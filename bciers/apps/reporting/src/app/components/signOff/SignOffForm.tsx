@@ -12,21 +12,22 @@ import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDa
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import reportValidationMessages from "./reportValidationMessages";
+import { NavigationInformation } from "../taskList/types";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 interface Props extends HasReportVersion {
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
 }
-export default function SignOffForm({ version_id, taskListElements }: Props) {
+export default function SignOffForm({
+  version_id,
+  navigationInformation,
+}: Props) {
   const [formState, setFormState] = useState({});
   const [errors, setErrors] = useState<string[]>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
-
-  const backUrl = `/reports/${version_id}/attachments`;
 
   const allChecked = (formData: SignOffFormData) => {
     return Object.values(formData).every((value) => value);
@@ -66,7 +67,7 @@ export default function SignOffForm({ version_id, taskListElements }: Props) {
         <MultiStepFormWithTaskList
           initialStep={3}
           steps={multiStepHeaderSteps}
-          taskListElements={taskListElements}
+          taskListElements={navigationInformation.taskList}
           schema={signOffSchema}
           uiSchema={signOffUiSchema}
           formData={formState}
@@ -78,7 +79,7 @@ export default function SignOffForm({ version_id, taskListElements }: Props) {
           saveButtonDisabled={true}
           submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
           continueUrl={""}
-          backUrl={backUrl}
+          backUrl={navigationInformation.backUrl}
           errors={errors}
         />
       )}

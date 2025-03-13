@@ -3,6 +3,7 @@ import {
   NavigationInformation,
   ReportingFlowDescription,
   ReportingPage,
+  TaskListPageFactoryContext,
   TaskListPageFactoryData,
 } from "./types";
 import { getFlow, reportingFlows } from "./reportingFlows";
@@ -26,6 +27,15 @@ const getTasklistElementLink: (
   );
 };
 
+/**
+ * Utility function to split tasklist page factory inputs depending on whether they should be
+ * displayed in the top section of the tasklist.
+ *
+ * @param taskListFactoryDataItems a list of tasklist page factory inputs
+ * @returns an array of length 2, containing:
+ * - at the index 0, an array of the items to be displayed in the header
+ * - at the index 1, an array of the items to be displayed regularly
+ */
 const splitHeaderElements = (
   taskListFactoryDataItems: TaskListPageFactoryData[],
 ) => {
@@ -49,7 +59,7 @@ export async function getNavigationInformation(
   page: ReportingPage,
   reportVersionId: number,
   facilityId: string,
-  context: any = {},
+  context: TaskListPageFactoryContext = {},
 ): Promise<NavigationInformation> {
   // get flow
   const flow = await getFlow(reportVersionId);
@@ -60,6 +70,8 @@ export async function getNavigationInformation(
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
   const pages = flowData[step] as ReportingPage[];
+
+  // build pages from the factories, skipping the ones
   const tasklistPages = (
     await Promise.all(
       pages.map(async (p) => {
@@ -72,7 +84,8 @@ export async function getNavigationInformation(
         );
       }),
     )
-  ).filter((p) => p !== undefined);
+  ).filter((p) => !p.extraOptions?.skip);
+
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);
   const taskListHeaders = taskListHeaderPages.map((tlp) => tlp.element);

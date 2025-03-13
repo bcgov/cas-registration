@@ -1,4 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { ActivityData } from "./2_facilitiesInformation";
 
 export enum ReportingPage {
   // 1
@@ -72,17 +73,28 @@ export interface TaskListPageFactoryData {
   };
 }
 
+// This is not ideal practice to describe the specific items of that context object,
+// because it tightly couples the generic type to the specifics of individual factories.
+// But it will help developers knowing what they can expect to set and access
+// when building the factories.
+export interface TaskListPageFactoryContext {
+  expandActivities?: boolean;
+  orderedActivities?: ActivityData[];
+  currentActivity?: ActivityData;
+  skipVerification?: boolean;
+}
+
 type SyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
-  context?: any,
+  context?: TaskListPageFactoryContext,
 ) => TaskListPageFactoryData;
 type AsyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
-  context?: any,
+  context?: TaskListPageFactoryContext,
 ) => Promise<TaskListPageFactoryData>;
 export type TaskListPageFactory =
   | SyncTaskListPageFactory
