@@ -134,3 +134,34 @@ class ComplianceSummaryService:
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
             return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET
+
+    @staticmethod
+    def calculate_outstanding_balance(compliance_summary: ComplianceSummary) -> Decimal:
+        """
+        Calculates the outstanding balance for a compliance summary.
+        The balance is equal to excess emissions if excess emissions are greater than 0,
+        and 0 otherwise.
+
+        Args:
+            compliance_summary (ComplianceSummary): The compliance summary
+
+        Returns:
+            Decimal: The outstanding balance
+        """
+
+        # Start with the base outstanding balance (excess emissions if positive, otherwise 0)
+        if compliance_summary.excess_emissions > Decimal('0'):
+            outstanding_balance = compliance_summary.excess_emissions
+        else:
+            outstanding_balance = Decimal('0')
+
+        # Future extension points:
+        # 1. Incorporate monetary payments into the calculation
+        # monetary_payments = _get_monetary_payments(compliance_summary)
+        # outstanding_balance = calculate_with_monetary_payments(outstanding_balance, monetary_payments)
+
+        # 2. Incorporate compliance credits into the calculation
+        # compliance_credits = _get_compliance_credits(compliance_summary)
+        # outstanding_balance = calculate_with_compliance_credits(outstanding_balance, compliance_credits)
+
+        return outstanding_balance

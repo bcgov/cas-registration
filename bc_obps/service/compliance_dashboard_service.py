@@ -5,6 +5,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
 from typing import Optional
+from service.compliance_summary_service import ComplianceSummaryService
 
 
 class ComplianceDashboardService:
@@ -38,11 +39,17 @@ class ComplianceDashboardService:
         )
 
         # Get all compliance summaries for the filtered operations
-        return (
+        summaries = (
             ComplianceSummary.objects.select_related('report', 'report__operation', 'compliance_period', 'obligation')
             .filter(id__in=[op.compliance_summary_id for op in operations if hasattr(op, 'compliance_summary_id')])
             .order_by('-compliance_period__end_date', 'report__operation__name')
         )
+
+        # Calculate and attach the outstanding balance to each summary
+        for summary in summaries:
+            summary.outstanding_balance = ComplianceSummaryService.calculate_outstanding_balance(summary)  # type: ignore[attr-defined]
+
+        return summaries
 
     @classmethod
     def get_compliance_summary_by_id(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceSummary]:
@@ -64,6 +71,12 @@ class ComplianceDashboardService:
         )
 
         # Get the compliance summary if it belongs to one of the user's operations
-        return ComplianceSummary.objects.select_related(
+        summary = ComplianceSummary.objects.select_related(
             'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
         ).get(id=summary_id, report__operation__in=operations)
+
+        # Calculate and attach the outstanding balance
+        if summary:
+            summary.outstanding_balance = ComplianceSummaryService.calculate_outstanding_balance(summary)  # type: ignore[attr-defined]
+
+        return summary
