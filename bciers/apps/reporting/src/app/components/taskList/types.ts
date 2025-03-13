@@ -2,11 +2,10 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { ActivityData } from "./2_facilitiesInformation";
 
 export enum ReportingPage {
-  // 1
   ReviewOperatorInfo = "ReviewOperatorInfo",
   PersonResponsible = "PersonResponsible",
   ReviewFacilities = "ReviewFacilities",
-  // 2
+
   FacilitiesTable = "FacilitiesTable",
   ReviewInformation = "ReviewInformation",
   Activities = "Activities",
@@ -15,13 +14,15 @@ export enum ReportingPage {
   ProductionData = "ProductionData",
   AllocationOfEmissions = "AllocationOfEmissions",
   EndOfReport = "EndOfReport",
-  // 3
+
+  EmissionsData = "EmissionsData",
+
   AdditionalReportingData = "AdditionalReportingData",
   NewEntrantInformation = "NewEntrantInformation",
   OperationEmissionSummary = "OperationEmissionSummary",
-  // 4
+
   ComplianceSummary = "ComplianceSummary",
-  // 5
+
   Verification = "Verification",
   Attachments = "Attachments",
   FinalReview = "FinalReview",
@@ -42,6 +43,7 @@ export enum ReportingFlow {
 export enum HeaderStep {
   OperationInformation = "Operation Information",
   ReportInformation = "Report Information",
+  EmissionsData = "Emissions Data",
   AdditionalInformation = "Additional Information",
   ComplianceSummary = "Compliance Summary",
   SignOffSubmit = "Sign-off & Submit",
