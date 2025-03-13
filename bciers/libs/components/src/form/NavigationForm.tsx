@@ -127,7 +127,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         noSaveButton={noSaveButton}
       />
       {/* Render form alerts */}
-      <FormAlerts errors={errors} />
+      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 };
