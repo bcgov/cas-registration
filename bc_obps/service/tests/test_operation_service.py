@@ -168,7 +168,7 @@ class TestOperationService:
         users_unregistered_operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
-            status=Operation.Statuses.PENDING,
+            status=Operation.Statuses.DRAFT,
         )
         # operation with a registered status
         baker.make_recipe(
@@ -177,7 +177,7 @@ class TestOperationService:
             status=Operation.Statuses.REGISTERED,
         )
         # operation for a different user_operator
-        baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.PENDING)
+        baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.DRAFT)
 
         result = OperationService.list_current_users_unregistered_operations(approved_user_operator.user.user_guid)
         assert Operation.objects.count() == 3
