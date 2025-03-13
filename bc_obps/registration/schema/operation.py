@@ -42,6 +42,12 @@ class OperationRegistrationOut(ModelSchema):
         return None
 
     @staticmethod
+    def resolve_operation_has_multiple_operators(obj: Operation) -> bool:
+        if obj.multiple_operators.exists():
+            return True
+        return False
+
+    @staticmethod
     def resolve_multiple_operators_array(obj: Operation) -> Optional[List[MultipleOperator]]:
         if obj.multiple_operators.exists():
             return [
