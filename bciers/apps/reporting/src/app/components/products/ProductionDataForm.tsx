@@ -5,7 +5,6 @@ import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { NavigationInformation } from "../taskList/types";
 
 interface Props {
@@ -68,8 +67,8 @@ const ProductionDataForm: React.FC<Props> = ({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={1}
-      steps={multiStepHeaderSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
       uiSchema={productionDataUiSchema}
