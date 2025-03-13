@@ -10,7 +10,7 @@ export interface ComplianceSummary {
   operation_name: string;
   reporting_year: number;
   excess_emissions: string;
-  outstanding_balance?: string;
+  outstanding_balance?: number;
   compliance_status?: string;
   penalty_status?: string;
   obligation_id?: string;
