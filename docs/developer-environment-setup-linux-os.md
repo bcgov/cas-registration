@@ -73,7 +73,7 @@ You can activate the virtual environment in two ways:
 1. Using Poetry (recommended):
 
 ```bash
-poetry shell
+poetry env activate
 ```
 
 > **Note**: If you're using Poetry 2.0+, the `shell` command was removed. In that case, use these alternatives:
@@ -133,8 +133,8 @@ After system restart, you'll need to:
 2. Activate the virtual environment:
 
    ```bash
-   # Using Poetry 1.8.1 (via asdf)
-   poetry shell
+   # Using Poetry 2.1.1 (via asdf)
+   poetry env activate
 
    # Or alternatively, activate directly:
    source $(poetry env info --path)/bin/activate
