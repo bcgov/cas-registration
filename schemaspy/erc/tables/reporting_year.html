@@ -131,6 +131,11 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
+                                                <td title="compliance_period.reporting_year_id references reporting_year.reporting_year via compliance_period_reporting_year_id_b7122d1a_fk_reporting"><a href='compliance_period.html'>compliance_period</a><span class='relatedKey'>.reporting_year_id</span></td>
+                                                <td class="constraint detail">compliance_period_reporting_year_id_b7122d1a_fk_reporting</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                            <tr>
                                                 <td title="report.reporting_year_id references reporting_year.reporting_year via report_reporting_year_id_8b6e1d1a_fk_reporting"><a href='report.html'>report</a><span class='relatedKey'>.reporting_year_id</span></td>
                                                 <td class="constraint detail">report_reporting_year_id_8b6e1d1a_fk_reporting</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -270,19 +275,22 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="report.html" target="_top" title="report" alt="" coords="427,5,615,299">
-<area shape="rect" id="node2" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="5,179,383,395">
+<area shape="rect" id="node1" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="427,5,656,240">
+<area shape="rect" id="node2" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="5,261,383,477">
+<area shape="rect" id="node3" href="report.html" target="_top" title="report" alt="" coords="447,257,635,551">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/reporting_year.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="operation.html" target="_top" title="operation" alt="" coords="467,185,625,273">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,171,120,259">
-<area shape="rect" id="node3" href="operator.html" target="_top" title="operator" alt="" coords="164,269,313,357">
-<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="779,113,967,406">
-<area shape="rect" id="node5" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="357,410,735,626">
-<area shape="rect" id="node6" href="report_version.html" target="_top" title="report_version" alt="" coords="1011,23,1207,111">
+<area shape="rect" id="node1" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="585,5,815,240">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="427,375,541,463">
+<area shape="rect" id="node3" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="5,421,383,637">
+<area shape="rect" id="node4" href="compliance_summary.html" target="_top" title="compliance_summary" alt="" coords="1532,236,1785,324">
+<area shape="rect" id="node5" href="report_version.html" target="_top" title="report_version" alt="" coords="1292,325,1488,413">
+<area shape="rect" id="node6" href="report.html" target="_top" title="report" alt="" coords="1060,393,1248,687">
+<area shape="rect" id="node7" href="operation.html" target="_top" title="operation" alt="" coords="859,465,1016,553">
+<area shape="rect" id="node8" href="operator.html" target="_top" title="operator" alt="" coords="625,549,775,637">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/reporting_year.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

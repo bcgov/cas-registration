@@ -18,6 +18,7 @@ facility_designated_operation_timeline_history
 document_type_history
 document_history
 contact_history
+compliance_obligation_history
 closure_event_history
 business_structure_history
 business_role_history

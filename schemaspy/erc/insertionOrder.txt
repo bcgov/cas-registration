@@ -2,9 +2,9 @@ business_structure
 configuration
 address
 naics_code
+reporting_year
 app_role
 business_role
-reporting_year
 user
 activity
 emission_category
@@ -19,7 +19,6 @@ bc_obps_regulated_operation
 activity_json_schema
 opted_in_operation_detail
 activity_source_type_json_schema
-contact
 operation
 facility
 report
@@ -28,9 +27,12 @@ facility_report
 report_activity
 report_source_type
 report_unit
+compliance_period
 custom_methodology_schema
 report_fuel
 report_new_entrant
+compliance_summary
+report_product
 report_operation
 report_emission
 document_type
@@ -40,8 +42,8 @@ closure_event
 restart_event
 temporary_shutdown_event
 report_non_attributable_emissions
-report_product
 configuration_element
+contact
 transfer_event
 naics_regulatory_values
 product_emission_intensity
@@ -61,7 +63,9 @@ temporary_shutdown_event_facilities
 transfer_event_facilities
 emission_category_mapping
 report_verification_visit
+compliance_obligation
 report_additional_data
+compliance_product
 document
 facility_designated_operation_timeline
 operation_designated_operator_timeline

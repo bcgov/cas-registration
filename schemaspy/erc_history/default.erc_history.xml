@@ -3,7 +3,7 @@
       <table name="activity_history" remarks="" schema="erc_history" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="false" remarks="The name of an activity. The activity names come from Schedule A of the British Columbia Greenhouse Gas Emission Reporting Regulation https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="applicable_to" nullable="false" remarks="Which type of facility the activity applies to. An activity can be valid for only a Single Facility Operation, only a Linear Facility Operation or it can apply to both" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="applicable_to" nullable="false" remarks="Which type of facility the activity applies to. An activity can be valid for only a Single Facility Operation, only a Linear Facilities Operation or it can apply to both" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="slug" nullable="false" remarks="A varchar slug to identify the activity on the frontend. This will be used to generate the routes to navigate to each activity" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="17" id="4" name="weight" nullable="false" remarks="A weighted float value used to order activities. This will be used on the frontend to determine the order in which activity pages appear in an emissions report" size="17" type="float8" typeCode="8"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
@@ -204,6 +204,47 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="compliance_obligation_history" remarks="" schema="erc_history" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="emissions_amount_tco2e" nullable="false" remarks="The amount of excess emissions in tCO2e" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="status" nullable="false" remarks="The status of the obligation (e.g., OBLIGATION_NOT_MET, OBLIGATION_MET)" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="penalty_status" nullable="false" remarks="The status of the penalty (e.g., NONE, ACCRUING, PAID)" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="obligation_deadline" nullable="false" remarks="Deadline date for meeting excess emissions obligations (November 30 of the following year), UTC-based" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="9" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="compliance_summary_id" nullable="true" remarks="The compliance summary this obligation belongs to" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <primaryKey column="history_id" sequenceNumberInPK="1"/>
+         <index name="compliance_obligation_history_pkey" unique="true">
+            <column ascending="true" name="history_id"/>
+         </index>
+         <index name="compliance_obligation_history_archived_by_id_53c62261" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_obligation_history_compliance_summary_id_e96f9a3d" unique="false">
+            <column ascending="true" name="compliance_summary_id"/>
+         </index>
+         <index name="compliance_obligation_history_created_by_id_8ea8950d" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_obligation_history_history_date_5fe4c1ef" unique="false">
+            <column ascending="true" name="history_date"/>
+         </index>
+         <index name="compliance_obligation_history_id_0fc6f978" unique="false">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_obligation_history_updated_by_id_a79209d5" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="contact_history" remarks="" schema="erc_history" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -336,7 +377,6 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="facility_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="status" nullable="false" remarks="The status of the facility in relation to the designated operation. For example, when a facility is transferred from Operation A to Operation B, under Operation A the status will be 'Transferred' but under Operation B the status will be 'Active'." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="facility_designated_operation_timeline_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -513,7 +553,6 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="operation_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operator_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="status" nullable="false" remarks="The status of an operation in relation to a specific operator (e.g. if an operation has transferred ownership, it may have a status of Transferred with its old operator and Active with its new one)" size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="operation_designated_operator_timeline_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -564,14 +603,13 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="naics_code_id" nullable="true" remarks="This column refers to an operation's primary NAICS code." size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="operator_id" nullable="true" remarks="The operator who owns the operation" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="point_of_contact_id" nullable="true" remarks="Foreign key to the contact that is the point of contact (point of contact is only used in registration 1)" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="verified_by_id" nullable="true" remarks="The IRC user who verified the operator" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="opted_in_operation_id" nullable="true" remarks="Details about the operation if it is opted in" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="28" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="29" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="30" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="verified_by_id" nullable="true" remarks="The IRC user who verified the operator" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="opted_in_operation_id" nullable="true" remarks="Details about the operation if it is opted in" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="28" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="29" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="operation_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -608,9 +646,6 @@
          </index>
          <index name="operation_history_opted_in_operation_id_5b2c17e2" unique="false">
             <column ascending="true" name="opted_in_operation_id"/>
-         </index>
-         <index name="operation_history_point_of_contact_id_4d88d03d" unique="false">
-            <column ascending="true" name="point_of_contact_id"/>
          </index>
          <index name="operation_history_secondary_naics_code_id_beb4ede0" unique="false">
             <column ascending="true" name="secondary_naics_code_id"/>
