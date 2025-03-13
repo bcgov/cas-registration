@@ -198,7 +198,6 @@ class OperationService:
 
         return OperationRepresentativeRemove(id=payload.id)
 
-
     @classmethod
     @transaction.atomic()
     def _create_operation(
