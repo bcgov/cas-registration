@@ -64,6 +64,11 @@ describe("the OperationInformationForm component", () => {
 
   it("should fetch operation data when an existing operation is selected", async () => {
     fetchFormEnums(Apps.REGISTRATION);
+    actionHandler.mockResolvedValueOnce({
+      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+      name: "Operation 1",
+      registration_purpose: "Electricity Import Operation",
+    }); // mock the GET from selecting an operation
     render(
       <OperationInformationForm
         rawFormData={{}}
@@ -85,6 +90,17 @@ describe("the OperationInformationForm component", () => {
         "",
       );
     });
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+        "Operation 1",
+      );
+      expect(
+        screen.getByLabelText(
+          /The purpose of this registration is to register as a:+/i,
+        ),
+      ).toHaveValue("Electricity Import Operation");
+    });
   });
 
   it(
@@ -96,12 +112,14 @@ describe("the OperationInformationForm component", () => {
       fetchFormEnums(Apps.REGISTRATION); // mock actionHandler calls to populate dropdown options
 
       actionHandler.mockResolvedValueOnce({
-        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
         name: "Existing Operation",
         type: "Single Facility Operation",
         naics_code_id: 1,
         boundary_map: mockDataUri,
         process_flow_diagram: mockDataUri,
+        registration_purpose: "Reporting Operation",
+        activities: [1],
       }); // mock the GET from selecting an operation
 
       actionHandler.mockResolvedValueOnce({
@@ -117,25 +135,6 @@ describe("the OperationInformationForm component", () => {
           steps={allOperationRegistrationSteps}
         />,
       );
-
-      const purposeInput = screen.getByRole("combobox", {
-        name: /The purpose of this registration+/i,
-      });
-      await fillComboboxWidgetField(purposeInput, "Reporting Operation");
-
-      expect(
-        screen.queryByPlaceholderText(/select regulated product/i),
-      ).not.toBeInTheDocument();
-
-      const reportingActivitiesInput = screen.getByPlaceholderText(
-        /select reporting activity.../i,
-      );
-
-      const openActivitiesDropdown = reportingActivitiesInput?.parentElement
-        ?.children[1]?.children[0] as HTMLInputElement;
-      await userEvent.click(openActivitiesDropdown);
-      const activityOption = screen.getByText("Ammonia production");
-      await userEvent.click(activityOption);
 
       const operationInput = screen.getByLabelText(/Select your operation+/i);
       await fillComboboxWidgetField(operationInput, "Existing Operation");
@@ -155,6 +154,7 @@ describe("the OperationInformationForm component", () => {
         expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
       });
       // edit one of the pre-filled values
+
       await userEvent.type(
         screen.getByLabelText(/Operation name+/i),
         " edited",
