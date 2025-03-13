@@ -63,8 +63,12 @@ export interface TaskListPageFactoryData {
   backUrl?: string;
   extraOptions?: {
     // Setting this flag to `true` will cause the tasklist element factory
-    // to prop that element above all the other ones
+    // to prop that element above all the other ones.
     taskListHeader?: boolean;
+
+    // Setting this flag to `true` will cause the tasklist element factory
+    // to skip it when building the task list.
+    skip?: boolean;
   };
 }
 

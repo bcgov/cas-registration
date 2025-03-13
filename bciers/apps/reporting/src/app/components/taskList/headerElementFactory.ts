@@ -17,6 +17,11 @@ export const headerElementFactories: {
     title: `${context?.facilityName ?? "Facility"} information`,
     isExpanded: true,
   }),
+  [HeaderStep.SignOffSubmit]: () => ({
+    type: "Section",
+    title: "Sign-off & submit",
+    isExpanded: true,
+  }),
 };
 
 export function headerElementFactory(

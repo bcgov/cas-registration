@@ -60,11 +60,19 @@ export async function getNavigationInformation(
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
   const pages = flowData[step] as ReportingPage[];
-  const tasklistPages = await Promise.all(
-    pages.map(async (p) => {
-      return pageElementFactory(p, page, reportVersionId, facilityId, context);
-    }),
-  );
+  const tasklistPages = (
+    await Promise.all(
+      pages.map(async (p) => {
+        return pageElementFactory(
+          p,
+          page,
+          reportVersionId,
+          facilityId,
+          context,
+        );
+      }),
+    )
+  ).filter((p) => p !== undefined);
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);
   const taskListHeaders = taskListHeaderPages.map((tlp) => tlp.element);
