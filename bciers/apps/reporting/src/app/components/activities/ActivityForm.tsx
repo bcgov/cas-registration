@@ -122,6 +122,14 @@ export default function ActivityForm({
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
     // Ensure we use the filtered formData with omitted extra data
     const filteredData = e.formData;
+
+    if (!filteredData.sourceTypes) {
+      setErrorList([
+        "At least one source type must be selected to report for that activity.",
+      ]);
+      return false;
+    }
+
     const selectedSourceTypeData = Object.keys(filteredData.sourceTypes);
 
     // Only filter the keys where the checkBox for that source type is checked IF there is more than one source type
