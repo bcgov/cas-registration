@@ -2,6 +2,18 @@
   {
     "model": "registration.useroperator",
     "fields": {
+      "user": "ba2ba62a121842e0942aab9e92ce8822",
+      "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
+      "role": "admin",
+      "status": "Approved",
+      "verified_at": "2024-02-26 06:24:57.293242-08",
+      "verified_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351",
+      "user_friendly_id": 1
+    }
+  },
+  {
+    "model": "registration.useroperator",
+    "fields": {
       "user": "59038013-a0c1-4c70-b025-a8312062d4c9",
       "operator": "3068caa0-25cd-4e48-aa4d-167acf1ecd3f",
       "role": "admin",
