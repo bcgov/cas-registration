@@ -23,3 +23,17 @@
 8. **Check Results** - Results will be in the `k6_results` folder in .csv format.
 
 9. **Monitor Results** - We have added [`K6_WEB_DASHBOARD=true`](https://grafana.com/docs/k6/latest/results-output/web-dashboard/) to the make target by default, and it will show `web dashboard: http://127.0.0.1:5665` in the terminal. You can view the results in the browser (with a 10s refresh rate).
+
+#### K6 File Upload Support
+
+K6 supports file uploads during performance testing, allowing the simulation of realistic file upload scenarios. Refer to the [K6 Data Uploads Guide](https://grafana.com/docs/k6/latest/examples/data-uploads/) for more details.
+
+###### Key Features:
+
+1. **Loading local files:** Use the open() function to read local files.
+
+2. **Binary file handling:** Pass "b" as the second argument to open() for binary files.
+
+3. **Multipart form uploads:** Use http.file() to attach files to POST requests.
+
+4. **Advanced uploads:** Utilize a FormData polyfill for handling multiple files and maintaining proper order in multipart requests (ideal for APIs like AWS S3).
