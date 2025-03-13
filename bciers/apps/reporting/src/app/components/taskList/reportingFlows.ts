@@ -1,3 +1,9 @@
+import {
+  ELECTRICITY_IMPORT_OPERATION,
+  NEW_ENTRANT_REGISTRATION_PURPOSE,
+  REPORTING_OPERATION,
+  SIMPLE_REPORT,
+} from "../../utils/constants";
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
 import { getReportingOperation } from "../../utils/getReportingOperation";
 import {
@@ -70,26 +76,32 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
   const operationType = reportOperationData.operation_type;
   const reportType = reportOperationData.operation_report_type;
 
-  if (reportType === "Simple Report") return ReportingFlow.SimpleReport;
+  if (reportType === SIMPLE_REPORT) return ReportingFlow.SimpleReport;
 
-  if (registrationPurpose === "Electricity Import Operation")
+  if (registrationPurpose === ELECTRICITY_IMPORT_OPERATION)
     return ReportingFlow.EIO;
 
-  if (
-    registrationPurpose === "Reporting Operation" &&
-    operationType === "Single Facility Operation"
-  )
-    return ReportingFlow.ReportingOnlySFO;
+  if (operationType === "Single Facility Operation") {
+    switch (registrationPurpose) {
+      case NEW_ENTRANT_REGISTRATION_PURPOSE:
+        return ReportingFlow.NewEntrantSFO;
+      case REPORTING_OPERATION:
+        return ReportingFlow.ReportingOnlySFO;
+      default:
+        return ReportingFlow.SFO;
+    }
+  }
 
-  if (
-    registrationPurpose === "Reporting Operation" &&
-    operationType === "Linear Facilities Operation"
-  )
-    return ReportingFlow.ReportingOnlyLFO;
-
-  if (operationType === "Single Facility Operation") return ReportingFlow.SFO;
-
-  if (operationType === "Linear Facilities Operation") return ReportingFlow.LFO;
+  if (operationType === "Linear Facilities Operation") {
+    switch (registrationPurpose) {
+      case NEW_ENTRANT_REGISTRATION_PURPOSE:
+        return ReportingFlow.NewEntrantLFO;
+      case REPORTING_OPERATION:
+        return ReportingFlow.ReportingOnlyLFO;
+      default:
+        return ReportingFlow.LFO;
+    }
+  }
 
   throw new Error(
     `Unable to resolve reporting flow for registration purpose ${registrationPurpose.registration_purpose} and operation type ${operationType}`,
