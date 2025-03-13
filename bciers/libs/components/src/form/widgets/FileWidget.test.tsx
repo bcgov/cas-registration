@@ -259,7 +259,6 @@ describe("RJSF FileWidget", () => {
               title: "Multiple files",
               items: {
                 type: "string",
-                format: "data-url",
               },
             },
           },
