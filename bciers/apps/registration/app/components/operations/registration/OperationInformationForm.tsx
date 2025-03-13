@@ -162,9 +162,7 @@ const OperationInformationForm = ({
     if (operationData?.error) {
       setError("Failed to fetch operation data!" as any);
     }
-    // combine the entered data with the fetched data
-    const combinedData = { ...data, section2: operationData };
-    setConfirmedFormState(combinedData);
+    setConfirmedFormState(createNestedFormData(operationData, schema));
     setKey(Math.random()); // NOSONAR
   };
 
