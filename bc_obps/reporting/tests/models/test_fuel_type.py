@@ -17,7 +17,7 @@ class TestInitialData(TestCase):
                 "C/D Waste - Wood",
                 "Carpet fibre",
                 "Coal Coke",
-                "Comubstible Tall Oil",
+                "Combustible Tall Oil",
                 "Concentrated Non-Condensible Gases (CNCGs)",
                 "Crude Sulfate Turpentine (CST)",
                 "Crude Tall Oil (CTO)",
