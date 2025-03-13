@@ -22,7 +22,7 @@ def migrate_reg1_operation_statuses(apps, schema_monitor):
     # import the required Django model
     Operation = apps.get_model('registration', 'Operation')
     User = apps.get_model('registration', 'User')
-    breakpoint()
+
     Operation.objects.filter(status="Pending").update(status="Draft")
     Operation.objects.filter(status="Approved").update(status="Draft")
     Operation.objects.filter(status="Changes Requested").update(status="Draft")
