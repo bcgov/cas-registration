@@ -1,3 +1,24 @@
+# [1.24.0](https://github.com/bcgov/cas-registration/compare/v1.23.1...v1.24.0) (2025-03-13)
+
+### Bug Fixes
+
+- correct my compliance link ([600d26b](https://github.com/bcgov/cas-registration/commit/600d26b8b49b07f784e542a876a2a040be82c1d5))
+- existing contact options conditional handling in operation representative schema ([80c3bb0](https://github.com/bcgov/cas-registration/commit/80c3bb039fc1904935888dfa22e2b6b55983d09c))
+- load_production_data to filter by report_version_id ([755477e](https://github.com/bcgov/cas-registration/commit/755477ee025a512e81125e0624ef819dea97f716))
+- prevent creating duplicate contact when approving user request ([c0442d1](https://github.com/bcgov/cas-registration/commit/c0442d145624b4ce9793f165a191b99feba309aa))
+- prevent processing when no uploads ([30a3a9f](https://github.com/bcgov/cas-registration/commit/30a3a9f99d5b6b8e24dcaca15feb3bc2502107c3))
+
+### Features
+
+- add action cell to compliance summary ([fced853](https://github.com/bcgov/cas-registration/commit/fced853a8fca7a0ef3ba1e4c10e44b20b8ebb393))
+- add new user entries to fixtures for load testing ([a79b574](https://github.com/bcgov/cas-registration/commit/a79b574a18b62d3466fe1fc00676b0ddc2b1cf6b))
+- add outstanding balance cell ([e7796fb](https://github.com/bcgov/cas-registration/commit/e7796fbb7d618f5dae1a3d582ebd36a6275e80ba))
+- add registration backend load testing scripts ([34022a7](https://github.com/bcgov/cas-registration/commit/34022a70c26b953ae1a09454bf264a046be9f7cc))
+- add woody biomass emission exception for pulp and paper ([53d301b](https://github.com/bcgov/cas-registration/commit/53d301b7b8cf40ddbb79f7784725b9cf19c08652))
+- **compliance:** create Compliance Summary from submitted report and compliance summaries page ([#2811](https://github.com/bcgov/cas-registration/issues/2811)) ([976d583](https://github.com/bcgov/cas-registration/commit/976d5832c8ee8df71b2139efb993cce755084f5b))
+- create contact record for user_operator during operator creation ([a64f096](https://github.com/bcgov/cas-registration/commit/a64f096f5ede229230b69859ad7a0c93f78344f2))
+- move outstanding balance calculation to BE ([f82c430](https://github.com/bcgov/cas-registration/commit/f82c430fb43070aa47efcb9d692c468217797aad))
+
 ## [1.23.1](https://github.com/bcgov/cas-registration/compare/v1.23.0...v1.23.1) (2025-03-03)
 
 # [1.23.0](https://github.com/bcgov/cas-registration/compare/v1.22.0...v1.23.0) (2025-02-28)
