@@ -379,7 +379,7 @@ def init_fuel_type_data(apps, schema_monitor):
             FuelType(name="C/D Waste - Wood", unit="tonnes", classification="Other Exempted Biomass"),
             FuelType(name="Carpet fibre", unit="tonnes", classification="Exempted Non-biomass"),
             FuelType(name="Coal Coke", unit="tonnes", classification="Non-biomass"),
-            FuelType(name="Comubstible Tall Oil", unit="kilolitres", classification="Woody Biomass"),
+            FuelType(name="Combustible Tall Oil", unit="kilolitres", classification="Woody Biomass"),
             FuelType(name="Concentrated Non-Condensible Gases (CNCGs)", unit="tonnes", classification="Woody Biomass"),
             FuelType(name="Crude Sulfate Turpentine (CST)", unit="kilolitres", classification="Woody Biomass"),
             FuelType(name="Crude Tall Oil (CTO)", unit="kilolitres", classification="Woody Biomass"),
