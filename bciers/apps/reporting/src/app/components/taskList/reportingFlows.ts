@@ -7,7 +7,10 @@ import {
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
 import { getReportingOperation } from "../../utils/getReportingOperation";
 import { lfoFlow } from "./reportingFlows/lfoFlow";
+import { lfoReportingOnlyFlow } from "./reportingFlows/lfoReportingOnlyFlow";
 import { sfoFlow } from "./reportingFlows/sfoFlow";
+import { sfoReportingOnlyFlow } from "./reportingFlows/sfoReportingOnlyFlow";
+import { simpleReportFlow } from "./reportingFlows/simpleReportFlow";
 import { ReportingFlow, ReportingFlowDescription } from "./types";
 
 export const reportingFlows: {
@@ -15,6 +18,9 @@ export const reportingFlows: {
 } = {
   [ReportingFlow.SFO]: sfoFlow,
   [ReportingFlow.LFO]: lfoFlow,
+  [ReportingFlow.ReportingOnlySFO]: sfoReportingOnlyFlow,
+  [ReportingFlow.ReportingOnlyLFO]: lfoReportingOnlyFlow,
+  [ReportingFlow.SimpleReport]: simpleReportFlow,
 };
 
 export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
