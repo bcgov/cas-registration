@@ -20,8 +20,9 @@ const activitiesPageFactory: TaskListPageFactory = (
         title: activity.name,
         link: `/reports/${reportVersionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
         isActive:
+          context?.currentActivity &&
           context?.orderedActivities?.indexOf(context?.currentActivity) ===
-          index,
+            index,
       }) as TaskListElement,
   );
 

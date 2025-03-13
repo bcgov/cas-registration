@@ -3,7 +3,11 @@ import { facilitiesInformationPageFactories } from "./2_facilitiesInformation";
 import { additionalInformationPageFactories } from "./3_additionalInformation";
 import { complianceSummaryPageFactories } from "./4_complianceSummary";
 import { signOffSubmitPageFactories } from "./5_signOffSubmit";
-import { ReportingPage, TaskListPageFactory } from "./types";
+import {
+  ReportingPage,
+  TaskListPageFactory,
+  TaskListPageFactoryContext,
+} from "./types";
 
 export const pageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
@@ -20,7 +24,7 @@ export const pageElementFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
-  context: Object = {},
+  context?: TaskListPageFactoryContext,
 ) => {
   const factory = pageFactories[page];
 

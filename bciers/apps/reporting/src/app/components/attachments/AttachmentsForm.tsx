@@ -7,27 +7,25 @@ import AttachmentElement, {
 } from "./AttachmentElement";
 import { useState } from "react";
 import { UploadedAttachment } from "./types";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { useRouter } from "next/navigation";
+import { NavigationInformation } from "../taskList/types";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
     [attachment_type: string]: UploadedAttachment;
   };
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
   isVerificationStatementMandatory: boolean;
 }
 
 const AttachmentsForm: React.FC<Props> = ({
   version_id,
-  taskListElements,
+  navigationInformation,
   initialUploadedAttachments,
   isVerificationStatementMandatory,
 }) => {
   const router = useRouter();
-  const saveAndContinueUrl = `/reports/${version_id}/sign-off`;
-  const backUrl = `/reports/${version_id}/verification`;
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
@@ -73,7 +71,7 @@ const AttachmentsForm: React.FC<Props> = ({
 
     if (Object.keys(pendingUploadFiles).length === 0) {
       // Nothing to submit
-      if (canContinue) return router.push(saveAndContinueUrl);
+      if (canContinue) return router.push(navigationInformation.continueUrl);
       else return;
     }
 
@@ -92,7 +90,7 @@ const AttachmentsForm: React.FC<Props> = ({
     } else {
       if (canContinue) {
         setIsRedirecting(true);
-        router.push(saveAndContinueUrl);
+        router.push(navigationInformation.continueUrl);
       }
     }
 
@@ -133,11 +131,11 @@ const AttachmentsForm: React.FC<Props> = ({
       <MultiStepWrapperWithTaskList
         steps={multiStepHeaderSteps}
         initialStep={4}
-        taskListElements={taskListElements}
+        taskListElements={navigationInformation.taskList}
         onSubmit={() => handleSubmit(true)}
         cancelUrl="#"
-        backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
         errors={errors}
         isSaving={isSaving}
         isRedirecting={isRedirecting}
