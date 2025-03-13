@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
@@ -89,8 +88,8 @@ export default function VerificationForm({
 
   return (
     <MultiStepFormWithTaskList
-      steps={multiStepHeaderSteps}
-      initialStep={4}
+      steps={navigationInformation.headerSteps}
+      initialStep={navigationInformation.headerStepIndex}
       taskListElements={navigationInformation.taskList}
       schema={verificationSchema}
       uiSchema={verificationUiSchema}

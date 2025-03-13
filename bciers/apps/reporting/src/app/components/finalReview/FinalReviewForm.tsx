@@ -1,7 +1,6 @@
 "use client";
 
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
 import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
@@ -67,8 +66,8 @@ const FinalReviewForm: React.FC<Props> = ({ navigationInformation, data }) => {
 
   return (
     <MultiStepWrapperWithTaskList
-      steps={multiStepHeaderSteps}
-      initialStep={4}
+      steps={navigationInformation.headerSteps}
+      initialStep={navigationInformation.headerStepIndex}
       onSubmit={submitHandler}
       isRedirecting={isRedirecting}
       taskListElements={navigationInformation.taskList}

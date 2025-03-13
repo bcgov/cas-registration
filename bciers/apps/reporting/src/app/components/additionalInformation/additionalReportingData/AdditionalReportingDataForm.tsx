@@ -9,7 +9,6 @@ import {
   additionalReportingDataWithElectricityGeneratedSchema,
 } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { actionHandler } from "@bciers/actions";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { NavigationInformation } from "../../taskList/types";
 
 interface AdditionalReportingDataProps {
@@ -73,8 +72,8 @@ export default function AdditionalReportingDataForm({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={2}
-      steps={multiStepHeaderSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
       uiSchema={additionalReportingDataUiSchema}

@@ -79,6 +79,7 @@ export interface TaskListPageFactoryData {
 // But it will help developers knowing what they can expect to set and access
 // when building the factories.
 export interface TaskListPageFactoryContext {
+  facilityName?: string;
   expandActivities?: boolean;
   orderedActivities?: ActivityData[];
   currentActivity?: ActivityData;

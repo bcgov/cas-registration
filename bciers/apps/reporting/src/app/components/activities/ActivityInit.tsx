@@ -6,7 +6,6 @@ import { ActivityData } from "@reporting/src/app/components/taskList/2_facilitie
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
-import { OperationTypes } from "@bciers/utils/src/enums";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 
@@ -72,8 +71,6 @@ export default async function ActivityInit({
       sourceTypeQueryString += `&source_types[]=${k}`;
     }
   }
-  const isLinearOperation =
-    reportInfoTaskListData?.operationType === OperationTypes.LFO;
 
   const fetchSchema = async () => {
     const schema = await actionHandler(
@@ -95,7 +92,6 @@ export default async function ActivityInit({
       facilityId={facilityId}
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
-      isLinearOperation={isLinearOperation}
     />
   );
 }

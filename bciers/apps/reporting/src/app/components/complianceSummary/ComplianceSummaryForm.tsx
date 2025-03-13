@@ -9,7 +9,6 @@ import {
   complianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { NavigationInformation } from "../taskList/types";
 
 interface Props {
@@ -46,7 +45,10 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="compliance-summary">
-        <MultiStepHeader stepIndex={3} steps={multiStepHeaderSteps} />
+        <MultiStepHeader
+          stepIndex={navigationInformation.headerStepIndex}
+          steps={navigationInformation.headerSteps}
+        />
       </div>
       <div className="w-full flex">
         <ReportingTaskList elements={navigationInformation.taskList} />

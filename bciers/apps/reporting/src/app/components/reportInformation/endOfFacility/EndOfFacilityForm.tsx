@@ -1,7 +1,6 @@
 "use client";
 import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import NavigationForm from "@bciers/components/form/NavigationForm";
 import ReportSubmissionEnd from "@reporting/src/app/components/reportInformation/endOfFacility/FacilityPageEnd";
@@ -22,7 +21,10 @@ export default function EndOfFacilityForm({
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
-        <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
+        <MultiStepHeader
+          stepIndex={navigationInformation.headerStepIndex}
+          steps={navigationInformation.headerSteps}
+        />
       </div>
       <div className="w-full flex">
         <div className="hidden md:flex flex-col">

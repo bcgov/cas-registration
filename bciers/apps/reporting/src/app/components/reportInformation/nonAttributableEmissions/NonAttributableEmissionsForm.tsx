@@ -7,7 +7,6 @@ import {
   nonAttributableEmissionUiSchema,
 } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
 import { actionHandler } from "@bciers/actions";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { NavigationInformation } from "../../taskList/types";
 
 interface ActivityData {
@@ -87,8 +86,8 @@ export default function NonAttributableEmissionsForm({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={1}
-      steps={multiStepHeaderSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
       uiSchema={nonAttributableEmissionUiSchema}

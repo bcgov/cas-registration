@@ -8,7 +8,6 @@ import { Typography } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { FacilityRow } from "@reporting/src/app/components/reportInformation/facilities/types";
 import getFacilityColumns from "@reporting/src/app/components/datagrid/models/facilities/getFacilityColumns";
@@ -205,7 +204,10 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         saveData(false);
       }}
     >
-      <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
+      <MultiStepHeader
+        stepIndex={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
+      />
       <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">Report Information</div>
       </div>

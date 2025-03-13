@@ -11,7 +11,6 @@ import {
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { EmissionSummaryFormData } from "@reporting/src/app/utils/emissionSummaryTypes";
 import { NavigationInformation } from "../taskList/types";
-import { multiStepHeaderSteps } from "../taskList/multiStepHeaderConfig";
 
 interface Props {
   summaryFormData: EmissionSummaryFormData;
@@ -28,7 +27,10 @@ const FacilityEmissionSummaryForm: React.FC<Props> = ({
         className="container mx-auto p-4"
         data-testid="facility-emission-summary"
       >
-        <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
+        <MultiStepHeader
+          stepIndex={navigationInformation.headerStepIndex}
+          steps={navigationInformation.headerSteps}
+        />
       </div>
       <div className="w-full flex">
         <ReportingTaskList elements={navigationInformation.taskList} />

@@ -4,7 +4,6 @@ import {
   operationEmissionSummarySchema,
   emissionSummaryUiSchema,
 } from "@reporting/src/data/jsonSchema/emissionSummary";
-import { multiStepHeaderSteps } from "../../taskList/multiStepHeaderConfig";
 import { EmissionSummaryFormData } from "@reporting/src/app/utils/emissionSummaryTypes";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { NavigationInformation } from "../../taskList/types";
@@ -18,8 +17,6 @@ const OperationEmissionSummary: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
-  const additionalReportingStepIndex = 2;
-
   return (
     <MultiStepFormWithTaskList
       taskListElements={navigationInformation.taskList}
@@ -27,8 +24,8 @@ const OperationEmissionSummary: React.FC<Props> = ({
       uiSchema={emissionSummaryUiSchema}
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
-      steps={multiStepHeaderSteps}
-      initialStep={additionalReportingStepIndex}
+      steps={navigationInformation.headerSteps}
+      initialStep={navigationInformation.headerStepIndex}
       formData={summaryFormData}
       saveButtonDisabled={true}
     />
