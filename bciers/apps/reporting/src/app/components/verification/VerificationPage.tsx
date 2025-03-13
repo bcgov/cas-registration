@@ -2,14 +2,12 @@ import { getReportVerification } from "@reporting/src/app/utils/getReportVerific
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
-import {
-  ActivePage,
-  getSignOffAndSubmitSteps,
-} from "@reporting/src/app/components/taskList/5_signOffSubmit";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { extendVerificationData } from "@reporting/src/app/utils/verification/extendVerificationData";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 
 // import { verificationSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 export default async function VerificationPage({
@@ -35,10 +33,13 @@ export default async function VerificationPage({
 
   //🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
-  const taskListElements = await getSignOffAndSubmitSteps(
+
+  const navInfo = await getNavigationInformation(
+    HeaderStep.SignOffSubmit,
+    ReportingPage.Verification,
     version_id,
-    ActivePage.Verification,
-    needsVerification,
+    "",
+    { skipVerification: !needsVerification },
   );
 
   // Render the verification form
@@ -49,7 +50,7 @@ export default async function VerificationPage({
         operationType={operationType}
         verificationSchema={verificationSchema}
         initialData={transformedData}
-        taskListElements={taskListElements}
+        navigationInformation={navInfo}
       />
     </>
   );
