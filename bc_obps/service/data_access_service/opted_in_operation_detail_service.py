@@ -1,7 +1,5 @@
-from uuid import UUID
 from registration.schema import OptedInOperationDetailIn
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
-from registration.models.operation import Operation
 from registration.utils import update_model_instance
 
 
@@ -23,16 +21,3 @@ class OptedInOperationDataAccessService:
         )
         updated_opted_in_operation_detail_instance.save()
         return updated_opted_in_operation_detail_instance
-
-    @classmethod
-    def archive_or_delete_opted_in_operation_detail(cls, user_guid: UUID, operation_id: UUID) -> None:
-        from service.operation_service import OperationService
-
-        operation = OperationService.get_if_authorized(user_guid, operation_id)
-        if operation.opted_in_operation:
-            opted_in_operation_detail_id = operation.opted_in_operation.id
-            opted_in_operation_detail = OptedInOperationDetail.objects.get(pk=opted_in_operation_detail_id)
-            if operation.status == Operation.Statuses.REGISTERED:
-                opted_in_operation_detail.set_archive(user_guid)
-            else:
-                opted_in_operation_detail.delete()
