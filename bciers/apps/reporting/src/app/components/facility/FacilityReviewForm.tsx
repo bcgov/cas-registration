@@ -6,7 +6,6 @@ import {
 } from "@reporting/src/data/jsonSchema/facilities";
 import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "../taskList/types";
 
@@ -78,8 +77,8 @@ const FacilityReview: React.FC<Props> = ({
         }));
       }}
       continueUrl={navigationInformation.continueUrl}
-      initialStep={1}
-      steps={multiStepHeaderSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
       backUrl={navigationInformation.backUrl}
       saveButtonDisabled={false}
       taskListElements={navigationInformation.taskList}
