@@ -8,7 +8,6 @@ import {
   NewEntrantUiSchema,
 } from "@reporting/src/data/jsonSchema/newEntrantInformation";
 import { IChangeEvent } from "@rjsf/core";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { NavigationInformation } from "../../taskList/types";
 
 interface NewEntrantInfornationProps {
@@ -53,8 +52,8 @@ export default function NewEntrantInformationForm({
   };
   return (
     <MultiStepFormWithTaskList
-      initialStep={2}
-      steps={multiStepHeaderSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={NewEntrantSchema}
       uiSchema={NewEntrantUiSchema}
