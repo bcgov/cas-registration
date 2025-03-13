@@ -11,7 +11,6 @@ import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import reportValidationMessages from "./reportValidationMessages";
 import { NavigationInformation } from "../taskList/types";
 
@@ -65,8 +64,8 @@ export default function SignOffForm({
         <ReportSubmission />
       ) : (
         <MultiStepFormWithTaskList
-          initialStep={3}
-          steps={multiStepHeaderSteps}
+          initialStep={navigationInformation.headerStepIndex}
+          steps={navigationInformation.headerSteps}
           taskListElements={navigationInformation.taskList}
           schema={signOffSchema}
           uiSchema={signOffUiSchema}
