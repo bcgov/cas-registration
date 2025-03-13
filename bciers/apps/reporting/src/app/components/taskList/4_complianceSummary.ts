@@ -1,9 +1,14 @@
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { ReportingPage, TaskListPageFactory } from "./types";
 
-export const getComplianceSummaryTaskList: () => TaskListElement[] = () => [
-  {
-    type: "Page",
-    title: "Compliance summary",
-    isActive: true,
-  },
-];
+export const complianceSummaryPageFactories: {
+  [Page in ReportingPage]?: TaskListPageFactory;
+} = {
+  [ReportingPage.ComplianceSummary]: (activePage, reportVersionId) => ({
+    element: {
+      type: "Page",
+      title: "Compliance summary",
+      isActive: activePage === ReportingPage.ComplianceSummary,
+      link: `/reports/${reportVersionId}/compliance-summary`,
+    },
+  }),
+};

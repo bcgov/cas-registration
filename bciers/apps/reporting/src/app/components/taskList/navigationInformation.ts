@@ -118,12 +118,12 @@ export async function getNavigationInformation(
   let continueUrl = tasklistPages[pageIndex].continueUrl;
 
   if (continueUrl === undefined) {
-    if (pageIndex != tasklistPages.length - 1)
+    if (pageIndex != tasklistPages.length - 1) {
       continueUrl = getTasklistElementLink(
         tasklistPages[pageIndex + 1].element,
         "first",
       );
-    else {
+    } else {
       // first element of next step
       const nextStepIndex = availableFlows.indexOf(step) + 1;
       if (nextStepIndex < availableFlows.length) {

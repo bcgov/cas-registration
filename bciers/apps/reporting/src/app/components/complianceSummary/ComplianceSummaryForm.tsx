@@ -4,17 +4,15 @@ import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import FormBase from "@bciers/components/form/FormBase";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   complianceSummaryUiSchema,
   complianceSummarySchema,
 } from "@reporting/src/data/jsonSchema/complianceSummary";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { NavigationInformation } from "../taskList/types";
 
 interface Props {
-  versionId: number;
   summaryFormData: {
     emissions_attributable_for_reporting: string;
     reporting_only_emissions: string;
@@ -38,31 +36,20 @@ interface Props {
       allocated_compliance_emissions: string;
     }[];
   };
-  taskListElements: TaskListElement[];
-  operationType: string;
+  navigationInformation: NavigationInformation;
 }
 
 const ComplianceSummaryForm: React.FC<Props> = ({
-  versionId,
   summaryFormData,
-  taskListElements,
-  operationType,
+  navigationInformation,
 }) => {
-  const step =
-    operationType === OperationTypes.LFO
-      ? "operation-emission-summary"
-      : "additional-reporting-data";
-  const backUrl = `/reports/${versionId}/${step}`;
-
-  const continueUrl = `/reports/${versionId}/final-review`;
-
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="compliance-summary">
         <MultiStepHeader stepIndex={3} steps={multiStepHeaderSteps} />
       </div>
       <div className="w-full flex">
-        <ReportingTaskList elements={taskListElements} />
+        <ReportingTaskList elements={navigationInformation.taskList} />
         <div className="w-full md:max-w-[60%]">
           <FormBase
             schema={complianceSummarySchema}
@@ -70,8 +57,8 @@ const ComplianceSummaryForm: React.FC<Props> = ({
             formData={summaryFormData}
           >
             <ReportingStepButtons
-              backUrl={backUrl}
-              continueUrl={continueUrl}
+              backUrl={navigationInformation.backUrl}
+              continueUrl={navigationInformation.continueUrl}
               saveButtonDisabled={true}
             />
           </FormBase>
