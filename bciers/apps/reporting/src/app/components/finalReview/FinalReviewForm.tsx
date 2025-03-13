@@ -1,9 +1,7 @@
 "use client";
 
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { useRouter } from "next/navigation";
 import { uiSchemaMap } from "../activities/uiSchemas/schemaMaps";
 import { nonAttributableEmissionUiSchema } from "@reporting/src/data/jsonSchema/nonAttributableEmissions/nonAttributableEmissions";
@@ -17,11 +15,11 @@ import finalReviewTheme from "./formCustomization/finalReviewTheme";
 import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { complianceSummaryUiSchema } from "@reporting/src/data/jsonSchema/complianceSummary";
 import { useState } from "react";
+import { NavigationInformation } from "../taskList/types";
 
-interface Props extends HasReportVersion {
-  taskListElements: TaskListElement[];
+interface Props {
+  navigationInformation: NavigationInformation;
   data: ReviewData[];
-  needsVerification: boolean;
 }
 
 // These uiSchemas need to be loaded on the client side, they contain interactive, stateful components.
@@ -58,24 +56,13 @@ const RenderForm = ({ idx, form }: { idx: number; form: any; data: any }) => (
   />
 );
 
-const FinalReviewForm: React.FC<Props> = ({
-  version_id,
-  taskListElements,
-  data,
-  needsVerification,
-}) => {
+const FinalReviewForm: React.FC<Props> = ({ navigationInformation, data }) => {
   const router = useRouter();
-  const verificationUrl = `/reports/${version_id}/verification`;
-  const attachmentUrl = `/reports/${version_id}/attachments`;
-  const saveAndContinueUrl = needsVerification
-    ? verificationUrl
-    : attachmentUrl;
-  const backUrl = `/reports/${version_id}/compliance-summary`;
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   const submitHandler = async () => {
     setIsRedirecting(true);
-    router.push(saveAndContinueUrl);
+    router.push(navigationInformation.continueUrl);
   };
 
   return (
@@ -84,10 +71,10 @@ const FinalReviewForm: React.FC<Props> = ({
       initialStep={4}
       onSubmit={submitHandler}
       isRedirecting={isRedirecting}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       cancelUrl="#"
-      backUrl={backUrl}
-      continueUrl={saveAndContinueUrl}
+      backUrl={navigationInformation.backUrl}
+      continueUrl={navigationInformation.continueUrl}
       noFormSave={() => {}}
       submittingButtonText="Continue"
       noSaveButton
