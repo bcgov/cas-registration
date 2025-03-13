@@ -1,4 +1,4 @@
-from registration.tests.constants import MOCK_DATA_URL
+from registration.tests.constants import MOCK_FILE
 from model_bakery import baker
 from localflavor.ca.models import CAPostalCodeField
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -61,27 +61,25 @@ class TestOperationsEndpoint(CommonTestSetup):
 
 class TestPostOperationsEndpoint(CommonTestSetup):
     mock_payload = {
-        "registration_purpose": "Reporting Operation",
+        "registration_purpose": ["Reporting Operation"],
         "regulated_products": [1],
-        "name": "op name",
-        "type": Operation.Types.SFO,
+        "name": ["op name"],
+        "type": [Operation.Types.SFO],
         "naics_code_id": 1,
         "secondary_naics_code_id": 2,
         "tertiary_naics_code_id": 3,
         "activities": [1],
-        "boundary_map": MOCK_DATA_URL,
-        "process_flow_diagram": MOCK_DATA_URL,
+        "boundary_map": MOCK_FILE,
+        "process_flow_diagram": MOCK_FILE,
     }
 
     # GET
     def test_user_can_post_operation_success(self):
         baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
-        response = TestUtils.mock_post_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            self.mock_payload,
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_create_operation_information"),
+            data=self.mock_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         assert response.status_code == 201

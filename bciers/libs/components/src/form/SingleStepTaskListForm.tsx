@@ -19,6 +19,7 @@ interface SingleStepTaskListFormProps {
   formData: { [key: string]: any };
   onCancel: () => void;
   onChange?: (e: IChangeEvent) => void;
+
   onSubmit: (e: IChangeEvent) => any;
   schema: RJSFSchema;
   uiSchema: UiSchema;

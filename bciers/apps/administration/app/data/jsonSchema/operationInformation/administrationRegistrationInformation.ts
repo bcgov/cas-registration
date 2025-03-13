@@ -21,10 +21,11 @@ export const createAdministrationRegistrationInformationSchema =
     } = await getContacts();
     if (contacts && "error" in contacts)
       throw new Error("Failed to retrieve contacts information");
-    const registrationPurposes: { id: number; name: string }[] =
-      await getRegistrationPurposes();
-    if (registrationPurposes && "error" in registrationPurposes)
-      throw new Error("Failed to retrieve registration purposes information");
+    // const registrationPurposes: { id: number; name: string }[] =
+    //   await getRegistrationPurposes();
+    // console.log("registrationPurposes", registrationPurposes);
+    // if (registrationPurposes && "error" in registrationPurposes)
+    //   throw new Error("Failed to retrieve registration purposes information");
     const reportingActivities: {
       id: number;
       applicable_to: string;
@@ -67,12 +68,20 @@ export const createAdministrationRegistrationInformationSchema =
     const registrationInformationSchema: RJSFSchema = {
       title: "Registration Information",
       type: "object",
-      required: ["operation_representatives"],
+      required: ["registration_purpose", "operation_representatives"],
       properties: {
         registration_purpose: {
           type: "string",
           title: "The purpose of this registration is to register as a:",
-          enum: registrationPurposes,
+          // enum: registrationPurposes,
+          enum: [
+            RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION,
+            RegistrationPurposes.NEW_ENTRANT_OPERATION,
+            RegistrationPurposes.OBPS_REGULATED_OPERATION,
+            RegistrationPurposes.OPTED_IN_OPERATION,
+            RegistrationPurposes.POTENTIAL_REPORTING_OPERATION,
+            RegistrationPurposes.REPORTING_OPERATION,
+          ],
         },
         operation_representatives: {
           title: "Operation Representative(s)",
@@ -147,11 +156,11 @@ export const createAdministrationRegistrationInformationSchema =
                 registration_purpose: {
                   const: RegistrationPurposes.NEW_ENTRANT_OPERATION,
                 },
-                new_entrant_preface: {
-                  // Not an actual field, just used to display a message
-                  type: "object",
-                  readOnly: true,
-                },
+                // new_entrant_preface: {
+                //   // Not an actual field, just used to display a message
+                //   type: "object",
+                //   readOnly: true,
+                // },
                 regulated_products: {
                   ...regulatedProductsSchema,
                 },
@@ -189,11 +198,11 @@ export const createAdministrationRegistrationInformationSchema =
                 activities: {
                   ...reportingActivitiesSchema,
                 },
-                opted_in_preface: {
-                  // Not an actual field, just used to display a message
-                  type: "object",
-                  readOnly: true,
-                },
+                // opted_in_preface: {
+                //   // Not an actual field, just used to display a message
+                //   type: "object",
+                //   readOnly: true,
+                // },
                 opted_in_operation: {
                   type: "object",
                   properties: {

@@ -22,6 +22,7 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import { convertRjsfFormData } from "@/registration/app/components/operations/registration/OperationInformationForm";
 
 const OperationInformationForm = ({
   formData,
@@ -41,6 +42,7 @@ const OperationInformationForm = ({
   const [selectedPurpose, setSelectedPurpose] = useState(
     formData.registration_purpose || "",
   );
+  console.log("generalSchema", generalSchema);
   const [
     pendingChangeRegistrationPurpose,
     setPendingChangeRegistrationPurpose,
@@ -67,13 +69,15 @@ const OperationInformationForm = ({
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
   }) => {
+    console.log("did i make it into handlesubmit");
     setError(undefined);
+
     const response = await actionHandler(
       `registration/operations/${operationId}`,
-      "PUT",
+      "POST",
       "",
       {
-        body: JSON.stringify(data.formData),
+        body: convertRjsfFormData(data.formData),
       },
     );
 
@@ -155,6 +159,7 @@ const OperationInformationForm = ({
           if (newSelectedPurpose !== selectedPurpose) {
             handleSelectedPurposeChange(newSelectedPurpose);
           }
+          console.log("e.formdata", e.formData);
         }}
         onCancel={() => router.push("/operations")}
         formContext={{

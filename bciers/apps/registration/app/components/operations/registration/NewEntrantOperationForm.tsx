@@ -8,6 +8,7 @@ import {
   NewEntrantOperationFormData,
   OperationRegistrationFormProps,
 } from "apps/registration/app/components/operations/registration/types";
+import { convertRjsfFormData } from "./OperationInformationForm";
 
 interface NewEntrantOperationFormProps extends OperationRegistrationFormProps {
   formData: NewEntrantOperationFormData | {};
@@ -24,11 +25,8 @@ const NewEntrantOperationForm = ({
   const handleSubmit = async (e: IChangeEvent) => {
     const endpoint = `registration/operations/${operation}/registration/new-entrant-application`;
     // errors are handled in MultiStepBase
-    const response = await actionHandler(endpoint, "PUT", `${baseUrl}`, {
-      body: JSON.stringify({
-        new_entrant_application: e.formData.new_entrant_application,
-        date_of_first_shipment: e.formData.date_of_first_shipment,
-      }),
+    const response = await actionHandler(endpoint, "POST", `${baseUrl}`, {
+      body: convertRjsfFormData(e.formData),
     });
     return response;
   };

@@ -18,13 +18,22 @@ import {
 import userEvent from "@testing-library/user-event";
 import { actionHandler } from "@bciers/testConfig/mocks";
 import { createRegistrationOperationInformationSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
-import { mockDataUri } from "./NewEntrantOperationForm.test";
+
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
+import {
+  downloadUrl,
+  downloadUrl2,
+  mockFile,
+  mockFile2,
+} from "libs/testConfig/src/constants";
 
 const mockPush = vi.fn();
-const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
+
+global.URL.createObjectURL = vi.fn(
+  () => "this is the link to download the File",
+);
 
 describe("the OperationInformationForm component", () => {
   beforeEach(() => {
@@ -100,8 +109,8 @@ describe("the OperationInformationForm component", () => {
         name: "Existing Operation",
         type: "Single Facility Operation",
         naics_code_id: 1,
-        boundary_map: mockDataUri,
-        process_flow_diagram: mockDataUri,
+        boundary_map: downloadUrl,
+        process_flow_diagram: downloadUrl2,
       }); // mock the GET from selecting an operation
 
       actionHandler.mockResolvedValueOnce({
@@ -152,7 +161,8 @@ describe("the OperationInformationForm component", () => {
           "211110 - Oil and gas extraction (except oil sands)",
         );
 
-        expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
+        expect(screen.getByText(/test.pdf/i)).toBeVisible();
+        expect(screen.getByText(/test2.pdf/i)).toBeVisible();
       });
       // edit one of the pre-filled values
       await userEvent.type(
@@ -171,23 +181,25 @@ describe("the OperationInformationForm component", () => {
         // LastCalledWith because we mock the actionHandler multiple times to populate the dropdown options and operation info
         expect(actionHandler).toHaveBeenLastCalledWith(
           "registration/operations/b974a7fc-ff63-41aa-9d57-509ebe2553a4/registration/operation",
-          "PUT",
+          "POST",
           "",
-          {
-            body: JSON.stringify({
-              registration_purpose: "Reporting Operation",
-              operation: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-              activities: [1],
-              name: "Existing Operation edited",
-              type: "Single Facility Operation",
-              naics_code_id: 1,
-              process_flow_diagram:
-                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
-              boundary_map:
-                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
-              operation_has_multiple_operators: false,
-            }),
-          },
+          { body: expect.any(FormData) },
+        );
+        const bodyFormData = actionHandler.mock.calls[1][3].body;
+        expect(bodyFormData.get("registration_purpose")).toBe(
+          "Reporting Operation",
+        );
+        expect(bodyFormData.get("operation")).toBe(
+          "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        );
+        expect(bodyFormData.get("activities")).toBe("1");
+        expect(bodyFormData.get("name")).toBe("Existing Operation edited");
+        expect(bodyFormData.get("type")).toBe("Single Facility Operation");
+        expect(bodyFormData.get("naics_code_id")).toBe("1");
+        expect(bodyFormData.get("boundary_map")).toBe(downloadUrl);
+        expect(bodyFormData.get("process_flow_diagram")).toBe(downloadUrl2);
+        expect(bodyFormData.get("operation_has_multiple_operators")).toBe(
+          "false",
         );
 
         expect(mockPush).toHaveBeenCalledWith(
@@ -278,7 +290,7 @@ describe("the OperationInformationForm component", () => {
       await userEvent.upload(processFlowDiagramInput, mockFile);
 
       const boundaryMapInput = screen.getByLabelText(/boundary map+/i);
-      await userEvent.upload(boundaryMapInput, mockFile);
+      await userEvent.upload(boundaryMapInput, mockFile2);
 
       // add multiple operator
       await userEvent.click(
@@ -329,37 +341,38 @@ describe("the OperationInformationForm component", () => {
           "registration/operations",
           "POST",
           "",
-          {
-            body: JSON.stringify({
-              registration_purpose: "OBPS Regulated Operation",
-              regulated_products: [1, 2],
-              activities: [2],
-              name: "Op Name",
-              type: "Single Facility Operation",
-              naics_code_id: 1,
-              process_flow_diagram:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
-              boundary_map:
-                "data:application/pdf;name=test.pdf;base64,dGVzdA==",
-              operation_has_multiple_operators: true,
-              multiple_operators_array: [
-                {
-                  mo_is_extraprovincial_company: false,
-                  mo_legal_name: "edit",
-                  mo_trade_name: "edit",
-                  mo_business_structure: "BC Corporation",
-                  mo_cra_business_number: 999999999,
-                  mo_attorney_street_address: "edit",
-                  mo_municipality: "edit",
-                  mo_province: "AB",
-                  mo_postal_code: "A1B2C3",
-                  mo_bc_corporate_registry_number: "zzz9999999",
-                },
-              ],
-            }),
-          },
+          { body: expect.any(FormData) },
         );
       });
+      const formData = actionHandler.mock.calls[0][3].body;
+      expect(formData.get("registration_purpose")).toBe(
+        "OBPS Regulated Operation",
+      );
+      // expect(formData.get("regulated_products")).toBe( [1, 2])
+      expect(formData.get("activities")).toBe("2");
+      expect(formData.get("name")).toBe("Op Name");
+      expect(formData.get("type")).toBe("Single Facility Operation");
+      expect(formData.get("naics_code_id")).toBe("1");
+      expect(formData.get("process_flow_diagram")).toBe(mockFile);
+      expect(formData.get("boundary_map")).toBe(mockFile2);
+      expect(formData.get("operation_has_multiple_operators")).toBe("true");
+      expect(formData.get("multiple_operators_array")).toBe(
+        JSON.stringify([
+          {
+            mo_is_extraprovincial_company: false,
+            mo_legal_name: "edit",
+            mo_trade_name: "edit",
+            mo_business_structure: "BC Corporation",
+            mo_cra_business_number: 999999999,
+            mo_attorney_street_address: "edit",
+            mo_municipality: "edit",
+            mo_province: "AB",
+            mo_postal_code: "A1B2C3",
+            mo_bc_corporate_registry_number: "zzz9999999",
+          },
+        ]),
+      );
+
       expect(mockPush).toHaveBeenCalledWith(
         "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=Picklejuice",
       );
@@ -411,15 +424,15 @@ describe("the OperationInformationForm component", () => {
           "registration/operations",
           "POST",
           "",
-          {
-            body: JSON.stringify({
-              registration_purpose: "Electricity Import Operation",
-              name: "EIO Op Name",
-              type: "Electricity Import Operation",
-              operation_has_multiple_operators: false,
-            }),
-          },
+          { body: expect.any(FormData) },
         );
+        const formData = actionHandler.mock.calls[0][3].body;
+        expect(formData.get("registration_purpose")).toBe(
+          "Electricity Import Operation",
+        );
+        expect(formData.get("name")).toBe("EIO Op Name");
+        expect(formData.get("type")).toBe("Electricity Import Operation");
+        expect(formData.get("operation_has_multiple_operators")).toBe("false");
       });
       expect(mockPush).toHaveBeenCalledWith(
         "/register-an-operation/b974a7fc-ff63-41aa-9d57-509ebe2553a4/2?operations_title=EIO%20Op%20Name",

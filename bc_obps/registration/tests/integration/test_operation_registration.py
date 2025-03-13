@@ -3,7 +3,7 @@ from django.db.models import Q
 from model_bakery import baker
 
 from registration.models import FacilityDesignatedOperationTimeline, Operation
-from registration.tests.constants import MOCK_DATA_URL
+from registration.tests.constants import MOCK_FILE
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
@@ -44,32 +44,31 @@ class TestOperationRegistration(CommonTestSetup):
         ]
 
     def _set_operation_information(self, purpose: Operation.Purposes, operation_type: Operation.Types):
+
         if operation_type == Operation.Types.EIO:
             operation_information_payload = {
-                "registration_purpose": purpose,
-                "name": f"{purpose} name",
-                "type": operation_type.value,
+                "registration_purpose": [purpose],
+                "name": [f"{purpose} name"],
+                "type": [operation_type.value],
             }
         else:
             operation_information_payload = {
-                "registration_purpose": purpose,
-                "regulated_products": [] if purpose in self.purposes_with_no_regulated_products else [1, 2],
-                "name": f"{purpose} name",
-                "type": operation_type,
-                "naics_code_id": 1,
-                "secondary_naics_code_id": 2,
-                "tertiary_naics_code_id": 3,
+                "registration_purpose": [purpose],
+                **({"regulated_products": [1, 2]} if purpose not in self.purposes_with_no_regulated_products else {}),
+                "name": [f"{purpose} name"],
+                "type": [operation_type],
+                "naics_code_id": [1],
+                "secondary_naics_code_id": [2],
+                "tertiary_naics_code_id": [3],
                 "activities": [1, 2],
-                "boundary_map": MOCK_DATA_URL,
-                "process_flow_diagram": MOCK_DATA_URL,
+                "boundary_map": MOCK_FILE,
+                "process_flow_diagram": MOCK_FILE,
             }
 
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            operation_information_payload,
+        response = TestUtils.client.post(
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': self.operation.id}),
+            data=operation_information_payload,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
         if response.status_code != 200:
@@ -94,7 +93,7 @@ class TestOperationRegistration(CommonTestSetup):
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
-            self.content_type,
+            'application/json',
             facility_payload,
             custom_reverse_lazy("create_facilities"),
         )
@@ -103,18 +102,17 @@ class TestOperationRegistration(CommonTestSetup):
         self.operation.refresh_from_db()
 
     def _set_new_entrant_application(self):
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            {
-                "date_of_first_shipment": "On or after April 1, 2024",
-                'new_entrant_application': MOCK_DATA_URL,
-            },
+        response = TestUtils.client.post(
             custom_reverse_lazy(
                 "create_or_replace_new_entrant_application", kwargs={'operation_id': self.operation.id}
             ),
+            data={
+                "date_of_first_shipment": ["On or after April 1, 2024"],
+                'new_entrant_application': MOCK_FILE,
+            },
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
+
         if response.status_code != 200:
             raise Exception(response.json())
         self.operation.refresh_from_db()
@@ -157,7 +155,7 @@ class TestOperationRegistration(CommonTestSetup):
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
-            self.content_type,
+            'application/json',
             operation_representative_payload,
             custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': self.operation.id}),
         )

@@ -1,6 +1,11 @@
-from typing import List, Optional, Tuple, Callable, Generator, Union
+from typing import List, Optional, Tuple, Callable, Generator
 from django.db.models import QuerySet
 from registration.models.facility import Facility
+from registration.schema.operation import (
+    OperationAdministrationInWithDocuments,
+    OperationNewEntrantApplicationInWithDocuments,
+    OperationRegistrationInWithDocuments,
+)
 from service.contact_service import ContactService
 from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_designated_operator_timeline_service import (
@@ -28,11 +33,8 @@ from service.data_access_service.opted_in_operation_detail_service import OptedI
 from service.document_service import DocumentService
 from service.facility_service import FacilityService
 from registration.schema import (
-    OperationInformationIn,
-    OperationInformationInUpdate,
     OperationRepresentativeRemove,
     OptedInOperationDetailIn,
-    OperationNewEntrantApplicationIn,
     OperationRepresentativeIn,
     FacilityIn,
     OperationTimelineFilterSchema,
@@ -42,6 +44,7 @@ from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from django.core.files.uploadedfile import UploadedFile
 
 
 class OperationService:
@@ -119,21 +122,17 @@ class OperationService:
 
     @classmethod
     def create_or_replace_new_entrant_application(
-        cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationIn
+        cls, user_guid: UUID, operation_id: UUID, payload: OperationNewEntrantApplicationInWithDocuments
     ) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
 
-        (
-            new_entrant_application_document,
-            new_entrant_application_document_created,
-        ) = DocumentService.create_or_replace_operation_document(
-            user_guid,
-            operation_id,
-            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-            "new_entrant_application",
-        )
-        if new_entrant_application_document_created:
-            operation.documents.add(new_entrant_application_document)
+        if payload.new_entrant_application and isinstance(payload.new_entrant_application, UploadedFile):
+            DocumentService.create_or_replace_operation_document(
+                operation_id=operation.id,
+                type='new_entrant_application',
+                file=payload.new_entrant_application,
+            )
+
         operation.date_of_first_shipment = payload.date_of_first_shipment
         operation.save(update_fields=['date_of_first_shipment'])
         return operation
@@ -165,9 +164,11 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def _create_or_update_eio(cls, user_guid: UUID, operation: Operation, payload: OperationInformationIn) -> None:
+    def _create_or_update_eio(
+        cls, user_guid: UUID, operation: Operation, payload: OperationRegistrationInWithDocuments
+    ) -> None:
         # EIO operations have a facility with the same data as the operation
-        eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)
+        eio_payload = FacilityIn(name=payload.name, type=Facility.Types.ELECTRICITY_IMPORT, operation_id=operation.id)  # type: ignore[attr-defined] # name is the fields section of the schema
         facility = operation.facilities.first()
         if not facility:
             FacilityService.create_facilities_with_designated_operations(user_guid, [eio_payload])
@@ -214,7 +215,7 @@ class OperationService:
     def _create_operation(
         cls,
         user_guid: UUID,
-        payload: OperationInformationIn,
+        payload: OperationRegistrationInWithDocuments,
     ) -> Operation:
 
         operation_data = payload.dict(
@@ -249,46 +250,19 @@ class OperationService:
         )
 
         # create documents
-        operation_documents = [
-            doc
-            for doc in [
-                *(
-                    [
-                        DocumentDataAccessService.create_document(
-                            user_guid,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                            operation.id,
-                        )
-                    ]
-                    if payload.boundary_map
-                    else []
-                ),
-                *(
-                    [
-                        DocumentDataAccessService.create_document(
-                            user_guid,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                            operation.id,
-                        )
-                    ]
-                    if payload.process_flow_diagram
-                    else []
-                ),
-                *(
-                    DocumentDataAccessService.create_document(
-                        user_guid,
-                        payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                        'new_entrant_application',
-                        operation.id,
-                    )
-                    if payload.new_entrant_application
-                    else []
-                ),
-            ]
-        ]
-        operation.documents.add(*operation_documents)
+        if payload.boundary_map and isinstance(payload.boundary_map, UploadedFile):
+            DocumentDataAccessService.create_document(
+                operation_id=operation.id,
+                type='boundary_map',
+                file=payload.boundary_map,
+            )
+
+        if payload.process_flow_diagram and isinstance(payload.process_flow_diagram, UploadedFile):
+            DocumentDataAccessService.create_document(
+                operation_id=operation.id,
+                type='process_flow_diagram',
+                file=payload.process_flow_diagram,
+            )
 
         # handle multiple operators
         multiple_operators_data = payload.multiple_operators_array
@@ -308,10 +282,9 @@ class OperationService:
         cls,
         user_guid: UUID,
         operation_id: UUID | None,
-        payload: Union[OperationInformationIn, OperationInformationInUpdate],
+        payload: OperationRegistrationInWithDocuments,
     ) -> Operation:
 
-        # can't optimize this much more without looking at files--the extra hits to operation are in the middleware, and the multi hits to document are from the resolvers
         operation: Operation
         if operation_id:
             operation = OperationService.get_if_authorized(user_guid, operation_id)
@@ -376,7 +349,7 @@ class OperationService:
     def update_operation(
         cls,
         user_guid: UUID,
-        payload: OperationInformationIn,
+        payload: OperationRegistrationInWithDocuments | OperationAdministrationInWithDocuments,
         operation_id: UUID,
     ) -> Operation:
 
@@ -416,7 +389,9 @@ class OperationService:
             else operation.regulated_products.clear()
         )
 
-        if operation.status == Operation.Statuses.REGISTERED and isinstance(payload, OperationInformationInUpdate):
+        if operation.status == Operation.Statuses.REGISTERED and isinstance(
+            payload, OperationAdministrationInWithDocuments
+        ):
             # operation representatives are only mandatory to register (vs. simply update) and operation
             for contact_id in payload.operation_representatives:
                 ContactService.raise_exception_if_contact_missing_address_information(contact_id)
@@ -424,49 +399,25 @@ class OperationService:
             operation.contacts.set(payload.operation_representatives)
 
         # create or replace documents
-        operation_documents = [
-            doc
-            for doc, created in [
-                *(
-                    [
-                        DocumentService.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.boundary_map,  # type: ignore # mypy is not aware of the schema validator
-                            'boundary_map',
-                        )
-                    ]
-                    if payload.boundary_map
-                    else []
-                ),
-                *(
-                    [
-                        DocumentService.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.process_flow_diagram,  # type: ignore # mypy is not aware of the schema validator
-                            'process_flow_diagram',
-                        )
-                    ]
-                    if payload.process_flow_diagram
-                    else []
-                ),
-                *(
-                    [
-                        DocumentService.create_or_replace_operation_document(
-                            user_guid,
-                            operation.id,
-                            payload.new_entrant_application,  # type: ignore # mypy is not aware of the schema validator
-                            'new_entrant_application',
-                        )
-                    ]
-                    if payload.new_entrant_application
-                    else []
-                ),
-            ]
-            if created
-        ]
-        operation.documents.add(*operation_documents)
+        if payload.boundary_map and isinstance(payload.boundary_map, UploadedFile):
+            DocumentService.create_or_replace_operation_document(
+                operation_id=operation.id,
+                file=payload.boundary_map,
+                type='boundary_map',
+            )
+        if payload.process_flow_diagram and isinstance(payload.process_flow_diagram, UploadedFile):
+            DocumentService.create_or_replace_operation_document(
+                operation_id=operation.id,
+                type='process_flow_diagram',
+                file=payload.process_flow_diagram,
+            )
+
+        if payload.new_entrant_application and isinstance(payload.new_entrant_application, UploadedFile):
+            DocumentService.create_or_replace_operation_document(
+                operation_id=operation.id,
+                type='new_entrant_application',
+                file=payload.new_entrant_application,
+            )
 
         # # this is not handled by changing registration purpose
         if (
@@ -635,8 +586,8 @@ class OperationService:
 
     @classmethod
     def handle_change_of_registration_purpose(
-        cls, user_guid: UUID, operation: Operation, payload: OperationInformationIn
-    ) -> OperationInformationIn:
+        cls, user_guid: UUID, operation: Operation, payload: OperationRegistrationInWithDocuments
+    ) -> OperationRegistrationInWithDocuments:
         """
         Logic to handle the situation when an industry user changes the selected registration purpose (RP) for their operation.
         Changing the RP can happen during or after submitting the operation's registration info.

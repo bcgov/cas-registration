@@ -66,6 +66,7 @@ const FacilityInformationForm = ({
   steps,
 }: FacilityInformationFormProps) => {
   const [formState, setFormState] = useState(formData ?? {});
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   // Get the list of sections in the LFO schema - used to unnest the formData
   const formSectionListSfo = Object.keys(

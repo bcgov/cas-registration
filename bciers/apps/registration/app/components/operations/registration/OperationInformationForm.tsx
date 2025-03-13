@@ -26,6 +26,45 @@ interface OperationInformationFormProps {
   steps: string[];
 }
 
+export const convertRjsfFormData = (rjsfFormData: { [key: string]: any }) => {
+  const formData = new FormData();
+  for (const key in rjsfFormData) {
+    // this removes the file keys if no new file has been uploaded (a new file will be of type File)
+    if (
+      (key === "boundary_map" ||
+        key === "process_flow_diagram" ||
+        key === "new_entrant_application") &&
+      typeof rjsfFormData[key] === "string"
+    ) {
+      delete rjsfFormData[key];
+      continue;
+    }
+    // this condition is to prevent sending '[]' if an RJSF array field is empty
+    if (Array.isArray(rjsfFormData[key]) && rjsfFormData[key].length === 0) {
+      continue;
+    }
+
+    // this handles the multiple_operators_array, which is nested
+    if (key === "multiple_operators_array") {
+      formData.append(key, JSON.stringify(rjsfFormData[key]));
+    }
+    // this handles any other flat array
+    else if (Array.isArray(rjsfFormData[key])) {
+      for (const el of rjsfFormData[key]) {
+        formData.append(key, el);
+      }
+      // this handles all other non-array values
+    } else {
+      formData.append(key, rjsfFormData[key]);
+    }
+  }
+  for (let [key, value] of formData.entries()) {
+    console.log(key, value);
+  }
+
+  return formData;
+};
+
 const OperationInformationForm = ({
   rawFormData,
   schema: initialSchema,
@@ -125,21 +164,21 @@ const OperationInformationForm = ({
 
   const handleSubmit = async (data: { formData?: any }) => {
     const isCreating = !data.formData?.section1?.operation;
-    const postEndpoint = `registration/operations`;
-    const putEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
-    const body = JSON.stringify(
-      createUnnestedFormData(data.formData, [
-        "section1",
-        "section2",
-        "section3",
-      ]),
-    );
+    const createEndpoint = `registration/operations`;
+    const editEndpoint = `registration/operations/${data.formData?.section1?.operation}/registration/operation`;
+
     const response = await actionHandler(
-      isCreating ? postEndpoint : putEndpoint,
-      isCreating ? "POST" : "PUT",
+      isCreating ? createEndpoint : editEndpoint,
+      "POST",
       "",
       {
-        body,
+        body: convertRjsfFormData(
+          createUnnestedFormData(data.formData, [
+            "section1",
+            "section2",
+            "section3",
+          ]),
+        ),
       },
     ).then((resolve) => {
       if (resolve?.error) {
@@ -167,7 +206,6 @@ const OperationInformationForm = ({
     setConfirmedFormState(combinedData);
     setKey(Math.random()); // NOSONAR
   };
-
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
       data.section1?.registration_purpose;
