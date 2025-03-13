@@ -6,60 +6,9 @@ import {
 } from "../../utils/constants";
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
 import { getReportingOperation } from "../../utils/getReportingOperation";
-import {
-  HeaderStep,
-  ReportingFlow,
-  ReportingFlowDescription,
-  ReportingPage,
-} from "./types";
-
-const sfoFlow: ReportingFlowDescription = {
-  [HeaderStep.OperationInformation]: [
-    ReportingPage.ReviewOperatorInfo,
-    ReportingPage.PersonResponsible,
-  ],
-  [HeaderStep.ReportInformation]: [
-    ReportingPage.Activities,
-    ReportingPage.NonAttributableEmission,
-    ReportingPage.EmissionSummary,
-    ReportingPage.ProductionData,
-    ReportingPage.AllocationOfEmissions,
-  ],
-  [HeaderStep.AdditionalInformation]: [ReportingPage.AdditionalReportingData],
-  [HeaderStep.ComplianceSummary]: [ReportingPage.ComplianceSummary],
-  [HeaderStep.SignOffSubmit]: [
-    ReportingPage.FinalReview,
-    ReportingPage.Verification,
-    ReportingPage.Attachments,
-    ReportingPage.SignOff,
-  ],
-};
-
-const lfoFlow: ReportingFlowDescription = {
-  [HeaderStep.OperationInformation]: [
-    ReportingPage.ReviewOperatorInfo,
-    ReportingPage.PersonResponsible,
-    ReportingPage.ReviewFacilities,
-  ],
-  [HeaderStep.ReportInformation]: [
-    ReportingPage.FacilitiesTable,
-    ReportingPage.ReviewInformation,
-    ReportingPage.Activities,
-    ReportingPage.NonAttributableEmission,
-    ReportingPage.EmissionSummary,
-    ReportingPage.ProductionData,
-    ReportingPage.AllocationOfEmissions,
-    ReportingPage.EndOfReport,
-  ],
-  [HeaderStep.AdditionalInformation]: [ReportingPage.AdditionalReportingData],
-  [HeaderStep.ComplianceSummary]: [ReportingPage.ComplianceSummary],
-  [HeaderStep.SignOffSubmit]: [
-    ReportingPage.FinalReview,
-    ReportingPage.Verification,
-    ReportingPage.Attachments,
-    ReportingPage.SignOff,
-  ],
-};
+import { lfoFlow } from "./reportingFlows/lfoFlow";
+import { sfoFlow } from "./reportingFlows/sfoFlow";
+import { ReportingFlow, ReportingFlowDescription } from "./types";
 
 export const reportingFlows: {
   [Flow in ReportingFlow]?: ReportingFlowDescription;
