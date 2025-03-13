@@ -6,7 +6,6 @@ import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationReviewUiSchema } from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
 
@@ -101,8 +100,8 @@ export default function OperationReviewForm({
         )}
       </SimpleModal>
       <MultiStepFormWithTaskList
-        initialStep={0}
-        steps={multiStepHeaderSteps}
+        initialStep={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
         taskListElements={navigationInformation.taskList}
         schema={schema}
         uiSchema={operationReviewUiSchema}

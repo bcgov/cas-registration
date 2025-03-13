@@ -6,7 +6,6 @@ import {
   buildReviewFacilitiesUiSchema,
 } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 import { actionHandler } from "@bciers/actions";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import { useRouter } from "next/navigation";
@@ -243,10 +242,10 @@ export default function LFOFacilitiesForm({
           },
         }}
         taskListElements={navigationInformation.taskList}
-        steps={multiStepHeaderSteps}
+        steps={navigationInformation.headerSteps}
         errors={errors}
         continueUrl={navigationInformation.continueUrl}
-        initialStep={0}
+        initialStep={navigationInformation.headerStepIndex}
         onChange={handleChange}
         onSubmit={async (data, navigateAfterSubmit) =>
           handleSubmit(data, navigateAfterSubmit)

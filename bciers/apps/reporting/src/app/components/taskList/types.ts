@@ -52,10 +52,11 @@ export type ReportingFlowDescription = {
 };
 
 export type NavigationInformation = {
-  // We might want to add the multistep header in here too
   taskList: TaskListElement[];
   continueUrl: string;
   backUrl: string;
+  headerSteps: HeaderStep[];
+  headerStepIndex: number;
 };
 
 export interface TaskListPageFactoryData {

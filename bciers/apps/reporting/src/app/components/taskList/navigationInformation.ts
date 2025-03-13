@@ -66,6 +66,7 @@ export async function getNavigationInformation(
 
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
+  const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
 
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
@@ -99,6 +100,8 @@ export async function getNavigationInformation(
       taskList: taskList,
       backUrl: "",
       continueUrl: "",
+      headerSteps: headerSteps,
+      headerStepIndex: -1,
     };
 
   // find forward and back links
@@ -173,5 +176,7 @@ export async function getNavigationInformation(
       : [...taskListHeaders, ...taskList],
     backUrl: backUrl ?? "/reports",
     continueUrl: continueUrl ?? "/reports",
+    headerSteps: headerSteps,
+    headerStepIndex: headerSteps.indexOf(step),
   };
 }
