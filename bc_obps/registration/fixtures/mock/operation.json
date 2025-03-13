@@ -258,12 +258,12 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-22T15:27:00.000Z",
-      "name": "Bojangles LFO - Not Started",
+      "name": "Bojangles LFO - Draft",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990013",
-      "status": "Not Started",
+      "status": "Draft",
       "registration_purpose": "Electricity Import Operation"
     }
   },
@@ -273,13 +273,13 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-23T15:27:00.000Z",
-      "name": "Brine LFO - Not Started",
+      "name": "Brine LFO - Draft",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990014",
       "regulated_products": [3],
-      "status": "Not Started",
+      "status": "Draft",
       "activities": [1, 5],
       "registration_purpose": "OBPS Regulated Operation"
     }
@@ -325,12 +325,12 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-26T15:27:00.000Z",
-      "name": "Blue LFO - Draft",
+      "name": "Blue LFO - Not Started",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990017",
-      "status": "Draft",
+      "status": "Not Started",
       "activities": [1, 5]
     }
   },
@@ -412,6 +412,7 @@
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "name": "Blight EIO - Draft",
       "type": "Electricity Import Operation",
+      "registration_purpose": "Electricity Import Operation",
       "status": "Draft"
     }
   },
@@ -420,11 +421,11 @@
     "pk": "0ac72fa9-2636-4f54-b378-af6b1a070787",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Brown LFO - Draft -- no facility",
+      "name": "Brown LFO - Not Started -- no facility",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "opt_in": false,
-      "status": "Draft",
+      "status": "Not Started",
       "activities": [1, 3]
     }
   },

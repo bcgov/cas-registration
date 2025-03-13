@@ -163,7 +163,11 @@ const OperationInformationForm = ({
       setError("Failed to fetch operation data!" as any);
     }
     // combine the entered data with the fetched data
-    const combinedData = { ...data, section2: operationData };
+    const combinedData = {
+      ...data,
+      section1: operationData,
+      section2: operationData,
+    };
     setConfirmedFormState(combinedData);
     setKey(Math.random()); // NOSONAR
   };
