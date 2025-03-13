@@ -5,7 +5,7 @@ MANAGE_PY = manage.py
 SCHEMA_NAME=erc
 PYTEST=pytest --rootdir=bc_obps --import-mode=importlib
 
-# If the VIRTUAL_ENV is specified, we can assume we're in a poetry shell, otherwise
+# If the VIRTUAL_ENV is specified, we can assume we're in a poetry virtual env, otherwise
 # we need to execute "poetry run"
 ifdef VIRTUAL_ENV
 POETRY_RUN=
@@ -29,10 +29,10 @@ install_backend_asdf_tools:
 
 .PHONY: install_poetry
 install_poetry: ## install poetry (MacOS/Linux only)
-install_poetry: ## poetry shell starts a new shell with the virtual environment activated
+install_poetry: ## poetry env activate starts a new virtual environment
 	@echo "Installing poetry"
 	@curl -sSL https://install.python-poetry.org | python3 -
-	@poetry shell
+	@poetry env activate
 
 .PHONY: install_dev_tools
 install_dev_tools: ## install development tools
