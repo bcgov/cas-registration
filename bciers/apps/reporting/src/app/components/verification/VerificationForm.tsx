@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema } from "@rjsf/utils";
 import {
@@ -14,6 +13,7 @@ import { lfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verific
 import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import { handleVerificationData } from "@reporting/src/app/utils/verification/handleVerificationData";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import { NavigationInformation } from "../taskList/types";
 // TEMPORARY: remmed to support #607
 // import { mergeVerificationData } from "@reporting/src/app/utils/verification/mergeVerificationData";
 
@@ -22,7 +22,7 @@ interface Props {
   operationType: string;
   verificationSchema: RJSFSchema;
   initialData: any;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
 }
 
 export default function VerificationForm({
@@ -30,13 +30,10 @@ export default function VerificationForm({
   operationType,
   verificationSchema,
   initialData,
-  taskListElements,
+  navigationInformation,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<string[]>();
-
-  const saveAndContinueUrl = `/reports/${version_id}/attachments`;
-  const backUrl = `/reports/${version_id}/final-review`;
 
   const verificationUiSchema =
     operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
@@ -94,17 +91,17 @@ export default function VerificationForm({
     <MultiStepFormWithTaskList
       steps={multiStepHeaderSteps}
       initialStep={4}
-      taskListElements={taskListElements}
+      taskListElements={navigationInformation.taskList}
       schema={verificationSchema}
       uiSchema={verificationUiSchema}
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}
-      backUrl={backUrl}
+      backUrl={navigationInformation.backUrl}
       onChange={handleChange}
       onSubmit={handleSubmit}
       errors={errors}
-      continueUrl={saveAndContinueUrl}
+      continueUrl={navigationInformation.continueUrl}
       formContext={{
         visit_types: formData?.visit_types, // set formContext to use in UiSchema
       }}
