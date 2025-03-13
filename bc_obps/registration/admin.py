@@ -21,6 +21,7 @@ from registration.models import (
     Activity,
     MultipleOperator,
     BcObpsRegulatedOperation,
+    OptedInOperationDetail,
 )
 
 admin.site.register(AppRole)
@@ -35,6 +36,7 @@ admin.site.register(BcObpsRegulatedOperation)
 admin.site.register(ClosureEvent)
 admin.site.register(TemporaryShutdownEvent)
 admin.site.register(RestartEvent)
+admin.site.register(OptedInOperationDetail)
 
 
 @admin.register(Operation)
