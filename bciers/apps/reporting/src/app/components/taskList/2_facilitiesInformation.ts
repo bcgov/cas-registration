@@ -1,19 +1,22 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { ReportingPage, TaskListPageFactory } from "./types";
+import { getOrderedActivities } from "../../utils/getOrderedActivities";
 
 export type ActivityData = { id: number; name: string; slug: string };
 
-const activitiesPageFactory: TaskListPageFactory = (
+const activitiesPageFactory: TaskListPageFactory = async (
   activePage,
   reportVersionId,
   facilityId,
   context,
 ) => {
+  const orderedActivities =
+    context?.orderedActivities ??
+    (await getOrderedActivities(reportVersionId, facilityId));
+
   const isActivityListExpanded = context?.expandActivities ?? true;
 
-  const activitiesPageElements: TaskListElement[] = (
-    context?.orderedActivities ?? []
-  ).map(
+  const activitiesPageElements: TaskListElement[] = orderedActivities.map(
     (activity: ActivityData, index: number) =>
       ({
         type: "Page",
@@ -21,8 +24,7 @@ const activitiesPageFactory: TaskListPageFactory = (
         link: `/reports/${reportVersionId}/facilities/${facilityId}/activities?activity_id=${activity.id}&step=${index}`,
         isActive:
           context?.currentActivity &&
-          context?.orderedActivities?.indexOf(context?.currentActivity) ===
-            index,
+          orderedActivities.indexOf(context?.currentActivity) === index,
       }) as TaskListElement,
   );
 

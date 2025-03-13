@@ -3,12 +3,12 @@ import { ReportingPage, TaskListPageFactory } from "./types";
 export const operationInformationPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
 } = {
-  [ReportingPage.ReviewOperatorInfo]: (activePage, reportVersionId) => ({
+  [ReportingPage.ReviewOperationInfo]: (activePage, reportVersionId) => ({
     element: {
       type: "Page",
       title: "Review operation information",
-      link: `/reports/${reportVersionId}/review-operator-data`,
-      isActive: activePage === ReportingPage.ReviewOperatorInfo,
+      link: `/reports/${reportVersionId}/review-operation-information`,
+      isActive: activePage === ReportingPage.ReviewOperationInfo,
     },
   }),
   [ReportingPage.PersonResponsible]: (activePage, reportVersionId) => ({

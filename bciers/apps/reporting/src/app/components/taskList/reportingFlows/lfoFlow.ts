@@ -2,7 +2,7 @@ import { HeaderStep, ReportingFlowDescription, ReportingPage } from "../types";
 
 export const lfoFlow: ReportingFlowDescription = {
   [HeaderStep.OperationInformation]: [
-    ReportingPage.ReviewOperatorInfo,
+    ReportingPage.ReviewOperationInfo,
     ReportingPage.PersonResponsible,
     ReportingPage.ReviewFacilities,
   ],
