@@ -1,5 +1,4 @@
 "use client";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
 import AttachmentElement, {
@@ -129,8 +128,8 @@ const AttachmentsForm: React.FC<Props> = ({
   return (
     <>
       <MultiStepWrapperWithTaskList
-        steps={multiStepHeaderSteps}
-        initialStep={4}
+        steps={navigationInformation.headerSteps}
+        initialStep={navigationInformation.headerStepIndex}
         taskListElements={navigationInformation.taskList}
         onSubmit={() => handleSubmit(true)}
         cancelUrl="#"

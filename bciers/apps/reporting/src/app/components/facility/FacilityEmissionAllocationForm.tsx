@@ -9,7 +9,6 @@ import {
   emissionAllocationUiSchema,
 } from "@reporting/src/data/jsonSchema/facility/facilityEmissionAllocation";
 import { IChangeEvent } from "@rjsf/core";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
@@ -230,8 +229,8 @@ export default function FacilityEmissionAllocationForm({
 
   return (
     <MultiStepFormWithTaskList
-      initialStep={1}
-      steps={multiStepHeaderSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={emissionAllocationSchema}
       uiSchema={emissionAllocationUiSchema}
