@@ -14,17 +14,12 @@ export default async function PersonResponsiblePage({
   // 🚀 Fetch async data for person responsible form
   const facilityReport = await getFacilityReport(version_id);
   const facilityId = facilityReport.facility_id;
-  const operationType = facilityReport.operation_type;
-  // const taskListElements = await getOperationInformationTaskList(
-  //   version_id,
-  //   ActivePage.PersonResponsible,
-  //   operationType,
-  // );
 
   const navInfo = await getNavigationInformation(
     HeaderStep.OperationInformation,
     ReportingPage.PersonResponsible,
     version_id,
+    facilityId,
   );
 
   const contactData = await getContacts();
@@ -51,9 +46,7 @@ export default async function PersonResponsiblePage({
   return (
     <PersonResponsibleForm
       versionId={version_id}
-      facilityId={facilityId}
-      operationType={operationType}
-      taskListElements={navInfo.taskList}
+      navigationInformation={navInfo}
       contacts={contactData}
       personResponsible={personResponsibleData}
       schema={schema}
