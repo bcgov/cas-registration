@@ -9,7 +9,7 @@ const operationGroupColumns = (
   isInternalUser: boolean,
   SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
 ) => {
-  const columnGroupModel: GridColumnGroupingModel = [
+  let columnGroupModel: GridColumnGroupingModel = [
     {
       groupId: "operation__bcghg_id",
       headerName: "BC GHG ID",
@@ -35,10 +35,10 @@ const operationGroupColumns = (
       children: [{ field: "operation__bc_obps_regulated_operation" }],
     },
     {
-      groupId: "status",
+      groupId: "operation__status",
       headerName: "Status",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "status" }],
+      children: [{ field: "operation__status" }],
     },
     {
       groupId: "action",
@@ -49,12 +49,17 @@ const operationGroupColumns = (
   ];
 
   if (isInternalUser) {
+    // Add operator column if user is internal
     columnGroupModel.splice(OPERATOR_COLUMN_INDEX, 0, {
       groupId: "operator__legal_name",
       headerName: "Operator Legal Name",
       renderHeaderGroup: SearchCell,
       children: [{ field: "operator__legal_name" }],
     });
+    // Remove status column if user is internal
+    columnGroupModel = columnGroupModel.filter(
+      (column) => column.groupId !== "operation__status",
+    );
   }
 
   return columnGroupModel;
