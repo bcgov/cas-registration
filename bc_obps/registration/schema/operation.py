@@ -298,17 +298,6 @@ class OperationBcghgIdOut(ModelSchema):
         fields = ['id']
 
 
-class OperationListOut(ModelSchema):
-    operator: str = Field(..., alias="operator.legal_name")
-    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-
-    class Meta:
-        model = Operation
-        fields = ['id', 'name', 'submission_date', 'status']
-        from_attributes = True
-
-
 class OperationUpdateStatusOut(ModelSchema):
     class Meta:
         model = Operation
