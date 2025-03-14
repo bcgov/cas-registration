@@ -38,10 +38,11 @@ if os.environ.get('CI', None) == 'true':
 else:
     # Google Cloud Storage Settings
     STORAGES = {
-        "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
     }
-    GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
+    GS_UNSCANNED_BUCKET_NAME = os.environ.get("GS_UNSCANNED_BUCKET_NAME")
+    GS_CLEAN_BUCKET_NAME = os.environ.get("GS_CLEAN_BUCKET_NAME")
+    GS_QUARANTINED_BUCKET_NAME = os.environ.get("GS_QUARANTINED_BUCKET_NAME")
     if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
         GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
             os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
