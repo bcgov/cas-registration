@@ -68,6 +68,34 @@ describe("the OperationInformationForm component", () => {
       id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
       name: "Operation 1",
       registration_purpose: "Electricity Import Operation",
+      operation_has_multiple_operators: true,
+      multiple_operators_array: [
+        {
+          mo_is_extraprovincial_company: false,
+          mo_legal_name: "mops 1",
+          mo_trade_name: "ads",
+          mo_cra_business_number: 555555555,
+          mo_bc_corporate_registry_number: "aaa5555555",
+          mo_business_structure: "Sole Proprietorship",
+          mo_attorney_street_address: "ads",
+          mo_municipality: "ad",
+          mo_province: "NS",
+          mo_postal_code: "H0H0H0",
+          id: 2,
+        },
+        {
+          mo_is_extraprovincial_company: true,
+          mo_legal_name: "mops 2",
+          mo_trade_name: "ads",
+          mo_cra_business_number: 666666666,
+          mo_business_structure: "General Partnership",
+          mo_attorney_street_address: "ad",
+          mo_municipality: "ad",
+          mo_province: "NS",
+          mo_postal_code: "H0H0H0",
+          id: 3,
+        },
+      ],
     }); // mock the GET from selecting an operation
     render(
       <OperationInformationForm
@@ -92,14 +120,26 @@ describe("the OperationInformationForm component", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
-        "Operation 1",
-      );
+      // spot check section 1
       expect(
         screen.getByLabelText(
           /The purpose of this registration is to register as a:+/i,
         ),
       ).toHaveValue("Electricity Import Operation");
+
+      // spot check section 2
+      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+        "Operation 1",
+      );
+
+      // spot check section 3
+      const multipleOperatorLegalNames =
+        screen.getAllByLabelText(/legal name+/i);
+
+      expect(multipleOperatorLegalNames).toHaveLength(2);
+
+      expect(multipleOperatorLegalNames[0]).toHaveValue("mops 1");
+      expect(multipleOperatorLegalNames[1]).toHaveValue("mops 2");
     });
   });
 
