@@ -24,6 +24,7 @@ class DocumentDataAccessService:
             type=DocumentType.objects.get(name=document_type_name),
             created_by_id=user_guid,
             operation_id=operation_id,
+            status=Document.FileStatus.UNSCANNED,
         )
 
         return document
