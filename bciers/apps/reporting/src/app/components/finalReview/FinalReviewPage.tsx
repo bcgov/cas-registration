@@ -18,7 +18,7 @@ export default async function FinalReviewPage({
     ReportingPage.FinalReview,
     version_id,
     "",
-    { skipVerification: needsVerification },
+    { skipVerification: !needsVerification },
   );
 
   return (

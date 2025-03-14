@@ -13,7 +13,7 @@ export default async function SignOffPage({ version_id }: HasReportVersion) {
     ReportingPage.SignOff,
     version_id,
     "",
-    { skipVerification: needsVerification },
+    { skipVerification: !needsVerification },
   );
 
   return (
