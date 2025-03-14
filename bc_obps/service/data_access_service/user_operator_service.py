@@ -57,7 +57,7 @@ class UserOperatorDataAccessService:
         return user.user_operators.only("operator_id").filter(status=UserOperator.Statuses.APPROVED).first()
 
     @classmethod
-    def get_admin_user_operator_requests_for_irc_users(cls) -> QuerySet[UserOperator]:
+    def get_user_operator_requests_for_irc_users(cls) -> QuerySet[UserOperator]:
         # Base query excluding operators with status 'Declined'
         qs = UserOperator.objects.select_related("user", "operator").exclude(status=UserOperator.Statuses.DECLINED)
         return qs

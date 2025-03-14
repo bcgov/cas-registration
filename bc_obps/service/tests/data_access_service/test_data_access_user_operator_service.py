@@ -11,7 +11,7 @@ pytestmark = pytest.mark.django_db
 
 class TestDataAccessUserOperatorService:
     @staticmethod
-    def test_get_admin_user_operator_requests_for_irc_users():
+    def test_get_user_operator_requests_for_irc_users():
         # Prepare operators
         declined_operator = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.DECLINED)
         approved_operator = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.APPROVED)
@@ -102,7 +102,7 @@ class TestDataAccessUserOperatorService:
         )
 
         # Run the service method under test
-        user_operator_requests = UserOperatorDataAccessService.get_admin_user_operator_requests_for_irc_users()
+        user_operator_requests = UserOperatorDataAccessService.get_user_operator_requests_for_irc_users()
 
         # Assertions
         # Assert that the number of user operators returned is valid
