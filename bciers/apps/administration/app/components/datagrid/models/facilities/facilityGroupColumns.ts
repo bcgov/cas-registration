@@ -21,12 +21,6 @@ const facilityGroupColumns = (
       children: [{ field: "facility__type" }],
     },
     {
-      groupId: "status",
-      headerName: "Status",
-      renderHeaderGroup: SearchCell,
-      children: [{ field: "status" }],
-    },
-    {
       groupId: "facility__bcghg_id__id",
       headerName: "BC GHG ID",
       renderHeaderGroup: SearchCell,

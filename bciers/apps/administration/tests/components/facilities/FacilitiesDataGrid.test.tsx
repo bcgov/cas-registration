@@ -25,7 +25,6 @@ const mockResponse = {
       facility__type: "Single Facility",
       facility__bcghg_id__id: "12111130001",
       facility__id: 1,
-      status: "Active",
     },
     {
       id: 2,
@@ -33,7 +32,6 @@ const mockResponse = {
       facility__type: "Large Facility",
       facility__bcghg_id__id: "1-211113-0002",
       facility__id: 2,
-      status: "Active",
     },
   ],
   row_count: 2,
@@ -61,9 +59,8 @@ describe("FacilitiesDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
     ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(4);
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
 
     // Check data displays
     expect(screen.getByText(/Facility 1/i)).toBeVisible();
@@ -72,8 +69,6 @@ describe("FacilitiesDataGrid component", () => {
     expect(screen.getByText(/Facility 2/i)).toBeVisible();
     expect(screen.getByText(/1-211113-0002/i)).toBeVisible();
     expect(screen.getAllByText(/Large Facility/i)).toHaveLength(1);
-    // Check status
-    expect(screen.getAllByText(/active/i)).toHaveLength(2);
     // Check the number of view details links
     const viewDetailsLinks = screen.getAllByRole("link", {
       name: /View Details/i,
@@ -126,7 +121,7 @@ describe("FacilitiesDataGrid component", () => {
 
     // click on another column header
     const facilityTypeHeader = screen.getByRole("columnheader", {
-      name: "Status",
+      name: "BC GHG ID",
     });
 
     act(() => {
@@ -135,7 +130,7 @@ describe("FacilitiesDataGrid component", () => {
 
     expect(
       extractParams(String(mockReplace.mock.calls[2][2]), "sort_field"),
-    ).toBe("status");
+    ).toBe("facility__bcghg_id__id");
     expect(
       extractParams(String(mockReplace.mock.calls[2][2]), "sort_order"),
     ).toBe("asc");
@@ -147,7 +142,7 @@ describe("FacilitiesDataGrid component", () => {
 
     expect(
       extractParams(String(mockReplace.mock.calls[3][2]), "sort_field"),
-    ).toBe("status");
+    ).toBe("facility__bcghg_id__id");
     expect(
       extractParams(String(mockReplace.mock.calls[3][2]), "sort_order"),
     ).toBe("desc");
