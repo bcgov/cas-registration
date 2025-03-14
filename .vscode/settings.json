@@ -1,6 +1,6 @@
 {
   "[python]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   },
   "python.formatting.provider": "black",
   "black-formatter.importStrategy": "fromEnvironment",
