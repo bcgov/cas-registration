@@ -3,6 +3,8 @@ import FacilityEmissionAllocationPage from "@reporting/src/app/components/facili
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // ✨ Mocks
 vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
@@ -14,6 +16,9 @@ vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
 }));
 vi.mock("@reporting/src/app/utils/getEmissionAllocations", () => ({
   getEmissionAllocations: vi.fn(),
+}));
+vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
+  getNavigationInformation: vi.fn(),
 }));
 
 // 🏷 Constants
@@ -181,6 +186,9 @@ describe("The FacilityEmissionAllocationPage component", () => {
     );
     (getEmissionAllocations as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       emissionAllocations,
+    );
+    (getNavigationInformation as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+      dummyNavigationInformation,
     );
     // Render the page with the `versionId` prop
     render(

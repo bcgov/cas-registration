@@ -1,10 +1,16 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // ⛏️ Helper function to render the form
 const renderSignOffForm = () => {
-  render(<SignOffForm version_id={1} taskListElements={[]} />);
+  render(
+    <SignOffForm
+      version_id={1}
+      navigationInformation={dummyNavigationInformation}
+    />,
+  );
 };
 
 describe("SignOffForm Component", () => {

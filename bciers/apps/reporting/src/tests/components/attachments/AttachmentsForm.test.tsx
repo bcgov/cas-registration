@@ -4,6 +4,7 @@ import postAttachments from "@reporting/src/app/utils/postAttachments";
 
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { useRouter } from "next/navigation";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentElement", () => ({
   default: vi.fn(),
@@ -30,7 +31,7 @@ describe("The attachments form", () => {
   it("renders the appropriate text", () => {
     render(
       <AttachmentsForm
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
         version_id={1}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
@@ -60,7 +61,7 @@ describe("The attachments form", () => {
 
     render(
       <AttachmentsForm
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
         version_id={1}
         initialUploadedAttachments={attachmentData}
         isVerificationStatementMandatory={true}
@@ -117,7 +118,7 @@ describe("The attachments form", () => {
 
     render(
       <AttachmentsForm
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
@@ -152,7 +153,7 @@ describe("The attachments form", () => {
 
     render(
       <AttachmentsForm
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={false}
@@ -172,7 +173,7 @@ describe("The attachments form", () => {
 
     render(
       <AttachmentsForm
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
@@ -208,6 +209,6 @@ describe("The attachments form", () => {
     expect(sentFormDataKeys).toEqual(["files", "file_types"]);
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
 
-    expect(useRouter().push).toHaveBeenCalledWith("/reports/1346/sign-off");
+    expect(useRouter().push).toHaveBeenCalledWith("continue");
   });
 });

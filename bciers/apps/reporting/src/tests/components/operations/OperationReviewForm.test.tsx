@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -75,7 +76,7 @@ describe("OperationReviewForm Component", () => {
       <OperationReviewForm
         formData={formData}
         version_id={1}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
         schema={schema}
       />,
     );
@@ -116,7 +117,7 @@ describe("OperationReviewForm Component", () => {
           expect.any(String),
           expect.objectContaining({ body: expect.any(String) }),
         );
-        expect(push).toHaveBeenCalledWith("/reports/1/person-responsible");
+        expect(push).toHaveBeenCalledWith("continue");
       });
     },
   );
@@ -161,7 +162,7 @@ describe("OperationReviewForm Component", () => {
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
-        "/reports/1234/review-operation-information",
+        `/reports/1234/review-operation-information`,
       );
     });
   });
