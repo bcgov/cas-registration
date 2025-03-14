@@ -24,9 +24,9 @@ class TestRlsManager(TestCase):
         )
 
     @patch('django.db.connection.cursor')
-    def test_revoke_all_privileges(self, mock_cursor):
+    def test_reset_privileges_for_roles(self, mock_cursor):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
-        RlsManager.revoke_all_privileges()
+        RlsManager.reset_privileges_for_roles()
 
         # Ensure SQL execution calls are made
         self.assertEqual(mock_cursor_instance.execute.call_count, 15)
@@ -35,7 +35,7 @@ class TestRlsManager(TestCase):
         mock_cursor_instance.execute.assert_any_call(
             Composed(
                 [
-                    SQL('drop owned by '),
+                    SQL('revoke all privileges on all tables in schema erc from '),
                     self._get_composed_role_identifiers(),
                 ]
             )
@@ -113,7 +113,7 @@ class TestRlsManager(TestCase):
     @patch('rls.utils.manager.apps.all_models')
     @patch.object(RlsManager, 'apply_rls_for_model')
     def test_apply_rls(self, mock_apply_rls_for_model, mock_all_models, mock_settings):
-        mock_settings.LOCAL_APPS = ['app1', 'app2']
+        mock_settings.RLS_GRANT_APPS = ['app1', 'app2']
         mock_all_models.__getitem__.side_effect = (
             lambda app_name: {'contact': MagicMock()} if app_name == 'app1' else {}
         )
@@ -133,11 +133,11 @@ class TestRlsManager(TestCase):
         # Ensure no grants were executed since the list is empty
         mock_cursor_instance.execute.assert_not_called()
 
-    @patch.object(RlsManager, 'revoke_all_privileges')
+    @patch.object(RlsManager, 'reset_privileges_for_roles')
     @patch.object(RlsManager, 'apply_rls')
-    def test_re_apply_rls(self, mock_apply_rls, mock_revoke_all_privileges):
+    def test_re_apply_rls(self, mock_apply_rls, mock_reset_privileges_for_roles):
         RlsManager.re_apply_rls()
 
         # Ensure methods are called in order
-        mock_revoke_all_privileges.assert_called_once()
+        mock_reset_privileges_for_roles.assert_called_once()
         mock_apply_rls.assert_called_once()
