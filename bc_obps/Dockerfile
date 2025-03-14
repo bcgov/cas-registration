@@ -33,10 +33,17 @@ RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
     asdf install && \
     asdf reshim
 
-# Add Poetry's bin directory to PATH
-ENV PATH="${HOME}/.asdf/installs/poetry/1.8.1/bin:${PATH}"
+# Extract the Poetry version dynamically
+ARG POETRY_VERSION
+RUN export POETRY_VERSION=$(grep '^poetry ' ${HOME}/.tool-versions | awk '{print $2}') && \
+    echo "Using Poetry version: $POETRY_VERSION"
 
-RUN poetry config virtualenvs.use-poetry-python true
+# Set the Poetry version as an environment variable
+ENV POETRY_VERSION=${POETRY_VERSION}
+ENV PATH="${HOME}/.asdf/installs/poetry/${POETRY_VERSION}/bin:${PATH}"
+
+RUN poetry config virtualenvs.create true && \
+	poetry config virtualenvs.in-project true
 
 # Change ownership and permissions
 RUN chown -R bc_obps:0 ${HOME} && \
