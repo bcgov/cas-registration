@@ -7,7 +7,7 @@ import {
   TaskListPageFactoryData,
 } from "./types";
 import { getFlow, reportingFlows } from "./reportingFlows";
-import { pageElementFactory } from "./pageElementFactory";
+import { pageElementFactory } from "./taskListPages/pageElementFactory";
 import { headerElementFactory } from "./headerElementFactory";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
@@ -95,14 +95,9 @@ export async function getNavigationInformation(
   const pageIndex = pages.indexOf(page);
   if (pageIndex === -1)
     // The current page wasn't found in the flow's step
-    // We can't generate navigation links
-    return {
-      taskList: taskList,
-      backUrl: "",
-      continueUrl: "",
-      headerSteps: headerSteps,
-      headerStepIndex: -1,
-    };
+    throw new Error(
+      `Page ${page} was not found in this reporting flow, unable to generate the appropriate tasklist and navigation.`,
+    );
 
   // find forward and back links
   // - either from the current page factory itself
@@ -128,12 +123,13 @@ export async function getNavigationInformation(
         ) as ReportingPage;
 
         const previousPage = await pageElementFactory(
-          ReportingPage[lastPageOfPreviousStep],
+          lastPageOfPreviousStep,
           page,
           reportVersionId,
           facilityId,
           context,
         );
+
         backUrl = getTasklistElementLink(previousPage.element, "last");
       }
     }
@@ -157,7 +153,7 @@ export async function getNavigationInformation(
         ) as ReportingPage;
 
         const nextPage = await pageElementFactory(
-          ReportingPage[firstPageOfNextStep],
+          firstPageOfNextStep,
           page,
           reportVersionId,
           facilityId,
