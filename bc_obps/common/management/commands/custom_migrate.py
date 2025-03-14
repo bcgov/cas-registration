@@ -74,11 +74,11 @@ class Command(BaseCommand):
         # Run migrations
         for app_label in self.apps_to_not_include_in_prod:
             self.stdout.write(f'Running custom migrations for {app_label}...')
-            self.migrate_app_to_latest_migration_flag(app_label)
+            self.migrate_app_to_latest_tagged_migration(app_label)
 
         RlsManager.re_apply_rls()
 
-    def migrate_app_to_latest_migration_flag(self, app_label):
+    def migrate_app_to_latest_tagged_migration(self, app_label):
         """
         Run migrations for a specific app up to the latest migration file.
 
