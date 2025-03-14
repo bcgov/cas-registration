@@ -1,8 +1,14 @@
+import { bcObpsGuidanceLink } from "@bciers/utils/src/urls";
+
 export const purposePreface = (
   <div>
     Please select the purpose of registering this operation. You may only select
-    one option from the dropdown. Definitions of each option can be found in the{" "}
-    <a href="#">glossary</a>.
+    one option from the dropdown. Definitions of the options can be found in the
+    glossary in the{" "}
+    <a target="_blank" href={bcObpsGuidanceLink}>
+      Program and Reporting Guidance
+    </a>
+    .
   </div>
 );
 
