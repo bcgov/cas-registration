@@ -97,6 +97,7 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
     ).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "Operation Type" }),
     ).toBeVisible();
