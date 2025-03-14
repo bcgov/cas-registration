@@ -1,10 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import PersonResponsiblePage from "@reporting/src/app/components/operations/personResponsible/PersonResponsiblePage"; // Adjust import path if needed
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { getOperationInformationTaskList } from "@reporting/src/app/components/taskList/taskListPages/1_operationInformation";
 import { getContacts } from "@bciers/actions/api";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import { dummyNavigationInformation } from "../../taskList/utils";
 
 // Mock functions
 vi.mock("@reporting/src/app/utils/getFacilityReport", () => ({
@@ -21,8 +22,6 @@ vi.mock(
     },
   }),
 );
-const mockGetOperationInformationTaskList =
-  getOperationInformationTaskList as ReturnType<typeof vi.fn>;
 
 vi.mock("@bciers/actions/api", () => ({
   getContacts: vi.fn(),
@@ -43,6 +42,13 @@ vi.mock(
 );
 const mockCreatePersonResponsibleSchema =
   createPersonResponsibleSchema as ReturnType<typeof vi.fn>;
+
+vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
+  getNavigationInformation: vi.fn(),
+}));
+const mockGetNavigationInformation = getNavigationInformation as ReturnType<
+  typeof vi.fn
+>;
 
 // Mocks for the data
 const mockFacilityReport = {
@@ -65,10 +71,13 @@ const mockVersionId = 12345;
 
 // Setting up the mock implementations
 mockGetFacilityReport.mockResolvedValue(mockFacilityReport);
-mockGetOperationInformationTaskList.mockResolvedValue(mockTaskListElements);
 mockGetContacts.mockResolvedValue(mockContactData);
 mockGetReportingPersonResponsible.mockResolvedValue(mockPersonResponsibleData);
 mockCreatePersonResponsibleSchema.mockReturnValue(mockSchema);
+mockGetNavigationInformation.mockResolvedValue({
+  ...dummyNavigationInformation,
+  taskList: mockTaskListElements,
+});
 
 describe("PersonResponsiblePage component", () => {
   it("renders the PersonResponsibleForm component with the correct data", async () => {
@@ -77,11 +86,6 @@ describe("PersonResponsiblePage component", () => {
     expect(mockGetFacilityReport).toHaveBeenCalledWith(mockVersionId);
     expect(mockGetReportingPersonResponsible).toHaveBeenCalledWith(
       mockVersionId,
-    );
-    expect(mockGetOperationInformationTaskList).toHaveBeenCalledWith(
-      mockVersionId,
-      "PersonResponsible",
-      "Single Facility Operation",
     );
     expect(mockGetContacts).toHaveBeenCalledTimes(1);
     expect(mockCreatePersonResponsibleSchema).toHaveBeenCalledTimes(1);

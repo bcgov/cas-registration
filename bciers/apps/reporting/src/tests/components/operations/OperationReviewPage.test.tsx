@@ -8,6 +8,8 @@ import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils//defaultPageFactoryTypes";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // ✨ Mock the utility functions
 vi.mock("@reporting/src/app/utils/getAllReportingActivities", () => ({
@@ -27,6 +29,9 @@ vi.mock("@bciers/actions/api", () => ({
 }));
 vi.mock("@reporting/src/app/utils/getFacilityReport", () => ({
   getFacilityReport: vi.fn(),
+}));
+vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
+  getNavigationInformation: vi.fn(),
 }));
 
 // 🏷 Constants
@@ -77,6 +82,9 @@ describe("OperationReviewPage Component", () => {
     );
     (getFacilityReport as ReturnType<typeof vi.fn>).mockResolvedValue(
       mockFacilityReport,
+    );
+    (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
+      dummyNavigationInformation,
     );
   });
 

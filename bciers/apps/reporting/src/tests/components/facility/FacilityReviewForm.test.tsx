@@ -2,8 +2,8 @@ import { render, act, waitFor } from "@testing-library/react";
 import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { vi } from "vitest";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import FacilityReview from "@reporting/src/app/components/facility/FacilityReviewForm";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // Mocks for external dependencies
 vi.mock("@bciers/actions", () => ({
@@ -51,7 +51,6 @@ describe("The FacilityReview component", () => {
       applicable_to: string;
     }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
     const mockFormData = { activities: ["Activity 1"] };
-    const mockTaskListElements: TaskListElement[] = [];
     const mockSchema = { testSchema: true };
 
     mockActionHandler.mockResolvedValue({}); // Mocking successful response
@@ -61,7 +60,7 @@ describe("The FacilityReview component", () => {
         version_id={1000}
         facility_id="abcd"
         activitiesData={mockActivitiesData}
-        taskListElements={mockTaskListElements}
+        navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
         schema={mockSchema}
       />,
@@ -85,7 +84,6 @@ describe("The FacilityReview component", () => {
       applicable_to: string;
     }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
     const mockFormData = { activities: [] };
-    const mockTaskListElements: TaskListElement[] = [];
     const mockSchema = { testSchema: true };
 
     render(
@@ -93,7 +91,7 @@ describe("The FacilityReview component", () => {
         version_id={1000}
         facility_id="abcd"
         activitiesData={mockActivitiesData}
-        taskListElements={mockTaskListElements}
+        navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
         schema={mockSchema}
       />,
@@ -123,7 +121,6 @@ describe("The FacilityReview component", () => {
       applicable_to: string;
     }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
     const mockFormData = { activities: ["Activity 1"] };
-    const mockTaskListElements: TaskListElement[] = [];
     const mockSchema = { testSchema: true };
 
     mockActionHandler.mockResolvedValue({ error: "Some error occurred" });
@@ -133,7 +130,7 @@ describe("The FacilityReview component", () => {
         version_id={1000}
         facility_id="abcd"
         activitiesData={mockActivitiesData}
-        taskListElements={mockTaskListElements}
+        navigationInformation={dummyNavigationInformation}
         formsData={mockFormData}
         schema={mockSchema}
       />,

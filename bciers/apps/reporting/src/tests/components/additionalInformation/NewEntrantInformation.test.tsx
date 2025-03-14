@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { actionHandler } from "@bciers/actions";
 import { vi } from "vitest";
 import NewEntrantInformationForm from "@reporting/src/app/components/additionalInformation/newEntrantInformation/NewEntrantInformationForm";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
@@ -45,7 +46,7 @@ describe("NewEntrantInformationForm Component", () => {
       <NewEntrantInformationForm
         version_id={versionId}
         initialFormData={initialFormData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -65,7 +66,7 @@ describe("NewEntrantInformationForm Component", () => {
       <NewEntrantInformationForm
         version_id={versionId}
         initialFormData={initialFormData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -87,7 +88,7 @@ describe("NewEntrantInformationForm Component", () => {
       <NewEntrantInformationForm
         version_id={versionId}
         initialFormData={initialFormData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -110,7 +111,7 @@ describe("NewEntrantInformationForm Component", () => {
       <NewEntrantInformationForm
         version_id={versionId}
         initialFormData={initialFormData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -120,8 +121,6 @@ describe("NewEntrantInformationForm Component", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-    expect(mockPush).toHaveBeenCalledWith(
-      `/reports/${versionId}/operation-emission-summary`,
-    );
+    expect(mockPush).toHaveBeenCalledWith(`continue`);
   });
 });

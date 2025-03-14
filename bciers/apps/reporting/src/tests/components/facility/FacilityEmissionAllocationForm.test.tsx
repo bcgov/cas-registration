@@ -2,7 +2,7 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -103,8 +103,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -139,8 +138,7 @@ describe("FacilityEmissionAllocationForm component", () => {
             },
           ],
         }}
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
     expect(
@@ -156,8 +154,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -181,8 +178,7 @@ describe("FacilityEmissionAllocationForm component", () => {
           facility_id={config.mockFacilityId}
           orderedActivities={[]}
           initialData={mockInitialData}
-          taskListElements={[]}
-          operationType={OperationTypes.LFO}
+          navigationInformation={dummyNavigationInformation}
         />,
       );
       // POST submit and assert the result
@@ -196,8 +192,7 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -208,8 +203,7 @@ describe("FacilityEmissionAllocationForm component", () => {
     fireEvent.click(backButton);
 
     // Assert that the router's push method was called with the expected route
-    const expectedRoute = `/reports/${config.mockVersionId}/facilities/${config.mockFacilityId}/production-data`;
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
-    expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
+    expect(mockRouterPush).toHaveBeenCalledWith("back");
   });
 });

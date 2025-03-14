@@ -2,10 +2,7 @@ import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistration
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import {
-  REGULATED_OPERATION_REGISTRATION_PURPOSE,
-  NEW_ENTRANT_REGISTRATION_PURPOSE,
-} from "@reporting/src/app/utils/constants";
+import { REGULATED_OPERATION_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { getNavigationInformation } from "../../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../../taskList/types";
@@ -47,7 +44,6 @@ export default async function AdditionalReportingDataPage({
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
   const facilityReport = await getFacilityReport(version_id);
-  const isNewEntrant = registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE;
 
   const navInfo = await getNavigationInformation(
     HeaderStep.AdditionalInformation,
@@ -62,11 +58,8 @@ export default async function AdditionalReportingDataPage({
       includeElectricityGenerated={
         registrationPurpose === REGULATED_OPERATION_REGISTRATION_PURPOSE
       }
-      isNewEntrant={isNewEntrant}
       initialFormData={transformedData}
       navigationInformation={navInfo}
-      operationType={facilityReport?.operation_type}
-      facilityId={facilityReport?.facility_id}
     />
   );
 }
