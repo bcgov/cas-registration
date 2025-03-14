@@ -54,7 +54,7 @@ class ReportSubmissionService:
             is_latest_submitted=True,
         ).update(is_latest_submitted=False)
 
-        # Set the new version as lastest submitted and the latest
+        # Set the new version as lastest submitted
         report_version.is_latest_submitted = True
         report_version.status = ReportVersion.ReportVersionStatus.Submitted
         report_version.save()
