@@ -15,10 +15,7 @@ interface AdditionalReportingDataProps {
   versionId: number;
   includeElectricityGenerated: boolean;
   initialFormData: any;
-  isNewEntrant: boolean;
   navigationInformation: NavigationInformation;
-  operationType: string;
-  facilityId: string;
 }
 
 interface FormData {
