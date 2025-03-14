@@ -2,6 +2,10 @@ from typing import Optional
 from uuid import UUID
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
+from bc_obps.storage_backends import (
+    CleanBucketStorage,
+    QuarantinedBucketStorage,
+)
 
 
 class DocumentDataAccessService:
@@ -28,3 +32,21 @@ class DocumentDataAccessService:
         )
 
         return document
+
+    @classmethod
+    def check_document_file_status(cls, document: Document) -> Document.FileStatus:
+        file_name = document.file.name
+
+        clean_storage = CleanBucketStorage()
+        quarnatined_storage = QuarantinedBucketStorage()
+
+        if clean_storage.exists(file_name):
+            document.status = Document.FileStatus.CLEAN
+        elif quarnatined_storage.exists(file_name):
+            document.status = Document.FileStatus.QUARANTINED
+        else:
+            # The file is not in any of the quarantined or clean buckets
+            return Document.FileStatus.UNSCANNED
+
+        document.save()
+        return document.status
