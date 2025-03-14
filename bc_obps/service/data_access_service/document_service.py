@@ -2,10 +2,7 @@ from typing import Optional
 from uuid import UUID
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
-from bc_obps.storage_backends import (
-    CleanBucketStorage,
-    QuarantinedBucketStorage,
-)
+from django.core.files.storage import storages
 
 
 class DocumentDataAccessService:
@@ -37,8 +34,8 @@ class DocumentDataAccessService:
     def check_document_file_status(cls, document: Document) -> Document.FileStatus:
         file_name = document.file.name
 
-        clean_storage = CleanBucketStorage()
-        quarnatined_storage = QuarantinedBucketStorage()
+        clean_storage = storages["clean"]
+        quarnatined_storage = storages["quarantined"]
 
         if clean_storage.exists(file_name):
             document.status = Document.FileStatus.CLEAN

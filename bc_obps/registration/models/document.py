@@ -4,8 +4,8 @@ from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
-from bc_obps.storage_backends import CleanBucketStorage, QuarantinedBucketStorage, UnscannedBucketStorage
 from registration.models.rls_configs.document import Rls as DocumentRls
+from django.core.files.storage import storages
 
 
 class Document(TimeStampedModel):
@@ -46,15 +46,16 @@ class Document(TimeStampedModel):
 
     Rls = DocumentRls
 
+    @typing.no_type_check
     def get_storage_handler(self):
         if self.status == Document.FileStatus.CLEAN:
-            return CleanBucketStorage()
+            return storages["clean"]
         elif self.status == Document.FileStatus.QUARANTINED:
-            return QuarantinedBucketStorage()
+            return storages["quarantined"]
         elif self.status == Document.FileStatus.UNSCANNED:
-            return UnscannedBucketStorage()
+            return storages["default"]
         else:
-            return UnscannedBucketStorage()
+            return storages["default"]
 
     @typing.no_type_check
     def save(self, *args, **kwards):
