@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: check-document-file-status
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+    component: backend
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: false
+  schedule: "*/1  * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-bciers.labels" . | nindent 12 }}
+            component: backend
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: check-document-file-status
+            image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+            imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+            env:
+              {{- include "cas-bciers.backendEnvVars" . | nindent 14 }}
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - |
+                set -euo pipefail;
+                poetry run python manage.py check_document_file_status
