@@ -4,26 +4,21 @@ import { Status } from "@bciers/utils/src/enums";
 import { Chip, ChipOwnProps } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
-export default function UserOperatorStatusCell(params: GridRenderCellParams) {
+export default function UserOperatorRoleCell(params: GridRenderCellParams) {
   const colorMap = new Map<string, ChipOwnProps["color"]>([
     [Status.PENDING, "primary"],
     [Status.APPROVED, "success"],
     [Status.DECLINED, "error"],
   ]);
   const status =
-    params.value === Status.APPROVED ? "Admin Access" : params.value;
+    params.value === Status.APPROVED ? "Administrator" : params.value;
   const statusColor = colorMap.get(params.value) || "primary";
-  const isMultiLineStatus = status === Status.APPROVED;
 
-  // Adjust the font size for multi-line statuses so it will fit in the chip
-  const fontSize = isMultiLineStatus ? "14px" : "16px";
   return (
     <Chip
       label={
         // whiteSpace: "normal" is needed to wrap the text in the chip for multi-line statuses like "Changes Requested"
-        <div style={{ whiteSpace: "normal", color: statusColor, fontSize }}>
-          {status}
-        </div>
+        <div style={{ color: statusColor, fontSize: "0.9em" }}>{status}</div>
       }
       variant="outlined"
       color={statusColor}
