@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.core.management import call_command
 
@@ -13,8 +14,7 @@ class Command(BaseCommand):
         if not migration_name:
             raise CommandError("Migration name is required.")
 
-        # We need to add other apps here if we want to create empty migrations for them(like when they are in PROD)
-        for app_label in ['common', 'registration']:
+        for app_label in (app for app in settings.LOCAL_APPS if app not in settings.APPS_TO_NOT_INCLUDE_IN_PROD):
             try:
                 # This command creates an empty migration with the specified name
                 call_command('makemigrations', app_label, empty=True, name=f'V{migration_name}')

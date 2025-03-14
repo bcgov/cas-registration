@@ -9,79 +9,60 @@ from rls.utils.m2m import M2mRls
 
 class RlsManager:
     @staticmethod
-    def revoke_all_privileges() -> None:
+    def reset_privileges_for_roles() -> None:
         # Convert enum values into an SQL-safe list
         role_identifiers = [Identifier(role.value) for role in RlsRoles]
+        roles = SQL(', ').join(role_identifiers)
+
+        queries = [
+            SQL("revoke all privileges on all tables in schema erc from {}"),
+            SQL("grant usage on schema erc to {}"),
+            SQL("grant usage on schema public to {}"),
+            SQL("grant usage on schema erc_history to {}"),
+            SQL("grant all privileges on all tables in schema erc_history to {}"),
+            SQL("grant usage on schema common to {}"),
+            SQL("grant select, insert on all tables in schema common to {}"),
+        ]
+
+        # Tables and sequences that need to be granted INSERT and UPDATE privileges
+        tables = [
+            'registration_historicalfacility_well_authorization_numbers',
+            'registration_historicaloperation_contacts',
+            'registration_historicaloperation_activities',
+            'registration_historicaloperation_regulated_products',
+        ]
+        sequences = [
+            'registration_historicalfacility_well_authori_m2m_history_id_seq',
+            'registration_historicaloperation_contacts_m2m_history_id_seq',
+            'registration_historicaloperation_activities_m2m_history_id_seq',
+            'registration_historicaloperation_regulated_p_m2m_history_id_seq',
+        ]
+
         with connection.cursor() as cursor:
-            drop_owned_by_query = SQL('drop owned by {}').format(SQL(', ').join(role_identifiers))
-            grant_erc_usage_query = SQL("grant usage on schema erc to {}").format(SQL(', ').join(role_identifiers))
-            grant_public_usage_query = SQL("grant usage on schema public to {}").format(
-                SQL(', ').join(role_identifiers)
-            )
+            for query in queries:
+                cursor.execute(query.format(roles))
 
-            cursor.execute(drop_owned_by_query)
-            cursor.execute(grant_erc_usage_query)
-            cursor.execute(grant_public_usage_query)
-
-            # Grant usage and all privileges on all tables in schema erc_history to public
-            erc_history_queries = [
-                SQL("grant usage on schema erc_history to {}").format(SQL(', ').join(role_identifiers)),
-                SQL("grant all privileges on all tables in schema erc_history to {}").format(
-                    SQL(', ').join(role_identifiers)
-                ),
-            ]
-            for query in erc_history_queries:
-                cursor.execute(query)
-
-            # Grant usage and select privileges on all tables in schema common to public
-            common_schema_queries = [
-                SQL("grant usage on schema common to {}").format(SQL(', ').join(role_identifiers)),
-                SQL("grant select, insert on all tables in schema common to {}").format(
-                    SQL(', ').join(role_identifiers)
-                ),
-            ]
-            for query in common_schema_queries:
-                cursor.execute(query)
-
-            # Tables and sequences that need to be granted INSERT and UPDATE privileges
-            tables = [
-                'registration_historicalfacility_well_authorization_numbers',
-                'registration_historicaloperation_contacts',
-                'registration_historicaloperation_activities',
-                'registration_historicaloperation_regulated_products',
-            ]
             for table in tables:
-                query = SQL("grant select, insert, update on public.{} to {};").format(
-                    Identifier(table), SQL(', ').join(role_identifiers)
-                )
-                cursor.execute(query)
+                cursor.execute(SQL("grant select, insert, update on public.{} to {};").format(Identifier(table), roles))
 
-            sequences = [
-                'registration_historicalfacility_well_authori_m2m_history_id_seq',
-                'registration_historicaloperation_contacts_m2m_history_id_seq',
-                'registration_historicaloperation_activities_m2m_history_id_seq',
-                'registration_historicaloperation_regulated_p_m2m_history_id_seq',
-            ]
             for sequence in sequences:
-                query = SQL("grant usage, select, update on sequence public.{} to {};").format(
-                    Identifier(sequence), SQL(', ').join(role_identifiers)
+                cursor.execute(
+                    SQL("grant usage, select, update on sequence public.{} to {};").format(Identifier(sequence), roles)
                 )
-                cursor.execute(query)
 
             if settings.DEBUG:
-                # Grant all privileges on all tables in schema public to public in DEBUG mode
+                # Grant all privileges on all tables in schema public to roles in DEBUG mode
+                # This is to avoid permission issues with silk profiler
                 debug_queries = [
-                    SQL("grant usage on schema public to {}").format(SQL(', ').join(role_identifiers)),
-                    SQL("grant all privileges on all tables in schema public to {}").format(
-                        SQL(', ').join(role_identifiers)
-                    ),
+                    SQL("grant usage on schema public to {}"),
+                    SQL("grant all privileges on all tables in schema public to {}"),
                 ]
                 for query in debug_queries:
-                    cursor.execute(query)
+                    cursor.execute(query.format(roles))
 
     @classmethod
     def apply_rls(cls) -> None:
-        apps_to_apply_rls = [app for app in settings.LOCAL_APPS if app != 'rls']
+        apps_to_apply_rls = settings.RLS_GRANT_APPS
         for app_name in apps_to_apply_rls:
             for model_name in apps.all_models[app_name]:
                 cls.apply_rls_for_model(app_name, model_name)
@@ -117,5 +98,5 @@ class RlsManager:
 
     @classmethod
     def re_apply_rls(cls) -> None:
-        cls.revoke_all_privileges()
+        cls.reset_privileges_for_roles()
         cls.apply_rls()

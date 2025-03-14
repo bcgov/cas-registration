@@ -67,9 +67,6 @@ CHES_API_URL = os.environ.get("CHES_API_URL")
 ELICENSING_API_URL = os.environ.get("ELICENSING_API_URL")
 ELICENSING_AUTH_TOKEN = os.environ.get("ELICENSING_AUTH_TOKEN")
 
-# Application definition
-
-
 LOCAL_APPS = [
     "registration",
     "reporting",
@@ -83,6 +80,13 @@ RLS_GRANT_APPS = [
     "registration",
     "reporting",
 ]
+
+# Only apply RLS policies for compliance app if ENVIRONMENT is dev or test
+if ENVIRONMENT in ["dev", "test"]:
+    RLS_GRANT_APPS += ["compliance"]
+
+# Apps that should not be included in production migrations
+APPS_TO_NOT_INCLUDE_IN_PROD = ["compliance", "events"]
 
 INSTALLED_APPS = [
     # Django apps

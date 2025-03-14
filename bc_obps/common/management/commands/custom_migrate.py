@@ -1,5 +1,6 @@
 import os
 import re
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.apps import apps
@@ -8,38 +9,52 @@ from registration.models import Operation
 
 
 class Command(BaseCommand):
-    help = 'Run default migrations for all apps except reporting, then run custom migrations for reporting app'
+    help = (
+        "Run default migrations for all apps except specified exclusions in production. "
+        "Runs additional custom migrations for specific apps if required."
+    )
+
+    # List of apps to exclude from default migrations in production
+    apps_to_not_include_in_prod = settings.APPS_TO_NOT_INCLUDE_IN_PROD
 
     def handle(self, *args, **options):
-        # Only running the custom command in the production environment
-        # Otherwise, run the default migrate command for all apps
-        if os.environ.get('ENVIRONMENT') != 'prod':
-            self.stdout.write('Running default migrate command for all apps...')
-            call_command('migrate')
-            # Revoke all RLS grants & policies for all roles
-            # Re-apply all RLS grants & policies for all roles
-            RlsManager.re_apply_rls()
-            if Operation.objects.exists():
-                self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
-                return
-            if os.environ.get('ENVIRONMENT') == 'test':
-                call_command("pgtrigger", "disable", "--schema", "erc")
-                call_command('load_test_data')
-                call_command("pgtrigger", "enable", "--schema", "erc")
-            if os.environ.get('ENVIRONMENT') == 'dev' and os.environ.get('CI') != 'true':
+        environment = os.environ.get('ENVIRONMENT')
+        if environment == 'prod':
+            self.run_prod_migrations()
+        else:
+            self.run_non_prod_migrations(environment)
+
+    def run_non_prod_migrations(self, environment):
+        self.stdout.write('Running default migrate command for all apps...')
+        call_command('migrate')
+        RlsManager.re_apply_rls()
+
+        if Operation.objects.exists():
+            self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
+            return
+
+        if environment == 'test':
+            call_command("pgtrigger", "disable", "--schema", "erc")
+            call_command('load_test_data')
+            call_command("pgtrigger", "enable", "--schema", "erc")
+        elif environment == 'dev':
+            if settings.DEBUG:  # local dev
+                call_command('load_fixtures')
+                call_command('load_reporting_fixtures')
+            elif os.environ.get('CI') != 'true':  # dev not in CI
                 call_command("pgtrigger", "disable", "--schema", "erc")
                 call_command('load_fixtures')
                 call_command('load_reporting_fixtures')
                 call_command("pgtrigger", "enable", "--schema", "erc")
-            return
-        # Run the default migrate command for all apps except the reporting app
-        self.stdout.write('Running default migrations for all apps except reporting...')
 
-        # Get all installed apps
-        all_apps = [app.label for app in apps.get_app_configs()]
-        apps_to_run_default_migrate = [app for app in all_apps if app != 'reporting']
+    def run_prod_migrations(self):
+        self.stdout.write('Running default migrate command for all apps except specified exclusions...')
+        all_apps_labels = [app.label for app in apps.get_app_configs()]
+        apps_to_run_default_migrate = [
+            app_label for app_label in all_apps_labels if app_label not in self.apps_to_not_include_in_prod
+        ]
 
-        # Run migrate for each app except reporting
+        # Run migrate for each app except the ones in apps_to_not_include_in_prod
         for app_label in apps_to_run_default_migrate:
             self.stdout.write(f'Running migrations for {app_label}...')
             # Wrap in try/except block to handle errors for apps with no migrations and continue with other apps
@@ -55,15 +70,15 @@ class Command(BaseCommand):
                     raise e
 
         self.stdout.write(self.style.SUCCESS('Default migrations completed.'))
+        self.stdout.write(self.style.WARNING('Running custom migrations for specific apps...'))
+        # Run migrations
+        for app_label in self.apps_to_not_include_in_prod:
+            self.stdout.write(f'Running custom migrations for {app_label}...')
+            self.migrate_app_to_latest_tagged_migration(app_label)
 
-        # Run custom migrations for the reporting app
-        self.migrate_app_to_latest('reporting')
-
-        # Revoke all RLS grants & policies for all roles
-        # Re-apply all RLS grants & policies for all roles
         RlsManager.re_apply_rls()
 
-    def migrate_app_to_latest(self, app_label):
+    def migrate_app_to_latest_tagged_migration(self, app_label):
         """
         Run migrations for a specific app up to the latest migration file.
 
@@ -87,7 +102,8 @@ class Command(BaseCommand):
         call_command('migrate', app_label, latest_migration_name)
         self.stdout.write(self.style.SUCCESS(f'Successfully migrated {app_label} to {latest_migration_name}'))
 
-    def get_migration_directory(self, app_label):
+    @staticmethod
+    def get_migration_directory(app_label):
         """
         Get the path to the migrations directory for a given app.
 
@@ -100,7 +116,8 @@ class Command(BaseCommand):
         app_config = apps.get_app_config(app_label)
         return os.path.join(app_config.path, 'migrations')
 
-    def get_migration_files(self, migration_dir):
+    @staticmethod
+    def get_migration_files(migration_dir):
         """
         Get a list of migration files in the specified directory that match the required format.
 
@@ -112,7 +129,8 @@ class Command(BaseCommand):
         """
         return [f for f in os.listdir(migration_dir) if re.match(r'^\d{4}_V\d+_\d+_\d+\.py$', f) and f != '__init__.py']
 
-    def get_latest_migration_file(self, migration_files):
+    @staticmethod
+    def get_latest_migration_file(migration_files):
         """
         Determine the latest migration file based on the numeric parts in the filename.
 
