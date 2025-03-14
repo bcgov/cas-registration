@@ -36,9 +36,9 @@ if os.environ.get('CI', None) == 'true':
     MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
     STORAGES = {
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-        "default": {"BACKEND": "bc_obps.storage_backends.UnscannedBucketStorage"},
-        "clean": {"BACKEND": "bc_obps.storage_backends.CleanBucketStorage"},
-        "quarantined": {"BACKEND": "bc_obps.storage_backends.QuarantinedBucketStorage"},
+        "default": {"BACKEND": "bc_obps.storage_backends.UnscannedLocal"},
+        "clean": {"BACKEND": "bc_obps.storage_backends.CleanLocal"},
+        "quarantined": {"BACKEND": "bc_obps.storage_backends.QuarantinedLocal"},
     }
 else:
     # Google Cloud Storage Settings
