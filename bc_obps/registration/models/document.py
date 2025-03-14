@@ -4,7 +4,6 @@ from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
-from django.core.files.storage import default_storage
 from bc_obps.storage_backends import CleanBucketStorage, QuarantinedBucketStorage, UnscannedBucketStorage
 from registration.models.rls_configs.document import Rls as DocumentRls
 
@@ -47,22 +46,36 @@ class Document(TimeStampedModel):
 
     Rls = DocumentRls
 
+    def get_storage_handler(self):
+        if self.status == Document.FileStatus.CLEAN:
+            return CleanBucketStorage()
+        elif self.status == Document.FileStatus.QUARANTINED:
+            return QuarantinedBucketStorage()
+        elif self.status == Document.FileStatus.UNSCANNED:
+            return UnscannedBucketStorage()
+        else:
+            return UnscannedBucketStorage()
+
     @typing.no_type_check
     def save(self, *args, **kwards):
-        """Make sure the correct storage backend is used based on the malware scanning status."""
-        if self.status == Document.FileStatus.UNSCANNED:
-            self.file.storage = UnscannedBucketStorage()
-        elif self.status == Document.FileStatus.QUARANTINED:
-            self.file.storage = QuarantinedBucketStorage()
-        elif self.status == Document.FileStatus.CLEAN:
-            self.file.storage = CleanBucketStorage()
-
+        """Make sure the correct storage backend is set for save based on the malware scanning status."""
+        self.file.storage = self.get_storage_handler()
         super().save(*args, **kwards)
+
+    @typing.no_type_check
+    def get_file_url(self) -> str:
+        """Get the file url for the document from the proper storage backend."""
+        return self.get_storage_handler().url(self.file.name)
+
+    @typing.no_type_check
+    def get_file_content(self) -> str:
+        """Get the file content of the document from the proper storage backend."""
+        return self.get_storage_handler().open(self.file.name)
 
     @typing.no_type_check
     def delete(self, *args, **kwargs):
         # Delete the file from Google Cloud Storage before deleting the model instance
         if self.file:
-            default_storage.delete(self.file.name)
+            self.get_storage_handler().delete(self.file.name)
 
         super().delete(*args, **kwargs)

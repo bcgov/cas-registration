@@ -84,7 +84,7 @@ def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[retur
     """
     timeout_seconds = 10
     try:
-        response = requests.get(document.file.url, timeout=timeout_seconds)
+        response = requests.get(document.get_file_url(), timeout=timeout_seconds)
         if response.status_code == 200:
             document_content = response.content
             encoded_content = base64.b64encode(document_content).decode("utf-8")
