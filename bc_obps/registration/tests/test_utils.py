@@ -9,14 +9,12 @@ from registration.models import User, UserOperator, AppRole
 from registration.utils import (
     file_to_data_url,
     data_url_to_file,
-    files_have_same_hash,
     update_model_instance,
     generate_useful_error,
 )
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
-from django.core.files.base import ContentFile
 from registration.tests.utils.bakers import document_baker, user_operator_baker
 import requests
 
@@ -283,46 +281,6 @@ class TestDataUrlToFile:
 
         with pytest.raises(base64.binascii.Error):
             data_url_to_file(data_url)
-
-
-class TestFileHashComparison(TestCase):
-    def test_same_content(self):
-        """Tests if the function returns True for files with identical content."""
-        content = b"This is some sample content."
-        file1 = ContentFile(content, "test_file1.txt")
-        file2 = ContentFile(content, "test_file2.txt")
-
-        self.assertTrue(files_have_same_hash(file1, file2))
-
-    def test_different_content(self):
-        """Tests if the function returns False for files with different content."""
-        content1 = b"This is some content."
-        content2 = b"This is different content."
-        file1 = ContentFile(content1, "test_file1.txt")
-        file2 = ContentFile(content2, "test_file2.txt")
-
-        self.assertFalse(files_have_same_hash(file1, file2))
-
-    def test_empty_file(self):
-        """Tests if the function handles empty files."""
-        empty_content = b""
-        file1 = ContentFile(empty_content, "empty_file.txt")
-        file2 = ContentFile(empty_content, "empty_file2.txt")
-
-        self.assertTrue(files_have_same_hash(file1, file2))
-
-    def test_none_values(self):
-        """Tests if the function raises a ValueError when None is passed as a file."""
-        content = b"This is some sample content."
-        file1 = ContentFile(content, "test_file.txt")
-        file2 = ContentFile(content, "test_file2.txt")
-        with self.assertRaises(ValueError) as context:
-            files_have_same_hash(None, file2)
-        self.assertEqual(str(context.exception), "Both files must be provided to compare hashes.")
-
-        with self.assertRaises(ValueError) as context:
-            files_have_same_hash(file1, None)
-        self.assertEqual(str(context.exception), "Both files must be provided to compare hashes.")
 
 
 class TestGenerateUniqueBcghgIdForOperationOrFacility(TestCase):
