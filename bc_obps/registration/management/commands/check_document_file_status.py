@@ -14,7 +14,10 @@ class Command(BaseCommand):
             unscanned_documents = Document.objects.filter(status=Document.FileStatus.UNSCANNED)
             for document in unscanned_documents:
                 DocumentDataAccessServiceV2.check_document_file_status(document)
-                self.stdout.write(f"Checking status of document {document.id}")
+                self.stdout.write(f"Checking status of document id: {document.id}")
+            self.stdout.write(
+                self.style.SUCCESS(f"Checked {unscanned_documents.count()} documents")
+            )
         except Exception as e:
             self.stdout.write(f"Error checking status of documents: {e}")
             raise e
