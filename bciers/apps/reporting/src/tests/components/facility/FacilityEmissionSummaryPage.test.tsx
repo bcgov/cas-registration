@@ -4,6 +4,7 @@ import FacilityEmissionSummaryForm from "@reporting/src/app/components/facility/
 import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -58,10 +59,8 @@ describe("FacilityEmissionSummaryForm", () => {
   it("should render the basic category summary data", async () => {
     render(
       <FacilityEmissionSummaryForm
-        versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -91,10 +90,8 @@ describe("FacilityEmissionSummaryForm", () => {
   it("should render the fuel excluded category summary data", async () => {
     render(
       <FacilityEmissionSummaryForm
-        versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -112,10 +109,8 @@ describe("FacilityEmissionSummaryForm", () => {
   it("should render the other excluded category summary data", async () => {
     render(
       <FacilityEmissionSummaryForm
-        versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -129,10 +124,8 @@ describe("FacilityEmissionSummaryForm", () => {
   it("should render the attributable summary data", async () => {
     render(
       <FacilityEmissionSummaryForm
-        versionId={1}
-        facilityId={"00000000-0000-0000-0000-000000000002"}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
