@@ -5,6 +5,7 @@ import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -57,9 +58,8 @@ describe("ComplianceSummaryForm", () => {
   it("should render the calculation summary data", async () => {
     render(
       <ComplianceSummaryForm
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -77,9 +77,8 @@ describe("ComplianceSummaryForm", () => {
   it("should render the regulatory values summary data", async () => {
     render(
       <ComplianceSummaryForm
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -94,9 +93,8 @@ describe("ComplianceSummaryForm", () => {
   it("should render the production summary data", async () => {
     render(
       <ComplianceSummaryForm
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -117,9 +115,8 @@ describe("ComplianceSummaryForm", () => {
   it("should render a back button that navigates to the additional information page", async () => {
     render(
       <ComplianceSummaryForm
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -129,17 +126,14 @@ describe("ComplianceSummaryForm", () => {
 
     fireEvent.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith(
-      `/reports/1/additional-reporting-data`,
-    );
+    expect(mockPush).toHaveBeenCalledWith("back");
   });
 
   it("should render a continue button that navigates to the final review page", async () => {
     render(
       <ComplianceSummaryForm
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -151,15 +145,14 @@ describe("ComplianceSummaryForm", () => {
 
     fireEvent.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith(`/reports/1/final-review`);
+    expect(mockPush).toHaveBeenCalledWith("continue");
   });
 
   it("should render a continue button that navigates to the final review page", async () => {
     render(
       <ComplianceSummaryForm
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -171,6 +164,6 @@ describe("ComplianceSummaryForm", () => {
 
     fireEvent.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith(`/reports/1/final-review`);
+    expect(mockPush).toHaveBeenCalledWith("continue");
   });
 });

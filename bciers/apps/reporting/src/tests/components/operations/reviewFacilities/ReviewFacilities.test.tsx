@@ -4,6 +4,7 @@ import { vi, Mock, it, expect } from "vitest";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import LFOFacilitiesForm from "@reporting/src/app/components/operations/reviewFacilities/ReviewFacilitiesForm";
 import expectButton from "@bciers/testConfig/helpers/expectButton";
+import { dummyNavigationInformation } from "../../taskList/utils";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -23,8 +24,8 @@ const config = {
     cancel: "Cancel",
   },
   urls: {
-    back: "/reports/1/person-responsible",
-    continue: "/reports/1/facilities/report-information",
+    back: "back",
+    continue: "continue",
   },
 };
 
@@ -81,6 +82,7 @@ describe("LFOFacilitiesForm", () => {
       <LFOFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
     await waitFor(() => {
@@ -116,6 +118,7 @@ describe("LFOFacilitiesForm", () => {
       <LFOFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -145,6 +148,7 @@ describe("LFOFacilitiesForm", () => {
         <LFOFacilitiesForm
           initialData={mockFacilitiesInitialData}
           version_id={1}
+          navigationInformation={dummyNavigationInformation}
         />,
       );
 
@@ -203,6 +207,7 @@ describe("LFOFacilitiesForm", () => {
       <LFOFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -222,6 +227,7 @@ describe("LFOFacilitiesForm", () => {
       <LFOFacilitiesForm
         initialData={mockFacilitiesInitialData}
         version_id={1}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -263,6 +269,7 @@ describe("LFOFacilitiesForm", () => {
       <LFOFacilitiesForm
         initialData={mockFacilitiesInitialDataWithoutPastFacility}
         version_id={1}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 

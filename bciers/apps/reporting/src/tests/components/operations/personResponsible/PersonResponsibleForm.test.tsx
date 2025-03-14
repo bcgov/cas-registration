@@ -14,6 +14,7 @@ import {
 import { personResponsibleSchema } from "@reporting/src/data/jsonSchema/personResponsible";
 import { actionHandler } from "@bciers/testConfig/mocks";
 import { getContacts } from "@bciers/actions/api";
+import { dummyNavigationInformation } from "../../taskList/utils";
 
 // Mocks for external dependencies
 vi.mock("@bciers/actions/api", () => ({
@@ -66,7 +67,7 @@ const defaultProps = {
   versionId: 1,
   facilityId: 1,
   operationType: "Single Facility Operation",
-  taskListElements: [],
+  navigationInformation: dummyNavigationInformation,
   contacts: mockContacts,
   personResponsible: mockPersonResponsible,
   schema: personResponsibleSchema,

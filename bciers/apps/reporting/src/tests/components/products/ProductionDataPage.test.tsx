@@ -3,6 +3,8 @@ import ProductionDataPage from "@reporting/src/app/components/products/Productio
 import { render, screen } from "@testing-library/react";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
@@ -12,6 +14,9 @@ vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
 }));
 vi.mock("@reporting/src/app/utils/getOrderedActivities", () => ({
   getOrderedActivities: vi.fn().mockReturnValue([]),
+}));
+vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
+  getNavigationInformation: vi.fn(),
 }));
 
 const getProductionDataMock = getProductionData as ReturnType<typeof vi.fn>;
@@ -29,6 +34,9 @@ const mockReportTaskList = {
 describe("The Production Data component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
+      dummyNavigationInformation,
+    );
   });
 
   it("fetches the proper data and passes it to the form", async () => {
@@ -54,7 +62,7 @@ describe("The Production Data component", () => {
     });
     render(await ProductionDataPage(props));
 
-    expect(screen.getAllByText(/production data/i)).toHaveLength(2); // One for the page, one for the tasklist
+    expect(screen.getAllByText(/production data/i)).toHaveLength(1);
     expect(
       screen.getByText("Products that apply to this facility"),
     ).toBeInTheDocument();

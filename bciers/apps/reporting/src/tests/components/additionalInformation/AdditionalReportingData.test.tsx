@@ -4,6 +4,7 @@ import { actionHandler } from "@bciers/actions";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { vi } from "vitest";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
@@ -50,8 +51,7 @@ describe("AdditionalReportingData Component", () => {
         versionId={versionId}
         includeElectricityGenerated={false}
         initialFormData={{}}
-        isNewEntrant={true}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
     const capturedEmissionsText = await screen.findByText(
@@ -66,8 +66,7 @@ describe("AdditionalReportingData Component", () => {
         versionId={versionId}
         includeElectricityGenerated={false}
         initialFormData={{}}
-        isNewEntrant={true}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -89,8 +88,7 @@ describe("AdditionalReportingData Component", () => {
         versionId={versionId}
         includeElectricityGenerated={true}
         initialFormData={{}}
-        isNewEntrant={false}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -104,8 +102,7 @@ describe("AdditionalReportingData Component", () => {
         versionId={versionId}
         includeElectricityGenerated={false}
         initialFormData={{}}
-        isNewEntrant={true}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -122,6 +119,6 @@ describe("AdditionalReportingData Component", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-    expect(mockPush).toHaveBeenCalledWith(`new-entrant-information`);
+    expect(mockPush).toHaveBeenCalledWith(`continue`);
   });
 });
