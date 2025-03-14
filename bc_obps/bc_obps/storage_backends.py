@@ -1,20 +1,35 @@
 from django.conf import settings
 from storages.backends.gcloud import GoogleCloudStorage  # type: ignore
 
+# FIXME: Need to stop class redefinitions
+# If we're in the CI environment, don't hit Google Cloud Storage
+if os.environ.get("CI", None) == "true":
+    class LocalStorage(FileSystemStorage):
+        location = settings.MEDIA_ROOT
 
-class UnscannedBucketStorage(GoogleCloudStorage):
-    """A storage backend for the unscanned bucket."""
+        def url(self, name):
+            name = os.path.join(self.location, name)
+            return super().url(name)
 
-    bucket_name = settings.GS_UNSCANNED_BUCKET_NAME
+    class UnscannedBucketStorage(LocalStorage):
+        location = os.path.join(settings.MEDIA_ROOT, "unscanned")
 
+    class CleanBucketStorage(LocalStorage):
+        location = os.path.join(settings.MEDIA_ROOT, "clean")
 
-class CleanBucketStorage(GoogleCloudStorage):
-    """A storage backend for the clean bucket."""
+    class QuarantinedBucketStorage(LocalStorage):
+        location = os.path.join(settings.MEDIA_ROOT, "quarantine")
 
-    bucket_name = settings.GS_CLEAN_BUCKET_NAME
+else:
 
+    class UnscannedBucketStorage(GoogleCloudStorage):
+        """A storage backend for the unscanned bucket."""
+        bucket_name = settings.GS_UNSCANNED_BUCKET_NAME
 
-class QuarantinedBucketStorage(GoogleCloudStorage):
-    """A storage backend for the quarantined bucket."""
+    class CleanBucketStorage(GoogleCloudStorage):
+        """A storage backend for the clean bucket."""
+        bucket_name = settings.GS_CLEAN_BUCKET_NAME
 
-    bucket_name = settings.GS_QUARANTINED_BUCKET_NAME
+    class QuarantinedBucketStorage(GoogleCloudStorage):
+        """A storage backend for the quarantined bucket."""
+        bucket_name = settings.GS_QUARANTINED_BUCKET_NAME
