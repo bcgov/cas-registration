@@ -1,5 +1,5 @@
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import UserOperatorStatusCell from "@/administration/app/components/userOperators/cells/UserOperatorStatusCell";
+import UserOperatorRoleCell from "@/administration/app/components/userOperators/cells/UserOperatorRoleCell";
 
 const userOperatorColumns = (
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
@@ -50,9 +50,9 @@ const userOperatorColumns = (
       flex: 1,
     },
     {
-      field: "status",
-      headerName: "Status",
-      renderCell: UserOperatorStatusCell,
+      field: "role",
+      headerName: "Role",
+      renderCell: UserOperatorRoleCell,
       align: "center",
       headerAlign: "center",
       width: 150,

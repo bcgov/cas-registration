@@ -246,7 +246,7 @@ const Review = ({
                   fontWeight: "bold",
                 }}
               >
-                Approve <RecommendIcon />
+                Approve as Administrator <RecommendIcon />
               </Button>
               <Button
                 onClick={handleReject}
@@ -258,7 +258,7 @@ const Review = ({
                   fontWeight: "bold",
                 }}
               >
-                Decline <DoNotDisturbIcon />
+                Decline Access <DoNotDisturbIcon />
               </Button>
             </Box>
           )}

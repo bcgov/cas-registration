@@ -55,6 +55,7 @@ const UserOperatorReviewForm = ({
                   userOperatorId={userOperatorId as string}
                 />
               )}
+              {/* brianna need a formState or useEffect or something so the change shows right away */}
               <FormBase
                 schema={userOperatorAdministrationSchema}
                 uiSchema={userOperatorAdministrationUiSchema}
