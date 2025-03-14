@@ -26,11 +26,25 @@ const addNameToDataURL = (dataURL: string, name: string) => {
   return dataURL.replace(";base64", `;name=${encodeURIComponent(name)};base64`);
 };
 
+type FileScanStatus = "Unscanned" | "Clean" | "Quarantined";
+
+const getScanStatusFromDataURL = (dataURL: string | null): FileScanStatus => {
+  if (dataURL === null) {
+    return "Unscanned";
+  }
+  const scanStatus = dataURL.match(/scanstatus=([^;]+)/)?.[1];
+  if (!scanStatus) {
+    return "Unscanned";
+  }
+  return scanStatus as FileScanStatus;
+};
+
 type FileInfoType = {
   dataURL?: string | null;
   name: string;
   size: number;
   type: string;
+  scanStatus: FileScanStatus;
 };
 
 const processFile = (file: File): Promise<FileInfoType> => {
@@ -45,6 +59,7 @@ const processFile = (file: File): Promise<FileInfoType> => {
           name,
           size,
           type,
+          scanStatus: getScanStatusFromDataURL(event.target.result),
         });
       } else {
         resolve({
@@ -52,6 +67,7 @@ const processFile = (file: File): Promise<FileInfoType> => {
           name,
           size,
           type,
+          scanStatus: "Unscanned",
         });
       }
     };
@@ -109,10 +125,10 @@ export function FilesInfo<
   return (
     <ul className="m-0 py-0 flex flex-col justify-start">
       {filesInfo.map((fileInfo) => {
-        const { name } = fileInfo;
+        const { name, scanStatus } = fileInfo;
         return (
           <li key={name}>
-            {name}
+            {name} <pre>{scanStatus}</pre>
             {preview && (
               <FileInfoPreview<T, S, F>
                 fileInfo={fileInfo}
@@ -131,11 +147,13 @@ export const extractFileInfo = (dataURLs: string[]): FileInfoType[] => {
     .filter((dataURL) => dataURL)
     .map((dataURL) => {
       const { blob, name } = dataURItoBlob(dataURL);
+      const scanStatus = getScanStatusFromDataURL(dataURL);
       return {
         dataURL,
         name: name,
         size: blob.size,
         type: blob.type,
+        scanStatus,
       };
     });
 };

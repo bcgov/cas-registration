@@ -207,7 +207,7 @@ class Operation(TimeStampedModel):
 
         return (
             self.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration"))
-            .only('file')
+            .only('file', 'status')
             .first()
         )  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
 
@@ -216,21 +216,29 @@ class Operation(TimeStampedModel):
         Returns the new entrant application document associated with the operation (document only exists if the operation has registered as a New Entrant).
         """
 
-        return self.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).only('file').first()
+        return (
+            self.documents.filter(type=DocumentType.objects.get(name="new_entrant_application"))
+            .only('file', 'status')
+            .first()
+        )
 
     def get_boundary_map(self) -> Optional[Document]:
         """
         Returns the boundary map document associated with the operation.
         """
 
-        return self.documents.filter(type=DocumentType.objects.get(name="boundary_map")).only('file').first()
+        return self.documents.filter(type=DocumentType.objects.get(name="boundary_map")).only('file', 'status').first()
 
     def get_process_flow_diagram(self) -> Optional[Document]:
         """
         Returns the process flow diagram document associated with the operation.
         """
 
-        return self.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram")).only('file').first()
+        return (
+            self.documents.filter(type=DocumentType.objects.get(name="process_flow_diagram"))
+            .only('file', 'status')
+            .first()
+        )
 
     def user_has_access(self, user_guid: UUID) -> bool:
         """

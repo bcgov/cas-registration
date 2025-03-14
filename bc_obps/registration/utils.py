@@ -87,8 +87,7 @@ def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[retur
     # Handles local storage when running in CI
     if os.environ.get("CI", None) == "true":
         encoded_content = base64.b64encode(document.get_file_content().read()).decode("utf-8")
-
-        return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";base64," + encoded_content  # type: ignore[no-any-return]
+        return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
     else:
         try:
             response = requests.get(document.get_file_url(), timeout=timeout_seconds)
@@ -96,7 +95,7 @@ def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[retur
                 document_content = response.content
                 encoded_content = base64.b64encode(document_content).decode("utf-8")
                 # only pdf format is allowed
-                return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";base64," + encoded_content  # type: ignore[no-any-return]
+                return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
             else:
                 logger.error(f"Request to retrieve file failed with status code {response.status_code}")
         except requests.exceptions.Timeout:
