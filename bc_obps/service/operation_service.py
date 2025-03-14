@@ -641,7 +641,8 @@ class OperationService:
             operation.facilities.all().delete()
         if old_purpose == Operation.Purposes.OPTED_IN_OPERATION:
             payload.opt_in = False
-            OptedInOperationDetail.objects.filter(pk=operation.opted_in_operation_id).delete()
+            if operation.opted_in_operation_id:  # To make mypy happy
+                OptedInOperationDetail.objects.filter(pk=operation.opted_in_operation_id).delete()
         elif old_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
             payload.date_of_first_shipment = None
             DocumentService.archive_or_delete_operation_document(user_guid, operation.id, 'new_entrant_application')
