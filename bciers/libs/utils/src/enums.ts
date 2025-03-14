@@ -78,6 +78,12 @@ export enum Status {
   NOT_STARTED = "Not Started",
 }
 
+export enum Role {
+  ADMIN = "admin",
+  REPORTER = "reporter",
+  PENDING = "pending",
+}
+
 // report operation statuses
 export enum ReportOperationStatus {
   NOT_STARTED = "Not started",

@@ -1,32 +1,29 @@
 "use client";
 
-import { Status } from "@bciers/utils/src/enums";
-import { Chip, ChipOwnProps } from "@mui/material";
+import { Role } from "@bciers/utils/src/enums";
+import { useTheme } from "@mui/material/styles";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
-export default function UserOperatorRoleCell(params: GridRenderCellParams) {
-  const colorMap = new Map<string, ChipOwnProps["color"]>([
-    [Status.PENDING, "primary"],
-    [Status.APPROVED, "success"],
-    [Status.DECLINED, "error"],
-  ]);
-  const status =
-    params.value === Status.APPROVED ? "Administrator" : params.value;
-  const statusColor = colorMap.get(params.value) || "primary";
+function titleCase(str: string) {
+  var splitStr = str.toLowerCase().split(" ");
+  for (let i = 0; i < splitStr.length; i++) {
+    splitStr[i] =
+      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  return splitStr.join(" ");
+}
 
-  return (
-    <Chip
-      label={
-        // whiteSpace: "normal" is needed to wrap the text in the chip for multi-line statuses like "Changes Requested"
-        <div style={{ color: statusColor, fontSize: "0.9em" }}>{status}</div>
-      }
-      variant="outlined"
-      color={statusColor}
-      sx={{
-        width: 100,
-        height: 40,
-        borderRadius: "20px",
-      }}
-    />
-  );
+export default function UserOperatorRoleCell(params: GridRenderCellParams) {
+  const theme = useTheme(); // Get MUI theme
+  const colorMap = new Map<string, string>([
+    [Role.PENDING, theme.palette.primary.main], // Get actual color from theme
+    [Role.ADMIN, theme.palette.success.main],
+    [Role.REPORTER, theme.palette.success.main],
+  ]);
+
+  const role =
+    params.value === Role.ADMIN ? "Administrator" : titleCase(params.value);
+  const roleColor = colorMap.get(params.value) || "primary";
+
+  return <span style={{ color: roleColor }}>{role}</span>;
 }
