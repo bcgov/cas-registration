@@ -22,9 +22,12 @@ export default function UserOperatorRoleCell(params: GridRenderCellParams) {
     [Role.REPORTER, theme.palette.success.main],
   ]);
 
-  const role =
-    params.value === Role.ADMIN ? "Administrator" : titleCase(params.value);
+  const role = params.value === Role.ADMIN ? "Administrator" : params.value;
   const roleColor = colorMap.get(params.value) || "primary";
 
-  return <span style={{ color: roleColor }}>{role}</span>;
+  return (
+    <span style={{ color: roleColor, textTransform: "capitalize" }}>
+      {role}
+    </span>
+  );
 }
