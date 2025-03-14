@@ -34,7 +34,7 @@ In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.loc
 3. Complete the .env file values reflecting the 1Password vault document `OBPS backend ENV`.
 4. Download 1Password vault file `OBPS GCS json` and store it in folder location detailed in `.env\GOOGLE_APPLICATION_CREDENTIALS`.
 5. From the terminal, cd into directory `cas-registration/bc_obps`.
-6. Run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry env activate`). To exit the virtual env run `exit`.
+6. Run `make install_dev_tools`. This will install asdf plugins, poetry and activate the poetry virtual environment (to get into the environment again after setup, run `poetry env activate`). To exit the virtual env run `deactivate`.
 7. Run `make install_poetry_deps` to install all python dependencies.
 8. Run `make start_pg` to start the postgres server if it is not already running.
 9. Run `make create_db` to create the database.
@@ -51,13 +51,12 @@ In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.loc
 
 After doing the initial setup, to get the backend re-running:
 
-1. From the `cas-registration/bc_obps` directory, run `poetry env activate`
-2. To set up the database:
+1. To set up the database:
    - If you want to drop and recreate the database with mock data, run `make reset_db`. (Warning: This will delete superusers and you will have to recreate with `make superuser`.)
    - If you want to keep your existing database and update (e.g. after a rebase)
      - If there are new migrations, run `make migrate`. (Or, because we're pre-production, you can delete the existing migrations, run `make migrations` and then `make migrate`)
      - If there are new fixtures, `run python manage.py loaddata <path-to-fixture>``
-3. Run `make run`
+2. Run `make run`
 
 ### Troubleshooting
 

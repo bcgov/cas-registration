@@ -29,7 +29,7 @@ install_backend_asdf_tools:
 
 .PHONY: install_poetry
 install_poetry: ## install poetry (MacOS/Linux only)
-install_poetry: ## poetry env activate starts a new virtual environment
+install_poetry:
 	@echo "Installing poetry"
 	@curl -sSL https://install.python-poetry.org | python3 -
 
