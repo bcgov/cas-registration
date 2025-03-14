@@ -145,7 +145,7 @@
     "happo-e2e": "^2.4.1",
     "happo-playwright": "^2.1.0",
     "happo.io": "^9.1.2",
-    "jsdom": "~22.1.0",
+    "jsdom": "~26.0.0",
     "nx": "19.8.2",
     "prettier": "^3.0.3",
     "ts-mockito": "^2.6.1",
