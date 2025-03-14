@@ -5,7 +5,8 @@
     "fields": {
       "file": "documents/file1.pdf",
       "type": 2,
-      "description": "A signed statutory declaration for opt-in."
+      "description": "A signed statutory declaration for opt-in.",
+      "status": "Unscanned"
     }
   },
   {
@@ -14,7 +15,8 @@
     "fields": {
       "file": "documents/file2.pdf",
       "type": 1,
-      "description": "A boundary map document."
+      "description": "A boundary map document.",
+      "status": "Unscanned"
     }
   }
 ]
