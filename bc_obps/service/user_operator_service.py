@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Literal, Optional
 from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
@@ -122,8 +122,8 @@ class UserOperatorService:
     def list_user_operators(
         cls,
         user_guid: UUID,
-        sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_field: Optional[str] = "status",
+        sort_order: Optional[Literal["desc", "asc"]] = "desc",
         filters: UserOperatorFilterSchema = Query(...),
     ) -> QuerySet[UserOperator]:
 
