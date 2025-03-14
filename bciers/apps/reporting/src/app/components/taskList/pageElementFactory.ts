@@ -1,8 +1,8 @@
-import { operationInformationPageFactories } from "./1_operationInformation";
-import { facilitiesInformationPageFactories } from "./2_facilitiesInformation";
-import { additionalInformationPageFactories } from "./3_additionalInformation";
-import { complianceSummaryPageFactories } from "./4_complianceSummary";
-import { signOffSubmitPageFactories } from "./5_signOffSubmit";
+import { operationInformationPageFactories } from "./taskListPages/1_operationInformation";
+import { facilitiesInformationPageFactories } from "./taskListPages/2_facilitiesInformation";
+import { additionalInformationPageFactories } from "./taskListPages/3_additionalInformation";
+import { complianceSummaryPageFactories } from "./taskListPages/4_complianceSummary";
+import { signOffSubmitPageFactories } from "./taskListPages/5_signOffSubmit";
 import {
   ReportingPage,
   TaskListPageFactory,

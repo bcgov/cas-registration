@@ -5,7 +5,7 @@ import { actionHandler } from "@bciers/actions";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 
 import { vi } from "vitest";
-import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/4_complianceSummary";
+import { getComplianceSummaryTaskList } from "@reporting/src/app/components/taskList/taskListPages/4_complianceSummary";
 
 // ✨ Mocks
 vi.mock(

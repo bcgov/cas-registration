@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import PersonResponsiblePage from "@reporting/src/app/components/operations/personResponsible/PersonResponsiblePage"; // Adjust import path if needed
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { getOperationInformationTaskList } from "@reporting/src/app/components/taskList/1_operationInformation";
+import { getOperationInformationTaskList } from "@reporting/src/app/components/taskList/taskListPages/1_operationInformation";
 import { getContacts } from "@bciers/actions/api";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";

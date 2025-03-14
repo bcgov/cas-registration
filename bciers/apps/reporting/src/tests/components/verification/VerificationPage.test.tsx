@@ -4,7 +4,7 @@ import VerificationForm from "@reporting/src/app/components/verification/Verific
 import { getReportVerification } from "@reporting/src/app/utils/getReportVerification";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
-import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/5_signOffSubmit";
+import { getSignOffAndSubmitSteps } from "@reporting/src/app/components/taskList/taskListPages/5_signOffSubmit";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { OperationTypes } from "@bciers/utils/src/enums";

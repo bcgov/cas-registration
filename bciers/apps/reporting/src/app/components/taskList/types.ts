@@ -1,5 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { ActivityData } from "./2_facilitiesInformation";
+import { ActivityData } from "./taskListPages/2_facilitiesInformation";
 
 export enum ReportingPage {
   ReviewOperationInfo = "ReviewOperationInfo",
