@@ -3,6 +3,7 @@ import { postProductionData } from "@bciers/actions/api";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import ProductionDataForm from "@reporting/src/app/components/products/ProductionDataForm";
 import { act, render } from "@testing-library/react";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(),
@@ -36,7 +37,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -53,7 +54,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -91,7 +92,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -146,7 +147,7 @@ describe("The ProductionDataForm component", () => {
         facility_id="abcd"
         report_version_id={1000}
         schema={{ testSchema: true }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 

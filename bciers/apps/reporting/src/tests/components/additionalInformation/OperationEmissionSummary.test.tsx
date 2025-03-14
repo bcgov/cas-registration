@@ -4,6 +4,7 @@ import { vi, Mock } from "vitest"; // If you are using Vitest for mocking
 
 import { actionHandler } from "@bciers/actions";
 import OperationEmissionSummary from "@reporting/src/app/components/additionalInformation/operationEmissionSummary/OperationEmissionSummaryForm";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
@@ -58,10 +59,8 @@ describe("OperationEmissionSummary", () => {
   it("should render the basic category summary data", async () => {
     render(
       <OperationEmissionSummary
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
-        isNewEntrant={false}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -91,10 +90,8 @@ describe("OperationEmissionSummary", () => {
   it("should render the fuel excluded category summary data", async () => {
     render(
       <OperationEmissionSummary
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
-        isNewEntrant={false}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -112,10 +109,8 @@ describe("OperationEmissionSummary", () => {
   it("should render the other excluded category summary data", async () => {
     render(
       <OperationEmissionSummary
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
-        isNewEntrant={false}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -129,10 +124,8 @@ describe("OperationEmissionSummary", () => {
   it("should render the attributable summary data", async () => {
     render(
       <OperationEmissionSummary
-        versionId={1}
         summaryFormData={mockSummaryData}
-        taskListElements={[]}
-        isNewEntrant={false}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
