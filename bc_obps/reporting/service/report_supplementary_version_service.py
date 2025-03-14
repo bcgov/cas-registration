@@ -1,10 +1,7 @@
 from django.db import transaction
-from reporting.models.facility_report import FacilityReport
-from reporting.models.report_operation import ReportOperation
-from reporting.models.report_version import ReportVersion
-from reporting.models import ReportOperationRepresentative
-from reporting.models import ReportPersonResponsible
+from typing import List, Optional
 from reporting.models import (
+    FacilityReport,
     ReportActivity,
     ReportAdditionalData,
     ReportAttachment,
@@ -16,12 +13,15 @@ from reporting.models import (
     ReportNewEntrantProduction,
     ReportNonAttributableEmissions,
     ReportOperation,
+    ReportOperationRepresentative,
+    ReportPersonResponsible,
     ReportProduct,
     ReportProductEmissionAllocation,
     ReportSourceType,
     ReportUnit,
     ReportVerification,
     ReportVerificationVisit,
+    ReportVersion,
 )
 
 
@@ -50,9 +50,7 @@ class ReportSupplementaryVersionService:
         # Clone related data
         ReportSupplementaryVersionService.clone_report_version_operation(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_representatives(report_version, new_report_version)
-        ReportSupplementaryVersionService.clone_report_version_person_responsible(
-            report_version, new_report_version
-        )
+        ReportSupplementaryVersionService.clone_report_version_person_responsible(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_additional_data(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_new_entrant_data(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_verification(report_version, new_report_version)
@@ -145,7 +143,7 @@ class ReportSupplementaryVersionService:
         # Get the ReportNewEntrant associated with the old report version
         old_report_version_new_entrant = ReportNewEntrant.objects.filter(report_version_id=old_report_version).first()
         if not old_report_version_new_entrant:
-            return None
+            return
         # Clone the ReportNewEntrant for the new report version
         new_report_version_new_entrant = ReportNewEntrant.objects.create(
             report_version=new_report_version,
@@ -183,7 +181,7 @@ class ReportSupplementaryVersionService:
         # Get the old ReportVerification associated with the old report version
         old_report_version_verification = ReportVerification.objects.filter(report_version=old_report_version).first()
         if not old_report_version_verification:
-            return None
+            return
         # Clone the ReportVerification for the new report version
         new_report_version_verification = ReportVerification.objects.create(
             report_version=new_report_version,
@@ -245,14 +243,13 @@ class ReportSupplementaryVersionService:
             )
 
     @staticmethod
-    @transaction.atomic
     def clone_report_version_facility_activities(
         old_facility_report: FacilityReport, new_facility_report: FacilityReport
     ) -> None:
         # Get activities from the old facility report
         old_activities = ReportActivity.objects.filter(facility_report=old_facility_report)
         # List to store the cloned activities
-        cloned_activities = []
+        cloned_activities: List[ReportActivity] = []
         # Clone each ReportActivity for the new facility report
         for old_activity in old_activities:
             new_activity = ReportSupplementaryVersionService.clone_report_version_facility_activity(
@@ -264,8 +261,8 @@ class ReportSupplementaryVersionService:
 
     @staticmethod
     def clone_report_version_facility_activity(
-        old_activity: ReportActivity, new_facility_report: ReportActivity
-    ) -> None:
+        old_activity: ReportActivity, new_facility_report: FacilityReport
+    ) -> ReportActivity:
         # Clone ReportActivity for the new facility report
         new_activity = ReportActivity.objects.create(
             report_version=new_facility_report.report_version,
@@ -355,11 +352,11 @@ class ReportSupplementaryVersionService:
     @staticmethod
     def _clone_emission_common_fields(
         old_emission: ReportEmission,
-        report_version,
-        report_source_type,
-        report_unit=None,
-        report_fuel=None,
-    ):
+        report_version: ReportVersion,
+        report_source_type: ReportSourceType,
+        report_unit: Optional[ReportUnit] = None,
+        report_fuel: Optional[ReportFuel] = None,
+    ) -> None:
         new_emission = ReportEmission.objects.create(
             report_version=report_version,
             report_source_type=report_source_type,
@@ -373,8 +370,6 @@ class ReportSupplementaryVersionService:
 
         # Clone methodology
         ReportSupplementaryVersionService.clone_emission_methodology(old_emission, new_emission)
-
-        return new_emission
 
     @staticmethod
     def clone_source_type_emissions(old_source_type: ReportSourceType, new_source_type: ReportSourceType) -> None:
@@ -414,7 +409,7 @@ class ReportSupplementaryVersionService:
         new_source_type: ReportSourceType,
         old_fuel: ReportFuel,
         new_fuel: ReportFuel,
-        new_unit: ReportUnit = None,
+        new_unit: Optional[ReportUnit] = None,
     ) -> None:
         # Clone emissions related to a fuel
         old_emissions = ReportEmission.objects.filter(report_source_type=old_source_type, report_fuel=old_fuel)
