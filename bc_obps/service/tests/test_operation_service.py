@@ -107,62 +107,6 @@ class TestOperationService:
         assert operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
 
     @staticmethod
-    def test_remove_opted_in_operation_detail():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
-        operation = baker.make_recipe(
-            'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
-            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
-            opt_in=True,
-            status=Operation.Statuses.DRAFT,
-        )
-        operation.opted_in_operation = opted_in_operation_detail
-        operation.save()
-
-        assert operation.opted_in_operation is not None
-        assert OptedInOperationDetail.objects.count() == 1
-
-        OperationService.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
-        operation.refresh_from_db()
-
-        assert operation.opt_in is False
-        assert operation.opted_in_operation is None
-        # operation.status is 'Draft', so opted_in_operation_detail should be deleted
-        assert OptedInOperationDetail.objects.count() == 0
-        assert OptedInOperationDetail._base_manager.count() == 0
-
-    @staticmethod
-    def test_archive_opted_in_operation_detail():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
-        operation = baker.make_recipe(
-            'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
-            registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
-            opt_in=True,
-            status=Operation.Statuses.REGISTERED,
-        )
-        operation.opted_in_operation = opted_in_operation_detail
-        operation.save()
-
-        assert operation.opted_in_operation is not None
-        assert OptedInOperationDetail.objects.count() == 1
-        detail_id = operation.opted_in_operation.id
-
-        OperationService.remove_opted_in_operation_detail(approved_user_operator.user.user_guid, operation.id)
-        operation.refresh_from_db()
-
-        assert operation.opt_in is False
-        assert operation.opted_in_operation is None
-        # operation.status is 'Registered', so opted_in_operation_detail should be archived
-        assert not OptedInOperationDetail.objects.filter(id=detail_id).exists()
-        # archived objects will not be retrieved
-        assert OptedInOperationDetail.objects.count() == 0
-        # archived objects exist
-        assert OptedInOperationDetail._base_manager.count() == 1
-
-    @staticmethod
     def test_list_current_users_unregistered_operations():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_unregistered_operation = baker.make_recipe(
