@@ -3,7 +3,6 @@ from uuid import UUID
 from registration.models import Operation, User, RegulatedProduct, Activity
 from ninja.types import DictStrAny
 from django.db.models import QuerySet
-from registration.schema import OperationListOut
 from service.user_operator_service import UserOperatorService
 
 
@@ -67,7 +66,9 @@ class OperationDataAccessService:
                 Operation.objects.select_related("operator", "bc_obps_regulated_operation")
                 .exclude(status=Operation.Statuses.NOT_STARTED)
                 .exclude(status=Operation.Statuses.DRAFT)
-                .only(*OperationListOut.Meta.fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+                .only(
+                    "id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id"
+                )
             )
         else:
             # Industry users can only see operations associated with their own operator
@@ -75,5 +76,5 @@ class OperationDataAccessService:
         return (
             Operation.objects.select_related("operator", "bc_obps_regulated_operation")
             .filter(operator_id=user_operator.operator_id)
-            .only(*OperationListOut.Meta.fields, "operator__legal_name", "bc_obps_regulated_operation__id")
+            .only("id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id")
         )
