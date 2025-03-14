@@ -72,6 +72,8 @@ export async function getNavigationInformation(
 
   const pages = flowData[step] as ReportingPage[];
 
+  console.log(pages);
+
   // build pages from the factories, skipping the ones
   const tasklistPages = (
     await Promise.all(
@@ -86,6 +88,8 @@ export async function getNavigationInformation(
       }),
     )
   ).filter((p) => !p.extraOptions?.skip);
+
+  console.log(tasklistPages);
 
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);
