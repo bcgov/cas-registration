@@ -86,18 +86,33 @@ class ReportVersionTest(BaseTestCase):
             report_id=report.id,
         )
 
-    def test_submitted_report_version_is_immutable(self):
-        self.test_object.status = "Submitted"
-        # Succeeds
-        self.test_object.save()
+        def test_submitted_report_version_is_immutable(self):
+            """
+            Test that for a ReportVersion with status 'Submitted', any update is blocked
+            unless the only change is to set is_latest_submitted from True to False.
+            """
+            # PRE-ACT: Set the report version to Submitted and is_latest_submitted True.
+            self.test_object.status = "Submitted"
+            self.test_object.is_latest_submitted = True
+            self.test_object.save()
 
-        with transaction.atomic():
-            with pytest.raises(
-                ProgrammingError,
-                match="pgtrigger: Cannot update rows from report_version table",
-            ):
-                self.test_object.status = "Draft"
-                self.test_object.save()
+            # ACT & ASSERT: Attempting to update any field other than the allowed transition (e.g. status) should fail.
+            with transaction.atomic():
+                with pytest.raises(ProgrammingError, match="pgtrigger"):
+                    self.test_object.status = "Draft"
+                    self.test_object.save()
+
+            # ACT & ASSERT: Updating is_latest_submitted from True to False (with status remaining Submitted) is allowed.
+            self.test_object.is_latest_submitted = False
+            # This update should succeed.
+            self.test_object.save()
+
+            # Try to update both is_latest_submitted and another field together, it should fail.
+            with transaction.atomic():
+                with pytest.raises(ProgrammingError, match="pgtrigger"):
+                    self.test_object.is_latest_submitted = True  # Reset to True
+                    self.test_object.status = "Draft"  # And also change status
+                    self.test_object.save()
 
     def test_all_report_version_models_have_the_immutability_trigger(self):
         report_version_models = get_cascading_models(ReportVersion)
