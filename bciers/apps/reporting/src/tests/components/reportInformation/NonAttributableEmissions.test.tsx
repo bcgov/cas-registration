@@ -4,6 +4,7 @@ import { actionHandler } from "@bciers/actions";
 import { vi } from "vitest";
 import NonAttributableEmissionsForm from "@reporting/src/app/components/reportInformation/nonAttributableEmissions/NonAttributableEmissionsForm";
 import { UUID } from "crypto";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // Mock next/navigation and action handler
 vi.mock("next/navigation", () => ({
@@ -48,7 +49,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -70,7 +71,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -90,7 +91,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 
@@ -102,9 +103,7 @@ describe("NonAttributableEmissionsForm Component", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => expect(actionHandler).toHaveBeenCalled());
-    expect(mockPush).toHaveBeenCalledWith(
-      `/reports/${versionId}/facilities/${facilityId}/emission-summary`,
-    );
+    expect(mockPush).toHaveBeenCalledWith(`continue`);
   });
 
   it("handles submission failure gracefully", async () => {
@@ -121,7 +120,7 @@ describe("NonAttributableEmissionsForm Component", () => {
         emissionCategories={emissionCategories}
         gasTypeMap={{ 1: "CO2" }}
         emissionCategoryMap={{ 1: "Direct" }}
-        taskListElements={[]}
+        navigationInformation={dummyNavigationInformation}
       />,
     );
 

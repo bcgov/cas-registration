@@ -1,14 +1,12 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import PersonResponsibleForm from "./PersonResponsibleForm";
-import {
-  ActivePage,
-  getOperationInformationTaskList,
-} from "@reporting/src/app/components/taskList/1_operationInformation";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { getContacts } from "@bciers/actions/api";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { personResponsibleSchema } from "@reporting/src/data/jsonSchema/personResponsible";
+import { HeaderStep, ReportingPage } from "../../taskList/types";
+import { getNavigationInformation } from "../../taskList/navigationInformation";
 
 export default async function PersonResponsiblePage({
   version_id,
@@ -16,12 +14,14 @@ export default async function PersonResponsiblePage({
   // 🚀 Fetch async data for person responsible form
   const facilityReport = await getFacilityReport(version_id);
   const facilityId = facilityReport.facility_id;
-  const operationType = facilityReport.operation_type;
-  const taskListElements = await getOperationInformationTaskList(
+
+  const navInfo = await getNavigationInformation(
+    HeaderStep.OperationInformation,
+    ReportingPage.PersonResponsible,
     version_id,
-    ActivePage.PersonResponsible,
-    operationType,
+    facilityId,
   );
+
   const contactData = await getContacts();
   const personResponsibleData = await getReportingPersonResponsible(version_id);
 
@@ -46,9 +46,7 @@ export default async function PersonResponsiblePage({
   return (
     <PersonResponsibleForm
       versionId={version_id}
-      facilityId={facilityId}
-      operationType={operationType}
-      taskListElements={taskListElements}
+      navigationInformation={navInfo}
       contacts={contactData}
       personResponsible={personResponsibleData}
       schema={schema}

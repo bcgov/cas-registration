@@ -1,27 +1,19 @@
 "use client";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { Box } from "@mui/material";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import NavigationForm from "@bciers/components/form/NavigationForm";
 import ReportSubmissionEnd from "@reporting/src/app/components/reportInformation/endOfFacility/FacilityPageEnd";
+import { NavigationInformation } from "../../taskList/types";
 
 interface NonAttributableEmissionsProps {
-  versionId: number;
-  facilityId: string;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
   facilityName: string;
 }
 export default function EndOfFacilityForm({
-  versionId,
-  facilityId,
-  taskListElements,
+  navigationInformation,
   facilityName,
 }: NonAttributableEmissionsProps) {
-  const backUrl = `/reports/${versionId}/facilities/${facilityId}/allocation-of-emissions`;
-  const saveAndContinueUrl = `/reports/${versionId}/facilities/report-information`;
-
   const onSubmit = async () => {
     return true;
   };
@@ -29,11 +21,14 @@ export default function EndOfFacilityForm({
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
-        <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
+        <MultiStepHeader
+          stepIndex={navigationInformation.headerStepIndex}
+          steps={navigationInformation.headerSteps}
+        />
       </div>
       <div className="w-full flex">
         <div className="hidden md:flex flex-col">
-          <ReportingTaskList elements={taskListElements} />
+          <ReportingTaskList elements={navigationInformation.taskList} />
         </div>
         <div className="w-full">
           <div className={"mt-10 mb-40 mr-40"}>
@@ -43,8 +38,8 @@ export default function EndOfFacilityForm({
             <NavigationForm
               key="form-buttons"
               schema={{}}
-              backUrl={backUrl}
-              continueUrl={saveAndContinueUrl}
+              backUrl={navigationInformation.backUrl}
+              continueUrl={navigationInformation.continueUrl}
               buttonText={"Return to all facility reports"}
               formData={{}}
               onSubmit={onSubmit}

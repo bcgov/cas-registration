@@ -6,32 +6,27 @@ import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import { operationReviewUiSchema } from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { useRouter } from "next/navigation";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { NavigationInformation } from "../taskList/types";
 
 interface Props {
   formData: any;
   version_id: number;
   schema: RJSFSchema;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
 }
 
 export default function OperationReviewForm({
   formData,
   version_id,
   schema,
-  taskListElements,
+  navigationInformation,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
-
-  // 🛸 Set up routing urls
-  const backUrl = `/reports`;
-  const saveAndContinueUrl = `/reports/${version_id}/person-responsible`;
 
   const router = useRouter();
 
@@ -105,16 +100,16 @@ export default function OperationReviewForm({
         )}
       </SimpleModal>
       <MultiStepFormWithTaskList
-        initialStep={0}
-        steps={multiStepHeaderSteps}
-        taskListElements={taskListElements}
+        initialStep={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
+        taskListElements={navigationInformation.taskList}
         schema={schema}
         uiSchema={operationReviewUiSchema}
         formData={formDataState}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
-        backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
         errors={errors}
       />
     </>

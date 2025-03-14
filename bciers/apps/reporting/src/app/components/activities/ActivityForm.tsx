@@ -1,21 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 import { actionHandler } from "@bciers/actions";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { FuelFields } from "./customFields/FuelFieldComponent";
 import { FieldProps, RJSFSchema } from "@rjsf/utils";
 import { getUiSchema } from "./uiSchemas/schemaMaps";
 import { UUID } from "crypto";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import debounce from "lodash.debounce";
-import { useSearchParams } from "next/navigation";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import { customizeValidator } from "@rjsf/validator-ajv8";
 import setNestedErrorForCustomValidate from "@bciers/utils/src/setCustomValidateErrors";
 import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
 import { IChangeEvent } from "@rjsf/core";
+import { NavigationInformation } from "../taskList/types";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -28,12 +26,11 @@ interface Props {
   };
   activityFormData: any;
   currentActivity: { id: number; name: string; slug: string };
-  taskListData: TaskListElement[];
+  navigationInformation: NavigationInformation;
   reportVersionId: number;
   facilityId: UUID;
   initialJsonSchema: RJSFSchema;
   initialSelectedSourceTypeIds: string[];
-  isLinearOperation: boolean;
 }
 
 // 🧩 Main component
@@ -41,15 +38,12 @@ export default function ActivityForm({
   activityData,
   activityFormData,
   currentActivity,
-  taskListData,
+  navigationInformation,
   reportVersionId,
   facilityId,
   initialJsonSchema,
   initialSelectedSourceTypeIds,
-  isLinearOperation,
 }: Readonly<Props>) {
-  const searchParams = useSearchParams(); // is read-only
-  let step = searchParams ? Number(searchParams.get("step")) : 0;
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
   const [formState, setFormState] = useState(activityFormData);
@@ -122,40 +116,20 @@ export default function ActivityForm({
     setFormState(c.formData);
   };
 
-  const createUrl = (isContinue: boolean) => {
-    const activitiesSection = taskListData
-      .flatMap((taskListElement) => taskListElement.elements || [])
-      .find((element) => element.title === "Activities information");
-
-    const taskListLength = activitiesSection?.elements?.length;
-    if (taskListLength && step === -1) step = taskListLength - 1;
-
-    if (step === 0 && !isContinue) {
-      if (isLinearOperation) {
-        return `/reports/${reportVersionId}/facilities/${facilityId}/review-facility-information`;
-      }
-      return `/reports/${reportVersionId}/person-responsible`; // Facility review page
-    }
-    if (taskListLength && step + 1 >= taskListLength && isContinue) {
-      return "non-attributable"; // Activities done, go to Non-attributable emissions
-    }
-
-    const params = new URLSearchParams(
-      searchParams ? searchParams.toString() : "",
-    );
-    const addition = isContinue ? 1 : -1;
-    params.set("step", (step + addition).toString());
-    params.delete("activity_id");
-
-    return `activities?${params.toString()}`;
-  };
-
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (e: IChangeEvent) => {
     setErrorList([]);
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
     // Ensure we use the filtered formData with omitted extra data
     const filteredData = e.formData;
+
+    if (!filteredData.sourceTypes) {
+      setErrorList([
+        "At least one source type must be selected to report for that activity.",
+      ]);
+      return false;
+    }
+
     const selectedSourceTypeData = Object.keys(filteredData.sourceTypes);
 
     // Only filter the keys where the checkBox for that source type is checked IF there is more than one source type
@@ -203,9 +177,9 @@ export default function ActivityForm({
 
   return (
     <MultiStepFormWithTaskList
-      steps={multiStepHeaderSteps}
-      initialStep={1}
-      taskListElements={taskListData}
+      steps={navigationInformation.headerSteps}
+      initialStep={navigationInformation.headerStepIndex}
+      taskListElements={navigationInformation.taskList}
       onSubmit={submitHandler}
       schema={jsonSchema}
       fields={CUSTOM_FIELDS}
@@ -213,8 +187,8 @@ export default function ActivityForm({
       uiSchema={getUiSchema(currentActivity.slug)}
       onChange={debounce(handleFormChange, 200)}
       errors={errorList}
-      backUrl={createUrl(false)}
-      continueUrl={createUrl(true)}
+      backUrl={navigationInformation.backUrl}
+      continueUrl={navigationInformation.continueUrl}
       validator={customizeValidator({})}
       customValidate={customValidate}
     />

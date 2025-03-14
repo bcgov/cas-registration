@@ -15,15 +15,11 @@ import {
 } from "@reporting/src/app/components/operations/types";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { NavigationInformation } from "../../taskList/types";
 
 interface Props {
   versionId: number;
-  facilityId: number;
-  operationType: string;
-  taskListElements: TaskListElement[];
+  navigationInformation: NavigationInformation;
   contacts: { items: ContactRow[]; count: number } | null;
   personResponsible?: Contact | null;
   schema: RJSFSchema;
@@ -31,9 +27,7 @@ interface Props {
 
 const PersonResponsibleForm = ({
   versionId,
-  facilityId,
-  operationType,
-  taskListElements,
+  navigationInformation,
   contacts: initialContacts,
   personResponsible,
   schema: initialSchema,
@@ -48,12 +42,6 @@ const PersonResponsibleForm = ({
       : "",
   });
   const [schema, setSchema] = useState<RJSFSchema>(initialSchema);
-
-  const continueUrl =
-    operationType === OperationTypes.LFO
-      ? `/reports/${versionId}/facilities/review-facilities`
-      : `/reports/${versionId}/facilities/${facilityId}/activities`;
-  const backUrl = `/reports/${versionId}/review-operation-information`;
 
   // Update schema whenever selectedContactId or contactFormData changes
   useEffect(() => {
@@ -136,11 +124,11 @@ const PersonResponsibleForm = ({
   return (
     <>
       <MultiStepFormWithTaskList
-        initialStep={0}
-        steps={multiStepHeaderSteps}
-        backUrl={backUrl}
-        continueUrl={continueUrl}
-        taskListElements={taskListElements}
+        initialStep={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
+        taskListElements={navigationInformation.taskList}
         schema={schema}
         uiSchema={{
           ...personResponsibleUiSchema,

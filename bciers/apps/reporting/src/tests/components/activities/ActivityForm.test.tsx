@@ -1,6 +1,7 @@
 import { act, render, screen } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
+import { dummyNavigationInformation } from "../taskList/utils";
 
 // Mock data
 const mockActivityData = {
@@ -46,13 +47,12 @@ describe("ActivityForm component", () => {
           name: "General stationary combustion excluding line tracing",
           slug: "gsc_excluding_line_tracing",
         }}
-        taskListData={[]}
+        navigationInformation={dummyNavigationInformation}
         activityFormData={{}}
         initialJsonSchema={activitySchema}
         reportVersionId={1}
         facilityId={mockUUID}
         initialSelectedSourceTypeIds={[]}
-        isLinearOperation={true}
       />,
     );
     await act(async () => {
@@ -106,13 +106,12 @@ describe("ActivityForm component", () => {
           name: "General stationary combustion excluding line tracing",
           slug: "gsc_excluding_line_tracing",
         }}
-        taskListData={[]}
+        navigationInformation={dummyNavigationInformation}
         activityFormData={{}}
         initialJsonSchema={sourceTypeSchema}
         reportVersionId={1}
         facilityId={mockUUID}
         initialSelectedSourceTypeIds={[]}
-        isLinearOperation={true}
       />,
     );
     await act(async () => {

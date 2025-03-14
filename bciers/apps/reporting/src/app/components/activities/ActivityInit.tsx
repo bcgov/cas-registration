@@ -2,14 +2,12 @@ import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import ActivityForm from "./ActivityForm";
 import { UUID } from "crypto";
-import {
-  ActivityData,
-  getFacilitiesInformationTaskList,
-} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { ActivityData } from "@reporting/src/app/components/taskList/taskListPages/2_facilitiesInformation";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 
 interface Props {
   versionId: number;
@@ -52,20 +50,17 @@ export default async function ActivityInit({
     currentActivity.id,
   );
 
-  const taskListData = getFacilitiesInformationTaskList(
+  const navigationInformation = await getNavigationInformation(
+    HeaderStep.ReportInformation,
+    ReportingPage.Activities,
     versionId,
     facilityId,
-    orderedActivities,
-    undefined,
-    reportInfoTaskListData?.facilityName,
-    reportInfoTaskListData?.operationType,
+    {
+      facilityName: reportInfoTaskListData?.facilityName,
+      orderedActivities: orderedActivities,
+      currentActivity: currentActivity,
+    },
   );
-
-  const currentActivityTaskListElement = taskListData[0]?.elements?.find(
-    (e) => e.title == currentActivity.name,
-  );
-  if (currentActivityTaskListElement)
-    currentActivityTaskListElement.isActive = true;
 
   // Determine which source types (if any) are selected in the loaded formData & fetch the jsonSchema accordingly
   const sourceTypeIds = [];
@@ -76,8 +71,6 @@ export default async function ActivityInit({
       sourceTypeQueryString += `&source_types[]=${k}`;
     }
   }
-  const isLinearOperation =
-    reportInfoTaskListData?.operationType === OperationTypes.LFO;
 
   const fetchSchema = async () => {
     const schema = await actionHandler(
@@ -94,12 +87,11 @@ export default async function ActivityInit({
       activityData={activityDataObject}
       activityFormData={formData}
       currentActivity={currentActivity}
-      taskListData={taskListData}
+      navigationInformation={navigationInformation}
       reportVersionId={versionId}
       facilityId={facilityId}
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
-      isLinearOperation={isLinearOperation}
     />
   );
 }

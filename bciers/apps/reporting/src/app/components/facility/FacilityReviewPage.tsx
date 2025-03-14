@@ -1,35 +1,33 @@
 import FacilityReviewForm from "./FacilityReviewForm";
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import {
-  ActivePage,
-  getFacilitiesInformationTaskList,
-} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 import { getAllActivities } from "@reporting/src/app/utils/getAllActivities";
 import { buildFacilitySchema } from "@reporting/src/data/jsonSchema/facilities";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 
 export default async function FacilityReviewPage({
   version_id,
   facility_id,
 }: HasFacilityId) {
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
-  const facilityReport = await getFacilityReport(version_id);
 
   const facilityData = await getFacilityReportDetails(version_id, facility_id);
   const activitiesData = await getAllActivities();
   const selectedActivities = activitiesData.filter((item: { id: any }) =>
     facilityData.activities.includes(item.id),
   );
-  const taskListElements: TaskListElement[] = getFacilitiesInformationTaskList(
+
+  const navInfo = await getNavigationInformation(
+    HeaderStep.ReportInformation,
+    ReportingPage.ReviewInformation,
     version_id,
     facility_id,
-    orderedActivities,
-    ActivePage.ReviewInformation,
-    facilityData?.facility_name,
-    facilityReport?.operation_type,
+    {
+      facilityName: facilityData?.facilityName,
+      orderedActivities: orderedActivities,
+    },
   );
 
   const formData = {
@@ -44,7 +42,7 @@ export default async function FacilityReviewPage({
       version_id={version_id}
       facility_id={facility_id}
       activitiesData={activitiesData}
-      taskListElements={taskListElements}
+      navigationInformation={navInfo}
       formsData={formData}
       schema={reviewSchema}
     />

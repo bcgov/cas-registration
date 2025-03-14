@@ -3,13 +3,10 @@ import { getBasicGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 import { getAllEmissionCategories } from "@reporting/src/app/utils/getAllEmissionCategories";
 import { getNonAttributableEmissionsData } from "@reporting/src/app/utils/getNonAttributableEmissionsData";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
-import {
-  ActivePage,
-  getFacilitiesInformationTaskList,
-} from "@reporting/src/app/components/taskList/2_facilitiesInformation";
-
 import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
+import { getNavigationInformation } from "../../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../../taskList/types";
 
 export default async function NonAttributableEmissionsPage({
   version_id,
@@ -27,13 +24,16 @@ export default async function NonAttributableEmissionsPage({
     facility_id,
   );
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
-  const taskListElements = getFacilitiesInformationTaskList(
+
+  const navigationInformation = await getNavigationInformation(
+    HeaderStep.ReportInformation,
+    ReportingPage.NonAttributableEmission,
     version_id,
     facility_id,
-    orderedActivities,
-    ActivePage.NonAttributableEmission,
-    tasklistData?.facilityName,
-    tasklistData?.operationType,
+    {
+      facilityName: tasklistData?.facilityName,
+      orderedActivities: orderedActivities,
+    },
   );
 
   const gasTypeMap = gasTypes.reduce(
@@ -67,7 +67,7 @@ export default async function NonAttributableEmissionsPage({
       emissionCategories={emissionCategories}
       gasTypeMap={gasTypeMap}
       emissionCategoryMap={emissionCategoryMap}
-      taskListElements={taskListElements}
+      navigationInformation={navigationInformation}
     />
   );
 }

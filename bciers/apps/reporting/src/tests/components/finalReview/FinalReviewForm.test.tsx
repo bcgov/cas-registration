@@ -13,15 +13,20 @@ describe("The FinalReviewForm component", () => {
     vi.clearAllMocks();
   });
 
-  it("routes to the compliance summary page when the back button is clicked", () => {
-    const expectedRoute = `/reports/12345/compliance-summary`;
+  it("routes back when the back button is clicked", () => {
+    const expectedRoute = "back";
 
     render(
       <FinalReviewForm
-        taskListElements={[]}
-        version_id={12345}
+        navigationInformation={
+          {
+            headerSteps: [],
+            taskList: [],
+            backUrl: "back",
+            continueUrl: "continue",
+          } as any
+        }
         data={[]}
-        needsVerification={true}
       />,
     );
 
@@ -35,37 +40,20 @@ describe("The FinalReviewForm component", () => {
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
   });
-  it("routes to the verification page when the submit button is clicked", () => {
-    const expectedRoute = `/reports/12345/verification`;
+  it("routes forward when the submit button is clicked", () => {
+    const expectedRoute = "continue";
 
     render(
       <FinalReviewForm
-        taskListElements={[]}
-        version_id={12345}
+        navigationInformation={
+          {
+            headerSteps: [],
+            taskList: [],
+            backUrl: "back",
+            continueUrl: "continue",
+          } as any
+        }
         data={[]}
-        needsVerification={true}
-      />,
-    );
-
-    // Click the "Save and continue" button
-    const button = screen.getByRole("button", {
-      name: "Continue",
-    });
-    fireEvent.click(button);
-
-    // Assert that the router's push method was called with the expected route
-    expect(mockRouterPush).toHaveBeenCalledTimes(1);
-    expect(mockRouterPush).toHaveBeenCalledWith(expectedRoute);
-  });
-  it("routes to the attachment page when the submit button is clicked", () => {
-    const expectedRoute = `/reports/12345/attachments`;
-
-    render(
-      <FinalReviewForm
-        taskListElements={[]}
-        version_id={12345}
-        data={[]}
-        needsVerification={false}
       />,
     );
 

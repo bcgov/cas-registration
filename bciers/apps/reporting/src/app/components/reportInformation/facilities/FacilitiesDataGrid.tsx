@@ -8,12 +8,12 @@ import { Typography } from "@mui/material";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import { FacilityRow } from "@reporting/src/app/components/reportInformation/facilities/types";
 import getFacilityColumns from "@reporting/src/app/components/datagrid/models/facilities/getFacilityColumns";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import facilityTableGroupColumns from "@reporting/src/app/components/datagrid/models/facilities/facilityGroupColumns";
+import { NavigationInformation } from "../../taskList/types";
 
 interface FacilitiesDataGridProps {
   initialData: {
@@ -22,11 +22,13 @@ interface FacilitiesDataGridProps {
     is_completed_count: number;
   };
   version_id: number;
+  navigationInformation: NavigationInformation;
 }
 
 const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   initialData,
   version_id,
+  navigationInformation,
 }) => {
   const [rows, setRows] = useState(initialData);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
@@ -75,8 +77,6 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
   }, [initialData, currentPage]);
 
   const router = useRouter();
-
-  const saveAndContinueUrl = `/reports/${version_id}/additional-reporting-data`;
 
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
@@ -150,7 +150,7 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       });
       if (redirect) {
         setIsRedirecting(true);
-        router.push(saveAndContinueUrl);
+        router.push(navigationInformation.continueUrl);
       } else {
         setIsSuccess(true);
         setTimeout(() => setIsSuccess(false), 3000);
@@ -204,7 +204,10 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
         saveData(false);
       }}
     >
-      <MultiStepHeader stepIndex={1} steps={multiStepHeaderSteps} />
+      <MultiStepHeader
+        stepIndex={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
+      />
       <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">Report Information</div>
       </div>
@@ -239,8 +242,8 @@ const FacilitiesDataGrid: React.FC<FacilitiesDataGridProps> = ({
       )}
 
       <ReportingStepButtons
-        backUrl={`/reports/${version_id}/facilities/review-facilities`}
-        continueUrl={saveAndContinueUrl}
+        backUrl={navigationInformation.backUrl}
+        continueUrl={navigationInformation.continueUrl}
         isSaving={isSaving}
         isSuccess={isSuccess}
         isRedirecting={isRedirecting}

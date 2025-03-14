@@ -5,7 +5,7 @@ export interface FacilityReportSearchParams {
 }
 
 export interface FacilityRow {
-  id: number;
+  id: string;
   facility: string;
   facility_bcghgid: string;
   facility_name: string;

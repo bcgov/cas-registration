@@ -70,7 +70,14 @@ const renderVerificationForm = (operationType: string) => {
       operationType={operationType}
       verificationSchema={verificationSchema}
       initialData={{}}
-      taskListElements={[]}
+      navigationInformation={
+        {
+          headerSteps: [],
+          taskList: [],
+          backUrl: "back",
+          continueUrl: "continue",
+        } as any
+      }
     />,
   );
 };

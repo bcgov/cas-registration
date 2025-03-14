@@ -3,13 +3,8 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getReportType } from "@reporting/src/app/utils/getReportType";
 import { getRegulatedProducts } from "@bciers/actions/api";
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
-import {
-  ActivePage,
-  getOperationInformationTaskList,
-} from "@reporting/src/app/components/taskList/1_operationInformation";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
 import {
@@ -17,16 +12,19 @@ import {
   POTENTIAL_REPORTING_OPERATION,
   REPORTING_OPERATION,
 } from "@reporting/src/app/utils/constants";
+import { getNavigationInformation } from "../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getFacilityReport } from "../../utils/getFacilityReport";
 
 export default async function OperationReviewPage({
   version_id,
 }: HasReportVersion) {
   const reportOperation = await getReportingOperation(version_id);
+  const facilityReport = await getFacilityReport(version_id);
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
   const reportingYear = await getReportingYear();
   const reportType = await getReportType(version_id);
-  const facilityReport = await getFacilityReport(version_id);
 
   const allRepresentatives = reportOperation.report_operation_representatives;
   const showRegulatedProducts = ![
@@ -34,11 +32,6 @@ export default async function OperationReviewPage({
     REPORTING_OPERATION,
     POTENTIAL_REPORTING_OPERATION,
   ].includes(reportOperation.registration_purpose);
-  const taskListElements = getOperationInformationTaskList(
-    version_id,
-    ActivePage.ReviewOperatorInfo,
-    facilityReport.operation_type,
-  );
 
   const reportingWindowEnd = formatDate(
     reportingYear.reporting_window_end,
@@ -54,12 +47,19 @@ export default async function OperationReviewPage({
     showRegulatedProducts,
   );
 
+  const navigationInformation = await getNavigationInformation(
+    HeaderStep.OperationInformation,
+    ReportingPage.ReviewOperationInfo,
+    version_id,
+    facilityReport.facility_id,
+  );
+
   return (
     <OperationReviewForm
       formData={reportOperation}
       version_id={version_id}
       schema={schema}
-      taskListElements={taskListElements}
+      navigationInformation={navigationInformation}
     />
   );
 }

@@ -1,0 +1,17 @@
+import { ReportingPage, TaskListPageFactoryContext } from "../types";
+import { pageFactories } from "./pageFactories";
+
+export const pageElementFactory = (
+  page: ReportingPage,
+  activePage: ReportingPage,
+  reportVersionId: number,
+  facilityId: string,
+  context?: TaskListPageFactoryContext,
+) => {
+  const factory = pageFactories[page];
+
+  if (!factory)
+    throw new Error(`Tasklist page factory not implemented for ${page}`);
+
+  return factory(activePage, reportVersionId, facilityId, context);
+};

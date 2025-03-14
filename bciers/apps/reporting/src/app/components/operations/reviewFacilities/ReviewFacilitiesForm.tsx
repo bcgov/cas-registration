@@ -6,19 +6,15 @@ import {
   buildReviewFacilitiesUiSchema,
 } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 import { actionHandler } from "@bciers/actions";
-import {
-  getOperationInformationTaskList,
-  ActivePage,
-} from "@reporting/src/app/components/taskList/1_operationInformation";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import { useRouter } from "next/navigation";
-import { OperationTypes } from "@bciers/utils/src/enums";
+import { NavigationInformation } from "../../taskList/types";
 
 interface Props {
   initialData: any;
   version_id: number;
+  navigationInformation: NavigationInformation;
 }
 
 interface SubmissionData {
@@ -36,7 +32,11 @@ interface Facility {
   is_selected: boolean;
 }
 
-export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
+export default function LFOFacilitiesForm({
+  initialData,
+  version_id,
+  navigationInformation,
+}: Props) {
   const [formData, setFormData] = useState(() => ({ ...initialData }));
   const [facilitiesData, setFacilitiesData] = useState(() => ({
     // a store of the facilities data that can be updated without changing the form data
@@ -56,17 +56,9 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       initialData.past_facilities,
     ),
   );
-  const saveAndContinueUrl = `/reports/${version_id}/facilities/report-information`;
-  const backUrl = `/reports/${version_id}/person-responsible`;
 
   const uiSchema: any = buildReviewFacilitiesUiSchema(initialData.operation_id);
   const router = useRouter();
-
-  const taskListElements = getOperationInformationTaskList(
-    version_id,
-    ActivePage.ReviewFacilities,
-    OperationTypes.LFO,
-  );
 
   // takes the form data and returns an array of facility_ids that are being selected. uses the intial form data as source of id-name mapping
   const getFacilityIdsForSubmission = (data: SubmissionData) => {
@@ -163,7 +155,7 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
       setErrors(undefined);
       // this check uses a state variable because this function can be called by a modal which is disconnected from the child component that bubbles up this value
       if (continueAfterSubmit !== undefined && continueAfterSubmit) {
-        router.push(saveAndContinueUrl);
+        router.push(navigationInformation.continueUrl);
       }
       return true;
     } catch (err) {
@@ -249,16 +241,16 @@ export default function LFOFacilitiesForm({ initialData, version_id }: Props) {
             },
           },
         }}
-        taskListElements={taskListElements}
-        steps={multiStepHeaderSteps}
+        taskListElements={navigationInformation.taskList}
+        steps={navigationInformation.headerSteps}
         errors={errors}
-        continueUrl={saveAndContinueUrl}
-        initialStep={0}
+        continueUrl={navigationInformation.continueUrl}
+        initialStep={navigationInformation.headerStepIndex}
         onChange={handleChange}
         onSubmit={async (data, navigateAfterSubmit) =>
           handleSubmit(data, navigateAfterSubmit)
         }
-        backUrl={backUrl}
+        backUrl={navigationInformation.backUrl}
         saveButtonDisabled={submittingDisabled}
         submitButtonDisabled={submittingDisabled}
       />

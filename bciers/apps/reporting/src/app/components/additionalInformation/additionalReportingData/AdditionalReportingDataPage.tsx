@@ -2,15 +2,10 @@ import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistration
 import AdditionalReportingDataForm from "@reporting/src/app/components/additionalInformation/additionalReportingData/AdditionalReportingDataForm";
 import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import {
-  REGULATED_OPERATION_REGISTRATION_PURPOSE,
-  NEW_ENTRANT_REGISTRATION_PURPOSE,
-} from "@reporting/src/app/utils/constants";
+import { REGULATED_OPERATION_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import {
-  ActivePage,
-  getAdditionalInformationTaskList,
-} from "@reporting/src/app/components/taskList/3_additionalInformation";
+import { getNavigationInformation } from "../../taskList/navigationInformation";
+import { HeaderStep, ReportingPage } from "../../taskList/types";
 
 export function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
@@ -49,24 +44,22 @@ export default async function AdditionalReportingDataPage({
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
   const facilityReport = await getFacilityReport(version_id);
-  const isNewEntrant = registrationPurpose === NEW_ENTRANT_REGISTRATION_PURPOSE;
-  const taskListElements = getAdditionalInformationTaskList(
+
+  const navInfo = await getNavigationInformation(
+    HeaderStep.AdditionalInformation,
+    ReportingPage.AdditionalReportingData,
     version_id,
-    ActivePage.AdditionalReportingData,
-    isNewEntrant,
-    facilityReport?.operation_type,
+    facilityReport?.facility_id,
   );
+
   return (
     <AdditionalReportingDataForm
       versionId={version_id}
       includeElectricityGenerated={
         registrationPurpose === REGULATED_OPERATION_REGISTRATION_PURPOSE
       }
-      isNewEntrant={isNewEntrant}
       initialFormData={transformedData}
-      taskListElements={taskListElements}
-      operationType={facilityReport?.operation_type}
-      facilityId={facilityReport?.facility_id}
+      navigationInformation={navInfo}
     />
   );
 }
