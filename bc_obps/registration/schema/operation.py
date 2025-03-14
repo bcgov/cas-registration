@@ -145,7 +145,7 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_notification_to_director_on_criteria_change: bool = Field(...)
 
 
-class OperationOutV2(ModelSchema):
+class OperationOut(ModelSchema):
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
     secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
@@ -201,7 +201,7 @@ class OperationOutV2(ModelSchema):
         from_attributes = True
 
 
-class OperationOutWithDocuments(OperationOutV2):
+class OperationOutWithDocuments(OperationOut):
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
         boundary_map = obj.get_boundary_map()
