@@ -1,6 +1,6 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { ReportingPage, TaskListPageFactory } from "./types";
-import { getOrderedActivities } from "../../utils/getOrderedActivities";
+import { ReportingPage, TaskListPageFactory } from "../types";
+import { getOrderedActivities } from "../../../utils/getOrderedActivities";
 
 export type ActivityData = { id: number; name: string; slug: string };
 
