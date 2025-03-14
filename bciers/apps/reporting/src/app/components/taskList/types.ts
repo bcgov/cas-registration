@@ -2,7 +2,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { ActivityData } from "./2_facilitiesInformation";
 
 export enum ReportingPage {
-  ReviewOperationInfo = "ReviewOperatorInfo",
+  ReviewOperationInfo = "ReviewOperationInfo",
   PersonResponsible = "PersonResponsible",
   ReviewFacilities = "ReviewFacilities",
 
