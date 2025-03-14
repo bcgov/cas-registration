@@ -22,6 +22,7 @@ import { mockDataUri } from "./NewEntrantOperationForm.test";
 import { fillComboboxWidgetField } from "@bciers/testConfig/helpers/helpers";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
+import { bcObpsGuidanceLink } from "@bciers/utils/src/urls";
 
 const mockPush = vi.fn();
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
@@ -60,6 +61,10 @@ describe("the OperationInformationForm component", () => {
     expect(
       screen.getByRole("button", { name: /save and continue/i }),
     ).toBeVisible();
+    expect(screen.getByText(/program and reporting guidance/i)).toHaveAttribute(
+      "href",
+      bcObpsGuidanceLink,
+    );
   });
 
   it("should fetch operation data when an existing operation is selected", async () => {
