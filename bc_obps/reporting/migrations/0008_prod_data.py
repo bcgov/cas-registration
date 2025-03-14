@@ -634,15 +634,35 @@ def init_reporting_years(apps, schema_editor):
     '''
     Add initial year data to erc.reporting_year
     '''
-    from django.core.management import call_command
-
-    fixture_files = [
-        'reporting/fixtures/mock/reporting_year.json',
-    ]
-
-    # Load the fixtures
-    for fixture in fixture_files:
-        call_command('loaddata', fixture)
+    ReportingYear = apps.get_model('reporting', 'ReportingYear')
+    ReportingYear.objects.bulk_create(
+        [
+            ReportingYear(
+                reporting_year=2023,
+                reporting_window_start="2024-01-01 00:00:00.000 -08:00",
+                reporting_window_end="2024-12-31 23:59:59.999 -08:00",
+                report_due_date="2024-05-31 23:59:59.999 -07:00",
+            ),
+            ReportingYear(
+                reporting_year=2024,
+                reporting_window_start="2025-01-01 00:00:00.000 -08:00",
+                reporting_window_end="2025-12-31 23:59:59.999 -08:00",
+                report_due_date="2025-05-31 23:59:59.999 -07:00",
+            ),
+            ReportingYear(
+                reporting_year=2025,
+                reporting_window_start="2026-01-01 00:00:00.000 -08:00",
+                reporting_window_end="2026-12-31 23:59:59.999 -08:00",
+                report_due_date="2026-05-31 23:59:59.999 -07:00",
+            ),
+            ReportingYear(
+                reporting_year=2026,
+                reporting_window_start="2027-01-01 00:00:00.000 -08:00",
+                reporting_window_end="2027-12-31 23:59:59.999 -08:00",
+                report_due_date="2027-05-31 23:59:59.999 -07:00",
+            ),
+        ]
+    )
 
 
 def reverse_init_reporting_years(apps, schema_editor):
@@ -650,7 +670,7 @@ def reverse_init_reporting_years(apps, schema_editor):
     Remove initial year data from erc.reporting_year
     '''
     ReportingYears = apps.get_model('reporting', 'ReportingYear')
-    ReportingYears.objects.filter(reporting_year__in=[2023, 2024]).delete()
+    ReportingYears.objects.filter(reporting_year__in=[2023, 2024, 2025, 2026]).delete()
 
 
 def init_reporting_field_data(apps, schema_monitor):

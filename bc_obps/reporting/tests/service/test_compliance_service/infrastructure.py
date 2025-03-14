@@ -167,14 +167,7 @@ class ComplianceTestInfrastructure:
     @classmethod
     def reporting_year_2025(cls):
         t = cls.build()
-        reporting_year = make_recipe(
-            "reporting.tests.utils.reporting_year",
-            reporting_year=2025,
-            reporting_window_start='2025-12-31 16:00:00-08',
-            reporting_window_end='2026-12-31 16:00:00-08',
-            report_due_date='2025-05-31 16:59:59.999-07',
-        )
-        Report.objects.filter(pk=t.report_1.id).update(reporting_year=reporting_year)
+        Report.objects.filter(pk=t.report_1.id).update(reporting_year=2025)
         return t
 
     @classmethod
