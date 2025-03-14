@@ -14,9 +14,10 @@ function titleCase(str: string) {
 }
 
 export default function UserOperatorRoleCell(params: GridRenderCellParams) {
-  const theme = useTheme(); // Get MUI theme
+  // Use MUI theme colours
+  const theme = useTheme();
   const colorMap = new Map<string, string>([
-    [Role.PENDING, theme.palette.primary.main], // Get actual color from theme
+    [Role.PENDING, theme.palette.primary.main],
     [Role.ADMIN, theme.palette.success.main],
     [Role.REPORTER, theme.palette.success.main],
   ]);
