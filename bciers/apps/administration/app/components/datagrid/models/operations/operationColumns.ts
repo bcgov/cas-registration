@@ -8,7 +8,7 @@ const operationColumns = (
   ActionCell: (params: GridRenderCellParams) => JSX.Element,
   FacilitiesActionCell: (params: GridRenderCellParams) => JSX.Element,
 ) => {
-  const columns: GridColDef[] = [
+  let columns: GridColDef[] = [
     {
       field: "operation__name",
       headerName: "Operation Name",
@@ -39,7 +39,7 @@ const operationColumns = (
       },
     },
     { field: "operation__bcghg_id", headerName: "BC GHG ID", width: 120 },
-    { field: "status", headerName: "Status", width: 100 },
+    { field: "operation__status", headerName: "Status", width: 100 },
     {
       field: "facilities",
       headerName: "Facilities",
@@ -57,11 +57,14 @@ const operationColumns = (
   ];
 
   if (isInternalUser) {
+    // Add operator column if user is internal
     columns.splice(OPERATOR_COLUMN_INDEX, 0, {
       field: "operator__legal_name",
       headerName: "Operator Legal Name",
       width: 250,
     });
+    // Remove status column if user is internal
+    columns = columns.filter((column) => column.field !== "operation__status");
   }
 
   return columns;

@@ -1,6 +1,6 @@
 from typing import Literal, Tuple
 from uuid import UUID
-from registration.schema import OperationInformationInUpdate, OperationOutV2, OperationOutWithDocuments, Message
+from registration.schema import OperationInformationInUpdate, OperationOut, OperationOutWithDocuments, Message
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import OPERATION_TAGS
@@ -16,7 +16,7 @@ from registration.models import Operation
 
 @router.get(
     "/operations/{uuid:operation_id}",
-    response={200: OperationOutV2, custom_codes_4xx: Message},
+    response={200: OperationOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="""Retrieves the details of a specific operation by its ID. Unlike the v1 endpoint, this endpoint does not
     return the new entrant application field as it can be quite large and cause slow requests. If you need the new entrant application field,
@@ -45,7 +45,7 @@ def get_operation_with_documents(request: HttpRequest, operation_id: UUID) -> Tu
 
 @router.put(
     "/operations/{uuid:operation_id}",
-    response={200: OperationOutV2, custom_codes_4xx: Message},
+    response={200: OperationOut, custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     description="Updates the details of a specific operation by its ID.",
     auth=authorize("approved_industry_user"),

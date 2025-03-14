@@ -145,7 +145,7 @@ class OptedInOperationDetailIn(OptedInOperationDetailOut):
     meets_notification_to_director_on_criteria_change: bool = Field(...)
 
 
-class OperationOutV2(ModelSchema):
+class OperationOut(ModelSchema):
     naics_code_id: Optional[int] = Field(None, alias="naics_code.id")
     secondary_naics_code_id: Optional[int] = Field(None, alias="secondary_naics_code.id")
     tertiary_naics_code_id: Optional[int] = Field(None, alias="tertiary_naics_code.id")
@@ -201,7 +201,7 @@ class OperationOutV2(ModelSchema):
         from_attributes = True
 
 
-class OperationOutWithDocuments(OperationOutV2):
+class OperationOutWithDocuments(OperationOut):
     @staticmethod
     def resolve_boundary_map(obj: Operation) -> Optional[str]:
         boundary_map = obj.get_boundary_map()
@@ -296,17 +296,6 @@ class OperationBcghgIdOut(ModelSchema):
     class Meta:
         model = BcGreenhouseGasId
         fields = ['id']
-
-
-class OperationListOut(ModelSchema):
-    operator: str = Field(..., alias="operator.legal_name")
-    bc_obps_regulated_operation: Optional[str] = Field(None, alias="bc_obps_regulated_operation.id")
-    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-
-    class Meta:
-        model = Operation
-        fields = ['id', 'name', 'submission_date', 'status']
-        from_attributes = True
 
 
 class OperationUpdateStatusOut(ModelSchema):
