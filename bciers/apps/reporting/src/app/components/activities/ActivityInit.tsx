@@ -2,7 +2,7 @@ import { actionHandler } from "@bciers/actions";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import ActivityForm from "./ActivityForm";
 import { UUID } from "crypto";
-import { ActivityData } from "@reporting/src/app/components/taskList/2_facilitiesInformation";
+import { ActivityData } from "@reporting/src/app/components/taskList/taskListPages/2_facilitiesInformation";
 import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivities";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";

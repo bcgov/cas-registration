@@ -1,5 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { ReportingPage, TaskListPageFactory } from "./types";
+import { ReportingPage, TaskListPageFactory } from "../types";
 
 export const signOffSubmitPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
