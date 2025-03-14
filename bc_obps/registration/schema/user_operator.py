@@ -29,17 +29,7 @@ class UserOperatorFilterSchema(FilterSchema):
         None, json_schema_extra={'q': 'user__bceid_business_name__icontains'}
     )
     operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
-
-    @staticmethod
-    def filter_status(value: Optional[str]) -> Q:
-        # Override the default filter_status method to handle the special case of 'admin' and 'access'
-        # The value in the frontend is 'admin access' but the value in the database is 'approved'
-        if value:
-            if value.lower() in "admin access":
-                value = "approved"
-            return Q(status__icontains=value)
-        return Q()
-
+    role: Optional[str] = Field(None, json_schema_extra={'q': 'role__icontains'})
 
 class UserOperatorListOut(ModelSchema):
     user__first_name: str = Field(..., alias="user.first_name")
@@ -50,7 +40,7 @@ class UserOperatorListOut(ModelSchema):
 
     class Meta:
         model = UserOperator
-        fields = ['id', 'user_friendly_id', 'status']
+        fields = ['id', 'user_friendly_id', 'role']
 
 
 class UserOperatorOut(ModelSchema):
