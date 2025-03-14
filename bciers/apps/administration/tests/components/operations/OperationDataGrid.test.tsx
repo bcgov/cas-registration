@@ -26,7 +26,6 @@ const mockResponse = {
       operation__type: OperationTypes.SFO,
       sfo_facility_id: null,
       sfo_facility_name: null,
-      status: "Active",
       operation__bc_obps_regulated_operation: null,
       operation__status: OperationStatus.NOT_STARTED,
       operation__id: "uuid1",
@@ -40,7 +39,6 @@ const mockResponse = {
       operation__type: OperationTypes.LFO,
       sfo_facility_id: null,
       sfo_facility_name: null,
-      status: "Active",
       operation__bc_obps_regulated_operation: "24-0001",
       operation__status: OperationStatus.DRAFT,
       operation__id: "uuid2",
@@ -55,7 +53,6 @@ const mockResponse = {
       operation__type: OperationTypes.SFO,
       sfo_facility_id: null,
       sfo_facility_name: null,
-      status: "Closed",
       operation__bc_obps_regulated_operation: null,
       operation__status: OperationStatus.DRAFT,
       operation__id: "uuid3",
@@ -67,7 +64,6 @@ const mockResponse = {
       operation__name: "Operation 4",
       operation__bcghg_id: "12111130004",
       operation__type: OperationTypes.SFO,
-      status: "Active",
       sfo_facility_id: "facility-test-id",
       sfo_facility_name: "Facility Test Name",
       operation__bc_obps_regulated_operation: null,
@@ -115,8 +111,6 @@ describe("OperationsDataGrid component", () => {
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(0);
     expect(screen.getByText(/24-0001/i)).toBeVisible();
-    expect(screen.getByText(/Closed/i)).toBeVisible();
-    expect(screen.getAllByText(/Active/i)).toHaveLength(3);
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
     expect(
       screen.getAllByRole("link", { name: /View Facilities/i }),
@@ -154,7 +148,6 @@ describe("OperationsDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "BC GHG ID" }),
     ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
     expect(
       screen.getByRole("columnheader", { name: "Operation Type" }),
     ).toBeVisible();
@@ -162,14 +155,12 @@ describe("OperationsDataGrid component", () => {
       screen.getByRole("columnheader", { name: "Facilities" }),
     ).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Action" })).toBeVisible();
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(6);
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(5);
 
     // Check data displays
     expect(screen.getByText(/Operation 1/i)).toBeVisible();
     expect(screen.queryAllByText(/FakeOperator/i)).toHaveLength(4);
     expect(screen.getByText(/24-0001/i)).toBeVisible();
-    expect(screen.getByText(/Closed/i)).toBeVisible();
-    expect(screen.getAllByText(/Active/i)).toHaveLength(3);
     expect(screen.getByText(/12111130001/i)).toBeVisible();
     expect(screen.getAllByText(/Single Facility Operation/i)).toHaveLength(3);
 
@@ -250,6 +241,10 @@ describe("OperationsDataGrid component", () => {
       <OperationDataGrid isInternalUser={false} initialData={mockResponse} />,
     );
 
+    expect(screen.getAllByText(/Draft/i)).toHaveLength(2);
+    expect(screen.getByText(/Not Started/i)).toBeVisible();
+    expect(screen.getByText(/Registered/i)).toBeVisible();
+
     expect(
       screen.getByRole("link", {
         name: /Start registration/i,
@@ -282,8 +277,8 @@ describe("OperationsDataGrid component", () => {
       <OperationDataGrid isInternalUser={true} initialData={mockResponse} />,
     );
     expect(screen.getAllByRole("gridcell")[3]).toHaveTextContent("N/A");
-    expect(screen.getAllByRole("gridcell")[11]).toHaveTextContent("24-0001");
-    expect(screen.getAllByRole("gridcell")[19]).toHaveTextContent("Pending");
-    expect(screen.getAllByRole("gridcell")[27]).toHaveTextContent("");
+    expect(screen.getAllByRole("gridcell")[10]).toHaveTextContent("24-0001");
+    expect(screen.getAllByRole("gridcell")[17]).toHaveTextContent("Pending");
+    expect(screen.getAllByRole("gridcell")[24]).toHaveTextContent("");
   });
 });
