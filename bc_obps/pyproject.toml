@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "registration"
+name = "bc_obps"
 version = "0.1.0"
 description = ""
 authors = ["Andrea Williams <andrea.williams@gov.bc.ca>"]

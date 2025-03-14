@@ -31,7 +31,7 @@ make install_dev_tools
 This command will:
 
 - Install Python 3.12.3 via asdf
-- Install Poetry 1.8.1
+- Install Poetry 2.1.1
 - Install and configure PostgreSQL 16.2
 
 2. Create PostgreSQL user:
@@ -67,13 +67,13 @@ If you see "role your_username does not exist" when running database commands, m
 
 ### Virtual Environment
 
-This project uses Poetry 1.8.1 managed by asdf.
+This project uses Poetry managed by asdf.
 You can activate the virtual environment in two ways:
 
 1. Using Poetry (recommended):
 
 ```bash
-poetry shell
+poetry env activate
 ```
 
 > **Note**: If you're using Poetry 2.0+, the `shell` command was removed. In that case, use these alternatives:
@@ -115,7 +115,7 @@ You can verify your installation by checking the versions of installed component
 python --version  # Should show 3.12.3
 
 # Check Poetry version
-poetry --version  # Should show 1.8.1
+poetry --version  # Should show 2.1.1
 
 # Check PostgreSQL version
 psql --version   # Should show 16.2
@@ -133,8 +133,8 @@ After system restart, you'll need to:
 2. Activate the virtual environment:
 
    ```bash
-   # Using Poetry 1.8.1 (via asdf)
-   poetry shell
+   # Using Poetry 2.1.1 (via asdf)
+   poetry env activate
 
    # Or alternatively, activate directly:
    source $(poetry env info --path)/bin/activate
