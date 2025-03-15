@@ -10,6 +10,7 @@ import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivit
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 interface Props {
   versionId: number;
@@ -79,9 +80,13 @@ export default async function ActivityInit({
   const isLinearOperation =
     reportInfoTaskListData?.operationType === OperationTypes.LFO;
 
+  // Get facility type for not applicable methodology in LFO small and medium facilities
+  const facilityType = (await getFacilityReportDetails(versionId, facilityId))
+    .facility_type;
+
   const fetchSchema = async () => {
     const schema = await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}${sourceTypeQueryString}`,
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_type=${facilityType}${sourceTypeQueryString}`,
       "GET",
       "",
     );
@@ -100,6 +105,7 @@ export default async function ActivityInit({
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
       isLinearOperation={isLinearOperation}
+      facilityType={facilityType}
     />
   );
 }
