@@ -1,5 +1,7 @@
 import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
-import { withRulesAppliedReport } from "./middlewares/withRulesAppliedReport";
+import { withRuleHasRegistered } from "./middlewares/withRuleHasRegisteredOperation";
+import { withRuleHasPathAccess } from "./middlewares/withRuleHasPathAccess";
+import { withRuleHasSubmittedReport } from "./middlewares/withRuleHasSubmittedReport";
 import { withResponseReport } from "./middlewares/withResponseReport";
 export const appName = "reporting";
 /* 📌
@@ -29,6 +31,8 @@ export const config = {
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
   withAuthorization,
-  withRulesAppliedReport,
+  withRuleHasRegistered,
+  withRuleHasPathAccess,
+  withRuleHasSubmittedReport,
   withResponseReport,
 ]);
