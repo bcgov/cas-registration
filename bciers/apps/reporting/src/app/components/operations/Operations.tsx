@@ -1,4 +1,4 @@
-import ReportingOperationDataGrid from "./ReportingOperationDataGrid";
+import OperationDataGrid from "./OperationDataGrid";
 import { OperationRow, OperationsSearchParams } from "./types";
 import { fetchOperationsPageData } from "./fetchOperationsPageData";
 
@@ -19,7 +19,7 @@ export default async function Operations({
   // Render the DataGrid component
   return (
     <div className="mt-5">
-      <ReportingOperationDataGrid initialData={operations} />
+      <OperationDataGrid initialData={operations} />
     </div>
   );
 }
