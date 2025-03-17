@@ -151,11 +151,12 @@ Define environment variables for the application.
   value: '*'
 - name: BACKEND_HOST
   value: {{ .Values.backend.route.host }}
-- name: GS_BUCKET_NAME
-  valueFrom:
-    secretKeyRef:
-      key: bucket_name
-      name: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+- name: GS_UNSCANNED_BUCKET_NAME
+  value: {{ .Release.Namespace }}-bciers-attach-unscanned
+- name: GS_CLEAN_BUCKET_NAME
+  value: {{ .Release.Namespace }}-bciers-attach-clean
+- name: GS_QUARANTINED_BUCKET_NAME
+  value: {{ .Release.Namespace }}-bciers-attach-quarantined
 - name: ENVIRONMENT
   value: {{ .Values.backend.environment }}
 {{- end }}
