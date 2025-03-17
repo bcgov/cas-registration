@@ -1,3 +1,5 @@
+## [2.0.1](https://github.com/bcgov/cas-registration/compare/v2.0.0...v2.0.1) (2025-03-17)
+
 # [2.0.0](https://github.com/bcgov/cas-registration/compare/v1.24.0...v2.0.0) (2025-03-17)
 
 ### Bug Fixes
