@@ -232,9 +232,9 @@ describe("the OperationInformationForm component", () => {
               type: "Single Facility Operation",
               naics_code_id: 1,
               process_flow_diagram:
-                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+                "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
               boundary_map:
-                "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=",
+                "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
               operation_has_multiple_operators: false,
             }),
           },
