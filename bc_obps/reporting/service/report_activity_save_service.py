@@ -1,5 +1,6 @@
 import uuid
 from django.db import transaction
+from reporting.service.report_activity_validation_service import ReportActivityValidationService
 from service.utils.get_report_valid_date_from_version_id import get_report_valid_date_from_version_id
 from registration.models.activity import Activity
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -60,7 +61,14 @@ class ReportActivitySaveService:
     def save(self, data: dict) -> ReportActivity:
         # Excluding the keys that are not part of the json_data
         activity_data = exclude_keys(data, ["sourceTypes", "id"])
-
+        try:
+            ReportActivityValidationService.validate_report_activity(
+                self.activity.id, self.facility_report.report_version.id, data
+            )
+        except ValueError as e:
+            raise ValueError(
+                f"Validation failed for report activity {self.activity.id} in report version {self.facility_report.report_version.id}: {e}"
+            )
         # Save raw json data
         self.save_raw_data(data)
 
