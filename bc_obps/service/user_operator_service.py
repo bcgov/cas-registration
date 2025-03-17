@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Literal, Optional
 from uuid import UUID
 from registration.emails import send_operator_access_request_email
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
@@ -123,7 +123,7 @@ class UserOperatorService:
         cls,
         user_guid: UUID,
         sort_field: Optional[str],
-        sort_order: Optional[str],
+        sort_order: Optional[Literal["desc", "asc"]],
         filters: UserOperatorFilterSchema = Query(...),
     ) -> QuerySet[UserOperator]:
 
@@ -133,7 +133,7 @@ class UserOperatorService:
             raise Exception(UNAUTHORIZED_MESSAGE)
 
         # Used to show internal users the list of user_operators to approve/deny
-        base_qs = UserOperatorDataAccessService.get_admin_user_operator_requests_for_irc_users()
+        base_qs = UserOperatorDataAccessService.get_user_operator_requests_for_irc_users()
 
         # `created_at` and `user_friendly_id` are not case-insensitive fields and Lower() cannot be applied to them
         if sort_field in ['created_at', 'user_friendly_id']:
