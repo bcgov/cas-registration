@@ -46,9 +46,9 @@ spec:
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-bciers.namespaceSuffix" . }}
             - name: SENTRY_RELEASE
-              value: {{ .Values.backend.image.tag }}
+              value: {{ .Values.defaultImageTag }}
             - name: SENTRY_TRACE_SAMPLE_RATE
-              value: {{ .Values.backend.sentry.traceSampleRate | quote }}
+              value: {{ .Values.sentry.traceSampleRate | quote }}
             {{- end }}
           ports:
             - containerPort: {{ .Values.backend.service.port }}
