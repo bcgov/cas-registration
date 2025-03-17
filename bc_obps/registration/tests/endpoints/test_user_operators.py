@@ -416,7 +416,7 @@ class TestListUserOperators(CommonTestSetup):
 
         assert response.status_code == 200
         response_data = response.json()
-        len(response.json()['items']) == 4  # all the mock user_operators except the declined one
+        assert len(response.json()['items']) == 4  # all the mock user_operators except the declined one
         # assert one of the approved admin user operators (as a sample) is in the response and has proper data
         approved_admin_user_operator_to_check = approved_admin_user_operators[0]
         approved_admin_user_operator_in_response = next(
