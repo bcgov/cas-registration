@@ -5,7 +5,13 @@ from rls.utils.helpers import generate_rls_grants
 
 class Rls:
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
+        # INDUSTRY_USER can delete their own user operator (Their own access request)
+        RlsRoles.INDUSTRY_USER: [
+            RlsOperations.SELECT,
+            RlsOperations.INSERT,
+            RlsOperations.UPDATE,
+            RlsOperations.DELETE,
+        ],
         # CAS_DIRECTOR can Approve or Decline the user operator (Admin request)
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
