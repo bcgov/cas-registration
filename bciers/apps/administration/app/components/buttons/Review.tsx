@@ -6,17 +6,17 @@ import RecommendIcon from "@mui/icons-material/Recommend";
 import Note from "@bciers/components/datagrid/Note";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import Modal from "@bciers/components/modal/Modal";
-import RequestChanges from "./RequestChanges";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Status } from "@bciers/utils/src/enums";
+import { Role, Status } from "@bciers/utils/src/enums";
 
 interface Props {
   confirmApproveMessage: string;
   confirmRejectMessage: string;
   approvedMessage: string;
   declinedMessage: string;
-  isStatusPending: boolean;
+  role: Role;
+  status: Status;
   operationStatus?: Status;
   note?: string;
   showRequestChanges?: boolean;
@@ -49,24 +49,17 @@ const Review = ({
   approvedMessage,
   confirmApproveMessage,
   confirmRejectMessage,
-  isStatusPending,
-  operationStatus,
   declinedMessage,
   note,
-  showRequestChanges = true,
+  role,
+  status,
   onApprove,
   onReject,
-  onRequestChange,
-  onUndoRequestChange,
 }: Readonly<Props>) => {
   const [errorList, setErrorList] = useState([] as any[]);
   const [successMessageList, setSuccessMessageList] = useState([] as any[]);
   const [modalState, setModalState] = useState("" as string);
   const [dismissAlert, setDismissAlert] = useState(false);
-  const [showChangeConfirmation, setShowChangeConfirmation] = useState(false);
-  const [showRequestChangesUndo, setShowRequestChangesUndo] = useState(
-    operationStatus ? operationStatus === Status.CHANGES_REQUESTED : false,
-  );
 
   const handleApprove = () => {
     setModalState("approve");
@@ -106,29 +99,11 @@ const Review = ({
     setDismissAlert(true);
   };
 
-  const handleCancelRequestChange = () => {
-    setShowChangeConfirmation(false);
-  };
-
-  const handleRequestChange = () => {
-    setShowChangeConfirmation(true);
-  };
-
-  const handleChangeRequestConfirm = () => {
-    onRequestChange?.();
-    setShowRequestChangesUndo(true);
-  };
-
-  const handleUndoRequestChanges = async () => {
-    onUndoRequestChange?.();
-    setShowChangeConfirmation(false);
-    setShowRequestChangesUndo(false);
-  };
   const isReviewButtons =
-    (isStatusPending &&
-      errorList.length === 0 &&
-      successMessageList.length === 0) ||
-    showRequestChangesUndo;
+    status !== Status.DECLINED &&
+    role !== Role.ADMIN &&
+    errorList.length === 0 &&
+    successMessageList.length === 0;
 
   const isApprove = modalState === "approve";
   const confirmMessage = isApprove
@@ -208,25 +183,15 @@ const Review = ({
               xs: "flex-end",
               lg: "center",
             },
-            justifyContent:
-              showRequestChanges || note ? "space-between" : "flex-end",
+            justifyContent: note ? "space-between" : "flex-end",
           }}
         >
-          {showRequestChanges && (
-            <RequestChanges
-              onCancelRequestChange={handleCancelRequestChange}
-              onRequestChange={handleRequestChange}
-              onRequestChangeConfirm={handleChangeRequestConfirm}
-              onUndoRequestChanges={handleUndoRequestChanges}
-              showUndo={showRequestChangesUndo}
-            />
-          )}
           {note && (
             <span className="w-full mb-2 lg:mb-0">
               <Note message={note} />
             </span>
           )}
-          {!showChangeConfirmation && !showRequestChangesUndo && (
+          {
             <Box
               sx={{
                 width: "fit-content",
@@ -246,7 +211,7 @@ const Review = ({
                   fontWeight: "bold",
                 }}
               >
-                Approve <RecommendIcon />
+                Approve as Administrator <RecommendIcon />
               </Button>
               <Button
                 onClick={handleReject}
@@ -258,10 +223,10 @@ const Review = ({
                   fontWeight: "bold",
                 }}
               >
-                Decline <DoNotDisturbIcon />
+                Decline Access <DoNotDisturbIcon />
               </Button>
             </Box>
-          )}
+          }
         </Box>
       )}
       {errorList.length > 0 &&
