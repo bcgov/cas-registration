@@ -157,7 +157,7 @@ export function FilesInfo<
       {filesInfo.map((fileInfo) => {
         const { name, scanStatus } = fileInfo;
         return (
-          <li key={name}>
+          <li key={name} data-name={name}>
             {showScanStatus(scanStatus) || name}
             {preview && (
               <FileInfoPreview<T, S, F>

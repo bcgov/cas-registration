@@ -28,7 +28,7 @@ useRouter.mockReturnValue({
 });
 
 export const mockDataUri =
-  "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
+  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 
 describe("the NewEntrantOperationForm component", () => {
@@ -179,7 +179,11 @@ describe("the NewEntrantOperationForm component", () => {
     const input = screen.getByTestId("root_new_entrant_application");
     await userEvent.upload(input, mockFile);
 
-    expect(screen.getByText("test.pdf")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test.pdf",
+    );
 
     const submitButton = screen.getByRole("button", {
       name: "Save and Continue",
