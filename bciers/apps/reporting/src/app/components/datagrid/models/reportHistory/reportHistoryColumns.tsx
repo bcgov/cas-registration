@@ -1,46 +1,56 @@
 "use client";
 import { GridColDef } from "@mui/x-data-grid";
-import ReportingOperationStatusCell from "@reporting/src/app/components/operations/cells/ReportingOperationStatusCell";
-import ActionCell from "@reporting/src/app/components/operations/cells/ActionCell";
-import MoreCell from "@reporting/src/app/components/operations/cells/MoreActions";
+import ReportHistoryActionCell from "@reporting/src/app/components/reportHistory/ActionCell";
+import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
 const reportHistoryColumns = (): GridColDef[] => {
-  const columns: GridColDef[] = [
-    { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
+  return [
+    {
+      field: "version",
+      headerName: "Report version",
+      width: 300,
+      sortable: false,
+    },
+    {
+      field: "updated_at",
+      headerName: "Date of submission",
+      sortable: false,
+      renderCell: (params) => {
+        // If the updated_at value is null, undefined, or an empty string, show nothing
+        if (!params.value) {
+          return ""; // Return empty string if no date is available
+        }
+        // Format the date if it's available
+        return formatDate(params.value, "YYYY-MM-DD HH:mm:ss");
+      },
+      width: 400,
+    },
     {
       field: "name",
-      headerName: "Operation",
-      width: 560,
+      headerName: "Submitted by",
+      sortable: false,
+      width: 400,
     },
     {
-      field: "report_status",
-      headerName: "Status",
-      renderCell: ReportingOperationStatusCell,
-      align: "center",
-      headerAlign: "center",
-      width: 200,
-    },
-    {
-      field: "report_id",
+      field: "status",
       headerName: "Actions",
-      renderCell: ActionCell,
+      renderCell: ReportHistoryActionCell,
       sortable: false,
       width: 200,
-    },
-
-    {
-      field: "more",
-      headerName: "More Actions",
-      renderCell: MoreCell,
-      sortable: false,
-      width: 120,
       flex: 1,
     },
+    //
+    // {
+    //   field: "more",
+    //   headerName: "More Actions",
+    //   renderCell: MoreCell,
+    //   sortable: false,
+    //   width: 120,
+    //   flex: 1,
+    // },
   ];
-
-  return columns;
 };
 
 export default reportHistoryColumns;
