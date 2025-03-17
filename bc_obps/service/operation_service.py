@@ -182,9 +182,8 @@ class OperationService:
         This method is called before any opt-in data is available.
         """
 
-        operation.opt_in = True
         operation.opted_in_operation = OptedInOperationDetail.objects.create(created_by_id=user_guid)
-        operation.save(update_fields=['opted_in_operation', 'opt_in'])
+        operation.save(update_fields=['opted_in_operation'])
 
         return operation
 
@@ -205,7 +204,6 @@ class OperationService:
         user_guid: UUID,
         payload: OperationInformationIn,
     ) -> Operation:
-
         operation_data = payload.dict(
             include={
                 'name',
@@ -215,7 +213,6 @@ class OperationService:
                 'tertiary_naics_code_id',
                 'date_of_first_shipment',
                 'registration_purpose',
-                'opt_in',
             }
         )
         user_operator: UserOperator = UserDataAccessService.get_user_operator_by_user(user_guid)
@@ -299,7 +296,6 @@ class OperationService:
         operation_id: UUID | None,
         payload: Union[OperationInformationIn, OperationInformationInUpdate],
     ) -> Operation:
-
         # can't optimize this much more without looking at files--the extra hits to operation are in the middleware, and the multi hits to document are from the resolvers
         operation: Operation
         if operation_id:
@@ -368,7 +364,6 @@ class OperationService:
         payload: OperationInformationIn,
         operation_id: UUID,
     ) -> Operation:
-
         # will need to retrieve operation as it exists currently in DB first, to determine whether there's been a change to the RP
 
         operation: Operation = OperationService.get_if_authorized(
@@ -388,7 +383,6 @@ class OperationService:
                 'tertiary_naics_code_id',
                 'date_of_first_shipment',
                 'registration_purpose',
-                'opt_in',
             }
         )
 
@@ -640,7 +634,6 @@ class OperationService:
             FacilityDesignatedOperationTimeline.objects.get(operation=operation).delete()
             operation.facilities.all().delete()
         if old_purpose == Operation.Purposes.OPTED_IN_OPERATION:
-            payload.opt_in = False
             if operation.opted_in_operation_id:  # To make mypy happy
                 OptedInOperationDetail.objects.filter(pk=operation.opted_in_operation_id).delete()
         elif old_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:

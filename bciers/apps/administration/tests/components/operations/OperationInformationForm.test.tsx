@@ -144,7 +144,6 @@ const formData = {
   ],
   registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
   regulated_products: [2],
-  opt_in: false,
 };
 
 const optInFormData = {
@@ -161,7 +160,6 @@ const optInFormData = {
     meets_reporting_and_regulated_obligations: true,
     meets_notification_to_director_on_criteria_change: true,
   },
-  opt_in: true,
 };
 
 const newEntrantFormData = {
@@ -921,11 +919,9 @@ describe("the OperationInformationForm component", () => {
         type: "Single Facility Operation",
         naics_code_id: 1,
         secondary_naics_code_id: 2,
-        operation_has_multiple_operators: false,
         activities: [1, 2],
         registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
         regulated_products: [1],
-        opt_in: false,
         operation_representatives: [1],
         boundary_map: mockDataUri,
         process_flow_diagram: mockDataUri,
@@ -989,7 +985,6 @@ describe("the OperationInformationForm component", () => {
             secondary_naics_code_id: 2,
             process_flow_diagram: mockDataUri,
             boundary_map: mockDataUri,
-            operation_has_multiple_operators: false,
             registration_purpose: "Reporting Operation",
             operation_representatives: [2],
             activities: [1, 2],
