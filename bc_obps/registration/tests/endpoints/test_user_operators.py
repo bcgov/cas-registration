@@ -396,11 +396,27 @@ class TestListUserOperators(CommonTestSetup):
                     status=UserOperator.Statuses.APPROVED,
                 )
             )
+        baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role=UserOperator.Roles.REPORTER,
+            status=UserOperator.Statuses.APPROVED,
+        )
+        baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role=UserOperator.Roles.PENDING,
+            status=UserOperator.Statuses.PENDING,
+        )
+        baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role=UserOperator.Roles.PENDING,
+            status=UserOperator.Statuses.DECLINED,
+        )
+
         response = TestUtils.mock_get_with_auth_role(self, "cas_admin", self.url)
 
         assert response.status_code == 200
         response_data = response.json()
-        assert len(response_data) == 2
+        len(response.json()['items']) == 4  # all the mock user_operators except the declined one
         # assert one of the approved admin user operators (as a sample) is in the response and has proper data
         approved_admin_user_operator_to_check = approved_admin_user_operators[0]
         approved_admin_user_operator_in_response = next(
@@ -417,7 +433,7 @@ class TestListUserOperators(CommonTestSetup):
             approved_admin_user_operator_in_response["user_friendly_id"]
             == approved_admin_user_operator_to_check.user_friendly_id
         )
-        assert approved_admin_user_operator_in_response["status"] == approved_admin_user_operator_to_check.status
+        assert approved_admin_user_operator_in_response["role"] == approved_admin_user_operator_to_check.role
         assert (
             approved_admin_user_operator_in_response["user__first_name"]
             == approved_admin_user_operator_to_check.user.first_name
@@ -441,7 +457,7 @@ class TestListUserOperators(CommonTestSetup):
         assert set(approved_admin_user_operator_in_response.keys()) == {
             "id",
             "user_friendly_id",
-            "status",
+            "role",
             "user__first_name",
             "user__last_name",
             "user__email",

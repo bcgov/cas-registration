@@ -75,6 +75,13 @@ class TestUserOperatorService:
         baker.make_recipe(
             'registration.tests.utils.user_operator',
             user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
+            role=UserOperator.Roles.REPORTER,
+            status=UserOperator.Statuses.APPROVED,
+            _quantity=5,
+        )
+        baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
             role=UserOperator.Roles.ADMIN,
             status=UserOperator.Statuses.DECLINED,
             _quantity=5,
@@ -82,17 +89,17 @@ class TestUserOperatorService:
         baker.make_recipe(
             'registration.tests.utils.user_operator',
             user=cycle(baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)),
-            role=UserOperator.Roles.ADMIN,
+            role=UserOperator.Roles.PENDING,
             status=UserOperator.Statuses.PENDING,
             _quantity=5,
         )
 
-        assert UserOperator.objects.count() == 15
+        assert UserOperator.objects.count() == 20
 
-        # Check filter status (we only care about status)
+        # Check filter role (we only care about role)
         filters_2 = UserOperatorFilterSchema(
             user_friendly_id="",
-            status="admin",
+            role="admin",
             user__first_name="",
             user__last_name="",
             user__email="",
@@ -100,16 +107,16 @@ class TestUserOperatorService:
             operator__legal_name="",
         )
         cas_admin = baker.make_recipe('registration.tests.utils.cas_admin')
-        user_operators_with_admin_access_status = UserOperatorService.list_user_operators(
-            user_guid=cas_admin.user_guid, filters=filters_2, sort_field="created_at", sort_order="asc"
+        user_operators_with_admin_access_role = UserOperatorService.list_user_operators(
+            user_guid=cas_admin.user_guid, filters=filters_2, sort_field="role", sort_order="asc"
         )
-        assert user_operators_with_admin_access_status.count() == 5
-        assert user_operators_with_admin_access_status.filter(status=UserOperator.Statuses.APPROVED).count() == 5
+        assert user_operators_with_admin_access_role.count() == 5
+        assert user_operators_with_admin_access_role.filter(role=UserOperator.Roles.ADMIN).count() == 5
 
         # Check sorting
         filters_3 = filters_2.model_copy(
-            update={"status": ""}
-        )  # making a copy of filters_2 and updating status to empty string
+            update={"role": ""}
+        )  # making a copy of filters_2 and updating role to empty string
         user_operators_sorted_by_user_friendly_id = UserOperatorService.list_user_operators(
             user_guid=cas_admin.user_guid, filters=filters_3, sort_field="user_friendly_id", sort_order="asc"
         )
@@ -117,11 +124,11 @@ class TestUserOperatorService:
             user_operators_sorted_by_user_friendly_id.first().user_friendly_id
             < user_operators_sorted_by_user_friendly_id.last().user_friendly_id
         )
-        user_operators_sorted_by_status = UserOperatorService.list_user_operators(
-            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="status", sort_order="asc"
+        user_operators_sorted_by_role = UserOperatorService.list_user_operators(
+            user_guid=cas_admin.user_guid, filters=filters_3, sort_field="role", sort_order="asc"
         )
-        assert user_operators_sorted_by_status.first().status == UserOperator.Statuses.APPROVED
-        assert user_operators_sorted_by_status.last().status == UserOperator.Statuses.PENDING
+        assert user_operators_sorted_by_role.first().role == UserOperator.Roles.ADMIN
+        assert user_operators_sorted_by_role.last().role == UserOperator.Roles.REPORTER
 
     @staticmethod
     @patch("service.user_operator_service.UserOperatorService.save_operator")
