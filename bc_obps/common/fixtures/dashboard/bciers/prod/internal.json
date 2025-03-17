@@ -69,26 +69,6 @@
             ]
           },
           {
-            "title": "Compliance",
-            "href": "/compliance",
-            "icon": "Pulse",
-            "content": "View payments for compliance obligations here.",
-            "links": [
-              {
-                "title": "TBD",
-                "href": "/compliance/"
-              },
-              {
-                "title": "TBD",
-                "href": "/compliance/"
-              },
-              {
-                "title": "TBD",
-                "href": "/compliance/"
-              }
-            ]
-          },
-          {
             "title": "Clean Growth User Access Management",
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Users",
