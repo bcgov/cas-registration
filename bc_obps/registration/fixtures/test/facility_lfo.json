@@ -26,7 +26,7 @@
       "type": "Medium Facility",
       "swrs_facility_id": 1022,
       "bcghg_id": "43219990002",
-      "address": 1,
+      "address": 2,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -42,7 +42,7 @@
       "type": "Large Facility",
       "swrs_facility_id": 1022,
       "bcghg_id": "43219990003",
-      "address": 1,
+      "address": 3,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
@@ -58,7 +58,7 @@
       "type": "Medium Facility",
       "swrs_facility_id": 1022,
       "bcghg_id": "43219990004",
-      "address": 1,
+      "address": 4,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
