@@ -225,3 +225,6 @@ download-dags:
   dagId: fetch_and_save_dag_from_github
   helm:
     hook: "pre-install,pre-upgrade"
+
+sentry:
+  traceSampleRate: 0.1

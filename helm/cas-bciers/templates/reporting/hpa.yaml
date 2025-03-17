@@ -3,8 +3,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "cas-bciers.fullname" . }}-reporting-frontend-hpa
-  labels:
-    {{- include "cas-bciers.labels" . | nindent 4 }}
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -13,16 +12,20 @@ spec:
   minReplicas: {{ .Values.reportingFrontend.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.reportingFrontend.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.reportingFrontend.autoscaling.targetCPUUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: cpu
-        targetAverageUtilization: {{ .Values.reportingFrontend.autoscaling.targetCPUUtilizationPercentage }}
-    {{- end }}
-    {{- if .Values.reportingFrontend.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
-      resource:
-        name: memory
-        targetAverageUtilization: {{ .Values.reportingFrontend.autoscaling.targetMemoryUtilizationPercentage }}
-    {{- end }}
+  {{- if .Values.reportingFrontend.autoscaling.targetCPUUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.reportingFrontend.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+  {{- if .Values.reportingFrontend.autoscaling.targetMemoryUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.reportingFrontend.autoscaling.targetMemoryUtilizationPercentage }}
+  {{- end }}
 {{- end }}
