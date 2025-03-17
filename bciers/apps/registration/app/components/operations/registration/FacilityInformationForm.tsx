@@ -1,6 +1,5 @@
 "use client";
 
-import { isDeepStrictEqual } from "util";
 import { useCallback, useMemo, useState } from "react";
 import { UUID } from "crypto";
 import { IChangeEvent } from "@rjsf/core";
@@ -114,19 +113,18 @@ const FacilityInformationForm = ({
 
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
+      // if there are no existing facilities and the user hasn't added a new one, return error
       if (
         initialGridData?.row_count === 0 &&
-        e.formData?.facility_information_array &&
-        e.formData.facility_information_array.length === 0
+        ((e.formData?.facility_information_array &&
+          e.formData.facility_information_array.length === 0) ||
+          JSON.stringify(e.formData.facility_information_array) ===
+            JSON.stringify([{}]))
       ) {
         return { error: "Operation must have at least one facility." };
       }
-      // if the facility form is completely blank, redirect to the next step without hitting the API
-      if (
-        initialGridData?.row_count &&
-        initialGridData?.row_count > 0 &&
-        isDeepStrictEqual(e.formData.facility_information_array, [{}])
-      ) {
+      // if there's an existing facility and the new facility form was opened but not filled, redirect to the next step without hitting the API
+      if (initialGridData?.row_count && initialGridData?.row_count > 0) {
         redirect();
         return;
       }

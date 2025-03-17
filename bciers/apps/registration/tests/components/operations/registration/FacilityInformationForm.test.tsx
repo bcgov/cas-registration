@@ -378,6 +378,31 @@ describe("the FacilityInformationForm component", () => {
     });
   });
 
+  it("should throw error if user attempts to save and continue with a blank form and no facilities", async () => {
+    render(<FacilityInformationForm {...defaultProps} />);
+    const addButton = screen.getByRole("button", {
+      name: "Add facility",
+    });
+
+    act(() => {
+      fireEvent.click(addButton);
+    });
+
+    const submitButton = screen.getByRole("button", {
+      name: "Save and Continue",
+    });
+
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+    expect(actionHandler).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Operation must have at least one facility./i),
+      ).toBeVisible();
+    });
+  });
+
   it("should display the Facility DataGrid", () => {
     render(<FacilityInformationForm {...defaultProps} />);
     expect(
