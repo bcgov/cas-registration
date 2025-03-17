@@ -11,8 +11,8 @@ backend:
     limits:
       memory: 1024Mi
     requests:
-      cpu: 150m
-      memory: 512Mi
+      cpu: 250m
+      memory: 550Mi
 
 administrationFrontend:
   replicaCount: 2
@@ -72,7 +72,7 @@ reportingFrontend:
       memory: 128Mi
 
 complianceFrontend:
-  replicaCount: 1
+  replicaCount: 0
 
   image:
     tag: "latest"
