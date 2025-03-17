@@ -1127,7 +1127,6 @@ class TestHandleChangeOfRegistrationPurpose:
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
-            opt_in=True,
         )
         opted_in_operation_detail = baker.make_recipe('registration.tests.utils.opted_in_operation_detail')
         operation.opted_in_operation = opted_in_operation_detail
@@ -1145,7 +1144,6 @@ class TestHandleChangeOfRegistrationPurpose:
             approved_user_operator.user.user_guid, operation, submitted_payload
         )
 
-        assert returned_payload.opt_in is False
         assert returned_payload.registration_purpose == Operation.Purposes.REPORTING_OPERATION
         assert OptedInOperationDetail.objects.count() == 0
 

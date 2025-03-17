@@ -13,7 +13,6 @@ export interface Operation {
   naics_code: number;
   swrs_facility_id?: number;
   bcghg_id?: string;
-  opt_in?: boolean;
   operator: Operator;
   operation_has_multiple_operators: boolean;
   first_name: string;

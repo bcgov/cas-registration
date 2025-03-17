@@ -62,10 +62,6 @@ class Operation(TimeStampedModel):
         db_comment="The operator who owns the operation",
         related_name="operations",
     )
-    operation_has_multiple_operators = models.BooleanField(
-        db_comment="Whether or not the operation has multiple operators", default=False
-    )
-
     naics_code = models.ForeignKey(
         NaicsCode,
         on_delete=models.PROTECT,
@@ -103,13 +99,6 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
-
-    opt_in = models.BooleanField(
-        db_comment="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.",
-        blank=True,
-        null=True,
-    )
-
     verified_at = models.DateTimeField(
         db_comment="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.",
         blank=True,

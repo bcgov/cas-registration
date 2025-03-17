@@ -72,7 +72,6 @@ class OperationModelTest(BaseTestCase):
             ("activities", "activities", None, 2),
             ("swrs_facility_id", "swrs facility id", None, None),
             ("bcghg_id", "bcghg id", None, None),
-            ("opt_in", "opt in", None, None),
             ("verified_at", "verified at", None, None),
             ("verified_by", "verified by", None, None),
             ("submission_date", "submission date", None, None),
