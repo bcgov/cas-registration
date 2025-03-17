@@ -1,3 +1,9 @@
+## [1.24.1](https://github.com/bcgov/cas-registration/compare/v1.24.0...v1.24.1) (2025-03-17)
+
+### Bug Fixes
+
+- resolve multiple operators in ninja schema ([4658fc5](https://github.com/bcgov/cas-registration/commit/4658fc5f44779de89d60b5ec32671b11fea5740f))
+
 # [1.24.0](https://github.com/bcgov/cas-registration/compare/v1.23.1...v1.24.0) (2025-03-13)
 
 ### Bug Fixes
