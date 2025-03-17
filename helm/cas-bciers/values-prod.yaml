@@ -11,8 +11,14 @@ backend:
     limits:
       memory: 1024Mi
     requests:
-      cpu: 150m
-      memory: 512Mi
+      cpu: 250m
+      memory: 550Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
 
 administrationFrontend:
   replicaCount: 2
@@ -33,6 +39,12 @@ administrationFrontend:
       cpu: 60m
       memory: 128Mi
 
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+
 registrationFrontend:
   replicaCount: 2
 
@@ -51,6 +63,12 @@ registrationFrontend:
     requests:
       cpu: 60m
       memory: 128Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
 
 reportingFrontend:
   replicaCount: 2
@@ -71,8 +89,14 @@ reportingFrontend:
       cpu: 60m
       memory: 128Mi
 
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+
 complianceFrontend:
-  replicaCount: 1
+  replicaCount: 0
 
   image:
     tag: "latest"
@@ -112,6 +136,12 @@ dashboardFrontend:
     requests:
       cpu: 60m
       memory: 128Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
 
 growthbook:
   clientKey: sdk-9Vyna67jpIYdjMa
