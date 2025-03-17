@@ -1,4 +1,5 @@
 from typing import Literal, Tuple
+from ninja.types import DictStrAny
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.constants import USER_OPERATOR_TAGS
@@ -27,3 +28,15 @@ def get_user_operator_by_id(request: HttpRequest, user_operator_id: UUID) -> Tup
         get_current_user_guid(request), user_operator_id
     )  # industry users can only access their own user_operators
     return 200, UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
+
+
+@router.delete(
+    "/user-operators/{uuid:user_operator_id}",
+    response={200: DictStrAny, custom_codes_4xx: Message},
+    tags=USER_OPERATOR_TAGS,
+    description="""Deletes a user-operator by its ID.""",
+    auth=authorize("industry_user"),
+)
+def delete_user_operator(request: HttpRequest, user_operator_id: UUID) -> Tuple[Literal[200], DictStrAny]:
+    UserOperatorService.delete_user_operator(get_current_user_guid(request), user_operator_id)
+    return 200, {"success": True}
