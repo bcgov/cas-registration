@@ -8,7 +8,7 @@ export const fetchReportHistoryPageData = async (params: {
   searchParams: OperationsSearchParams;
 }) => {
   const queryParams = buildQueryParams(params.searchParams);
-  const url = `reporting/report/${params.report_id}/report-history${queryParams}`;
+  const url = `reporting/report-history/${params.report_id}${queryParams}`;
   const pageData = await actionHandler(url, "GET", url);
   return {
     rows: pageData.items,
