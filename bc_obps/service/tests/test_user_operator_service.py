@@ -182,6 +182,17 @@ class TestUserOperatorService:
             operator_id=operator_instance.id,
         ).exists()
 
+    @staticmethod
+    @patch("service.user_operator_service.UserOperatorService.check_if_user_eligible_to_access_user_operator")
+    def test_delete_user_operator(mock_check_if_user_eligible_to_access_user_operator):
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+        user_operator = baker.make_recipe('registration.tests.utils.user_operator', user=user)
+
+        UserOperatorService.delete_user_operator(user_guid=user.user_guid, user_operator_id=user_operator.id)
+
+        mock_check_if_user_eligible_to_access_user_operator.assert_called_once_with(user.user_guid, user_operator.id)
+        assert UserOperator.objects.count() == 0
+
 
 class TestUpdateStatusAndCreateContact:
     def test_industry_user_cannot_approve_access_request_from_a_different_operator(
