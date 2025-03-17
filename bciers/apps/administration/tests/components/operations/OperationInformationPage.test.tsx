@@ -31,7 +31,6 @@ const formData = {
   ],
   registration_purpose: "Reporting Operation",
   regulated_products: [6],
-  opt_in: false,
 };
 
 const operationId = "8be4c7aa-6ab3-4aad-9206-0ef914fea063";

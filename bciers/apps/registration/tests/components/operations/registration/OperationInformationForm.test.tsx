@@ -235,7 +235,6 @@ describe("the OperationInformationForm component", () => {
                 "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
               boundary_map:
                 "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
-              operation_has_multiple_operators: false,
             }),
           },
         );
@@ -466,7 +465,6 @@ describe("the OperationInformationForm component", () => {
               registration_purpose: "Electricity Import Operation",
               name: "EIO Op Name",
               type: "Electricity Import Operation",
-              operation_has_multiple_operators: false,
             }),
           },
         );
