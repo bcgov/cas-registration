@@ -320,6 +320,7 @@ ENDPOINTS = {
             "kwargs": {"operator_id": MOCK_UUID},
         },
         {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
+        {"method": "delete", "endpoint_name": "delete_user_operator", "kwargs": {"user_operator_id": MOCK_UUID}},
     ],
     "approved_industry_admin_user": [
         {
