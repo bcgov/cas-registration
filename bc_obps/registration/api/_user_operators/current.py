@@ -6,9 +6,7 @@ from registration.schema import OperatorFromUserOperatorOut, Message
 from service.data_access_service.user_service import UserDataAccessService
 from common.api.utils import get_current_user_guid
 from registration.api.router import router
-from registration.models import (
-    UserOperator,
-)
+from registration.models import Operator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 
@@ -22,6 +20,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     Declined user-operators are excluded from the results.""",
     auth=authorize("approved_industry_user"),
 )
-def get_current_operator_from_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
+def get_current_operator_from_user_operator(request: HttpRequest) -> Tuple[Literal[200], Operator]:
     user_operator = UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))
-    return 200, user_operator
+    return 200, user_operator.operator
