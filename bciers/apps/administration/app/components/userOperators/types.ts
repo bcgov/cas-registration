@@ -6,6 +6,7 @@ import {
 import { GridRenderCellParams } from "@mui/x-data-grid/models/params/gridCellParams";
 import { ButtonOwnProps } from "@mui/material/Button";
 import { ReactNode } from "react";
+import { UUID } from "crypto";
 
 export interface Operator {
   id: number;
@@ -134,4 +135,13 @@ export interface UserOperatorFormData extends UserFormData {
   user_operator_id?: string;
   is_new: boolean;
   operator_id: number;
+}
+
+export interface UserOperator {
+  id: UUID;
+  status: UserOperatorStatus;
+  is_new: boolean;
+  operatorId: UUID;
+  operatorStatus: string;
+  operatorLegalName: string;
 }
