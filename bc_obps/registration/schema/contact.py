@@ -48,6 +48,7 @@ class ContactFilterSchema(FilterSchema):
     last_name: Optional[str] = Field(None, json_schema_extra={'q': 'last_name__icontains'})
     email: Optional[str] = Field(None, json_schema_extra={'q': 'email__icontains'})
     operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
+    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator_id'})
 
 
 class OperationRepresentativeListOut(Schema):
