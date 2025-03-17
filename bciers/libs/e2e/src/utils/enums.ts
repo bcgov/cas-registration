@@ -203,8 +203,8 @@ export enum MessageTextOperator {
 // 💬 Operators messages
 export enum MessageTextOperators {
   ALERT_NEW_OPERATOR_NEEDS_APPROVE = "Operator must be approved before approving or declining users.",
-  ALERT_ADMIN_APPROVED = "You have approved the prime admin request.",
-  ALERT_ADMIN_DECLINED = "You have declined the prime admin request.",
+  ALERT_ADMIN_APPROVED = "You have approved the administrator request.",
+  ALERT_ADMIN_DECLINED = "You have declined the administrator request.",
   ALERT_OPERATOR_APPROVED = "You have approved the creation of the new operator.",
   ALERT_OPERATOR_DECLINED = "You have declined the creation of the new operator.",
   NOTE_INTERNAL = "Once “Approved,” the user will have access to their operator dashboard with full admin permissions, and can grant access and designate permissions to other authorized users there.",
