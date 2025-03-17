@@ -29,7 +29,7 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000002",
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "role": "approved",
+      "role": "admin",
       "status": "Approved",
       "verified_at": "2024-02-27 06:24:57.293242-08",
       "verified_by": "58f255ed-8d46-44ee-b2fe-9f8d3d92c684",
@@ -186,8 +186,8 @@
     "fields": {
       "user": "00000000-0000-0000-0000-000000000015",
       "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
-      "role": "reporter",
-      "status": "Approved",
+      "role": "pending",
+      "status": "Declined",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 18
