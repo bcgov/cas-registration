@@ -15,5 +15,6 @@ class DocumentModelTest(BaseTestCase):
             ("type", "type", None, None),
             ("description", "description", 1000, None),
             ("operation", "operation", None, None),
+            ("status", "status", None, None),
         ]
         cls.test_object = Document.objects.get(id=1)
