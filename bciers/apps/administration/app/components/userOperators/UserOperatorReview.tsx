@@ -1,12 +1,7 @@
 "use client";
 
 import { actionHandler } from "@bciers/actions";
-import {
-  OperatorStatus,
-  Status,
-  UserOperatorRoles,
-  UserOperatorStatus,
-} from "@bciers/utils/src/enums";
+import { Role, Status, UserOperatorRoles } from "@bciers/utils/src/enums";
 import { UserOperatorFormData } from "./types";
 import Review from "../buttons/Review";
 
@@ -60,10 +55,8 @@ export default function UserOperatorReview({
       declinedMessage={`You have declined the prime admin request.`}
       confirmApproveMessage={`Are you sure you want to approve the prime admin request?`}
       confirmRejectMessage={`Are you sure you want to decline the prime admin request?`}
-      isStatusPending={
-        userOperator.status === UserOperatorStatus.PENDING &&
-        userOperator.operator_status !== OperatorStatus.DECLINED
-      }
+      status={userOperator.status as Status}
+      role={userOperator.role as Role}
       note={note}
       onApprove={approvePrimeAdminRequest}
       onReject={declinePrimeAdminRequest}

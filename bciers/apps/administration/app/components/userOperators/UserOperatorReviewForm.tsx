@@ -55,6 +55,7 @@ const UserOperatorReviewForm = ({
                   userOperatorId={userOperatorId as string}
                 />
               )}
+
               <FormBase
                 schema={userOperatorAdministrationSchema}
                 uiSchema={userOperatorAdministrationUiSchema}
