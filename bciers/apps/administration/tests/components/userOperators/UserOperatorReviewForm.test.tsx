@@ -68,7 +68,7 @@ describe("UserOperatorReview component", () => {
         />,
       );
       expect(
-        screen.queryByRole("button", { name: /Approve/i }),
+        screen.queryByRole("button", { name: /Approve as administrator/i }),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: /Decline/i }),
@@ -93,7 +93,7 @@ describe("UserOperatorReview component", () => {
         />,
       );
       expect(
-        screen.queryByRole("button", { name: /Approve/i }),
+        screen.queryByRole("button", { name: /Approve as administrator/i }),
       ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: /Decline/i }),
