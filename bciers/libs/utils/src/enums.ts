@@ -73,9 +73,15 @@ export enum Status {
   APPROVED = "Approved",
   DECLINED = "Declined",
   PENDING = "Pending",
-  DRAFT = "Draft",
   CHANGES_REQUESTED = "Changes Requested",
   NOT_STARTED = "Not Started",
+  DRAFT = "Draft",
+}
+
+export enum Role {
+  ADMIN = "admin",
+  REPORTER = "reporter",
+  PENDING = "pending",
 }
 
 // report operation statuses
