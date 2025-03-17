@@ -24,6 +24,7 @@ const mockResponse = {
       user__email: "john.doe@example.com",
       user__bceid_business_name: "John Doe Inc.",
       operator__legal_name: "FakeOperator 1",
+      role: "Administrator",
     },
     {
       id: 2,
@@ -34,6 +35,7 @@ const mockResponse = {
       user__email: "jane.smith@example.com",
       user__bceid_business_name: "Jane Smith Inc.",
       operator__legal_name: "FakeOperator 2",
+      role: "Administrator",
     },
     {
       id: 3,
@@ -44,6 +46,7 @@ const mockResponse = {
       user__email: "alice.brown@example.com",
       user__bceid_business_name: "Alice Brown Inc.",
       operator__legal_name: "FakeOperator 3",
+      role: "Administrator",
     },
     {
       id: 4,
@@ -54,6 +57,7 @@ const mockResponse = {
       user__email: "bob.white@example.com",
       user__bceid_business_name: "Bob White Inc.",
       operator__legal_name: "FakeOperator 4",
+      role: "Administrator",
     },
   ],
   row_count: 4,
@@ -83,7 +87,7 @@ describe("UserOperatorDataGrid component", () => {
     expect(
       screen.getByRole("columnheader", { name: "Operator" }),
     ).toBeVisible();
-    expect(screen.getByRole("columnheader", { name: "Status" })).toBeVisible();
+    expect(screen.getByRole("columnheader", { name: "Role" })).toBeVisible();
 
     expect(screen.getByRole("columnheader", { name: "Actions" })).toBeVisible();
     expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(7);
@@ -96,7 +100,7 @@ describe("UserOperatorDataGrid component", () => {
     expect(within(firstUserOperatorRow).getByText("John")).toBeVisible();
     expect(within(firstUserOperatorRow).getByText("Doe")).toBeVisible();
     expect(
-      within(firstUserOperatorRow).getByText(/admin access/i),
+      within(firstUserOperatorRow).getByText(/administrator/i),
     ).toBeVisible();
     expect(
       within(firstUserOperatorRow).getByText(/john.doe@example.com/i),
