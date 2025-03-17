@@ -33,7 +33,6 @@ export const userOperatorAdministrationSchema: RJSFSchema = {
       format: "phone",
       readOnly: true,
     },
-    // brianna do a custom widget for title case
     role: { type: "string", title: "Role" },
   },
 };
