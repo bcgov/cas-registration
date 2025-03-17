@@ -18,5 +18,105 @@
       "province": "BC",
       "postal_code": "X0Y 1Z0"
     }
+  },
+  {
+    "model": "registration.address",
+    "pk": 3,
+    "fields": {
+      "street_address": "123 Main St",
+      "municipality": "City",
+      "province": "ON",
+      "postal_code": "A1B 2C3"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 4,
+    "fields": {
+      "street_address": "789 Oak St",
+      "municipality": "Village",
+      "province": "BC",
+      "postal_code": "M2N 3P4"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 5,
+    "fields": {
+      "street_address": "101 Maple St",
+      "municipality": "Hamlet",
+      "province": "QC",
+      "postal_code": "H3Z 2Y7"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 6,
+    "fields": {
+      "street_address": "202 Pine St",
+      "municipality": "Borough",
+      "province": "AB",
+      "postal_code": "T5K 1P2"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 7,
+    "fields": {
+      "street_address": "303 Cedar St",
+      "municipality": "Metropolis",
+      "province": "ON",
+      "postal_code": "M4B 1B3"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 8,
+    "fields": {
+      "street_address": "404 Birch St",
+      "municipality": "Uptown",
+      "province": "BC",
+      "postal_code": "V6B 2W3"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 9,
+    "fields": {
+      "street_address": "505 Spruce St",
+      "municipality": "Downtown",
+      "province": "ON",
+      "postal_code": "K1A 0B1"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 10,
+    "fields": {
+      "street_address": "606 Fir St",
+      "municipality": "Suburbia",
+      "province": "QC",
+      "postal_code": "G1V 4N7"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 11,
+    "fields": {
+      "street_address": "707 Willow St",
+      "municipality": "Riverside",
+      "province": "MB",
+      "postal_code": "R3C 4A5"
+    }
+  },
+  {
+    "model": "registration.address",
+    "pk": 12,
+    "fields": {
+      "street_address": "808 Poplar St",
+      "municipality": "Lakeside",
+      "province": "NS",
+      "postal_code": "B3H 2Y9"
+    }
   }
 ]
