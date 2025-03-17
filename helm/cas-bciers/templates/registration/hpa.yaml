@@ -1,0 +1,28 @@
+{{- if .Values.registrationFrontend.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-registration-frontend-hpa
+  labels:
+    {{- include "cas-bciers.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "cas-bciers.fullname" . }}-registration-frontend
+  minReplicas: {{ .Values.registrationFrontend.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.registrationFrontend.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.registrationFrontend.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        targetAverageUtilization: {{ .Values.registrationFrontend.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.registrationFrontend.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        targetAverageUtilization: {{ .Values.registrationFrontend.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}
