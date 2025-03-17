@@ -8,10 +8,14 @@ import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
 
 const fileFieldLabel = "FileWidget test field";
 const fileLabelRequired = `${fileFieldLabel}*`;
-export const testDataUri =
-  "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
+export const testDataUriClean =
+  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
+export const testDataUriUnscanned =
+  "data:application/pdf;name=testpdf.pdf;scanstatus=Unscanned;base64,ZHVtbXk=";
+export const testDataUriQuarantined =
+  "data:application/pdf;name=testpdf.pdf;scanstatus=Quarantined;base64,ZHVtbXk=";
 export const testDataUri2 =
-  "data:application/pdf;name=testpdf2.pdf;base64,ZHVtbXk=";
+  "data:application/pdf;name=testpdf2.pdf;scanstatus=Clean;base64,ZHVtbXk=";
 const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 const mockFile2 = new File(["test2"], "test2.pdf", { type: "application/pdf" });
 const mockFileUnaccepted = new File(["test"], "test.txt", {
@@ -66,12 +70,48 @@ describe("RJSF FileWidget", () => {
     expect(screen.queryByRole("input")).not.toBeInTheDocument();
   });
 
-  it("should render the file value when formData is provided", async () => {
+  it("should render the scanning message when formData is provided and scanStatus is Unscanned", async () => {
     render(
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: testDataUri,
+          fileTestField: testDataUriUnscanned,
+        }}
+        uiSchema={fileFieldUiSchema}
+      />,
+    );
+
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "testpdf.pdf",
+    );
+  });
+
+  it("should render the quarantine message when formData is provided and scanStatus is Quarantined", async () => {
+    render(
+      <FormBase
+        schema={fileFieldSchema}
+        formData={{
+          fileTestField: testDataUriQuarantined,
+        }}
+        uiSchema={fileFieldUiSchema}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Security risk found. Check for viruses or upload a different file.",
+      ),
+    ).toBeVisible();
+  });
+
+  it("should render the file value when formData is provided and scanStatus is Clean", async () => {
+    render(
+      <FormBase
+        schema={fileFieldSchema}
+        formData={{
+          fileTestField: testDataUriClean,
         }}
         uiSchema={fileFieldUiSchema}
       />,
@@ -86,7 +126,11 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(screen.getByText("test.pdf")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test.pdf",
+    );
     expect(
       screen.queryByText("No attachment was uploaded"),
     ).not.toBeInTheDocument();
@@ -132,12 +176,18 @@ describe("RJSF FileWidget", () => {
     });
 
     await userEvent.upload(input, mockKmlFile);
-
-    expect(screen.getByText("test.kml")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test.kml",
+    );
 
     await userEvent.upload(input, mockKmzFile);
-
-    expect(screen.getByText("test.kmz")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test.kmz",
+    );
   });
 
   it("should not allow uploading a file larger than 20MB", async () => {
@@ -164,11 +214,19 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(screen.getByText("test.pdf")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test.pdf",
+    );
 
     await userEvent.upload(input, mockFile2);
 
-    expect(screen.getByText("test2.pdf")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test2.pdf",
+    );
   });
 
   it("should allow replacing an uploaded file after submission", async () => {
@@ -176,7 +234,7 @@ describe("RJSF FileWidget", () => {
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: testDataUri,
+          fileTestField: testDataUriClean,
         }}
         uiSchema={fileFieldUiSchema}
       />,
@@ -188,7 +246,11 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockFile2);
 
-    expect(screen.getByText("test2.pdf")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "test2.pdf",
+    );
   });
 
   it("should display the file preview link when a file is uploaded", async () => {
@@ -209,12 +271,12 @@ describe("RJSF FileWidget", () => {
         schema={fileFieldSchema}
         uiSchema={fileFieldUiSchema}
         formData={{
-          fileTestField: [testDataUri],
+          fileTestField: [testDataUriClean],
         }}
       />,
     );
     const previewLink = screen.getByRole("link", { name: "Preview" });
-    expect(previewLink).toHaveAttribute("href", testDataUri);
+    expect(previewLink).toHaveAttribute("href", testDataUriClean);
   });
 
   it("should not render the upload button for internal users", () => {
@@ -248,7 +310,7 @@ describe("RJSF FileWidget", () => {
       <FormBase
         schema={fileFieldSchema}
         formData={{
-          fileTestField: testDataUri,
+          fileTestField: testDataUriClean,
         }}
         uiSchema={fileFieldUiSchema}
       />,
@@ -276,7 +338,7 @@ describe("RJSF FileWidget", () => {
           },
         }}
         formData={{
-          fileTestField: [testDataUri, testDataUri2],
+          fileTestField: [testDataUriClean, testDataUri2],
         }}
         uiSchema={fileFieldUiSchema}
       />,
