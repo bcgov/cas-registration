@@ -77,7 +77,6 @@ class OperationModelTest(BaseTestCase):
             ("submission_date", "submission date", None, None),
             ("documents", "document", None, None),
             ("bc_obps_regulated_operation", "bc obps regulated operation", None, None),
-            ("operation_has_multiple_operators", "operation has multiple operators", None, None),
             ("operator", "operator", None, None),
             ("status", "status", 1000, None),
             ("multiple_operators", "multiple operator", None, None),
