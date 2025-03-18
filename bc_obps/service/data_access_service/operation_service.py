@@ -9,7 +9,6 @@ from service.user_operator_service import UserOperatorService
 class OperationDataAccessService:
     @classmethod
     def get_by_id(cls, operation_id: UUID, only_fields: Optional[List[str]] = None) -> Operation:
-
         if only_fields:
             operation: Operation = Operation.objects.only(*only_fields).get(id=operation_id)
         else:
@@ -23,7 +22,6 @@ class OperationDataAccessService:
                     'secondary_naics_code',
                     'tertiary_naics_code',
                     'bcghg_id',
-                    'verified_by',
                     'bc_obps_regulated_operation',
                     'opted_in_operation',
                 )

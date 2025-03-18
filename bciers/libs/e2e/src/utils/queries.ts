@@ -32,15 +32,14 @@ const defaultUpsertOperatorValues: UpsertOperatorValues = {
 };
 // Operator Upsert SQL
 const upsertOperator = `
-    INSERT INTO erc.operator (legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, status, is_new, id)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    INSERT INTO erc.operator (legal_name, trade_name, cra_business_number, bc_corporate_registry_number, business_structure_id, status, id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     ON CONFLICT (id)
     DO UPDATE SET status = EXCLUDED.status;
   `;
 // 🛠️ Function: upserts operator record
 export const upsertOperatorRecord = async (
   status: string = OperatorStatus.APPROVED,
-  isNew: boolean = false,
   id: string = OperatorUUID.DEFAULT,
   values: Partial<UpsertOperatorValues> = {},
 ) => {
@@ -58,7 +57,6 @@ export const upsertOperatorRecord = async (
       mergedValues.bcCorporateRegistryNumber,
       mergedValues.businessStructure,
       status,
-      isNew,
       id,
     ];
 

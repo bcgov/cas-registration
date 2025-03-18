@@ -59,7 +59,6 @@ export interface UserOperatorFormData extends UserFormData {
   parent_operators_array?: Array<ParentOperator>;
   // Not in form, but needed for API to create a contact based on the existing user-operator
   user_operator_id?: string;
-  is_new: boolean;
   operator_id: number;
 }
 

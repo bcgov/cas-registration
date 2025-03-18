@@ -17,7 +17,6 @@ interface Props {
 const UserOperatorReviewForm = ({ formData, schema }: Props) => {
   const params = useParams();
   const userOperatorId = params.id;
-  const isNewOperator = formData.is_new;
   const isUserOperatorPending = formData.status === UserOperatorStatus.PENDING;
   const isOperatorStatusDeclined =
     formData.operator_status === OperatorStatus.DECLINED;
@@ -35,7 +34,7 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
       formData={formData}
       // Add Review components to the beforeForm prop
       beforeForm={{
-        "Operator Information": isNewOperator && (
+        "Operator Information": (
           <UserOperatorReview
             userOperator={formData as UserOperatorFormData}
             userOperatorId={userOperatorId as string}
@@ -48,7 +47,6 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
               setRerenderKey(crypto.getRandomValues(new Uint32Array(1))[0])
             }
             note="This is a new operator. You must approve this operator before approving its admin."
-            isOperatorNew={formData?.is_new}
             operatorId={formData?.operator_id}
             showRequestChanges={false}
           />
@@ -63,10 +61,10 @@ const UserOperatorReviewForm = ({ formData, schema }: Props) => {
           />
         ),
       }}
-      // If the operator is new, the first section should be expanded
+      // The first section should always be expanded
       // If the user is pending, the second section should be expanded
       expandedSteps={{
-        "Operator Information": isNewOperator,
+        "Operator Information": true,
         "User Information": isUserOperatorPending && !isOperatorDeclined,
       }}
     />

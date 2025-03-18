@@ -28,10 +28,8 @@ class UserModelTest(BaseTestCase):
             ("business_guid", "business guid", None, None),
             ("bceid_business_name", "bceid business name", None, None),
             ("app_role", "app role", None, None),
-            ("operators_verified_by", "operator", None, None),
             ("user_operators", "user operator", None, None),
             ("user_operators_verified_by", "user operator", None, None),
-            ("operation_verified_by", "operation", None, None),
             # related models by TimestampedModel
             ("document_created", "document", None, None),
             ("document_updated", "document", None, None),
