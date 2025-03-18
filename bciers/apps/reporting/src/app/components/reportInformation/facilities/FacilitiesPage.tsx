@@ -24,8 +24,9 @@ export default async function FacilitiesPage({
     HeaderStep.ReportInformation,
     ReportingPage.FacilitiesTable,
     version_id,
-    facilities.rows[0].id,
+    facilities.rows[0].facility,
   );
+
   return (
     <div className="mt-4">
       <FacilitiesDataGrid
