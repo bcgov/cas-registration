@@ -1,8 +1,8 @@
-import {UUID} from "crypto";
-import {render, screen} from "@testing-library/react";
-import {actionHandler, useRouter} from "@bciers/testConfig/mocks";
+import { UUID } from "crypto";
+import { render, screen } from "@testing-library/react";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import CancelAccessRequest from "@/administration/app/components/buttons/CancelAccessRequest";
-import {UserOperatorJSON} from "@/administration/tests/components/userOperators/constants";
+import { UserOperatorJSON } from "@/administration/tests/components/userOperators/constants";
 import userEvent from "@testing-library/user-event";
 
 const mockRouterPush = vi.fn();
@@ -12,17 +12,23 @@ useRouter.mockReturnValue({
 });
 
 describe("Cancel Access Requests component", () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-    });
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it("renders Cancel Access Requests component", () => {
-    render(<CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID}/>);
-    expect(screen.getByRole("button", {name: "Cancel Access Request"})).toBeVisible();
+    render(
+      <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Cancel Access Request" }),
+    ).toBeVisible();
   });
 
   it("should allow the user to cancel the request", async () => {
-    render(<CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID}/>);
+    render(
+      <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
+    );
     await userEvent.click(
       screen.getByRole("button", { name: "Cancel Access Request" }),
     );
@@ -52,10 +58,12 @@ describe("Cancel Access Requests component", () => {
     );
     // make sure the user is redirected to the select operator page
     expect(mockRouterPush).toHaveBeenCalledWith("/select-operator");
-  })
+  });
   it("shows an error message if the request fails", async () => {
     actionHandler.mockResolvedValueOnce({ error: "Failed to cancel request" });
-    render(<CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID}/>);
+    render(
+      <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
+    );
     await userEvent.click(
       screen.getByRole("button", { name: "Cancel Access Request" }),
     );
