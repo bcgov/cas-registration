@@ -18,7 +18,7 @@ const config = {
   },
   mockVersionId: 3,
   mockFacilityId: "abc",
-  mockRouteSubmit: `additional-reporting-data?facility_id=$abc`,
+  mockRouteSubmit: `additional-reporting-data`,
 };
 const mockInitialData = {
   allocation_methodology: "Other",
