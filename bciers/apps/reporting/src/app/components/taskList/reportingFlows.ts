@@ -7,8 +7,10 @@ import {
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
 import { getReportingOperation } from "../../utils/getReportingOperation";
 import { lfoFlow } from "./reportingFlows/lfoFlow";
+import { lfoNewEntrantFlow } from "./reportingFlows/lfoNewEntrantFlow";
 import { lfoReportingOnlyFlow } from "./reportingFlows/lfoReportingOnlyFlow";
 import { sfoFlow } from "./reportingFlows/sfoFlow";
+import { sfoNewEntrantFlow } from "./reportingFlows/sfoNewEntrantFlow";
 import { sfoReportingOnlyFlow } from "./reportingFlows/sfoReportingOnlyFlow";
 import { simpleReportFlow } from "./reportingFlows/simpleReportFlow";
 import { ReportingFlow, ReportingFlowDescription } from "./types";
@@ -18,6 +20,8 @@ export const reportingFlows: {
 } = {
   [ReportingFlow.SFO]: sfoFlow,
   [ReportingFlow.LFO]: lfoFlow,
+  [ReportingFlow.NewEntrantLFO]: lfoNewEntrantFlow,
+  [ReportingFlow.NewEntrantSFO]: sfoNewEntrantFlow,
   [ReportingFlow.ReportingOnlySFO]: sfoReportingOnlyFlow,
   [ReportingFlow.ReportingOnlyLFO]: lfoReportingOnlyFlow,
   [ReportingFlow.SimpleReport]: simpleReportFlow,
