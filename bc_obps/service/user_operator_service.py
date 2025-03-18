@@ -90,7 +90,6 @@ class UserOperatorService:
             business_structure=payload.business_structure,  # type: ignore[misc] # we use field validator which returns a BusinessStructure object
             # set as approved
             status=Operator.Statuses.APPROVED,
-            is_new=False,
         )
         operator: Operator = cls.save_operator(payload, operator_instance)
 
@@ -126,7 +125,6 @@ class UserOperatorService:
         sort_order: Optional[Literal["desc", "asc"]],
         filters: UserOperatorFilterSchema = Query(...),
     ) -> QuerySet[UserOperator]:
-
         user = UserDataAccessService.get_by_guid(user_guid)
         # This service is only available to IRC users
         if not user.is_irc_user():

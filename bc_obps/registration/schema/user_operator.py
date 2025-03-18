@@ -115,7 +115,6 @@ class UserOperatorOut(ModelSchema):
 
 
 class CurrentUserOperatorOut(ModelSchema):
-    is_new: bool = Field(..., alias="operator.is_new")
     operatorId: UUID = Field(..., alias="operator.id")
     operatorStatus: str = Field(..., alias="operator.status")
     operatorLegalName: str = Field(..., alias="operator.legal_name")
