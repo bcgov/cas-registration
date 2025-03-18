@@ -11,10 +11,7 @@
       "physical_address": 1,
       "mailing_address": 1,
       "website": "http://www.example.com",
-      "status": "Approved",
-      "is_new": false,
-      "verified_at": "2024-01-03 08:09:51.133556-08",
-      "verified_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351"
+      "status": "Approved"
     }
   },
   {
@@ -29,10 +26,7 @@
       "physical_address": 2,
       "mailing_address": 2,
       "website": "http://www.example2.com",
-      "status": "Approved",
-      "is_new": false,
-      "verified_at": "2024-01-03 08:09:51.133556-08",
-      "verified_by": "d59b7c27-3c6e-4c64-8509-0a2afe5b2351"
+      "status": "Approved"
     }
   }
 ]

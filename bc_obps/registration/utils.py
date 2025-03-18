@@ -12,8 +12,6 @@ import re
 from django.core.files.base import ContentFile
 from registration.models import (
     Document,
-    Operation,
-    Operator,
     UserOperator,
 )
 from django.urls import reverse_lazy
@@ -126,7 +124,7 @@ def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: DictStrAny) -> Uni
     return reverse_lazy(f"{DEFAULT_API_NAMESPACE}:{view_name}", *args, **kwargs)
 
 
-def set_verification_columns(record: Union[UserOperator, Operator, Operation], user_guid: UUID) -> None:
+def set_verification_columns(record: UserOperator, user_guid: UUID) -> None:
     record.verified_at = datetime.now(ZoneInfo("UTC"))
     record.verified_by_id = user_guid
 

@@ -7,8 +7,7 @@
       "cra_business_number": 123456787,
       "bc_corporate_registry_number": "abc1234569",
       "business_structure": "Sole Proprietorship",
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -19,8 +18,7 @@
       "cra_business_number": 123456789,
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "Sole Proprietorship",
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -33,8 +31,7 @@
       "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
       "mailing_address": 3,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -46,8 +43,7 @@
       "bc_corporate_registry_number": "ghi1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -59,8 +55,7 @@
       "bc_corporate_registry_number": "jkl1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -72,8 +67,7 @@
       "bc_corporate_registry_number": "mno1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -85,8 +79,7 @@
       "bc_corporate_registry_number": "pqr1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -98,8 +91,7 @@
       "bc_corporate_registry_number": "stu1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -111,8 +103,7 @@
       "bc_corporate_registry_number": "vwx1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -124,8 +115,7 @@
       "bc_corporate_registry_number": "yza1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -137,8 +127,7 @@
       "bc_corporate_registry_number": "bcd1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -150,8 +139,7 @@
       "bc_corporate_registry_number": "efg1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -163,8 +151,7 @@
       "bc_corporate_registry_number": "hij1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -176,8 +163,7 @@
       "bc_corporate_registry_number": "klm1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -189,8 +175,7 @@
       "bc_corporate_registry_number": "nop1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -202,8 +187,7 @@
       "bc_corporate_registry_number": "qrs1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   },
   {
@@ -215,8 +199,7 @@
       "bc_corporate_registry_number": "tuv1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
-      "status": "Approved",
-      "is_new": false
+      "status": "Approved"
     }
   }
 ]

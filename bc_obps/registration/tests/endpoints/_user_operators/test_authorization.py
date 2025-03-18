@@ -11,7 +11,7 @@ from registration.utils import custom_reverse_lazy
 class TestUserOperatorEndpointAuthorization(CommonTestSetup):
     def test_unauthorized_users_cannot_put(self):
         # only industry_user admins can change statuses
-        operator = operator_baker({'status': Operator.Statuses.APPROVED, 'is_new': False})
+        operator = operator_baker({'status': Operator.Statuses.APPROVED})
         user_operator_2 = TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         user_operator_2.role = UserOperator.Roles.REPORTER
         user_operator_2.save()
