@@ -32,6 +32,12 @@ function isNumeric(value: string): boolean {
   return !isNaN(Number(value));
 }
 
+// 🛠️ Function to determine valid crumb link
+function isValidLink(segment: string): boolean {
+  const invalidWords = ["confirm", "received", "request-access"];
+  return !invalidWords.some((word) => segment.toLowerCase().includes(word));
+}
+
 const liStyle = "inline text-white text-lg";
 const aStyle = "text-white text-lg";
 
@@ -122,6 +128,7 @@ export default function Bread({
               );
             })}
             {slicedPathNames.map((link, index) => {
+              if (!isValidLink(link)) return null; // Skip rendering invalid links
               const isLastItem = index === slicedPathNames.length - 1;
               const content = capitalizeLinks
                 ? transformPathSegment(unslugifyAndCapitalize(link), index)
