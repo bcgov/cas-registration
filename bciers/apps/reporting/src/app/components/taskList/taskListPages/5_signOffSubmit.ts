@@ -12,12 +12,7 @@ export const signOffSubmitPageFactories: {
       isActive: activePage === ReportingPage.FinalReview,
     },
   }),
-  [ReportingPage.Verification]: (
-    activePage,
-    reportVersionId,
-    facilityId,
-    context,
-  ) => {
+  [ReportingPage.Verification]: (activePage, reportVersionId, _, context) => {
     return {
       extraOptions: {
         skip: !!context?.skipVerification,
