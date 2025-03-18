@@ -14,6 +14,7 @@ api = NinjaAPI(
     title="BCIERS API", docs=Swagger(settings={"filter": True, "operationsSorter": "method", "tagsSorter": "alpha"})
 )
 
+
 # This is a custom exception handler for Ninja ValidationError, This helps to return a more detailed error message for Unprocessable Entity (422) responses
 @api.exception_handler(ValidationError)
 def custom_validation_errors(request: HttpRequest, exc: Type[ValidationError]) -> HttpResponse:

@@ -6,3 +6,4 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_SUMMARY = "compliance_summary"
     COMPLIANCE_OBLIGATION = "compliance_obligation"
     COMPLIANCE_PRODUCT = "compliance_product"
+    ELICENSING_LINK = "elicensing_link"

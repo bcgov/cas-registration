@@ -167,6 +167,9 @@ class UserModelTest(BaseTestCase):
             ("complianceobligation_created", "compliance obligation", None, None),
             ("complianceobligation_updated", "compliance obligation", None, None),
             ("complianceobligation_archived", "compliance obligation", None, None),
+            ("elicensinglink_created", "e licensing link", None, None),
+            ("elicensinglink_updated", "e licensing link", None, None),
+            ("elicensinglink_archived", "e licensing link", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):

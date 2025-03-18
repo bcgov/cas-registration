@@ -18,6 +18,7 @@ from registration.schema import (
 from service.user_operator_service import UserOperatorService
 from ninja.pagination import paginate, PageNumberPagination
 
+
 ## GET
 @router.get(
     "/user-operators",
