@@ -46,12 +46,17 @@ const createUnnestedArrayFormData = (
 ) => {
   const unnestedFormData: { [key: string]: any }[] = [];
   formDataArray.forEach((formData: { [key: string]: any }) => {
+    // if facility form is blank (a user clicked "Add Facility" but didn't fill anything), do nothing
+    if (Object.keys(formData).length === 0) {
+      return;
+    }
     // Unnest each formData object and add operation_id
     unnestedFormData.push({
       ...createUnnestedFormData(formData, formSectionList),
       operation_id: operationId,
     });
   });
+
   return unnestedFormData;
 };
 
@@ -98,8 +103,31 @@ const FacilityInformationForm = ({
     [setFormState],
   );
 
+  const redirect = () => {
+    // Using window.location.href instead of MutliStepBase router.push as there were rerender issues due to
+    // Facility Grid listerning to params change on this page which sometimes hijacked the route change
+    window.location.href = `${
+      window.location.origin
+    }/registration/register-an-operation/${operation}/${step + 1}`;
+  };
+
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
+      // if there are no existing facilities and the user hasn't added a new one, return error
+      if (
+        initialGridData?.row_count === 0 &&
+        ((e.formData?.facility_information_array &&
+          e.formData.facility_information_array.length === 0) ||
+          JSON.stringify(e.formData.facility_information_array) ===
+            JSON.stringify([{}]))
+      ) {
+        return { error: "Operation must have at least one facility." };
+      }
+      // if there's an existing facility and the new facility form was opened but not filled, redirect to the next step without hitting the API
+      if (initialGridData?.row_count && initialGridData?.row_count > 0) {
+        redirect();
+        return;
+      }
       setIsSubmitting(true);
       const method = isCreating ? "POST" : "PUT";
 
@@ -124,6 +152,7 @@ const FacilityInformationForm = ({
             formSectionListSfo,
             operation,
           );
+
       const response = await actionHandler(endpoint, method, "", {
         body: JSON.stringify(body),
       }).then((resolve) => {
@@ -131,11 +160,7 @@ const FacilityInformationForm = ({
           // errors are handled in MultiStepBase
           return { error: resolve.error };
         } else {
-          // Using window.location.href instead of MutliStepBase router.push as there were rerender issues due to
-          // Facility Grid listerning to params change on this page which sometimes hijacked the route change
-          window.location.href = `${
-            window.location.origin
-          }/registration/register-an-operation/${operation}/${step + 1}`;
+          redirect();
         }
       });
 

@@ -361,6 +361,48 @@ describe("the FacilityInformationForm component", () => {
     },
   );
 
+  it("should throw error if user attempts to save and continue without any facilities", async () => {
+    render(<FacilityInformationForm {...defaultProps} />);
+    const submitButton = screen.getByRole("button", {
+      name: "Save and Continue",
+    });
+
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+    expect(actionHandler).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Operation must have at least one facility./i),
+      ).toBeVisible();
+    });
+  });
+
+  it("should throw error if user attempts to save and continue with a blank form and no facilities", async () => {
+    render(<FacilityInformationForm {...defaultProps} />);
+    const addButton = screen.getByRole("button", {
+      name: "Add facility",
+    });
+
+    act(() => {
+      fireEvent.click(addButton);
+    });
+
+    const submitButton = screen.getByRole("button", {
+      name: "Save and Continue",
+    });
+
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+    expect(actionHandler).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Operation must have at least one facility./i),
+      ).toBeVisible();
+    });
+  });
+
   it("should display the Facility DataGrid", () => {
     render(<FacilityInformationForm {...defaultProps} />);
     expect(
@@ -494,6 +536,50 @@ describe("the FacilityInformationForm component", () => {
     act(() => {
       fireEvent.click(submitButton);
     });
+
+    await waitFor(() => {
+      expect(window.location.href).toBe(`${origin}${path}/3`);
+    });
+  });
+
+  it("should only redirect, not hit API, if user submits blank form", async () => {
+    window = Object.create(window);
+    const origin = "http://localhost:3000";
+    const path = `/registration/register-an-operation/002d5a9e-32a6-4191-938c-2c02bfec592d`;
+    Object.defineProperty(window, "location", {
+      value: {
+        href: `${origin}${path}/2`,
+        origin,
+      },
+      writable: true,
+    });
+    render(
+      <FacilityInformationForm
+        {...defaultProps}
+        initialGridData={facilityInitialData as any}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(window.location.href).toBe(`${origin}${path}/2`);
+    });
+
+    const addButton = screen.getByRole("button", {
+      name: "Add facility",
+    });
+
+    act(() => {
+      fireEvent.click(addButton);
+    });
+
+    const submitButton = screen.getByRole("button", {
+      name: "Save and Continue",
+    });
+
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+    expect(actionHandler).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(window.location.href).toBe(`${origin}${path}/3`);
