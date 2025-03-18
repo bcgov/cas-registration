@@ -32,7 +32,7 @@ from ninja.pagination import paginate, PageNumberPagination
 def list_user_operators(
     request: HttpRequest,
     filters: UserOperatorFilterSchema = Query(...),
-    sort_field: Optional[str] = "created_at",
+    sort_field: Optional[str] = "status",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
 ) -> QuerySet[UserOperator]:

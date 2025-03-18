@@ -33,6 +33,7 @@ export const userOperatorAdministrationSchema: RJSFSchema = {
       format: "phone",
       readOnly: true,
     },
+    role: { type: "string", title: "Role" },
   },
 };
 

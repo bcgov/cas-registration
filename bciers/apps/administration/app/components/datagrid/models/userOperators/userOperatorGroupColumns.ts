@@ -42,10 +42,10 @@ const userOperatorGroupColumns = (
       children: [{ field: "operator__legal_name" }],
     },
     {
-      groupId: "status",
-      headerName: "Status",
+      groupId: "role",
+      headerName: "Role",
       renderHeaderGroup: SearchCell,
-      children: [{ field: "status" }],
+      children: [{ field: "role" }],
     },
     {
       groupId: "action",

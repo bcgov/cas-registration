@@ -26,7 +26,7 @@ describe("UserOperatorReview component", () => {
     ).toBeVisible();
   });
 
-  it("approves the prime admin when the user clicks approve", async () => {
+  it("approves the admin when the user clicks approve", async () => {
     actionHandler.mockResolvedValueOnce({});
 
     render(
@@ -41,7 +41,7 @@ describe("UserOperatorReview component", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          /Are you sure you want to approve the prime admin request?/,
+          /Are you sure you want to approve the administrator request?/,
         ),
       ).toBeVisible();
     });
@@ -56,12 +56,12 @@ describe("UserOperatorReview component", () => {
         },
       );
       expect(
-        screen.getByText(/You have approved the prime admin request./i),
+        screen.getByText(/You have approved the administrator request./i),
       ).toBeVisible();
     });
   });
 
-  it("declines the prime admin when the user clicks decline", async () => {
+  it("declines the admin when the user clicks decline", async () => {
     actionHandler.mockResolvedValueOnce({});
 
     render(
@@ -76,7 +76,7 @@ describe("UserOperatorReview component", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          /Are you sure you want to decline the prime admin request?/,
+          /Are you sure you want to decline the administrator request?/,
         ),
       ).toBeVisible();
     });
@@ -91,7 +91,7 @@ describe("UserOperatorReview component", () => {
         },
       );
       expect(
-        screen.getByText(/You have declined the prime admin request./i),
+        screen.getByText(/You have declined the administrator request./i),
       ).toBeVisible();
     });
   });

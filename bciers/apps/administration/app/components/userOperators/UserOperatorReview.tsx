@@ -1,12 +1,7 @@
 "use client";
 
 import { actionHandler } from "@bciers/actions";
-import {
-  OperatorStatus,
-  Status,
-  UserOperatorRoles,
-  UserOperatorStatus,
-} from "@bciers/utils/src/enums";
+import { Role, Status, UserOperatorRoles } from "@bciers/utils/src/enums";
 import { UserOperatorFormData } from "./types";
 import Review from "../buttons/Review";
 
@@ -22,7 +17,7 @@ export default function UserOperatorReview({
   userOperator,
   userOperatorId,
 }: Props) {
-  // Reusable function to change the status of the prime admin
+  // Reusable function to change the status of the user
   const changePrimeAdminStatus = async (status: Status) => {
     try {
       const response = await actionHandler(
@@ -56,14 +51,12 @@ export default function UserOperatorReview({
 
   return (
     <Review
-      approvedMessage={`You have approved the prime admin request.`}
-      declinedMessage={`You have declined the prime admin request.`}
-      confirmApproveMessage={`Are you sure you want to approve the prime admin request?`}
-      confirmRejectMessage={`Are you sure you want to decline the prime admin request?`}
-      isStatusPending={
-        userOperator.status === UserOperatorStatus.PENDING &&
-        userOperator.operator_status !== OperatorStatus.DECLINED
-      }
+      approvedMessage={`You have approved the administrator request.`}
+      declinedMessage={`You have declined the administrator request.`}
+      confirmApproveMessage={`Are you sure you want to approve the administrator request?`}
+      confirmRejectMessage={`Are you sure you want to decline the administrator request?`}
+      status={userOperator.status as Status}
+      role={userOperator.role as Role}
       note={note}
       onApprove={approvePrimeAdminRequest}
       onReject={declinePrimeAdminRequest}
