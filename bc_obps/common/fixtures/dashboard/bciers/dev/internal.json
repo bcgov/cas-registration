@@ -96,7 +96,7 @@
             "links": [
               {
                 "title": "Access Requests",
-                "href": "/tbd/"
+                "href": "/administration/users/"
               },
               {
                 "title": "Invite User (by Email)",
