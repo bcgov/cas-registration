@@ -7,6 +7,38 @@ addr_id int;
 
 begin
 
+  -- BCGHGID Data
+  with y as (
+    select f.swrs_facility_id, max(r.id) as latest_report from swrs_facility f
+    join swrs_report r
+    on f.report_id = r.id
+    and r.reporting_period_duration = 2023
+    and facility_type in ('IF_a', 'IF_b', 'L_c')
+    group by f.swrs_facility_id
+    order by f.swrs_facility_id
+  )
+  insert into erc.bc_greenhouse_gas_id(
+    id,
+    issued_at,
+    comments
+  )
+  select
+    f.facility_bc_ghg_id,
+    '1970-01-01 00:00:00.000000',
+    ''
+  from y
+    join swrs_facility f
+    on f.swrs_facility_id = y.swrs_facility_id
+    and f.report_id = y.latest_report
+    join swrs_report r
+    on r.id = f.report_id
+    and r.reporting_period_duration=2023
+    and f.facility_type in ('IF_a', 'IF_b', 'L_c')
+    and f.facility_bc_ghg_id is not null
+    join erc.operation o
+    on o.swrs_facility_id = (select swrs_facility_id from swrs_facility where id = f.parent_facility_id)
+  on conflict (id) do nothing;
+
   -- Facility Data
   with y as (
     select f.swrs_facility_id, max(r.id) as latest_report from swrs_facility f
@@ -20,7 +52,7 @@ begin
   insert into erc.facility(
     id,
     swrs_facility_id,
-    bcghg_id,
+    bcghg_id_id,
     operation_id,
     name,
     type,
