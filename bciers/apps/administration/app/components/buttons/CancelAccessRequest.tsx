@@ -23,7 +23,7 @@ export default function CancelAccessRequest({
     setIsSubmitting(true);
     const response = await cancelAccessRequest(userOperatorId);
 
-    if (response && response.error) {
+    if (response && "error" in response) {
       setError(response.error);
       setModalOpen(false);
       setIsSubmitting(false);
