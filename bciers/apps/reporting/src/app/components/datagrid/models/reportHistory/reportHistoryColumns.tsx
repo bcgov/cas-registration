@@ -26,7 +26,7 @@ const reportHistoryColumns = (): GridColDef[] => {
       width: 400,
     },
     {
-      field: "name",
+      field: "submitted_by",
       headerName: "Submitted by",
       sortable: false,
       width: 400,

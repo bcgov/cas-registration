@@ -37,13 +37,10 @@ class ReportingHistoryDashboardService:
                 default=Concat(Value("Version "), F("id")),
                 output_field=CharField(),
             ),
-            name=Subquery(
+            submitted_by=Subquery(
                 User.objects.filter(user_guid=OuterRef('updated_by_id'))
                 .annotate(full_name=Concat('first_name', Value(' '), 'last_name'))
                 .values('full_name')[:1]
             ),
         ).order_by(F('id').desc())
-        for report_version in report_versions:
-            print(f"Report Version ID: {report_version.id}, Full Name: {report_version.name}")
-
         return report_versions
