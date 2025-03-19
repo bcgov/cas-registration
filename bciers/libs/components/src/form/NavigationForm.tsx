@@ -80,6 +80,8 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         }, 3000);
         setIsSaving(false);
       }
+      // Invalidate next router caching
+      router.refresh();
     } else {
       setIsSaving(false);
     }
@@ -90,6 +92,8 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
      *  Otherwise the spinner stops spinning before the page changes. */
     setIsRedirecting(false);
     setIsSaving(false);
+    // Invalidate next router caching again
+    router.refresh();
   }, [backUrl, continueUrl]);
 
   // Essentially a manual call to `submit()` with a context
