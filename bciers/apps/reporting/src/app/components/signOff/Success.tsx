@@ -1,9 +1,10 @@
 import Check from "@bciers/components/icons/Check";
 import Link from "next/link";
 import { getTodaysDateWithTime } from "@reporting/src/app/utils/formatDate";
+import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
 const ReportSubmission = () => {
-  const currentDate = getTodaysDateWithTime();
+  const currentDate = formatTimestamp(getTodaysDateWithTime());
 
   return (
     <div className="flex items-center justify-center">
