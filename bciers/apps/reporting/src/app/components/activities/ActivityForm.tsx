@@ -155,7 +155,7 @@ export default function ActivityForm({
     const response = await actionHandler(
       `reporting/report-version/${reportVersionId}/facilities/${facilityId}/activity/${activityId}/report-activity`,
       "POST",
-      `reporting/reports/${reportVersionId}/facilities/${facilityId}/activities`,
+      "",
       {
         body: JSON.stringify({
           activity_data: submittedData,
