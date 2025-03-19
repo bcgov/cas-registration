@@ -71,4 +71,5 @@ class TestReportVersionService:
             "ReportVerification",
             "ReportVerificationVisit",
             "ReportProductEmissionAllocation",
+            "ReportEmissionAllocationNoProduct",
         }
