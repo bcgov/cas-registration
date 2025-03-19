@@ -138,6 +138,16 @@ ENDPOINTS = {
             "endpoint_name": "get_report_needs_verification",
             "kwargs": {"report_version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_history",
+            "kwargs": {"report_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_operation",
+            "kwargs": {"report_id": MOCK_INT},
+        },
         {"method": "post", "endpoint_name": "create_facilities"},
         {"method": "post", "endpoint_name": "create_contact"},
         {
