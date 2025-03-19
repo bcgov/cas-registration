@@ -1,14 +1,16 @@
-export interface OperationRow {
+export interface ReportHistoryRow {
   id: number;
-  bcghg_id: string;
-  name: string;
-  operator: string;
+  version: string;
+  updated_at: string;
+  status: string;
+  report_type: string;
+  submitted_by: string;
 }
-export interface OperationsSearchParams {
+export interface ReportHistorySearchParams {
   [key: string]: string | number | undefined;
-  bcghg_id?: string;
-  name?: string;
-  page?: number;
-  sort_field?: string;
-  sort_order?: string;
+  version?: string;
+  updated_at?: string;
+  status?: number;
+  report_type?: string;
+  submitted_by?: string;
 }
