@@ -74,3 +74,8 @@ class UserDataAccessService:
             setattr(user, attr, value)
         user.save()
         return user
+
+    @classmethod
+    def user_has_access_to_operator(cls, user_guid: UUID, operator_id: UUID) -> bool:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        return user.user_operators.filter(operator_id=operator_id, status=UserOperator.Statuses.APPROVED).exists()
