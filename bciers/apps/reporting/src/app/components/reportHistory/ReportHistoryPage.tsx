@@ -20,8 +20,6 @@ export default async function ReportHistoryPage({
 
   // Fetch history data with report_id and searchParams
   const history = await fetchReportHistoryPageData({ report_id, searchParams });
-  console.log("data", history);
-
   return (
     <ReportHistoryDataGrid
       report_id={report_id}
