@@ -13,7 +13,6 @@ class ReportHistoryResponse(ModelSchema):
     report_id: int
     submitted_by: Optional[str] = None
     version: Optional[str] = None
-    name: Optional[str] = None
 
 
 class ReportOperationResponse(ModelSchema):
