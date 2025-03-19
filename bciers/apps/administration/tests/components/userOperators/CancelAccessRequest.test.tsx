@@ -26,6 +26,7 @@ describe("Cancel Access Requests component", () => {
   });
 
   it("should allow the user to cancel the request", async () => {
+    actionHandler.mockResolvedValueOnce(true);
     render(
       <CancelAccessRequest userOperatorId={UserOperatorJSON.id as UUID} />,
     );
