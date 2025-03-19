@@ -159,7 +159,7 @@ def init_emission_category_mapping_data(apps, schema_monitor):
             ),
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='Petroleum refining'),
-                source_type=SourceType.objects.get(name='Equipment leaks at refineries'),
+                source_type=SourceType.objects.get(name='Equipment leaks'),
                 emission_category=EmissionCategory.objects.get(category_name='Fugitive emissions'),
             ),
             EmissionCategoryMapping(
