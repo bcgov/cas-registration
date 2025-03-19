@@ -18,7 +18,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
     tags=USER_OPERATOR_TAGS,
     description="""Retrieves data about the pending user-operator and their associated operator.
     Declined user-operators are excluded from the results.""",
-    auth=authorize("industry_user")
+    auth=authorize("industry_user"),
 )
 def get_current_operator_from_user_operator(request: HttpRequest) -> Tuple[Literal[200], UserOperator]:
     return 200, UserDataAccessService.get_user_operator_by_user(get_current_user_guid(request))

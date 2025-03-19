@@ -1,5 +1,4 @@
 from typing import List, Optional
-from uuid import UUID
 from registration.models.partner_operator import PartnerOperator
 from registration.schema import (
     PartnerOperatorIn,

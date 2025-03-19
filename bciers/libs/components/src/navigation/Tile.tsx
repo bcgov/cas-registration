@@ -51,26 +51,26 @@ const Tile = ({
       {links && (
         <div className="flex flex-col mt-6">
           {links?.map((link: LinkItem) => {
-              const {
-                title: linkTitle,
-                href: linkHref,
-                target: linkTarget,
-                rel: linkRel,
-              } = link;
-              return (
-                <div className="w-full px-6 py-2 " key={linkTitle}>
-                  <a
-                    key={linkTitle}
-                    href={linkHref}
-                    className="dashboard-tile-link no-underline"
-                    {...(linkTarget && { target: linkTarget })}
-                    {...(linkRel && { rel: linkRel })}
-                  >
-                    <span dangerouslySetInnerHTML={{ __html: linkTitle }} />
-                  </a>
-                </div>
-              );
-            })}
+            const {
+              title: linkTitle,
+              href: linkHref,
+              target: linkTarget,
+              rel: linkRel,
+            } = link;
+            return (
+              <div className="w-full px-6 py-2 " key={linkTitle}>
+                <a
+                  key={linkTitle}
+                  href={linkHref}
+                  className="dashboard-tile-link no-underline"
+                  {...(linkTarget && { target: linkTarget })}
+                  {...(linkRel && { rel: linkRel })}
+                >
+                  <span dangerouslySetInnerHTML={{ __html: linkTitle }} />
+                </a>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
