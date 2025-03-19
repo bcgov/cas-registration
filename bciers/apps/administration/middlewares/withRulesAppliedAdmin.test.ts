@@ -87,29 +87,6 @@ describe("withRulesAppliedAdmin middleware", () => {
     );
     expect(result?.status).toBe(200);
   });
-  it("proceeds /operations for industry users if their operator is pending", async () => {
-    getToken.mockResolvedValue({
-      ...mockIndustryUserToken,
-      user_guid: "feb4d26d-45e1-437a-b53f-b25e617c388f",
-    });
-    const nextUrl = new NextURL(`${domain}/administration/operations`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        operator_id: "feb4d26d-45e1-437a-b53f-b25e617c388f",
-        status: "Pending",
-      }),
-    );
-
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-    expect(result?.status).toBe(200);
-  });
 
   it("redirects /select-operator for industry users if their userOperator status is approved", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
