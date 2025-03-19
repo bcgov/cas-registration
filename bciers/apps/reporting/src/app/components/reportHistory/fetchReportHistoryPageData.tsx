@@ -1,11 +1,11 @@
 import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
-import { OperationsSearchParams } from "./types";
+import { ReportHistorySearchParams } from "./types";
 
 // 🛠️ Function to fetch operations
 export const fetchReportHistoryPageData = async (params: {
   report_id: number;
-  searchParams: OperationsSearchParams;
+  searchParams: ReportHistorySearchParams;
 }) => {
   const queryParams = buildQueryParams(params.searchParams);
   const url = `reporting/report-history/${params.report_id}${queryParams}`;

@@ -2,7 +2,7 @@
 
 import React, { useCallback } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import { OperationRow } from "./types";
+import { ReportHistoryRow } from "./types";
 import { fetchReportHistoryPageData } from "@reporting/src/app/components/reportHistory/fetchReportHistoryPageData";
 import { useSearchParams } from "next/navigation";
 import reportHistoryColumns from "@reporting/src/app/components/datagrid/models/reportHistory/reportHistoryColumns";
@@ -17,7 +17,7 @@ const ReportHistoryDataGrid = ({
 }: {
   report_id: number;
   initialData: {
-    rows: OperationRow[];
+    rows: ReportHistoryRow[];
     row_count: number;
   };
   operationName: string;
