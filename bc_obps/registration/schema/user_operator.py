@@ -114,7 +114,7 @@ class UserOperatorOut(ModelSchema):
         fields = ["role", "status"]
 
 
-class PendingUserOperatorOut(ModelSchema):
+class CurrentUserOperatorOut(ModelSchema):
     is_new: bool = Field(..., alias="operator.is_new")
     operatorId: UUID = Field(..., alias="operator.id")
     operatorStatus: str = Field(..., alias="operator.status")

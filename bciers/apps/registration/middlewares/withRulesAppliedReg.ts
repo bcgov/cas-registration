@@ -20,7 +20,7 @@ import { fetchApi } from "@bciers/actions/api/fetchApi";
 const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
   try {
     // 📏 Rule: Industry users can only proceed to registration if they have operator access
-    const userOperator = await fetchApi("registration/user-operators/pending", {
+    const userOperator = await fetchApi("registration/user-operators/current", {
       user_guid: token.user_guid,
     });
 

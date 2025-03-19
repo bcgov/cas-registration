@@ -27,16 +27,12 @@ import { appName } from "../middleware";
 const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
   const { pathname } = request.nextUrl;
 
-  // 📏 Rule: Industry users can only see operations if their operator is pending/approved
+  // 📏 Rule: Industry users can only see operations if their userOperator is approved
   if (pathname.includes("operations")) {
-    const operator = await fetchApi("registration/user-operators/current", {
+    const userOperator = await fetchApi("registration/user-operators/current", {
       user_guid: token.user_guid,
     });
-
-    if (
-      operator.status !== OperatorStatus.PENDING &&
-      operator.status !== OperatorStatus.APPROVED
-    ) {
+    if (!userOperator || userOperator?.status !== UserOperatorStatus.APPROVED) {
       // 🛸 Redirect to the app's root page (dashboard)
       return NextResponse.redirect(new URL(`/${appName}`, request.url));
     }
@@ -46,7 +42,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
   if (pathname.endsWith("select-operator")) {
     try {
       const userOperator = await fetchApi(
-        "registration/user-operators/pending",
+        "registration/user-operators/current",
         {
           user_guid: token.user_guid,
         },
@@ -85,7 +81,7 @@ const handleIndustryUserRoutes = async (request: NextRequest, token: any) => {
 
   // 📏 Rule: Industry users can only see contacts if they have operator access
   if (pathname.includes("contacts")) {
-    const userOperator = await fetchApi("registration/user-operators/pending", {
+    const userOperator = await fetchApi("registration/user-operators/current", {
       user_guid: token.user_guid,
     });
 
