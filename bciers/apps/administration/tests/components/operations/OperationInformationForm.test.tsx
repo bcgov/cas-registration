@@ -27,6 +27,7 @@ useSearchParams.mockReturnValue({
 });
 
 const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
+const mockDataUri2 = "data:application/pdf;name=testpdf2.pdf;base64,ZHVtbXk=";
 
 // Just using a simple schema for testing purposes
 const testSchema: RJSFSchema = {
@@ -123,6 +124,8 @@ const formData = {
   secondary_naics_code_id: 2,
   operation_has_multiple_operators: true,
   activities: [1, 2],
+  boundary_map: mockDataUri,
+  process_flow_diagram: mockDataUri2,
   multiple_operators_array: [
     {
       mo_is_extraprovincial_company: false,
@@ -218,7 +221,13 @@ describe("the OperationInformationForm component", () => {
     // 2 file inputs
     expect(screen.getByText(/Process Flow Diagram/i)).toBeVisible();
     expect(screen.getByText(/Boundary Map/i)).toBeVisible();
-    expect(screen.getAllByText(/No attachment was uploaded/i)).toHaveLength(2);
+    expect(screen.getByText(/testpdf.pdf/i)).toBeVisible();
+    expect(screen.getByText(/testpdf2.pdf/i)).toBeVisible();
+    expect(
+      screen.getAllByRole("link", {
+        name: /preview/i,
+      }),
+    ).toHaveLength(2);
     // multiple operators
     expect(
       screen.getByText(/Does the operation have multiple operators/i),
