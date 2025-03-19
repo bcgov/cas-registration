@@ -3,6 +3,8 @@ from unittest.mock import patch, MagicMock
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_submission_service import ReportSubmissionService
+from reporting.models.report_version import ReportVersion
+import uuid
 
 
 class TestReportSubmissionService:
@@ -85,3 +87,64 @@ class TestReportSubmissionService:
 
         mock_get_verification.assert_called_once_with(report_version_id=version_id)
         mock_get_attachment.assert_not_called()
+
+    @patch("reporting.service.report_submission_service.report_submitted.send")
+    @patch("reporting.models.report_version.ReportVersion.objects.filter")
+    @patch("reporting.models.report_version.ReportVersion.objects.get")
+    @patch("reporting.service.report_submission_service.ReportSubmissionService.validate_report")
+    def test_submit_report(
+        self,
+        mock_validate_report,
+        mock_get,
+        mock_filter,
+        mock_signal_send,
+    ):
+        # Arrange
+        version_id = 1
+        user_guid = uuid.uuid4()
+
+        # Create a fake Report instance object
+        fake_report = MagicMock()
+        fake_report_version = MagicMock()
+        fake_report_version.report = fake_report
+        fake_report_version.is_latest_submitted = False
+        fake_report_version.status = ReportVersion.ReportVersionStatus.Draft
+
+        # Configure the get() call to return our fake report version.
+        mock_get.return_value = fake_report_version
+
+        # Configure the filter() call to return a mock that supports update.
+        mock_filter_instance = MagicMock()
+        mock_filter.return_value = mock_filter_instance
+
+        # Act: Call submit_report.
+        result = ReportSubmissionService.submit_report(version_id, user_guid)
+
+        # Assert that validate_report was called.
+        mock_validate_report.assert_called_once_with(version_id)
+
+        # Assert that ReportVersion was fetched with the correct version_id.
+        mock_get.assert_called_once_with(id=version_id)
+
+        # Assert that any previously submitted latest versions were updated.
+        mock_filter.assert_called_once_with(
+            report=fake_report,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+            is_latest_submitted=True,
+        )
+        mock_filter_instance.update.assert_called_once_with(is_latest_submitted=False)
+
+        # Assert that the fake report version’s properties were updated.
+        assert fake_report_version.is_latest_submitted is True
+        assert fake_report_version.status == ReportVersion.ReportVersionStatus.Submitted
+
+        # Assert that the fake report version was saved.
+        fake_report_version.save.assert_called_once()
+
+        # Assert that the report_submitted signal was sent with the correct parameters.
+        mock_signal_send.assert_called_once_with(
+            sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid
+        )
+
+        # Assert that the returned value is the fake report version.
+        assert result == fake_report_version
