@@ -188,10 +188,14 @@ class TestUserOperatorService:
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         user_operator = baker.make_recipe('registration.tests.utils.user_operator', user=user)
 
+        # generate a random user_operator to make sure it is not deleted
+        baker.make_recipe('registration.tests.utils.user_operator')
+
         UserOperatorService.delete_user_operator(user_guid=user.user_guid, user_operator_id=user_operator.id)
 
         mock_check_if_user_eligible_to_access_user_operator.assert_called_once_with(user.user_guid, user_operator.id)
-        assert UserOperator.objects.count() == 0
+        assert UserOperator.objects.count() == 1
+        assert UserOperator.objects.filter(id=user_operator.id).exists() is False
 
 
 class TestUpdateStatusAndCreateContact:
