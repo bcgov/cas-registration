@@ -50,8 +50,7 @@ const Tile = ({
       </a>
       {links && (
         <div className="flex flex-col mt-6">
-          {links &&
-            links.map((link: LinkItem) => {
+          {links?.map((link: LinkItem) => {
               const {
                 title: linkTitle,
                 href: linkHref,
