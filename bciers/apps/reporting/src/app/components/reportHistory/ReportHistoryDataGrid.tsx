@@ -1,56 +1,72 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import { OperationRow } from "./types";
 import { fetchReportHistoryPageData } from "@reporting/src/app/components/reportHistory/fetchReportHistoryPageData";
 import { useSearchParams } from "next/navigation";
 import reportHistoryColumns from "@reporting/src/app/components/datagrid/models/reportHistory/reportHistoryColumns";
-import reportHistoryGroupColumns from "@reporting/src/app/components/datagrid/models/reportHistory/reportHistoryGroupColumns";
+import { Button, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const ReportHistoryDataGrid = ({
   report_id,
   initialData,
+  operationName,
+  reportingYear,
 }: {
   report_id: number;
   initialData: {
     rows: OperationRow[];
     row_count: number;
   };
+  operationName: string;
+  reportingYear: number;
 }) => {
-  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-
-  const SearchCell = useMemo(
-    () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
-    [lastFocusedField, setLastFocusedField],
-  );
   const browserSearchParams = useSearchParams();
+  const router = useRouter();
   const columns = reportHistoryColumns();
+  const backUrl = "/reports";
 
-  const columnGroup = useMemo(
-    () => reportHistoryGroupColumns(false, SearchCell),
-    [SearchCell],
-  );
-
-  const fetchPageData = useCallback(async () => {
+  const fetchPageData = useCallback(() => {
     const searchParams = Object.fromEntries(browserSearchParams.entries());
+    return fetchReportHistoryPageData({ report_id, searchParams });
+  }, [report_id, browserSearchParams]);
 
-    return await fetchReportHistoryPageData({
-      report_id,
-      searchParams,
-    });
-  }, [report_id, browserSearchParams, initialData]);
-
-  const searchParams = Object.fromEntries(browserSearchParams.entries());
   return (
-    <DataGrid
-      columns={columns}
-      columnGroupModel={columnGroup}
-      fetchPageData={fetchPageData}
-      paginationMode="server"
-      initialData={initialData}
-    />
+    <div>
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Report History: {operationName}</h2>
+      </div>
+
+      <Typography variant="body2" fontSize={16} className="mb-5">
+        History of this operation&apos;s report versions for the year{" "}
+        <strong>{reportingYear}</strong>
+      </Typography>
+
+      <div className="mt-5">
+        <DataGrid
+          columns={columns}
+          fetchPageData={fetchPageData}
+          paginationMode="client"
+          initialData={initialData}
+          noDataMessage={
+            <div style={{ textAlign: "center" }}>
+              No report versions available. <br />
+              Once a report is created, it will be displayed here.
+            </div>
+          }
+        />
+
+        <Button
+          className="mt-5"
+          variant="outlined"
+          onClick={() => router.push(backUrl)}
+        >
+          Back
+        </Button>
+      </div>
+    </div>
   );
 };
 

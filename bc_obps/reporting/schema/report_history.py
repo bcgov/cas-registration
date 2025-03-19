@@ -1,18 +1,22 @@
-from ninja import ModelSchema, Schema
-from pydantic import BaseModel
-from typing import List, Optional
+from ninja import ModelSchema
+from typing import Optional
 
+from registration.models import Operation
 from reporting.models import ReportVersion
 
 
 class ReportHistoryResponse(ModelSchema):
     class Meta:
         model = ReportVersion
-        fields = ["id", "updated_at", "status","report_type"]
+        fields = ["id", "updated_at", "status", "report_type"]
+
     report_id: int
-    name: Optional[str] = None
+    submitted_by: Optional[str] = None
     version: Optional[str] = None
+    name: Optional[str] = None
 
 
-class ReportOperation(Schema):
-    operation: str
+class ReportOperationResponse(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ["id", "name"]

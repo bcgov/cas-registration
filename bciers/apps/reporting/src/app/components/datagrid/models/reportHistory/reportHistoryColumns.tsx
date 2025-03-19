@@ -18,11 +18,9 @@ const reportHistoryColumns = (): GridColDef[] => {
       headerName: "Date of submission",
       sortable: false,
       renderCell: (params) => {
-        // If the updated_at value is null, undefined, or an empty string, show nothing
         if (!params.value) {
-          return ""; // Return empty string if no date is available
+          return "";
         }
-        // Format the date if it's available
         return formatDate(params.value, "YYYY-MM-DD HH:mm:ss");
       },
       width: 400,
@@ -41,15 +39,6 @@ const reportHistoryColumns = (): GridColDef[] => {
       width: 200,
       flex: 1,
     },
-    //
-    // {
-    //   field: "more",
-    //   headerName: "More Actions",
-    //   renderCell: MoreCell,
-    //   sortable: false,
-    //   width: 120,
-    //   flex: 1,
-    // },
   ];
 };
 

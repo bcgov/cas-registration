@@ -29,6 +29,7 @@ interface Props {
   getRowId?: GridRowIdGetter<any> | undefined;
   pageSize?: number;
   rowSelection?: boolean;
+  noDataMessage?: JSX.Element | string;
 }
 
 const AscendingIcon = () => {
@@ -37,18 +38,6 @@ const AscendingIcon = () => {
 
 const DescendingIcon = () => {
   return <SortIcon topFill="white" bottomFill="grey" />;
-};
-
-const slots = {
-  columnSortedAscendingIcon: AscendingIcon,
-  columnSortedDescendingIcon: DescendingIcon,
-  columnUnsortedIcon: SortIcon,
-  pagination: Pagination,
-  noRowsOverlay: () => (
-    <div className="flex items-center w-full h-full justify-center text-2xl">
-      No records found
-    </div>
-  ),
 };
 
 const experimentalFeatures = {
@@ -67,6 +56,7 @@ const DataGrid: React.FC<Props> = ({
   sx,
   pageSize,
   rowSelection,
+  noDataMessage,
 }) => {
   const PAGE_SIZE = pageSize ? pageSize : 20;
   const [rows, setRows] = useState(initialData.rows ?? []);
@@ -93,6 +83,17 @@ const DataGrid: React.FC<Props> = ({
     return () => debouncedFetchData.cancel();
   }, 200);
 
+  const slots = {
+    columnSortedAscendingIcon: AscendingIcon,
+    columnSortedDescendingIcon: DescendingIcon,
+    columnUnsortedIcon: SortIcon,
+    pagination: Pagination,
+    noRowsOverlay: () => (
+      <div className="flex items-center w-full h-full justify-center text-2xl">
+        {noDataMessage || "No records found"}
+      </div>
+    ),
+  };
   useEffect(() => {
     setIsComponentMounted(true);
 
