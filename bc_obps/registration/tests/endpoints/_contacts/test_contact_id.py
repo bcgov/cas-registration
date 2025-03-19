@@ -1,4 +1,6 @@
 from typing import Dict
+from unittest.mock import patch
+
 from registration.models.business_role import BusinessRole
 from registration.models.address import Address
 from registration.models.contact import Contact
@@ -141,43 +143,50 @@ class TestContactIdEndpoint(CommonTestSetup):
 
     def test_industry_user_admin_update_contact_and_remove_address(self):
         operator = baker.make_recipe('registration.tests.utils.operator')
-        contact = baker.make_recipe('registration.tests.utils.contact', operator=operator)
-        TestUtils.authorize_current_user_as_operator_user(self, operator)
-        # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
-        assert Contact.objects.count() == 1
-        # Assert that we are not creating a new address
-        assert Address.objects.count() == 2
-
-        contact_data_no_address = {
-            "first_name": "John",
-            "last_name": "Doe",
-            "email": "john.doe@example.com",
-            "phone_number": "+16044011234",
-            "position_title": "Mr.Tester",
-        }
-
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            contact_data_no_address,
-            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
+        senior_officer_role = BusinessRole.objects.get(role_name='Senior Officer')
+        contact = baker.make_recipe(
+            'registration.tests.utils.contact', operator=operator, business_role=senior_officer_role
         )
-        assert response.status_code == 200
-        assert Contact.objects.count() == 1
-        assert Address.objects.count() == 1  # One for the operator
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
 
-        response_json: Dict = response.json()
-        assert response_json.get('first_name') == contact_data_no_address.get('first_name')
-        assert response_json.get('last_name') == contact_data_no_address.get('last_name')
-        assert response_json.get('email') == contact_data_no_address.get('email')
-        assert response_json.get('phone_number') == contact_data_no_address.get('phone_number')
-        assert response_json.get('position_title') == contact_data_no_address.get('position_title')
-        assert response_json.get('street_address') is None
-        assert response_json.get('municipality') is None
-        assert response_json.get('province') is None
-        assert response_json.get('postal_code') is None
-        assert Contact.objects.first().address is None
+        # override the get method to return the senior officer role(otherwise it will return the operation representative role and the test will fail)
+        with patch('registration.models.BusinessRole.objects.get', return_value=senior_officer_role) as mock_get:
+            # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
+            assert Contact.objects.count() == 1
+            # Assert that we are not creating a new address
+            assert Address.objects.count() == 2
+
+            contact_data_no_address = {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@example.com",
+                "phone_number": "+16044011234",
+                "position_title": "Mr.Tester",
+            }
+
+            response = TestUtils.mock_put_with_auth_role(
+                self,
+                "industry_user",
+                self.content_type,
+                contact_data_no_address,
+                custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
+            )
+            assert response.status_code == 200
+            mock_get.assert_called_once()
+            assert Contact.objects.count() == 1
+            assert Address.objects.count() == 1  # One for the operator
+
+            response_json: Dict = response.json()
+            assert response_json.get('first_name') == contact_data_no_address.get('first_name')
+            assert response_json.get('last_name') == contact_data_no_address.get('last_name')
+            assert response_json.get('email') == contact_data_no_address.get('email')
+            assert response_json.get('phone_number') == contact_data_no_address.get('phone_number')
+            assert response_json.get('position_title') == contact_data_no_address.get('position_title')
+            assert response_json.get('street_address') is None
+            assert response_json.get('municipality') is None
+            assert response_json.get('province') is None
+            assert response_json.get('postal_code') is None
+            assert Contact.objects.first().address is None
 
     def test_industry_user_admin_update_contact_by_adding_address(self):
         operator = baker.make_recipe('registration.tests.utils.operator')
