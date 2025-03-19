@@ -203,15 +203,3 @@ class OperatorExternalDashboardUsersTileData(ModelSchema):
     class Meta:
         model = Operator
         fields = ["legal_name"]
-
-
-class OperatorFromUserOperatorOut(ModelSchema):
-    """
-    Schema for the Operator associated with a UserOperator
-    """
-
-    operator_id: UUID = Field(..., alias="id")
-
-    class Meta:
-        model = Operator
-        fields = ["status"]

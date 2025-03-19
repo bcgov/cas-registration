@@ -5,7 +5,7 @@ export default async function getCurrentUserOperator(): Promise<
   UserOperator | { error: string }
 > {
   const response = await actionHandler(
-    `registration/user-operators/pending`,
+    "registration/user-operators/current",
     "GET",
     "",
   );
