@@ -67,7 +67,7 @@ class ReportActivitySaveService:
             )
         except ValueError as e:
             raise ValueError(
-                f"Validation failed for report activity {self.activity.id} in report version {self.facility_report.report_version.id}: {e}"
+                f"Validation failed for report activity {self.activity.name}: {e}"
             )
         # Save raw json data
         self.save_raw_data(data)
