@@ -132,11 +132,15 @@ export const operationInformationUISchema: UiSchema = {
   },
   process_flow_diagram: {
     "ui:widget": "FileWidget",
-    "ui:options": {},
+    "ui:options": {
+      filePreview: true,
+    },
   },
   boundary_map: {
     "ui:widget": "FileWidget",
-    "ui:options": {},
+    "ui:options": {
+      filePreview: true,
+    },
   },
   bc_obps_regulated_operation: {
     "ui:widget": "BoroIdWidget",
