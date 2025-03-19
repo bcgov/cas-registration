@@ -23,8 +23,13 @@ from registration.schema import Message
 )
 def get_current_user_operator_has_registered_operation(request: HttpRequest) -> Tuple[Literal[200], Dict[str, bool]]:
     try:
+        current_user_guid = get_current_user_guid(request)
         # Retrieve the operator associated with the current user
-        operator = UserDataAccessService.get_operator_by_user(get_current_user_guid(request))
+        operator = UserDataAccessService.get_operator_by_user(current_user_guid)
+        # Check if user has access to the operator(We use this endpoint for dashboard tiles too)
+        # If user does not have access to the operator, we don't need to check for registered operation
+        if not UserDataAccessService.user_has_access_to_operator(current_user_guid, operator.id):
+            return 200, {"has_registered_operation": False}
         # Use the service to check if the operator has a registered operation
         has_registered_operation = OperationDataAccessService.check_current_users_registered_operation(operator.id)
         return 200, {"has_registered_operation": has_registered_operation}
