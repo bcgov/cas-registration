@@ -197,6 +197,11 @@ describe("the OperationInformationForm component", () => {
         );
 
         expect(screen.getAllByText(/testpdf.pdf/i)).toHaveLength(2);
+        expect(
+          screen.getAllByRole("link", {
+            name: /preview/i,
+          }),
+        ).toHaveLength(2);
       });
       // edit one of the pre-filled values
 
