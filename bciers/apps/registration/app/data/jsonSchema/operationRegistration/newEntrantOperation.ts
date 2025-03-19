@@ -102,6 +102,7 @@ export const newEntrantOperationUiSchema: UiSchema = {
     "ui:options": {
       accept: ".pdf",
       label: false,
+      filePreview: true,
     },
   },
 };
