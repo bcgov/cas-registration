@@ -5,6 +5,7 @@ from localflavor.ca.models import CAPostalCodeField, CAProvinceField
 from simple_history.models import HistoricalRecords
 from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.address import Rls as AddressRls
+import pgtrigger
 
 
 class Address(BaseModel):
@@ -30,5 +31,30 @@ class Address(BaseModel):
     class Meta:
         db_table_comment = "Table containing address data. Only Canadian addresses are supported."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.ADDRESS.value}'
+        triggers = [
+            pgtrigger.Trigger(
+                # Prevent setting address fields to empty or NULL for Operation Representative
+                name="protect_fields_empty_update",
+                level=pgtrigger.Row,  # Row-level trigger
+                when=pgtrigger.Before,  # Trigger before the update
+                operation=pgtrigger.Update,  # Only for UPDATE operations
+                func="""
+                    if exists (
+                        select 1
+                        from erc.contact
+                        where address_id = new.id
+                          and business_role_id = 'Operation Representative'
+                    )
+                    and (new.street_address is null or new.street_address = ''
+                         or new.municipality is null or new.municipality = ''
+                         or new.province is null or new.province = ''
+                         or new.postal_code is null or new.postal_code = '')
+                    then
+                        raise exception 'Cannot set address fields to empty or NULL when associated with an Operation Representative';
+                    end if;
+                    return new;
+                """,
+            )
+        ]
 
     Rls = AddressRls
