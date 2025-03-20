@@ -52,6 +52,7 @@ from reporting.models.emission_category_mapping import EmissionCategoryMapping
 from reporting.models.report_non_attributable_emissions import (
     ReportNonAttributableEmissions,
 )
+from reporting.models.report_sign_off import ReportSignOff
 
 
 def json_seq(
@@ -284,4 +285,15 @@ report_raw_activity_data = Recipe(
     facility_report=foreign_key(facility_report),
     activity=foreign_key(activity),
     json_data=json_seq(json_value="generated raw activity data"),
+)
+
+report_sign_off = Recipe(
+    ReportSignOff,
+    report_version=foreign_key(report_version),
+    acknowledgement_of_review=True,
+    acknowledgement_of_records=True,
+    acknowledgement_of_information=True,
+    acknowledgement_of_impact=True,
+    signature="Test Signature",
+    signing_date=datetime.now(),
 )
