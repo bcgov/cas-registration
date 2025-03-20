@@ -113,18 +113,21 @@ const FacilityInformationForm = ({
 
   const handleSubmit = useCallback(
     async (e: IChangeEvent) => {
-      // if there are no existing facilities and the user hasn't added a new one, return error
-      if (
-        initialGridData?.row_count === 0 &&
-        ((e.formData?.facility_information_array &&
-          e.formData.facility_information_array.length === 0) ||
+      const facilityFormIsBlank =
+        e.formData?.facility_information_array &&
+        (e.formData.facility_information_array.length === 0 ||
           JSON.stringify(e.formData.facility_information_array) ===
-            JSON.stringify([{}]))
-      ) {
+            JSON.stringify([{}]));
+      // if there are no existing facilities and the user hasn't added a new one, return error
+      if (initialGridData?.row_count === 0 && facilityFormIsBlank) {
         return { error: "Operation must have at least one facility." };
       }
       // if there's an existing facility and the new facility form was opened but not filled, redirect to the next step without hitting the API
-      if (initialGridData?.row_count && initialGridData?.row_count > 0) {
+      if (
+        initialGridData?.row_count &&
+        initialGridData?.row_count > 0 &&
+        facilityFormIsBlank
+      ) {
         redirect();
         return;
       }
