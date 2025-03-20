@@ -46,8 +46,8 @@ CONFIG_SOURCE_TYPE_SCHEMA = [
         False,
     ),
     (
-        "8_equipment_leaks",
-        "Equipment leaks",
+        "8_equipment_leaks_at_refineries",
+        "Equipment leaks at refineries",
         False,
         False,
     ),
