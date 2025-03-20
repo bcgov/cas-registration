@@ -1,4 +1,5 @@
 import logging
+import os
 from django.db.models import QuerySet
 from typing import Any, TypeVar, Union, Iterable, Dict, Optional
 from uuid import UUID
@@ -83,21 +84,26 @@ def file_to_data_url(document: Document) -> Optional[str]:  # type: ignore[retur
     Transforms a Django FieldField record into a data url that RJSF can process.
     """
     timeout_seconds = 10
-    try:
-        response = requests.get(document.file.url, timeout=timeout_seconds)
-        if response.status_code == 200:
-            document_content = response.content
-            encoded_content = base64.b64encode(document_content).decode("utf-8")
-            # only pdf format is allowed
-            return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";base64," + encoded_content  # type: ignore[no-any-return]
-        else:
-            logger.error(f"Request to retrieve file failed with status code {response.status_code}")
-    except requests.exceptions.Timeout:
-        # Handle the timeout exception
-        logger.exception(f"Request timed out after {timeout_seconds} seconds")
-    except requests.exceptions.RequestException as e:
-        # Handle other types of exceptions (e.g., connection error)
-        logger.exception(f"An error occurred: {e}")
+    # Handles local storage when running in CI
+    if os.environ.get("CI", None) == "true":
+        encoded_content = base64.b64encode(document.get_file_content().read()).decode("utf-8")
+        return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
+    else:
+        try:
+            response = requests.get(document.get_file_url(), timeout=timeout_seconds)
+            if response.status_code == 200:
+                document_content = response.content
+                encoded_content = base64.b64encode(document_content).decode("utf-8")
+                # only pdf format is allowed
+                return "data:application/pdf;name=" + document.file.name.split("/")[-1] + ";scanstatus=" + document.status + ";base64," + encoded_content  # type: ignore[no-any-return]
+            else:
+                logger.error(f"Request to retrieve file failed with status code {response.status_code}")
+        except requests.exceptions.Timeout:
+            # Handle the timeout exception
+            logger.exception(f"Request timed out after {timeout_seconds} seconds")
+        except requests.exceptions.RequestException as e:
+            # Handle other types of exceptions (e.g., connection error)
+            logger.exception(f"An error occurred: {e}")
 
 
 def data_url_to_file(data_url: str) -> ContentFile:

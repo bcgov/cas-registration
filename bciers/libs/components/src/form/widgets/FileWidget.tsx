@@ -18,6 +18,8 @@ import {
   WidgetProps,
 } from "@rjsf/utils";
 import { useSession } from "next-auth/react";
+import { CircularProgress } from "@mui/material";
+import { AlertIcon } from "@bciers/components/icons";
 
 const addNameToDataURL = (dataURL: string, name: string) => {
   if (dataURL === null) {
@@ -26,11 +28,25 @@ const addNameToDataURL = (dataURL: string, name: string) => {
   return dataURL.replace(";base64", `;name=${encodeURIComponent(name)};base64`);
 };
 
+type FileScanStatus = "Unscanned" | "Clean" | "Quarantined";
+
+const getScanStatusFromDataURL = (dataURL: string | null): FileScanStatus => {
+  if (dataURL === null) {
+    return "Unscanned";
+  }
+  const scanStatus = dataURL.match(/scanstatus=([^;]+)/)?.[1];
+  if (!scanStatus) {
+    return "Unscanned";
+  }
+  return scanStatus as FileScanStatus;
+};
+
 type FileInfoType = {
   dataURL?: string | null;
   name: string;
   size: number;
   type: string;
+  scanStatus: FileScanStatus;
 };
 
 const processFile = (file: File): Promise<FileInfoType> => {
@@ -45,6 +61,7 @@ const processFile = (file: File): Promise<FileInfoType> => {
           name,
           size,
           type,
+          scanStatus: getScanStatusFromDataURL(event.target.result),
         });
       } else {
         resolve({
@@ -52,6 +69,7 @@ const processFile = (file: File): Promise<FileInfoType> => {
           name,
           size,
           type,
+          scanStatus: "Unscanned",
         });
       }
     };
@@ -61,6 +79,34 @@ const processFile = (file: File): Promise<FileInfoType> => {
 
 const processFiles = (files: FileList) => {
   return Promise.all(Array.from(files).map(processFile));
+};
+
+// Show a different message depending on the fileScanStatus
+const showScanStatus = (status: FileScanStatus | undefined) => {
+  if (status === "Quarantined") {
+    return (
+      <div className="flex items-center justify-between text-red-500 text-sm">
+        <AlertIcon />
+        <span className="ml-2">
+          Security risk found. Check for viruses or upload a different file.
+        </span>
+      </div>
+    );
+  }
+  if (status === "Unscanned") {
+    return (
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col">
+          <span>Upload in progress....</span>
+          <span className="text-sm">This may take up to 5 minutes.</span>
+        </div>
+        <div>
+          <CircularProgress size={20} className="ml-2" />
+        </div>
+      </div>
+    );
+  }
+  return null;
 };
 
 function FileInfoPreview<
@@ -107,12 +153,12 @@ export function FilesInfo<
     return null;
   }
   return (
-    <ul className="m-0 py-0 flex flex-col justify-start">
+    <ul className="m-0 py-0 flex flex-col justify-start list-none">
       {filesInfo.map((fileInfo) => {
-        const { name } = fileInfo;
+        const { name, scanStatus } = fileInfo;
         return (
-          <li key={name}>
-            {name}
+          <li key={name} data-name={name}>
+            {showScanStatus(scanStatus) || name}
             {preview && (
               <FileInfoPreview<T, S, F>
                 fileInfo={fileInfo}
@@ -131,11 +177,13 @@ export const extractFileInfo = (dataURLs: string[]): FileInfoType[] => {
     .filter((dataURL) => dataURL)
     .map((dataURL) => {
       const { blob, name } = dataURItoBlob(dataURL);
+      const scanStatus = getScanStatusFromDataURL(dataURL);
       return {
         dataURL,
         name: name,
         size: blob.size,
         type: blob.type,
+        scanStatus,
       };
     });
 };

@@ -204,7 +204,9 @@ class TestCheckIfRoleAuthorized(TestCase):
 
 class TestFileTODataURL:
     @staticmethod
-    def test_file_to_data_url_returns_data_url(mocker):
+    def test_file_to_data_url_returns_data_url(mocker, monkeypatch):
+        monkeypatch.setenv("CI", "false")
+
         # Mock the document object
         document = document_baker()
 
@@ -220,11 +222,13 @@ class TestFileTODataURL:
 
         # Check the expected result
         encoded_content = base64.b64encode(b"PDF content").decode("utf-8")
-        expected_result = f"data:application/pdf;name=test.pdf;base64,{encoded_content}"
+        expected_result = f"data:application/pdf;name=test.pdf;scanstatus=Unscanned;base64,{encoded_content}"
         assert result == expected_result
 
     @staticmethod
-    def test_file_to_data_url_handles_timeout(mocker, caplog):
+    def test_file_to_data_url_handles_timeout(mocker, caplog, monkeypatch):
+        monkeypatch.setenv("CI", "false")
+
         # Mock the document object
         document = document_baker()
 
@@ -241,7 +245,9 @@ class TestFileTODataURL:
         assert "Request timed out" in caplog.text
 
     @staticmethod
-    def test_file_to_data_url_handles_request_exception(mocker, caplog):
+    def test_file_to_data_url_handles_request_exception(mocker, caplog, monkeypatch):
+        monkeypatch.setenv("CI", "false")
+
         # Mock the document object
         document = document_baker()
 

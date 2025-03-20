@@ -33,15 +33,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # If we're in the CI environment, don't hit Google Cloud Storage
 if os.environ.get('CI', None) == 'true':
     # Use local file storage for tests
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
+    STORAGES = {
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+        "default": {"BACKEND": "bc_obps.storage_backends.UnscannedLocal"},
+        "clean": {"BACKEND": "bc_obps.storage_backends.CleanLocal"},
+        "quarantined": {"BACKEND": "bc_obps.storage_backends.QuarantinedLocal"},
+    }
 else:
     # Google Cloud Storage Settings
+    GS_UNSCANNED_BUCKET_NAME = os.environ.get("GS_UNSCANNED_BUCKET_NAME")
+    GS_CLEAN_BUCKET_NAME = os.environ.get("GS_CLEAN_BUCKET_NAME")
+    GS_QUARANTINED_BUCKET_NAME = os.environ.get("GS_QUARANTINED_BUCKET_NAME")
+
     STORAGES = {
-        "default": {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage"},
+        "default": {"BACKEND": "bc_obps.storage_backends.UnscannedBucketStorage"},
+        "clean": {"BACKEND": "bc_obps.storage_backends.CleanBucketStorage"},
+        "quarantined": {"BACKEND": "bc_obps.storage_backends.QuarantinedBucketStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
     }
-    GS_BUCKET_NAME = os.environ.get("GS_BUCKET_NAME")
     if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
         GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
             os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")

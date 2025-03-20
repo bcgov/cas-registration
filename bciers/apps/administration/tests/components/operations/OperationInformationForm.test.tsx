@@ -26,8 +26,10 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockDataUri = "data:application/pdf;name=testpdf.pdf;base64,ZHVtbXk=";
-const mockDataUri2 = "data:application/pdf;name=testpdf2.pdf;base64,ZHVtbXk=";
+const mockDataUri =
+  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
+const mockDataUri2 =
+  "data:application/pdf;name=testpdf2.pdf;scanstatus=Clean;base64,ZHVtbXk=";
 
 // Just using a simple schema for testing purposes
 const testSchema: RJSFSchema = {
@@ -845,7 +847,11 @@ describe("the OperationInformationForm component", () => {
       /new entrant application and statutory declaration/i,
     );
     await userEvent.upload(newEntrantApplicationDocument, mockFile);
-    expect(screen.getByText("mock_file.pdf")).toBeVisible();
+    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByRole("listitem")).toHaveAttribute(
+      "data-name",
+      "mock_file.pdf",
+    );
     const submitButton = screen.getByRole("button", {
       name: "Submit",
     });
