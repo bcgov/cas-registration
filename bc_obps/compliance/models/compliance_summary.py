@@ -70,37 +70,6 @@ class ComplianceSummary(TimeStampedModel):
         else:
             return self.ComplianceStatus.OBLIGATION_FULLY_MET
 
-    @property
-    def obligation_id(self) -> str:
-        """
-        Format the obligation ID as "YY-OOOO-R-V" where:
-        - YY-OOOO = BORO ID (from bc_obps_regulated_operation)
-        - R = Report ID
-        - V = Report version ID
-
-        Example: "21-0001-1-1"
-
-        Returns:
-            str: The formatted obligation ID
-        """
-        # Get BORO ID if available (format: YY-OOOO)
-        if self.report.operation.bc_obps_regulated_operation:
-            # Use the BORO ID directly (already in YY-OOOO format)
-            operation_part = self.report.operation.bc_obps_regulated_operation.id
-        else:
-            # The operation has not been approved the BC OBPS
-            # Fallback: construct a similar format using reporting year and a default operation ID
-            # year_part = str(self.report.reporting_year.reporting_year)[-2:]
-            # operation_part = f"{year_part}-0001"
-            operation_part = "Not-approved"
-
-        # Get report (R) and version (V) IDs
-        report_id = str(self.report.id)
-        version_id = str(self.current_report_version.id)
-
-        # Format the complete obligation ID
-        return f"{operation_part}-{report_id}-{version_id}"
-
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store compliance summaries for reports"
         db_table = 'erc"."compliance_summary'

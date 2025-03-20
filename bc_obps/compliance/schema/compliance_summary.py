@@ -39,7 +39,7 @@ class ComplianceSummaryListOut(ModelSchema):
     operation_name: str = Field(..., alias="report.operation.name")
     reporting_year: int = Field(..., alias="compliance_period.end_date.year")
     compliance_status: str
-    obligation_id: str
+    obligation_id: Optional[str] = Field(None, alias="obligation.obligation_id")
     outstanding_balance: Optional[Decimal] = None
 
     class Meta:
@@ -61,7 +61,7 @@ class ComplianceSummaryOut(ModelSchema):
     obligation: ComplianceObligationOut
     excess_emissions: Decimal
     outstanding_balance: Optional[Decimal] = None
-    obligation_id: str
+    obligation_id: Optional[str] = Field(None, alias="obligation.obligation_id")
 
     class Meta:
         model = ComplianceSummary

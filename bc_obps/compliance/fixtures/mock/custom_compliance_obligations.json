@@ -1,0 +1,44 @@
+[
+  {
+    "model": "compliance.complianceobligation",
+    "pk": 1,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "compliance_summary": 101,
+      "emissions_amount_tco2e": "1000.0000",
+      "status": "OBLIGATION_NOT_MET",
+      "penalty_status": "NONE",
+      "obligation_deadline": "2024-11-30",
+      "obligation_id": "21-0001-1-1"
+    }
+  },
+  {
+    "model": "compliance.complianceobligation",
+    "pk": 2,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "compliance_summary": 102,
+      "emissions_amount_tco2e": "0.0000",
+      "status": "OBLIGATION_MET",
+      "penalty_status": "NONE",
+      "obligation_deadline": "2024-11-30",
+      "obligation_id": "21-0002-2-2"
+    }
+  },
+  {
+    "model": "compliance.complianceobligation",
+    "pk": 3,
+    "fields": {
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "compliance_summary": 103,
+      "emissions_amount_tco2e": "0.0000",
+      "status": "OBLIGATION_MET",
+      "penalty_status": "NONE",
+      "obligation_deadline": "2024-11-30",
+      "obligation_id": "21-0003-3-3"
+    }
+  }
+]
