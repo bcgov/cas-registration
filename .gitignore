@@ -160,3 +160,9 @@ vitest.config.**s.timestamp-*
 
 # Local file attachments
 bc_obps/test_media/*
+
+# Docker compose
+docker-compose.yml
+
+# VS Code
+.vscode/launch.json
