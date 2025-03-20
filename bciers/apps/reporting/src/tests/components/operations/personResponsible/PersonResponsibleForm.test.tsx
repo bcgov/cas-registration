@@ -5,14 +5,13 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import { useRouter } from "next/navigation";
 import PersonResponsibleForm from "@reporting/src/app/components/operations/personResponsible/PersonResponsibleForm";
 import {
   Contact,
   ContactRow,
 } from "@reporting/src/app/components/operations/types";
 import { personResponsibleSchema } from "@reporting/src/data/jsonSchema/personResponsible";
-import { actionHandler } from "@bciers/testConfig/mocks";
+import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { getContacts } from "@bciers/actions/api";
 import { dummyNavigationInformation } from "../../taskList/utils";
 
@@ -21,8 +20,8 @@ vi.mock("@bciers/actions/api", () => ({
   getContacts: vi.fn(), // Mock getContact function
 }));
 const mockGetContacts = getContacts as ReturnType<typeof vi.fn>;
-const mockRouter = useRouter as ReturnType<typeof vi.fn>;
 const mockPush = vi.fn();
+const mockRefresh = vi.fn();
 
 // Define test data types
 interface MockContact extends Contact {
@@ -76,6 +75,10 @@ const defaultProps = {
 describe("PersonResponsibleForm component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    useRouter.mockReturnValue({
+      push: mockPush,
+      refresh: mockRefresh,
+    });
   });
   it("renders the form correctly", async () => {
     render(<PersonResponsibleForm {...defaultProps} />);
@@ -97,7 +100,6 @@ describe("PersonResponsibleForm component", () => {
 
   it("submits the form successfully", async () => {
     actionHandler.mockResolvedValueOnce({});
-    mockRouter.mockReturnValue({ push: mockPush });
 
     render(<PersonResponsibleForm {...defaultProps} />);
 

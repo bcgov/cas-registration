@@ -5,6 +5,7 @@ import { getOrderedActivities } from "@reporting/src/app/utils/getOrderedActivit
 import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllocations";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // ✨ Mocks
 vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
@@ -176,6 +177,9 @@ const emissionAllocations = {
 describe("The FacilityEmissionAllocationPage component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
   });
   it("renders the FacilityEmissionAllocationForm", async () => {
     (

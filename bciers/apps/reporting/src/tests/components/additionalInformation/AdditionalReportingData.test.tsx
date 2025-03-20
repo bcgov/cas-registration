@@ -29,6 +29,7 @@ describe("AdditionalReportingData Component", () => {
       replace: vi.fn(),
       prefetch: vi.fn(),
       back: vi.fn(),
+      refresh: vi.fn(),
     });
 
     (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({

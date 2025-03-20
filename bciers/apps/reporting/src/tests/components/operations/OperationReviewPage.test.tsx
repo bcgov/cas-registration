@@ -10,6 +10,7 @@ import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { HasReportVersion } from "@reporting/src/app/utils//defaultPageFactoryTypes";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // ✨ Mock the utility functions
 vi.mock("@reporting/src/app/utils/getAllReportingActivities", () => ({
@@ -86,6 +87,9 @@ describe("OperationReviewPage Component", () => {
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
       dummyNavigationInformation,
     );
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
   });
 
   it("renders the form correctly with transformed props", async () => {

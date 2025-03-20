@@ -6,8 +6,10 @@ import { dummyNavigationInformation } from "../taskList/utils";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
+const mockRouterRefresh = vi.fn();
 useRouter.mockReturnValue({
   push: mockRouterPush,
+  refresh: mockRouterRefresh,
 });
 
 // 🏷 Constants
