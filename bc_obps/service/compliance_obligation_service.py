@@ -2,11 +2,8 @@ from datetime import date
 from decimal import Decimal
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
-from service.operator_elicensing_service import OperatorELicensingService
 from service.compliance_fee_service import ComplianceFeeService
-from service.fee_elicensing_service import FeeELicensingService
 import logging
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +14,14 @@ class ComplianceObligationService:
     """
 
     @classmethod
+    @transaction.atomic
     def create_compliance_obligation(
         cls, compliance_summary_id: int, emissions_amount: Decimal, reporting_year: int
     ) -> ComplianceObligation:
         """
-        Creates a compliance obligation for a compliance summary
+        Creates a compliance obligation for a compliance summary.
+        This method focuses purely on domain logic - creating the obligation record.
+        Integration with external systems is handled by separate services.
 
         Args:
             compliance_summary_id (int): The ID of the compliance summary
@@ -34,45 +34,36 @@ class ComplianceObligationService:
         Raises:
             ComplianceSummary.DoesNotExist: If the compliance summary doesn't exist
         """
-        with transaction.atomic():
-            compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
+        # Get the compliance summary
+        compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
 
-            # Set obligation deadline to November 30 of the following year
-            # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
-            obligation_deadline = cls.get_obligation_deadline(reporting_year)
+        # Set obligation deadline to November 30 of the following year
+        # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
+        obligation_deadline = cls.get_obligation_deadline(reporting_year)
 
-            obligation = ComplianceObligation.objects.create(
-                compliance_summary=compliance_summary,
-                emissions_amount_tco2e=emissions_amount,
-                status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
-                penalty_status=ComplianceObligation.PenaltyStatus.NONE,
-                obligation_deadline=obligation_deadline,
-            )
+        # Create the obligation (domain operation)
+        obligation = ComplianceObligation.objects.create(
+            compliance_summary=compliance_summary,
+            emissions_amount_tco2e=emissions_amount,
+            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
+            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
+            obligation_deadline=obligation_deadline,
+        )
 
-            # Ensure an eLicensing client exists for the operator and create a fee
-            try:
-                # Create compliance fee
-                fee = ComplianceFeeService.create_compliance_fee(obligation.id)
-                if fee is not None:
-                    logger.info(f"Created compliance fee for obligation {obligation.id}")
-                    
-                    # Sync fee with eLicensing
-                    try:
-                        fee_link = FeeELicensingService.sync_fee_with_elicensing(fee.id)
-                        if fee_link is not None:
-                            logger.info(f"Synced fee {fee.id} with eLicensing")
-                        else:
-                            logger.warning(f"Failed to sync fee {fee.id} with eLicensing")
-                    except Exception as e:
-                        logger.error(f"Error syncing fee {fee.id} with eLicensing: {str(e)}")
-                        # Continue with the process even if fee sync fails
-                else:
-                    logger.warning(f"Failed to create compliance fee for obligation {obligation.id}")
-            except Exception as e:
-                logger.error(f"Error processing compliance fee for obligation {obligation.id}: {str(e)}")
-                # Continue with the process even if fee processing fails
+        logger.info(f"Created compliance obligation {obligation.id} for summary {compliance_summary_id}")
 
-            return obligation
+        # Create the associated fee for this obligation
+        try:
+            fee = ComplianceFeeService.create_compliance_fee(obligation.id)
+            if fee:
+                logger.info(f"Created compliance fee {fee.id} for obligation {obligation.id}")
+            else:
+                logger.warning(f"Failed to create compliance fee for obligation {obligation.id}")
+        except Exception as e:
+            logger.error(f"Error creating compliance fee for obligation {obligation.id}: {str(e)}", exc_info=True)
+            # Continue with the process even if fee creation fails
+
+        return obligation
 
     @classmethod
     def get_obligation_deadline(cls, year: int) -> date:

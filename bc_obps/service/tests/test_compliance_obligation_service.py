@@ -19,6 +19,7 @@ def mock_compliance_summary():
     summary.report = MagicMock(spec=Report)
     summary.report.operator = MagicMock()
     summary.report.operator.id = uuid.uuid4()
+    summary.report.reporting_year_id = 2023
     return summary
 
 
@@ -31,25 +32,29 @@ def mock_compliance_obligation():
     return obligation
 
 
+@pytest.fixture
+def mock_compliance_fee():
+    """Create a mock compliance fee"""
+    fee = MagicMock()
+    fee.id = 1
+    return fee
+
+
 class TestComplianceObligationService:
     """Tests for the ComplianceObligationService class"""
 
     @pytest.mark.django_db
     @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.sync_client_with_elicensing')
+    @patch('service.compliance_obligation_service.ComplianceFeeService.create_compliance_fee')
     def test_create_compliance_obligation_success(
-        self, mock_sync_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+        self, mock_create_fee, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation, mock_compliance_fee
     ):
-        """Test successful creation of a compliance obligation with eLicensing client"""
+        """Test successful creation of a compliance obligation"""
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Mock successful eLicensing client creation
-        mock_elicensing_link = MagicMock()
-        mock_elicensing_link.elicensing_object_id = 'test-client-id'
-        mock_sync_client.return_value = mock_elicensing_link
+        mock_create_fee.return_value = mock_compliance_fee
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
@@ -60,111 +65,59 @@ class TestComplianceObligationService:
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
+        mock_create_fee.assert_called_once_with(mock_compliance_obligation.id)
 
     @pytest.mark.django_db
     @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.sync_client_with_elicensing')
-    def test_create_compliance_obligation_client_not_created(
-        self, mock_sync_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+    @patch('service.compliance_obligation_service.ComplianceFeeService.create_compliance_fee')
+    def test_create_compliance_obligation_fee_creation_fails(
+        self, mock_create_fee, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
     ):
-        """Test compliance obligation creation when eLicensing client creation fails"""
+        """Test compliance obligation creation when fee creation fails"""
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Mock failed eLicensing client creation
-        mock_sync_client.return_value = None
+        
+        # Mock fee creation failure
+        mock_create_fee.return_value = None
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
             compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
         )
 
-        # Verify results - obligation should still be created even if client fails
+        # Verify results - obligation should still be created even if fee creation fails
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
+        mock_create_fee.assert_called_once_with(mock_compliance_obligation.id)
 
     @pytest.mark.django_db
     @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.sync_client_with_elicensing')
-    def test_create_compliance_obligation_attribute_error(
-        self, mock_sync_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+    @patch('service.compliance_obligation_service.ComplianceFeeService.create_compliance_fee')
+    def test_create_compliance_obligation_fee_creation_exception(
+        self, mock_create_fee, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
     ):
-        """Test compliance obligation creation handling AttributeError during eLicensing client creation"""
+        """Test compliance obligation creation handling exception during fee creation"""
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Remove operator to cause AttributeError
-        mock_compliance_summary.report = None
+        
+        # Mock exception during fee creation
+        mock_create_fee.side_effect = Exception("Error creating fee")
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
             compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
         )
 
-        # Verify results - obligation should still be created despite error
+        # Verify results - obligation should still be created despite fee creation error
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_sync_client.assert_not_called()
-
-    @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.sync_client_with_elicensing')
-    def test_create_compliance_obligation_request_exception(
-        self, mock_sync_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
-    ):
-        """Test compliance obligation creation handling RequestException during eLicensing client creation"""
-        # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
-        mock_create.return_value = mock_compliance_obligation
-
-        # Mock RequestException during client creation
-        mock_sync_client.side_effect = requests.RequestException("API connection error")
-
-        # Call the method
-        result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
-        )
-
-        # Verify results - obligation should still be created despite API error
-        assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
-        mock_create.assert_called_once()
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
-
-    @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.sync_client_with_elicensing')
-    def test_create_compliance_obligation_generic_exception(
-        self, mock_sync_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
-    ):
-        """Test compliance obligation creation handling generic Exception during eLicensing client creation"""
-        # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
-        mock_create.return_value = mock_compliance_obligation
-
-        # Mock generic Exception during client creation
-        mock_sync_client.side_effect = Exception("Unexpected error")
-
-        # Call the method
-        result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
-        )
-
-        # Verify results - obligation should still be created despite error
-        assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
-        mock_create.assert_called_once()
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
+        mock_create_fee.assert_called_once_with(mock_compliance_obligation.id)
 
     def test_get_obligation_deadline(self):
         """Test get_obligation_deadline returns the correct date"""
