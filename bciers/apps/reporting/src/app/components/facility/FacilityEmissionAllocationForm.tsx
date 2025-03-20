@@ -20,6 +20,8 @@ interface Props {
   orderedActivities: any;
   initialData: any;
   navigationInformation: NavigationInformation;
+  isPulpAndPaper: boolean;
+  overlappingIndustrialProcessEmissions: number;
 }
 
 interface FormData {
@@ -66,7 +68,11 @@ const validateMethodologyOther = (formData: FormData): boolean => {
         formData.allocation_other_methodology_description !== "";
 };
 
-const validateFormData = (formData: FormData) => {
+const validateFormData = (
+  formData: FormData,
+  isPulpAndPaper: boolean,
+  overlappingIndustrialProcessEmissions: number,
+) => {
   const errorMismatch =
     "All emissions must be allocated to 100% before saving and continuing";
   const errorMethodology =
@@ -85,6 +91,27 @@ const validateFormData = (formData: FormData) => {
   if (!validateMethodologyOther(formData)) {
     newErrors.push(errorMethodologyOther);
   }
+  if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
+    const industrialEmissionAllocations =
+      formData?.basic_emission_allocation_data?.find(
+        (allocation: EmissionAllocationData) =>
+          allocation.emission_category_name === "Industrial process emissions",
+      );
+    const chemicalPulpAllocation =
+      industrialEmissionAllocations?.products?.find(
+        (p) => p.product_name === "Pulp and paper: chemical pulp",
+      );
+    if (!chemicalPulpAllocation)
+      newErrors.push("Missing Product: 'Pulp and paper: chemical pulp'");
+    else if (
+      chemicalPulpAllocation.allocated_quantity -
+        overlappingIndustrialProcessEmissions <
+      0
+    )
+      newErrors.push(
+        "Invalid allocation: Industrial Process quantity allocated to product 'Pulp and paper: chemical pulp' is too low",
+      );
+  }
 
   return newErrors;
 };
@@ -94,6 +121,8 @@ export default function FacilityEmissionAllocationForm({
   facility_id,
   initialData,
   navigationInformation,
+  isPulpAndPaper,
+  overlappingIndustrialProcessEmissions,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
@@ -121,7 +150,11 @@ export default function FacilityEmissionAllocationForm({
 
   // 🔄 Check for allocation mismatch on page load to prevent submit
   useEffect(() => {
-    const newErrors = validateFormData(formData);
+    const newErrors = validateFormData(
+      formData,
+      isPulpAndPaper,
+      overlappingIndustrialProcessEmissions,
+    );
     setErrors(newErrors);
     setSubmitButtonDisabled(newErrors.length > 0);
   }, [formData]);
