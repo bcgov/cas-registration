@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import MultiStepFormWithTaskList from "./MultiStepFormWithTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { RJSFSchema } from "@rjsf/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // Mock data for taskListElements
 const taskListElements: TaskListElement[] = [
@@ -35,6 +36,13 @@ const formData = {
 const mockOnSubmit = vi.fn(async () => {});
 
 describe("MultiStepFormWithTaskList", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
+  });
+
   it("renders form with task list and submit button", () => {
     render(
       <MultiStepFormWithTaskList

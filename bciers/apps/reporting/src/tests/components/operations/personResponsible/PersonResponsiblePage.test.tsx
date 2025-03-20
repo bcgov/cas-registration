@@ -6,6 +6,7 @@ import { getReportingPersonResponsible } from "@reporting/src/app/utils/getRepor
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // Mock functions
 vi.mock("@reporting/src/app/utils/getFacilityReport", () => ({
@@ -80,6 +81,12 @@ mockGetNavigationInformation.mockResolvedValue({
 });
 
 describe("PersonResponsiblePage component", () => {
+  beforeEach(() => {
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
+  });
+
   it("renders the PersonResponsibleForm component with the correct data", async () => {
     render(await PersonResponsiblePage({ version_id: mockVersionId }));
 

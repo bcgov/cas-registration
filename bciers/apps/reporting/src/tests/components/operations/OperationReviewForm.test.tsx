@@ -67,7 +67,7 @@ const schema = buildOperationReviewSchema(
 
 describe("OperationReviewForm Component", () => {
   beforeEach(() => {
-    mockUseRouter.mockReturnValue({ push: vi.fn() });
+    mockUseRouter.mockReturnValue({ push: vi.fn(), refresh: vi.fn() });
     mockActionHandler.mockResolvedValue(true); // Mock successful action handler
   });
 
