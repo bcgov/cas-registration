@@ -4,9 +4,11 @@ from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_submission_service import ReportSubmissionService
 from reporting.models.report_version import ReportVersion
+from reporting.schema.report_sign_off import ReportSignOffIn
 import uuid
 
 
+@pytest.mark.django_db
 class TestReportSubmissionService:
     @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
@@ -117,8 +119,16 @@ class TestReportSubmissionService:
         mock_filter_instance = MagicMock()
         mock_filter.return_value = mock_filter_instance
 
+        fake_sign_off_data = ReportSignOffIn(
+            acknowledgement_of_review=True,
+            acknowledgement_of_records=True,
+            acknowledgement_of_information=True,
+            acknowledgement_of_impact=True,
+            signature="signature",
+        )
+
         # Act: Call submit_report.
-        result = ReportSubmissionService.submit_report(version_id, user_guid)
+        result = ReportSubmissionService.submit_report(version_id, user_guid, fake_sign_off_data)
 
         # Assert that validate_report was called.
         mock_validate_report.assert_called_once_with(version_id)
