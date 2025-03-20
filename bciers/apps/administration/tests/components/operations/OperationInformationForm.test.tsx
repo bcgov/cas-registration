@@ -985,6 +985,7 @@ describe("the OperationInformationForm component", () => {
             secondary_naics_code_id: 2,
             process_flow_diagram: mockDataUri,
             boundary_map: mockDataUri,
+            operation_has_multiple_operators: false,
             registration_purpose: "Reporting Operation",
             operation_representatives: [2],
             activities: [1, 2],
