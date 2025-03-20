@@ -2,6 +2,7 @@ import { act, render, screen } from "@testing-library/react";
 import { describe, expect, vi, it, beforeEach } from "vitest";
 import ActivityForm from "@reporting/src/app/components/activities/ActivityForm";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // Mock data
 const mockActivityData = {
@@ -36,6 +37,9 @@ const flushPromises = () => new Promise((resolve) => setTimeout(resolve, 0));
 describe("ActivityForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
   });
 
   it("renders the activity schema", async () => {
