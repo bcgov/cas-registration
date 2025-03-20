@@ -208,7 +208,11 @@ export default function FacilityEmissionAllocationForm({
         );
     }
     // Validate the updated form data and set an error message if validation fails
-    const newErrors = validateFormData(updatedFormData);
+    const newErrors = validateFormData(
+      updatedFormData,
+      isPulpAndPaper,
+      overlappingIndustrialProcessEmissions,
+    );
     setErrors(newErrors);
     setSubmitButtonDisabled(newErrors.length > 0);
 
