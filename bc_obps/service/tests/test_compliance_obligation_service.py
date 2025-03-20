@@ -8,7 +8,7 @@ import requests
 
 from service.compliance_obligation_service import ComplianceObligationService
 from compliance.models import ComplianceObligation, ComplianceSummary
-from reporting.models import Report
+from reporting.models import Report, ReportVersion
 
 
 @pytest.fixture
@@ -19,7 +19,22 @@ def mock_compliance_summary():
     summary.report = MagicMock(spec=Report)
     summary.report.operator = MagicMock()
     summary.report.operator.id = uuid.uuid4()
+    summary.report.reporting_year_id = 2023
     return summary
+
+
+@pytest.fixture
+def mock_report_version():
+    """Create a mock report version"""
+    report_version = MagicMock(spec=ReportVersion)
+    report_version.id = 1
+    report_version.report = MagicMock(spec=Report)
+    report_version.report.id = 1
+    report_version.report.reporting_year_id = 2023
+    report_version.report.operation = MagicMock()
+    report_version.report.operation.bc_obps_regulated_operation = MagicMock()
+    report_version.report.operation.bc_obps_regulated_operation.id = "23-0001"
+    return report_version
 
 
 @pytest.fixture
@@ -39,7 +54,13 @@ class TestComplianceObligationService:
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_success(
-        self, mock_ensure_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+        self,
+        mock_ensure_client,
+        mock_create,
+        mock_get_summary,
+        mock_compliance_summary,
+        mock_compliance_obligation,
+        mock_report_version,
     ):
         """Test successful creation of a compliance obligation with eLicensing client"""
         # Set up mocks
@@ -53,7 +74,7 @@ class TestComplianceObligationService:
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
+            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
         )
 
         # Verify results
@@ -67,7 +88,13 @@ class TestComplianceObligationService:
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_client_not_created(
-        self, mock_ensure_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+        self,
+        mock_ensure_client,
+        mock_create,
+        mock_get_summary,
+        mock_compliance_summary,
+        mock_compliance_obligation,
+        mock_report_version,
     ):
         """Test compliance obligation creation when eLicensing client creation fails"""
         # Set up mocks
@@ -79,7 +106,7 @@ class TestComplianceObligationService:
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
+            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
         )
 
         # Verify results - obligation should still be created even if client fails
@@ -93,7 +120,13 @@ class TestComplianceObligationService:
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_attribute_error(
-        self, mock_ensure_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+        self,
+        mock_ensure_client,
+        mock_create,
+        mock_get_summary,
+        mock_compliance_summary,
+        mock_compliance_obligation,
+        mock_report_version,
     ):
         """Test compliance obligation creation handling AttributeError during eLicensing client creation"""
         # Set up mocks
@@ -105,7 +138,7 @@ class TestComplianceObligationService:
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
+            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
         )
 
         # Verify results - obligation should still be created despite error
@@ -120,7 +153,13 @@ class TestComplianceObligationService:
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_request_exception(
-        self, mock_ensure_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+        self,
+        mock_ensure_client,
+        mock_create,
+        mock_get_summary,
+        mock_compliance_summary,
+        mock_compliance_obligation,
+        mock_report_version,
     ):
         """Test compliance obligation creation handling RequestException during eLicensing client creation"""
         # Set up mocks
@@ -132,7 +171,7 @@ class TestComplianceObligationService:
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
+            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
         )
 
         # Verify results - obligation should still be created despite API error
@@ -146,7 +185,13 @@ class TestComplianceObligationService:
     @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_generic_exception(
-        self, mock_ensure_client, mock_create, mock_get_summary, mock_compliance_summary, mock_compliance_obligation
+        self,
+        mock_ensure_client,
+        mock_create,
+        mock_get_summary,
+        mock_compliance_summary,
+        mock_compliance_obligation,
+        mock_report_version,
     ):
         """Test compliance obligation creation handling generic Exception during eLicensing client creation"""
         # Set up mocks
@@ -158,7 +203,7 @@ class TestComplianceObligationService:
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), reporting_year=2023
+            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
         )
 
         # Verify results - obligation should still be created despite error
