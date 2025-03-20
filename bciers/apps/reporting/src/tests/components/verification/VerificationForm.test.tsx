@@ -86,6 +86,9 @@ const renderVerificationForm = (operationType: string) => {
 describe("VerificationForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
   });
 
   it("renders the form with SFO UI schema fields", async () => {

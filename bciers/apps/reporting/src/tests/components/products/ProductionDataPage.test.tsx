@@ -5,6 +5,7 @@ import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes"
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 vi.mock("@bciers/actions/api", () => ({
   getProductionData: vi.fn(),
@@ -34,6 +35,9 @@ const mockReportTaskList = {
 describe("The Production Data component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
       dummyNavigationInformation,
     );

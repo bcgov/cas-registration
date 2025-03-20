@@ -11,8 +11,10 @@ vi.mock("@bciers/actions", () => ({
 }));
 
 const mockRouterPush = vi.fn();
+const mockRouterRefresh = vi.fn();
 useRouter.mockReturnValue({
   push: mockRouterPush,
+  refresh: mockRouterRefresh,
 });
 
 const config = {

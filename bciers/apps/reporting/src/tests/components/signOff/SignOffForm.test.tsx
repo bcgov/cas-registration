@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { useRouter } from "@bciers/testConfig/mocks";
 
 // ⛏️ Helper function to render the form
 const renderSignOffForm = () => {
@@ -14,6 +15,13 @@ const renderSignOffForm = () => {
 };
 
 describe("SignOffForm Component", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    useRouter.mockReturnValue({
+      refresh: vi.fn(),
+    });
+  });
+
   it("renders the form with correct fields and values", async () => {
     renderSignOffForm();
     expect(
