@@ -26,8 +26,10 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockDataUri = "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
-const mockDataUri2 = "data:application/pdf;name=testpdf2.pdf;scanstatus=Clean;base64,ZHVtbXk=";
+const mockDataUri =
+  "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=";
+const mockDataUri2 =
+  "data:application/pdf;name=testpdf2.pdf;scanstatus=Clean;base64,ZHVtbXk=";
 
 // Just using a simple schema for testing purposes
 const testSchema: RJSFSchema = {
