@@ -114,8 +114,8 @@ class TestRlsManager(TestCase):
     @patch.object(RlsManager, 'apply_rls_for_model')
     def test_apply_rls(self, mock_apply_rls_for_model, mock_all_models, mock_settings):
         mock_settings.RLS_GRANT_APPS = ['app1', 'app2']
-        mock_all_models.__getitem__.side_effect = (
-            lambda app_name: {'contact': MagicMock()} if app_name == 'app1' else {}
+        mock_all_models.__getitem__.side_effect = lambda app_name: (
+            {'contact': MagicMock()} if app_name == 'app1' else {}
         )
         RlsManager.apply_rls()
 

@@ -2,6 +2,9 @@ from django.dispatch import receiver
 from service.compliance_summary_service import ComplianceSummaryService
 from events.signals import report_submitted
 from typing import Any, Type
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @receiver(report_submitted)
