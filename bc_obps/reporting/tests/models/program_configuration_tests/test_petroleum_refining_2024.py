@@ -104,7 +104,7 @@ class PetroleumRefining2024Test(BaseProgramConfigurationTest, TestCase):
                     "Replacement Methodology": 1,
                 },
             },
-            "Equipment leaks": {
+            "Equipment leaks at refineries": {
                 "CH4": {
                     "WCI.203(i)(1)": 0,
                     "WCI.203(i)(2)": 0,
