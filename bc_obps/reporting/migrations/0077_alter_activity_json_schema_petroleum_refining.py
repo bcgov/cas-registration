@@ -29,7 +29,7 @@ def update_activity_source_type_json_schema_and_configuration_elements(apps, sch
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('reporting', '0075_alter_configuration_element_petroleum_refining'),
+        ('reporting', '0076_alter_configuration_element_petroleum_refining'),
     ]
 
     operations = [
