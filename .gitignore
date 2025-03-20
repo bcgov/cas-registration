@@ -164,3 +164,8 @@ bc_obps/test_media/*
 # Docker compose
 docker-compose.yml
 
+# VS Code
+.vscode/launch.json
+
+
+
