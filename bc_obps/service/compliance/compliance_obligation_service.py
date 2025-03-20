@@ -1,11 +1,10 @@
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
 from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
 import logging
-import requests
 
 logger = logging.getLogger(__name__)
 
@@ -16,11 +15,14 @@ class ComplianceObligationService:
     """
 
     @classmethod
+    @transaction.atomic
     def create_compliance_obligation(
         cls, compliance_summary_id: int, emissions_amount: Decimal, report_version: ReportVersion
     ) -> ComplianceObligation:
         """
-        Creates a compliance obligation for a compliance summary
+        Creates a compliance obligation for a compliance summary.
+        This method focuses purely on domain logic - creating the obligation record.
+        Integration with external systems is handled by separate services.
 
         Args:
             compliance_summary_id (int): The ID of the compliance summary
@@ -34,46 +36,38 @@ class ComplianceObligationService:
             ComplianceSummary.DoesNotExist: If the compliance summary doesn't exist
             ValueError: If the operation is not regulated by BC OBPS (no obligation_id can be generated)
         """
-        with transaction.atomic():
-            compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
+        # Get the compliance summary
+        compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
 
-            # Set obligation deadline to November 30 of the following year
-            # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
-            obligation_deadline = cls.get_obligation_deadline(report_version.report.reporting_year_id)
+        # Set obligation deadline to November 30 of the following year
+        # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
+        obligation_deadline = cls.get_obligation_deadline(report_version.report.reporting_year_id)
 
-            obligation = ComplianceObligation.objects.create(
-                compliance_summary=compliance_summary,
-                emissions_amount_tco2e=emissions_amount,
-                status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
-                penalty_status=ComplianceObligation.PenaltyStatus.NONE,
-                obligation_deadline=obligation_deadline,
-                obligation_id=cls._get_obligation_id(report_version),
-            )
+        # Get the compliance charge rate for the reporting year
+        try:
+            fee_rate_dollars = ComplianceObligation.COMPLIANCE_CHARGE_RATES[report_version.report.reporting_year_id]
+        except KeyError:
+            raise ValueError(f"No compliance charge rate defined for year {report_version.report.reporting_year_id}")
 
-            # Ensure an eLicensing client exists for the operator
-            try:
-                operator = compliance_summary.report.operator
+        # Calculate fee amount: emissions_amount_tco2e * fee rate
+        fee_amount_dollars = (emissions_amount * fee_rate_dollars).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-                # Ensure an eLicensing client exists for this operator
-                client_link = OperatorELicensingService.ensure_client_exists(operator.id)
+        # Create the obligation with fee data
+        obligation = ComplianceObligation.objects.create(
+            compliance_summary=compliance_summary,
+            emissions_amount_tco2e=emissions_amount,
+            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
+            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
+            obligation_deadline=obligation_deadline,
+            obligation_id=cls._get_obligation_id(report_version),
+            fee_amount_dollars=fee_amount_dollars,
+            fee_rate_dollars=fee_rate_dollars,
+            fee_date=date.today(),
+        )
 
-                if client_link is not None:
-                    logger.info(
-                        f"eLicensing client for operator {operator.id} with client ID {client_link.elicensing_object_id}"
-                    )
-                else:
-                    logger.warning(f"Failed to create or find eLicensing client for operator {operator.id}")
+        logger.info(f"Created compliance obligation {obligation.id} for summary {compliance_summary_id}")
 
-            except AttributeError:
-                logger.error(f"Compliance summary {compliance_summary.id} has no associated report or operator")
-            except requests.RequestException as e:
-                logger.error(f"eLicensing API error creating client for compliance obligation: {str(e)}")
-            except Exception as e:
-                logger.error(
-                    f"Error ensuring eLicensing client exists for compliance obligation {obligation.id}: {str(e)}"
-                )
-
-            return obligation
+        return obligation
 
     @classmethod
     def _get_obligation_id(cls, report_version: ReportVersion) -> str:

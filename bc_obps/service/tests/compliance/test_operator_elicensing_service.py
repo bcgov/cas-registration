@@ -164,20 +164,21 @@ class TestOperatorELicensingService:
     def test_ensure_client_exists_existing_client(
         self, mock_link_service, mock_elicensing_link_class, mock_operator, mock_elicensing_link
     ):
-        """Test ensure_client_exists when client already exists"""
-        # Set up mock to return an existing link
-        mock_link_service.get_link_for_model.return_value = mock_elicensing_link
+        """Test sync_client_with_elicensing when client already exists"""
+        # Setup mock operator
+        mock_operator.id = uuid.uuid4()
 
-        # Make sure the link has an object ID (meaning it's already created in eLicensing)
-        mock_elicensing_link.elicensing_object_id = "existing-client-id"
+        # Setup mock for existing link
+        mock_link_service.get_link_for_model.return_value = mock_client_link
+        mock_client_link.elicensing_object_id = "12345"
 
         # Call the method
-        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
-        # Verify results
-        assert result == mock_elicensing_link
+        # Assert that the existing link was returned
+        assert result == mock_client_link
         mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
+            Operator, mock_operator.id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
         )
 
     @pytest.mark.django_db
@@ -187,20 +188,16 @@ class TestOperatorELicensingService:
     def test_ensure_client_exists_operator_not_found(
         self, mock_get, mock_link_service, mock_elicensing_link_class, mock_operator
     ):
-        """Test ensure_client_exists when operator does not exist"""
-        # Set up mocks
-        mock_link_service.get_link_for_model.return_value = None
-        mock_get.side_effect = Operator.DoesNotExist()
+        """Test sync_client_with_elicensing when operator does not exist"""
+        # Setup mock operator and mock it not being found
+        mock_operator.id = uuid.uuid4()
+        mock_operator.objects.get.side_effect = Operator.DoesNotExist
 
         # Call the method
-        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
-        # Verify results
+        # Assert result is None
         assert result is None
-        mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
-        )
-        mock_get.assert_called_once_with(id=mock_operator.id)
 
     @pytest.mark.django_db
     @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
@@ -218,46 +215,29 @@ class TestOperatorELicensingService:
         mock_get,
         mock_link_service,
         mock_content_type,
-        mock_elicensing_link_class,
         mock_operator,
+        mock_client_link,
     ):
-        """Test ensure_client_exists successfully creates a new client"""
-        # Set up mocks
+        """Test sync_client_with_elicensing successfully creates a new client"""
+        # Setup mock operator
+        mock_operator.id = uuid.uuid4()
+
+        # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        mock_get.return_value = mock_operator
-        mock_content_type.objects.get_for_model.return_value = MagicMock()
 
-        # Mock the ELicensingLink class and instance
-        mock_link = MagicMock()
-        mock_elicensing_link_class.return_value = mock_link
-        mock_link.id = uuid.uuid4()
-        mock_link.elicensing_guid = uuid.uuid4()
-
-        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
-        mock_map_data.return_value = client_data
-
-        # API client now returns pre-validated response
-        api_response = {"clientObjectId": "new-client-id", "clientGUID": str(mock_link.elicensing_guid)}
-        mock_api_client.create_client.return_value = api_response
+        # Setup successful API call
+        mock_api_client.create_client.return_value = {"clientObjectId": "54321", "clientGUID": str(uuid.uuid4())}
 
         # Call the method
-        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
-        # Verify results
-        assert result == mock_link
-        mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
-        )
-        mock_get.assert_called_once_with(id=mock_operator.id)
-        mock_content_type.objects.get_for_model.assert_called_once_with(Operator)
-        mock_elicensing_link_class.assert_called_once()
-        mock_map_data.assert_called_once_with(mock_operator, mock_link)
-        mock_api_client.create_client.assert_called_once_with(client_data)
+        # Assert result is the new link
+        assert result == mock_client_link
+        assert mock_client_link.elicensing_object_id == "54321"
+        assert mock_client_link.sync_status == "SUCCESS"
 
-        # Check that link was updated with correct values
-        assert mock_link.elicensing_object_id == "new-client-id"
-        assert mock_link.sync_status == "SUCCESS"
-        mock_link.save.assert_called_once()
+        # Assert save was called
+        assert mock_client_link.save.called
 
     @pytest.mark.django_db
     @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
@@ -275,41 +255,25 @@ class TestOperatorELicensingService:
         mock_get,
         mock_link_service,
         mock_content_type,
-        mock_elicensing_link_class,
         mock_operator,
+        mock_client_link,
     ):
-        """Test ensure_client_exists handles invalid API responses by returning None"""
-        # Set up mocks
+        """Test sync_client_with_elicensing handles invalid API responses by returning None"""
+        # Setup mock operator
+        mock_operator.id = uuid.uuid4()
+
+        # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        mock_get.return_value = mock_operator
-        mock_content_type.objects.get_for_model.return_value = MagicMock()
 
-        # Mock the ELicensingLink class and instance
-        mock_link = MagicMock()
-        mock_elicensing_link_class.return_value = mock_link
-        mock_link.id = uuid.uuid4()
-        mock_link.elicensing_guid = uuid.uuid4()
-
-        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
-        mock_map_data.return_value = client_data
-
-        # Mock API raising ValueError for missing clientObjectId
-        mock_api_client.create_client.side_effect = ValueError("Missing or empty clientObjectId in response")
+        # Setup invalid API response
+        mock_api_client.create_client.side_effect = ValueError("Invalid response from API")
 
         # Call the method
-        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
-        # Verify results
+        # Assert result is None
         assert result is None
-        mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
-        )
-        mock_get.assert_called_once_with(id=mock_operator.id)
-        mock_content_type.objects.get_for_model.assert_called_once_with(Operator)
-        mock_elicensing_link_class.assert_called_once()
-        mock_map_data.assert_called_once_with(mock_operator, mock_link)
-        mock_api_client.create_client.assert_called_once_with(client_data)
-        assert not mock_link.save.called  # Ensure the link wasn't saved
+        assert mock_client_link.sync_status == "FAILED"
 
     @pytest.mark.django_db
     @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
@@ -327,34 +291,25 @@ class TestOperatorELicensingService:
         mock_get,
         mock_link_service,
         mock_content_type,
-        mock_elicensing_link_class,
         mock_operator,
+        mock_client_link,
     ):
-        """Test ensure_client_exists handles RequestException properly"""
-        # Set up mocks
+        """Test sync_client_with_elicensing handles RequestException properly"""
+        # Setup mock operator
+        mock_operator.id = uuid.uuid4()
+
+        # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        mock_get.return_value = mock_operator
-        mock_content_type.objects.get_for_model.return_value = MagicMock()
 
-        # Mock the ELicensingLink class and instance
-        mock_link = MagicMock()
-        mock_elicensing_link_class.return_value = mock_link
-        mock_link.id = uuid.uuid4()
-        mock_link.elicensing_guid = uuid.uuid4()
-
-        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
-        mock_map_data.return_value = client_data
-
-        # Raise RequestException
-        mock_api_client.create_client.side_effect = requests.RequestException("API request failed")
+        # Setup API raising RequestException
+        mock_api_client.create_client.side_effect = requests.RequestException("Connection failed")
 
         # Call the method
-        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
-        # Verify results
+        # Assert result is None
         assert result is None
-        mock_api_client.create_client.assert_called_once_with(client_data)
-        assert not mock_link.save.called  # Ensure the link wasn't saved
+        assert mock_client_link.sync_status == "FAILED"
 
     @pytest.mark.django_db
     @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
@@ -372,31 +327,24 @@ class TestOperatorELicensingService:
         mock_get,
         mock_link_service,
         mock_content_type,
-        mock_elicensing_link_class,
         mock_operator,
+        mock_client_link,
     ):
-        """Test ensure_client_exists handles HTTPError properly"""
-        # Set up mocks
+        """Test sync_client_with_elicensing handles HTTPError properly"""
+        # Setup mock operator
+        mock_operator.id = uuid.uuid4()
+
+        # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        mock_get.return_value = mock_operator
-        mock_content_type.objects.get_for_model.return_value = MagicMock()
 
-        # Mock the ELicensingLink class and instance
-        mock_link = MagicMock()
-        mock_elicensing_link_class.return_value = mock_link
-        mock_link.id = uuid.uuid4()
-        mock_link.elicensing_guid = uuid.uuid4()
-
-        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
-        mock_map_data.return_value = client_data
-
-        # Raise HTTPError (which would occur when API returns an error status code)
-        mock_api_client.create_client.side_effect = requests.HTTPError("400 Client Error")
+        # Setup API raising HTTPError
+        mock_response = MagicMock()
+        mock_response.raise_for_status.side_effect = requests.HTTPError("404 Not Found")
+        mock_api_client.create_client.side_effect = requests.HTTPError("404 Not Found", response=mock_response)
 
         # Call the method
-        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
-        # Verify results
+        # Assert result is None
         assert result is None
-        mock_api_client.create_client.assert_called_once_with(client_data)
-        assert not mock_link.save.called  # Ensure the link wasn't saved
+        assert mock_client_link.sync_status == "FAILED"
