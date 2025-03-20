@@ -42,6 +42,7 @@ beforeEach(() => {
       ...actual,
       useRouter: vi.fn(() => ({
         push: vi.fn(),
+        refresh: vi.fn(),
       })),
       useSearchParams: vi.fn(() => ({
         get: vi.fn(),
