@@ -31,6 +31,7 @@ class ReportingTableNames(Enum):
     REPORT_PRODUCT_EMISSION_ALLOCATION = 'report_product_emission_allocation'
     REPORT_PRODUCT = 'report_product'
     REPORT_RAW_ACTIVITY_DATA = 'report_raw_activity_data'
+    REPORT_SIGN_OFF = 'report_sign_off'
     REPORT_SOURCE_TYPE = 'report_source_type'
     REPORT_UNIT = 'report_unit'
     REPORT_VERIFICATION_VISIT = 'report_verification_visit'
