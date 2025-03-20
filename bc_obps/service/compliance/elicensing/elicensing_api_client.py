@@ -1,44 +1,127 @@
 import logging
-from typing import Dict, Any, Optional, cast, TypedDict
+from typing import Dict, Any, Optional, cast, List, Literal
 import requests
 from django.conf import settings
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
 
-class ClientResponse(TypedDict, total=False):
+@dataclass
+class ClientResponse:
     """Type definition for the client response from eLicensing API"""
 
     clientObjectId: str
     clientGUID: str
     companyName: str
-    lastName: Optional[str]
-    doingBusinessAs: Optional[str]
-    firstName: Optional[str]
-    middleName: Optional[str]
-    title: Optional[str]
-    businessPhone: Optional[str]
-    homeNumber: Optional[str]
-    cellularNumber: Optional[str]
-    faxNumber: Optional[str]
-    businessPhoneExt: Optional[str]
-    bcCompanyRegistrationNumber: Optional[str]
-    bcCompanySocietyNumber: Optional[str]
-    email: Optional[str]
-    dateOfBirth: Optional[str]
-    addressLine1: str
-    addressLine2: Optional[str]
-    city: str
-    stateProvince: str
-    postalCode: str
-    country: Optional[str]
+    lastName: Optional[str] = None
+    doingBusinessAs: Optional[str] = None
+    firstName: Optional[str] = None
+    middleName: Optional[str] = None
+    title: Optional[str] = None
+    businessPhone: Optional[str] = None
+    homeNumber: Optional[str] = None
+    cellularNumber: Optional[str] = None
+    faxNumber: Optional[str] = None
+    businessPhoneExt: Optional[str] = None
+    bcCompanyRegistrationNumber: Optional[str] = None
+    bcCompanySocietyNumber: Optional[str] = None
+    email: Optional[str] = None
+    dateOfBirth: Optional[str] = None
+    addressLine1: str = ""
+    addressLine2: Optional[str] = None
+    city: str = ""
+    stateProvince: str = ""
+    postalCode: str = ""
+    country: Optional[str] = None
 
 
-class ClientCreationResponse(TypedDict):
+@dataclass
+class ClientCreationResponse:
     """Type definition for the client creation response from eLicensing API"""
 
     clientObjectId: str
     clientGUID: str
+
+
+# Valid fee profile group names in eLicensing
+FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
+
+
+@dataclass
+class FeeCreationItem:
+    """Type definition for a fee item in the fee creation request"""
+
+    businessAreaCode: str
+    feeGUID: str
+    feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
+    feeDescription: str  # Mandatory field
+    feeAmount: float
+    feeDate: str  # Format: YYYY-MM-DD
+
+
+@dataclass
+class FeeCreationRequest:
+    """Type definition for the fee creation request to eLicensing API"""
+
+    fees: List[FeeCreationItem]
+
+
+@dataclass
+class FeeItem:
+    """Type definition for a fee item in the eLicensing API response"""
+
+    feeGUID: str
+    feeObjectId: str
+    businessAreaCode: Optional[str] = None
+    feeProfileGroupName: Optional[str] = None
+    feeDescription: Optional[str] = None
+    feeAmount: Optional[float] = None
+    feeDate: Optional[str] = None
+
+
+@dataclass
+class FeeResponse:
+    """Type definition for the fee creation response from eLicensing API"""
+
+    clientObjectId: str
+    clientGUID: str
+    fees: List[FeeItem]
+
+
+@dataclass
+class InvoiceResponse:
+    clientObjectId: str
+    businessAreaCode: str
+    clientGUID: str
+    invoiceNumber: str
+
+
+@dataclass
+class InvoiceCreationRequest:
+    paymentDueDate: str
+    businessAreaCode: str
+    fees: List[str]
+
+
+@dataclass
+class FeeRequest:
+    """Type for fee creation request"""
+
+    clientId: str
+    amount: str
+    description: str
+    profileGroupName: str
+    businessAreaCode: str
+    effectiveDate: str
+    expiryDate: str
+    status: str
+
+
+class ELicensingAPIError(Exception):
+    """Exception for eLicensing API errors"""
+
+    pass
 
 
 class ELicensingAPIClient:
@@ -193,7 +276,9 @@ class ELicensingAPIClient:
                 if 'clientGUID' not in json_response or not json_response['clientGUID']:
                     raise ValueError(f"Missing or empty clientGUID in response: {json_response}")
 
-                return cast(ClientCreationResponse, json_response)
+                return ClientCreationResponse(
+                    clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID']
+                )
             except ValueError as e:
                 logger.error(f"Error with client creation response: {str(e)}, Response: {response.text}")
                 raise
@@ -245,7 +330,7 @@ class ELicensingAPIClient:
                     if field not in json_response or not json_response[field]:
                         raise ValueError(f"Missing or empty required field '{field}' in response: {json_response}")
 
-                return cast(ClientResponse, json_response)
+                return ClientResponse(**json_response)
             except ValueError as e:
                 logger.error(f"Error with client query response: {str(e)}, Response: {response.text}")
                 raise
@@ -333,41 +418,47 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_fees(self, fees_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_fees(self, client_id: str, fees_data: FeeCreationRequest) -> FeeResponse:
         """
-        Creates fees for a client.
+        Creates fee records for a specified client.
 
         Args:
-            fees_data: Fees data according to the API specification
+            client_id: The client ID (can be either object ID or GUID)
+            fees_data: Fee data containing an array of fee records
 
         Returns:
-            Response data
+            FeeResponse: Response data containing clientObjectId, clientGUID, and an array of created fees
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/fees"
+        endpoint = f"/client/{client_id}/fees"
 
-        response = self._make_request(endpoint, method='POST', data=fees_data)
+        # Convert dataclass to dict for API request
+        fees_dict = {
+            "fees": [
+                {
+                    "businessAreaCode": fee.businessAreaCode,
+                    "feeGUID": fee.feeGUID,
+                    "feeProfileGroupName": fee.feeProfileGroupName,
+                    "feeDescription": fee.feeDescription,
+                    "feeAmount": fee.feeAmount,
+                    "feeDate": fee.feeDate,
+                }
+                for fee in fees_data.fees
+            ]
+        }
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
-            except ValueError as e:
-                logger.error(f"Error with fees creation response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing fees creation response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "create fees")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+        response = self._make_request(endpoint, method='POST', data=fees_dict)
+        response.raise_for_status()
+
+        json_response = response.json()
+        fees = [FeeItem(**fee) for fee in json_response['fees']]
+
+        return FeeResponse(
+            clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID'], fees=fees
+        )
 
     def adjust_fees(self, adjustment_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -483,41 +574,63 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_invoice(self, invoice_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """
-        Creates an invoice.
+        Creates an invoice in eLicensing for a set of fees.
 
         Args:
-            invoice_data: Invoice data according to the API specification
+            client_id: The ID of the client
+            invoice_data: The invoice data to create
 
         Returns:
-            Response data
+            InvoiceResponse: The response from the API
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
-            requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/invoice"
+        # Convert dataclass to dict for API request
+        invoice_dict = {
+            "paymentDueDate": invoice_data.paymentDueDate,
+            "businessAreaCode": invoice_data.businessAreaCode,
+            "fees": invoice_data.fees,
+        }
 
-        response = self._make_request(endpoint, method='POST', data=invoice_data)
+        response = self._make_request(
+            f"/client/{client_id}/invoice",
+            method='POST',
+            data=invoice_dict,
+        )
+        response.raise_for_status()
+        json_response = response.json()
+        return InvoiceResponse(**json_response)
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
-            except ValueError as e:
-                logger.error(f"Error with invoice creation response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing invoice creation response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "create invoice")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+    def create_fee(self, fee_data: FeeRequest) -> str:
+        """
+        Creates a fee in eLicensing
+
+        Args:
+            fee_data (FeeRequest): The fee data
+
+        Returns:
+            str: The eLicensing fee ID
+
+        Raises:
+            ELicensingAPIError: If the request fails
+        """
+        # Convert dataclass to dict for API request
+        fee_dict = {
+            "clientId": fee_data.clientId,
+            "amount": fee_data.amount,
+            "description": fee_data.description,
+            "profileGroupName": fee_data.profileGroupName,
+            "businessAreaCode": fee_data.businessAreaCode,
+            "effectiveDate": fee_data.effectiveDate,
+            "expiryDate": fee_data.expiryDate,
+            "status": fee_data.status,
+        }
+
+        response = self._make_request("POST", "/fees", data=fee_dict)
+        return response["id"]
 
 
 # Create a singleton instance

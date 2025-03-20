@@ -679,21 +679,35 @@ class TestELicensingAPIClient:
         ELicensingAPIClient._instance = None
 
         # Set up test data
-        invoice_data = {'clientObjectId': 'test-id', 'feeIds': ['fee-id-1', 'fee-id-2']}
+        client_id = "test-id"
+        invoice_data = {"paymentDueDate": "2025-12-31", "businessAreaCode": "OBPS", "fees": ["fee-id-1", "fee-id-2"]}
 
         # Set up mock response
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {'invoiceNumber': 'INV-001', 'amount': 150.00}
+        mock_response.json.return_value = {
+            "clientObjectId": "test-id",
+            "businessAreaCode": "OBPS",
+            "clientGUID": "test-guid",
+            "invoiceNumber": "INV-001",
+        }
         mock_post.return_value = mock_response
 
         client = ELicensingAPIClient()
-        response = client.create_invoice(invoice_data)
+        response = client.create_invoice(client_id, invoice_data)
 
         # Check that requests.post was called correctly
         mock_post.assert_called_once_with(
-            'https://test-api.example.com/invoice', headers=client._get_headers(), json=invoice_data, timeout=30
+            'https://test-api.example.com/client/test-id/invoice',
+            headers=client._get_headers(),
+            json=invoice_data,
+            timeout=30,
         )
 
         # Check that we got the expected response
-        assert response == {'invoiceNumber': 'INV-001', 'amount': 150.00}
+        assert response == {
+            "clientObjectId": "test-id",
+            "businessAreaCode": "OBPS",
+            "clientGUID": "test-guid",
+            "invoiceNumber": "INV-001",
+        }
