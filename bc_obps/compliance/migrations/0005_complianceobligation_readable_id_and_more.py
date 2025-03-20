@@ -4,7 +4,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0003_remove_historicalcomplianceproduct_archived_by_and_more'),
+        ('compliance', '0004_elicensinglink_and_more'),
     ]
 
     operations = [
