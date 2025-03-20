@@ -587,7 +587,7 @@ describe("the FacilityInformationForm component", () => {
     });
   });
 
-  it.only("should allow creation of new facility if one exists", async () => {
+  it("should allow creation of new facility if one exists", async () => {
     render(
       <FacilityInformationForm
         {...defaultProps}
