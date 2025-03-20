@@ -32,4 +32,12 @@ spec:
               - -c
               - |
                 set -euo pipefail;
+                flock -w 45 --verbose /data/locks/.check.lock \
                 poetry run python manage.py check_document_file_status
+            volumeMounts:
+              - name: check-document-file-status-lock
+                mountPath: /data/locks
+          volumes:
+            - name: check-document-file-status-lock
+              persistentVolumeClaim:
+                claimName: check-document-file-status-lock-pvc
