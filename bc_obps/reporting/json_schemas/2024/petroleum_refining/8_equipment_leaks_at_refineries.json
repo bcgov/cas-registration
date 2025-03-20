@@ -1,6 +1,6 @@
 {
   "type": "object",
-  "title": "Equipment leaks",
+  "title": "Equipment leaks at refineries",
   "default": { "emissions": [{}] },
   "properties": {
     "emissions": {
