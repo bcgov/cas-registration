@@ -15,7 +15,7 @@ class ReportSignOffService:
             and data.acknowledgement_of_information
             and data.acknowledgement_of_impact
         ):
-            report_sign_off_record = ReportSignOff.objects.create(
+            report_sign_off_record, _ = ReportSignOff.objects.update_or_create(
                 report_version_id=report_version_id,
                 acknowledgement_of_review=data.acknowledgement_of_review,
                 acknowledgement_of_records=data.acknowledgement_of_records,
