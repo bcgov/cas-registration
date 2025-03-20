@@ -3,6 +3,8 @@ from decimal import Decimal
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
 from service.operator_elicensing_service import OperatorELicensingService
+from service.compliance_fee_service import ComplianceFeeService
+from service.fee_elicensing_service import FeeELicensingService
 import logging
 import requests
 
@@ -47,28 +49,28 @@ class ComplianceObligationService:
                 obligation_deadline=obligation_deadline,
             )
 
-            # Ensure an eLicensing client exists for the operator
+            # Ensure an eLicensing client exists for the operator and create a fee
             try:
-                operator = compliance_summary.report.operator
-
-                # Ensure an eLicensing client exists for this operator
-                client_link = OperatorELicensingService.ensure_client_exists(operator.id)
-
-                if client_link is not None:
-                    logger.info(
-                        f"eLicensing client for operator {operator.id} with client ID {client_link.elicensing_object_id}"
-                    )
+                # Create compliance fee
+                fee = ComplianceFeeService.create_compliance_fee(obligation.id)
+                if fee is not None:
+                    logger.info(f"Created compliance fee for obligation {obligation.id}")
+                    
+                    # Sync fee with eLicensing
+                    try:
+                        fee_link = FeeELicensingService.sync_fee_with_elicensing(fee.id)
+                        if fee_link is not None:
+                            logger.info(f"Synced fee {fee.id} with eLicensing")
+                        else:
+                            logger.warning(f"Failed to sync fee {fee.id} with eLicensing")
+                    except Exception as e:
+                        logger.error(f"Error syncing fee {fee.id} with eLicensing: {str(e)}")
+                        # Continue with the process even if fee sync fails
                 else:
-                    logger.warning(f"Failed to create or find eLicensing client for operator {operator.id}")
-
-            except AttributeError:
-                logger.error(f"Compliance summary {compliance_summary.id} has no associated report or operator")
-            except requests.RequestException as e:
-                logger.error(f"eLicensing API error creating client for compliance obligation: {str(e)}")
+                    logger.warning(f"Failed to create compliance fee for obligation {obligation.id}")
             except Exception as e:
-                logger.error(
-                    f"Error ensuring eLicensing client exists for compliance obligation {obligation.id}: {str(e)}"
-                )
+                logger.error(f"Error processing compliance fee for obligation {obligation.id}: {str(e)}")
+                # Continue with the process even if fee processing fails
 
             return obligation
 
