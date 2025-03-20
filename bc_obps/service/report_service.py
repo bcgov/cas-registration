@@ -48,7 +48,7 @@ class ReportService:
         report_operation_representatives = ReportOperationRepresentative.objects.filter(
             report_version__id=report_version_id
         )
-        report_type = ReportVersion.objects.get(id=report_version_id)
+        report_version = ReportVersion.objects.get(id=report_version_id)
 
         report_operation_data = model_to_dict(report_operation)
 
@@ -58,7 +58,8 @@ class ReportService:
             "operation_representative_name": [
                 rep.id for rep in report_operation_representatives if rep.selected_for_report
             ],
-            "operation_report_type": report_type.report_type,
+            "operation_report_type": report_version.report_type,
+            "operation_report_status": report_version.status,
         }
 
     @classmethod
