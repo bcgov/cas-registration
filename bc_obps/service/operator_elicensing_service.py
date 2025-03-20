@@ -138,12 +138,7 @@ class OperatorELicensingService:
         try:
             response = elicensing_api_client.create_client(client_data)
 
-            # Only save the link if API call was successful
-            if not response or not response.get('clientObjectId'):
-                logger.error(f"Failed to create client for operator {operator_id}: Empty or invalid response")
-                return None
-
-            temp_link.elicensing_object_id = str(response['clientObjectId'])
+            temp_link.elicensing_object_id = response['clientObjectId']
             temp_link.sync_status = "SUCCESS"
             temp_link.save()
 

@@ -170,6 +170,11 @@ class ELicensingAPIClient:
 
         Returns:
             Response data containing the clientObjectId and clientGUID
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/client"
 
@@ -179,26 +184,26 @@ class ELicensingAPIClient:
             try:
                 json_response = response.json()
                 # Ensure the response has the expected fields
-                if (
-                    not isinstance(json_response, dict)
-                    or 'clientObjectId' not in json_response
-                    or 'clientGUID' not in json_response
-                ):
-                    logger.error(f"Invalid client creation response format: {json_response}")
-                    # Return response using the provided GUID from the request
-                    return {
-                        'clientObjectId': json_response.get('id', ''),
-                        'clientGUID': client_data.get('clientGUID', ''),
-                    }
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+
+                if 'clientObjectId' not in json_response or not json_response['clientObjectId']:
+                    raise ValueError(f"Missing or empty clientObjectId in response: {json_response}")
+
+                if 'clientGUID' not in json_response or not json_response['clientGUID']:
+                    raise ValueError(f"Missing or empty clientGUID in response: {json_response}")
+
                 return cast(ClientCreationResponse, json_response)
+            except ValueError as e:
+                logger.error(f"Error with client creation response: {str(e)}, Response: {response.text}")
+                raise
             except Exception as e:
                 logger.error(f"Error parsing client creation response: {str(e)}, Response: {response.text}")
-                # Return response using the provided GUID as fallback
-                return {'clientObjectId': '', 'clientGUID': client_data.get('clientGUID', '')}
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "create client")
-            # This line should never be reached due to raise_for_status, but keeping for type checking
-            return {'clientObjectId': '', 'clientGUID': client_data.get('clientGUID', '')}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def query_client(self, client_object_id: str) -> ClientResponse:
         """
@@ -209,6 +214,11 @@ class ELicensingAPIClient:
 
         Returns:
             Client information with detailed fields as defined in the API documentation
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = f"/client/{client_object_id}"
 
@@ -219,42 +229,33 @@ class ELicensingAPIClient:
                 json_response = response.json()
                 # Ensure the response has the expected structure
                 if not isinstance(json_response, dict):
-                    logger.error(f"Invalid client query response format: {json_response}")
-                    # Return a minimal valid response
-                    return {
-                        'clientObjectId': client_object_id,
-                        'clientGUID': '',
-                        'companyName': '',
-                        'addressLine1': '',
-                        'city': '',
-                        'stateProvince': '',
-                        'postalCode': '',
-                    }
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+
+                # Validate required fields exist and aren't empty
+                required_fields = [
+                    'clientObjectId',
+                    'clientGUID',
+                    'companyName',
+                    'addressLine1',
+                    'city',
+                    'stateProvince',
+                    'postalCode',
+                ]
+                for field in required_fields:
+                    if field not in json_response or not json_response[field]:
+                        raise ValueError(f"Missing or empty required field '{field}' in response: {json_response}")
+
                 return cast(ClientResponse, json_response)
+            except ValueError as e:
+                logger.error(f"Error with client query response: {str(e)}, Response: {response.text}")
+                raise
             except Exception as e:
                 logger.error(f"Error parsing client query response: {str(e)}, Response: {response.text}")
-                # Return a minimal valid response
-                return {
-                    'clientObjectId': client_object_id,
-                    'clientGUID': '',
-                    'companyName': '',
-                    'addressLine1': '',
-                    'city': '',
-                    'stateProvince': '',
-                    'postalCode': '',
-                }
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query client")
-            # This line should never be reached due to raise_for_status
-            return {
-                'clientObjectId': client_object_id,
-                'clientGUID': '',
-                'companyName': '',
-                'addressLine1': '',
-                'city': '',
-                'stateProvince': '',
-                'postalCode': '',
-            }
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def update_client(self, client_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -265,6 +266,11 @@ class ELicensingAPIClient:
 
         Returns:
             Response data
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/client"
 
@@ -274,10 +280,21 @@ class ELicensingAPIClient:
         response = self._make_request(endpoint, method='PUT', data=client_data)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with client update response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing client update response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "update client")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def query_balance(self, client_object_id: str) -> Dict[str, Any]:
         """
@@ -288,6 +305,11 @@ class ELicensingAPIClient:
 
         Returns:
             Balance information
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/balance"
         params = {"clientObjectId": client_object_id}
@@ -295,10 +317,21 @@ class ELicensingAPIClient:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with balance query response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing balance query response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query balance")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def create_fees(self, fees_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -309,16 +342,32 @@ class ELicensingAPIClient:
 
         Returns:
             Response data
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/fees"
 
         response = self._make_request(endpoint, method='POST', data=fees_data)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with fees creation response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing fees creation response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "create fees")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def adjust_fees(self, adjustment_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -329,16 +378,32 @@ class ELicensingAPIClient:
 
         Returns:
             Response data
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/fees/adjust"
 
         response = self._make_request(endpoint, method='POST', data=adjustment_data)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with fees adjustment response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing fees adjustment response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "adjust fees")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def query_fees(self, client_object_id: str, fee_status: Optional[str] = None) -> Dict[str, Any]:
         """
@@ -350,6 +415,11 @@ class ELicensingAPIClient:
 
         Returns:
             Fees information
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/fees"
         params = {"clientObjectId": client_object_id}
@@ -360,10 +430,21 @@ class ELicensingAPIClient:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with fees query response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing fees query response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query fees")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def query_invoice(self, invoice_number: str) -> Dict[str, Any]:
         """
@@ -374,6 +455,11 @@ class ELicensingAPIClient:
 
         Returns:
             Invoice information
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/invoice"
         params = {"invoiceNumber": invoice_number}
@@ -381,10 +467,21 @@ class ELicensingAPIClient:
         response = self._make_request(endpoint, method='GET', params=params)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with invoice query response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing invoice query response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "query invoice")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
     def create_invoice(self, invoice_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -395,16 +492,32 @@ class ELicensingAPIClient:
 
         Returns:
             Response data
+
+        Raises:
+            requests.RequestException: If the API request fails
+            ValueError: If the response format is invalid
+            requests.HTTPError: If the API returns an error response
         """
         endpoint = "/invoice"
 
         response = self._make_request(endpoint, method='POST', data=invoice_data)
 
         if response.status_code == 200:
-            return cast(Dict[str, Any], response.json())
+            try:
+                json_response = response.json()
+                if not isinstance(json_response, dict):
+                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+                return cast(Dict[str, Any], json_response)
+            except ValueError as e:
+                logger.error(f"Error with invoice creation response: {str(e)}, Response: {response.text}")
+                raise
+            except Exception as e:
+                logger.error(f"Error parsing invoice creation response: {str(e)}, Response: {response.text}")
+                raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "create invoice")
-            return {}
+            # This line should never be reached due to raise_for_status in _handle_error_response
+            raise RuntimeError("Unexpected code path - API error handling failed")
 
 
 # Create a singleton instance

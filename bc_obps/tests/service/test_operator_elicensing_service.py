@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 import uuid
+import requests
 
 import pytest
 from django.utils import timezone
@@ -233,6 +234,7 @@ class TestOperatorELicensingService:
         client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
         mock_map_data.return_value = client_data
 
+        # API client now returns pre-validated response
         api_response = {"clientObjectId": "new-client-id", "clientGUID": str(mock_link.elicensing_guid)}
         mock_api_client.create_client.return_value = api_response
 
@@ -272,7 +274,7 @@ class TestOperatorELicensingService:
         mock_elicensing_link_class,
         mock_operator,
     ):
-        """Test ensure_client_exists when API returns invalid response"""
+        """Test ensure_client_exists handles invalid API responses by returning None"""
         # Set up mocks
         mock_link_service.get_link_for_model.return_value = None
         mock_get.return_value = mock_operator
@@ -281,21 +283,29 @@ class TestOperatorELicensingService:
         # Mock the ELicensingLink class and instance
         mock_link = MagicMock()
         mock_elicensing_link_class.return_value = mock_link
+        mock_link.id = uuid.uuid4()
+        mock_link.elicensing_guid = uuid.uuid4()
 
-        client_data = {"clientGUID": str(mock_link.id), "companyName": mock_operator.legal_name}
+        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
         mock_map_data.return_value = client_data
 
-        # Return empty response (invalid)
-        mock_api_client.create_client.return_value = {}
+        # Mock API raising ValueError for missing clientObjectId
+        mock_api_client.create_client.side_effect = ValueError("Missing or empty clientObjectId in response")
 
         # Call the method
         result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
 
         # Verify results
-        assert result is None  # Should return None on failure
+        assert result is None
+        mock_link_service.get_link_for_model.assert_called_once_with(
+            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
+        )
+        mock_get.assert_called_once_with(id=mock_operator.id)
+        mock_content_type.objects.get_for_model.assert_called_once_with(Operator)
+        mock_elicensing_link_class.assert_called_once()
+        mock_map_data.assert_called_once_with(mock_operator, mock_link)
         mock_api_client.create_client.assert_called_once_with(client_data)
-        # Verify the link was NOT saved
-        mock_link.save.assert_not_called()
+        assert not mock_link.save.called  # Ensure the link wasn't saved
 
     @pytest.mark.django_db
     @patch('service.operator_elicensing_service.ELicensingLink')
@@ -314,7 +324,7 @@ class TestOperatorELicensingService:
         mock_elicensing_link_class,
         mock_operator,
     ):
-        """Test ensure_client_exists when API raises RequestException"""
+        """Test ensure_client_exists handles RequestException properly"""
         # Set up mocks
         mock_link_service.get_link_for_model.return_value = None
         mock_get.return_value = mock_operator
@@ -323,20 +333,62 @@ class TestOperatorELicensingService:
         # Mock the ELicensingLink class and instance
         mock_link = MagicMock()
         mock_elicensing_link_class.return_value = mock_link
+        mock_link.id = uuid.uuid4()
+        mock_link.elicensing_guid = uuid.uuid4()
 
-        client_data = {"clientGUID": str(mock_link.id), "companyName": mock_operator.legal_name}
+        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
         mock_map_data.return_value = client_data
 
-        # Simulate a requests.RequestException
-        import requests
-
-        mock_api_client.create_client.side_effect = requests.RequestException("API connection error")
+        # Raise RequestException
+        mock_api_client.create_client.side_effect = requests.RequestException("API request failed")
 
         # Call the method
         result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
 
         # Verify results
-        assert result is None  # Should return None on exception
+        assert result is None
         mock_api_client.create_client.assert_called_once_with(client_data)
-        # Verify the link was NOT saved
-        mock_link.save.assert_not_called()
+        assert not mock_link.save.called  # Ensure the link wasn't saved
+
+    @pytest.mark.django_db
+    @patch('service.operator_elicensing_service.ELicensingLink')
+    @patch('service.operator_elicensing_service.ContentType')
+    @patch('service.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.operator_elicensing_service.Operator.objects.get')
+    @patch('service.operator_elicensing_service.elicensing_api_client')
+    @patch('service.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data')
+    def test_ensure_client_exists_http_error(
+        self,
+        mock_map_data,
+        mock_api_client,
+        mock_get,
+        mock_link_service,
+        mock_content_type,
+        mock_elicensing_link_class,
+        mock_operator,
+    ):
+        """Test ensure_client_exists handles HTTPError properly"""
+        # Set up mocks
+        mock_link_service.get_link_for_model.return_value = None
+        mock_get.return_value = mock_operator
+        mock_content_type.objects.get_for_model.return_value = MagicMock()
+
+        # Mock the ELicensingLink class and instance
+        mock_link = MagicMock()
+        mock_elicensing_link_class.return_value = mock_link
+        mock_link.id = uuid.uuid4()
+        mock_link.elicensing_guid = uuid.uuid4()
+
+        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
+        mock_map_data.return_value = client_data
+
+        # Raise HTTPError (which would occur when API returns an error status code)
+        mock_api_client.create_client.side_effect = requests.HTTPError("400 Client Error")
+
+        # Call the method
+        result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
+
+        # Verify results
+        assert result is None
+        mock_api_client.create_client.assert_called_once_with(client_data)
+        assert not mock_link.save.called  # Ensure the link wasn't saved

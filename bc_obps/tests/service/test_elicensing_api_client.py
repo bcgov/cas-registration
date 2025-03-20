@@ -240,34 +240,51 @@ class TestELicensingAPIClient:
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.json.return_value = {'id': 'test-id'}  # Missing expected fields
+        mock_response.text = '{"id": "test-id"}'
         mock_post.return_value = mock_response
 
         client = ELicensingAPIClient()
-        response = client.create_client(client_data)
 
-        # Check that we got a response with expected structure
-        assert 'clientObjectId' in response
-        assert 'clientGUID' in response
-        assert response['clientObjectId'] == 'test-id'
-        assert response['clientGUID'] == client_data['clientGUID']
+        # Now we should expect a ValueError instead of a fallback response
+        with pytest.raises(ValueError, match="Missing or empty clientObjectId in response"):
+            client.create_client(client_data)
 
     @patch('service.elicensing_api_client.requests.post')
     def test_create_client_error(self, mock_post, mock_settings, client_data):
-        """Test the create_client method error case"""
+        """Test the create_client method with error response"""
         # Reset the singleton instance for testing
         ELicensingAPIClient._instance = None
 
         # Set up mock response with error
         mock_response = MagicMock()
         mock_response.status_code = 400
-        mock_response.json.return_value = {'message': 'Error creating client'}
-        mock_response.raise_for_status.side_effect = requests.HTTPError('400 Client Error')
+        mock_response.json.return_value = {'message': 'Invalid client data'}
+        mock_response.raise_for_status.side_effect = requests.HTTPError("400 Client Error")
         mock_post.return_value = mock_response
 
         client = ELicensingAPIClient()
 
-        # Check that the exception is raised
+        # Check that the error is propagated as an HTTPError
         with pytest.raises(requests.HTTPError):
+            client.create_client(client_data)
+
+    @patch('service.elicensing_api_client.requests.post')
+    def test_create_client_non_dict_response(self, mock_post, mock_settings, client_data):
+        """Test the create_client method with non-dictionary response"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with non-dictionary format
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = ['unexpected', 'array', 'response']
+        mock_response.text = '["unexpected", "array", "response"]'
+        mock_post.return_value = mock_response
+
+        client = ELicensingAPIClient()
+
+        # We should expect a ValueError for invalid response format
+        with pytest.raises(ValueError, match="Invalid response format: expected dict"):
             client.create_client(client_data)
 
     @patch('service.elicensing_api_client.requests.get')
@@ -302,20 +319,15 @@ class TestELicensingAPIClient:
         # Set up mock response with invalid format
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = 'not a dict'  # Invalid response format
+        mock_response.json.return_value = {'clientObjectId': 'test-id'}  # Missing other required fields
+        mock_response.text = '{"clientObjectId": "test-id"}'
         mock_get.return_value = mock_response
 
         client = ELicensingAPIClient()
-        response = client.query_client('test-id')
 
-        # Check that we got a minimal valid response
-        assert response['clientObjectId'] == 'test-id'
-        assert response['clientGUID'] == ''
-        assert response['companyName'] == ''
-        assert response['addressLine1'] == ''
-        assert response['city'] == ''
-        assert response['stateProvince'] == ''
-        assert response['postalCode'] == ''
+        # Now we should expect a ValueError for missing required fields
+        with pytest.raises(ValueError, match="Missing or empty required field"):
+            client.query_client('test-id')
 
     @patch('service.elicensing_api_client.requests.get')
     def test_query_client_error(self, mock_get, mock_settings):
@@ -325,15 +337,34 @@ class TestELicensingAPIClient:
 
         # Set up mock response with error
         mock_response = MagicMock()
-        mock_response.status_code = 404
+        mock_response.status_code = 400
         mock_response.json.return_value = {'message': 'Client not found'}
-        mock_response.raise_for_status.side_effect = requests.HTTPError('404 Not Found')
+        mock_response.raise_for_status.side_effect = requests.HTTPError('400 Client Error')
         mock_get.return_value = mock_response
 
         client = ELicensingAPIClient()
 
-        # Check that the exception is raised
+        # Check that the error is propagated
         with pytest.raises(requests.HTTPError):
+            client.query_client('test-id')
+
+    @patch('service.elicensing_api_client.requests.get')
+    def test_query_client_non_dict_response(self, mock_get, mock_settings):
+        """Test the query_client method with non-dictionary response"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with non-dictionary format
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = ['not', 'a', 'dict']  # Array instead of dict
+        mock_response.text = '["not", "a", "dict"]'
+        mock_get.return_value = mock_response
+
+        client = ELicensingAPIClient()
+
+        # We should expect a ValueError for invalid response format
+        with pytest.raises(ValueError, match="Invalid response format: expected dict"):
             client.query_client('test-id')
 
     @patch('service.elicensing_api_client.requests.put')
@@ -345,23 +376,27 @@ class TestELicensingAPIClient:
         # Set up mock response
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {'status': 'success'}
+        mock_response.json.return_value = {'success': True, 'clientObjectId': 'test-id'}
         mock_put.return_value = mock_response
 
         client = ELicensingAPIClient()
-        response = client.update_client(client_data)
 
-        # Check that businessAreaCode was added
-        expected_data = client_data.copy()
-        expected_data['businessAreaCode'] = 'CG'
+        # Add clientObjectId which is required for update
+        update_data = client_data.copy()
+        update_data['clientObjectId'] = 'test-id'
+
+        response = client.update_client(update_data)
 
         # Check that requests.put was called correctly
         mock_put.assert_called_once_with(
-            'https://test-api.example.com/client', headers=client._get_headers(), json=expected_data, timeout=30
+            'https://test-api.example.com/client',
+            headers=client._get_headers(),
+            json={'clientObjectId': 'test-id', 'businessAreaCode': 'CG', **client_data},
+            timeout=30,
         )
 
         # Check that we got the expected response
-        assert response == {'status': 'success'}
+        assert response == {'success': True, 'clientObjectId': 'test-id'}
 
     @patch('service.elicensing_api_client.requests.put')
     def test_update_client_error(self, mock_put, mock_settings, client_data):
@@ -372,15 +407,42 @@ class TestELicensingAPIClient:
         # Set up mock response with error
         mock_response = MagicMock()
         mock_response.status_code = 400
-        mock_response.json.return_value = {'message': 'Error updating client'}
+        mock_response.json.return_value = {'message': 'Client not found'}
         mock_response.raise_for_status.side_effect = requests.HTTPError('400 Client Error')
         mock_put.return_value = mock_response
 
         client = ELicensingAPIClient()
 
-        # Check that the exception is raised
+        # Add clientObjectId which is required for update
+        update_data = client_data.copy()
+        update_data['clientObjectId'] = 'test-id'
+
+        # Check that the error is propagated
         with pytest.raises(requests.HTTPError):
-            client.update_client(client_data)
+            client.update_client(update_data)
+
+    @patch('service.elicensing_api_client.requests.put')
+    def test_update_client_non_dict_response(self, mock_put, mock_settings, client_data):
+        """Test the update_client method with non-dictionary response"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with non-dictionary format
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = ['not', 'a', 'dict']  # Array instead of dict
+        mock_response.text = '["not", "a", "dict"]'
+        mock_put.return_value = mock_response
+
+        client = ELicensingAPIClient()
+
+        # Add clientObjectId which is required for update
+        update_data = client_data.copy()
+        update_data['clientObjectId'] = 'test-id'
+
+        # We should expect a ValueError for invalid response format
+        with pytest.raises(ValueError, match="Invalid response format: expected dict"):
+            client.update_client(update_data)
 
     @patch('service.elicensing_api_client.requests.get')
     def test_query_balance_success(self, mock_get, mock_settings):
@@ -391,7 +453,7 @@ class TestELicensingAPIClient:
         # Set up mock response
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {'balance': 100.00}
+        mock_response.json.return_value = {'balance': 100, 'clientObjectId': 'test-id'}
         mock_get.return_value = mock_response
 
         client = ELicensingAPIClient()
@@ -406,7 +468,45 @@ class TestELicensingAPIClient:
         )
 
         # Check that we got the expected response
-        assert response == {'balance': 100.00}
+        assert response == {'balance': 100, 'clientObjectId': 'test-id'}
+
+    @patch('service.elicensing_api_client.requests.get')
+    def test_query_balance_error(self, mock_get, mock_settings):
+        """Test the query_balance method error case"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with error
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {'message': 'Client not found'}
+        mock_response.raise_for_status.side_effect = requests.HTTPError('400 Client Error')
+        mock_get.return_value = mock_response
+
+        client = ELicensingAPIClient()
+
+        # Check that the error is propagated
+        with pytest.raises(requests.HTTPError):
+            client.query_balance('test-id')
+
+    @patch('service.elicensing_api_client.requests.get')
+    def test_query_balance_non_dict_response(self, mock_get, mock_settings):
+        """Test the query_balance method with non-dictionary response"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with non-dictionary format
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = ['not', 'a', 'dict']  # Array instead of dict
+        mock_response.text = '["not", "a", "dict"]'
+        mock_get.return_value = mock_response
+
+        client = ELicensingAPIClient()
+
+        # We should expect a ValueError for invalid response format
+        with pytest.raises(ValueError, match="Invalid response format: expected dict"):
+            client.query_balance('test-id')
 
     @patch('service.elicensing_api_client.requests.post')
     def test_create_fees_success(self, mock_post, mock_settings):
@@ -414,14 +514,19 @@ class TestELicensingAPIClient:
         # Reset the singleton instance for testing
         ELicensingAPIClient._instance = None
 
-        # Set up test data
-        fees_data = {'clientObjectId': 'test-id', 'fees': [{'amount': 100.00, 'description': 'Test fee'}]}
-
         # Set up mock response
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.json.return_value = {'feeIds': ['fee-id-1']}
+        mock_response.json.return_value = {'feeObjectId': 'fee-123', 'status': 'success'}
         mock_post.return_value = mock_response
+
+        # Create test data
+        fees_data = {
+            'clientObjectId': 'test-id',
+            'feeAmount': 100.00,
+            'feeCode': 'TEST',
+            'feeDescription': 'Test Fee',
+        }
 
         client = ELicensingAPIClient()
         response = client.create_fees(fees_data)
@@ -432,7 +537,61 @@ class TestELicensingAPIClient:
         )
 
         # Check that we got the expected response
-        assert response == {'feeIds': ['fee-id-1']}
+        assert response == {'feeObjectId': 'fee-123', 'status': 'success'}
+
+    @patch('service.elicensing_api_client.requests.post')
+    def test_create_fees_error(self, mock_post, mock_settings):
+        """Test the create_fees method error case"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with error
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.json.return_value = {'message': 'Invalid fee amount'}
+        mock_response.raise_for_status.side_effect = requests.HTTPError('400 Client Error')
+        mock_post.return_value = mock_response
+
+        # Create test data
+        fees_data = {
+            'clientObjectId': 'test-id',
+            'feeAmount': -100.00,  # Invalid negative amount
+            'feeCode': 'TEST',
+            'feeDescription': 'Test Fee',
+        }
+
+        client = ELicensingAPIClient()
+
+        # Check that the error is propagated
+        with pytest.raises(requests.HTTPError):
+            client.create_fees(fees_data)
+
+    @patch('service.elicensing_api_client.requests.post')
+    def test_create_fees_non_dict_response(self, mock_post, mock_settings):
+        """Test the create_fees method with non-dictionary response"""
+        # Reset the singleton instance for testing
+        ELicensingAPIClient._instance = None
+
+        # Set up mock response with non-dictionary format
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = ['not', 'a', 'dict']  # Array instead of dict
+        mock_response.text = '["not", "a", "dict"]'
+        mock_post.return_value = mock_response
+
+        # Create test data
+        fees_data = {
+            'clientObjectId': 'test-id',
+            'feeAmount': 100.00,
+            'feeCode': 'TEST',
+            'feeDescription': 'Test Fee',
+        }
+
+        client = ELicensingAPIClient()
+
+        # We should expect a ValueError for invalid response format
+        with pytest.raises(ValueError, match="Invalid response format: expected dict"):
+            client.create_fees(fees_data)
 
     @patch('service.elicensing_api_client.requests.post')
     def test_adjust_fees_success(self, mock_post, mock_settings):
