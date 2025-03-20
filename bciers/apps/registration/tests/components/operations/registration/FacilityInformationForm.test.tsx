@@ -579,10 +579,61 @@ describe("the FacilityInformationForm component", () => {
     act(() => {
       fireEvent.click(submitButton);
     });
+
     expect(actionHandler).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(window.location.href).toBe(`${origin}${path}/3`);
     });
+  });
+
+  it.only("should allow creation of new facility if one exists", async () => {
+    render(
+      <FacilityInformationForm
+        {...defaultProps}
+        initialGridData={facilityInitialData as any}
+      />,
+    );
+
+    const addButton = screen.getByRole("button", {
+      name: "Add facility",
+    });
+
+    act(() => {
+      fireEvent.click(addButton);
+    });
+
+    fireEvent.change(screen.getAllByLabelText(/Facility Name*/i)[0], {
+      target: { value: "Test Facility" },
+    });
+    const comboBoxInput = screen.getAllByLabelText(/Facility Type*/i)[0];
+    fireEvent.mouseDown(comboBoxInput);
+    const comboBoxOption = screen.getByText("Small Aggregate");
+    fireEvent.click(comboBoxOption);
+
+    actionHandler.mockResolvedValueOnce({
+      error: null,
+    });
+    const submitButton = screen.getByRole("button", {
+      name: "Save and Continue",
+    });
+
+    act(() => {
+      fireEvent.click(submitButton);
+    });
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/facilities",
+      "POST",
+      "",
+      {
+        body: JSON.stringify([
+          {
+            name: "Test Facility",
+            type: "Small Aggregate",
+            operation_id: "002d5a9e-32a6-4191-938c-2c02bfec592d",
+          },
+        ]),
+      },
+    );
   });
 });
