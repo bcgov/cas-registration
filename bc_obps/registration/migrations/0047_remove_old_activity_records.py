@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+
 # We have a couple left over activities that should not be in our dataset: Oil and gas extraction and gas processing activities & Carbon dioxide transportation and oil transmission
 # These activities were split up and have been replaced by the following (which already exist in out data):
 # Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities

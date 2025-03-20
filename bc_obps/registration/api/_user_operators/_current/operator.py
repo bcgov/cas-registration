@@ -10,6 +10,7 @@ from registration.api.router import router
 from service.data_access_service.user_service import UserDataAccessService
 from registration.constants import USER_OPERATOR_TAGS
 
+
 ## GET
 @router.get(
     "/user-operators/current/operator",

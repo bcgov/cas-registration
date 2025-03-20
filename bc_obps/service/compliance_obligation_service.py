@@ -2,6 +2,11 @@ from datetime import date
 from decimal import Decimal
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
+from service.operator_elicensing_service import OperatorELicensingService
+import logging
+import requests
+
+logger = logging.getLogger(__name__)
 
 
 class ComplianceObligationService:
@@ -41,6 +46,29 @@ class ComplianceObligationService:
                 penalty_status=ComplianceObligation.PenaltyStatus.NONE,
                 obligation_deadline=obligation_deadline,
             )
+
+            # Ensure an eLicensing client exists for the operator
+            try:
+                operator = compliance_summary.report.operator
+
+                # Ensure an eLicensing client exists for this operator
+                client_link = OperatorELicensingService.ensure_client_exists(operator.id)
+
+                if client_link is not None:
+                    logger.info(
+                        f"eLicensing client for operator {operator.id} with client ID {client_link.elicensing_object_id}"
+                    )
+                else:
+                    logger.warning(f"Failed to create or find eLicensing client for operator {operator.id}")
+
+            except AttributeError:
+                logger.error(f"Compliance summary {compliance_summary.id} has no associated report or operator")
+            except requests.RequestException as e:
+                logger.error(f"eLicensing API error creating client for compliance obligation: {str(e)}")
+            except Exception as e:
+                logger.error(
+                    f"Error ensuring eLicensing client exists for compliance obligation {obligation.id}: {str(e)}"
+                )
 
             return obligation
 
