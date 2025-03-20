@@ -3,7 +3,7 @@
 from django.db import migrations
 
 
-def update_source_type(apps):
+def update_source_type(apps, schema_editor):
     ConfigurationElement = apps.get_model("reporting", "ConfigurationElement")
     SourceType = apps.get_model("reporting", "SourceType")
     Activity = apps.get_model("registration", "Activity")
@@ -17,7 +17,7 @@ def update_source_type(apps):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0074_V2_0_1'),
+        ('reporting', '0075_remove_reportversion_immutable_report_version_and_more'),
     ]
 
     operations = [
