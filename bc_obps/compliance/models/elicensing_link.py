@@ -15,8 +15,10 @@ class ELicensingLink(TimeStampedModel):
     (clients, invoices, fees, etc.), allowing for future queries and additional metadata storage.
     """
 
-    id = models.UUIDField(
-        primary_key=True, default=uuid.uuid4, editable=False, db_comment="Unique identifier for the eLicensing link"
+    id = models.AutoField(primary_key=True, db_comment="Standard Django primary key")
+
+    elicensing_guid = models.UUIDField(
+        default=uuid.uuid4, editable=False, db_comment="Unique identifier for the eLicensing system integration"
     )
 
     class ObjectKind(models.TextChoices):
@@ -37,7 +39,7 @@ class ELicensingLink(TimeStampedModel):
     )
     content_object = GenericForeignKey('content_type', 'object_id')
 
-    object_kind = models.CharField(
+    elicensing_object_kind = models.CharField(
         max_length=20,
         choices=ObjectKind.choices,
         default=ObjectKind.CLIENT,
@@ -67,11 +69,12 @@ class ELicensingLink(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store links between system objects and eLicensing objects"
         db_table = 'erc"."elicensing_link'
-        unique_together = ('content_type', 'object_id', 'object_kind')
+        unique_together = ('content_type', 'object_id', 'elicensing_object_kind')
         indexes = [
             models.Index(fields=['content_type', 'object_id']),
-            models.Index(fields=['object_kind']),
+            models.Index(fields=['elicensing_object_kind']),
             models.Index(fields=['elicensing_object_id']),
+            models.Index(fields=['elicensing_guid']),
         ]
 
     Rls = ELicensingLinkRls

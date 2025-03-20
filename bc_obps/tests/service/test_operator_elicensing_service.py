@@ -72,9 +72,10 @@ def mock_operator_mailing_only():
 def mock_elicensing_link():
     """Mock an ELicensingLink object"""
     link = MagicMock(spec=ELicensingLink)
-    link.id = uuid.uuid4()
+    link.id = 1
+    link.elicensing_guid = uuid.uuid4()
     link.elicensing_object_id = "test-client-id"
-    link.object_kind = ELicensingLink.ObjectKind.CLIENT
+    link.elicensing_object_kind = ELicensingLink.ObjectKind.CLIENT
     link.sync_status = "SUCCESS"
     link.last_sync_at = timezone.now()
     return link
@@ -84,9 +85,10 @@ def mock_elicensing_link():
 def mock_pending_elicensing_link():
     """Mock a pending ELicensingLink object with no elicensing_object_id"""
     link = MagicMock(spec=ELicensingLink)
-    link.id = uuid.uuid4()
+    link.id = 2
+    link.elicensing_guid = uuid.uuid4()
     link.elicensing_object_id = None
-    link.object_kind = ELicensingLink.ObjectKind.CLIENT
+    link.elicensing_object_kind = ELicensingLink.ObjectKind.CLIENT
     link.sync_status = "PENDING"
     link.last_sync_at = timezone.now()
     return link
@@ -103,7 +105,7 @@ class TestOperatorELicensingService:
         result = OperatorELicensingService._map_operator_to_client_data(mock_operator, mock_elicensing_link)
 
         # Verify the mapping is correct
-        assert result["clientGUID"] == str(mock_elicensing_link.id)
+        assert result["clientGUID"] == str(mock_elicensing_link.elicensing_guid)
         assert result["companyName"] == mock_operator.legal_name
         assert result["doingBusinessAs"] == mock_operator.trade_name
         assert result["bcCompanyRegistrationNumber"] == mock_operator.bc_corporate_registry_number
@@ -162,8 +164,11 @@ class TestOperatorELicensingService:
         self, mock_link_service, mock_elicensing_link_class, mock_operator, mock_elicensing_link
     ):
         """Test ensure_client_exists when client already exists"""
-        # Set up mock
+        # Set up mock to return an existing link
         mock_link_service.get_link_for_model.return_value = mock_elicensing_link
+
+        # Make sure the link has an object ID (meaning it's already created in eLicensing)
+        mock_elicensing_link.elicensing_object_id = "existing-client-id"
 
         # Call the method
         result = OperatorELicensingService.ensure_client_exists(mock_operator.id)
@@ -171,7 +176,7 @@ class TestOperatorELicensingService:
         # Verify results
         assert result == mock_elicensing_link
         mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, mock_elicensing_link_class.ObjectKind.CLIENT
+            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
         )
 
     @pytest.mark.django_db
@@ -192,7 +197,7 @@ class TestOperatorELicensingService:
         # Verify results
         assert result is None
         mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, mock_elicensing_link_class.ObjectKind.CLIENT
+            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
         )
         mock_get.assert_called_once_with(id=mock_operator.id)
 
@@ -223,11 +228,12 @@ class TestOperatorELicensingService:
         mock_link = MagicMock()
         mock_elicensing_link_class.return_value = mock_link
         mock_link.id = uuid.uuid4()
+        mock_link.elicensing_guid = uuid.uuid4()
 
-        client_data = {"clientGUID": str(mock_link.id), "companyName": mock_operator.legal_name}
+        client_data = {"clientGUID": str(mock_link.elicensing_guid), "companyName": mock_operator.legal_name}
         mock_map_data.return_value = client_data
 
-        api_response = {"clientObjectId": "new-client-id", "clientGUID": str(mock_link.id)}
+        api_response = {"clientObjectId": "new-client-id", "clientGUID": str(mock_link.elicensing_guid)}
         mock_api_client.create_client.return_value = api_response
 
         # Call the method
@@ -236,7 +242,7 @@ class TestOperatorELicensingService:
         # Verify results
         assert result == mock_link
         mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, mock_elicensing_link_class.ObjectKind.CLIENT
+            Operator, mock_operator.id, elicensing_object_kind=mock_elicensing_link_class.ObjectKind.CLIENT
         )
         mock_get.assert_called_once_with(id=mock_operator.id)
         mock_content_type.objects.get_for_model.assert_called_once_with(Operator)
@@ -247,7 +253,6 @@ class TestOperatorELicensingService:
         # Check that link was updated with correct values
         assert mock_link.elicensing_object_id == "new-client-id"
         assert mock_link.sync_status == "SUCCESS"
-        # Verify the link was saved
         mock_link.save.assert_called_once()
 
     @pytest.mark.django_db

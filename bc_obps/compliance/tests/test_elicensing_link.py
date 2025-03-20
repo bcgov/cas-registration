@@ -26,7 +26,7 @@ class TestELicensingLink(TestCase):
         link = ELicensingLink.objects.create(
             content_type=self.operator_content_type,
             object_id=self.operator.id,
-            object_kind=ELicensingLink.ObjectKind.CLIENT,
+            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
             elicensing_object_id="12345",
             last_sync_at=now,
             sync_status="SUCCESS",
@@ -34,20 +34,20 @@ class TestELicensingLink(TestCase):
 
         # Verify that the link was created
         assert link.id is not None
+        assert link.elicensing_guid is not None
         assert link.content_object == self.operator
         assert link.elicensing_object_id == "12345"
-        assert isinstance(link.id, uuid.UUID)  # Ensure the ID is a UUID
+        assert isinstance(link.id, int)
+        assert isinstance(link.elicensing_guid, uuid.UUID)
         assert link.last_sync_at == now
         assert link.sync_status == "SUCCESS"
-
-        assert link.elicensing_object_id == "12345"
 
     def test_operator_relationship(self):
         """Test the relationship between ELicensingLink and Operator"""
         link = ELicensingLink.objects.create(
             content_type=self.operator_content_type,
             object_id=self.operator.id,
-            object_kind=ELicensingLink.ObjectKind.CLIENT,
+            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
             elicensing_object_id="12345",
         )
 
@@ -55,32 +55,33 @@ class TestELicensingLink(TestCase):
         assert link.content_object == self.operator
 
     def test_unique_operator_constraint(self):
-        """Test that an operator can only have one ELicensingLink for each object_kind"""
+        """Test that an operator can only have one ELicensingLink for each elicensing_object_kind"""
         # Create a link
         _ = ELicensingLink.objects.create(
             content_type=self.operator_content_type,
             object_id=self.operator.id,
-            object_kind=ELicensingLink.ObjectKind.CLIENT,
+            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
             elicensing_object_id="12345",
         )
 
-        # Try to create another link for the same operator with same object_kind
+        # Try to create another link for the same operator with same elicensing_object_kind
         with self.assertRaises(Exception):
             _ = ELicensingLink.objects.create(
                 content_type=self.operator_content_type,
                 object_id=self.operator.id,
-                object_kind=ELicensingLink.ObjectKind.CLIENT,
+                elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
                 elicensing_object_id="67890",
             )
 
-        # Should be able to create a link with a different object_kind
+        # Should be able to create a link with a different elicensing_object_kind
         invoice_link = ELicensingLink.objects.create(
             content_type=self.operator_content_type,
             object_id=self.operator.id,
-            object_kind=ELicensingLink.ObjectKind.INVOICE,
+            elicensing_object_kind=ELicensingLink.ObjectKind.INVOICE,
             elicensing_object_id="INV-12345",
         )
 
         assert invoice_link.id is not None
+        assert invoice_link.elicensing_guid is not None
         assert invoice_link.content_object == self.operator
-        assert invoice_link.object_kind == ELicensingLink.ObjectKind.INVOICE
+        assert invoice_link.elicensing_object_kind == ELicensingLink.ObjectKind.INVOICE

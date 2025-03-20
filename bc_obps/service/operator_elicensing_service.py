@@ -41,7 +41,7 @@ class OperatorELicensingService:
         if existing_link is None:
             raise ValueError("Cannot map operator to client data without an existing link")
 
-        client_guid = str(existing_link.id)
+        client_guid = str(existing_link.elicensing_guid)
 
         client_data = {
             "clientGUID": client_guid,
@@ -112,7 +112,9 @@ class OperatorELicensingService:
             The ELicensingLink object if successful, None if there was an error
         """
         # Check if a client already exists for this operator
-        client_link = ELicensingLinkService.get_link_for_model(Operator, operator_id, ELicensingLink.ObjectKind.CLIENT)
+        client_link = ELicensingLinkService.get_link_for_model(
+            Operator, operator_id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
+        )
 
         if client_link and client_link.elicensing_object_id is not None:
             return client_link
@@ -126,7 +128,7 @@ class OperatorELicensingService:
         temp_link = ELicensingLink(
             content_type=ContentType.objects.get_for_model(Operator),
             object_id=operator.id,
-            object_kind=ELicensingLink.ObjectKind.CLIENT,
+            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
             last_sync_at=timezone.now(),
             sync_status="PENDING",
         )
