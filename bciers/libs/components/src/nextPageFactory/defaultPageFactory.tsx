@@ -29,7 +29,6 @@ export default function defaultPageFactory<TPageParams extends {}>(
     params: TPageParams;
     searchParams?: Record<string, string>;
   }) {
-    console.log("params", params);
     return (
       <Suspense fallback={<Loading />}>
         <Component {...params} searchParams={searchParams} />
