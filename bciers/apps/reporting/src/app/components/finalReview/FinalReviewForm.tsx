@@ -35,7 +35,7 @@ const FinalReviewForm: React.FC<Props> = ({ navigationInformation, data }) => {
       submittingButtonText="Continue"
       noSaveButton
     >
-      <FinalReviewForms data={data} />;
+      <FinalReviewForms data={data} />
     </MultiStepWrapperWithTaskList>
   );
 };
