@@ -13,9 +13,11 @@ import getUUIDFromEndpoint from "@bciers/utils/src/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
+import { mockToken } from "@/dashboard/auth/mockSession";
 
 // 🛠️ Function to get the encrypted JWT from NextAuth getToken route function
 export async function getToken() {
+  if (process.env.NEXT_PUBLIC_BYPASS_AUTH) return mockToken as any;
   try {
     const res = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/token`, {
       method: "POST",
