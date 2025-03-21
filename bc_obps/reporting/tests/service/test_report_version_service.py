@@ -2,7 +2,7 @@ from common.tests.utils.model_inspection import get_cascading_models
 from model_bakery import baker
 import pytest
 from reporting.models.report_version import ReportVersion
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 
 pytestmark = pytest.mark.django_db
 
@@ -72,3 +72,17 @@ class TestReportVersionService:
             "ReportVerificationVisit",
             "ReportProductEmissionAllocation",
         }
+
+
+    def test_get_registration_purpose_by_version_id_returns_correct_data(self):
+        """
+        Test that the service retrieves the correct registration purpose
+        for a given report version ID.
+        """
+        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        self.report_operation = baker.make_recipe(
+            'reporting.tests.utils.report_operation', report_version=self.report_version
+        )
+        retrieved_data = ReportVersionService.get_registration_purpose_by_version_id(version_id=self.report_version.id)
+        self.assertIsNotNone(retrieved_data)
+        self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)

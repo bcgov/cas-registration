@@ -7,7 +7,7 @@ from reporting.models.report_verification_visit import ReportVerificationVisit
 from reporting.models import ReportVersion
 from registration.models import Operation
 from reporting.schema.report_verification import ReportVerificationIn
-from service.report_service import ReportService
+from reporting.service.report_version_service import ReportVersionService
 
 
 class ReportVerificationService:
@@ -96,7 +96,7 @@ class ReportVerificationService:
         ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000")  # 25,000 TCo₂e
 
         # Fetch registration purpose
-        registration_purpose = ReportService.get_registration_purpose_by_version_id(report_version_id)
+        registration_purpose = ReportVersionService.get_registration_purpose_by_version_id(report_version_id)
         registration_purpose_value = registration_purpose.get("registration_purpose", {})
 
         # Check the REGULATED_OPERATION_PURPOSES
