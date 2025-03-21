@@ -44,6 +44,12 @@ class ComplianceObligation(TimeStampedModel):
         default=PenaltyStatus.NONE,
         db_comment="The status of the penalty (e.g., NONE, ACCRUING, PAID)",
     )
+    obligation_id = models.CharField(
+        max_length=30,
+        null=True,
+        blank=True,
+        db_comment="A human-readable identifier for the obligation in format YY-OOOO-R-V",
+    )
     obligation_deadline = models.DateField(
         blank=False,
         null=False,
