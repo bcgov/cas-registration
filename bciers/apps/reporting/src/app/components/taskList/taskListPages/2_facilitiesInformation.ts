@@ -59,7 +59,7 @@ export const facilitiesInformationPageFactories: {
     element: {
       type: "Link",
       text: "Back to facilities table",
-      link: `/reports/${reportVersionId}/facilities/report-information`,
+      link: `/reporting/reports/${reportVersionId}/facilities/report-information`,
       title: "Back to facilities table",
     },
     extraOptions: {
