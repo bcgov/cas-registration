@@ -1,16 +1,31 @@
 import { ReportingPage, TaskListPageFactory } from "../types";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export const additionalInformationPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
 } = {
-  [ReportingPage.AdditionalReportingData]: (activePage, reportVersionId) => ({
-    element: {
-      type: "Page",
-      title: "Additional reporting data",
-      link: `/reports/${reportVersionId}/additional-reporting-data`,
-      isActive: activePage === ReportingPage.AdditionalReportingData,
-    },
-  }),
+  [ReportingPage.AdditionalReportingData]: async (
+    activePage,
+    reportVersionId,
+  ) => {
+    const reportOperation = await getReportingOperation(reportVersionId);
+    const operationType = reportOperation?.operation_type;
+    const backUrl =
+      operationType === OperationTypes.LFO
+        ? `/reports/${reportVersionId}/facilities/report-information`
+        : undefined;
+
+    return {
+      element: {
+        type: "Page",
+        title: "Additional reporting data",
+        link: `/reports/${reportVersionId}/additional-reporting-data`,
+        isActive: activePage === ReportingPage.AdditionalReportingData,
+      },
+      backUrl,
+    };
+  },
   [ReportingPage.NewEntrantInformation]: (activePage, reportVersionId) => ({
     element: {
       type: "Page",
