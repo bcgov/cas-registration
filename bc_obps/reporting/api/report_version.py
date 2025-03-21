@@ -7,7 +7,6 @@ from django.http import HttpRequest
 from registration.models import RegulatedProduct
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.report_service import ReportService
 from reporting.service.report_version_service import ReportVersionService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut, ReportOperationOut
@@ -74,10 +73,10 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
     auth=authorize("approved_industry_user"),
 )
-def save_report(
+def save_report_operation(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
 ) -> Tuple[Literal[201], ReportOperationOut]:
-    report_operation = ReportService.save_report_operation(version_id, payload)
+    report_operation = ReportVersionService.save_report_operation(version_id, payload)
     return 201, report_operation  # type: ignore
 
 

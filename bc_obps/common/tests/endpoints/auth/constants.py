@@ -161,7 +161,12 @@ ENDPOINTS = {
         {"method": "post", "endpoint_name": "start_report"},
         {
             "method": "post",
-            "endpoint_name": "save_report",
+            "endpoint_name": "save_report_non_attributable",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "post",
+            "endpoint_name": "save_report_operation",
             "kwargs": {"version_id": MOCK_INT},
         },
         {
