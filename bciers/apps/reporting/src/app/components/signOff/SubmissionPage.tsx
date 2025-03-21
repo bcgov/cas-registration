@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getTodaysDateWithTime } from "@reporting/src/app/utils/formatDate";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
-const ReportSubmission = () => {
+const SubmissionPage = () => {
   const currentDate = formatTimestamp(getTodaysDateWithTime());
 
   return (
@@ -29,4 +29,4 @@ const ReportSubmission = () => {
   );
 };
 
-export default ReportSubmission;
+export default SubmissionPage;

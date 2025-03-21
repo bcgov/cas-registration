@@ -39,5 +39,6 @@ export const signOffSubmitPageFactories: {
       link: `/reports/${reportVersionId}/sign-off`,
       isActive: activePage === ReportingPage.SignOff,
     },
+    continueUrl: `/reports/${reportVersionId}/submission`,
   }),
 };
