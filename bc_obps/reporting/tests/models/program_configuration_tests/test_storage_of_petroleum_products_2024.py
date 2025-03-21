@@ -63,11 +63,6 @@ class StorageOfPetroleumProducts2024Test(TestCase):
 
                 expected_methodologies = list(methods.items())
 
-                # Print actual vs. expected for debugging purposes
-                print(f"Checking {source_type_name}:{gas_name}")
-                print(f"Expected: {expected_methodologies}")
-                print(f"Actual: {list(actual_methodologies)}")
-
                 self.assertQuerySetEqual(
                     actual_methodologies,
                     expected_methodologies,
