@@ -67,7 +67,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.assert_not_called()
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
-    @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
+    @patch("reporting.service.report_version_service.ReportVersionService.get_registration_purpose_by_version_id")
     def test_get_report_needs_verification_returns_false_for_non_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):

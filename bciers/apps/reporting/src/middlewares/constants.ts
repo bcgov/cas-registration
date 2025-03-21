@@ -56,7 +56,7 @@ export const getUserRole = (token: JWT | null): IDP | null => {
 
 // App API endpoints
 export enum ApiEndpoints {
-  REGISTRATION_PURPOSE = "/registration_purpose",
+  REGISTRATION_PURPOSE = "/registration-purpose",
   REPORT_OPERATION = "/report-operation",
   NEEDS_VERIFICATION = "/report-needs-verification",
 }

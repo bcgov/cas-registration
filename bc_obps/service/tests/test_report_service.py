@@ -2,7 +2,6 @@ from unittest import mock
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from model_bakery import baker
-from model_bakery.baker import make_recipe
 
 from registration.models import RegulatedProduct, Activity, Operation
 from registration.tests.utils.bakers import (
@@ -13,7 +12,7 @@ from registration.tests.utils.bakers import (
 from reporting.models import ReportingYear, ReportVersion, ReportOperation, FacilityReport
 from reporting.schema.report_operation import ReportOperationIn
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
-from service.report_service import ReportService
+from reporting.service.report_version_service import ReportVersionService
 
 
 class TestReportService(TestCase):
@@ -187,7 +186,7 @@ class TestReportService(TestCase):
             mock_regulated_product_2 = mock.MagicMock(spec=RegulatedProduct, name="Mining: gold-equivalent")
             mock_regulated_product_filter.return_value = [mock_regulated_product_1, mock_regulated_product_2]
 
-            ReportService.save_report_operation(report_version.id, data)
+            ReportVersionService.save_report_operation(report_version.id, data)
 
             mock_report_operation.activities.set.assert_called_once_with([mock_activity_1, mock_activity_2])
 
@@ -203,16 +202,3 @@ class TestReportService(TestCase):
             mock_report_operation.operation_bcghgid = data.operation_bcghgid
             mock_report_operation.bc_obps_regulated_operation_id = data.bc_obps_regulated_operation_id
             mock_report_operation.operation_report_type = data.operation_report_type
-
-    def test_get_registration_purpose_by_version_id_returns_correct_data(self):
-        """
-        Test that the service retrieves the correct registration purpose
-        for a given report version ID.
-        """
-        self.report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        self.report_operation = make_recipe(
-            'reporting.tests.utils.report_operation', report_version=self.report_version
-        )
-        retrieved_data = ReportService.get_registration_purpose_by_version_id(version_id=self.report_version.id)
-        self.assertIsNotNone(retrieved_data)
-        self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)

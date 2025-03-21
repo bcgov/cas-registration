@@ -43,7 +43,7 @@ def get_report_non_attributable_by_version_id(
     is saved.""",
     auth=authorize("approved_industry_user"),
 )
-def save_report(
+def save_report_non_attributable(
     request: HttpRequest, version_id: int, facility_id: UUID, payload: ReportNonAttributableSchema
 ) -> tuple[Literal[201], list[ReportNonAttributableEmissions]]:
     saved_reports = []

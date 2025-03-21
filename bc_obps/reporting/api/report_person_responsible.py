@@ -3,7 +3,7 @@ from common.permissions import authorize
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from service.report_person_responsible import ReportContactService
+from reporting.service.report_contact_service import ReportContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from ..models import ReportPersonResponsible
