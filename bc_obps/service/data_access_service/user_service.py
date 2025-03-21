@@ -2,12 +2,14 @@ from typing import Dict
 from uuid import UUID
 from registration.schema import UserIn, UserUpdateIn, UserOut
 from registration.models import AppRole, Operator, UserOperator, User
+from django.db.models import QuerySet
+from registration.schema.user import UserUpdateRoleIn
 
 
 class UserDataAccessService:
     @classmethod
     def get_by_guid(cls, user_guid: UUID) -> User:
-        return User.objects.get(user_guid=user_guid)
+        return User._base_manager.get(user_guid=user_guid)
 
     @classmethod
     def get_user_business_guid(cls, user_guid: UUID) -> UUID:
@@ -68,7 +70,7 @@ class UserDataAccessService:
         )
 
     @classmethod
-    def update_user(cls, user_guid: UUID, updated_data: UserUpdateIn) -> User:
+    def update_user(cls, user_guid: UUID, updated_data: UserUpdateIn | UserUpdateRoleIn) -> User:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         for attr, value in updated_data.dict().items():
             setattr(user, attr, value)
@@ -79,3 +81,11 @@ class UserDataAccessService:
     def user_has_access_to_operator(cls, user_guid: UUID, operator_id: UUID) -> bool:
         user = UserDataAccessService.get_by_guid(user_guid)
         return user.user_operators.filter(operator_id=operator_id, status=UserOperator.Statuses.APPROVED).exists()
+    
+    @classmethod
+    def get_internal_users(cls) -> QuerySet[User]:
+        return cls._list_including_archived().filter(app_role__role_name__icontains="cas")
+
+    @classmethod
+    def _list_including_archived(cls) -> QuerySet[User]:
+        return User._base_manager.all()
