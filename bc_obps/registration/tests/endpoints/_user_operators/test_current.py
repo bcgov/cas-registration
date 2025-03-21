@@ -21,14 +21,9 @@ class TestCurrentUserOperatorEndpoint(CommonTestSetup):
         assert response.status_code == 200
 
         # Additional Assertions
-        assert "operator_id" in response_json
+        assert "id" in response_json
         assert "status" in response_json
-
-    # GET USER OPERATOR OPERATOR ID 401
-    def test_get_current_operator_and_user_operator_with_invalid_user(self):
-        # Act
-        response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", custom_reverse_lazy("get_current_operator_from_user_operator")
-        )
-        # User_operator must be approved to see their operator info
-        assert response.status_code == 401
+        assert "is_new" in response_json
+        assert "operatorId" in response_json
+        assert "operatorStatus" in response_json
+        assert "operatorLegalName" in response_json

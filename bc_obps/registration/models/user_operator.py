@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 import typing
 import uuid
 from django.core.cache import cache
@@ -6,7 +6,7 @@ from django.db import models
 from common.constants import PERMISSION_CONFIGS_CACHE_KEY
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
-from registration.models import TimeStampedModel, User, Operator, Contact, BusinessRole
+from registration.models import TimeStampedModel, User, Operator
 from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.user_operator import Rls as UserOperatorRls
 
@@ -82,27 +82,6 @@ class UserOperator(TimeStampedModel):
         ]
 
     Rls = UserOperatorRls
-
-    def get_senior_officer(self) -> Optional[Contact]:
-        """
-        Returns the senior officer associated with the useroperator's operator.
-        Assuming that there is only one senior officer per operator.
-        """
-        return self.operator.contacts.filter(business_role=BusinessRole.objects.get(role_name='Senior Officer')).first()
-
-    def user_is_senior_officer(self) -> bool:
-        """
-        Verifies whether the useroperator's user is present in the contacts associated with the operator.
-        """
-        senior_officer = self.get_senior_officer()
-        if not senior_officer:
-            return False  # if there is no senior officer, then the user is not a senior officer
-        user = self.user
-        return (
-            senior_officer.first_name == user.first_name
-            and senior_officer.last_name == user.last_name
-            and senior_officer.email == user.email
-        )
 
     @staticmethod
     def get_all_industry_user_operator_roles() -> List[str]:

@@ -16,6 +16,24 @@ describe("The Breadcrumb component", () => {
 
   const testCases = [
     {
+      url: "http://localhost:3000/administration/select-operator/confirm/685d581b-5698-411f-ae00-de1d97334a71?title=Alpha%20Enterprises",
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Administration",
+        "Select Operator",
+        "Alpha Enterprises",
+      ],
+    },
+    {
+      url: "http://localhost:3000/administration/select-operator/received/request-access/685d581b-5698-411f-ae00-de1d97334a71?title=Alpha%20Enterprises",
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Administration",
+        "Select Operator",
+        "Alpha Enterprises",
+      ],
+    },
+    {
       url: "http://localhost:3000/administration/contacts",
       expectedBreadcrumbs: ["Dashboard", "Administration", "Contacts"],
     },

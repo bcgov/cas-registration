@@ -29,7 +29,7 @@ from ._operations._operation_id._registration import (
     opted_in_operation,
     submission,
 )
-from ._user_operators import current, pending, user_operator_id
+from ._user_operators import current, user_operator_id
 from ._user_operators._current import (
     access_requests,
     has_registered_operation,

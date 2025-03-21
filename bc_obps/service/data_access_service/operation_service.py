@@ -38,7 +38,7 @@ class OperationDataAccessService:
         """
         Returns True if the userOperator's operator has at least one operation with status 'Registered', False otherwise.
         """
-        return Operation.objects.filter(operator_id=operator_id, status="Registered").exists()
+        return Operation.objects.filter(operator_id=operator_id, status=Operation.Statuses.REGISTERED).exists()
 
     @classmethod
     def create_operation(
