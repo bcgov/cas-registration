@@ -11,6 +11,13 @@ export enum IDP {
   BCEIDBUSINESS = "bceidbusiness",
 }
 
+export enum InternalFrontEndRoles {
+  CAS_ADMIN = "cas_admin",
+  CAS_ANALYST = "cas_analyst",
+  CAS_DIRECTOR = "cas_director",
+  CAS_VIEW_ONLY = "cas_view_only",
+  CAS_PENDING = "cas_pending",
+}
 export enum FrontEndRoles {
   CAS_ADMIN = "cas_admin",
   CAS_ANALYST = "cas_analyst",
