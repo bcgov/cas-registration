@@ -5,6 +5,7 @@ from unittest.mock import patch, MagicMock
 from django.http import HttpResponse
 from model_bakery import baker
 
+from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 from reporting.models import Report, ReportVersion
@@ -15,8 +16,10 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 class TestReportsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/create-report"
 
-    def send_authorized_post_request(self, request_data: dict[str, Any]) -> HttpResponse:
-        operator = operator_baker()
+    def send_authorized_post_request(
+        self, request_data: dict[str, Any], operation: Operation | None = None
+    ) -> HttpResponse:
+        operator = operation.operator if operation else operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         return TestUtils.mock_post_with_auth_role(
@@ -36,14 +39,13 @@ class TestReportsEndpoint(CommonTestSetup):
         }
         response = self.send_authorized_post_request(request_data)
 
-        assert response.status_code == 404
-        assert response.json()["message"] == "Not Found"
+        assert response.status_code == 401
 
     def test_error_if_no_reporting_year_exists(self):
         operation = operation_baker()
 
         request_data = {"operation_id": str(operation.id), "reporting_year": 2000}
-        response = self.send_authorized_post_request(request_data)
+        response = self.send_authorized_post_request(request_data, operation)
 
         assert response.status_code == 404
         assert response.json()["message"] == "Not Found"
@@ -55,7 +57,7 @@ class TestReportsEndpoint(CommonTestSetup):
             "operation_id": str(report.operation.id),
             "reporting_year": report.reporting_year.reporting_year,
         }
-        response = self.send_authorized_post_request(request_data)
+        response = self.send_authorized_post_request(request_data, report.operation)
 
         assert response.status_code == 400
         assert (
@@ -74,7 +76,7 @@ class TestReportsEndpoint(CommonTestSetup):
             "operation_id": str(operation.id),
             "reporting_year": reporting_year.reporting_year,
         }
-        response = self.send_authorized_post_request(request_data)
+        response = self.send_authorized_post_request(request_data, operation)
 
         assert Report.objects.count() == 1
         assert ReportVersion.objects.count() == 1

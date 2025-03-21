@@ -93,7 +93,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves all regulated products associated with a report operation identified by its version ID.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
 )
 def get_regulated_products_by_version_id(
     request: HttpRequest, version_id: int
@@ -107,7 +107,7 @@ def get_regulated_products_by_version_id(
     response={200: ReportingVersionOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Retrieve the report type for a specific reporting version, including the reporting year and due date.",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
 )
 def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     report_type = ReportService.get_report_type_by_version_id(version_id)
@@ -119,7 +119,7 @@ def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[L
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
 )
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportService.get_registration_purpose_by_version_id(version_id)
