@@ -11,10 +11,12 @@ import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFacto
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
 import { useSearchParams } from "next/navigation";
+import { isUndefined } from "util";
 const FacilitiesDataGrid = ({
   disabled,
   operationId,
   initialData,
+  fromRegistration,
   sx,
 }: {
   disabled?: boolean;
@@ -23,6 +25,7 @@ const FacilitiesDataGrid = ({
     rows: FacilityRow[];
     row_count: number;
   };
+  fromRegistration?: boolean;
   sx?: { [key: string]: any };
 }) => {
   const searchParams = useSearchParams();
@@ -30,7 +33,7 @@ const FacilitiesDataGrid = ({
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
-        return `/administration/operations/${operationId}/facilities/${params.row.facility__id}?operations_title=${operationsTitle}&facilities_title=${params.row.facility__name}`;
+        return `/administration/operations/${operationId}/facilities/${params.row.facility__id}?operations_title=${operationsTitle}&facilities_title=${params.row.facility__name}${fromRegistration ? "&from_registration=true" : ""}`;
       },
       cellText: "View Details",
       useWindowLocation: true,

@@ -36,6 +36,8 @@ export default function FacilityForm({
   const searchParams = useSearchParams();
   const queryString = serializeSearchParams(searchParams);
   const isSfo = formState.type === FacilityTypes.SFO;
+  const isFromRegistration = searchParams.get("from_registration") as string;
+  const operationsTitleParam = searchParams.get("operations_title") as string;
 
   return (
     <SingleStepTaskListForm
@@ -94,13 +96,15 @@ export default function FacilityForm({
         const replaceUrl = `/administration/operations/${params.operationId}/facilities/${facilityId}${queryString}&facilities_title=${facilityName}`;
         window.history.replaceState(null, "", replaceUrl);
       }}
-      onCancel={() =>
-        router.replace(
+      onCancel={() => {
+        isFromRegistration
+         ? window.history.replaceState({}, "", `/registration/register-an-operation/${params.operationId}/2?operations_title=${operationsTitleParam}`)
+         : router.replace(
           isSfo
             ? `/operations`
             : `/operations/${params.operationId}/facilities${queryString}`,
-        )
-      }
+        )        
+      } }
     />
   );
 }

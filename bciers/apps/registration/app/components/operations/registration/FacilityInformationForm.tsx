@@ -90,6 +90,7 @@ const FacilityInformationForm = ({
         disabled={isSubmitting}
         initialData={initialGridData ?? { rows: [], row_count: 0 }}
         operationId={operation}
+        fromRegistration={true}
         sx={FacilityGridSx}
       />
     ),
