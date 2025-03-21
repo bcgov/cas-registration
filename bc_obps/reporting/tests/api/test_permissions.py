@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 from model_bakery.baker import make_recipe
 import pytest
 from reporting.api.permissions import (
-    validate_operation_ownership_from_payload,
-    validate_version_ownership_from_url,
+    check_operation_ownership,
+    check_version_ownership_in_url,
 )
 
 
@@ -31,7 +31,7 @@ class TestVersionOwnershipFromUrl:
             report__operator=user_operator.operator,
         )
 
-        validator_under_test = validate_version_ownership_from_url("test_id")
+        validator_under_test = check_version_ownership_in_url("test_id")
 
         mock_request = MagicMock()
         mock_request.resolver_match.kwargs = {"test_id": report_version.id}
@@ -45,7 +45,7 @@ class TestVersionOwnershipFromUrl:
         report_version = make_recipe("reporting.tests.utils.report_version")
         user = make_recipe("registration.tests.utils.industry_operator_user")
 
-        validator_under_test = validate_version_ownership_from_url("test_id")
+        validator_under_test = check_version_ownership_in_url("test_id")
 
         mock_request = MagicMock()
         mock_request.resolver_match.kwargs = {"test_id": report_version.id}
@@ -62,7 +62,7 @@ class TestVersionOwnershipFromUrl:
             report__operator=user_operator.operator,
         )
 
-        validator_under_test = validate_version_ownership_from_url("test_id")
+        validator_under_test = check_version_ownership_in_url("test_id")
 
         mock_request = MagicMock()
         mock_request.resolver_match.kwargs = {"another_id": report_version.id}
@@ -79,7 +79,7 @@ class TestVersionOwnershipFromUrl:
             report__operator=user_operator.operator,
         )
 
-        validator_under_test = validate_version_ownership_from_url("test_id")
+        validator_under_test = check_version_ownership_in_url("test_id")
 
         mock_request = MagicMock()
         mock_request.resolver_match.kwargs = {}
@@ -96,7 +96,7 @@ class TestOperationOwnershipFromPayload:
         user_operator = make_recipe("registration.tests.utils.user_operator", role=role, status=status)
         operation = make_recipe("registration.tests.utils.operation", operator=user_operator.operator)
 
-        validator_under_test = validate_operation_ownership_from_payload()
+        validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
         mock_request.body = f'{{"operation_id": "{operation.id}"}}'
@@ -110,7 +110,7 @@ class TestOperationOwnershipFromPayload:
         operation = make_recipe("registration.tests.utils.operation")
         user = make_recipe("registration.tests.utils.industry_operator_user")
 
-        validator_under_test = validate_operation_ownership_from_payload()
+        validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
         mock_request.body = f'{{"operation_id": "{operation.id}"}}'
@@ -124,7 +124,7 @@ class TestOperationOwnershipFromPayload:
         user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
         operation = make_recipe("registration.tests.utils.operation", operator=user_operator.operator)
 
-        validator_under_test = validate_operation_ownership_from_payload()
+        validator_under_test = check_operation_ownership()
 
         mock_request = MagicMock()
         mock_request.body = f'{{"some_other_payload": "{operation.id}"}}'

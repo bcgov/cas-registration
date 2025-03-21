@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.models import RegulatedProduct
-from reporting.api.permissions import validate_operation_ownership_from_payload, validate_version_ownership_from_url
+from reporting.api.permissions import check_operation_ownership, check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn
@@ -28,7 +28,7 @@ from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
     pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
-    auth=authorize("approved_industry_user", validate_operation_ownership_from_payload()),
+    auth=authorize("approved_industry_user", check_operation_ownership()),
 )
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
@@ -40,7 +40,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=authorize("approved_authorized_roles", validate_version_ownership_from_url("version_id")),
+    auth=authorize("approved_authorized_roles", check_version_ownership_in_url("version_id")),
 )
 def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
     report_service = ReportService.get_report_operation_by_version_id(version_id)
@@ -53,7 +53,7 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
     tags=EMISSIONS_REPORT_TAGS,
     description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
     Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
-    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
@@ -68,7 +68,7 @@ def save_report(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Changes the report type of a report version. This operation deletes the report version, including all existing data associated with that report version,
     and returns the id of a newly initialized report version.""",
-    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def change_report_version_type(
     request: HttpRequest, version_id: int, payload: ReportVersionTypeIn
@@ -93,7 +93,7 @@ def get_reporting_year(request: HttpRequest) -> Tuple[Literal[200], ReportingYea
     response={200: List[RegulatedProductOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves all regulated products associated with a report operation identified by its version ID.""",
-    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def get_regulated_products_by_version_id(
     request: HttpRequest, version_id: int
@@ -107,7 +107,7 @@ def get_regulated_products_by_version_id(
     response={200: ReportingVersionOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Retrieve the report type for a specific reporting version, including the reporting year and due date.",
-    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     report_type = ReportService.get_report_type_by_version_id(version_id)
@@ -119,7 +119,7 @@ def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[L
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
-    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportService.get_registration_purpose_by_version_id(version_id)
