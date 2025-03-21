@@ -63,7 +63,6 @@ class TestUserOperatorService:
 
     @staticmethod
     def test_list_user_operators():
-
         # add some user operators
         baker.make_recipe(
             'registration.tests.utils.user_operator',
@@ -150,9 +149,7 @@ class TestUserOperatorService:
             province="AB",
             postal_code="H0H0H0",
         )
-        operator_instance = baker.make_recipe(
-            'registration.tests.utils.operator', status=Operator.Statuses.APPROVED, is_new=False
-        )
+        operator_instance = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.APPROVED)
         mock_save_operator.return_value = operator_instance
 
         user_operator_instance = MagicMock(
@@ -170,7 +167,6 @@ class TestUserOperatorService:
 
         assert Operator.objects.count() == 1
         assert Operator.objects.first().status == "Approved"
-        assert Operator.objects.first().is_new is False
         assert Contact.objects.count() == 1
         assert Contact.objects.filter(
             first_name=user.first_name,

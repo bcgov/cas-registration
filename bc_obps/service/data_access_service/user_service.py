@@ -20,9 +20,8 @@ class UserDataAccessService:
 
     @classmethod
     def get_user_operator_by_user(cls, user_guid: UUID) -> UserOperator:
-
         user_operator = (
-            UserOperator.objects.only("id", "status", "operator__id", "operator__is_new", "operator__status")
+            UserOperator.objects.only("id", "status", "operator__id", "operator__status")
             .exclude(
                 status=UserOperator.Statuses.DECLINED
             )  # We exclude declined user_operators because the user may have previously requested access and been declined and therefore have multiple records in the user_operator table

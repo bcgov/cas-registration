@@ -16,7 +16,6 @@ class TestDataAccessOptedInOperationService:
             registration_purpose=Operation.Purposes.OPTED_IN_OPERATION,
             opted_in_operation=baker.make_recipe('registration.tests.utils.opted_in_operation_detail'),
             operator=approved_user_operator.operator,
-            opt_in=True,
         )
 
         opted_in_operation_detail_payload = OptedInOperationDetailIn(
@@ -38,7 +37,6 @@ class TestDataAccessOptedInOperationService:
         assert opted_in_operation_detail.id == users_operation.opted_in_operation.id
         assert OptedInOperationDetail.objects.count() == 1
         assert users_operation.opted_in_operation is not None
-        assert users_operation.opt_in is True
         assert users_operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert users_operation.opted_in_operation.meets_electricity_import_operation_criteria is True
         assert users_operation.opted_in_operation.meets_entire_operation_requirements is True

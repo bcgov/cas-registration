@@ -16,7 +16,6 @@ class TestPendingUserOperatorEndpoint(CommonTestSetup):
         )
         assert response.status_code == 200
         assert response.json()['status'] == user_operator.status
-        assert response.json().get('is_new') is not None
 
     # /user-operators/current/user-operator-from-user ignores DECLINED records
     def test_get_user_operator_declined(self):
