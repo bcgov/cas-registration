@@ -1,5 +1,6 @@
 import json
 import logging
+from common.tests.utils.call_endpoint import call_endpoint
 import pytest
 from unittest.mock import patch, MagicMock, ANY
 from django.urls import get_resolver
@@ -9,7 +10,6 @@ from registration.models import User
 from common.tests.endpoints.auth.constants import ENDPOINTS
 from common.permissions import get_permission_configs
 from registration.models import AppRole
-from model_bakery import baker
 
 
 @pytest.fixture(autouse=True)
@@ -23,25 +23,6 @@ class TestEndpointPermissions(TestCase):
     endpoints_to_test = ENDPOINTS
 
     @classmethod
-    def _call_endpoint(cls, method, endpoint, app_role=None):
-        client_method = getattr(cls.client, method)
-        kwargs = {
-            'path': endpoint,
-        }
-
-        if app_role:
-            user = baker.make(
-                User, app_role_id=app_role, _fill_optional=True
-            )  # Passing _fill_optional to fill all fields with random data
-            auth_header = {'user_guid': str(user.user_guid)}
-            kwargs['HTTP_AUTHORIZATION'] = json.dumps(auth_header)
-
-        if method.lower() != "get":
-            kwargs.update({'content_type': "application/json", 'data': {}})
-
-        return client_method(**kwargs)
-
-    @classmethod
     @patch("common.permissions.check_permission_for_role")
     def test_endpoint_permissions_by_role(
         cls,
@@ -51,7 +32,7 @@ class TestEndpointPermissions(TestCase):
             for config in configs:
                 endpoint = custom_reverse_lazy(config["endpoint_name"], kwargs=config.get("kwargs", {}))
                 method = config.get("method")
-                cls._call_endpoint(method, endpoint)
+                call_endpoint(cls.client, method, endpoint)
                 # Assert that the correct role check is called
                 mock_check_permission_for_role.assert_called_once_with(ANY, role)
                 # Reset mock after each subtest to isolate calls
@@ -137,7 +118,7 @@ class TestEndpointPermissions(TestCase):
                 for config in configs:
                     endpoint = custom_reverse_lazy(config["endpoint_name"], kwargs=config.get("kwargs", {}))
                     method = config.get("method")
-                    response = cls._call_endpoint(method, endpoint, current_app_role)
+                    response = call_endpoint(cls.client, method, endpoint, current_app_role)
 
                     if current_app_role not in authorized_app_roles:
                         assert (
