@@ -3,6 +3,7 @@ from uuid import UUID
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import storages
+import pgtrigger
 
 
 class DocumentDataAccessService:
@@ -45,5 +46,7 @@ class DocumentDataAccessService:
             # The file is not in any of the quarantined or clean buckets
             return Document.FileStatus.UNSCANNED
 
-        document.save()
+        # Ignore the audit columns triggers, we're not changing anything about the document itself
+        with pgtrigger.ignore("registration.Document:set_updated_audit_columns"):
+            document.save()
         return document.status
