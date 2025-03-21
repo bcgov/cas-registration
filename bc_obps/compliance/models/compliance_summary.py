@@ -10,9 +10,9 @@ class ComplianceSummary(TimeStampedModel):
     """Model to store compliance summaries for reports"""
 
     class ComplianceStatus(models.TextChoices):
-        OBLIGATION_NOT_MET = "OBLIGATION_NOT_MET", "Obligation Not Met"
-        OBLIGATION_FULLY_MET = "OBLIGATION_FULLY_MET", "Obligation Fully Met"
-        EARNED_CREDITS = "EARNED_CREDITS", "Earned Credits"
+        PARTIALLY_MET = "PARTIALLY_MET", "Obligation partially met"
+        FULLY_MET = "FULLY_MET", "Obligation fully met"
+        EARNED_CREDITS = "EARNED_CREDITS", "Earned credits"
 
     report = models.ForeignKey(
         Report,
@@ -61,14 +61,14 @@ class ComplianceSummary(TimeStampedModel):
         Compute compliance status based on excess_emissions and credited_emissions.
 
         Returns:
-            str: One of the ComplianceStatus choices
+            str: The user-friendy label for the compliance status
         """
         if self.excess_emissions > 0:
-            return self.ComplianceStatus.OBLIGATION_NOT_MET
+            return self.ComplianceStatus(self.ComplianceStatus.PARTIALLY_MET).label
         elif self.credited_emissions > 0:
-            return self.ComplianceStatus.EARNED_CREDITS
+            return self.ComplianceStatus(self.ComplianceStatus.EARNED_CREDITS).label
         else:
-            return self.ComplianceStatus.OBLIGATION_FULLY_MET
+            return self.ComplianceStatus(self.ComplianceStatus.FULLY_MET).label
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table to store compliance summaries for reports"

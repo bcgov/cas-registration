@@ -129,11 +129,11 @@ class ComplianceSummaryService:
             str: The compliance status
         """
         if excess_emissions > Decimal('0'):
-            return ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET
+            return ComplianceSummary.ComplianceStatus.PARTIALLY_MET
         elif credited_emissions > Decimal('0'):
             return ComplianceSummary.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET
+            return ComplianceSummary.ComplianceStatus.FULLY_MET
 
     @staticmethod
     def calculate_outstanding_balance(compliance_summary: ComplianceSummary) -> Decimal:
