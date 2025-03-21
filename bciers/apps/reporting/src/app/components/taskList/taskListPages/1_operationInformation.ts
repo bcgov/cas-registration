@@ -26,5 +26,6 @@ export const operationInformationPageFactories: {
       link: `/reports/${reportVersionId}/facilities/review-facilities`,
       isActive: activePage === ReportingPage.ReviewFacilities,
     },
+    continueUrl: `/reports/${reportVersionId}/facilities/report-information`,
   }),
 };
