@@ -97,7 +97,7 @@ describe("withRuleHasReportRouteAccess middleware", () => {
         { operation_report_status: ReportOperationStatus.SUBMITTED }, // For routeSubmittedReport (pass)
       ],
       routeMocks: {
-        reportRoutesSubmitted: constants.reportRoutesSubmitted, // Expected value, e.g. ["submitted"]
+        reportRoutesSubmitted: ["submitted", "submission"],
       },
     });
     expect(nextMiddleware).toHaveBeenCalledOnce();
