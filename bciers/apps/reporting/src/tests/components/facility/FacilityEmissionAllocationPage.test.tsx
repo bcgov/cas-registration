@@ -6,6 +6,7 @@ import { getEmissionAllocations } from "@reporting/src/app/utils/getEmissionAllo
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
 
 // ✨ Mocks
 vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
@@ -20,6 +21,9 @@ vi.mock("@reporting/src/app/utils/getEmissionAllocations", () => ({
 }));
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
+}));
+vi.mock("@reporting/src/app/utils/getOverlappingIndProcessEmissions", () => ({
+  getOverlappingIndustrialProcessEmissions: vi.fn(),
 }));
 
 // 🏷 Constants
@@ -194,6 +198,9 @@ describe("The FacilityEmissionAllocationPage component", () => {
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       dummyNavigationInformation,
     );
+    (
+      getOverlappingIndustrialProcessEmissions as ReturnType<typeof vi.fn>
+    ).mockResolvedValueOnce(0.0);
     // Render the page with the `versionId` prop
     render(
       await FacilityEmissionAllocationPage({
