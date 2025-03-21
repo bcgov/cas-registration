@@ -9,7 +9,7 @@ from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn
 from service.report_service import ReportService
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut, ReportOperationOut

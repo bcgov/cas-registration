@@ -4,7 +4,7 @@ from model_bakery import baker
 from model_bakery.baker import make_recipe
 import pytest
 from reporting.models.report_version import ReportVersion
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 
 from registration.models import RegulatedProduct, Activity, Operation
 from registration.tests.utils.bakers import (
@@ -106,11 +106,11 @@ class TestReportVersionService:
         )
 
         with (
-            mock.patch('reorting.service.report_version_service.ReportOperation.objects.get') as mock_get,
-            mock.patch('reorting.service.report_version_service.ReportOperationRepresentative.objects.filter') as mock_filter,
-            mock.patch('reorting.service.report_version_service.FacilityReport.objects.filter') as mock_facility_filter,
-            mock.patch('reorting.service.report_version_service.Activity.objects.filter') as mock_activity_filter,
-            mock.patch('reorting.service.report_version_service.RegulatedProduct.objects.filter') as mock_regulated_product_filter,
+            mock.patch('reporting.service.report_version_service.ReportOperation.objects.get') as mock_get,
+            mock.patch('reporting.service.report_version_service.ReportOperationRepresentative.objects.filter') as mock_filter,
+            mock.patch('reporting.service.report_version_service.FacilityReport.objects.filter') as mock_facility_filter,
+            mock.patch('reporting.service.report_version_service.Activity.objects.filter') as mock_activity_filter,
+            mock.patch('reporting.service.report_version_service.RegulatedProduct.objects.filter') as mock_regulated_product_filter,
         ):
             mock_report_operation = mock.MagicMock(spec=ReportOperation)
             mock_get.return_value = mock_report_operation

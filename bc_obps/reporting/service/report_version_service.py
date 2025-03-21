@@ -9,7 +9,7 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.schema.report_operation import ReportOperationIn
-from service.report_version_service import ReportVersionService
+from reporting.service.report_version_service import ReportVersionService
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
