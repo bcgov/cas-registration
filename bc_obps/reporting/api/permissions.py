@@ -17,51 +17,60 @@ def is_access_granted(user_operator: UserOperator | None) -> bool:
     )
 
 
-def validate_version_ownership_from_url(
+def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: str) -> bool:
+    if not request.resolver_match:
+        logger.warning("No resolver_match attribute found on request.")
+        return False
+
+    report_version_id = request.resolver_match.kwargs.get(version_id_param)
+    if not report_version_id:
+        logger.warning("No report_version_id found in request.")
+        return False
+
+    report_version = ReportVersion.objects.filter(pk=report_version_id).first()
+    if not report_version:
+        logger.warning("No report version found.")
+        return False
+
+    user_operator = UserOperator.objects.filter(
+        user=request.current_user,  # type: ignore
+        operator=report_version.report.operator,
+    ).first()
+
+    return is_access_granted(user_operator)
+
+
+def _validate_operation_ownership(request: HttpRequest) -> bool:
+    operation_id = json.loads(request.body).get("operation_id")
+
+    if not operation_id:
+        logger.warning("Couldn't find operation_id field in payload.")
+        return False
+
+    operation = Operation.objects.filter(pk=operation_id).first()
+    if not operation:
+        logger.warning("Couldn't find operation record.")
+        return False
+
+    user_operator = UserOperator.objects.filter(
+        user=request.current_user,  # type: ignore
+        operator=operation.operator,
+    ).first()
+
+    return is_access_granted(user_operator)
+
+
+def check_version_ownership_in_url(
     version_id_param: str,
 ) -> Callable[[HttpRequest], bool]:
     def validate_func(request: HttpRequest) -> bool:
-        if not request.resolver_match:
-            logger.warning("No resolver_match attribute found on request.")
-            return False
-
-        report_version_id = request.resolver_match.kwargs.get(version_id_param)
-        if not report_version_id:
-            logger.warning("No report_version_id found in request.")
-            return False
-
-        report_version = ReportVersion.objects.filter(pk=report_version_id).first()
-        if not report_version:
-            logger.warning("No report version found.")
-            return False
-
-        user_operator = UserOperator.objects.filter(
-            user=request.current_user,  # type: ignore
-            operator=report_version.report.operator,
-        ).first()
-
-        return is_access_granted(user_operator)
+        return _validate_version_ownership_in_url(request, version_id_param)
 
     return validate_func
 
 
-def validate_operation_ownership_from_payload() -> Callable[[HttpRequest], bool]:
+def check_operation_ownership() -> Callable[[HttpRequest], bool]:
     def validate_func(request: HttpRequest) -> bool:
-        operation_id = json.loads(request.body).get("operation_id")
-
-        if not operation_id:
-            logger.warning("Couldn't find operation_id field in payload.")
-            return False
-
-        operation = Operation.objects.filter(pk=operation_id).first()
-        if not operation:
-            logger.warning("Couldn't find operation record.")
-            return False
-
-        user_operator = UserOperator.objects.filter(
-            user=request.current_user, operator=operation.operator  # type: ignore
-        ).first()
-
-        return is_access_granted(user_operator)
+        return _validate_operation_ownership(request)
 
     return validate_func
