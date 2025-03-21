@@ -6,29 +6,35 @@ import {
   signOffUiSchema,
 } from "@reporting/src/data/jsonSchema/signOff/signOff";
 import { IChangeEvent } from "@rjsf/core";
-import { SignOffFormData } from "@reporting/src/app/components/signOff/types";
+import {
+  SignOffFormData,
+  SignOffFormItems,
+} from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import reportValidationMessages from "./reportValidationMessages";
 import { NavigationInformation } from "../taskList/types";
+import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 
 const baseUrl = "/reports";
 const cancelUrl = "/reports";
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
+  initialData: SignOffFormData;
 }
 export default function SignOffForm({
   version_id,
   navigationInformation,
+  initialData,
 }: Props) {
-  const [formState, setFormState] = useState({});
+  const [formState, setFormState] = useState(initialData);
   const [errors, setErrors] = useState<string[]>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
-  const allChecked = (formData: SignOffFormData) => {
+  const allChecked = (formData: SignOffFormItems) => {
     return Object.values(formData).every((value) => value);
   };
 
@@ -44,7 +50,8 @@ export default function SignOffForm({
 
   const handleSubmit = async () => {
     if (!submitButtonDisabled) {
-      const response: any = await postSubmitReport(version_id);
+      const payload = safeJsonParse(JSON.stringify(formState));
+      const response: any = await postSubmitReport(version_id, payload);
 
       if (response?.error) {
         setErrors([reportValidationMessages[response.error]]);
