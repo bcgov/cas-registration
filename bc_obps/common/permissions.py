@@ -150,13 +150,16 @@ def authorize(
         "cas_director_analyst_and_industry_admin_user",
         "authorized_irc_user_and_industry_admin_user",
         "cas_analyst",
-    ]
+    ],
+    *args: Callable[[HttpRequest], bool],
 ) -> Callable[[HttpRequest], bool]:
     """
-    Returns an authentication function that checks if the user has the specified permission.
+    Returns an authentication function that checks if the user has the specified permission, and an arbitrary amount of extra checks.
+    All checks must return True for this one to return True.
 
     Parameters:
       permission (Permissions): The permission to check.
+      *args: an arbitrary number of additional authorization/check functions.
 
     Returns:
       Callable[[HttpRequest], bool]: The authentication function.
@@ -165,6 +168,6 @@ def authorize(
     def check_permission(
         request: HttpRequest,
     ) -> bool:  # This function must return a boolean to work with django-ninja `auth`.
-        return check_permission_for_role(request, permission)
+        return check_permission_for_role(request, permission) and all(validator(request) for validator in args)
 
     return check_permission
