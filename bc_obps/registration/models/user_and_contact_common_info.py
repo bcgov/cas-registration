@@ -1,9 +1,9 @@
-from common.models import BaseModel
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+from registration.models.time_stamped_model import TimeStampedModel
 
 
-class UserAndContactCommonInfo(BaseModel):
+class UserAndContactCommonInfo(TimeStampedModel):
     first_name = models.CharField(max_length=1000, db_comment="A user or contact's first name")
     last_name = models.CharField(max_length=1000, db_comment="A user or contact's last name")
     position_title = models.CharField(max_length=1000, db_comment="A user or contact's position title")
