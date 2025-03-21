@@ -9,7 +9,7 @@ const InternalUserRoleColumnCell = (
   params: InternalAccessRequestGridRenderCellParams,
 ) => {
   const {
-    row: { role, id },
+    row: { role, id, archived_at: archivedAt },
   } = params;
 
   const status = params?.row.status || inferStatus(role, "");
@@ -24,7 +24,8 @@ const InternalUserRoleColumnCell = (
     ]);
   };
 
-  if (status !== Status.PENDING) return <span>{formatRole(role)}</span>;
+  // brianna for declined operations, status is pending because it's not in params
+  if (status === Status.APPROVED) return <span>{formatRole(role)}</span>;
 
   return (
     <FormControl
