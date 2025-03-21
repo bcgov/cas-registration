@@ -98,10 +98,10 @@
       "opt_in": false,
       "bcghg_id": "23219990001",
       "regulated_products": [1, 2],
-      "registration_purpose": "OBPS Regulated Operation",
+      "registration_purpose": "Reporting Operation",
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0003",
-      "activities": [1, 5],
+      "activities": [1],
       "operation_has_multiple_operators": true,
       "contacts": [3]
     }
@@ -296,7 +296,7 @@
       "opt_in": false,
       "bcghg_id": "23219990015",
       "status": "Draft",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Potential Reporting Operation"
     }
   },
