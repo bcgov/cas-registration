@@ -5,8 +5,8 @@ from django.db.models import QuerySet
 from common.permissions import authorize
 from django.http import HttpRequest
 from registration.models import RegulatedProduct
+from reporting.api.permissions import validate_operation_ownership_from_payload, validate_version_ownership_from_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.permissions import validate_version_ownership_from_url
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn
 from service.report_service import ReportService
@@ -28,7 +28,7 @@ from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
     pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", validate_operation_ownership_from_payload()),
 )
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
@@ -68,7 +68,7 @@ def save_report(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Changes the report type of a report version. This operation deletes the report version, including all existing data associated with that report version,
     and returns the id of a newly initialized report version.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", validate_version_ownership_from_url("version_id")),
 )
 def change_report_version_type(
     request: HttpRequest, version_id: int, payload: ReportVersionTypeIn
