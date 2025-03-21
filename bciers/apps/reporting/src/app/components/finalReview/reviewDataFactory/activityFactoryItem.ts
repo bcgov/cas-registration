@@ -28,7 +28,7 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
     );
 
     const sourceTypeQueryString = Object.entries(initData.sourceTypeMap)
-      .filter(([, v]) => String(v) in formData)
+      .filter(([, v]) => String(v) in formData.sourceTypes)
       .map(([k]) => `&source_types[]=${k}`)
       .join("");
 
