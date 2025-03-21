@@ -11,6 +11,7 @@ from registration.utils import custom_reverse_lazy
 from reporting.models import Report, ReportVersion
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportsEndpoint(CommonTestSetup):
@@ -103,3 +104,11 @@ class TestReportsEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json() == expected_data
         mock_get_registration_purpose.assert_called_once_with(report_version.id)
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
+        assert_report_version_ownership_is_validated("save_report")
+        assert_report_version_ownership_is_validated("change_report_version_type", "post")
+        assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
+        assert_report_version_ownership_is_validated("get_report_type_by_version")
+        assert_report_version_ownership_is_validated("get_registration_purpose_by_version_id")
