@@ -92,12 +92,22 @@ export async function getNavigationInformation(
   const taskListHeaders = taskListHeaderPages.map((tlp) => tlp.element);
   const taskList = taskListNonHeaderPages.map((tlp) => tlp.element);
 
-  const pageIndex = pages.indexOf(page);
-  if (pageIndex === -1)
-    // The current page wasn't found in the flow's step
-    throw new Error(
-      `Page ${page} was not found in this reporting flow, unable to generate the appropriate tasklist and navigation.`,
-    );
+  // Determine the index of the current page from the filtered tasklistPages array.
+  // First, try to find the active page (assuming each factory sets an isActive flag).
+  let pageIndex = tasklistPages.findIndex((task) => task.element.isActive);
+
+  // If no tasklist page is marked active, fall back to finding the index
+  // in the original pages array.
+  if (pageIndex === -1) {
+    pageIndex = pages.indexOf(page);
+    if (pageIndex === -1) {
+      // The current page wasn't found in either the filtered list or the original flow,
+      // so throw an error.
+      throw new Error(
+        `Page ${page} was not found in this reporting flow, unable to generate the appropriate tasklist and navigation.`,
+      );
+    }
+  }
 
   // find forward and back links
   // - either from the current page factory itself
