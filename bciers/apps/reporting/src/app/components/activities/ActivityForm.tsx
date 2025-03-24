@@ -32,7 +32,6 @@ interface Props {
   facilityId: UUID;
   initialJsonSchema: RJSFSchema;
   initialSelectedSourceTypeIds: string[];
-  isLinearOperation: boolean;
   facilityType: string;
 }
 
@@ -46,7 +45,6 @@ export default function ActivityForm({
   facilityId,
   initialJsonSchema,
   initialSelectedSourceTypeIds,
-  isLinearOperation,
   facilityType,
 }: Readonly<Props>) {
   // 🐜 To display errors
