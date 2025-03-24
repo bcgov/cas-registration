@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0088_contact_unique_email_per_operator'),
-        ('reporting', '0073_not_applicable_methodology'),
+        ('reporting', '0078_not_applicable_methodology'),
     ]
 
     operations = [
