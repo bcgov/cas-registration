@@ -26,8 +26,8 @@ spec:
             imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
             env:
               {{- include "cas-bciers.backendEnvVars" . | nindent 14 }}
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: "/attachment-credentials/attachment-credentials.json"
+              - name: GOOGLE_APPLICATION_CREDENTIALS
+                value: "/attachment-credentials/attachment-credentials.json"
             command:
               - /usr/bin/env
               - bash
