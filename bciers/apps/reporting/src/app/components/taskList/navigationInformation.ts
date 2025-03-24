@@ -82,6 +82,7 @@ export async function getNavigationInformation(
           reportVersionId,
           facilityId,
           context,
+          flow,
         );
       }),
     )
@@ -128,6 +129,7 @@ export async function getNavigationInformation(
           reportVersionId,
           facilityId,
           context,
+          flow,
         );
 
         backUrl = getTasklistElementLink(previousPage.element, "last");
@@ -158,6 +160,7 @@ export async function getNavigationInformation(
           reportVersionId,
           facilityId,
           context,
+          flow,
         );
         continueUrl = getTasklistElementLink(nextPage.element, "first");
       }

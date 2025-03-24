@@ -93,12 +93,14 @@ type SyncTaskListPageFactory = (
   reportVersionId: number,
   facilityId: string,
   context?: TaskListPageFactoryContext,
+  reportingFlow?: ReportingFlow,
 ) => TaskListPageFactoryData;
 type AsyncTaskListPageFactory = (
   activePage: ReportingPage,
   reportVersionId: number,
   facilityId: string,
   context?: TaskListPageFactoryContext,
+  reportingFlow?: ReportingFlow,
 ) => Promise<TaskListPageFactoryData>;
 export type TaskListPageFactory =
   | SyncTaskListPageFactory
