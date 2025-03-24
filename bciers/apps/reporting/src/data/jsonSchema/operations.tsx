@@ -11,6 +11,7 @@ import {
   ANNUAL_REPORT,
   SIMPLE_REPORT,
 } from "@reporting/src/app/utils/constants";
+import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
@@ -88,6 +89,14 @@ export const buildOperationReviewSchema = (
           title: "BORO ID",
         },
       }),
+      bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
+      sync_button: {
+        type: "object",
+        properties: {
+          label: { type: "string", default: "Sync Facilities" },
+          disabled: { type: "boolean", default: false },
+        },
+      },
     },
 
     dependencies: {
@@ -139,6 +148,22 @@ export const buildOperationReviewSchema = (
 export const operationReviewUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  "ui:order": [
+    "purpose_note",
+    "date_info",
+    "operation_report_type",
+    "operation_representative_name",
+    "operator_legal_name",
+    "operator_trade_name",
+    "operation_name",
+    "operation_type",
+    "registration_purpose",
+    "operation_bcghgid",
+    "bc_obps_regulated_operation_id",
+    "activities",
+    "regulated_products",
+    "sync_button",
+  ],
   operator_legal_name: {
     "ui:options": commonUiOptions,
   },
@@ -217,5 +242,8 @@ export const operationReviewUiSchema = {
     },
     "ui:placeholder": "Operation representative",
     uniqueItems: true,
+  },
+  sync_button: {
+    "ui:FieldTemplate": SyncFacilitiesButton,
   },
 };
