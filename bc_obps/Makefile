@@ -122,11 +122,6 @@ pythontests_verbose: ## run Python tests with verbose output
 pythontests_verbose:
 	$(POETRY_RUN) $(PYTEST) -v
 
-.PHONY: pythontests_watch
-pythontests_watch: ## Use pytest-testmon and pytest-watch to trigger test runs on file changes
-pythontests_watch:
-	$(POETRY_RUN) ptw --runner "pytest --rootdir=bc_obps --picked --testmon"
-
 .PHONY: pythontests_coverage
 pythontests_coverage: ## run Python tests with coverage
 pythontests_coverage:
