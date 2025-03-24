@@ -31,7 +31,7 @@ def reverse_additional_methodology_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0072_alter_reportverification_scope_of_verification_and_more')]
+    dependencies = [('reporting', '0077_alter_activity_json_schema_petroleum_refining')]
 
     operations = [
         migrations.RunPython(
