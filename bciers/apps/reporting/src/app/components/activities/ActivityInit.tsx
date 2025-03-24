@@ -8,7 +8,6 @@ import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormDat
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
-import { OperationTypes } from "@bciers/utils/src/enums";
 import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 interface Props {
@@ -99,7 +98,6 @@ export default async function ActivityInit({
       facilityId={facilityId}
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
-      isLinearOperation={isLinearOperation}
       facilityType={facilityType}
     />
   );

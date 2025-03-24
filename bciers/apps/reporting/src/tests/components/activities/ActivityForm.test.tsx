@@ -57,7 +57,6 @@ describe("ActivityForm component", () => {
         reportVersionId={1}
         facilityId={mockUUID}
         initialSelectedSourceTypeIds={[]}
-        isLinearOperation={true}
         facilityType=""
       />,
     );
@@ -118,7 +117,6 @@ describe("ActivityForm component", () => {
         reportVersionId={1}
         facilityId={mockUUID}
         initialSelectedSourceTypeIds={[]}
-        isLinearOperation={true}
         facilityType=""
       />,
     );

@@ -1,14 +1,11 @@
 "use client";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { useState } from "react";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { useEffect, useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { NavigationInformation } from "../taskList/types";
-import { multiStepHeaderSteps } from "@reporting/src/app/components/taskList/multiStepHeaderConfig";
 import DeselectAllButton from "./DeselectAllButton";
 import { createRoot } from "react-dom/client";
 
