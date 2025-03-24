@@ -10,8 +10,8 @@ import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
-import reportValidationMessages from "./reportValidationMessages";
-import { NavigationInformation } from "../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { useRouter } from "next/navigation";
 
@@ -52,7 +52,7 @@ export default function SignOffForm({
       const response: any = await postSubmitReport(version_id, payload);
 
       if (response?.error) {
-        setErrors([reportValidationMessages[response.error]]);
+        setErrors([getValidationErrorMessage(response.error)]);
         return false;
       }
       router.push(navigationInformation.continueUrl);
