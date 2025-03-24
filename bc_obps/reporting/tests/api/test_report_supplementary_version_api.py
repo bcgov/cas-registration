@@ -18,7 +18,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
     @patch(
         "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService.create_report_supplementary_version"
     )
-    def test_returns_data_as_provided_by_the_service(
+    def test_returns_data_as_provided_by_create_report_supplementary_version(
         self, mock_create_report_supplementary_version: MagicMock | AsyncMock
     ):
         # Arrange: Mock service method return value
@@ -47,3 +47,31 @@ class TestReportSupplementaryApi(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
+    @patch(
+        "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService.is_initial_submission"
+    )
+    def test_returns_data_as_provided_by_is_initial_submission(
+        self, mock_is_initial_submission: MagicMock | AsyncMock
+    ):
+        # Arrange: Set the expected response from the service
+        expected_response = {"is_initial_submission": True}
+        mock_is_initial_submission.return_value = expected_response
+
+        # Act: Make GET request to the endpoint.
+        endpoint_under_test = "is_initial_submission"
+        endpoint_under_test_kwargs = {"report_version_id": self.old_report_version.id}
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                endpoint_under_test,
+                kwargs=endpoint_under_test_kwargs,
+            ),
+        )
+
+        # Assert: Check the response status and that the response data matches the expected result
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service method was called with the correct report_version_id.
+        mock_is_initial_submission.assert_called_once_with(self.old_report_version.id)
