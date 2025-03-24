@@ -106,14 +106,6 @@ class TestReportsEndpoint(CommonTestSetup):
         assert response.json() == expected_data
         mock_get_registration_purpose.assert_called_once_with(report_version.id)
 
-    def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
-        assert_report_version_ownership_is_validated("save_report")
-        assert_report_version_ownership_is_validated("change_report_version_type", "post")
-        assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
-        assert_report_version_ownership_is_validated("get_report_type_by_version")
-        assert_report_version_ownership_is_validated("get_registration_purpose_by_version_id")
-
     def test_create_report_validates_operation_ownership(self):
         with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
             "reporting.api.permissions._validate_operation_ownership"
@@ -124,3 +116,11 @@ class TestReportsEndpoint(CommonTestSetup):
             call_endpoint(TestUtils.client, "post", endpoint, "industry_user")
 
             mock_validate_operation_ownership.assert_called_once()
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_report_operation_by_version_id")
+        assert_report_version_ownership_is_validated("save_report")
+        assert_report_version_ownership_is_validated("change_report_version_type", "post")
+        assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
+        assert_report_version_ownership_is_validated("get_report_type_by_version")
+        assert_report_version_ownership_is_validated("get_registration_purpose_by_version_id")
