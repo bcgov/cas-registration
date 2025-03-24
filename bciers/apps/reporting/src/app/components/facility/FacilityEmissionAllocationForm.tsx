@@ -12,8 +12,6 @@ import { IChangeEvent } from "@rjsf/core";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { OperationTypes } from "@bciers/utils/src/enums";
 import { RJSFSchema } from "@rjsf/utils";
 
 // 📊 Interface for props passed to the component
@@ -23,7 +21,6 @@ interface Props {
   orderedActivities: any;
   initialData: any;
   navigationInformation: NavigationInformation;
-  taskListElements: TaskListElement[];
   operationType: string;
   facilityType: string;
 }
@@ -100,8 +97,6 @@ export default function FacilityEmissionAllocationForm({
   facility_id,
   initialData,
   navigationInformation,
-  taskListElements,
-  operationType,
   facilityType,
 }: Props) {
   // If facility type is small or medium, add not applicable as an option

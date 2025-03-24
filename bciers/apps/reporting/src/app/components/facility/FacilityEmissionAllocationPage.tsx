@@ -40,7 +40,6 @@ export default async function FacilityEmissionAllocationPage({
       orderedActivities={orderedActivities}
       initialData={initialData}
       navigationInformation={navInfo}
-      taskListElements={taskListElements}
       operationType={operationType}
       facilityType={facilityType}
     />
