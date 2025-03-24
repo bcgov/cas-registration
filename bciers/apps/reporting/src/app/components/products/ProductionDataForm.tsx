@@ -80,28 +80,6 @@ const ProductionDataForm: React.FC<Props> = ({
     item.properties.production_methodology = object as RJSFSchema;
   }
 
-  // Add button to deselect other checkboxes if small or medium
-  useEffect(() => {
-    const checkboxes = document.querySelector(".checkboxes");
-    const div = document.createElement("div");
-    if (
-      ["Small Aggregate", "Medium Facility"].includes(facilityType) &&
-      checkboxes
-    ) {
-      checkboxes.appendChild(div); // Add div to checkbox list
-      const root = createRoot(div); // Make div root for react
-      root.render(<DeselectAllButton />); // Render JSX button
-
-      // The only way I found to avoid adding duplicates on page change with dev remounting
-      setTimeout(() => {
-        const buttons = document.querySelectorAll("#deselectButton");
-        if (buttons.length > 1) {
-          buttons[1].remove();
-        }
-      }, 10);
-    }
-  }, []);
-
   const onSubmit = async (data: any) => {
     /*
       Handle pulp & paper overlapping industrial process exception:
