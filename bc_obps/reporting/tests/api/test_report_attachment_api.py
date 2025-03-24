@@ -3,6 +3,7 @@ from django.core.files.base import ContentFile
 from model_bakery.baker import make_recipe, prepare
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.models.report_attachment import ReportAttachment
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportAttachmentEndpoints(CommonTestSetup):
@@ -87,3 +88,11 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         ]
 
         mock_get_attachments.assert_called_once_with(self.report_version.id)
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated(
+            "get_report_attachments", version_id_param_name="report_version_id"
+        )
+        assert_report_version_ownership_is_validated(
+            "save_report_attachments", method="post", version_id_param_name="report_version_id"
+        )

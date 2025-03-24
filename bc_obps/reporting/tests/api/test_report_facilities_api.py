@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportFacilityListEndpoint(CommonTestSetup):
@@ -39,3 +40,6 @@ class TestReportFacilityListEndpoint(CommonTestSetup):
         assert len(response_json["facilities"]) == 2
         assert response_json["facilities"][0] == "Facility 1"
         assert response_json["facilities"][1] == "Facility 2"
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_report_facility_list_by_version_id")

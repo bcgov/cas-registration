@@ -3,6 +3,7 @@ from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report_activity_data import ReportActivityDataIn
@@ -17,7 +18,7 @@ from .router import router
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Saves the data for an activity report form, for a given report version, facility and activity; returns the id of the ReportActivity record on success.""",
-    auth=authorize('approved_industry_user'),
+    auth=authorize('approved_industry_user', check_version_ownership_in_url("report_version_id")),
 )
 def save_report_activity_data(
     request: HttpRequest,
@@ -40,7 +41,7 @@ def save_report_activity_data(
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Loads the initial data for an activity report form, for a given report version, facility and activity.""",
-    auth=authorize('approved_industry_user'),
+    auth=authorize('approved_industry_user', check_version_ownership_in_url("report_version_id")),
 )
 def load_report_activity_data(
     request: HttpRequest,

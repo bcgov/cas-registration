@@ -2,6 +2,7 @@ from model_bakery import baker
 from unittest.mock import patch, MagicMock, AsyncMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportSupplementaryApi(CommonTestSetup):
@@ -43,3 +44,8 @@ class TestReportSupplementaryApi(CommonTestSetup):
 
         # Assert: Ensure the service method was called with the correct version_id
         mock_create_report_supplementary_version.assert_called_once_with(self.old_report_version.id)
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated(
+            "create_report_supplementary_version", method="post", version_id_param_name="report_version_id"
+        )

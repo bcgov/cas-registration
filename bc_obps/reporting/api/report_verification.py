@@ -1,4 +1,5 @@
 from typing import Literal, Optional
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.models.report_verification import ReportVerification
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -15,7 +16,7 @@ from reporting.service.report_verification_service import ReportVerificationServ
     response={200: Optional[ReportVerificationOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the Verification data associated with the given report version ID.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def get_report_verification_by_version_id(
     request: HttpRequest, report_version_id: int
@@ -28,7 +29,7 @@ def get_report_verification_by_version_id(
     response={200: bool, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Checks if a report needs verification data based on its purpose and attributable emissions.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def get_report_needs_verification(request: HttpRequest, report_version_id: int) -> tuple[Literal[200], bool]:
     return 200, ReportVerificationService.get_report_needs_verification(report_version_id)
@@ -39,7 +40,7 @@ def get_report_needs_verification(request: HttpRequest, report_version_id: int) 
     response={200: ReportVerificationOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Creates or updates the Verification data for the given report version ID.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def save_report_verification(
     request: HttpRequest, report_version_id: int, payload: ReportVerificationIn

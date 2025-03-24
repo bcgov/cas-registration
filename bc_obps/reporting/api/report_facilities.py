@@ -1,6 +1,7 @@
 from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -13,7 +14,7 @@ from reporting.service.report_facilities_service import ReportFacilitiesService
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the facility list for the operation associated with the given report version ID.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def get_report_facility_list_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportFacilitiesService.get_report_facility_list_by_version_id(version_id)

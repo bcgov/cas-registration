@@ -2,6 +2,7 @@ from typing import Literal
 from uuid import UUID
 
 from common.permissions import authorize
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from django.http import HttpRequest
@@ -17,7 +18,7 @@ from ..service.report_facilities_service import ReportFacilitiesService
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the list of selected facilities for a report version""",
     exclude_none=True,
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def get_selected_facilities(request: HttpRequest, report_version_id: int) -> tuple[int, dict]:
     response_data = ReportFacilitiesService.get_all_facilities_for_review(report_version_id)
@@ -29,7 +30,7 @@ def get_selected_facilities(request: HttpRequest, report_version_id: int) -> tup
     response={200: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Saves the list of selected facilities for a report version""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def save_selected_facilities(
     request: HttpRequest,

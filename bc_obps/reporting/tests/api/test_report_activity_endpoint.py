@@ -5,6 +5,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from model_bakery.baker import make_recipe
 
 from registration.utils import custom_reverse_lazy
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportActivityEndpoint(CommonTestSetup):
@@ -174,3 +175,15 @@ class TestReportActivityEndpoint(CommonTestSetup):
                 }
             },
         }
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated(
+            "load_report_activity_data", version_id_param_name="report_version_id", facility_id="uuid", activity_id=0
+        )
+        assert_report_version_ownership_is_validated(
+            "save_report_activity_data",
+            method="post",
+            version_id_param_name="report_version_id",
+            facility_id="uuid",
+            activity_id=0,
+        )

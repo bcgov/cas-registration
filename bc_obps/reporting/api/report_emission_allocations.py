@@ -2,6 +2,7 @@ from typing import Literal
 from uuid import UUID
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.schema.report_product_emission_allocation import (
     ReportProductEmissionAllocationsSchemaIn,
     ReportProductEmissionAllocationsSchemaOut,
@@ -20,7 +21,7 @@ from reporting.service.report_emission_allocation_service import ReportEmissionA
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for product emissions allocations that have been saved for a facility""",
     exclude_none=True,
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def get_emission_allocations(
     request: HttpRequest, report_version_id: int, facility_id: UUID
@@ -35,7 +36,7 @@ def get_emission_allocations(
     response={200: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Saves the data for the allocation of emissions page into multiple ReportProductEmissionAllocation rows""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def save_emission_allocation_data(
     request: HttpRequest,

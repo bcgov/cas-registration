@@ -17,19 +17,21 @@ client = Client()
 #   version_id_param_name: the key containing the report version id in the URL
 #                          example: "submit" for an endpoint "report-version/{version_id}/submit"
 #   role: the user role to test with
+#   **kwargs: Any additional named arguments will be passed to the api endpoint resolver
 #
 def assert_report_version_ownership_is_validated(
-    reverse_api_function_name: str,
+    api_function_name: str,
     method="get",
     version_id_param_name: str = "version_id",
     role: str = "industry_user",
+    **kwargs
 ):
     with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
         "reporting.api.permissions._validate_version_ownership_in_url"
     ) as mock_validate_version_ownership:
         mock_check_permissions.return_value = True
 
-        endpoint = custom_reverse_lazy(reverse_api_function_name, kwargs={version_id_param_name: 1234})
+        endpoint = custom_reverse_lazy(api_function_name, kwargs={version_id_param_name: 1234, **kwargs})
         call_endpoint(client, method, endpoint, role)
 
         mock_validate_version_ownership.assert_called_once()
