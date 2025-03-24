@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock
 from model_bakery.baker import make_recipe
 from registration.models.regulated_product import RegulatedProduct
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportProductEndpoints(CommonTestSetup):
@@ -144,4 +145,12 @@ class TestReportProductEndpoints(CommonTestSetup):
                 }
             ],
             self.user.user_guid,
+        )
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated(
+            "load_production_data", version_id_param_name="report_version_id", facility_id="uuid"
+        )
+        assert_report_version_ownership_is_validated(
+            "save_production_data", method="post", version_id_param_name="report_version_id", facility_id="uuid"
         )

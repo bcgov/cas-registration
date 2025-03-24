@@ -4,6 +4,7 @@ from uuid import UUID
 from django.http import HttpRequest
 
 from common.permissions import authorize
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -22,7 +23,7 @@ from ..service.report_non_attributable_service import ReportNonAttributableServi
     response={200: List[ReportNonAttributableOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns all non-attributable emissions for that report version.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def get_report_non_attributable_by_version_id(
     request: HttpRequest, version_id: int, facility_id: UUID
@@ -41,7 +42,7 @@ def get_report_non_attributable_by_version_id(
     version. If `emissions_exceeded` is `false`, all existing non-attributable emissions data is deleted for the
     specified version and facility. If `emissions_exceeded` is `true`, the provided non-attributable emissions data
     is saved.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def save_report(
     request: HttpRequest, version_id: int, facility_id: UUID, payload: ReportNonAttributableSchema

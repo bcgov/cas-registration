@@ -1,6 +1,7 @@
 from typing import Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.service.report_supplementary_version_service import ReportSupplementaryVersionService
@@ -14,7 +15,7 @@ from .router import router
     tags=EMISSIONS_REPORT_TAGS,
     description="""Creates a new supplementary report version based on an existing submitted report version.
     This endpoint allows the creation of a new draft version of a previously submitted emissions report.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def create_report_supplementary_version(request: HttpRequest, report_version_id: int) -> Tuple[Literal[201], int]:
     report_version = ReportSupplementaryVersionService.create_report_supplementary_version(report_version_id)
