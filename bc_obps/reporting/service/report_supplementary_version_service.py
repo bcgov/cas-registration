@@ -1,5 +1,5 @@
 from django.db import transaction
-from typing import Optional
+from typing import Dict, Optional
 import copy
 from reporting.models import (
     FacilityReport,
@@ -27,6 +27,36 @@ from reporting.models import (
 
 
 class ReportSupplementaryVersionService:
+    @staticmethod
+    def is_initial_submission(report_version_id: int) -> Dict[str, bool]:
+        """
+        Checks if this report version is a supplementary report by determining
+        whether there is any other submitted report version for the same report.
+
+        Args:
+            report_version_id: The unique identifier of the report version.
+
+        Returns:
+            A dictionary indicating whether a supplementary report exists (True if another
+            submitted report exists, False otherwise).
+        """
+        # Retrieve the ReportVersion object for the given report_version_id.
+        report_version = ReportVersion.objects.get(id=report_version_id)
+
+        # Check if there exists any other submitted ReportVersion for the same report.
+        # Exclude the current report_version from the query
+        is_initial_submission: bool = (
+            ReportVersion.objects.filter(
+                report=report_version.report,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+            )
+            .exclude(id=report_version_id)
+            .exists()
+        )
+
+        # Return a dictionary indicating whether another submitted version exists.
+        return {"is_initial_submission": is_initial_submission}
+
     @staticmethod
     @transaction.atomic
     def create_report_supplementary_version(report_version_id: int) -> ReportVersion:
