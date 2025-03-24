@@ -8,6 +8,8 @@ import { operationReviewUiSchema } from "@reporting/src/data/jsonSchema/operatio
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
+import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
+import { buildReviewFacilitiesSchema } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 
 interface Props {
   formData: any;
@@ -25,6 +27,7 @@ export default function OperationReviewForm({
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
+  const [pageSchema, setPageSchema] = useState(schema);
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -58,6 +61,17 @@ export default function OperationReviewForm({
     }
 
     setFormDataState(updatedFormData);
+  };
+
+  const handleSync = async () => {
+    const newData = await getOperationFacilitiesList(version_id);
+    setSchema(
+      buildReviewFacilitiesSchema(
+        newData.current_facilities,
+        newData.past_facilities,
+      ),
+    );
+    setFacilitiesData(newData);
   };
 
   const confirmReportTypeChange = async () => {
@@ -103,8 +117,16 @@ export default function OperationReviewForm({
         initialStep={navigationInformation.headerStepIndex}
         steps={navigationInformation.headerSteps}
         taskListElements={navigationInformation.taskList}
-        schema={schema}
-        uiSchema={operationReviewUiSchema}
+        schema={pageSchema}
+        uiSchema={{
+          ...operationReviewUiSchema,
+          sync_button: {
+            ...operationReviewUiSchema.sync_button,
+            "ui:options": {
+              onSync: handleSync,
+            },
+          },
+        }}
         formData={formDataState}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
