@@ -8,7 +8,6 @@ import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormDat
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
-import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 interface Props {
   versionId: number;
@@ -73,13 +72,9 @@ export default async function ActivityInit({
     }
   }
 
-  // Get facility type for not applicable methodology in LFO small and medium facilities
-  const facilityType = (await getFacilityReportDetails(versionId, facilityId))
-    .facility_type;
-
   const fetchSchema = async () => {
     const schema = await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_type=${facilityType}${sourceTypeQueryString}`,
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
       "GET",
       "",
     );
@@ -98,7 +93,6 @@ export default async function ActivityInit({
       facilityId={facilityId}
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
-      facilityType={facilityType}
     />
   );
 }

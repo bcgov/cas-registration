@@ -4,7 +4,6 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { getActivityInitData } from "@reporting/src/app/utils/getActivityInitData";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
-import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 
 const activityFactoryItem: ReviewDataFactoryItem = async (
   versionId: number,
@@ -42,7 +41,7 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
         versionId,
         activity.id,
         sourceTypeQueryString,
-        facilityType,
+        facilityId,
       ),
     ).schema;
     activityReviewData.push({

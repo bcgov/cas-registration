@@ -11,6 +11,7 @@ export const buildProductionDataSchema = (
   compliance_period_start: string,
   compliance_period_end: string,
   product_selection: string[],
+  production_methodology_options: string[]
 ) =>
   ({
     type: "object",
@@ -72,7 +73,7 @@ export const buildProductionDataSchema = (
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
-            enum: ["Not Applicable", "OBPS Calculator", "other"],
+            enum: production_methodology_options,
             default: "OBPS Calculator",
           },
           storage_quantity_start_of_period: {

@@ -1,13 +1,11 @@
 "use client";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { productionDataUiSchema } from "@reporting/src/data/jsonSchema/productionData";
 import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { NavigationInformation } from "../taskList/types";
-import DeselectAllButton from "./DeselectAllButton";
-import { createRoot } from "react-dom/client";
 
 interface ProductionDataItem {
   properties: {
@@ -63,23 +61,6 @@ const ProductionDataForm: React.FC<Props> = ({
     });
   };
 
-  // If facility type is small or medium, add not applicable as an option to production quantity
-  const modifiedSchema = schema;
-  if (modifiedSchema.definitions) {
-    // From productionData.tsx
-    const object = {
-      title: "Production Quantification Methodology",
-      type: "string",
-      enum: ["OBPS Calculator", "other"],
-      default: "OBPS Calculator",
-    };
-    if (["Small Aggregate", "Medium Facility"].includes(facilityType))
-      object.enum.push("Not Applicable");
-    const item = modifiedSchema.definitions
-      .productionDataItem as ProductionDataItem;
-    item.properties.production_methodology = object as RJSFSchema;
-  }
-
   const onSubmit = async (data: any) => {
     /*
       Handle pulp & paper overlapping industrial process exception:
@@ -114,7 +95,7 @@ const ProductionDataForm: React.FC<Props> = ({
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={modifiedSchema}
+      schema={schema}
       uiSchema={productionDataUiSchema}
       formData={formData}
       baseUrl={"#"}
