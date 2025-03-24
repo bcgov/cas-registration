@@ -1,5 +1,7 @@
 import { ReportingFlow, ReportingPage, TaskListPageFactory } from "../types";
 
+const sfoFlows = new Set([ReportingFlow.SFO, ReportingFlow.NewEntrantSFO]);
+
 export const additionalInformationPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
 } = {
@@ -17,7 +19,7 @@ export const additionalInformationPageFactories: {
       isActive: activePage === ReportingPage.AdditionalReportingData,
     },
     backUrl:
-      reportingFlow === ReportingFlow.SFO
+      reportingFlow && sfoFlows.has(reportingFlow)
         ? `/reports/${reportVersionId}/facilities/${facilityId}/allocation-of-emissions`
         : `/reports/${reportVersionId}/facilities/report-information`,
   }),
