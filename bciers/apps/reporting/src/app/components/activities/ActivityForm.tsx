@@ -14,6 +14,7 @@ import { findPathsWithNegativeNumbers } from "@bciers/utils/src/findInObject";
 import { calculateMobileAnnualAmount } from "@bciers/utils/src/customReportingActivityFormCalculations";
 import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "../taskList/types";
+import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 
 const CUSTOM_FIELDS = {
   fuelType: (props: FieldProps) => <FuelFields {...props} />,
@@ -164,7 +165,7 @@ export default function ActivityForm({
     );
 
     if (response.error) {
-      setErrorList([response.error]);
+      setErrorList([getValidationErrorMessage(response.error)]);
       return false;
     }
     if (response) {
