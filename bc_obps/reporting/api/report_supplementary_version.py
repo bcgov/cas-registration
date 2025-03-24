@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Dict, Literal, Tuple
 from common.permissions import authorize
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
@@ -6,6 +6,17 @@ from reporting.schema.generic import Message
 from reporting.service.report_supplementary_version_service import ReportSupplementaryVersionService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
+
+
+@router.get(
+    "/report-version/{report_version_id}/is-supplementary-report",
+    response={200: dict, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Checks if this report version is a supplementary report version.""",
+    auth=authorize("approved_industry_user"),
+)
+def is_supplementary_report(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], Dict[str, bool]]:
+    return 200, ReportSupplementaryVersionService.is_supplementary_report(report_version_id)
 
 
 @router.post(
