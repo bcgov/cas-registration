@@ -6,6 +6,7 @@ from registration.models import Activity
 from model_bakery import baker
 
 from reporting.schema.facility_report import FacilityReportListInSchema
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestFacilityReportEndpoints(CommonTestSetup):
@@ -17,7 +18,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
 
-        endpoint_under_test = '/api/reporting/report-version/9999/facility-report/00000000-0000-0000-0000-000000000000'
+        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/00000000-0000-0000-0000-000000000000'
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
 
         assert response.status_code == 404
@@ -108,3 +109,12 @@ class TestFacilityReportEndpoints(CommonTestSetup):
                 FacilityReportListInSchema(facility=facility_id_2, is_completed=False),
             ],
         )
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_facility_report_form_data", facility_id="uuid")
+        assert_report_version_ownership_is_validated("get_ordered_facility_report_activities", facility_id="uuid")
+        assert_report_version_ownership_is_validated("save_facility_report", method="post", facility_id="uuid")
+
+        assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
+        assert_report_version_ownership_is_validated("get_facility_report_list")
+        assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")

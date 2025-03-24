@@ -2,6 +2,7 @@ from typing import Literal, Tuple, List, Optional
 from uuid import UUID
 from common.permissions import authorize
 from django.http import HttpRequest
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.facility_report_service import FacilityReportService
@@ -31,7 +32,7 @@ from ..utils import ReportingCustomPagination
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_authorized_roles", check_version_ownership_in_url("version_id")),
 )
 def get_facility_report_form_data(
     request: HttpRequest, version_id: int, facility_id: UUID
@@ -45,7 +46,7 @@ def get_facility_report_form_data(
     response={200: List[FacilityReportActivityDataOut], 404: Message, 400: Message, 500: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a list of activities that apply to that facility, ordered by weight""",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_authorized_roles", check_version_ownership_in_url("version_id")),
 )
 def get_ordered_facility_report_activities(
     request: HttpRequest, version_id: int, facility_id: UUID
@@ -63,7 +64,7 @@ def get_ordered_facility_report_activities(
     description="""Updates the report facility details by version_id and facility_id. The request body should include
     fields to be updated, such as facility name, type, BC GHG ID, activities, and products. Returns the updated report
     facility object or an error message if the update fails.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def save_facility_report(
     request: HttpRequest, version_id: int, facility_id: UUID, payload: FacilityReportIn
@@ -93,7 +94,7 @@ def save_facility_report(
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=authorize("approved_authorized_roles"),
+    auth=authorize("approved_authorized_roles", check_version_ownership_in_url("version_id")),
 )
 def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     facility_report = FacilityReportService.get_facility_report_by_version_id(version_id)
@@ -117,7 +118,7 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their
     details.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 @paginate(ReportingCustomPagination, page_size=10)
 def get_facility_report_list(
@@ -137,7 +138,7 @@ def get_facility_report_list(
     tags=["Emissions Report"],
     description="""Updates facility report details by version_id. The request body should include fields
     to be updated for the respective facility reports.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
 )
 def save_facility_report_list(
     request: HttpRequest, version_id: int, payload: List[FacilityReportListInSchema]

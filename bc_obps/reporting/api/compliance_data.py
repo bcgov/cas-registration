@@ -1,5 +1,6 @@
 from typing import Literal, Tuple
 from django.http import HttpRequest
+from reporting.api.permissions import check_version_ownership_in_url
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
@@ -15,7 +16,7 @@ from common.permissions import authorize
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for the compliance summary page from multiple data sources.""",
     exclude_none=True,
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_industry_user", check_version_ownership_in_url("report_version_id")),
 )
 def get_compliance_summary_data(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], ComplianceData]:
     compliance_data = ComplianceService.get_calculated_compliance_data(report_version_id)
