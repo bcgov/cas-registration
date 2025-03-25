@@ -8,7 +8,6 @@ import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import { IDP } from "@bciers/utils/src/enums";
 import {
-  REPORTING_BASE,
   REPORT_APP_BASE,
   AppRoutes,
   extractReportVersionId,
@@ -24,52 +23,50 @@ import {
  * @param token - The user's authentication token.
  * @returns A response if a redirect is required, otherwise null.
  */
-const checkHasRegisteredOperation = async (
-  request: NextRequest,
-  token: any,
-) => {
+const checkUserStatus = async (request: NextRequest, token: any) => {
   try {
-    // 📏 Rule: Check if the userOperator's operator has a registered operation
-    let response = await fetchResponse(
-      "registration/user-operators/current/has_registered_operation",
-      token.user_guid,
-    );
-    // If required no registered operation, redirect to the onboarding page
-    if (response.has_registered_operation !== true) {
-      // 🛸 Redirect to BCIERS dashboard
-      return NextResponse.redirect(new URL(AppRoutes.ONBOARDING, request.url));
-    }
-    // Check if a reportVersionId is valid
+    // 📏 Extract the report version from the URL
     const { pathname } = request.nextUrl;
     const reportVersionId = extractReportVersionId(pathname);
-    // Check if reportVersionId is a valid number before proceeding
-    if (typeof reportVersionId === "number" && !isNaN(reportVersionId)) {
-      // Check if this reportVersionId is a valid report for this user
-      response = await fetchResponse(
-        `${REPORTING_BASE}/operations`,
-        token.user_guid,
-      );
-      // Extract all valid report_version_id values from the response (ignoring null values)
-      const reportVersionIds = response.items
-        .map((item: { report_version_id: any }) => item.report_version_id)
-        .filter((id: null | undefined) => id !== null && id !== undefined);
 
-      // Validate if the reportVersionId extracted from the URL matches any value from the response
-      const isValidReportVersion = reportVersionIds.includes(reportVersionId);
-      if (!isValidReportVersion) {
-        // 🛸 Redirect to reports grid
+    // 🛸 Make a single API call to validate the user and, if necessary, report version
+    let response = await fetchResponse(
+      `reporting/validate_user?report_version_id=${reportVersionId}`,
+      token.user_guid,
+    );
+
+    // Handle the response statuses
+    switch (response.status) {
+      case "Not Registered":
+        // 🛸 Redirect to onboarding page if the user is not registered
+        return NextResponse.redirect(
+          new URL(AppRoutes.ONBOARDING, request.url),
+        );
+
+      case "Registered and Valid Report Version":
+        // 🛸 Proceed if the report version is valid
+        return null;
+
+      case "Registered and Invalid Report Version":
+        // 🛸 Redirect to the reports grid page if the report version is invalid
         return NextResponse.redirect(
           new URL(`${REPORT_APP_BASE}`, request.url),
         );
-      }
+
+      case "Registered":
+        // 🛸 If no report version is present, just proceed as registered user
+        return null;
+
+      default:
+        // 🛸 Fallback for unexpected statuses
+        return NextResponse.redirect(
+          new URL(AppRoutes.ONBOARDING, request.url),
+        );
     }
   } catch (error) {
-    // 🛸 Redirect to BCIERS dashboard
+    // 🛸 Handle error (e.g., redirect to onboarding in case of failure)
     return NextResponse.redirect(new URL(AppRoutes.ONBOARDING, request.url));
   }
-
-  // 🛸 No redirect required, proceed to the next middleware
-  return null;
 };
 
 /**
@@ -84,7 +81,7 @@ export const withRuleHasRegisteredOperation: MiddlewareFactory = (
     // 📏 Apply industry user-specific routing rules
     if (role === IDP.BCEIDBUSINESS) {
       try {
-        const response = await checkHasRegisteredOperation(request, token);
+        const response = await checkUserStatus(request, token);
         // If a response is returned from the route handler, redirect
         if (response) {
           return response;

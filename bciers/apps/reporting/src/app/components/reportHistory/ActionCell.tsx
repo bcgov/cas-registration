@@ -30,7 +30,7 @@ const ReportHistoryActionCell = ({
         return {
           text: "View Details",
           action: async () =>
-            router.push(`/reports/${reportVersionId}/final-review`),
+            router.push(`/reports/${reportVersionId}/submitted`),
           disabled: false,
         };
       default:
