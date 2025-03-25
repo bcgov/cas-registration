@@ -139,7 +139,6 @@ export interface UserOperatorFormData extends UserFormData {
 export interface UserOperator {
   id: UUID;
   status: UserOperatorStatus;
-  is_new: boolean;
   operatorId: UUID;
   operatorStatus: string;
   operatorLegalName: string;

@@ -13,7 +13,6 @@ export const operatorJSON = {
 export const UserOperatorJSON = {
   id,
   status: UserOperatorStatus.PENDING,
-  is_new: false,
   operatorId: id,
   operatorStatus: "Approved",
   operatorLegalName: operatorLegalName,
