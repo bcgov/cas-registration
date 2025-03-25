@@ -1,57 +1,38 @@
-import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-import { getReportType } from "@reporting/src/app/utils/getReportType";
-import { getRegulatedProducts } from "@bciers/actions/api";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
-import { formatDate } from "@reporting/src/app/utils/formatDate";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
-  ELECTRICITY_IMPORT_OPERATION,
-  POTENTIAL_REPORTING_OPERATION,
-  REPORTING_OPERATION,
-} from "@reporting/src/app/utils/constants";
-import { getNavigationInformation } from "../taskList/navigationInformation";
-import { HeaderStep, ReportingPage } from "../taskList/types";
-import { getFacilityReport } from "../../utils/getFacilityReport";
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
+import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
+import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
 
 export default async function OperationReviewPage({
   version_id,
 }: HasReportVersion) {
   const reportOperation = await getReportingOperation(version_id);
   const facilityReport = await getFacilityReport(version_id);
-  const allActivities = await getAllActivities();
-  const allRegulatedProducts = await getRegulatedProducts();
-  const reportingYear = await getReportingYear();
-  const reportType = await getReportType(version_id);
-
-  const allRepresentatives = reportOperation.report_operation_representatives;
-  const showRegulatedProducts = ![
-    ELECTRICITY_IMPORT_OPERATION,
-    REPORTING_OPERATION,
-    POTENTIAL_REPORTING_OPERATION,
-  ].includes(reportOperation.registration_purpose);
-
-  const reportingWindowEnd = formatDate(
-    reportingYear.reporting_window_end,
-    "MMM DD YYYY",
-  );
-  const schema = buildOperationReviewSchema(
-    reportOperation,
-    reportingWindowEnd,
-    allActivities,
-    allRegulatedProducts,
-    allRepresentatives,
-    reportType,
-    showRegulatedProducts,
-  );
 
   const navigationInformation = await getNavigationInformation(
     HeaderStep.OperationInformation,
     ReportingPage.ReviewOperationInfo,
     version_id,
     facilityReport.facility_id,
+  );
+
+  const params = await getOperationSchemaParameters(version_id);
+  const schema = buildOperationReviewSchema(
+    params.reportOperation,
+    params.reportingWindowEnd,
+    params.allActivities,
+    params.allRegulatedProducts,
+    params.allRepresentatives,
+    params.reportType,
+    params.showRegulatedProducts,
+    params.showBoroId,
   );
 
   return (

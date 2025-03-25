@@ -54,7 +54,7 @@ const allRepresentatives = [
   { id: 70, representative_name: "Bob Brown", selected_for_report: true },
 ];
 
-const reportType = { report_type: "Simple Report" };
+const reportType = "Simple Report";
 const schema = buildOperationReviewSchema(
   formData,
   "Dec 31 2025",
@@ -62,6 +62,7 @@ const schema = buildOperationReviewSchema(
   regulatedProducts,
   allRepresentatives,
   reportType,
+  true,
   true,
 );
 
