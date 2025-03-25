@@ -11,7 +11,7 @@
 3. **Choose Test** - Select the test you are going to run in `/app/tests/perf/[backend/frontend]-load-test.js`.
 
 4. **Local Testing** - Test that it is working correctly by running tests against your local backend server running at `http://127.0.0.1:8000/`.
-   For Reporting load testing in local add **@psql -h localhost -U postgres -d registration -f bciers/apps/reporting/tests/performance/setup/populate_test_data_for_load_testing.sql** in make file to ppopulate load testing data.
+   For Reporting load testing in local add **@psql -h localhost -U postgres -d registration -f bciers/apps/reporting/tests/performance/setup/populate_test_data_for_load_testing.sql** in make file to populate load testing data.
 
    **IMPORTANT**: If running the frontend tests, you will need to disable auth and deploy an image to OpenShift. We implemented a hacky solution and didn't want to merge it into the codebase. You can use this example: [Example Pull Request](https://github.com/bcgov/cas-registration/pull/2924).
 
