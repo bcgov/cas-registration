@@ -27,10 +27,12 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       activity.id,
     );
 
-    const sourceTypeQueryString = Object.entries(initData.sourceTypeMap)
-      .filter(([, v]) => String(v) in formData.sourceTypes)
-      .map(([k]) => `&source_types[]=${k}`)
-      .join("");
+    const sourceTypeQueryString = formData?.soureTypes
+      ? Object.entries(initData.sourceTypeMap)
+          .filter(([, v]) => String(v) in formData.sourceTypes)
+          .map(([k]) => `&source_types[]=${k}`)
+          .join("")
+      : "";
 
     const schema = safeJsonParse(
       await getActivitySchema(versionId, activity.id, sourceTypeQueryString),
