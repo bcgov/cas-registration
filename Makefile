@@ -113,6 +113,13 @@ perf_test_reg_frontend: APP_HOST=http://localhost:3000
 perf_test_reg_frontend:
 	@K6_WEB_DASHBOARD=true k6 -e APP_HOST=$(APP_HOST) run bciers/apps/registration/tests/performance/frontend-load-test.js --out csv=k6_results/test_results_reg_frontend.csv
 
+.PHONY: perf_test_rep_backend
+perf_test_rep_backend: ## run reporting backend performance tests with k6
+perf_test_rep_backend: SERVER_HOST=http://127.0.0.1:8000
+perf_test_rep_backend: SERVER_API_ROUTE=/api/reporting
+perf_test_rep_backend: SERVER_ROUTE=$(SERVER_HOST)$(SERVER_API_ROUTE)
+perf_test_rep_backend:
+	@K6_WEB_DASHBOARD=true k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/reporting/tests/performance/backend-load-test.js --out csv=k6_results/test_results_rep_backend.csv
 
 # include .env.devops
 # .PHONY: bootstrap_terraform
