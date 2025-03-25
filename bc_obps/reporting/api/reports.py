@@ -37,6 +37,7 @@ def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report_version_id
 
+
 @router.post(
     "/update-report",
     response={201: int, custom_codes_4xx: Message},
