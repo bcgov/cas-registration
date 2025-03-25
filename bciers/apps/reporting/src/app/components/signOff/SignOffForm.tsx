@@ -6,10 +6,7 @@ import {
   signOffUiSchema,
 } from "@reporting/src/data/jsonSchema/signOff/signOff";
 import { IChangeEvent } from "@rjsf/core";
-import {
-  SignOffFormData,
-  SignOffFormItems,
-} from "@reporting/src/app/components/signOff/types";
+import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
 import ReportSubmission from "@reporting/src/app/components/signOff/Success";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
@@ -22,14 +19,12 @@ const baseUrl = "/reports";
 const cancelUrl = "/reports";
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
-  initialData: SignOffFormData;
 }
 export default function SignOffForm({
   version_id,
   navigationInformation,
-  initialData,
 }: Props) {
-  const [formState, setFormState] = useState(initialData);
+  const [formState, setFormState] = useState({});
   const [errors, setErrors] = useState<string[]>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);

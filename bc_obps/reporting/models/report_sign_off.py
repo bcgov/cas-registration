@@ -13,25 +13,31 @@ class ReportSignOff(TimeStampedModel):
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
-        related_name="report_sign_offs",
+        related_name="report_sign_off",
         db_comment="The report this sign-off information relates to",
     )
 
     acknowledgement_of_review = models.BooleanField(
         default=False,
-        db_comment="Whether the user has certified that they have reviewed the annual report, and that they have exercised due diligence to ensure that the information included in this report is true and complete.",
+        db_comment="Whether the user has certified that they have reviewed the report, and that they have ensured that the information included in this report is true and complete.",
     )
     acknowledgement_of_records = models.BooleanField(
         default=False,
         db_comment="Whether the user has understood that the information provided in the report may require records from the Operator evidencing the truth of this report.",
     )
     acknowledgement_of_information = models.BooleanField(
-        default=False,
-        db_comment="Whether the user has understood the purpose of the report.",
+        null=True,
+        blank=True,
+        db_comment="Whether the user has understood that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
     )
-    acknowledgement_of_impact = models.BooleanField(
+    acknowledgement_of_possible_costs = models.BooleanField(
         default=False,
-        db_comment="Whether the user has understood that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
+        db_comment="Whether the user has understood that the information provided in this report can impact any compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
+    )
+    acknowledgement_of_new_version = models.BooleanField(
+        null=True,
+        blank=True,
+        db_comment="Whether the user has understood that the sign-off is creating a new report version that will be the report for the reporting or compliance period that it pertains to.",
     )
     signature = models.TextField(
         db_comment="The signature of the user who signed off the report",
@@ -49,12 +55,6 @@ class ReportSignOff(TimeStampedModel):
             "understanding of the report's purpose, and the impact of the information provided. "
             "Also stores the user's signature and the date and time of the sign-off."
         )
-        constraints = [
-            models.UniqueConstraint(
-                fields=["report_version_id"],
-                name="unique_report_sign_off_per_report_version",
-            )
-        ]
         triggers = [
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
