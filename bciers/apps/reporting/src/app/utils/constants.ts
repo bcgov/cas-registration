@@ -7,3 +7,4 @@ export const ELECTRICITY_IMPORT_OPERATION = "Electricity Import Operation";
 export const REPORTING_OPERATION = "Reporting Operation";
 export const POTENTIAL_REPORTING_OPERATION = "Potential Reporting Operation";
 export const SIMPLE_REPORT = "Simple Report";
+export const ANNUAL_REPORT = "Annual Report";
