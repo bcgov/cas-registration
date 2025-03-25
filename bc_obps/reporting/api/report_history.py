@@ -30,7 +30,7 @@ def get_report_history(request: HttpRequest, report_id: int) -> QuerySet[ReportV
 
 
 @router.get(
-    "/report-operation/{report_id}",
+    "/reports/{report_id}/operation",
     response={200: ReportOperationResponse, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the operation details given report.""",

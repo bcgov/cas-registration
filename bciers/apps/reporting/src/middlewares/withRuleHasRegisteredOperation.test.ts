@@ -24,14 +24,18 @@ describe("withRuleHasRegisteredOperation middleware", () => {
     reset(mockedRequest);
   });
 
-  it("redirects industry user to onboarding if no registered operation", async () => {
+  it("redirects industry user to onboarding if not registered", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
     const nextUrl = new NextURL(`${domain}/reporting/reports`);
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    fetch.mockResponseOnce(JSON.stringify({ has_registered_operation: false }));
+    fetch.mockResponseOnce(
+      JSON.stringify({
+        status: "Not Registered",
+      }),
+    );
 
     const middleware = withRuleHasRegisteredOperation(() =>
       NextResponse.next(),
@@ -45,43 +49,17 @@ describe("withRuleHasRegisteredOperation middleware", () => {
     expect(result?.status).toBe(307);
   });
 
-  it("allows industry user to continue if registered operation exists", async () => {
+  it("allows industry user to continue if registered and valid report version", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
     const nextUrl = new NextURL(`${domain}/reporting/reports`);
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    fetch.mockResponseOnce(JSON.stringify({ has_registered_operation: true }));
-    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(null);
-
-    const nextMiddleware = vi.fn(() => NextResponse.next());
-    const middleware = withRuleHasRegisteredOperation(nextMiddleware);
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-
-    expect(nextMiddleware).toHaveBeenCalledOnce();
-    expect(result?.status).toBe(200);
-  });
-
-  it("allows industry user to continue when reportVersionId is valid", async () => {
-    getToken.mockResolvedValue(mockIndustryUserToken);
-
-    const nextUrl = new NextURL(`${domain}/reporting/123`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    // First fetch: has_registered_operation = true
-    fetch.mockResponseOnce(JSON.stringify({ has_registered_operation: true }));
-
-    // ReportVersionId extraction returns 123
-    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(123);
-
-    // Second fetch: the valid report_version_id list
     fetch.mockResponseOnce(
-      JSON.stringify({ items: [{ report_version_id: 123 }] }),
+      JSON.stringify({
+        status: "Registered and Valid Report Version",
+      }),
     );
 
     const nextMiddleware = vi.fn(() => NextResponse.next());
@@ -95,27 +73,16 @@ describe("withRuleHasRegisteredOperation middleware", () => {
     expect(result?.status).toBe(200);
   });
 
-  it("redirects industry user to reports grid if reportVersionId is invalid", async () => {
+  it("redirects industry user to reports grid if registered and invalid report version", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
     const nextUrl = new NextURL(`${domain}/reporting/999`);
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
 
-    // First fetch: has_registered_operation = true
-    fetch.mockResponseOnce(JSON.stringify({ has_registered_operation: true }));
-
-    // ReportVersionId extraction returns 999 (invalid)
-    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(999);
-
-    // Second fetch: valid report_version_ids are 1, 2, 3 (no 999)
     fetch.mockResponseOnce(
       JSON.stringify({
-        items: [
-          { report_version_id: 1 },
-          { report_version_id: 2 },
-          { report_version_id: 3 },
-        ],
+        status: "Registered and Invalid Report Version",
       }),
     );
 
@@ -130,6 +97,51 @@ describe("withRuleHasRegisteredOperation middleware", () => {
     expect(NextResponse.redirect).toHaveBeenCalledWith(
       new URL(constants.REPORT_APP_BASE, domain),
     );
+    expect(result?.status).toBe(307);
+  });
+
+  it("allows industry user to continue if registered without report version", async () => {
+    getToken.mockResolvedValue(mockIndustryUserToken);
+
+    const nextUrl = new NextURL(`${domain}/reporting/reports`);
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    fetch.mockResponseOnce(
+      JSON.stringify({
+        status: "Registered",
+      }),
+    );
+
+    const nextMiddleware = vi.fn(() => NextResponse.next());
+    const middleware = withRuleHasRegisteredOperation(nextMiddleware);
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+
+    expect(nextMiddleware).toHaveBeenCalledOnce();
+    expect(result?.status).toBe(200);
+  });
+
+  it("redirects to onboarding if an error occurs in the user validation", async () => {
+    getToken.mockResolvedValue(mockIndustryUserToken);
+
+    const nextUrl = new NextURL(`${domain}/reporting/reports`);
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    fetch.mockRejectedValueOnce(new Error("API Error"));
+
+    const middleware = withRuleHasRegisteredOperation(() =>
+      NextResponse.next(),
+    );
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(result?.status).toBe(307);
   });
 
