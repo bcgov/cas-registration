@@ -1,4 +1,3 @@
-from reporting.api.permissions import check_version_ownership_in_url
 from service.activity_service import ActivityService
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -7,7 +6,7 @@ from django.http import HttpRequest
 from typing import Tuple
 from uuid import UUID
 from reporting.schema.generic import Message
-
+from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 ##### GET #####
 
@@ -15,7 +14,7 @@ from reporting.schema.generic import Message
 @router.get(
     "/report-version/{version_id}/facility-report/{facility_id}/initial-activity-data",
     response={200: str, custom_codes_4xx: Message},
-    auth=authorize("approved_industry_user", check_version_ownership_in_url("version_id")),
+    auth=approved_industry_user_report_version_composite_auth,
 )
 def get_initial_activity_data(
     request: HttpRequest, version_id: int, facility_id: UUID, activity_id: int

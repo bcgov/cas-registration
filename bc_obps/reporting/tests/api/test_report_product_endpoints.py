@@ -148,9 +148,5 @@ class TestReportProductEndpoints(CommonTestSetup):
         )
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated(
-            "load_production_data", version_id_param_name="report_version_id", facility_id="uuid"
-        )
-        assert_report_version_ownership_is_validated(
-            "save_production_data", method="post", version_id_param_name="report_version_id", facility_id="uuid"
-        )
+        assert_report_version_ownership_is_validated("load_production_data", facility_id="uuid")
+        assert_report_version_ownership_is_validated("save_production_data", method="post", facility_id="uuid")

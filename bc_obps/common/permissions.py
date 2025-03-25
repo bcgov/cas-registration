@@ -20,7 +20,7 @@ def raise_401_if_user_not_authorized(
         - have an authorized app_role
         - if the user's app_role is industry_user, then they must additionally have status = 'Approved' in the user_operator table unless industry_user_must_be_approved is set to False (defaults to True)
     """
-    if not hasattr(request, 'current_user'):
+    if not hasattr(request, "current_user"):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
     user: User = request.current_user
     role_name = getattr(user.app_role, "role_name")
@@ -41,7 +41,7 @@ def raise_401_if_user_not_authorized(
             try:
                 user_operator = (
                     UserOperator.objects.exclude(status=UserOperator.Statuses.DECLINED)
-                    .only('role')
+                    .only("role")
                     .get(user=user.user_guid)
                 )
                 user_operator_role = user_operator.role
@@ -57,7 +57,9 @@ and this is the reason why it is not included in some of the permission configur
 """
 
 
-def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str]], Dict[str, bool]]]:
+def get_permission_configs(
+    permission: str,
+) -> Optional[Union[Dict[str, List[str]], Dict[str, bool]]]:
     """
     Returns the permission configurations for the specified permission.
     :param permission: The permission to get the configuration for.
@@ -73,50 +75,50 @@ def get_permission_configs(permission: str) -> Optional[Union[Dict[str, List[str
     all_industry_user_operator_roles = UserOperator.get_all_industry_user_operator_roles()
     permission_configs: Dict[str, Dict] = {
         "all_roles": {
-            'authorized_app_roles': AppRole.get_all_app_roles(),
-            'authorized_user_operator_roles': all_industry_user_operator_roles,
-            'industry_user_must_be_approved': False,
+            "authorized_app_roles": AppRole.get_all_app_roles(),
+            "authorized_user_operator_roles": all_industry_user_operator_roles,
+            "industry_user_must_be_approved": False,
         },
         "authorized_roles": {
-            'authorized_app_roles': all_authorized_app_roles,
-            'authorized_user_operator_roles': all_industry_user_operator_roles,
-            'industry_user_must_be_approved': False,
+            "authorized_app_roles": all_authorized_app_roles,
+            "authorized_user_operator_roles": all_industry_user_operator_roles,
+            "industry_user_must_be_approved": False,
         },
         "approved_authorized_roles": {
-            'authorized_app_roles': all_authorized_app_roles,
-            'authorized_user_operator_roles': all_industry_user_operator_roles,
+            "authorized_app_roles": all_authorized_app_roles,
+            "authorized_user_operator_roles": all_industry_user_operator_roles,
         },
         "industry_user": {
-            'authorized_app_roles': ["industry_user"],
-            'authorized_user_operator_roles': all_industry_user_operator_roles,
-            'industry_user_must_be_approved': False,
+            "authorized_app_roles": ["industry_user"],
+            "authorized_user_operator_roles": all_industry_user_operator_roles,
+            "industry_user_must_be_approved": False,
         },
         "approved_industry_user": {
-            'authorized_app_roles': ["industry_user"],
-            'authorized_user_operator_roles': all_industry_user_operator_roles,
+            "authorized_app_roles": ["industry_user"],
+            "authorized_user_operator_roles": all_industry_user_operator_roles,
         },
         "approved_industry_admin_user": {
-            'authorized_app_roles': ["industry_user"],
-            'authorized_user_operator_roles': ["admin"],
+            "authorized_app_roles": ["industry_user"],
+            "authorized_user_operator_roles": ["admin"],
         },
         "authorized_irc_user_and_industry_admin_user": {
-            'authorized_app_roles': all_authorized_app_roles,
-            'authorized_user_operator_roles': ["admin"],
+            "authorized_app_roles": all_authorized_app_roles,
+            "authorized_user_operator_roles": ["admin"],
         },
         "authorized_irc_user": {
-            'authorized_app_roles': AppRole.get_authorized_irc_roles(),
+            "authorized_app_roles": AppRole.get_authorized_irc_roles(),
         },
         "cas_director": {
-            'authorized_app_roles': list(
+            "authorized_app_roles": list(
                 AppRole.objects.filter(role_name="cas_director").values_list("role_name", flat=True)
             )
         },
         "cas_director_analyst_and_industry_admin_user": {
-            'authorized_app_roles': ["cas_director", "cas_analyst", "industry_user"],
-            'authorized_user_operator_roles': ["admin"],
+            "authorized_app_roles": ["cas_director", "cas_analyst", "industry_user"],
+            "authorized_user_operator_roles": ["admin"],
         },
         "cas_analyst": {
-            'authorized_app_roles': list(
+            "authorized_app_roles": list(
                 AppRole.objects.filter(role_name="cas_analyst").values_list("role_name", flat=True)
             ),
         },
@@ -151,7 +153,6 @@ def authorize(
         "authorized_irc_user_and_industry_admin_user",
         "cas_analyst",
     ],
-    *args: Callable[[HttpRequest], bool],
 ) -> Callable[[HttpRequest], bool]:
     """
     Returns an authentication function that checks if the user has the specified permission, and an arbitrary amount of extra checks.
@@ -168,6 +169,13 @@ def authorize(
     def check_permission(
         request: HttpRequest,
     ) -> bool:  # This function must return a boolean to work with django-ninja `auth`.
-        return check_permission_for_role(request, permission) and all(validator(request) for validator in args)
+        return check_permission_for_role(request, permission)
 
     return check_permission
+
+
+def compose_auth(*args: Callable[[HttpRequest], bool]) -> Callable[[HttpRequest], bool]:
+    def validate_all(request: HttpRequest) -> bool:
+        return all(auth_function(request) for auth_function in args)
+
+    return validate_all

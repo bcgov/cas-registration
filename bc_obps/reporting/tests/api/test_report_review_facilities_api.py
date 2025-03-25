@@ -33,7 +33,7 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_selected_facilities",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
         assert response.status_code == 200
@@ -58,15 +58,11 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
             payload,
             custom_reverse_lazy(
                 "save_selected_facilities",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
         assert response.status_code == 200
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated(
-            "get_selected_facilities", version_id_param_name="report_version_id"
-        )
-        assert_report_version_ownership_is_validated(
-            "save_selected_facilities", method="post", version_id_param_name="report_version_id"
-        )
+        assert_report_version_ownership_is_validated("get_selected_facilities")
+        assert_report_version_ownership_is_validated("save_selected_facilities", method="post")

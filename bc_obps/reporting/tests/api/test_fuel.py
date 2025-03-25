@@ -1,9 +1,5 @@
-from django.test import Client
-import pytest
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
-pytestmark = pytest.mark.django_db
-client = Client()
 endpoint = "/api/reporting/fuel"
 
 

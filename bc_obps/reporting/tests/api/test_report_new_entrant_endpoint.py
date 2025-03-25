@@ -44,7 +44,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_new_entrant_data",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -120,7 +120,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_new_entrant_data",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -226,7 +226,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
             payload.dict(),  # Pass the payload directly as it's already a dictionary
             custom_reverse_lazy(
                 "save_new_entrant_data",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -234,7 +234,5 @@ class TestNewEntrantDataApi(CommonTestSetup):
         assert response.status_code == 200
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("get_new_entrant_data", version_id_param_name="report_version_id")
-        assert_report_version_ownership_is_validated(
-            "save_new_entrant_data", method="post", version_id_param_name="report_version_id"
-        )
+        assert_report_version_ownership_is_validated("get_new_entrant_data")
+        assert_report_version_ownership_is_validated("save_new_entrant_data", method="post")

@@ -26,7 +26,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
 
         # Act: Authorize user and perform POST request
         endpoint_under_test = "create_report_supplementary_version"
-        endpoint_under_test_kwargs = {"report_version_id": self.old_report_version.id}
+        endpoint_under_test_kwargs = {"version_id": self.old_report_version.id}
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -46,6 +46,4 @@ class TestReportSupplementaryApi(CommonTestSetup):
         mock_create_report_supplementary_version.assert_called_once_with(self.old_report_version.id)
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated(
-            "create_report_supplementary_version", method="post", version_id_param_name="report_version_id"
-        )
+        assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
