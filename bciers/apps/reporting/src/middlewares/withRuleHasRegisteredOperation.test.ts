@@ -15,6 +15,20 @@ const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
 vi.spyOn(NextResponse, "redirect");
 
+const setupRequestMock = (url: string) => {
+  const nextUrl = new NextURL(url);
+  when(mockedRequest.nextUrl).thenReturn(nextUrl);
+  when(mockedRequest.url).thenReturn(domain);
+};
+
+const mockFetchResponse = (status: string) => {
+  fetch.mockResponseOnce(
+    JSON.stringify({
+      status,
+    }),
+  );
+};
+
 describe("withRuleHasRegisteredOperation middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -27,15 +41,8 @@ describe("withRuleHasRegisteredOperation middleware", () => {
   it("redirects industry user to onboarding if not registered", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const nextUrl = new NextURL(`${domain}/reporting/reports`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        status: "Not Registered",
-      }),
-    );
+    setupRequestMock(`${domain}/reporting/reports`);
+    mockFetchResponse("Not Registered");
 
     const middleware = withRuleHasRegisteredOperation(() =>
       NextResponse.next(),
@@ -52,15 +59,8 @@ describe("withRuleHasRegisteredOperation middleware", () => {
   it("allows industry user to continue if registered and valid report version", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const nextUrl = new NextURL(`${domain}/reporting/reports`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        status: "Registered and Valid Report Version",
-      }),
-    );
+    setupRequestMock(`${domain}/reporting/reports`);
+    mockFetchResponse("Registered and Valid Report Version");
 
     const nextMiddleware = vi.fn(() => NextResponse.next());
     const middleware = withRuleHasRegisteredOperation(nextMiddleware);
@@ -76,15 +76,8 @@ describe("withRuleHasRegisteredOperation middleware", () => {
   it("redirects industry user to reports grid if registered and invalid report version", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const nextUrl = new NextURL(`${domain}/reporting/999`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        status: "Registered and Invalid Report Version",
-      }),
-    );
+    setupRequestMock(`${domain}/reporting/999`);
+    mockFetchResponse("Registered and Invalid Report Version");
 
     const middleware = withRuleHasRegisteredOperation(() =>
       NextResponse.next(),
@@ -103,15 +96,8 @@ describe("withRuleHasRegisteredOperation middleware", () => {
   it("allows industry user to continue if registered without report version", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const nextUrl = new NextURL(`${domain}/reporting/reports`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    fetch.mockResponseOnce(
-      JSON.stringify({
-        status: "Registered",
-      }),
-    );
+    setupRequestMock(`${domain}/reporting/reports`);
+    mockFetchResponse("Registered");
 
     const nextMiddleware = vi.fn(() => NextResponse.next());
     const middleware = withRuleHasRegisteredOperation(nextMiddleware);
@@ -127,10 +113,7 @@ describe("withRuleHasRegisteredOperation middleware", () => {
   it("redirects to onboarding if an error occurs in the user validation", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
 
-    const nextUrl = new NextURL(`${domain}/reporting/reports`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
+    setupRequestMock(`${domain}/reporting/reports`);
     fetch.mockRejectedValueOnce(new Error("API Error"));
 
     const middleware = withRuleHasRegisteredOperation(() =>
@@ -148,9 +131,7 @@ describe("withRuleHasRegisteredOperation middleware", () => {
   it("allows CAS user to continue without validation", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
 
-    const nextUrl = new NextURL(`${domain}/reporting/reports`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
+    setupRequestMock(`${domain}/reporting/reports`);
 
     const nextMiddleware = vi.fn(() => NextResponse.next());
     const middleware = withRuleHasRegisteredOperation(nextMiddleware);
