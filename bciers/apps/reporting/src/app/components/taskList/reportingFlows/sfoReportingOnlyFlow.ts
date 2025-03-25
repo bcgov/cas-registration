@@ -4,18 +4,13 @@ export const sfoReportingOnlyFlow: ReportingFlowDescription = {
   [HeaderStep.OperationInformation]: [
     ReportingPage.ReviewOperationInfo,
     ReportingPage.PersonResponsible,
-    ReportingPage.ReviewFacilities,
   ],
   [HeaderStep.ReportInformation]: [
     ReportingPage.Activities,
     ReportingPage.NonAttributableEmission,
     ReportingPage.EmissionSummary,
-    ReportingPage.EndOfReport,
   ],
-  [HeaderStep.AdditionalInformation]: [
-    ReportingPage.AdditionalReportingData,
-    ReportingPage.OperationEmissionSummary,
-  ],
+  [HeaderStep.AdditionalInformation]: [ReportingPage.AdditionalReportingData],
   [HeaderStep.SignOffSubmit]: [
     ReportingPage.FinalReview,
     ReportingPage.Verification,

@@ -66,26 +66,29 @@ export async function getNavigationInformation(
 
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
-  const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
-
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
+  const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
+
+  // Original pages array from flowData
   const pages = flowData[step] as ReportingPage[];
 
-  // build pages from the factories, skipping the ones
-  const tasklistPages = (
-    await Promise.all(
-      pages.map(async (p) => {
-        return pageElementFactory(
-          p,
-          page,
-          reportVersionId,
-          facilityId,
-          context,
-        );
-      }),
-    )
-  ).filter((p) => !p.extraOptions?.skip);
+  // Build tasklistPages from the factories
+  const tasklistPagesTemp = await Promise.all(
+    pages.map(async (p) =>
+      pageElementFactory(p, page, reportVersionId, facilityId, context),
+    ),
+  );
+
+  // Remove corresponding pages where tasklistPagesTemp has extraOptions.skip === true
+  for (let i = tasklistPagesTemp.length - 1; i >= 0; i--) {
+    if (tasklistPagesTemp[i].extraOptions?.skip) {
+      pages.splice(i, 1);
+    }
+  }
+
+  // Filter tasklistPages when element has extraOptions.skip === true
+  const tasklistPages = tasklistPagesTemp.filter((p) => !p.extraOptions?.skip);
 
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);

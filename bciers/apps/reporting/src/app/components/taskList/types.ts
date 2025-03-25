@@ -86,6 +86,7 @@ export interface TaskListPageFactoryContext {
   orderedActivities?: ActivityData[];
   currentActivity?: ActivityData;
   skipVerification?: boolean;
+  returnToFacilitiesTable?: boolean;
 }
 
 type SyncTaskListPageFactory = (

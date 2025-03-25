@@ -25,7 +25,7 @@ export default async function FacilityReviewPage({
     version_id,
     facility_id,
     {
-      facilityName: facilityData?.facilityName,
+      facilityName: facilityData?.facility_name,
       orderedActivities: orderedActivities,
     },
   );
