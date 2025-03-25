@@ -82,7 +82,7 @@ class TestReportAdditionalDataApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_report_additional_data_by_version_id",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -90,7 +90,5 @@ class TestReportAdditionalDataApi(CommonTestSetup):
         mock_get_report_additional_data.assert_called_once_with(self.report_version.id)
 
     def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated(
-            "get_report_additional_data_by_version_id", version_id_param_name="report_version_id"
-        )
+        assert_report_version_ownership_is_validated("get_report_additional_data_by_version_id")
         assert_report_version_ownership_is_validated("save_report_additional_data", method="post")

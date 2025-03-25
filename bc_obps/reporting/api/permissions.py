@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import Callable
+from common.permissions import authorize, compose_auth
 from django.http import HttpRequest
 from registration.models.operation import Operation
 from registration.models.user_operator import UserOperator
@@ -74,3 +75,11 @@ def check_operation_ownership() -> Callable[[HttpRequest], bool]:
         return _validate_operation_ownership(request)
 
     return validate_func
+
+
+approved_industry_user_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
+    authorize("approved_industry_user"), check_version_ownership_in_url("version_id")
+)
+approved_authorized_roles_report_version_composite_auth: Callable[[HttpRequest], bool] = compose_auth(
+    authorize("approved_authorized_roles"), check_version_ownership_in_url("version_id")
+)
