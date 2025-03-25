@@ -135,6 +135,6 @@ describe("reportHistoryColumns function", () => {
     render(<WrapperComponent />);
     await user.click(screen.getByText("View Details"));
 
-    expect(mockPush).toHaveBeenCalledWith(`/reports/1/final-review`);
+    expect(mockPush).toHaveBeenCalledWith(`/reports/1/submitted`);
   });
 });
