@@ -18,8 +18,8 @@ class UserStatusEnum(Enum):
     REGISTERED_AND_INVALID = "Registered and Invalid Report Version"
 
 
-@router.get("/validate_user", response=UserStatusResponse)
-def validate_user(request: HttpRequest, report_version_id: Optional[str] = Query(None)) -> dict:
+@router.get("/validate_user_report_version", response=UserStatusResponse)
+def validate_user_report_version(request: HttpRequest, report_version_id: Optional[str] = Query(None)) -> dict:
     status, has_registered_operation = get_current_user_operator_has_registered_operation(request)
 
     if not has_registered_operation:

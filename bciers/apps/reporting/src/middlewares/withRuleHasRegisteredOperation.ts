@@ -31,7 +31,7 @@ const checkUserStatus = async (request: NextRequest, token: any) => {
 
     // 🛸 Make a single API call to validate the user and, if necessary, report version
     let response = await fetchResponse(
-      `reporting/validate_user?report_version_id=${reportVersionId}`,
+      `reporting/validate_user_report_version?report_version_id=${reportVersionId}`,
       token.user_guid,
     );
 
