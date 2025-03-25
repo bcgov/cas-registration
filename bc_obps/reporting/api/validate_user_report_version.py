@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Optional
+from common.permissions import authorize
 
 from ninja import Query
 from django.http import HttpRequest
@@ -18,7 +19,7 @@ class UserStatusEnum(Enum):
     REGISTERED_AND_INVALID = "Registered and Invalid Report Version"
 
 
-@router.get("/validate_user_report_version", response=UserStatusResponse)
+@router.get("/validate_user_report_version", response=UserStatusResponse, auth=authorize("approved_industry_user"))
 def validate_user_report_version(request: HttpRequest, report_version_id: Optional[str] = Query(None)) -> dict:
     status, has_registered_operation = get_current_user_operator_has_registered_operation(request)
 
