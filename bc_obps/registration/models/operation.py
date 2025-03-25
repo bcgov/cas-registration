@@ -200,17 +200,6 @@ class Operation(TimeStampedModel):
 
     Rls = OperationRls
 
-    def get_statutory_declaration(self) -> Optional[Document]:
-        """
-        Returns the statutory declaration associated with the operation.
-        """
-
-        return (
-            self.documents.filter(type=DocumentType.objects.get(name="signed_statutory_declaration"))
-            .only('file', 'status')
-            .first()
-        )  # filter returns a queryset, so we use .first() to get the single record (there will only ever be one statutory declaration per operation)
-
     def get_new_entrant_application(self) -> Optional[Document]:
         """
         Returns the new entrant application document associated with the operation (document only exists if the operation has registered as a New Entrant).
@@ -287,13 +276,6 @@ class Operation(TimeStampedModel):
         from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
 
         generate_unique_bcghg_id_for_operation_or_facility(self, user_guid)
-
-    @property
-    def current_designated_operator(self) -> Operator:
-        """
-        Returns the current designated operator of the operation.
-        """
-        return self.designated_operators.get(end_date__isnull=True).operator
 
     @property
     def is_regulated_operation(self) -> bool:
