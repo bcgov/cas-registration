@@ -19,6 +19,7 @@ export default function RequestAccessButton({
 }: Readonly<RequestAccessButtonProps>) {
   const router = useRouter();
   const [errorList, setErrorList] = useState([] as any[]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const label = isAdminRequest
     ? "Request administrator access"
@@ -29,9 +30,11 @@ export default function RequestAccessButton({
   }`;
 
   const handleRequestAccess = async () => {
+    setIsSubmitting(true);
     const response = await actionHandler(endpointUrl, "POST", "");
     if (response.error) {
       setErrorList([{ message: response.error }]);
+      setIsSubmitting(false);
       return;
     }
     // admin vs. subsequent access request conditionality handled in component: select-operator/(request-access)/received/[step]/[id]
@@ -55,6 +58,7 @@ export default function RequestAccessButton({
         color="primary"
         variant="contained"
         onClick={async () => handleRequestAccess()}
+        disabled={isSubmitting}
       >
         {label}
       </Button>

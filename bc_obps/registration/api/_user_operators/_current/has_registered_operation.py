@@ -28,7 +28,7 @@ def get_current_user_operator_has_registered_operation(request: HttpRequest) -> 
         operator = UserDataAccessService.get_operator_by_user(current_user_guid)
         # Check if user has access to the operator(We use this endpoint for dashboard tiles too)
         # If user does not have access to the operator, we don't need to check for registered operation
-        if not UserDataAccessService.user_has_access_to_operator(current_user_guid, operator.id):
+        if not operator.user_has_access(current_user_guid):
             return 200, {"has_registered_operation": False}
         # Use the service to check if the operator has a registered operation
         has_registered_operation = OperationDataAccessService.check_current_users_registered_operation(operator.id)
