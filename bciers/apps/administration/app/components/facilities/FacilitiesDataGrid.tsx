@@ -9,6 +9,7 @@ import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { GridRenderCellParams } from "@mui/x-data-grid";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import { useSearchParams } from "next/navigation";
 const FacilitiesDataGrid = ({
@@ -34,6 +35,8 @@ const FacilitiesDataGrid = ({
       },
       cellText: "View Details",
       useWindowLocation: true,
+      IconComponent: OpenInNewIcon,
+      openInNewTab: true,
     });
   const ActionCell = useMemo(() => createFacilitiesActionCell(), []);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
