@@ -119,7 +119,6 @@ perf_test_rep_backend: SERVER_HOST=http://127.0.0.1:8000
 perf_test_rep_backend: SERVER_API_ROUTE=/api/reporting
 perf_test_rep_backend: SERVER_ROUTE=$(SERVER_HOST)$(SERVER_API_ROUTE)
 perf_test_rep_backend:
-	@psql -h localhost -U postgres -d registration -f bciers/apps/reporting/tests/performance/setup/populate_test_data_for_load_testing.sql
 	@K6_WEB_DASHBOARD=true k6 -e SERVER_HOST=$(SERVER_ROUTE) run bciers/apps/reporting/tests/performance/backend-load-test.js --out csv=k6_results/test_results_rep_backend.csv
 
 # include .env.devops

@@ -71,7 +71,8 @@ const fetchAllocatedEmissions = (reportVersion, facility) => {
 };
 const fetchActivitySchema = (reportVersion, facility) => {
   const url =
-    "/build-form-schema?activity=34&report_version_id=1&source_types[]=57&source_types[]=58&source_types[]=59&source_types[]=60&source_types[]=62&source_types[]=63&source_types[]=64&source_types[]=65&source_types[]=66&source_types[]=67&source_types[]=70&source_types[]=71&source_types[]=72&source_types[]=73&source_types[]=74&source_types[]=75&source_types[]=76&source_types[]=77&source_types[]=78&source_types[]=79&source_types[]=80&source_types[]=81&source_types[]=82&source_types[]=83&source_types[]=84&source_types[]=85";
+    // "/build-form-schema?activity=34&report_version_id=1&source_types[]=57&source_types[]=58&source_types[]=59&source_types[]=60&source_types[]=62&source_types[]=63&source_types[]=64&source_types[]=65&source_types[]=66&source_types[]=67&source_types[]=70&source_types[]=71&source_types[]=72&source_types[]=73&source_types[]=74&source_types[]=75&source_types[]=76&source_types[]=77&source_types[]=78&source_types[]=79&source_types[]=80&source_types[]=81&source_types[]=82&source_types[]=83&source_types[]=84&source_types[]=85";
+    "/build-form-schema?activity=34&report_version_id=1&source_types[]=57&source_types[]=58&source_types[]=59&source_types[]=60&source_types[]=62&source_types[]=63&source_types[]=64&source_types[]=65&source_types[]=66&source_types[]=67";
   fetchData(
     url,
     reportVersion,

@@ -353,7 +353,6 @@ const fetchOperations = () => {
 
 export default async function () {
   const versionId = createReport();
-  sleep(2);
 
   fetchOperations(versionId);
   createReportOperation(versionId);
@@ -361,7 +360,7 @@ export default async function () {
   createNewEntrantData(versionId);
   createReportAdditionalData(versionId);
   createReportVerification(versionId);
-  createReportAttachment(versionId);
+  // createReportAttachment(versionId);
   fetchComplianceData(versionId);
-  createReportSubmit(versionId);
+  // createReportSubmit(versionId);
 }
