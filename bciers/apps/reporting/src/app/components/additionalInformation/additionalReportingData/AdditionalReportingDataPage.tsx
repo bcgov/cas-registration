@@ -4,8 +4,12 @@ import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAddit
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { REGULATED_OPERATION_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { getNavigationInformation } from "../../taskList/navigationInformation";
-import { HeaderStep, ReportingPage } from "../../taskList/types";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export function transformReportAdditionalData(reportAdditionalData: any) {
   const captureType = [];
@@ -44,12 +48,15 @@ export default async function AdditionalReportingDataPage({
 
   const transformedData = transformReportAdditionalData(reportAdditionalData);
   const facilityReport = await getFacilityReport(version_id);
-
   const navInfo = await getNavigationInformation(
     HeaderStep.AdditionalInformation,
     ReportingPage.AdditionalReportingData,
     version_id,
     facilityReport?.facility_id,
+    {
+      returnToFacilitiesTable:
+        facilityReport.operation_type === OperationTypes.LFO,
+    },
   );
 
   return (
