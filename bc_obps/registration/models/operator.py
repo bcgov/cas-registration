@@ -117,10 +117,15 @@ class Operator(TimeStampedModel):
     def __str__(self) -> str:
         return f"{self.legal_name} ({self.id})"
 
-
     def user_has_access(self, user_guid: uuid.UUID) -> bool:
         """
         Returns whether a user has access to the operator
         """
         from registration.models import UserOperator
-        return self.user_operators.only('user__user_guid').filter(user_id=user_guid, status=UserOperator.Statuses.APPROVED).exclude(role=UserOperator.Roles.PENDING).exists()
+
+        return (
+            self.user_operators.only('user__user_guid')
+            .filter(user_id=user_guid, status=UserOperator.Statuses.APPROVED)
+            .exclude(role=UserOperator.Roles.PENDING)
+            .exists()
+        )
