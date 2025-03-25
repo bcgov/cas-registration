@@ -10,13 +10,13 @@ from registration.models import UserOperator
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 
 # "current" refers to the current user-operator (we look up the current user-operator via the current user)
-# We don't need a user_operator_id parameter (using "pending" instead) because we can look up the user_operator via the user data we receive in the middleware
+# We don't need a user_operator_id parameter (using "current" instead) because we can look up the user_operator via the user data we receive in the middleware
 # This endpoint retrieves data about both the user-operator and the operator.
 @router.get(
     "/user-operators/current",
     response={200: CurrentUserOperatorOut, custom_codes_4xx: Message},
     tags=USER_OPERATOR_TAGS,
-    description="""Retrieves data about the pending user-operator and their associated operator.
+    description="""Retrieves data about the user-operator and their associated operator regardless of approval status.
     Declined user-operators are excluded from the results.""",
     auth=authorize("industry_user"),
 )
