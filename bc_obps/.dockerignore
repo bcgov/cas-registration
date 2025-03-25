@@ -1,7 +1,48 @@
+# Python and Poetry-related files
 .venv
-.git
-.gitignore
-.vscode
+env/
 **/__pycache__
 **/*.pyc
+*.pyo
+*.pyd
+.Python
 python_cache
+#.env
+#*.env
+#.env.example
+
+# Django-specific exclusions
+*.log
+staticfiles/
+media/
+
+# asdf-related exclusions
+.asdf/
+
+# Git and version control
+.git
+.gitignore
+
+# Development and testing files
+.vscode
+**/tests
+*.pytest_cache/
+pytest.ini
+.coveragerc
+.coverage
+htmlcov/
+test_*.py
+mypy.ini
+bandit.yaml
+
+# Miscellaneous
+Makefile
+*.md
+Dockerfile
+docker-compose.yml
+*.swp
+*.bak
+*.tmp
+node_modules/  # If you have any frontend dependencies
+dist/
+build/
