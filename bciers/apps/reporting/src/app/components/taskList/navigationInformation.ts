@@ -66,48 +66,41 @@ export async function getNavigationInformation(
 
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
-  const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
-
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
+  const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
+
+  // Original pages array from flowData
   const pages = flowData[step] as ReportingPage[];
 
-  // build pages from the factories, skipping the ones
-  const tasklistPages = (
-    await Promise.all(
-      pages.map(async (p) => {
-        return pageElementFactory(
-          p,
-          page,
-          reportVersionId,
-          facilityId,
-          context,
-        );
-      }),
-    )
-  ).filter((p) => !p.extraOptions?.skip);
+  // Build tasklistPages from the factories
+  const tasklistPagesTemp = await Promise.all(
+    pages.map(async (p) =>
+      pageElementFactory(p, page, reportVersionId, facilityId, context),
+    ),
+  );
+
+  // Remove corresponding pages where tasklistPagesTemp has extraOptions.skip === true
+  for (let i = tasklistPagesTemp.length - 1; i >= 0; i--) {
+    if (tasklistPagesTemp[i].extraOptions?.skip) {
+      pages.splice(i, 1);
+    }
+  }
+
+  // Filter tasklistPages when element has extraOptions.skip === true
+  const tasklistPages = tasklistPagesTemp.filter((p) => !p.extraOptions?.skip);
 
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);
   const taskListHeaders = taskListHeaderPages.map((tlp) => tlp.element);
   const taskList = taskListNonHeaderPages.map((tlp) => tlp.element);
 
-  // Determine the index of the current page from the filtered tasklistPages array.
-  // First, try to find the active page (assuming each factory sets an isActive flag).
-  let pageIndex = tasklistPages.findIndex((task) => task.element.isActive);
-
-  // If no tasklist page is marked active, fall back to finding the index
-  // in the original pages array.
-  if (pageIndex === -1) {
-    pageIndex = pages.indexOf(page);
-    if (pageIndex === -1) {
-      // The current page wasn't found in either the filtered list or the original flow,
-      // so throw an error.
-      throw new Error(
-        `Page ${page} was not found in this reporting flow, unable to generate the appropriate tasklist and navigation.`,
-      );
-    }
-  }
+  const pageIndex = pages.indexOf(page);
+  if (pageIndex === -1)
+    // The current page wasn't found in the flow's step
+    throw new Error(
+      `Page ${page} was not found in this reporting flow, unable to generate the appropriate tasklist and navigation.`,
+    );
 
   // find forward and back links
   // - either from the current page factory itself
