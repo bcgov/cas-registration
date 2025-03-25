@@ -7,9 +7,9 @@ env/
 *.pyd
 .Python
 python_cache
-#.env
-#*.env
-#.env.example
+.env
+*.env
+.env.example
 
 # Django-specific exclusions
 *.log
