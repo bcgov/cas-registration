@@ -235,6 +235,7 @@ describe("the OperationInformationForm component", () => {
                 "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
               boundary_map:
                 "data:application/pdf;name=testpdf.pdf;scanstatus=Clean;base64,ZHVtbXk=",
+              operation_has_multiple_operators: false,
             }),
           },
         );
