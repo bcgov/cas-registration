@@ -5,6 +5,7 @@ import { HasFacilityId } from "@reporting/src/app/utils/defaultPageFactoryTypes"
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 
 export default async function FacilityEmissionAllocationPage({
   version_id,
@@ -16,6 +17,10 @@ export default async function FacilityEmissionAllocationPage({
   );
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const initialData = await getEmissionAllocations(version_id, facility_id);
+  const operationType = tasklistData?.operationType;
+  // Get facility type for not applicable methodology in LFO small and medium facilities
+  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
+    .facility_type;
 
   const navInfo = await getNavigationInformation(
     HeaderStep.ReportInformation,
@@ -35,6 +40,8 @@ export default async function FacilityEmissionAllocationPage({
       orderedActivities={orderedActivities}
       initialData={initialData}
       navigationInformation={navInfo}
+      operationType={operationType}
+      facilityType={facilityType}
     />
   );
 }
