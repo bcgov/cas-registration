@@ -224,3 +224,9 @@ class UserOperatorService:
         user_operator.save(update_fields=["status", "verified_at", "verified_by_id", "role"])
 
         return user_operator
+
+    @classmethod
+    def delete_user_operator(cls, user_guid: UUID, user_operator_id: UUID) -> None:
+        cls.check_if_user_eligible_to_access_user_operator(user_guid, user_operator_id)
+        UserOperator.objects.filter(id=user_operator_id).delete()
+        return None

@@ -125,10 +125,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_current_operator_from_user_operator",
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_report_attachments",
             "kwargs": {"report_version_id": MOCK_INT},
         },
@@ -294,12 +290,12 @@ ENDPOINTS = {
     "industry_user": [
         {
             "method": "get",
-            "endpoint_name": "get_user_operator_access_declined",
-            "kwargs": {"operator_id": MOCK_UUID},
+            "endpoint_name": "get_current_operator_from_user_operator",
         },
         {
             "method": "get",
-            "endpoint_name": "get_pending_operator_and_user_operator",
+            "endpoint_name": "get_user_operator_access_declined",
+            "kwargs": {"operator_id": MOCK_UUID},
         },
         {
             "method": "get",
@@ -320,6 +316,7 @@ ENDPOINTS = {
             "kwargs": {"operator_id": MOCK_UUID},
         },
         {"method": "post", "endpoint_name": "create_operator_and_user_operator"},
+        {"method": "delete", "endpoint_name": "delete_user_operator", "kwargs": {"user_operator_id": MOCK_UUID}},
     ],
     "approved_industry_admin_user": [
         {

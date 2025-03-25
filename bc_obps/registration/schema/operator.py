@@ -1,5 +1,4 @@
 from typing import List, Optional
-from uuid import UUID
 from registration.models.partner_operator import PartnerOperator
 from registration.schema import (
     PartnerOperatorIn,
@@ -203,15 +202,3 @@ class OperatorExternalDashboardUsersTileData(ModelSchema):
     class Meta:
         model = Operator
         fields = ["legal_name"]
-
-
-class OperatorFromUserOperatorOut(ModelSchema):
-    """
-    Schema for the Operator associated with a UserOperator
-    """
-
-    operator_id: UUID = Field(..., alias="id")
-
-    class Meta:
-        model = Operator
-        fields = ["status"]

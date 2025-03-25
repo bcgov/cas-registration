@@ -1,6 +1,7 @@
 const getAccessRequests = vi.fn();
 const handleAccessRequestStatus = vi.fn();
 const getUserOperatorFormData = vi.fn();
+const getCurrentUserOperator = vi.fn();
 
 vi.mock(
   "apps/administration/app/components/userOperators/getUserOperatorFormData",
@@ -17,6 +18,13 @@ vi.mock(
 );
 
 vi.mock(
+  "apps/administration/app/components/userOperators/getCurrentUserOperator",
+  () => ({
+    default: getCurrentUserOperator,
+  }),
+);
+
+vi.mock(
   "apps/administration/app/components/userOperators/cells/handleAccessRequestStatus",
   () => ({
     default: handleAccessRequestStatus,
@@ -24,7 +32,8 @@ vi.mock(
 );
 
 export {
-  getAccessRequests,
-  handleAccessRequestStatus,
   getUserOperatorFormData,
+  getAccessRequests,
+  getCurrentUserOperator,
+  handleAccessRequestStatus,
 };
