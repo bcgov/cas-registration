@@ -27,7 +27,7 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       activity.id,
     );
 
-    const sourceTypeQueryString = formData?.soureTypes
+    const sourceTypeQueryString = formData?.sourceTypes
       ? Object.entries(initData.sourceTypeMap)
           .filter(([, v]) => String(v) in formData.sourceTypes)
           .map(([k]) => `&source_types[]=${k}`)
