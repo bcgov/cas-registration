@@ -18,6 +18,7 @@ const FacilitiesDataGrid = ({
   operationName,
   initialData,
   sx,
+  fromRegistration,
 }: {
   disabled?: boolean;
   operationId: string;
@@ -27,6 +28,7 @@ const FacilitiesDataGrid = ({
     row_count: number;
   };
   sx?: { [key: string]: any };
+  fromRegistration?: boolean;
 }) => {
   const searchParams = useSearchParams();
   const operationsTitle =
@@ -34,12 +36,17 @@ const FacilitiesDataGrid = ({
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
-        return `/administration/operations/${operationId}/facilities/${params.row.facility__id}?operations_title=${operationsTitle}&facilities_title=${params.row.facility__name}`;
+        return `/administration/operations/${operationId}/facilities/${
+          params.row.facility__id
+        }?operations_title=${operationsTitle}&facilities_title=${
+          params.row.facility__name
+        }${fromRegistration ? "&from_registration=true" : ""}`;
       },
       cellText: "View Details",
       useWindowLocation: true,
-      IconComponent: OpenInNewIcon,
+      IconComponent: <OpenInNewIcon fontSize="small" />,
       openInNewTab: true,
+      tooltipText: "Link opens in a new tab",
     });
   const ActionCell = useMemo(() => createFacilitiesActionCell(), []);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
