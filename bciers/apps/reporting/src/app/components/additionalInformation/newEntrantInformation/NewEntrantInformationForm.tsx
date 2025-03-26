@@ -3,10 +3,8 @@
 import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { actionHandler } from "@bciers/actions";
-import {
-  NewEntrantSchema,
-  NewEntrantUiSchema,
-} from "@reporting/src/data/jsonSchema/newEntrantInformation";
+import { newEntrantUiSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformation";
+import { newEntrantSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformationSchema";
 import { IChangeEvent } from "@rjsf/core";
 import { NavigationInformation } from "../../taskList/types";
 
@@ -55,8 +53,8 @@ export default function NewEntrantInformationForm({
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={NewEntrantSchema}
-      uiSchema={NewEntrantUiSchema}
+      schema={newEntrantSchema}
+      uiSchema={newEntrantUiSchema}
       formData={formData}
       backUrl={navigationInformation.backUrl}
       onChange={handleChange}

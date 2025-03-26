@@ -60,3 +60,28 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
     `Unable to resolve reporting flow for registration purpose ${registrationPurpose.registration_purpose} and operation type ${operationType}`,
   );
 }
+
+/**
+ * Retrieves the ReportingFlowDescription corresponding to the report version.
+ * It calls getFlow to get the ReportingFlow and then uses that key to look up
+ * the appropriate description from the reportingFlows mapping.
+ *
+ * @param reportVersionId - The ID of the report version.
+ * @returns A Promise that resolves to a ReportingFlowDescription.
+ * @throws Error if no mapping is found for the determined flow.
+ */
+export async function getFlowData(
+  reportVersionId: number,
+): Promise<ReportingFlowDescription> {
+  // Determine the flow for the provided report version ID.
+  const flow = await getFlow(reportVersionId);
+  // Retrieve the corresponding ReportingFlowDescription from the mapping.
+  const flowData = reportingFlows[flow] as ReportingFlowDescription;
+
+  // If no description is found, throw an error.
+  if (!flowData) {
+    throw new Error(`No ReportingFlowDescription found for flow: ${flow}`);
+  }
+
+  return flowData;
+}
