@@ -4,7 +4,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from reporting.service.report_submission_service import ReportSubmissionService
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
+from reporting.service.report_sign_off_service import ReportSignOffData
 import uuid
 
 from reporting.service.report_validation.report_validation_error import ReportValidationError, Severity
@@ -30,7 +30,6 @@ class TestReportSubmissionService:
         # Arrange
         version_id = 1
         user_guid = uuid.uuid4()
-        mock_validate_report_version.return_value = {}
 
         # Create a fake Report instance object
         fake_report = MagicMock()
@@ -47,15 +46,13 @@ class TestReportSubmissionService:
         mock_filter_instance = MagicMock()
         mock_filter.return_value = mock_filter_instance
 
-        fake_sign_off_data = ReportSignOffIn(
-            acknowledgements=ReportSignOffAcknowledgements(
-                acknowledgement_of_review=True,
-                acknowledgement_of_records=True,
-                acknowledgement_of_information=True,
-                acknowledgement_of_possible_costs=True,
-                acknowledgement_of_new_version=None,
-                acknowledgement_of_corrections=None,
-            ),
+        fake_sign_off_data = ReportSignOffData(
+            acknowledgement_of_review=True,
+            acknowledgement_of_records=True,
+            acknowledgement_of_information=True,
+            acknowledgement_of_possible_costs=True,
+            acknowledgement_of_new_version=None,
+            acknowledgement_of_corrections=None,
             signature="signature",
         )
 
