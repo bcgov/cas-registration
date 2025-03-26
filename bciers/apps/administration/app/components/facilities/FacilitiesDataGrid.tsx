@@ -15,11 +15,13 @@ import { useSearchParams } from "next/navigation";
 const FacilitiesDataGrid = ({
   disabled,
   operationId,
+  operationName,
   initialData,
   sx,
 }: {
   disabled?: boolean;
   operationId: string;
+  operationName: string;
   initialData: {
     rows: FacilityRow[];
     row_count: number;
@@ -27,7 +29,8 @@ const FacilitiesDataGrid = ({
   sx?: { [key: string]: any };
 }) => {
   const searchParams = useSearchParams();
-  const operationsTitle = searchParams.get("operations_title") as string;
+  const operationsTitle =
+    (searchParams.get("operations_title") as string) || operationName;
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
