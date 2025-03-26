@@ -40,6 +40,7 @@ from .naics_regulatory_value import NaicsRegulatoryValue
 from .product_emission_intensity import ProductEmissionIntensity
 from .report_product_emission_allocation import ReportProductEmissionAllocation
 from .report_operation_representative import ReportOperationRepresentative
+from .report_sign_off import ReportSignOff
 
 __all__ = [
     "ReportDataBaseModel",
@@ -81,4 +82,5 @@ __all__ = [
     "ProductEmissionIntensity",
     "ReportProductEmissionAllocation",
     "ReportOperationRepresentative",
+    "ReportSignOff",
 ]

@@ -64,6 +64,7 @@ class TestReportVersionService:
             "ReportProduct",
             "ReportProductEmissionAllocation",
             "ReportRawActivityData",
+            "ReportSignOff",
             "ReportSourceType",
             "ReportUnit",
             "ReportOperationRepresentative",

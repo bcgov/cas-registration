@@ -59,6 +59,7 @@ class ReportVersionTest(BaseTestCase):
                 None,
                 None,
             ),
+            ("report_sign_off", "report sign off", None, None),
         ]
 
     def test_unique_draft_version_per_report(self):

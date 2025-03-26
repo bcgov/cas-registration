@@ -1,4 +1,5 @@
 from uuid import UUID
+from reporting.schema.report_sign_off import ReportSignOffIn
 from common.api.utils.current_user_utils import get_current_user_guid
 from common.permissions import authorize
 from django.http import HttpRequest
@@ -16,7 +17,7 @@ from .router import router
     description="""Submits a report version""",
     auth=authorize("approved_industry_user"),
 )
-def submit_report_version(request: HttpRequest, version_id: int) -> int:
+def submit_report_version(request: HttpRequest, version_id: int, payload: ReportSignOffIn) -> int:
     user_guid: UUID = get_current_user_guid(request)
-    ReportSubmissionService.submit_report(version_id, user_guid)
+    ReportSubmissionService.submit_report(version_id, user_guid, payload)
     return version_id
