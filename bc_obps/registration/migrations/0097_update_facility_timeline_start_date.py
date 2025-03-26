@@ -13,7 +13,10 @@ Purpose: Update the start_date of each FacilityDesignatedOperationTimeline recor
 
 def update_facility_designated_operation_timeline_start_date(apps, schema_editor):
     FacilityDesignatedOperationTimeline = apps.get_model("registration", "FacilityDesignatedOperationTimeline")
-    FacilityDesignatedOperationTimeline.objects.update(start_date = datetime(2024, 1, 1, tzinfo=ZoneInfo("UTC")))  # January 1, 2024
+    FacilityDesignatedOperationTimeline.objects.update(
+        start_date=datetime(2024, 1, 1, tzinfo=ZoneInfo("UTC"))
+    )  # January 1, 2024
+
 
 class Migration(migrations.Migration):
 
@@ -22,5 +25,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code=update_facility_designated_operation_timeline_start_date, reverse_code=migrations.RunPython.noop, elidable=True),
+        migrations.RunPython(
+            code=update_facility_designated_operation_timeline_start_date,
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
+        ),
     ]
