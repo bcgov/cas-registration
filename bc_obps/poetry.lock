@@ -264,7 +264,7 @@ description = "Cross-platform colored terminal text."
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 groups = ["dev"]
-markers = "sys_platform == \"win32\" or platform_system == \"Windows\""
+markers = "platform_system == \"Windows\" or sys_platform == \"win32\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -510,6 +510,17 @@ files = [
 
 [package.dependencies]
 phonenumbers = "*"
+
+[[package]]
+name = "django-querycount"
+version = "0.8.3"
+description = "Middleware that Prints the number of DB queries to the runserver console."
+optional = false
+python-versions = "*"
+groups = ["dev"]
+files = [
+    {file = "django-querycount-0.8.3.tar.gz", hash = "sha256:0782484e8a1bd29498fa0195a67106e47cdcc98fafe80cebb1991964077cb694"},
+]
 
 [[package]]
 name = "django-silk"
@@ -2101,4 +2112,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "1bd3e3c16a50bab2dd5355839201211feb6b9ea8ca77520d9b71b681993ae29d"
+content-hash = "94d28baf1cff096cc6fea66e691b996cd6a464c393aa09efb6f57888e3d87459"
