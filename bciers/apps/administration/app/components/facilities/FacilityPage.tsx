@@ -11,6 +11,7 @@ import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/src/enums";
 import { getOperation } from "@bciers/actions/api";
+import Note from "@bciers/components/layout/Note";
 
 // 🧩 Main component
 export default async function Facility({
@@ -50,11 +51,18 @@ export default async function Facility({
   }
 
   return (
-    <FacilityForm
-      schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
-      uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
-      formData={facilityFormData}
-      isCreating={isCreating}
-    />
+    <>
+      {/* TODO: add logic so this is rendered conditionally */}
+      <Note variant="important">
+        This link has opened in a new tab. To go back to the previous page,
+        close this tab.
+      </Note>
+      <FacilityForm
+        schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
+        uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
+        formData={facilityFormData}
+        isCreating={isCreating}
+      />
+    </>
   );
 }
