@@ -58,10 +58,7 @@ const checkUserStatus = async (request: NextRequest, token: any) => {
         return null;
 
       default:
-        // 🛸 Fallback for unexpected statuses
-        return NextResponse.redirect(
-          new URL(AppRoutes.ONBOARDING, request.url),
-        );
+        return null;
     }
   } catch (error) {
     // 🛸 Handle error (e.g., redirect to onboarding in case of failure)
