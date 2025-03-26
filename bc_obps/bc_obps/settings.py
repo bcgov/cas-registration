@@ -130,6 +130,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
+    # django-querycount is hard coded to work only in DEBUG mode set to true
+    'querycount.middleware.QueryCountMiddleware',
 ]
 
 if DEBUG:  # DEV only apps
@@ -235,3 +237,13 @@ NINJA_PAGINATION_PER_PAGE = 20
 # Bypass CSRF protection in development(for admin login page only)
 if not DEBUG and ENVIRONMENT == "dev":
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}"]
+
+
+# DJANGO-QUERYCOUNT SETTINGS
+# Repo: https://github.com/bradmontgomery/django-querycount
+QUERYCOUNT = {
+    # define a list of regexp patterns that get applied to each request's path. If there is a match, the middleware will not be applied to that request
+    'IGNORE_REQUEST_PATTERNS': [r'^/admin/', r'^/static/', r'^/silk/'],
+    # define a list of regexp patterns that ignored to statistic sql query count
+    'IGNORE_SQL_PATTERNS': [r'silk_'],
+}
