@@ -53,10 +53,13 @@ export default async function Facility({
   return (
     <>
       {/* TODO: add logic so this is rendered conditionally */}
-      <Note variant="important">
-        This link has opened in a new tab. To go back to the previous page,
-        close this tab.
-      </Note>
+      {console.log("fromRegistration", fromRegistration)}
+      {fromRegistration && (
+        <Note variant="important">
+          This link has opened in a new tab. To go back to the previous page,
+          close this tab.
+        </Note>
+      )}
       <FacilityForm
         schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
         uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}

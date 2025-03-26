@@ -94,6 +94,7 @@ const FacilityInformationForm = ({
         operationId={operationId}
         operationName={operationName}
         sx={FacilityGridSx}
+        fromRegistration={true}
       />
     ),
     [initialGridData, isSubmitting, operationId, operationName],
