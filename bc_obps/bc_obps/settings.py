@@ -130,8 +130,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'simple_history.middleware.HistoryRequestMiddleware',
-    # django-querycount is hard coded to work only in DEBUG mode set to true
-    'querycount.middleware.QueryCountMiddleware',
 ]
 
 if DEBUG:  # DEV only apps
@@ -140,6 +138,8 @@ if DEBUG:  # DEV only apps
     INSTALLED_APPS.append("silk")
     MIDDLEWARE.insert(0, "silk.middleware.SilkyMiddleware")
     SILKY_META = True
+    # DJANGO QUERY COUNT
+    MIDDLEWARE.append("querycount.middleware.QueryCountMiddleware")
 
 ROOT_URLCONF = "bc_obps.urls"
 
