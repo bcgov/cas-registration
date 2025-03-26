@@ -1,7 +1,6 @@
 from uuid import UUID
 from django.core.exceptions import ObjectDoesNotExist
-from reporting.service.report_sign_off_service import ReportSignOffService
-from reporting.schema.report_sign_off import ReportSignOffIn
+from reporting.service.report_sign_off_service import ReportSignOffData, ReportSignOffService
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_version import ReportVersion
@@ -44,7 +43,7 @@ class ReportSubmissionService:
             raise Exception("verification_statement")
 
     @staticmethod
-    def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffIn) -> ReportVersion:
+    def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffData) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
         ReportSubmissionService.validate_report(version_id)

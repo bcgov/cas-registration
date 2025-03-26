@@ -4,7 +4,7 @@ from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_submission_service import ReportSubmissionService
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
+from reporting.service.report_sign_off_service import ReportSignOffData
 import uuid
 
 
@@ -122,14 +122,12 @@ class TestReportSubmissionService:
         mock_filter_instance = MagicMock()
         mock_filter.return_value = mock_filter_instance
 
-        fake_sign_off_data = ReportSignOffIn(
-            acknowledgements=ReportSignOffAcknowledgements(
-                acknowledgement_of_review=True,
-                acknowledgement_of_records=True,
-                acknowledgement_of_information=True,
-                acknowledgement_of_possible_costs=True,
-                acknowledgement_of_new_version=None,
-            ),
+        fake_sign_off_data = ReportSignOffData(
+            acknowledgement_of_review=True,
+            acknowledgement_of_records=True,
+            acknowledgement_of_information=True,
+            acknowledgement_of_possible_costs=True,
+            acknowledgement_of_new_version=None,
             signature="signature",
         )
 

@@ -1,4 +1,5 @@
 from uuid import UUID
+from reporting.service.report_sign_off_service import ReportSignOffData
 from reporting.schema.report_sign_off import ReportSignOffIn
 from common.api.utils.current_user_utils import get_current_user_guid
 from django.http import HttpRequest
@@ -19,5 +20,13 @@ from .router import router
 )
 def submit_report_version(request: HttpRequest, version_id: int, payload: ReportSignOffIn) -> int:
     user_guid: UUID = get_current_user_guid(request)
-    ReportSubmissionService.submit_report(version_id, user_guid, payload)
+    data = ReportSignOffData(
+        acknowledgement_of_possible_costs=payload.acknowledgement_of_possible_costs,
+        acknowledgement_of_records=payload.acknowledgement_of_records,
+        acknowledgement_of_review=payload.acknowledgement_of_review,
+        acknowledgement_of_information=payload.acknowledgement_of_information,
+        acknowledgement_of_new_version=payload.acknowledgement_of_new_version,
+        signature=payload.signature,
+    )
+    ReportSubmissionService.submit_report(version_id, user_guid, data)
     return version_id
