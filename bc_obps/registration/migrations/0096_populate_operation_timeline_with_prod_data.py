@@ -14,12 +14,11 @@ def populate_operation_timeline_table_with_existing_data(apps, schema_editor):
     Operation = apps.get_model("registration", "Operation")
     OperationDesignatedOperatorTimeline = apps.get_model("registration", "OperationDesignatedOperatorTimeline")
 
-
     for operation in Operation.objects.all():
         OperationDesignatedOperatorTimeline.objects.create(
             operation=operation,
             operator=operation.operator,
-            start_date = datetime(2024, 1, 1, tzinfo=ZoneInfo("UTC"))  # January 1, 2024
+            start_date=datetime(2024, 1, 1, tzinfo=ZoneInfo("UTC")),  # January 1, 2024
         )
 
 
@@ -30,5 +29,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(code=populate_operation_timeline_table_with_existing_data, reverse_code=migrations.RunPython.noop, elidable=True),
+        migrations.RunPython(
+            code=populate_operation_timeline_table_with_existing_data,
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
+        ),
     ]

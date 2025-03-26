@@ -15,8 +15,9 @@ REQUIRED_ENV = {
     'ENVIRONMENT': 'prod',
     'DB_NAME': PROD_DB_NAME,
     'DB_USER': PROD_DB_USER,
-    'DEBUG': None  # Explicitly unset DEBUG
+    'DEBUG': None,  # Explicitly unset DEBUG
 }
+
 
 class Command(BaseCommand):
     """
@@ -27,6 +28,7 @@ class Command(BaseCommand):
     - DB_USER=registration
     - DEBUG= (unset)
     """
+
     help = 'Syncs the latest PROD data to the local environment and runs migrations'
 
     def __init__(self, *args, **kwargs):
@@ -60,20 +62,13 @@ class Command(BaseCommand):
         """Create database and schemas with appropriate privileges."""
         self.stdout.write('Creating database and schemas...')
         self._execute_command(['createdb', PROD_DB_NAME])
-        self._execute_command([
-            'psql', '-d', PROD_DB_NAME, '-c',
-            f'GRANT ALL ON DATABASE {PROD_DB_NAME} TO {PROD_DB_USER}'
-        ])
+        self._execute_command(
+            ['psql', '-d', PROD_DB_NAME, '-c', f'GRANT ALL ON DATABASE {PROD_DB_NAME} TO {PROD_DB_USER}']
+        )
 
         for schema in SCHEMA_NAMES:
-            self._execute_command([
-                'psql', '-d', PROD_DB_NAME, '-c',
-                f'CREATE SCHEMA IF NOT EXISTS {schema}'
-            ])
-            self._execute_command([
-                'psql', '-d', PROD_DB_NAME, '-c',
-                f'GRANT ALL ON SCHEMA {schema} TO {PROD_DB_USER}'
-            ])
+            self._execute_command(['psql', '-d', PROD_DB_NAME, '-c', f'CREATE SCHEMA IF NOT EXISTS {schema}'])
+            self._execute_command(['psql', '-d', PROD_DB_NAME, '-c', f'GRANT ALL ON SCHEMA {schema} TO {PROD_DB_USER}'])
 
     def _cleanup(self) -> None:
         """Clean up temporary files and database."""
@@ -109,10 +104,7 @@ class Command(BaseCommand):
             # Setup database
             self._create_database_and_schemas()
             # We need this extension since it is used in the migrations
-            self._execute_command([
-                'psql', '-d', PROD_DB_NAME, '-c',
-                'CREATE EXTENSION IF NOT EXISTS btree_gist'
-            ])
+            self._execute_command(['psql', '-d', PROD_DB_NAME, '-c', 'CREATE EXTENSION IF NOT EXISTS btree_gist'])
 
             # Restore and migrate
             self.stdout.write('Restoring database and running migrations...')
