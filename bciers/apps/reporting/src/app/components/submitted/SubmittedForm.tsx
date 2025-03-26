@@ -12,12 +12,12 @@ interface Props {
 const SubmittedForm: React.FC<Props> = ({ data }) => {
   const router = useRouter();
   return (
-    <div className="flex flex-col gap-4 items-start">
+    <div className="flex flex-col gap-6">
       <FinalReviewForms data={data} />
       <Button
         variant="outlined"
         onClick={() => router.push(baseUrlReports)}
-        sx={{ width: "auto" }}
+        sx={{ width: "10px" }}
       >
         Back
       </Button>
