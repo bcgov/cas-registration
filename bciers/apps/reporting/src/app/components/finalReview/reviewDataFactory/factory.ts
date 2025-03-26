@@ -3,6 +3,7 @@ import operationReviewFactoryItem from "./operationReviewFactoryItem";
 import personResponsibleFactoryItem from "./personResponsibleFactoryItem";
 import facilityActivitiesFactoryItem from "./facilityActivitiesFactoryItem";
 import additionalReportingDataFactoryItem from "./additionalReportingDataFactoryItem";
+import newEntrantInformationFactoryItem from "./newEntrantInformationFactoryItem";
 import complianceSummaryFactoryItem from "./complianceSummaryFactoryItem";
 import operationEmissionSummaryFactoryItem from "./operationEmissionSummaryFactoryItem";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
@@ -41,6 +42,7 @@ export default async function reviewDataFactory(
     [ReportingPage.PersonResponsible]: personResponsibleFactoryItem,
     [ReportingPage.Activities]: facilityActivitiesFactoryItem,
     [ReportingPage.AdditionalReportingData]: additionalReportingDataFactoryItem,
+    [ReportingPage.NewEntrantInformation]: newEntrantInformationFactoryItem,
     [ReportingPage.OperationEmissionSummary]:
       operationEmissionSummaryFactoryItem,
     [ReportingPage.ComplianceSummary]: complianceSummaryFactoryItem,
@@ -48,6 +50,7 @@ export default async function reviewDataFactory(
 
   let reviewData: ReviewData[] = [];
   // Iterate over the provided flow's header steps and their associated pages
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const [headerStep, pages] of Object.entries(flow)) {
     for (const page of pages) {
       const factoryFn = factoryMapping[page];

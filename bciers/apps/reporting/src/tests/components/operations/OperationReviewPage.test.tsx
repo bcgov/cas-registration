@@ -37,7 +37,7 @@ vi.mock(
 
 describe("OperationReviewPage", () => {
   it("renders OperationReviewForm with correct props", async () => {
-    const version_id = 1;
+    const reportVersion = { version_id: 1 };
 
     // Fake data returned by the mocks
     const fakeReportOperation = { foo: "bar" };
@@ -65,28 +65,32 @@ describe("OperationReviewPage", () => {
     (buildOperationReviewSchema as any).mockReturnValue(fakeSchema);
 
     // Call the page
-    const result = await OperationReviewPage({ version_id });
+    const result = await OperationReviewPage(reportVersion);
 
     // Verify that the returned element is an OperationReviewForm with the expected props
     expect(result).toBeDefined();
     expect(result.type).toBe(OperationReviewForm);
     expect(result.props.formData).toEqual(fakeReportOperation);
-    expect(result.props.version_id).toEqual(version_id);
+    expect(result.props.version_id).toEqual(reportVersion.version_id);
     expect(result.props.schema).toEqual(fakeSchema);
     expect(result.props.navigationInformation).toEqual(
       fakeNavigationInformation,
     );
 
     // Verify that the dependent functions were called with the expected parameters
-    expect(getReportingOperation).toHaveBeenCalledWith(version_id);
-    expect(getFacilityReport).toHaveBeenCalledWith(version_id);
+    expect(getReportingOperation).toHaveBeenCalledWith(
+      reportVersion.version_id,
+    );
+    expect(getFacilityReport).toHaveBeenCalledWith(reportVersion.version_id);
     expect(getNavigationInformation).toHaveBeenCalledWith(
       HeaderStep.OperationInformation,
       ReportingPage.ReviewOperationInfo,
-      version_id,
+      reportVersion.version_id,
       fakeFacilityReport.facility_id,
     );
-    expect(getOperationSchemaParameters).toHaveBeenCalledWith(version_id);
+    expect(getOperationSchemaParameters).toHaveBeenCalledWith(
+      reportVersion.version_id,
+    );
     expect(buildOperationReviewSchema).toHaveBeenCalledWith(
       fakeParams.reportOperation,
       fakeParams.reportingWindowEnd,

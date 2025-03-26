@@ -10,6 +10,7 @@ import { customizeValidator } from "@rjsf/validator-ajv8";
 import finalReviewTheme from "@reporting/src/app/components/finalReview/formCustomization/finalReviewTheme";
 import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 import { complianceSummaryUiSchema } from "@reporting/src/data/jsonSchema/complianceSummary";
+import { newEntrantUiSchema } from "@reporting/src/data/jsonSchema/newEntrantInformation/newEntrantInformation";
 
 // These uiSchemas need to be loaded on the client side, they contain interactive, stateful components.
 const finalReviewSchemaMap: { [key: string]: any } = {
@@ -20,6 +21,7 @@ const finalReviewSchemaMap: { [key: string]: any } = {
   additionalReportingData: additionalReportingDataUiSchema,
   operationEmissionSummary: emissionSummaryUiSchema,
   complianceSummary: complianceSummaryUiSchema,
+  newEntrantUiSchema: newEntrantUiSchema,
 };
 
 const resolveUiSchema = (uiSchema: any) => {
