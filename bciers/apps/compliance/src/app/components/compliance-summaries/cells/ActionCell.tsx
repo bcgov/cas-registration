@@ -9,7 +9,7 @@ const ActionCell = (params: GridRenderCellParams) => {
 
   const cell = ActionCellFactory({
     generateHref: (p: { row: ComplianceSummary }) =>
-      `/compliance-summaries/${p.row.id}`,
+      `/compliance-summaries/${p.row.id}/review-compliance-summary`,
     cellText: cellText,
   });
 

@@ -30,6 +30,7 @@ interface Props {
   pageSize?: number;
   rowSelection?: boolean;
   noDataMessage?: JSX.Element | string;
+  hideFooter?: boolean;
 }
 
 const AscendingIcon = () => {
@@ -57,6 +58,7 @@ const DataGrid: React.FC<Props> = ({
   pageSize,
   rowSelection,
   noDataMessage,
+  hideFooter = false,
 }) => {
   const PAGE_SIZE = pageSize ? pageSize : 20;
   const [rows, setRows] = useState(initialData.rows ?? []);
@@ -231,6 +233,7 @@ const DataGrid: React.FC<Props> = ({
         sx={gridStyles}
         disableVirtualization
         rowSelection={rowSelection}
+        hideFooter={hideFooter}
       />
     </div>
   );
