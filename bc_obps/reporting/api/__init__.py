@@ -1,6 +1,8 @@
 # ruff: noqa: F401
 from .router import router
 from .reports import start_report
+from .report_history import get_report_history
+from .report_history import get_report_operation
 from .build_form_schema import build_form_schema
 from .operations import get_dashboard_operations_list
 from .activity_data import get_initial_activity_data
@@ -34,3 +36,4 @@ from .report_review_facilties import get_selected_facilities
 from .report_additional_data import get_report_additional_data_by_version_id
 from .report_additional_data import save_report_additional_data
 from .report_supplementary_version import create_report_supplementary_version
+from .validate_user_report_version import validate_user_report_version
