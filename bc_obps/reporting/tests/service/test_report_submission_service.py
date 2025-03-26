@@ -4,9 +4,11 @@ from reporting.models.report_verification import ReportVerification
 from reporting.models.report_attachment import ReportAttachment
 from reporting.service.report_submission_service import ReportSubmissionService
 from reporting.models.report_version import ReportVersion
+from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
 import uuid
 
 
+@pytest.mark.django_db
 class TestReportSubmissionService:
     @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
@@ -88,6 +90,7 @@ class TestReportSubmissionService:
         mock_get_verification.assert_called_once_with(report_version_id=version_id)
         mock_get_attachment.assert_not_called()
 
+    @patch("reporting.service.report_sign_off_service.ReportSignOffService.save_report_sign_off")
     @patch("reporting.service.report_submission_service.report_submitted.send")
     @patch("reporting.models.report_version.ReportVersion.objects.filter")
     @patch("reporting.models.report_version.ReportVersion.objects.get")
@@ -98,6 +101,7 @@ class TestReportSubmissionService:
         mock_get,
         mock_filter,
         mock_signal_send,
+        mock_save_report_sign_off,
     ):
         # Arrange
         version_id = 1
@@ -105,6 +109,7 @@ class TestReportSubmissionService:
 
         # Create a fake Report instance object
         fake_report = MagicMock()
+        fake_report.id = 1
         fake_report_version = MagicMock()
         fake_report_version.report = fake_report
         fake_report_version.is_latest_submitted = False
@@ -117,11 +122,25 @@ class TestReportSubmissionService:
         mock_filter_instance = MagicMock()
         mock_filter.return_value = mock_filter_instance
 
+        fake_sign_off_data = ReportSignOffIn(
+            acknowledgements=ReportSignOffAcknowledgements(
+                acknowledgement_of_review=True,
+                acknowledgement_of_records=True,
+                acknowledgement_of_information=True,
+                acknowledgement_of_possible_costs=True,
+                acknowledgement_of_new_version=None,
+            ),
+            signature="signature",
+        )
+
         # Act: Call submit_report.
-        result = ReportSubmissionService.submit_report(version_id, user_guid)
+        result = ReportSubmissionService.submit_report(version_id, user_guid, fake_sign_off_data)
 
         # Assert that validate_report was called.
         mock_validate_report.assert_called_once_with(version_id)
+
+        # Assert that save_report_sign_off was called with the correct parameters.
+        mock_save_report_sign_off.assert_called_once_with(version_id, fake_sign_off_data)
 
         # Assert that ReportVersion was fetched with the correct version_id.
         mock_get.assert_called_once_with(id=version_id)

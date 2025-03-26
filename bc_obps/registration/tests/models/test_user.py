@@ -170,6 +170,9 @@ class UserModelTest(BaseTestCase):
             ("elicensinglink_created", "e licensing link", None, None),
             ("elicensinglink_updated", "e licensing link", None, None),
             ("elicensinglink_archived", "e licensing link", None, None),
+            ("reportsignoff_created", "report sign off", None, None),
+            ("reportsignoff_updated", "report sign off", None, None),
+            ("reportsignoff_archived", "report sign off", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
