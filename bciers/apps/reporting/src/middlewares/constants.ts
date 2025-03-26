@@ -91,7 +91,7 @@ export const reportRoutesLFO = [
 ];
 
 // App routes for submitted report
-export const reportRoutesSubmitted = ["submitted"];
+export const reportRoutesSubmitted = ["submitted", "submission"];
 
 // App routes restricted to New Entrant
 export const restrictedRoutesNewEntrant = ["new-entrant-information"];
