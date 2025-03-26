@@ -1,11 +1,11 @@
 ---
 name: User Story Template
-about:
-  User stories are broken down product backlog items that are user-focused and
+about: User stories are broken down product backlog items that are user-focused and
   vertically-sliced.
-title: ""
+title: ''
 labels: Backlog Refinement, User Story
-assignees: ""
+assignees: ''
+
 ---
 
 #### Description:
@@ -42,6 +42,7 @@ Then
 - [ ] Configuration changes are documented, documentation and designs are updated
 - [ ] Passes code peer-review
 - [ ] Passes QA of Acceptance Criteria with verification in Dev and Test
+- [ ] Run `django-silk`
 - [ ] Ticket is ready to be merged to main branch
 - [ ] Can be demoed in Sprint Review
 - [ ] Bugs or future work cards are identified and created
