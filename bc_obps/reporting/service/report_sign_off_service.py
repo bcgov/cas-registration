@@ -1,14 +1,50 @@
 import datetime
 from django.db import transaction
 from reporting.models.report_sign_off import ReportSignOff
-from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
 from django.core.exceptions import ValidationError
+
+
+class ReportSignOffAcknowledgements:
+    def __init__(
+        self,
+        acknowledgement_of_review: bool,
+        acknowledgement_of_records: bool,
+        acknowledgement_of_information: bool | None,
+        acknowledgement_of_possible_costs: bool,
+        acknowledgement_of_new_version: bool | None,
+    ):
+        self.acknowledgement_of_review = acknowledgement_of_review
+        self.acknowledgement_of_records = acknowledgement_of_records
+        self.acknowledgement_of_information = acknowledgement_of_information
+        self.acknowledgement_of_possible_costs = acknowledgement_of_possible_costs
+        self.acknowledgement_of_new_version = acknowledgement_of_new_version
+
+
+class ReportSignOffData:
+    def __init__(
+        self,
+        acknowledgement_of_review: bool,
+        acknowledgement_of_records: bool,
+        acknowledgement_of_information: bool | None,
+        acknowledgement_of_possible_costs: bool,
+        acknowledgement_of_new_version: bool | None,
+        signature: str,
+    ):
+        self.acknowledgements = ReportSignOffAcknowledgements(
+            acknowledgement_of_review=acknowledgement_of_review,
+            acknowledgement_of_records=acknowledgement_of_records,
+            acknowledgement_of_information=acknowledgement_of_information,
+            acknowledgement_of_possible_costs=acknowledgement_of_possible_costs,
+            acknowledgement_of_new_version=acknowledgement_of_new_version,
+        )
+
+        self.signature = signature
 
 
 class ReportSignOffService:
     @classmethod
     @transaction.atomic
-    def save_report_sign_off(cls, report_version_id: int, data: ReportSignOffIn) -> ReportSignOff | None:
+    def save_report_sign_off(cls, report_version_id: int, data: ReportSignOffData) -> ReportSignOff | None:
         acknowledgements = data.acknowledgements
         if ReportSignOffService.validate_report_sign_off(acknowledgements):
             report_sign_off_record, _ = ReportSignOff.objects.update_or_create(
