@@ -8,20 +8,15 @@ import { getNavigationInformation } from "@reporting/src/app/components/taskList
 import {
   HeaderStep,
   ReportingPage,
-  ReportingFlowDescription,
 } from "@reporting/src/app/components/taskList/types";
-import {
-  getFlow,
-  reportingFlows,
-} from "@reporting/src/app/components/taskList/reportingFlows";
+import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
 
 export default async function FinalReviewPage({
   version_id,
 }: HasReportVersion) {
-  // Get the report version flow type
-  const flow = await getFlow(version_id);
-  const flowData = reportingFlows[flow] as ReportingFlowDescription;
-  if (!flowData) throw Error(`No reporting flow found for ${flow}`);
+  // Get the report version flow data definitions
+  const flowData = await getFlowData(version_id);
+
   // Build final review data based on the report version flow type
   const finalReviewData: ReviewData[] = await reviewDataFactory(
     version_id,
