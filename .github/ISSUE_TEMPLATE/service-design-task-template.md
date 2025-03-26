@@ -1,9 +1,10 @@
 ---
 name: Service Design Task Template
 about: Service Design Task Template
-title: ""
+title: ''
 labels: Backlog Refinement, Service Design
-assignees: ""
+assignees: ''
+
 ---
 
 #### Goal of Ticket
