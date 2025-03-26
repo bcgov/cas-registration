@@ -21,7 +21,7 @@ const FacilitiesDataGrid = ({
 }: {
   disabled?: boolean;
   operationId: string;
-  operationName: string;
+  operationName?: string;
   initialData: {
     rows: FacilityRow[];
     row_count: number;
@@ -30,7 +30,7 @@ const FacilitiesDataGrid = ({
 }) => {
   const searchParams = useSearchParams();
   const operationsTitle =
-    (searchParams.get("operations_title") as string) || operationName;
+    (searchParams.get("operations_title") as string) ?? operationName;
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
