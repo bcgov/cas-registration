@@ -22,6 +22,7 @@ def raise_401_if_user_not_authorized(
     """
     if not hasattr(request, "current_user"):
         raise HttpError(401, UNAUTHORIZED_MESSAGE)
+    # breakpoint()
     user: User = request.current_user
     role_name = getattr(user.app_role, "role_name")
     if role_name not in authorized_app_roles:
