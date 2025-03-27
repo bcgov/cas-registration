@@ -10,6 +10,7 @@ import { useSearchParams } from "@bciers/testConfig/mocks";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "@bciers/testConfig/helpers/extractParams";
+import userEvent from "@testing-library/user-event";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 
@@ -174,5 +175,53 @@ describe("FacilitiesDataGrid component", () => {
         extractParams(String(mockReplace.mock.calls), "facility__name"),
       ).toBe("facility 1");
     });
+  });
+
+  it("opens Action Cell links in new tab when navigating from Registration", async () => {
+    render(
+      <FacilityDataGrid
+        operationId="randomOperationUUID"
+        initialData={mockResponse}
+        fromRegistration={true}
+      />,
+    );
+
+    const actionCells = await screen.findAllByText("View Details");
+    expect(actionCells.length).toBe(mockResponse.rows.length);
+
+    actionCells.forEach(async (actionCell) => {
+      expect(actionCell).toHaveAttribute("target", "_blank");
+      expect(actionCell).toHaveAttribute("rel", "noopener noreferrer");
+
+      // check for the tooltip text
+      userEvent.hover(actionCell);
+      expect(
+        await screen.findByText(/Link opens in a new tab/i),
+      ).toBeInTheDocument();
+    });
+
+    // check for the "open in new tab" icon in the action cells
+    expect(screen.getAllByTestId("OpenInNewIcon").length).toBe(
+      mockResponse.rows.length,
+    );
+  });
+
+  it("opens Action Cells links in the same tab when coming from Administration module", async () => {
+    render(
+      <FacilityDataGrid
+        operationId="randomOperationUUID"
+        initialData={mockResponse}
+      />,
+    );
+
+    const actionCells = await screen.findAllByText("View Details");
+    expect(actionCells.length).toBe(mockResponse.rows.length);
+
+    actionCells.forEach((actionCell) => {
+      expect(actionCell).not.toHaveAttribute("target", "_blank");
+      expect(actionCell).not.toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    expect(screen.queryByTestId("OpenInNewIcon")).not.toBeInTheDocument();
   });
 });
