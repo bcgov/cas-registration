@@ -6,7 +6,7 @@ import Note from "@bciers/components/layout/Note";
 
 const FacilityPageBanner: React.FC = () => {
   const searchParams = useSearchParams();
-  const fromRegistration = searchParams.get("from_registration") === "true";
+  const fromRegistration = searchParams?.get("from_registration") === "true";
 
   if (!fromRegistration) return null;
 
