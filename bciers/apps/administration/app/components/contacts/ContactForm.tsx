@@ -8,6 +8,7 @@ import { ContactFormData } from "./types";
 import { FormMode } from "@bciers/utils/src/enums";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import Link from "next/link";
 
 interface Props {
   schema: any;
@@ -18,8 +19,10 @@ interface Props {
 
 const NewOperationMessage = () => (
   <>
-    <b>Note: </b>To assign this representative to an operation, go to the
-    operation information form
+    <b>Note: </b>You can assign this representative to an operation directly in
+    the Operation Information form. To do so, go to the{" "}
+    <Link href={"/operations"}>Operations page</Link>, select an operation, and
+    go to the Operation Information form.
   </>
 );
 export default function ContactForm({
