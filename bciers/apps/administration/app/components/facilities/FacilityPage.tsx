@@ -11,7 +11,7 @@ import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/src/enums";
 import { getOperation } from "@bciers/actions/api";
-import Note from "@bciers/components/layout/Note";
+import FacilityPageBanner from "./FacilityPageBanner";
 
 // 🧩 Main component
 export default async function Facility({
@@ -52,14 +52,7 @@ export default async function Facility({
 
   return (
     <>
-      {/* TODO: add logic so this is rendered conditionally */}
-      {console.log("fromRegistration", fromRegistration)}
-      {fromRegistration && (
-        <Note variant="important">
-          This link has opened in a new tab. To go back to the previous page,
-          close this tab.
-        </Note>
-      )}
+      <FacilityPageBanner />
       <FacilityForm
         schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
         uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
