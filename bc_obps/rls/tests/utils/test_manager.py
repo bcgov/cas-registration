@@ -29,7 +29,7 @@ class TestRlsManager(TestCase):
         RlsManager.reset_privileges_for_roles()
 
         # Ensure SQL execution calls are made
-        self.assertEqual(mock_cursor_instance.execute.call_count, 15)
+        self.assertEqual(mock_cursor_instance.execute.call_count, 16)
 
         # Check the correct SQL commands are executed
         mock_cursor_instance.execute.assert_any_call(
@@ -76,6 +76,14 @@ class TestRlsManager(TestCase):
             Composed(
                 [
                     SQL('grant select, insert on all tables in schema common to '),
+                    self._get_composed_role_identifiers(),
+                ]
+            )
+        )
+        mock_cursor_instance.execute.assert_any_call(
+            Composed(
+                [
+                    SQL('grant select on public.django_content_type to '),
                     self._get_composed_role_identifiers(),
                 ]
             )
