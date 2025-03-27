@@ -179,7 +179,7 @@ describe("the NewEntrantOperationForm component", () => {
     const input = screen.getByTestId("root_new_entrant_application");
     await userEvent.upload(input, mockFile);
 
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.pdf",
