@@ -12,6 +12,7 @@ export interface InternalAccessRequestDataGridRow {
   id: UUID;
   name: string;
   role: InternalFrontEndRoles;
+  email: string;
   status?: string | Status;
   archived_at?: string;
 }

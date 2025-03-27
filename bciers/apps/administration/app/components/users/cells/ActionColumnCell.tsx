@@ -11,6 +11,7 @@ import LoadingSpinner from "@bciers/components/loading/LoadingSpinner";
 import { BC_GOV_COMPONENTS_GREY } from "@bciers/styles";
 import handleInternalAccessRequest from "./handleInternalAccessRequest";
 import { InternalAccessRequestGridRenderCellParams } from "../types";
+import { useSession } from "next-auth/react";
 
 export const formatRole = (role: InternalFrontEndRoles) => {
   return role
@@ -49,6 +50,9 @@ export const inferStatus = (
 const ActionColumnCell = (
   params: InternalAccessRequestGridRenderCellParams,
 ) => {
+  const { data: session } = useSession();
+  const email = session?.user?.email;
+
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -150,10 +154,17 @@ const ActionColumnCell = (
       </Button>
     </>
   );
+
   return (
     <>
       <Stack direction="row" spacing={1}>
-        {status === Status.PENDING ? approveDeclineButton : editButton}
+        {email === params?.row.email ? (
+          <></>
+        ) : status === Status.PENDING ? (
+          approveDeclineButton
+        ) : (
+          editButton
+        )}
       </Stack>
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}
