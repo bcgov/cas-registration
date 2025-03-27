@@ -498,7 +498,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="391" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="300" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -549,7 +549,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="535" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="481" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -707,6 +707,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="operation_id" nullable="true" remarks="The operation that the document is about" size="2147483647" type="uuid" typeCode="1111">
             <parent column="id" foreignKey="document_operation_id_341c850d_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="document_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -740,6 +741,69 @@
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="document_type_pkey" unique="true">
             <column ascending="true" name="id"/>
+         </index>
+      </table>
+      <table name="elicensing_link" remarks="A table to store links between system objects and eLicensing objects" schema="erc" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Standard Django primary key" size="10" type="int4" typeCode="4">
+            <child column="swrs_facility_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="facility"/>
+            <child column="swrs_facility_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="operation"/>
+            <child column="swrs_organisation_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="operator"/>
+            <child column="user_friendly_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="user_operator"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="elicensing_guid" nullable="false" remarks="Unique identifier for the eLicensing system integration" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="object_id" nullable="false" remarks="The ID of the CAS object this link relates to" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="elicensing_object_kind" nullable="false" remarks="The type of eLicensing object (client, invoice, fee, etc.)" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="elicensing_object_id" nullable="true" remarks="The object ID in the eLicensing system" size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="last_sync_at" nullable="true" remarks="The timestamp when this object was last synced with eLicensing" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="sync_status" nullable="true" remarks="Status of the last sync operation with eLicensing" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_link_archived_by_id_f25b9704_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="content_type_id" nullable="false" remarks="The type of CAS object this link relates to" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="elicensing_link_content_type_id_dbbc39ef_fk_django_co" implied="false" onDeleteCascade="false" schema="public" table="django_content_type"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_link_created_by_id_c1b19f44_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_link_updated_by_id_79f14f48_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_link_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="elicensing__content_e96062_idx" unique="false">
+            <column ascending="true" name="content_type_id"/>
+            <column ascending="true" name="object_id"/>
+         </index>
+         <index name="elicensing__elicens_72c88d_idx" unique="false">
+            <column ascending="true" name="elicensing_object_id"/>
+         </index>
+         <index name="elicensing__elicens_7892ef_idx" unique="false">
+            <column ascending="true" name="elicensing_object_kind"/>
+         </index>
+         <index name="elicensing__elicens_812a0f_idx" unique="false">
+            <column ascending="true" name="elicensing_guid"/>
+         </index>
+         <index name="elicensing_link_archived_by_id_f25b9704" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="elicensing_link_content_type_id_dbbc39ef" unique="false">
+            <column ascending="true" name="content_type_id"/>
+         </index>
+         <index name="elicensing_link_content_type_id_object_i_ee939aad_uniq" unique="true">
+            <column ascending="true" name="content_type_id"/>
+            <column ascending="true" name="object_id"/>
+            <column ascending="true" name="elicensing_object_kind"/>
+         </index>
+         <index name="elicensing_link_created_by_id_c1b19f44" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="elicensing_link_updated_by_id_79f14f48" unique="false">
+            <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
       <table name="emission_category" remarks="This table contains the set of emission categories that greenhouse gas emissions can be counted under." schema="erc" type="TABLE">
@@ -816,7 +880,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="bcghg_id_id" nullable="true" remarks="A facility's BCGHG identifier." size="255" type="varchar" typeCode="12">
             <parent column="id" foreignKey="facility_bcghg_id_id_c2662128_fk_bc_greenhouse_gas_id_id" implied="false" onDeleteCascade="false" schema="erc" table="bc_greenhouse_gas_id"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="swrs_facility_id" nullable="true" remarks="A facility's SWRS facility ID." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="swrs_facility_id" nullable="true" remarks="A facility's SWRS facility ID." size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="latitude_of_largest_emissions" nullable="true" remarks="The latitude of the largest point of emissions" size="8" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="longitude_of_largest_emissions" nullable="true" remarks="The longitude of the largest point of emissions" size="9" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="is_current_year" nullable="true" remarks="The facility's starting date is within the current year or preceeding year" size="1" type="bool" typeCode="-7"/>
@@ -1036,7 +1102,7 @@
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="methodology" numRows="52" remarks="Table contains the set of reporting methodologies that can be applied to an emission as outlined in GGERR (Greenhous Gas Emission Reporting Regulation)" schema="erc" type="TABLE">
+      <table name="methodology" remarks="Table contains the set of reporting methodologies that can be applied to an emission as outlined in GGERR (Greenhous Gas Emission Reporting Regulation)" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="methodology_id" foreignKey="configuration_element_methodology_id_de7aa928_fk_methodology_id" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
             <child column="methodology_id" foreignKey="custom_methodology_s_methodology_id_fe0f1db6_fk_methodolo" implied="false" onDeleteCascade="false" schema="erc" table="custom_methodology_schema"/>
@@ -1149,7 +1215,9 @@
             <parent column="name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="business_structure"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="type" nullable="false" remarks="The type of an operation" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="swrs_facility_id" nullable="true" remarks="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="swrs_facility_id" nullable="true" remarks="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year." size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="bcghg_id_id" nullable="true" remarks="An operation's BCGHG identifier." size="255" type="varchar" typeCode="12">
             <parent column="id" foreignKey="operation_bcghg_id_id_efe89a02_fk_bc_greenhouse_gas_id_id" implied="false" onDeleteCascade="false" schema="erc" table="bc_greenhouse_gas_id"/>
          </column>
@@ -1405,7 +1473,9 @@
             <parent column="name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="business_structure"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="swrs_organisation_id" nullable="true" remarks="An identifier used in the CIIP/SWRS dataset (in swrs: organisation = operator). This identifier will only be populated for operators that were imported from that dataset." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="swrs_organisation_id" nullable="true" remarks="An identifier used in the CIIP/SWRS dataset (in swrs: organisation = operator). This identifier will only be populated for operators that were imported from that dataset." size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="bc_corporate_registry_number" nullable="true" remarks="The BC corporate registry number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="website" nullable="true" remarks="The website address of an operator" size="200" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="status" nullable="false" remarks="The status of an operator in the app (e.g. draft)" size="1000" type="varchar" typeCode="12"/>
@@ -2625,6 +2695,47 @@
             <column ascending="true" name="activity_id"/>
          </index>
       </table>
+      <table name="report_sign_off" remarks="Stores information about the sign-off of a report, including the user's certification of due diligence, understanding of the report's purpose, and the impact of the information provided. Also stores the user's signature and the date and time of the sign-off." schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="acknowledgement_of_review" nullable="false" remarks="Whether the user has certified that they have reviewed the report, and that they have ensured that the information included in this report is true and complete." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="acknowledgement_of_records" nullable="false" remarks="Whether the user has understood that the information provided in the report may require records from the Operator evidencing the truth of this report." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="acknowledgement_of_information" nullable="true" remarks="Whether the user has understood that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="acknowledgement_of_possible_costs" nullable="false" remarks="Whether the user has understood that the information provided in this report can impact any compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="acknowledgement_of_new_version" nullable="true" remarks="Whether the user has understood that the sign-off is creating a new report version that will be the report for the reporting or compliance period that it pertains to." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="signature" nullable="false" remarks="The signature of the user who signed off the report" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="signing_date" nullable="false" remarks="The date and time the report was signed off" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_sign_off_archived_by_id_0f5a2247_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_sign_off_created_by_id_c2656fad_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="report_version_id" nullable="false" remarks="The report this sign-off information relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_sign_off_report_version_id_e24df703_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_sign_off_updated_by_id_6cf05dc5_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_sign_off_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_sign_off_archived_by_id_0f5a2247" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_sign_off_created_by_id_c2656fad" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_sign_off_report_version_id_e24df703" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_sign_off_updated_by_id_6cf05dc5" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="report_source_type" remarks="A table to store the reported source type-specific data, in a JSON format" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="report_source_type_id" foreignKey="report_emission_report_source_type_i_b0bcf9b2_fk_report_so" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
@@ -2826,6 +2937,7 @@
             <child column="report_version_id" foreignKey="report_person_respon_report_version_id_0d6ee4de_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_person_responsible"/>
             <child column="report_version_id" foreignKey="report_product_report_version_id_0b6a26ae_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_product"/>
             <child column="report_version_id" foreignKey="report_product_emiss_report_version_id_5511d2d0_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_product_emission_allocation"/>
+            <child column="report_version_id" foreignKey="report_sign_off_report_version_id_e24df703_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_sign_off"/>
             <child column="report_version_id" foreignKey="report_source_type_report_version_id_8bdee43c_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
             <child column="report_version_id" foreignKey="report_unit_report_version_id_25a4c0c6_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_unit"/>
             <child column="report_version_id" foreignKey="report_verification_report_version_id_affb429c_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_verification"/>
@@ -3163,6 +3275,9 @@
             <child column="archived_by_id" foreignKey="document_archived_by_id_f815d708_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
             <child column="created_by_id" foreignKey="document_created_by_id_9ca09a36_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
             <child column="updated_by_id" foreignKey="document_updated_by_id_e225f4ce_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
+            <child column="archived_by_id" foreignKey="elicensing_link_archived_by_id_f25b9704_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+            <child column="created_by_id" foreignKey="elicensing_link_created_by_id_c1b19f44_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+            <child column="updated_by_id" foreignKey="elicensing_link_updated_by_id_79f14f48_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
             <child column="archived_by_id" foreignKey="facility_archived_by_id_8292bf94_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
             <child column="created_by_id" foreignKey="facility_created_by_id_491dc391_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
             <child column="updated_by_id" foreignKey="facility_updated_by_id_43590626_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
@@ -3246,6 +3361,9 @@
             <child column="archived_by_id" foreignKey="report_raw_activity__archived_by_id_5ee56788_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_raw_activity_data"/>
             <child column="created_by_id" foreignKey="report_raw_activity__created_by_id_47773eab_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_raw_activity_data"/>
             <child column="updated_by_id" foreignKey="report_raw_activity__updated_by_id_bec58a40_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_raw_activity_data"/>
+            <child column="archived_by_id" foreignKey="report_sign_off_archived_by_id_0f5a2247_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_sign_off"/>
+            <child column="created_by_id" foreignKey="report_sign_off_created_by_id_c2656fad_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_sign_off"/>
+            <child column="updated_by_id" foreignKey="report_sign_off_updated_by_id_6cf05dc5_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_sign_off"/>
             <child column="archived_by_id" foreignKey="report_source_type_archived_by_id_e356358d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
             <child column="created_by_id" foreignKey="report_source_type_created_by_id_de48d8c6_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
             <child column="updated_by_id" foreignKey="report_source_type_updated_by_id_89d39c34_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_source_type"/>
@@ -3330,7 +3448,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="verified_by_id" nullable="true" remarks="The IRC user who verified the user operator" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="user_operator_verified_by_id_abba2ab2_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="user_friendly_id" nullable="true" remarks="A user-friendly ID to identify the user operator" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="user_friendly_id" nullable="true" remarks="A user-friendly ID to identify the user operator" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="user_operator_pkey" unique="true">
             <column ascending="true" name="id"/>

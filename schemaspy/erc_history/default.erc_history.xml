@@ -315,6 +315,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="type_id" nullable="true" remarks="Type of document, e.g., boundary map" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="operation_id" nullable="true" remarks="The operation that the document is about" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="document_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>

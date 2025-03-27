@@ -13,16 +13,17 @@ source_type
 gas_type
 methodology
 fuel_type
-operator
 bc_greenhouse_gas_id
 bc_obps_regulated_operation
 activity_json_schema
 opted_in_operation_detail
 activity_source_type_json_schema
+elicensing_link
+operator
 operation
-facility
 report
 report_version
+facility
 facility_report
 report_activity
 report_source_type
@@ -65,6 +66,7 @@ emission_category_mapping
 report_verification_visit
 compliance_obligation
 report_additional_data
+report_sign_off
 compliance_product
 document
 facility_designated_operation_timeline
@@ -77,8 +79,8 @@ report_raw_activity_data
 report_verification
 report_methodology
 report_person_responsible
-user_operator
 partner_operator
 report_product_emission_allocation
+user_operator
 multiple_operator
 parent_operator
