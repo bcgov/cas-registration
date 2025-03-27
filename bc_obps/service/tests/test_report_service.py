@@ -165,6 +165,7 @@ class TestReportService(TestCase):
             mock.patch('service.report_service.ReportOperation.objects.get') as mock_get,
             mock.patch('service.report_service.ReportOperationRepresentative.objects.filter') as mock_filter,
             mock.patch('service.report_service.FacilityReport.objects.filter') as mock_facility_filter,
+            mock.patch('service.report_service.FacilityReport.objects.get') as mock_facility_get,
             mock.patch('service.report_service.Activity.objects.filter') as mock_activity_filter,
             mock.patch('service.report_service.RegulatedProduct.objects.filter') as mock_regulated_product_filter,
         ):
@@ -174,7 +175,11 @@ class TestReportService(TestCase):
             mock_filter.return_value.update.return_value = None
 
             # Mock FacilityReport behavior
-            mock_facility_reports = [mock.MagicMock(spec=FacilityReport) for _ in range(3)]
+            mock_facility_report = mock.MagicMock(spec=FacilityReport, report_version_id=report_version.id, id=999)
+            mock_facility_reports = [
+                mock.MagicMock(spec=FacilityReport, report_version_id=report_version.id) for _ in range(3)
+            ]
+            mock_facility_get.return_value = mock_facility_report
             mock_facility_filter.return_value = mock_facility_reports
 
             # Mock Activity filtering
