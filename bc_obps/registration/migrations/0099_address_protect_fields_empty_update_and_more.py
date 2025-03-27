@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0097_document_status_historicaldocument_status'),
+        ('registration', '0098_V2_1_1'),
     ]
 
     operations = [
