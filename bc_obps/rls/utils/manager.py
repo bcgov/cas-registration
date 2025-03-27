@@ -22,6 +22,7 @@ class RlsManager:
             SQL("grant all privileges on all tables in schema erc_history to {}"),
             SQL("grant usage on schema common to {}"),
             SQL("grant select, insert on all tables in schema common to {}"),
+            SQL("grant select on public.django_content_type to {}"),
         ]
 
         # Tables and sequences that need to be granted INSERT and UPDATE privileges
