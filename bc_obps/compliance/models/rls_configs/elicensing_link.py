@@ -21,5 +21,4 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
 
-    # Standard grants for the ELicensingLink table
     grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.ELICENSING_LINK)
