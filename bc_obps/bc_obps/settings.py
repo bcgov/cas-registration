@@ -246,4 +246,6 @@ QUERYCOUNT = {
     'IGNORE_REQUEST_PATTERNS': [r'^/admin/', r'^/static/', r'^/silk/'],
     # define a list of regexp patterns that ignored to statistic sql query count
     'IGNORE_SQL_PATTERNS': [r'silk_'],
+    # print the 2 most duplicated queries
+    'DISPLAY_DUPLICATES': 2,
 }
