@@ -4,7 +4,6 @@ from reporting.tests.utils.bakers import activity_baker
 from service.facility_report_service import FacilityReportService
 from reporting.schema.facility_report import FacilityReportIn
 from model_bakery import baker
-from registration.tests.utils.bakers import user_baker
 from common.tests.utils.model_inspection import get_cascading_models
 from reporting.models import (
     ReportActivity,
@@ -76,12 +75,10 @@ class TestFacilityReportService(TestCase):
             activities=[],
             products=[],
         )
-        user = user_baker()
         returned_data = FacilityReportService.save_facility_report(
             report_version_id=facility_report.report_version_id,
             facility_id=facility_report.facility_id,
             data=data,
-            user_guid=user.user_guid,
         )
         assert returned_data.facility_name == "CHANGED"
         assert returned_data.facility_type == facility_report.facility_type
@@ -138,12 +135,10 @@ class TestFacilityReportService(TestCase):
             activities=['1'],
             products=[],
         )
-        user = user_baker()
         FacilityReportService.save_facility_report(
             report_version_id=facility_report.report_version_id,
             facility_id=facility_report.facility_id,
             data=data,
-            user_guid=user.user_guid,
         )
         assert ReportActivity.objects.filter(facility_report=facility_report.id).count() == 1
         assert ReportActivity.objects.filter(activity_id=2).count() == 0
