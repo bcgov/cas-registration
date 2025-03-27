@@ -5,4 +5,4 @@ from reporting.service.report_validation.report_validation_result import (
 
 
 def validate(report_version: ReportVersion) -> ReportValidationResult:
-    return ReportValidationResult(True)
+    return ReportValidationResult(False, {"fails_all_the_time": "Yes!"})
