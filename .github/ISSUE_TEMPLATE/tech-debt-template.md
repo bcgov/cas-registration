@@ -1,10 +1,9 @@
 ---
 name: Tech Debt Template
 about: Tech Debt Template
-title: ''
+title: ""
 labels: Tech Debt
-assignees: ''
-
+assignees: ""
 ---
 
 #### Description of the Tech Debt
