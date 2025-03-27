@@ -21,7 +21,7 @@ def update_facility_designated_operation_timeline_start_date(apps, schema_editor
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0095_populate_operation_timeline_with_prod_data'),
+        ('registration', '0096_populate_operation_timeline_with_prod_data'),
     ]
 
     operations = [

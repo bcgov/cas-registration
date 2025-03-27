@@ -25,7 +25,7 @@ def populate_operation_timeline_table_with_existing_data(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0094_V2_0_1'),
+        ('registration', '0095_document_status_historicaldocument_status'),
     ]
 
     operations = [
