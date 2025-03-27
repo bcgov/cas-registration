@@ -56,6 +56,11 @@ export default function Bread({
   const showBreadcrumb = paths !== "/onboarding";
   if (!showBreadcrumb) return null;
 
+  // 🛠️ Remove the last path segment if it's a number
+  if (pathNames.length > 0 && isNumeric(pathNames[pathNames.length - 1])) {
+    pathNames.pop();
+  }
+
   // 🛠️ Function to check if a link is the last link
   const isLastBreadcrumbItem = (link: string, index: number) => {
     const lastLinkValues = ["register-an-operation"];
