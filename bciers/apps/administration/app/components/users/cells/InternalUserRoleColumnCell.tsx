@@ -12,7 +12,7 @@ const InternalUserRoleColumnCell = (
     row: { role, id, archived_at: archivedAt },
   } = params;
 
-  const status = params?.row.status || inferStatus(role, "");
+  const status = params?.row.status || inferStatus(role, archivedAt);
 
   const handleChange = (event: SelectChangeEvent) => {
     params.api.updateRows([
@@ -24,8 +24,7 @@ const InternalUserRoleColumnCell = (
     ]);
   };
 
-  // brianna for declined operations, status is pending because it's not in params
-  if (status === Status.APPROVED) return <span>{formatRole(role)}</span>;
+  if (status !== Status.PENDING) return <span>{formatRole(role)}</span>;
 
   return (
     <FormControl
