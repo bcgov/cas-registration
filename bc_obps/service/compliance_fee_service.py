@@ -51,7 +51,7 @@ class ComplianceFeeService:
                 status=ComplianceFee.FeeStatus.PENDING,
                 fee_date=date.today(),
                 fee_description=fee_description,
-                fee_profile_group_name="EXCESS_EMISSIONS",
+                fee_profile_group_name=ComplianceFee.FeeProfileGroupName.EXCESS_EMISSIONS,
                 business_area_code="OBPS"
             )
             

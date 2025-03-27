@@ -131,7 +131,7 @@ pythontests_coverage:
 .PHONY: pythontests_parallel
 pythontests_parallel: ## run Python tests in parallel for faster execution
 pythontests_parallel:
-	$(POETRY_RUN) $(PYTEST) -n auto
+	$(POETRY_RUN) $(PYTEST) -n auto --reuse-db
 
 .PHONY: clear_db
 clear_db: ## Clear all data in the datbase
