@@ -151,10 +151,11 @@ export function FilesInfo<
     <ul className="m-0 py-0 flex flex-col justify-start list-none">
       {filesInfo.map((fileInfo) => {
         const { name, scanStatus } = fileInfo;
+        const isQuarantined = scanStatus === "Quarantined";
         return (
           <li key={name} data-name={name}>
             {showScanStatus(scanStatus) || name}
-            {preview && (
+            {preview && !isQuarantined && (
               <FileInfoPreview<T, S, F>
                 fileInfo={fileInfo}
                 registry={registry}
