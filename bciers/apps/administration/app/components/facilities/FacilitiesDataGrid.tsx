@@ -44,9 +44,11 @@ const FacilitiesDataGrid = ({
       },
       cellText: "View Details",
       useWindowLocation: true,
-      IconComponent: <OpenInNewIcon fontSize="small" />,
-      openInNewTab: true,
-      tooltipText: "Link opens in a new tab",
+      IconComponent: fromRegistration ? (
+        <OpenInNewIcon fontSize="small" />
+      ) : undefined,
+      openInNewTab: fromRegistration,
+      tooltipText: fromRegistration ? "Link opens in a new tab" : "",
     });
   const ActionCell = useMemo(() => createFacilitiesActionCell(), []);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);

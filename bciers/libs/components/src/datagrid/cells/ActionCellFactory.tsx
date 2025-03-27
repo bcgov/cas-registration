@@ -38,7 +38,7 @@ const ActionCellFactory = ({
         href={href}
       >
         {tooltipText ? (
-          <Tooltip title={tooltipText}>
+          <Tooltip className="flex align-center" title={tooltipText}>
             {cellText}
             {IconComponent}
           </Tooltip>
