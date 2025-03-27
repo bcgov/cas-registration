@@ -1,11 +1,11 @@
 ---
 name: User Story Template
-about: User stories are broken down product backlog items that are user-focused and
+about:
+  User stories are broken down product backlog items that are user-focused and
   vertically-sliced.
-title: ''
+title: ""
 labels: Backlog Refinement, User Story
-assignees: ''
-
+assignees: ""
 ---
 
 #### Description:
