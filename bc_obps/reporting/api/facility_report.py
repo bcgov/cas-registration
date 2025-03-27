@@ -7,14 +7,13 @@ from service.facility_report_service import FacilityReportService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.schema.facility_report import (
-    FacilityReportOut,
     FacilityReportIn,
+    FacilityReportOut,
     FacilityReportListSchema,
     FacilityReportListInSchema,
     FacilityReportFilterSchema,
 )
 from reporting.schema.activity import FacilityReportActivityDataOut
-from common.api.utils import get_current_user_guid
 from registration.models import Activity, Operation
 from reporting.models import FacilityReport, ReportVersion, Report
 from ninja.pagination import paginate
@@ -84,8 +83,7 @@ def save_facility_report(
         Tuple: HTTP status code and the response data or an error message.
     """
     # Fetch the existing facility report or create a new one
-    user_guid = get_current_user_guid(request)
-    facility_report = FacilityReportService.save_facility_report(version_id, facility_id, payload, user_guid)
+    facility_report = FacilityReportService.save_facility_report(version_id, facility_id, payload)
 
     # Prepare the response data
     return 201, facility_report
