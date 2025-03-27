@@ -39,8 +39,10 @@ const ActionCellFactory = ({
       >
         {tooltipText ? (
           <Tooltip className="flex align-center" title={tooltipText}>
-            {cellText}
-            {IconComponent}
+            <>
+              {cellText}
+              {IconComponent}
+            </>
           </Tooltip>
         ) : (
           <>
