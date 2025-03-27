@@ -62,14 +62,8 @@ jobs:
         with:
           path: |
             ./.pre-commit-cache
-          key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v5
+          key: pre-commit-${{ env.PY }}-${{ hashFiles('.pre-commit-config.yaml') }}-v4
       - run: pip install -r requirements.txt
-      - run: |
-          wget -qO /usr/local/bin/devtunnel https://aka.ms/TunnelsCliDownload/linux-x64 && chmod +x /usr/local/bin/devtunnel
-          npm -g i wetty@2.7.0
-          sudo wetty -c bash -b / &
-          devtunnel user login -g -d
-          devtunnel host -p 3000
       - uses: pre-commit/action@v3.0.1
 
   check-migrations:
