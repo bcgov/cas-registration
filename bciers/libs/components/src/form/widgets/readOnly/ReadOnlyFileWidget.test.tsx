@@ -22,7 +22,9 @@ describe("RJSF ReadOnlyFileWidget", () => {
     const readOnlyFileWidget = container.querySelector("#root_fileTestField");
 
     expect(readOnlyFileWidget).toBeVisible();
-    expect(readOnlyFileWidget).toHaveTextContent("Upload in progress....");
+    expect(readOnlyFileWidget).toHaveTextContent(
+      "File is uploaded upon saving",
+    );
   });
 
   it("should render a file field with correct message when scanStatus is Quarantined", async () => {

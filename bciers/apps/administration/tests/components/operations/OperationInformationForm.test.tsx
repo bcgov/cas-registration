@@ -845,7 +845,7 @@ describe("the OperationInformationForm component", () => {
       /new entrant application and statutory declaration/i,
     );
     await userEvent.upload(newEntrantApplicationDocument, mockFile);
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "mock_file.pdf",
