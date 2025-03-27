@@ -8,8 +8,11 @@ from registration.schema.user import UserUpdateRoleIn
 
 class UserDataAccessService:
     @classmethod
-    def get_by_guid(cls, user_guid: UUID) -> User:
-        return User._base_manager.get(user_guid=user_guid)
+    def get_by_guid(cls, user_guid: UUID, include_archived: bool = False) -> User:
+        if include_archived:
+            return User._base_manager.get(user_guid=user_guid)
+        else:
+            return User.objects.get(user_guid=user_guid)
 
     @classmethod
     def get_user_business_guid(cls, user_guid: UUID) -> UUID:
@@ -70,8 +73,8 @@ class UserDataAccessService:
         )
 
     @classmethod
-    def update_user(cls, user_guid: UUID, updated_data: UserUpdateIn | UserUpdateRoleIn) -> User:
-        user: User = UserDataAccessService.get_by_guid(user_guid)
+    def update_user(cls, user_guid: UUID, updated_data: UserUpdateIn | UserUpdateRoleIn, include_archived: bool = False) -> User:
+        user: User = UserDataAccessService.get_by_guid(user_guid, include_archived)
         for attr, value in updated_data.dict().items():
             setattr(user, attr, value)
         user.save()
@@ -83,9 +86,6 @@ class UserDataAccessService:
         return user.user_operators.filter(operator_id=operator_id, status=UserOperator.Statuses.APPROVED).exists()
     
     @classmethod
-    def get_internal_users(cls) -> QuerySet[User]:
-        return cls._list_including_archived().filter(app_role__role_name__icontains="cas")
+    def get_internal_users_including_archived(cls) -> QuerySet[User]:
+        return User._base_manager.all().filter(app_role__role_name__icontains="cas")
 
-    @classmethod
-    def _list_including_archived(cls) -> QuerySet[User]:
-        return User._base_manager.all()

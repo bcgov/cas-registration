@@ -25,7 +25,7 @@ from typing import List
     auth=authorize("authorized_irc_user"),
 )
 def get_internal_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[User]]:
-    return 200, UserDataAccessService.get_internal_users()
+    return 200, UserDataAccessService.get_internal_users_including_archived()
 
 
 ##### POST #####

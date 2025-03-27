@@ -20,7 +20,7 @@ from django.utils import timezone
 """,
 )
 def update_user_role(request: HttpRequest, user_id: UUID, payload: UserUpdateRoleIn) -> Tuple[Literal[200], User]:
-    user = UserDataAccessService.update_user(user_guid=user_id, updated_data=payload)
+    user = UserDataAccessService.update_user(user_guid=user_id, updated_data=payload, include_archived=True)
     if payload.archive:
         # brianna this isn't working
         # user.set_archive(get_current_user_guid(request))
