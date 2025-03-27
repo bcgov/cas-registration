@@ -138,6 +138,8 @@ if DEBUG:  # DEV only apps
     INSTALLED_APPS.append("silk")
     MIDDLEWARE.insert(0, "silk.middleware.SilkyMiddleware")
     SILKY_META = True
+    # DJANGO QUERY COUNT
+    MIDDLEWARE.append("querycount.middleware.QueryCountMiddleware")
 
 ROOT_URLCONF = "bc_obps.urls"
 
@@ -235,3 +237,15 @@ NINJA_PAGINATION_PER_PAGE = 20
 # Bypass CSRF protection in development(for admin login page only)
 if not DEBUG and ENVIRONMENT == "dev":
     CSRF_TRUSTED_ORIGINS = [f"https://{os.environ.get('BACKEND_HOST')}"]
+
+
+# DJANGO-QUERYCOUNT SETTINGS
+# Repo: https://github.com/bradmontgomery/django-querycount
+QUERYCOUNT = {
+    # define a list of regexp patterns that get applied to each request's path. If there is a match, the middleware will not be applied to that request
+    'IGNORE_REQUEST_PATTERNS': [r'^/admin/', r'^/static/', r'^/silk/'],
+    # define a list of regexp patterns that ignored to statistic sql query count
+    'IGNORE_SQL_PATTERNS': [r'silk_'],
+    # print the 2 most duplicated queries
+    'DISPLAY_DUPLICATES': 2,
+}
