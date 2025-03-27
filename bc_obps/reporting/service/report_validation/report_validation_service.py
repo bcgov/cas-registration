@@ -1,20 +1,24 @@
-from typing import List
-from django.core.exceptions import ObjectDoesNotExist
-from reporting.models.report_attachment import ReportAttachment
-from reporting.models.report_verification import ReportVerification
-from reporting.service.report_verification_service import ReportVerificationService
+from typing import Callable, List
+
+from reporting.models.report_version import ReportVersion
+from reporting.service.report_validation.report_validation_result import (
+    ReportValidationResult,
+)
+from . import validators
 
 
-class ReportValidationResult:
-    """
-    Data type for validator return type.
+def build_validation_plugins():
+    validation_plugins = [validators.__dict__.get(plugin_name) for plugin_name in validators.__all__]
 
-    - valid: whether the validation passed
-    - errors: dictionary
-    """
+    for plugin in validation_plugins:
+        if not hasattr(plugin, "validate"):
+            raise AttributeError(
+                f"Plugin {plugin.__name__} needs to expose a `validate(report_version: ReportVersion) -> ReportValidationResult` function"
+            )
+        if not isinstance(plugin.validate, Callable):
+            raise AttributeError(f"{plugin.__name__}'s validate attribute must be a function")
 
-    valid: bool
-    errors: dict[str, str]
+    return validation_plugins
 
 
 class ReportValidationService:
@@ -24,8 +28,10 @@ class ReportValidationService:
     Strategy: independent, plug-in validators will
     """
 
+    validation_plugins = build_validation_plugins()
+
     @staticmethod
-    def validate_report(version_id: int, validators: List[str] = None) -> None:
+    def validate_report_version(version_id: int) -> None:
         """
         Future implementation could create a specific exception housing all the issues a report would have
         Django-ninja could then have a special way of parsing that error with a custom error code.
@@ -34,25 +40,15 @@ class ReportValidationService:
         - If report verification is required, ensures that a `ReportVerification` entry exists.
         - If a verification statement is required, ensures the presence of a corresponding attachment.
         """
-        try:
-            # Check if verification is mandatory
-            isVerificationMandatory = (
-                ReportVerificationService.get_report_needs_verification(version_id)
-            )
+        report_version = ReportVersion.objects.get(id=version_id)
 
-            if isVerificationMandatory:
-                # Check for the ReportVerification entry
-                try:
-                    ReportVerification.objects.get(
-                        report_version_id=version_id
-                    )  # attempt to get the object.
-                except ObjectDoesNotExist:
-                    raise Exception("missing_report_verification")
+        results: List[ReportValidationResult] = [
+            validation_plugin.validate(report_version)
+            for validation_plugin in ReportValidationService.validation_plugins
+        ]
 
-                # Check for the attachment only if mandatory
-                ReportAttachment.objects.get(
-                    report_version_id=version_id,
-                    attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
-                )
-        except ReportAttachment.DoesNotExist:
-            raise Exception("verification_statement")
+        # Aggregate the results
+        return ReportValidationResult(
+            valid=all([result.valid for result in results]),
+            errors={k: v for result in results for k, v in result.errors.items()},
+        )
