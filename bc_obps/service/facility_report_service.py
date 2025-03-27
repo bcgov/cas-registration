@@ -3,6 +3,7 @@ from django.db import transaction
 from typing import List, Optional, Tuple, cast
 from ninja import Query
 from registration.models import Activity, Facility
+from reporting.models import ReportActivity, ReportProductEmissionAllocation
 from reporting.models.facility_report import FacilityReport
 from reporting.schema.facility_report import FacilityReportIn, FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
@@ -55,6 +56,12 @@ class FacilityReportService:
         # Update ManyToMany fields (activities)
         if data.activities:
             facility_report.activities.set(Activity.objects.filter(id__in=data.activities))
+            # If activities are removed from a facility_report, then the corresponding report_activity data must be delete-cascaded
+            ReportActivity.objects.filter(facility_report_id=facility_report.id).exclude(
+                activity_id__in=data.activities
+            ).delete()
+            # If activities are removed from a facility report, then the allocation of emissions to products must be deleted & re-allocated by the user
+            ReportProductEmissionAllocation.objects.filter(facility_report_id=facility_report.id).delete()
 
         # Save the updated FacilityReport instance
         facility_report.save()
