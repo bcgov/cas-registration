@@ -4,31 +4,35 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 
+// 📐 type for breadcrumb props
 type TBreadCrumbProps = {
   separator: React.ReactNode;
   capitalizeLinks: boolean;
   defaultLinks?: { label: string; href: string }[];
   zone?: string;
 };
-
+// 🛠️ Custom function to validate UUID using regex
 const isValidUUID = (segment: string): boolean => {
   const uuidRegex =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   return uuidRegex.test(segment);
 };
 
+// 🛠️ Function to un-slugify and capitalize a string
 function unslugifyAndCapitalize(segment: string): string {
-  if (isValidUUID(segment)) return segment;
+  if (isValidUUID(segment)) return segment; // Do not capitalize UUIDs
   return segment
     .split("-")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
 
+// 🛠️ Function to check if a given value is numeric
 function isNumeric(value: string): boolean {
   return !isNaN(Number(value));
 }
 
+// 🛠️ Function to determine valid crumb link
 function isValidLink(segment: string): boolean {
   const invalidWords = ["confirm", "received", "request-access"];
   return !invalidWords.some((word) => segment.toLowerCase().includes(word));
@@ -40,24 +44,25 @@ const aStyle = "text-white text-lg";
 export default function Bread({
   separator,
   capitalizeLinks,
-  defaultLinks = [],
-  zone = "",
+  defaultLinks = [], // Default to an empty array if not provided
+  zone = "", // Default to empty string if not provided
 }: TBreadCrumbProps) {
   const paths = usePathname();
-  console.log("paths", paths);
   const pathNames = paths.split("/").filter((path) => path);
-  console.log("pathNames", pathNames);
   const searchParams = useSearchParams();
   const crumbTitles = Object.fromEntries(searchParams.entries());
 
+  // Not showing breadcrumbs on the onboarding page
   const showBreadcrumb = paths !== "/onboarding";
   if (!showBreadcrumb) return null;
 
+  // 🛠️ Function to check if a link is the last link
   const isLastBreadcrumbItem = (link: string, index: number) => {
     const lastLinkValues = ["register-an-operation"];
     return lastLinkValues.includes(link) || index === pathNames.length - 1;
   };
 
+  // 🛠️ Find the index of the last breadcrumb item
   const lastLinkIndex = pathNames.findIndex((link, index) =>
     isLastBreadcrumbItem(link, index),
   );
@@ -72,7 +77,9 @@ export default function Bread({
   ) {
     slicedPathNames.pop();
   }
+  // 🛠️ Function to transform path segment crumb content based on conditions: segmant paths; uuid; number
   function transformPathSegment(segment: string, index: number): string | null {
+    // Check if "reports" is in the pathNames and the current segment is "Facilities"
     if (
       pathNames.some((path) => path.toLowerCase() === "reports") &&
       segment.toLowerCase() === "facilities"
@@ -80,20 +87,25 @@ export default function Bread({
       return null;
     }
 
+    // Check if the current segment is an ID
     if (isValidUUID(segment) || isNumeric(segment)) {
       const precedingSegment = pathNames[index - 1]
         ? unslugifyAndCapitalize(pathNames[index - 1])
         : "";
 
+      // Check if there is a title associated with the preceding segment
       if (
         precedingSegment &&
         crumbTitles[`${precedingSegment.toLowerCase()}_title`]
       )
         return crumbTitles[`${precedingSegment.toLowerCase()}_title`];
 
+      // If there's a title for the numeric/UUID segment itself, return it
+      // 🚨 If no title is found, omit the segment by returning null
       return crumbTitles?.title || null;
     }
 
+    // Return segment as-is
     return segment;
   }
 
@@ -118,22 +130,25 @@ export default function Bread({
                   </Link>
                   {!isLastDefaultLink || pathNames.length > 0
                     ? separator
-                    : null}
+                    : null}{" "}
+                  {/* Conditionally render the separator */}
                 </li>
               );
             })}
             {slicedPathNames.map((link, index) => {
-              if (!isValidLink(link)) return null;
+              if (!isValidLink(link)) return null; // Skip rendering invalid links
               const isLastItem = index === slicedPathNames.length - 1;
               const content = capitalizeLinks
                 ? transformPathSegment(unslugifyAndCapitalize(link), index)
                 : transformPathSegment(link, index);
 
+              // 🚨 Skip rendering if content is null (segment should be omitted)
               if (!content) {
                 return null;
               }
 
               if (!isLastItem) {
+                // 🔗 create a link
                 const path = `/${slicedPathNames
                   .slice(0, index + 1)
                   .join("/")}`;
@@ -151,6 +166,7 @@ export default function Bread({
                   </li>
                 );
               } else {
+                // Last item, no link, bold styling
                 return (
                   <li
                     key={link}
