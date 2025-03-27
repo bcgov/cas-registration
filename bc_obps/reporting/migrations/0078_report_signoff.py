@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0095_document_status_historicaldocument_status'),
+        ('registration', '0097_document_status_historicaldocument_status'),
         ('reporting', '0077_alter_activity_json_schema_petroleum_refining'),
     ]
 

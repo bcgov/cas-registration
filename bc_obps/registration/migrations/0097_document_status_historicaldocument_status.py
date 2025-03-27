@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0094_V2_0_1'),
+        ('registration', '0096_update_facility_timeline_start_date'),
     ]
 
     operations = [
