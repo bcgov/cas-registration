@@ -5,7 +5,7 @@ from django.db import transaction
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
-from service.elicensing_api_client import ELicensingAPIClient
+from service.elicensing_api_client import ELicensingAPIClient, FeeCreationRequest, FeeCreationItem
 from service.operator_elicensing_service import OperatorELicensingService
 from service.elicensing_link_service import ELicensingLinkService
 from service.compliance_fee_service import ComplianceFeeService
@@ -24,8 +24,20 @@ class FeeELicensingService:
     This service handles syncing fee data between the system and eLicensing.
     """
 
+    # Mapping of our fee profile group names to eLicensing fee profile group names
+    FEE_PROFILE_GROUP_MAPPING = {
+        "EXCESS_EMISSIONS": "OBPS Compliance Obligation",
+        "ADMINISTRATIVE_PENALTY": "OBPS Administrative Penalty",
+    }
+
+    # Default descriptions if none provided
+    DEFAULT_FEE_DESCRIPTIONS = {
+        "EXCESS_EMISSIONS": "OBPS Excess Emissions Fee",
+        "ADMINISTRATIVE_PENALTY": "OBPS Administrative Penalty",
+    }
+
     @classmethod
-    def _map_fee_to_elicensing_data(cls, fee: ComplianceFee, fee_link: ELicensingLink) -> Dict[str, Any]:
+    def _map_fee_to_elicensing_data(cls, fee: ComplianceFee, fee_link: ELicensingLink) -> FeeCreationRequest:
         """
         Map fee data to eLicensing fee data format.
 
@@ -35,19 +47,36 @@ class FeeELicensingService:
 
         Returns:
             A dictionary with fee data in the format expected by the eLicensing API
+
+        Raises:
+            ValueError: If the fee has an invalid profile group name
         """
-        return {
-            "fees": [
-                {
-                    "businessAreaCode": fee.business_area_code,
-                    "feeGUID": str(fee_link.elicensing_guid),
-                    "feeProfileGroupName": fee.fee_profile_group_name,
-                    "feeDescription": fee.fee_description,
-                    "feeAmount": float(fee.fee_amount),
-                    "feeDate": fee.fee_date.strftime("%Y-%m-%d")
-                }
-            ]
-        }
+        # Map our profile group name to eLicensing profile group name
+        elicensing_profile_group = cls.FEE_PROFILE_GROUP_MAPPING.get(fee.fee_profile_group_name)
+        if not elicensing_profile_group:
+            raise ValueError(
+                f"Invalid fee profile group name: {fee.fee_profile_group_name}. "
+                f"Must be one of: {', '.join(cls.FEE_PROFILE_GROUP_MAPPING.keys())}"
+            )
+
+        # Use provided description or default if blank
+        fee_description = fee.fee_description
+        if not fee_description:
+            fee_description = cls.DEFAULT_FEE_DESCRIPTIONS.get(
+                fee.fee_profile_group_name, 
+                f"OBPS Fee - {fee.fee_profile_group_name}"
+            )
+
+        fee_item = FeeCreationItem(
+            businessAreaCode=fee.business_area_code,
+            feeGUID=str(fee_link.elicensing_guid),
+            feeProfileGroupName=elicensing_profile_group,
+            feeDescription=fee_description,
+            feeAmount=float(fee.fee_amount),
+            feeDate=fee.fee_date.strftime("%Y-%m-%d")
+        )
+
+        return {"fees": [fee_item]}
 
     @classmethod
     @transaction.atomic
@@ -63,6 +92,7 @@ class FeeELicensingService:
             
         Raises:
             ComplianceFee.DoesNotExist: If the fee doesn't exist
+            ValueError: If the fee has invalid data for eLicensing
         """
         try:
             fee = ComplianceFee.objects.get(id=fee_id)
@@ -103,7 +133,14 @@ class FeeELicensingService:
                 fee_link.save()
             
             # Prepare fee data for eLicensing API
-            fee_data = cls._map_fee_to_elicensing_data(fee, fee_link)
+            try:
+                fee_data = cls._map_fee_to_elicensing_data(fee, fee_link)
+            except ValueError as e:
+                logger.error(f"Error mapping fee {fee_id} to eLicensing format: {str(e)}")
+                fee_link.sync_status = "FAILED"
+                fee_link.sync_error = str(e)
+                fee_link.save()
+                return None
             
             # Make the API call
             try:
@@ -117,6 +154,7 @@ class FeeELicensingService:
                     if fee_result.get("feeGUID") == str(fee_link.elicensing_guid):
                         fee_link.elicensing_object_id = fee_result.get("feeObjectId")
                         fee_link.sync_status = "SUCCESS"
+                        fee_link.sync_error = None
                         fee_link.save()
                         
                         fee.elicensing_fee_object_id = fee_result.get("feeObjectId")
@@ -126,11 +164,15 @@ class FeeELicensingService:
                         return fee_link
                 
                 logger.error(f"Failed to find matching fee GUID in eLicensing response")
+                fee_link.sync_status = "FAILED"
+                fee_link.sync_error = "No matching fee found in response"
+                fee_link.save()
                 return None
                 
-            except requests.RequestException as e:
+            except (ValueError, requests.RequestException) as e:
                 logger.error(f"eLicensing API request failed for fee {fee_id}: {str(e)}")
                 fee_link.sync_status = "FAILED"
+                fee_link.sync_error = str(e)
                 fee_link.save()
                 return None
             

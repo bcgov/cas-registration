@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Any, Optional, cast, TypedDict, List
+from typing import Dict, Any, Optional, cast, TypedDict, List, Literal
 import requests
 from django.conf import settings
 
@@ -39,6 +39,25 @@ class ClientCreationResponse(TypedDict):
 
     clientObjectId: str
     clientGUID: str
+
+
+# Valid fee profile group names in eLicensing
+FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
+
+
+class FeeCreationItem(TypedDict):
+    """Type definition for a fee item in the fee creation request"""
+    businessAreaCode: str
+    feeGUID: str
+    feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
+    feeDescription: str  # Mandatory field
+    feeAmount: float
+    feeDate: str  # Format: YYYY-MM-DD
+
+
+class FeeCreationRequest(TypedDict):
+    """Type definition for the fee creation request to eLicensing API"""
+    fees: List[FeeCreationItem]
 
 
 class FeeItem(TypedDict):
@@ -351,20 +370,20 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_fees(self, client_id: str, fees_data: Dict[str, Any]) -> FeeResponse:
+    def create_fees(self, client_id: str, fees_data: FeeCreationRequest) -> FeeResponse:
         """
         Creates fee records for a specified client.
 
         Args:
             client_id: The client ID (can be either object ID or GUID)
-            fees_data: Fee data containing an array of fee records
+            fees_data: Fee data containing an array of fee records with:
                 {
                   "fees": [
                     {
                       "businessAreaCode": "OBPS",
                       "feeGUID": "string",
-                      "feeProfileGroupName": "string",
-                      "feeDescription": "string",
+                      "feeProfileGroupName": "OBPS Compliance Obligation" | "OBPS Administrative Penalty",
+                      "feeDescription": "string",  # Mandatory descriptive field
                       "feeAmount": number,
                       "feeDate": "YYYY-MM-DD"
                     },
@@ -378,9 +397,23 @@ class ELicensingAPIClient:
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
+            ValueError: If the response format is invalid or if mandatory fields are missing
             requests.HTTPError: If the API returns an error response
         """
+        # Validate mandatory fields
+        for fee in fees_data.get("fees", []):
+            if not fee.get("feeProfileGroupName"):
+                raise ValueError("feeProfileGroupName is mandatory for each fee")
+            
+            if fee.get("feeProfileGroupName") not in ["OBPS Compliance Obligation", "OBPS Administrative Penalty"]:
+                raise ValueError(
+                    f"Invalid feeProfileGroupName: {fee.get('feeProfileGroupName')}. "
+                    f"Must be one of: 'OBPS Compliance Obligation', 'OBPS Administrative Penalty'"
+                )
+                
+            if not fee.get("feeDescription"):
+                raise ValueError("feeDescription is mandatory for each fee")
+
         endpoint = f"/client/{client_id}/fees"
 
         response = self._make_request(endpoint, method='POST', data=fees_data)

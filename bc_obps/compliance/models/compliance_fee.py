@@ -21,6 +21,10 @@ class ComplianceFee(TimeStampedModel):
         SYNCED = "SYNCED", "Synced with eLicensing"
         PAID = "PAID", "Paid"
         CANCELLED = "CANCELLED", "Cancelled"
+        
+    class FeeProfileGroupName(models.TextChoices):
+        EXCESS_EMISSIONS = "EXCESS_EMISSIONS", "OBPS Compliance Obligation"
+        ADMINISTRATIVE_PENALTY = "ADMINISTRATIVE_PENALTY", "OBPS Administrative Penalty"
 
     # Fee calculation constants
     # From https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015
@@ -57,7 +61,8 @@ class ComplianceFee(TimeStampedModel):
     
     fee_profile_group_name = models.CharField(
         max_length=30,
-        default="EXCESS_EMISSIONS",
+        choices=FeeProfileGroupName.choices,
+        default=FeeProfileGroupName.EXCESS_EMISSIONS,
         db_comment="The fee profile group name for eLicensing integration",
     )
     
