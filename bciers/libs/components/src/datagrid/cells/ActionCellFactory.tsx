@@ -36,6 +36,8 @@ const ActionCellFactory = ({
         className="action-cell-text"
         onClick={useWindowLocation ? handleClick : undefined}
         href={href}
+        target={openInNewTab ? "_blank" : undefined}
+        rel={openInNewTab ? "noopener noreferrer" : undefined}
       >
         {tooltipText ? (
           <Tooltip className="flex align-center" title={tooltipText}>
