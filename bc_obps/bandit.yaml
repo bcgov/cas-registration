@@ -2,4 +2,5 @@ exclude_dirs: [
     "tests", # exclude tests directory
     "bc_obps/common/management/commands/check_migrations_with_prod_data", # skip this command as it is not a part of the application(we manually run this command)
     "bc_obps/reporting/models/triggers", # This is generating sql running during migrations, and won't be executed at runtime with the parameters
+    "bc_obps/common/lib/pgtrigger", # This is external code
   ]
