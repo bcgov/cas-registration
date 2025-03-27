@@ -85,6 +85,9 @@ export const restrictedRoutesNewEntrant = ["new-entrant-information"];
 // App routes restricted to EIO
 export const restrictedRoutesEIO = ["electricity-import-data"];
 
+// App routes restricted to Submitted
+export const restrictedRoutesSubmitted = ["submitted", "submission"];
+
 // App routes for submitted report
 export const reportRoutesSubmitted = ["submitted", "submission"];
 
@@ -101,5 +104,4 @@ export const reportRoutesReportingOperation = [
   "attachments",
   "sign-off",
   ...reportRoutesLFO,
-  ...reportRoutesSubmitted,
 ];

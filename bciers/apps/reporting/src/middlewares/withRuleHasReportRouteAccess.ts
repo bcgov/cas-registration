@@ -21,6 +21,7 @@ import {
   reportRoutesSubmitted,
   restrictedRoutesNewEntrant,
   restrictedRoutesEIO,
+  restrictedRoutesSubmitted,
 } from "./constants";
 import {
   NEW_ENTRANT_REGISTRATION_PURPOSE,
@@ -179,6 +180,34 @@ export const permissionRules: PermissionRule[] = [
         ),
       ),
   },
+  // Rule: check access to restricted submitted routes
+  {
+    name: "accessSubmitted",
+    isApplicable: (request, reportVersionId) =>
+      Boolean(
+        reportVersionId &&
+          restrictedRoutesSubmitted.some((path) =>
+            request.nextUrl.pathname.includes(path),
+          ),
+      ),
+    validate: async (reportVersionId, token, _request, context) => {
+      const reportOperation = await context!.getReportOperation(
+        reportVersionId,
+        token,
+      );
+      return (
+        reportOperation?.operation_report_status ===
+        ReportOperationStatus.SUBMITTED
+      );
+    },
+    redirect: (reportVersionId, request) =>
+      NextResponse.redirect(
+        new URL(
+          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.OPERATION}`,
+          request.url,
+        ),
+      ),
+  },
   // Rule: check access to restricted Verification route
   {
     name: "accessVerification",
@@ -221,8 +250,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (reportVersionId, token, request) => {
       if (
-        !reportRoutesSubmitted.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesSubmitted.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -249,8 +278,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (reportVersionId, token, request) => {
       if (
-        !reportRoutesReportingOperation.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesReportingOperation.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;

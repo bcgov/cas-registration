@@ -25,7 +25,10 @@ const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 vi.spyOn(NextResponse, "redirect");
 
 // Define allowed keys for route mocks.
-type RouteMockKey = "reportRoutesSubmitted" | "reportRoutesReportingOperation";
+type RouteMockKey =
+  | "reportRoutesSubmitted"
+  | "reportRoutesReportingOperation"
+  | "restrictedRoutesSubmitted";
 
 // Helper function for common middleware test setup.
 const runMiddlewareTest = async ({
@@ -123,15 +126,147 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     expect(result?.status).toBe(307);
   });
 
+  describe("EIO route tests (restrictedRoutesEIO)", () => {
+    const invalidEIOResponse = { registration_purpose: "NOT_EIO" };
+
+    // Loop over each route segment defined in restrictedRoutesEIO.
+    constants.restrictedRoutesEIO.forEach((routeSegment) => {
+      it(`redirects industry user for EIO route segment '${routeSegment}' when registration purpose is not ELECTRICITY_IMPORT_OPERATION`, async () => {
+        // Build a test URL using the current EIO route segment.
+        const testUrl = `${domain}/reporting/123/${routeSegment}`;
+
+        // Run the middleware test with an invalid registration purpose.
+        // The fetchResponses array supplies a response for the rule's getRegistrationPurpose call.
+        const { result } = await runMiddlewareTest({
+          userToken: mockIndustryUserToken,
+          url: testUrl,
+          fetchResponses: [
+            invalidEIOResponse, // This response will be used by context.getRegistrationPurpose for the accessEIO rule.
+          ],
+        });
+
+        // Expect a redirect because the registration purpose does not match ELECTRICITY_IMPORT_OPERATION.
+        expect(NextResponse.redirect).toHaveBeenCalledOnce();
+        expect(result?.status).toBe(307);
+      });
+    });
+  });
+
+  describe("LFO route segment tests", () => {
+    const invalidOperationResponse = { operation_type: "NOT_LFO" };
+    // Loop over each LFO route segment
+    constants.reportRoutesLFO.forEach((routeSegment) => {
+      it(`redirects industry user for LFO route segment '${routeSegment}' when operation type is not LFO`, async () => {
+        // Build a test URL with the current LFO segment
+        const testUrl = `${domain}/reporting/123/${routeSegment}`;
+
+        // Run the middleware test with an invalid operation type
+        const { result } = await runMiddlewareTest({
+          userToken: mockIndustryUserToken,
+          url: testUrl,
+          fetchResponses: [
+            invalidOperationResponse, // This will be used by getReportOperation
+          ],
+        });
+
+        // Expect a redirect because the operation type does not match LFO.
+        expect(NextResponse.redirect).toHaveBeenCalledOnce();
+        expect(result?.status).toBe(307);
+      });
+    });
+  });
+
+  describe("New Entrant route tests", () => {
+    const invalidNewEntrantResponse = {
+      registration_purpose: "NOT_NEW_ENTRANT",
+    };
+
+    // Loop over each route segment defined in restrictedRoutesNewEntrant.
+    constants.restrictedRoutesNewEntrant.forEach((routeSegment) => {
+      it(`redirects industry user for New Entrant route segment '${routeSegment}' when registration purpose is not NEW_ENTRANT_REGISTRATION_PURPOSE`, async () => {
+        // Build a test URL with the current New Entrant route segment.
+        const testUrl = `${domain}/reporting/123/${routeSegment}`;
+
+        // Run the middleware test with an invalid registration purpose.
+        // The fetchResponses array supplies a response for the rule's getRegistrationPurpose call.
+        const { result } = await runMiddlewareTest({
+          userToken: mockIndustryUserToken,
+          url: testUrl,
+          fetchResponses: [
+            invalidNewEntrantResponse, // This response will be used by context.getRegistrationPurpose for the accessNewEntrant rule.
+          ],
+        });
+
+        // Expect a redirect because the registration purpose does not match NEW_ENTRANT_REGISTRATION_PURPOSE.
+        expect(NextResponse.redirect).toHaveBeenCalledOnce();
+        expect(result?.status).toBe(307);
+      });
+    });
+  });
+
+  describe("Submitted route tests (restrictedRoutesSubmitted)", () => {
+    const invalidSubmittedResponse = {
+      operation_report_status: "NOT_SUBMITTED",
+    };
+
+    // Loop over each route segment defined in restrictedRoutesSubmitted.
+    constants.restrictedRoutesSubmitted.forEach((routeSegment) => {
+      it(`redirects industry user for submitted route segment '${routeSegment}' when operation status is not SUBMITTED`, async () => {
+        // Build a test URL using the current submitted route segment.
+        const testUrl = `${domain}/reporting/123/${routeSegment}`;
+
+        // Run the middleware test with a fetch response simulating a non-submitted operation.
+        const { result } = await runMiddlewareTest({
+          userToken: mockIndustryUserToken,
+          url: testUrl,
+          fetchResponses: [
+            invalidSubmittedResponse, // This response is used by the rule checking for SUBMITTED status.
+          ],
+          routeMocks: {
+            restrictedRoutesSubmitted: ["submitted", "submission"],
+          },
+        });
+
+        // Expect a redirect because the operation status is not SUBMITTED.
+        expect(NextResponse.redirect).toHaveBeenCalledOnce();
+        expect(result?.status).toBe(307);
+      });
+    });
+  });
+
+  describe("Verification route tests", () => {
+    // Define URL variants that should match the verification rule
+    const verificationTestUrls = [
+      `${domain}/reporting/reports/123/verification`,
+    ];
+
+    // For these tests, simulate the fetchResponse call to return a false value
+    // which means verification validation fails.
+    verificationTestUrls.forEach((testUrl) => {
+      it(`redirects industry user when verification check fails for URL "${testUrl}"`, async () => {
+        const { result } = await runMiddlewareTest({
+          userToken: mockIndustryUserToken,
+          url: testUrl,
+          fetchResponses: [
+            false, // This simulates the API returning a falsy value for needsVerification.
+          ],
+        });
+        // Expect a redirect due to failing validation.
+        expect(NextResponse.redirect).toHaveBeenCalledOnce();
+        expect(result?.status).toBe(307);
+      });
+    });
+  });
+
   // --- Passing tests for route rules ---
   it('allows industry user when "routeSubmittedReport" rule passes validation', async () => {
     const { nextMiddleware, result } = await runMiddlewareTest({
       userToken: mockIndustryUserToken,
       url: `${domain}/reporting/reports/123/submitted`,
       fetchResponses: [
-        {}, // For any rule that may be skipped.
-        {}, // For additional skipped rules.
-        { operation_report_status: ReportOperationStatus.SUBMITTED }, // For routeSubmittedReport (pass)
+        { operation_report_status: ReportOperationStatus.SUBMITTED }, // For accessSubmitted rule
+        {}, // For any additional rule that may be skipped.
+        { operation_report_status: ReportOperationStatus.SUBMITTED }, // For routeSubmittedReport rule
       ],
       routeMocks: {
         reportRoutesSubmitted: ["submitted", "submission"],
@@ -167,8 +302,6 @@ describe("withRuleHasReportRouteAccess middleware", () => {
           "review-facility-information",
           "end-of-facility-report",
           "operation-emission-summary",
-          "submitted",
-          "submission",
         ],
       },
     });
