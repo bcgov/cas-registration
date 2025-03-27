@@ -18,7 +18,6 @@ import {
   WidgetProps,
 } from "@rjsf/utils";
 import { useSession } from "next-auth/react";
-import { CircularProgress } from "@mui/material";
 import { AlertIcon } from "@bciers/components/icons";
 
 const addNameToDataURL = (dataURL: string, name: string) => {
@@ -46,7 +45,7 @@ type FileInfoType = {
   name: string;
   size: number;
   type: string;
-  scanStatus: FileScanStatus;
+  scanStatus?: FileScanStatus | null;
 };
 
 const processFile = (file: File): Promise<FileInfoType> => {
@@ -69,7 +68,7 @@ const processFile = (file: File): Promise<FileInfoType> => {
           name,
           size,
           type,
-          scanStatus: "Unscanned",
+          scanStatus: null,
         });
       }
     };
@@ -82,7 +81,7 @@ const processFiles = (files: FileList) => {
 };
 
 // Show a different message depending on the fileScanStatus
-const showScanStatus = (status: FileScanStatus | undefined) => {
+const showScanStatus = (status: FileScanStatus | undefined | null) => {
   if (status === "Quarantined") {
     return (
       <div className="flex items-center justify-between text-red-500 text-sm">
@@ -97,11 +96,7 @@ const showScanStatus = (status: FileScanStatus | undefined) => {
     return (
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
-          <span>Upload in progress....</span>
-          <span className="text-sm">This may take up to 5 minutes.</span>
-        </div>
-        <div>
-          <CircularProgress size={20} className="ml-2" />
+          <span>File is uploaded upon saving</span>
         </div>
       </div>
     );
