@@ -8,6 +8,8 @@ import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "../taskList/types";
+import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
+import { buildReviewFacilitiesSchema } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
 
 interface Props {
   version_id: number;
@@ -33,11 +35,13 @@ const FacilityReview: React.FC<Props> = ({
 }) => {
   const [formData, setFormData] = useState<any>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
-
+  const [facilitiesData, setFacilitiesData] = useState(() => ({
+    // a store of the facilities data that can be updated without changing the form data
+    ...formsData,
+  }));
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
-    const pathToRevalidate = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
 
     const activityNameToIdMap = new Map(
       activitiesData.map((activity: Activity) => [activity.name, activity.id]),
@@ -52,7 +56,7 @@ const FacilityReview: React.FC<Props> = ({
         .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
         .map(String), // Ensure all IDs are strings
     };
-    const response = await actionHandler(endpoint, method, pathToRevalidate, {
+    const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(updatedFormData),
     });
     if (response?.error) {
@@ -63,11 +67,31 @@ const FacilityReview: React.FC<Props> = ({
     setErrors(undefined);
     return true;
   };
+  const handleSync = async () => {
+    const updatedFacilityData = await getFacilityReportDetails(
+      version_id,
+      facility_id,
+    );
+    setFormData((prevFormData: any) => ({
+      ...prevFormData,
+      facility_name: updatedFacilityData.facility_name,
+      facility_type: updatedFacilityData.facility_type,
+      facility_bcghgid: updatedFacilityData.facility_bcghgid,
+    }));
+  };
 
   return (
     <MultiStepFormWithTaskList
       schema={schema}
-      uiSchema={facilityReviewUiSchema}
+      uiSchema={{
+        ...facilityReviewUiSchema,
+        sync_button: {
+          ...facilityReviewUiSchema.sync_button,
+          "ui:options": {
+            onSync: handleSync,
+          },
+        },
+      }}
       formData={formData}
       onSubmit={handleSubmit}
       onChange={(data: any) => {

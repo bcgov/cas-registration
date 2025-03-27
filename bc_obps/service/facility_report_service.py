@@ -2,7 +2,7 @@ from uuid import UUID
 from django.db import transaction
 from typing import List, Optional, Tuple, cast
 from ninja import Query
-from registration.models import Activity
+from registration.models import Activity, Facility
 from reporting.models.facility_report import FacilityReport
 from reporting.schema.facility_report import FacilityReportIn, FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
@@ -92,3 +92,17 @@ class FacilityReportService:
             FacilityReport.objects.filter(report_version_id=version_id, facility_id=facility_id).update(
                 is_completed=is_completed
             )
+
+    @classmethod
+    @transaction.atomic()
+    def sync_facility_report(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
+        facility = Facility.objects.get(id=facility_id)
+        facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+
+        facility_report.facility_name = facility.name
+        facility_report.facility_type = facility.type
+        facility_report.facility_bcghgid = facility.bcghgid
+
+        facility_report.save()
+
+        return facility_report
