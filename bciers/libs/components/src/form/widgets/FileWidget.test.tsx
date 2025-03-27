@@ -81,7 +81,7 @@ describe("RJSF FileWidget", () => {
       />,
     );
 
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "testpdf.pdf",
@@ -104,6 +104,7 @@ describe("RJSF FileWidget", () => {
         "Security risk found. Check for viruses or upload a different file.",
       ),
     ).toBeVisible();
+    expect(screen.getByRole("link", { name: "Preview" })).not.toBeVisible();
   });
 
   it("should render the file value when formData is provided and scanStatus is Clean", async () => {
@@ -126,7 +127,7 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.pdf",
@@ -176,14 +177,14 @@ describe("RJSF FileWidget", () => {
     });
 
     await userEvent.upload(input, mockKmlFile);
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.kml",
     );
 
     await userEvent.upload(input, mockKmzFile);
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.kmz",
@@ -214,7 +215,7 @@ describe("RJSF FileWidget", () => {
     const input = screen.getByLabelText(fileLabelRequired);
     await userEvent.upload(input, mockFile);
 
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test.pdf",
@@ -222,7 +223,7 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockFile2);
 
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test2.pdf",
@@ -246,7 +247,7 @@ describe("RJSF FileWidget", () => {
 
     await userEvent.upload(input, mockFile2);
 
-    expect(screen.getByText("Upload in progress....")).toBeVisible();
+    expect(screen.getByText("File is uploaded upon saving")).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
       "data-name",
       "test2.pdf",
