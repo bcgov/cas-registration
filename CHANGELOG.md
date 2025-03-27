@@ -1,3 +1,34 @@
+## [2.1.1](https://github.com/bcgov/cas-registration/compare/v2.0.1...v2.1.1) (2025-03-27)
+
+### Bug Fixes
+
+- 422 on facilities form and not allowed to submit with 0 zero facilities ([eadfea3](https://github.com/bcgov/cas-registration/commit/eadfea3398108ee0d408cf596e22cc3390b9abf8))
+- add gcp application credentials to cronjob ([af7beac](https://github.com/bcgov/cas-registration/commit/af7beacd51ddadfd9ee941b05f56d2ec15de7b0c))
+- bypass audit column for FileStatus update ([75fce05](https://github.com/bcgov/cas-registration/commit/75fce05be75736534aae821d20bf5875d0d04eec))
+- ensure file fetch works locally ([a11126a](https://github.com/bcgov/cas-registration/commit/a11126a0ae6b2f0078215062598a7d6ca859ce23))
+- incorrect indent in helm chart causes error ([4d57489](https://github.com/bcgov/cas-registration/commit/4d57489c5de769c89d159f839a06bae359b5ab3d))
+- new facility saves when there are existing facilities ([e95d2a7](https://github.com/bcgov/cas-registration/commit/e95d2a70476d3381aeed3f18509b007f31d7223b))
+- only add source types from the formData to the query string ([c536373](https://github.com/bcgov/cas-registration/commit/c5363730fdce9e8b7c0620eeb9ef94c5051631b2))
+- report submitted routing rule ([4ba58ea](https://github.com/bcgov/cas-registration/commit/4ba58eadea024631e505cb46c819806f34eac341))
+- Revalidate activity form path after saving, fixing the necessity to refresh activity form and emission summary page on navigation ([385d91a](https://github.com/bcgov/cas-registration/commit/385d91a073d586d1b69fbb826522aa2c0d44723b))
+- set status checking cronjob to once per 5 minutes ([c8e1c86](https://github.com/bcgov/cas-registration/commit/c8e1c86e7328342529142a22f3472e06d2242e92))
+
+### Features
+
+- add cronjob to check scanned documents every minute ([02c9283](https://github.com/bcgov/cas-registration/commit/02c92834704774e543a517fd11f22f11a8e75a31))
+- add delete user operator endpoint and service method ([c7ea101](https://github.com/bcgov/cas-registration/commit/c7ea1015e0ffc192301c9988f1acab2fa2586fad))
+- add multiple buckets and status to document model for malware scan ([c302471](https://github.com/bcgov/cas-registration/commit/c302471d2568aafe33ddc856653385cb22111ac0))
+- creates a client in eLicensing when report is submitted ([#3036](https://github.com/bcgov/cas-registration/issues/3036)) ([84e3662](https://github.com/bcgov/cas-registration/commit/84e3662d2e1d88787e6c14e448b27cff8b684955))
+- display message in file widget depending on file scan status ([d406417](https://github.com/bcgov/cas-registration/commit/d406417b1998af074acd5988da69e24defa8c5d6))
+- frontend work for access request grid ([b31ef8a](https://github.com/bcgov/cas-registration/commit/b31ef8adbda87a98d298fb5e7f9ed70b8ea63cc2))
+- set management to check scanner status ([6a2db86](https://github.com/bcgov/cas-registration/commit/6a2db86080d177903f9d449f75b84e411110c016))
+- submitted report version form ([725fae5](https://github.com/bcgov/cas-registration/commit/725fae5fa00e19e3d98bd17667a1289ce1b12c32))
+- supplementary report version ([75b8920](https://github.com/bcgov/cas-registration/commit/75b8920378c0f8f38f373d067217f83622f239a1))
+
+### Reverts
+
+- Revert "chore: set up mock data to reproduce bug" ([be63736](https://github.com/bcgov/cas-registration/commit/be637361e43b58b4f116b9a20f679179956eebc2))
+
 # [2.1.0](https://github.com/bcgov/cas-registration/compare/v2.0.1...v2.1.0) (2025-03-27)
 
 ### Bug Fixes
