@@ -95,6 +95,24 @@ export const fillContactForm = async () => {
   await userEvent.type(screen.getByLabelText(/Postal Code/i), "A1B 2C3");
 };
 
+const checkInlineMessage = (shouldExist = true) => {
+  const message = screen.queryByText(
+    /you can assign this representative to an operation directly in the operation information form\. to do so, go to the , select an operation, and go to the operation information form\./i,
+  );
+
+  if (shouldExist) {
+    expect(message).toBeVisible();
+    expect(
+      screen.getByRole("link", { name: /operations page/i }),
+    ).toBeInTheDocument();
+  } else {
+    expect(message).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /operations page/i }),
+    ).not.toBeInTheDocument();
+  }
+};
+
 describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -119,12 +137,7 @@ describe("ContactForm component", () => {
     // form fields and headings
     checkEmptyContactForm();
 
-    // Inline message
-    expect(
-      screen.getByText(
-        /To assign this representative to an operation, go to the operation information form/i,
-      ),
-    ).toBeVisible();
+    checkInlineMessage();
 
     // Buttons
     expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
@@ -147,12 +160,7 @@ describe("ContactForm component", () => {
       />,
     );
 
-    // Inline message
-    expect(
-      screen.queryByText(
-        /To assign this representative to an operation, go to the operation information form/i,
-      ),
-    ).not.toBeInTheDocument();
+    checkInlineMessage(false);
 
     expect(
       container.querySelector("#root_section1_first_name"),
