@@ -4,6 +4,7 @@ import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
 import LoopIcon from "@mui/icons-material/Loop";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 export const infoNote = (
   <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
@@ -44,5 +45,30 @@ export const SyncContactsButton: React.FC<FieldTemplateProps> = ({
     >
       <LoopIcon /> Sync latest data from registration
     </Button>
+  );
+};
+
+export const AddressErrorWidget = (props: any) => {
+  const { value, style, classNames, id } = props;
+  if (!value || value.trim() === "") return null;
+
+  return (
+    <Paper
+      sx={{
+        p: 1.5,
+        mt: 0,
+        mb: 1,
+        bgcolor: "error.light",
+        color: "error.contrastText",
+        width: "100%",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", width: "100%" }}>
+        <ErrorOutlineIcon sx={{ mr: 1 }} />
+        <Typography variant="body2" sx={{ width: "100%" }}>
+          <div dangerouslySetInnerHTML={{ __html: value }} />
+        </Typography>
+      </Box>
+    </Paper>
   );
 };
