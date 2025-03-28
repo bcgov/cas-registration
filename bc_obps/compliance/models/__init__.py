@@ -3,7 +3,6 @@ from .compliance_summary import ComplianceSummary
 from .compliance_product import ComplianceProduct
 from .compliance_obligation import ComplianceObligation
 from .elicensing_link import ELicensingLink
-from .compliance_fee import ComplianceFee
 
 __all__ = [
     'CompliancePeriod',
@@ -11,5 +10,4 @@ __all__ = [
     'ComplianceProduct',
     'ComplianceObligation',
     'ELicensingLink',
-    'ComplianceFee',
 ]
