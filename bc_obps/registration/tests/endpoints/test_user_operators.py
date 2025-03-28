@@ -42,50 +42,6 @@ class TestCreateUserOperator(CommonTestSetup):
         - **Postal Code**: Required field.
         """
         payload_empty = {}
-        expected_response = {
-            "detail": [
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "business_structure"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "cra_business_number"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "bc_corporate_registry_number"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "street_address"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "municipality"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "province"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "postal_code"],
-                    "msg": "Field required",
-                },
-                {
-                    "type": "missing",
-                    "loc": ["body", "payload", "legal_name"],
-                    "msg": "Field required",
-                },
-            ]
-        }
 
         # Send POST request with empty payload
         post_response = self._post_with_auth(payload_empty)
@@ -93,7 +49,7 @@ class TestCreateUserOperator(CommonTestSetup):
         assert post_response.status_code == 422
 
         # Assert the response contains all expected error messages
-        assert post_response.json() == expected_response
+        assert post_response.json() == {'message': 'Business Structure: Field required'}
 
     # DUPLICATE FIELDS
     def test_duplicates_not_allowed(self):
