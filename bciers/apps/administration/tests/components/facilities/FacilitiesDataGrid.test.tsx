@@ -10,6 +10,7 @@ import { useSearchParams } from "@bciers/testConfig/mocks";
 import FacilityDataGrid from "apps/administration/app/components/facilities/FacilitiesDataGrid";
 import { QueryParams } from "@bciers/testConfig/types";
 import extractParams from "@bciers/testConfig/helpers/extractParams";
+import userEvent from "@testing-library/user-event";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 
@@ -174,5 +175,55 @@ describe("FacilitiesDataGrid component", () => {
         extractParams(String(mockReplace.mock.calls), "facility__name"),
       ).toBe("facility 1");
     });
+  });
+
+  it("checks Action Cell links from Registration for new tab behavior and UI", async () => {
+    render(
+      <FacilityDataGrid
+        operationId="randomOperationUUID"
+        initialData={mockResponse}
+        fromRegistration={true}
+      />,
+    );
+
+    const actionCells: HTMLSpanElement[] =
+      await screen.findAllByText("View Details");
+    expect(actionCells).toHaveLength(mockResponse.rows.length);
+
+    actionCells.forEach((actionCell) => {
+      const tooltip = actionCell.parentElement;
+      expect(tooltip).toHaveAttribute("target", "_blank");
+      expect(tooltip).toHaveAttribute("rel", "noopener noreferrer");
+
+      // check for the tooltip text
+      userEvent.hover(actionCell);
+      waitFor(() => {
+        expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
+      });
+    });
+
+    // check for the "open in new tab" icon in the action cells
+    expect(screen.getAllByTestId("OpenInNewIcon")).toHaveLength(
+      mockResponse.rows.length,
+    );
+  });
+
+  it("opens Action Cells links in the same tab when coming from Administration module", async () => {
+    render(
+      <FacilityDataGrid
+        operationId="randomOperationUUID"
+        initialData={mockResponse}
+      />,
+    );
+
+    const actionCells = await screen.findAllByText("View Details");
+    expect(actionCells).toHaveLength(mockResponse.rows.length);
+
+    actionCells.forEach((actionCell) => {
+      expect(actionCell).not.toHaveAttribute("target", "_blank");
+      expect(actionCell).not.toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    expect(screen.queryByTestId("OpenInNewIcon")).not.toBeInTheDocument();
   });
 });
