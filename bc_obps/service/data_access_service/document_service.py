@@ -1,9 +1,9 @@
 from typing import Optional
 from uuid import UUID
+from common.lib import pgtrigger
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
 from django.core.files.storage import storages
-import pgtrigger
 
 
 class DocumentDataAccessService:
