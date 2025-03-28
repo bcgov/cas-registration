@@ -114,6 +114,20 @@ def get_facility_report_by_version_id(request: HttpRequest, version_id: int) -> 
     return 200, response_data
 
 
+@router.put(
+    "/report-version/{version_id}/facility-report/{facility_id}/update",
+    response={200: FacilityReportOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="Updates the facility report details by version_id and facility_id.",
+    auth=approved_authorized_roles_report_version_composite_auth,
+)
+def update_facility_report(
+    request: HttpRequest, version_id: int, facility_id: UUID
+) -> tuple[Literal[200], FacilityReport]:
+    facility_report = FacilityReportService.update_facility_report(version_id, facility_id)
+    return 200, facility_report
+
+
 @router.get(
     "/report-version/{version_id}/facility-report-list",
     response={200: list[FacilityReportListSchema], custom_codes_4xx: Message},
