@@ -24,7 +24,8 @@ interface FacilityInformationFormProps {
   initialGridData?: FacilityInitialData;
   isCreating: boolean;
   isOperationSfo: boolean;
-  operation: UUID | "create";
+  operationId: UUID | "create";
+  operationName: string;
   step: number;
   steps: string[];
 }
@@ -66,7 +67,8 @@ const FacilityInformationForm = ({
   initialGridData,
   isCreating,
   isOperationSfo,
-  operation,
+  operationId,
+  operationName,
   step,
   steps,
 }: FacilityInformationFormProps) => {
@@ -89,11 +91,13 @@ const FacilityInformationForm = ({
       <FacilitiesDataGrid
         disabled={isSubmitting}
         initialData={initialGridData ?? { rows: [], row_count: 0 }}
-        operationId={operation}
+        operationId={operationId}
+        operationName={operationName}
         sx={FacilityGridSx}
+        fromRegistration={true}
       />
     ),
-    [initialGridData, isSubmitting, operation],
+    [initialGridData, isSubmitting, operationId, operationName],
   );
 
   const handleFormChange = useCallback(
@@ -108,7 +112,7 @@ const FacilityInformationForm = ({
     // Facility Grid listerning to params change on this page which sometimes hijacked the route change
     window.location.href = `${
       window.location.origin
-    }/registration/register-an-operation/${operation}/${step + 1}`;
+    }/registration/register-an-operation/${operationId}/${step + 1}`;
   };
 
   const handleSubmit = useCallback(
@@ -139,7 +143,7 @@ const FacilityInformationForm = ({
         : `registration/facilities/${facilityId}`;
       const sfoFormData = isOperationSfo && {
         ...createUnnestedFormData(e.formData, formSectionListSfo),
-        operation_id: operation,
+        operation_id: operationId,
         facility_id: facilityId,
       };
 
@@ -153,7 +157,7 @@ const FacilityInformationForm = ({
           createUnnestedArrayFormData(
             e.formData.facility_information_array,
             formSectionListSfo,
-            operation,
+            operationId,
           );
 
       const response = await actionHandler(endpoint, method, "", {
@@ -169,13 +173,13 @@ const FacilityInformationForm = ({
 
       return response;
     },
-    [operation, isOperationSfo, formSectionListSfo, isCreating, facilityId],
+    [operationId, isOperationSfo, formSectionListSfo, isCreating, facilityId],
   );
 
   return (
     <MultiStepBase
       allowBackNavigation
-      baseUrl={`/register-an-operation/${operation}`}
+      baseUrl={`/register-an-operation/${operationId}`}
       cancelUrl="/"
       formData={formState}
       onChange={handleFormChange}

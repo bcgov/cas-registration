@@ -9,31 +9,46 @@ import createFetchFacilitiesPageData from "./createFetchFacilitiesPageData";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { GridRenderCellParams } from "@mui/x-data-grid";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import { useSearchParams } from "next/navigation";
 const FacilitiesDataGrid = ({
   disabled,
   operationId,
+  operationName,
   initialData,
   sx,
+  fromRegistration,
 }: {
   disabled?: boolean;
   operationId: string;
+  operationName?: string;
   initialData: {
     rows: FacilityRow[];
     row_count: number;
   };
   sx?: { [key: string]: any };
+  fromRegistration?: boolean;
 }) => {
   const searchParams = useSearchParams();
-  const operationsTitle = searchParams.get("operations_title") as string;
+  const operationsTitle =
+    (searchParams.get("operations_title") as string) ?? operationName;
   const createFacilitiesActionCell = () =>
     ActionCellFactory({
       generateHref: (params: GridRenderCellParams) => {
-        return `/administration/operations/${operationId}/facilities/${params.row.facility__id}?operations_title=${operationsTitle}&facilities_title=${params.row.facility__name}`;
+        return `/administration/operations/${operationId}/facilities/${
+          params.row.facility__id
+        }?operations_title=${operationsTitle}&facilities_title=${
+          params.row.facility__name
+        }${fromRegistration ? "&from_registration=true" : ""}`;
       },
       cellText: "View Details",
       useWindowLocation: true,
+      IconComponent: fromRegistration ? (
+        <OpenInNewIcon fontSize="small" />
+      ) : undefined,
+      openInNewTab: fromRegistration,
+      tooltipText: fromRegistration ? "Link opens in a new tab" : "",
     });
   const ActionCell = useMemo(() => createFacilitiesActionCell(), []);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);

@@ -122,7 +122,8 @@ const fillLatitudeLongitudeFields = (index: number) => {
 
 const defaultProps = {
   formData: {},
-  operation: "002d5a9e-32a6-4191-938c-2c02bfec592d" as UUID,
+  operationId: "002d5a9e-32a6-4191-938c-2c02bfec592d" as UUID,
+  operationName: "Vitest Operation",
   step: 2,
   steps: allOperationRegistrationSteps,
   initialGridData: { rows: [], row_count: 0 },
