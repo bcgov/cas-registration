@@ -64,7 +64,7 @@ class ComplianceSummaryService:
             # Create compliance obligation if there are excess emissions
             if compliance_data.excess_emissions > Decimal('0'):
                 ComplianceObligationService.create_compliance_obligation(
-                    summary.id, compliance_data.excess_emissions, report_version.report.reporting_year_id
+                    summary.id, compliance_data.excess_emissions, report_version
                 )
 
             return summary

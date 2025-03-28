@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
 from service.operator_elicensing_service import OperatorELicensingService
@@ -16,7 +17,7 @@ class ComplianceObligationService:
 
     @classmethod
     def create_compliance_obligation(
-        cls, compliance_summary_id: int, emissions_amount: Decimal, reporting_year: int
+        cls, compliance_summary_id: int, emissions_amount: Decimal, report_version: ReportVersion
     ) -> ComplianceObligation:
         """
         Creates a compliance obligation for a compliance summary
@@ -24,20 +25,21 @@ class ComplianceObligationService:
         Args:
             compliance_summary_id (int): The ID of the compliance summary
             emissions_amount (Decimal): The amount of excess emissions in tCO2e
-            reporting_year (int): The reporting year for calculating the obligation deadline
+            report_version (ReportVersion): The report version for calculating the obligation deadline and obligation_id
 
         Returns:
             ComplianceObligation: The created compliance obligation
 
         Raises:
             ComplianceSummary.DoesNotExist: If the compliance summary doesn't exist
+            ValueError: If the operation is not regulated by BC OBPS (no obligation_id can be generated)
         """
         with transaction.atomic():
             compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
 
             # Set obligation deadline to November 30 of the following year
             # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
-            obligation_deadline = cls.get_obligation_deadline(reporting_year)
+            obligation_deadline = cls.get_obligation_deadline(report_version.report.reporting_year_id)
 
             obligation = ComplianceObligation.objects.create(
                 compliance_summary=compliance_summary,
@@ -45,6 +47,7 @@ class ComplianceObligationService:
                 status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
                 penalty_status=ComplianceObligation.PenaltyStatus.NONE,
                 obligation_deadline=obligation_deadline,
+                obligation_id=cls._get_obligation_id(report_version),
             )
 
             # Ensure an eLicensing client exists for the operator
@@ -71,6 +74,38 @@ class ComplianceObligationService:
                 )
 
             return obligation
+
+    @classmethod
+    def _get_obligation_id(cls, report_version: ReportVersion) -> str:
+        """
+        Format the obligation ID as "YY-OOOO-R-V" where:
+        - YY-OOOO = BORO ID (from bc_obps_regulated_operation)
+        - R = Report ID
+        - V = Report version ID
+
+        Example: "21-0001-1-1"
+
+        Returns:
+            str: The formatted obligation ID
+
+        Raises:
+            ValueError: If the operation is not regulated by BC OBPS
+        """
+        # Get BORO ID (format: YY-OOOO)
+        operation = report_version.report.operation
+        if operation.bc_obps_regulated_operation is None:
+            raise ValueError(
+                f"Cannot create a compliance obligation for an operation not regulated by BC OBPS. Operation ID: {operation.id}, Operation Name: {operation.name}"
+            )
+
+        operation_part = operation.bc_obps_regulated_operation.id
+
+        # Get report (R) and version (V) IDs
+        report_id = str(report_version.report.id)
+        version_id = str(report_version.id)
+
+        # Format the complete obligation ID
+        return f"{operation_part}-{report_id}-{version_id}"
 
     @classmethod
     def get_obligation_deadline(cls, year: int) -> date:
