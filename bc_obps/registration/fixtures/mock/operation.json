@@ -149,8 +149,8 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-16T15:27:00.000Z",
-      "name": "Arctic LFO - Registered",
-      "type": "Linear Facilities Operation",
+      "name": "Arctic EIO - Registered",
+      "type": "Electricity Import Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990007",
@@ -258,8 +258,8 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-22T15:27:00.000Z",
-      "name": "Bojangles LFO - Draft",
-      "type": "Linear Facilities Operation",
+      "name": "Bojangles EIO - Draft",
+      "type": "Electricity Import Operation",
       "naics_code": 21,
       "opt_in": false,
       "bcghg_id": "23219990013",
