@@ -99,7 +99,7 @@ for event_model in event_models:
     create_pre_save_signal_handler(event_model)
 
 # Numbers have been chosen based on a 25mb file taking ~19 seconds to scan
-MAX_RETRIES = 20  # Number of times to retry if file isn't found
+MAX_RETRIES = 16  # Number of times to retry if file isn't found
 RETRY_DELAY = 1.5  # Delay between retries in seconds
 
 
