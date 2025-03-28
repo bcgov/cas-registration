@@ -95,11 +95,10 @@ class TestSendBoroIdApplicationEmail:
         )
         return mocked_send_email_by_template, expected_email_notifications_after_sending
 
-    @pytest.mark.parametrize("opted_in", [True, False])
     @pytest.mark.parametrize("application_state", list(BoroIdApplicationStates))
-    def test_send_boro_id_application_email_with_the_same_recipients(self, opted_in, application_state, mocker):
+    def test_send_boro_id_application_email_with_the_same_recipients(self, application_state, mocker):
         assert EmailNotification.objects.count() == 0
-        template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
+        template_name = f"BORO ID Application {application_state.value}"
         template_instance = EmailNotificationTemplateService.get_template_by_name(template_name)
         mocked_send_email_by_template, expected_email_notifications_after_sending = self.mock_email_service(mocker)
 
@@ -110,7 +109,6 @@ class TestSendBoroIdApplicationEmail:
             application_state,
             self.operation.operator.legal_name,
             self.operation.name,
-            opted_in,
             operation_creator=self.operation.created_by,
         )
 

@@ -30,7 +30,6 @@ def send_boro_id_application_email(
     application_state: BoroIdApplicationStates,
     operator_legal_name: str,
     operation_name: str,
-    opted_in: Optional[bool],
     operation_creator: Optional[User],
 ) -> None:
     """
@@ -40,7 +39,6 @@ def send_boro_id_application_email(
         application_state: The state of the BORO ID application, which is used to determine which email template should be used.
         operator_legal_name: The legal name of the operator to use in the email template.
         operation_name: The name of the operation to use in the email template.
-        opted_in: A boolean indicating whether or not the operation is required to register or is simply opting in.
         operation_creator: The user who created the operation.
 
     Raises:
@@ -50,7 +48,7 @@ def send_boro_id_application_email(
         None
     """
 
-    template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
+    template_name = f"BORO ID Application {application_state.value}"
     template = EmailNotificationTemplateService.get_template_by_name(template_name)
 
     # prepare recipients list
