@@ -341,7 +341,7 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "list_transfer_events"},
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "get", "endpoint_name": "get_internal_users"},
-        {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"transfer_id": MOCK_UUID}},
+        {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},
     ],
     "approved_authorized_roles": [
         {
