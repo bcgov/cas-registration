@@ -102,7 +102,9 @@ const validateFormData = (
         (p) => p.product_name === "Pulp and paper: chemical pulp",
       );
     if (!chemicalPulpAllocation)
-      newErrors.push("Missing Product: 'Pulp and paper: chemical pulp'");
+      newErrors.push(
+        "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+      );
     else if (
       chemicalPulpAllocation.allocated_quantity -
         overlappingIndustrialProcessEmissions <

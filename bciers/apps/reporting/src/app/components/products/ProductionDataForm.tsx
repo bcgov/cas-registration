@@ -61,7 +61,9 @@ const ProductionDataForm: React.FC<Props> = ({
     */
     if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
       if (!data.product_selection.includes("Pulp and paper: chemical pulp")) {
-        setErrors(["Missing Product: 'Pulp and paper: chemical pulp'"]);
+        setErrors([
+          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+        ]);
         return false;
       }
     }
