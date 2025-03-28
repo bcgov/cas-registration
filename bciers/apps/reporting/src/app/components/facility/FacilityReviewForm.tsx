@@ -8,8 +8,7 @@ import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "../taskList/types";
-import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
-import { buildReviewFacilitiesSchema } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
+import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
 
 interface Props {
   version_id: number;
@@ -35,10 +34,6 @@ const FacilityReview: React.FC<Props> = ({
 }) => {
   const [formData, setFormData] = useState<any>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
-  const [facilitiesData, setFacilitiesData] = useState(() => ({
-    // a store of the facilities data that can be updated without changing the form data
-    ...formsData,
-  }));
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
@@ -68,7 +63,7 @@ const FacilityReview: React.FC<Props> = ({
     return true;
   };
   const handleSync = async () => {
-    const updatedFacilityData = await getFacilityReportDetails(
+    const updatedFacilityData = await getUpdatedFacilityReportDetails(
       version_id,
       facility_id,
     );
