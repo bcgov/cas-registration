@@ -2,7 +2,6 @@ import logging
 import os
 from django.db.models import QuerySet
 from typing import Any, TypeVar, Union, Iterable, Dict, Optional
-from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, models
 from registration.constants import DEFAULT_API_NAMESPACE
@@ -10,13 +9,8 @@ import requests
 import base64
 import re
 from django.core.files.base import ContentFile
-from registration.models import (
-    Document,
-    UserOperator,
-)
+from registration.models import Document
 from django.urls import reverse_lazy
-from datetime import datetime
-from zoneinfo import ZoneInfo
 from ninja.types import DictStrAny
 from ninja.pagination import PageNumberPagination
 
@@ -122,11 +116,6 @@ def custom_reverse_lazy(view_name: str, *args: Any, **kwargs: DictStrAny) -> Uni
     A custom reverse_lazy function that includes the default API namespace.
     """
     return reverse_lazy(f"{DEFAULT_API_NAMESPACE}:{view_name}", *args, **kwargs)
-
-
-def set_verification_columns(record: UserOperator, user_guid: UUID) -> None:
-    record.verified_at = datetime.now(ZoneInfo("UTC"))
-    record.verified_by_id = user_guid
 
 
 class CustomPagination(PageNumberPagination):
