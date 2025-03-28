@@ -1,5 +1,6 @@
 from typing import Literal, Tuple
 from uuid import UUID
+from common.permissions import authorize
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from registration.constants import USER_TAGS
@@ -18,6 +19,7 @@ from django.utils import timezone
     tags=USER_TAGS,
     description="""Updates application role of the current user and optionally archives them.
 """,
+    auth=authorize("authorized_irc_user"),
 )
 def update_user_role(request: HttpRequest, user_id: UUID, payload: UserUpdateRoleIn) -> Tuple[Literal[200], User]:
     user = UserDataAccessService.update_user(user_guid=user_id, updated_data=payload, include_archived=True)

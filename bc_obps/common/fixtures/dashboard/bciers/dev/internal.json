@@ -93,6 +93,7 @@
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Users",
             "content": "View, approve or decline IDIR user access requests, or to assign access type to users here.",
+            "access_roles": ["cas_admin"],
             "links": [
               {
                 "title": "Access Requests",

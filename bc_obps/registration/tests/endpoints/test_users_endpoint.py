@@ -1,25 +1,21 @@
-from typing import Any, Dict
-from model_bakery import baker
-from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
-from registration.models.app_role import AppRole
-from registration.models.operator import Operator
-from registration.models.user_operator import UserOperator
-from registration.models import BusinessStructure
-from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from unittest.mock import patch, MagicMock
 from model_bakery.baker import make_recipe
 
+
 class TestGetInternalUsersEndpoint(CommonTestSetup):
-    @patch("service.data_access_service.user_service.UserDataAccessService.get_internal_users_including_archived", autospec=True)
+    @patch(
+        "service.data_access_service.user_service.UserDataAccessService.get_internal_users_including_archived",
+        autospec=True,
+    )
     def test_returns_data_as_provided_by_the_service(self, mock_get_internal_users_including_archived: MagicMock):
         """
         Testing that the API endpoint fetches the internal user data.
         """
         # Arrange: Mock users returned by the service
         internal_users = make_recipe('registration.tests.utils.cas_admin', _quantity=2)
-        internal_users += make_recipe('registration.tests.utils.cas_director', _quantity=2) 
+        internal_users += make_recipe('registration.tests.utils.cas_director', _quantity=2)
 
         mock_get_internal_users_including_archived.return_value = internal_users
         response = TestUtils.mock_get_with_auth_role(
@@ -34,12 +30,8 @@ class TestGetInternalUsersEndpoint(CommonTestSetup):
         # Assert: Validate the response structure and data
         response_json = response.json()
         assert len(response_json) == 4
-        assert response_json.keys() == {'count', 'items'}
-        assert sorted(response_json['items'][0].keys()) == sorted(
-            [
-                'role','id','name','email','archived_at'
-            ]
-        )
+        # assert response_json.keys() == {'count', 'items'}
+        assert sorted(response_json[0].keys()) == sorted(['role', 'id', 'name', 'email', 'archived_at'])
 
     def test_unauthorized_user_cannot_get(self):
         response = TestUtils.mock_get_with_auth_role(

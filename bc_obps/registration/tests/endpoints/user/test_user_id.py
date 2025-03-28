@@ -1,10 +1,5 @@
-import json
-import uuid
-from registration.schema import UserIn, UserUpdateIn
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.enums.enums import IdPs
 from registration.utils import custom_reverse_lazy
-from django.conf import settings
 from model_bakery.baker import make_recipe
 
 
@@ -13,25 +8,21 @@ class TestUserEndpoint(CommonTestSetup):
         # Act
 
         user = make_recipe('registration.tests.utils.cas_analyst')
-        
-        
-        response = TestUtils.mock_patch_with_auth_role(self, 'cas_admin',  self.content_type,
-            {'archive': False,
-            'app_role': 'cas_director'},
+
+        response = TestUtils.mock_patch_with_auth_role(
+            self,
+            'cas_admin',
+            self.content_type,
+            {'archive': False, 'app_role': 'cas_director'},
             custom_reverse_lazy(
-                "update_user",
-                kwargs={'facility_id': user.user_guid},
-            ),)
+                "update_user_role",
+                kwargs={'user_id': user.user_guid},
+            ),
+        )
 
         # Assert
         assert response.status_code == 200
         response_json = response.json()
-        assert sorted(response_json.keys()) == sorted(
-            [
-                'first_name','last_name', 'app_role','archived_at'
-            ]
-        )
+        assert sorted(response_json.keys()) == sorted(['first_name', 'last_name', 'app_role', 'archived_at'])
         assert response.json.app_role == 'cas_director'
         assert response.json.archived_at == None
-
-        
