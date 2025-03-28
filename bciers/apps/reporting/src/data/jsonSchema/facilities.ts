@@ -2,6 +2,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import CheckboxGroupWidget from "@bciers/components/form/widgets/CheckboxGroupWidget";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 
 export interface ActivityData {
   name: string;
@@ -38,6 +39,13 @@ export const buildFacilitySchema = (activities: ActivityData[]) =>
         },
         uniqueItems: true,
       },
+      sync_button: {
+        type: "object",
+        properties: {
+          label: { type: "string", default: "Sync Facilities" },
+          disabled: { type: "boolean", default: false },
+        },
+      },
     },
   }) as RJSFSchema;
 
@@ -68,5 +76,8 @@ export const facilityReviewUiSchema = {
       label: false,
       columns: 1,
     },
+  },
+  sync_button: {
+    "ui:FieldTemplate": SyncFacilitiesButton,
   },
 };

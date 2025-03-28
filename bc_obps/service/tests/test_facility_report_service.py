@@ -76,3 +76,24 @@ class TestFacilityReportService(TestCase):
         assert returned_data.facility_name == "CHANGED"
         assert returned_data.facility_type == facility_report.facility_type
         assert returned_data.facility_bcghgid == facility_report.facility_bcghgid
+
+    # @staticmethod
+    # def test_update_facility_report():
+    #     # Create a facility and a facility report
+    #
+    #     facility = baker.make('registration.Facility')
+    #     facility_report = baker.make('reporting.FacilityReport', report_version_id=1, facility_id=facility.id, facility_name='Old Name', facility_type='Old Type')
+    #
+    #     # Update the facility with new data
+    #     facility.name = 'New Name'
+    #     facility.type = 'New Type'
+    #     facility.bcghg_id.id = 'new_id'
+    #     facility.save()
+    #
+    #     # Call the update_facility_report method
+    #     updated_facility_report = FacilityReportService.update_facility_report(report_version_id=1, facility_id=facility.id)
+    #
+    #     # Assert that the facility report fields have been updated
+    #     assert updated_facility_report.facility_name == 'New Name'
+    #     assert updated_facility_report.facility_type == 'New Type'
+    #     assert updated_facility_report.facility_bcghgid == 'new_id'
