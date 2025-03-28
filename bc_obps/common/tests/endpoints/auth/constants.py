@@ -422,6 +422,11 @@ ENDPOINTS = {
             "endpoint_name": "get_operation_emission_summary_totals",
             "kwargs": {"version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_overlapping_industrial_process_emissions",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
     "cas_director": [

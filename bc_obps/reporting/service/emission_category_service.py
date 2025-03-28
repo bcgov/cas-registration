@@ -228,3 +228,30 @@ class EmissionCategoryService:
     def get_facility_emission_summary_form_data(cls, facility_report_id: int) -> dict:
         emission_totals = EmissionCategoryService.get_all_category_totals(facility_report_id)
         return EmissionCategoryService.transform_category_totals_to_summary_form_data(emission_totals)
+
+    # These functions calculate the sum of emissions where both the industrial process & excluded biomass (and woody biomass) have been applied.
+    # This is used in handling exceptions for pulp & paper emission reporting & compliance calculation
+    @classmethod
+    def get_industrial_process_excluded_biomass_overlap_by_facility(cls, facility_report_id: int) -> Decimal:
+        industrial_process_records = ReportEmission.objects_with_decimal_emissions.filter(
+            emission_categories__id=3,
+            report_source_type__report_activity__facility_report_id=facility_report_id,
+        )
+        woody_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=10)
+        other_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=11)
+        overlapping_records = woody_biomass_overlap_records.union(other_biomass_overlap_records)
+        total_overlapping_emissions = overlapping_records.aggregate(emission_sum=Sum('emission'))
+        return total_overlapping_emissions['emission_sum'] or Decimal(0)
+
+    @classmethod
+    def get_industrial_process_excluded_biomass_overlap_by_report_version(cls, report_version_id: int) -> Decimal:
+        industrial_process_records = ReportEmission.objects_with_decimal_emissions.filter(
+            emission_categories__id=3,
+            report_source_type__report_version_id=report_version_id,
+        )
+
+        woody_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=10)
+        other_biomass_overlap_records = industrial_process_records.filter(emission_categories__id=11)
+        overlapping_records = woody_biomass_overlap_records.union(other_biomass_overlap_records)
+        total_overlapping_emissions = overlapping_records.aggregate(emission_sum=Sum('emission'))
+        return total_overlapping_emissions['emission_sum'] or Decimal(0)

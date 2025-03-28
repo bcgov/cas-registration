@@ -5,7 +5,7 @@ export interface Product {
 }
 
 export interface EmissionAllocationData {
-  emission_category: string;
+  emission_category_name: string;
   emission_total: number;
   category_type: string;
   products: Product[];
