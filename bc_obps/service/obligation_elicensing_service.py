@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Optional
+from typing import Optional, Dict, Any
 from django.db import transaction
 from datetime import date
 
@@ -12,6 +12,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
+elicensing_api_client = ELicensingAPIClient()
 
 class ObligationELicensingService:
     """
@@ -90,6 +91,44 @@ class ObligationELicensingService:
             return None
 
     @classmethod
+    def _map_obligation_to_fee_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
+        """
+        Map obligation data to eLicensing fee data format.
+
+        Args:
+            obligation: The compliance obligation object
+
+        Returns:
+            A dictionary with fee data in the format expected by the eLicensing API
+        """
+        return {
+            "businessAreaCode": "OBPS",
+            "feeGUID": str(uuid.uuid4()),
+            "feeProfileGroupName": "OBPS Compliance Obligation",
+            "feeDescription": f"{obligation.compliance_summary.compliance_period.reporting_year.reporting_year} GGIRCA Compliance Obligation",
+            "feeAmount": float(obligation.fee_amount_dollars),
+            "feeDate": obligation.fee_date.strftime("%Y-%m-%d")
+        }
+
+    @classmethod
+    def _map_obligation_to_invoice_data(cls, obligation: ComplianceObligation, fee_id: str) -> Dict[str, Any]:
+        """
+        Map obligation data to eLicensing invoice data format.
+
+        Args:
+            obligation: The compliance obligation object
+            fee_id: The eLicensing fee ID to include in the invoice
+
+        Returns:
+            A dictionary with invoice data in the format expected by the eLicensing API
+        """
+        return {
+            "paymentDueDate": obligation.obligation_deadline.strftime("%Y-%m-%d"),
+            "businessAreaCode": "OBPS",
+            "fees": [fee_id]
+        }
+
+    @classmethod
     def sync_fee_with_elicensing(cls, obligation_id: int, client_link: ELicensingLink) -> Optional[ELicensingLink]:
         """
         Creates a fee in eLicensing for a compliance obligation.
@@ -105,31 +144,24 @@ class ObligationELicensingService:
             obligation = ComplianceObligation.objects.get(id=obligation_id)
             client_id = client_link.elicensing_object_id
             
-            # Prepare fee data for eLicensing
-            fee_data = {
-                "businessAreaCode": "OBPS",
-                "feeGUID": str(uuid.uuid4()),
-                "feeProfileGroupName": "OBPS Compliance Obligation",
-                "feeDescription": f"{obligation.compliance_summary.report.reporting_year} GGIRCA Compliance Obligation",
-                "feeAmount": float(obligation.fee_amount_dollars),
-                "feeDate": obligation.fee_date.strftime("%Y-%m-%d")
-            }
+            fee_data = cls._map_obligation_to_fee_data(obligation)
             
             # Create fee in eLicensing
-            api_client = ELicensingAPIClient()
-            response = api_client.create_fees(client_id, {"fees": [fee_data]})
+            response = elicensing_api_client.create_fees(client_id, {"fees": [fee_data]})
             
             if not response or "fees" not in response or not response["fees"]:
                 logger.error(f"Failed to create fee in eLicensing for obligation {obligation_id}")
                 return None
                 
             fee_object_id = response["fees"][0]["feeObjectId"]
+            elicensing_guid = response["fees"][0]["feeGUID"]
             
             # Create link between obligation and eLicensing fee
             fee_link = ELicensingLinkService.create_link(
                 obligation,
                 fee_object_id,
-                ELicensingLink.ObjectKind.FEE
+                ELicensingLink.ObjectKind.FEE,
+                elicensing_guid
             )
             
             return fee_link
@@ -156,19 +188,10 @@ class ObligationELicensingService:
             client_id = client_link.elicensing_object_id
             fee_id = fee_link.elicensing_object_id
             
-            # Calculate payment due date (30 days from today)
-            payment_due_date = date.today().replace(day=date.today().day + 30)
-            
-            # Prepare invoice data for eLicensing
-            invoice_data = {
-                "paymentDueDate": payment_due_date.strftime("%Y-%m-%d"),
-                "businessAreaCode": "OBPS",
-                "fees": [fee_id]
-            }
+            invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_id)
             
             # Create invoice in eLicensing
-            api_client = ELicensingAPIClient()
-            response = api_client.create_invoice(client_id, invoice_data)
+            response = elicensing_api_client.create_invoice(client_id, invoice_data)
             
             if not response or "invoiceNumber" not in response:
                 logger.error(f"Failed to create invoice in eLicensing for obligation {obligation_id}")
@@ -180,7 +203,8 @@ class ObligationELicensingService:
             invoice_link = ELicensingLinkService.create_link(
                 obligation,
                 invoice_number,
-                "invoice"
+                ELicensingLink.ObjectKind.INVOICE,
+                elicensing_guid=invoice_number
             )
             
             return invoice_link
