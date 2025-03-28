@@ -37,10 +37,8 @@ if CI == 'true' or ENVIRONMENT == 'local':
     # Use local file storage for tests
     MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
     STORAGES = {
+        "default": {"BACKEND": "bc_obps.storage_backends.SimpleLocal"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
-        "default": {"BACKEND": "bc_obps.storage_backends.UnscannedLocal"},
-        "clean": {"BACKEND": "bc_obps.storage_backends.CleanLocal"},
-        "quarantined": {"BACKEND": "bc_obps.storage_backends.QuarantinedLocal"},
     }
 else:
     # Google Cloud Storage Settings
@@ -49,9 +47,7 @@ else:
     GS_QUARANTINED_BUCKET_NAME = os.environ.get("GS_QUARANTINED_BUCKET_NAME")
 
     STORAGES = {
-        "default": {"BACKEND": "bc_obps.storage_backends.UnscannedBucketStorage"},
-        "clean": {"BACKEND": "bc_obps.storage_backends.CleanBucketStorage"},
-        "quarantined": {"BACKEND": "bc_obps.storage_backends.QuarantinedBucketStorage"},
+        "default": {"BACKEND": "bc_obps.storage_backends.UnifiedGcsStorage"},
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
     }
     if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
