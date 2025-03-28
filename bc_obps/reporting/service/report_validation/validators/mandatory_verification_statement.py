@@ -31,7 +31,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
                 attachment_type=ReportAttachment.ReportAttachmentType.VERIFICATION_STATEMENT,
             )
         except ReportAttachment.DoesNotExist:
-            errors["verififcation_statement"] = ReportValidationError(
+            errors["verification_statement"] = ReportValidationError(
                 Severity.ERROR,
                 "Mandatory verification statement document was not uploaded with this report.",
             )

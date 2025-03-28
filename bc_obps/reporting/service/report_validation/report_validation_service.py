@@ -50,7 +50,7 @@ class ReportValidationService:
             for validation_plugin in ReportValidationService.validation_plugins
         ]
 
-        # Aggregate the results in one dictionary by key
+        # Aggregate the results in one dictionary, by key
         error_dictionary: dict[str, ReportValidationError] = reduce(lambda acc, curr: {**acc, **curr}, results, {})
 
         return error_dictionary
