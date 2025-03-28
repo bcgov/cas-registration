@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import {
   checkTextWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
-} from "@/tests/helpers/form";
+} from "@bciers/testConfig/helpers/form";
 
 const dateWidgetFieldLabel = "DateWidget test field";
 const dateWidgetLabelRequired = `${dateWidgetFieldLabel}*`;

@@ -5,7 +5,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   checkNoValidationErrorIsTriggered,
   checkComboBoxWidgetValidationStyles,
-} from "@/tests/helpers/form";
+} from "@bciers/testConfig/helpers/form";
 
 const multiSelectFieldLabel = "MultiSelectWidget test field";
 const multiSelectLabelRequired = `${multiSelectFieldLabel}*`;

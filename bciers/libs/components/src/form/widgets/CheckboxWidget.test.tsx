@@ -2,7 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
+import { checkNoValidationErrorIsTriggered } from "@bciers/testConfig/helpers/form";
 const checkboxFieldLabel = "Checkbox test field";
 
 const checkboxFieldSchema = {
