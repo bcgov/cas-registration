@@ -11,7 +11,7 @@ def call_endpoint(client, method, endpoint, app_role=None):
 
     if app_role:
         user = baker.make(
-            User, app_role_id=app_role, _fill_optional=True
+            User, app_role_id=app_role, archived_by=None, archived_at=None,_fill_optional=True
         )  # Passing _fill_optional to fill all fields with random data
         auth_header = {'user_guid': str(user.user_guid)}
         kwargs['HTTP_AUTHORIZATION'] = json.dumps(auth_header)

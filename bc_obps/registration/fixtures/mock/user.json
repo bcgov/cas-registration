@@ -10,7 +10,7 @@
       "position_title": "Code Monkey",
       "email": "somebody@email.com",
       "phone_number": "+16044015432",
-      "app_role": "cas_analyst"
+      "app_role": "cas_admin"
     }
   },
   {
@@ -358,7 +358,7 @@
       "first_name": "CAS",
       "last_name": "DIRECTOR",
       "position_title": "Code Monkey",
-      "email": "somebody@email.com",
+      "email": "cas_director@email.com",
       "phone_number": "+16044015432",
       "app_role": "cas_director"
     }

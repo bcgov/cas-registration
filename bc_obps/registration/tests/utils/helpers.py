@@ -200,7 +200,7 @@ class CommonTestSetup:
     def setup_method(self):
         self.content_type = "application/json"
         self.user = baker.make(
-            User, app_role_id="industry_user", _fill_optional=True
+            User, app_role_id="industry_user", _fill_optional=True, archived_at=None, archived_by=None
         )  # Passing _fill_optional to fill all fields with random data
         self.auth_header = {'user_guid': str(self.user.user_guid)}
         self.auth_header_dumps = json.dumps(self.auth_header)
