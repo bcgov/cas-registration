@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0098_V2_1_1'),
+        ('registration', '0099_remove_historicaloperation_operation_has_multiple_operators_and_more'),
     ]
 
     operations = [
