@@ -2,6 +2,7 @@ from model_bakery import baker
 from unittest.mock import patch, MagicMock, AsyncMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportSupplementaryApi(CommonTestSetup):
@@ -25,7 +26,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
 
         # Act: Authorize user and perform POST request
         endpoint_under_test = "create_report_supplementary_version"
-        endpoint_under_test_kwargs = {"report_version_id": self.old_report_version.id}
+        endpoint_under_test_kwargs = {"version_id": self.old_report_version.id}
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -43,3 +44,6 @@ class TestReportSupplementaryApi(CommonTestSetup):
 
         # Assert: Ensure the service method was called with the correct version_id
         mock_create_report_supplementary_version.assert_called_once_with(self.old_report_version.id)
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")

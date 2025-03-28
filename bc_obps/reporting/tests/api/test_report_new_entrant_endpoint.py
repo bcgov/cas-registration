@@ -6,6 +6,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.models.emission_category import EmissionCategory
 from reporting.schema.report_new_entrant import ReportNewEntrantSchemaIn
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestNewEntrantDataApi(CommonTestSetup):
@@ -43,7 +44,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_new_entrant_data",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -119,7 +120,7 @@ class TestNewEntrantDataApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_new_entrant_data",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -225,9 +226,13 @@ class TestNewEntrantDataApi(CommonTestSetup):
             payload.dict(),  # Pass the payload directly as it's already a dictionary
             custom_reverse_lazy(
                 "save_new_entrant_data",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
         # Assert: Verify response status
         assert response.status_code == 200
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_new_entrant_data")
+        assert_report_version_ownership_is_validated("save_new_entrant_data", method="post")

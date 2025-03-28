@@ -66,7 +66,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_report_additional_data_by_version_id",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "get",
@@ -81,7 +81,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_report_verification_by_version_id",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "get",
@@ -93,7 +93,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "load_production_data",
-            "kwargs": {"report_version_id": MOCK_INT, "facility_id": MOCK_UUID},
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {
             "method": "get",
@@ -104,7 +104,7 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "load_report_activity_data",
             "kwargs": {
-                "report_version_id": MOCK_INT,
+                "version_id": MOCK_INT,
                 "facility_id": MOCK_UUID,
                 "activity_id": MOCK_INT,
             },
@@ -112,7 +112,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_new_entrant_data",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "get",
@@ -127,7 +127,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_selected_facilities",
-            "kwargs": {'report_version_id': MOCK_VERSION},
+            "kwargs": {'version_id': MOCK_VERSION},
         },
         {
             "method": "get",
@@ -137,17 +137,17 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_report_attachments",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "get",
             "endpoint_name": "get_emission_allocations",
-            "kwargs": {"report_version_id": MOCK_INT, "facility_id": MOCK_UUID},
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {
             "method": "get",
             "endpoint_name": "get_report_needs_verification",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {"method": "post", "endpoint_name": "create_facilities"},
         {"method": "post", "endpoint_name": "create_contact"},
@@ -159,7 +159,7 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_new_entrant_data",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "post",
@@ -179,7 +179,7 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_selected_facilities",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "post",
@@ -189,7 +189,7 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_report_verification",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "post",
@@ -200,7 +200,7 @@ ENDPOINTS = {
             "method": "post",
             "endpoint_name": "save_report_activity_data",
             "kwargs": {
-                "report_version_id": MOCK_INT,
+                "version_id": MOCK_INT,
                 "facility_id": MOCK_UUID,
                 "activity_id": MOCK_INT,
             },
@@ -208,17 +208,17 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_production_data",
-            "kwargs": {"report_version_id": MOCK_INT, "facility_id": MOCK_UUID},
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {
             "method": "post",
             "endpoint_name": "save_emission_allocation_data",
-            "kwargs": {"report_version_id": MOCK_INT, "facility_id": MOCK_UUID},
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {
             "method": "post",
             "endpoint_name": "save_report_attachments",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "put",
@@ -238,7 +238,7 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "create_report_supplementary_version",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "post",
@@ -287,7 +287,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_compliance_summary_data",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "get",

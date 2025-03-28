@@ -4,6 +4,7 @@ from model_bakery import baker
 from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestFacilitiesReviewEndpoints(CommonTestSetup):
@@ -32,7 +33,7 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_selected_facilities",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
         assert response.status_code == 200
@@ -57,7 +58,11 @@ class TestFacilitiesReviewEndpoints(CommonTestSetup):
             payload,
             custom_reverse_lazy(
                 "save_selected_facilities",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
         assert response.status_code == 200
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_selected_facilities")
+        assert_report_version_ownership_is_validated("save_selected_facilities", method="post")

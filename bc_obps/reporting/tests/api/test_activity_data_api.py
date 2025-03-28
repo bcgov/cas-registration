@@ -4,6 +4,7 @@ from registration.tests.utils.bakers import operator_baker
 from model_bakery import baker
 
 from registration.utils import custom_reverse_lazy
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestActivityData(CommonTestSetup):
@@ -12,6 +13,7 @@ class TestActivityData(CommonTestSetup):
         facility_report = baker.make_recipe(
             'reporting.tests.utils.facility_report',
             report_version__report__reporting_year_id=2025,
+            report_version__report__operator=operator,
         )
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
@@ -31,8 +33,11 @@ class TestActivityData(CommonTestSetup):
         assert len(response_object['sourceTypeMap'].keys()) == 2
 
     def test_invalid_without_activity(self):
-        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
         operator = operator_baker()
+        facility_report = baker.make_recipe(
+            'reporting.tests.utils.facility_report', report_version__report__operator=operator
+        )
+
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
@@ -45,3 +50,6 @@ class TestActivityData(CommonTestSetup):
         )
 
         assert response.status_code == 422
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_initial_activity_data", facility_id="uuid")

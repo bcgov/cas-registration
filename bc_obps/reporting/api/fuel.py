@@ -1,3 +1,4 @@
+from common.permissions import authorize
 from service.data_access_service.fuel_service import FuelTypeDataAccessService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
@@ -14,6 +15,7 @@ from registration.schema import Message
 @router.get(
     "/fuel",
     response={200: FuelTypeSchema, custom_codes_4xx: Message},
+    auth=authorize("approved_authorized_roles"),
 )
 def get_fuel_data(
     request: HttpRequest,
