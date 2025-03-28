@@ -1,3 +1,11 @@
-from . import mandatory_verification_statement, test_validator, new_validator
+# Example:
+# from . import example_validator
 
-__all__ = ["mandatory_verification_statement", "test_validator", "new_validator"]
+from . import mandatory_verification_statement
+
+
+__all__ = [
+    # Example:
+    # "example_validator",
+    "mandatory_verification_statement",
+]
