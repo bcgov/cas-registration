@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.core.exceptions import ValidationError
 from reporting.service.report_sign_off_service import ReportSignOffService
 from reporting.schema.report_sign_off import ReportSignOffIn
 from reporting.models.report_version import ReportVersion
@@ -19,7 +20,13 @@ class ReportSubmissionService:
     def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffIn) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
-        ReportValidationService.validate_report_version(version_id)
+        validation_result = ReportValidationService.validate_report_version(version_id)
+
+        # The validation service now returns erros, but to not change the system behaviour,
+        # we raise an error for now.
+        for error_key, error in validation_result.items():
+            raise ValidationError(error_key)
+
         ReportSignOffService.save_report_sign_off(version_id, sign_off_data)
         # Mark the previous latest submitted version as not latest
         with pgtrigger.ignore("reporting.ReportVersion:set_updated_audit_columns"):

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 
 
@@ -6,6 +7,7 @@ class Severity(Enum):
     ERROR = "Error"
 
 
+@dataclass
 class ReportValidationError:
     """
     Data type for validation error
@@ -16,7 +18,3 @@ class ReportValidationError:
 
     severity: Severity
     message: str
-
-    def __init__(self, severity: Severity, message: str):
-        self.severity = severity
-        self.message = message
