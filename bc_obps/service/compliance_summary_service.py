@@ -7,7 +7,11 @@ from reporting.service.compliance_service import ComplianceService as ReportComp
 from compliance.models import ComplianceSummary, ComplianceProduct
 from service.compliance_period_service import CompliancePeriodService
 from service.compliance_obligation_service import ComplianceObligationService
+from service.obligation_elicensing_service import ObligationELicensingService
 from django.core.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ComplianceSummaryService:
@@ -16,6 +20,7 @@ class ComplianceSummaryService:
     """
 
     @classmethod
+    @transaction.atomic
     def create_compliance_summary(cls, report_version_id: int, user_guid: UUID) -> ComplianceSummary:
         """
         Creates a compliance summary for a submitted report version
@@ -40,7 +45,7 @@ class ComplianceSummaryService:
                     f"No compliance period exists for reporting year {report_version.report.reporting_year_id}"
                 )
 
-            # Get compliance data from reporting service
+            # Calculate compliance data
             compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
 
             # Create compliance summary
@@ -63,11 +68,41 @@ class ComplianceSummaryService:
 
             # Create compliance obligation if there are excess emissions
             if compliance_data.excess_emissions > Decimal('0'):
-                ComplianceObligationService.create_compliance_obligation(
+                # Domain operation - create the obligation
+                obligation = ComplianceObligationService.create_compliance_obligation(
                     summary.id, compliance_data.excess_emissions, report_version.report.reporting_year_id
                 )
+                
+                # Integration operation - handle eLicensing integration
+                try:
+                    # This is done outside of the main transaction to prevent rollback if integration fails
+                    transaction.on_commit(
+                        lambda: cls._process_obligation_integration(obligation.id)
+                    )
+                except Exception as e:
+                    logger.error(f"Error scheduling eLicensing integration for obligation {obligation.id}: {str(e)}", 
+                                 exc_info=True)
 
             return summary
+            
+    @classmethod
+    def _process_obligation_integration(cls, obligation_id: int) -> None:
+        """
+        Process the eLicensing integration for an obligation.
+        This is executed after the transaction is committed.
+        
+        Args:
+            obligation_id: The ID of the obligation to process
+        """
+        try:
+            success = ObligationELicensingService.process_obligation_integration(obligation_id)
+            if success:
+                logger.info(f"Successfully processed eLicensing integration for obligation {obligation_id}")
+            else:
+                logger.warning(f"Failed to process eLicensing integration for obligation {obligation_id}")
+        except Exception as e:
+            logger.error(f"Unexpected error in obligation eLicensing integration for {obligation_id}: {str(e)}", 
+                         exc_info=True)
 
     @classmethod
     def _create_compliance_products(

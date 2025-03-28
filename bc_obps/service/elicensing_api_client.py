@@ -1,7 +1,8 @@
 import logging
-from typing import Dict, Any, Optional, cast, TypedDict
+from typing import Dict, Any, Optional, cast, TypedDict, List, Literal
 import requests
 from django.conf import settings
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +40,75 @@ class ClientCreationResponse(TypedDict):
 
     clientObjectId: str
     clientGUID: str
+
+
+# Valid fee profile group names in eLicensing
+FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
+
+
+class FeeCreationItem(TypedDict):
+    """Type definition for a fee item in the fee creation request"""
+    businessAreaCode: str
+    feeGUID: str
+    feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
+    feeDescription: str  # Mandatory field
+    feeAmount: float
+    feeDate: str  # Format: YYYY-MM-DD
+
+
+class FeeCreationRequest(TypedDict):
+    """Type definition for the fee creation request to eLicensing API"""
+    fees: List[FeeCreationItem]
+
+
+class FeeItem(TypedDict):
+    """Type definition for a fee item in the eLicensing API response"""
+    feeGUID: str
+    feeObjectId: str
+    businessAreaCode: Optional[str]
+    feeProfileGroupName: Optional[str]
+    feeDescription: Optional[str]
+    feeAmount: Optional[float]
+    feeDate: Optional[str]
+
+
+class FeeResponse(TypedDict):
+    """Type definition for the fee creation response from eLicensing API"""
+    clientObjectId: str
+    clientGUID: str
+    fees: List[FeeItem]
+
+
+class InvoiceResponse(TypedDict):
+    clientObjectId: str
+    businessAreaCode: str
+    clientGUID: str
+    invoiceNumber: str
+
+
+class InvoiceCreationRequest(TypedDict):
+    paymentDueDate: str
+    businessAreaCode: str
+    fees: List[str]
+
+
+class FeeRequest(TypedDict):
+    """Type for fee creation request"""
+    clientId: str
+    amount: str
+    description: str
+    profileGroupName: str
+    businessAreaCode: str
+    effectiveDate: str
+    expiryDate: str
+    status: str
+
+
+
+
+class ELicensingAPIError(Exception):
+    """Exception for eLicensing API errors"""
+    pass
 
 
 class ELicensingAPIClient:
@@ -333,22 +403,51 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_fees(self, fees_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_fees(self, client_id: str, fees_data: FeeCreationRequest) -> FeeResponse:
         """
-        Creates fees for a client.
+        Creates fee records for a specified client.
 
         Args:
-            fees_data: Fees data according to the API specification
+            client_id: The client ID (can be either object ID or GUID)
+            fees_data: Fee data containing an array of fee records with:
+                {
+                  "fees": [
+                    {
+                      "businessAreaCode": "OBPS",
+                      "feeGUID": "string",
+                      "feeProfileGroupName": "OBPS Compliance Obligation" | "OBPS Administrative Penalty",
+                      "feeDescription": "string",  # Mandatory descriptive field
+                      "feeAmount": number,
+                      "feeDate": "YYYY-MM-DD"
+                    },
+                    ...
+                  ]
+                }
 
         Returns:
-            Response data
+            FeeResponse: Response data containing clientObjectId, clientGUID, and an array of created fees
+            with their feeGUID and feeObjectId
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
+            ValueError: If the response format is invalid or if mandatory fields are missing
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/fees"
+        # Validate mandatory fields
+        for fee in fees_data.get("fees", []):
+            if not fee.get("feeProfileGroupName"):
+                raise ValueError("feeProfileGroupName is mandatory for each fee")
+            
+            if fee.get("feeProfileGroupName") not in ["OBPS Compliance Obligation", "OBPS Administrative Penalty"]:
+                raise ValueError(
+                    f"Invalid feeProfileGroupName: {fee.get('feeProfileGroupName')}. "
+                    f"Must be one of: 'OBPS Compliance Obligation', 'OBPS Administrative Penalty'"
+                )
+                
+            if not fee.get("feeDescription"):
+                raise ValueError("feeDescription is mandatory for each fee")
+
+        endpoint = f"/client/{client_id}/fees"
 
         response = self._make_request(endpoint, method='POST', data=fees_data)
 
@@ -357,16 +456,32 @@ class ELicensingAPIClient:
                 json_response = response.json()
                 if not isinstance(json_response, dict):
                     raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
+
+                # Validate required fields
+                if 'clientObjectId' not in json_response:
+                    raise ValueError(f"Missing clientObjectId in response: {json_response}")
+                if 'clientGUID' not in json_response:
+                    raise ValueError(f"Missing clientGUID in response: {json_response}")
+                if 'fees' not in json_response or not isinstance(json_response['fees'], list):
+                    raise ValueError(f"Missing or invalid fees array in response: {json_response}")
+
+                # Validate each fee in the response
+                for fee in json_response['fees']:
+                    if 'feeGUID' not in fee:
+                        raise ValueError(f"Missing feeGUID in fee response: {fee}")
+                    if 'feeObjectId' not in fee:
+                        raise ValueError(f"Missing feeObjectId in fee response: {fee}")
+
+                return cast(FeeResponse, json_response)
             except ValueError as e:
-                logger.error(f"Error with fees creation response: {str(e)}, Response: {response.text}")
+                logger.error(f"Error parsing fee creation response: {str(e)}, Response: {response.text}")
                 raise
             except Exception as e:
-                logger.error(f"Error parsing fees creation response: {str(e)}, Response: {response.text}")
+                logger.error(f"Error with fee creation response: {str(e)}, Response: {response.text}")
                 raise ValueError(f"Failed to parse API response: {str(e)}")
         else:
             self._handle_error_response(response, "create fees")
-            # This line should never be reached due to raise_for_status in _handle_error_response
+            # This should never be reached
             raise RuntimeError("Unexpected code path - API error handling failed")
 
     def adjust_fees(self, adjustment_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -483,41 +598,43 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_invoice(self, invoice_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """
-        Creates an invoice.
+        Creates an invoice in eLicensing for a set of fees.
 
         Args:
-            invoice_data: Invoice data according to the API specification
+            client_id: The ID of the client
+            invoice_data: The invoice data to create
 
         Returns:
-            Response data
+            InvoiceResponse: The response from the API
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
-            requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/invoice"
+        response = self._make_request(
+            f"/client/{client_id}/invoice",
+            method='POST',
+            data=invoice_data,
+        )
+        response.raise_for_status()
+        return response.json()
 
-        response = self._make_request(endpoint, method='POST', data=invoice_data)
+    def create_fee(self, fee_data: FeeRequest) -> str:
+        """
+        Creates a fee in eLicensing
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
-            except ValueError as e:
-                logger.error(f"Error with invoice creation response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing invoice creation response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "create invoice")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+        Args:
+            fee_data (FeeRequest): The fee data
+
+        Returns:
+            str: The eLicensing fee ID
+
+        Raises:
+            ELicensingAPIError: If the request fails
+        """
+        response = self._make_request("POST", "/fees", data=fee_data)
+        return response["id"]
 
 
 # Create a singleton instance
