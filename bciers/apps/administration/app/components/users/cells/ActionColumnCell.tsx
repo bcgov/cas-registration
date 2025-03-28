@@ -78,7 +78,7 @@ const ActionColumnCell = (
       action === Actions.EDIT ? InternalFrontEndRoles.CAS_PENDING : role,
       action === Actions.DECLINE ? true : false,
     );
-
+    console.log("-------------res", res);
     if (res?.error) {
       throw new Error(`Failed to update user`);
     }

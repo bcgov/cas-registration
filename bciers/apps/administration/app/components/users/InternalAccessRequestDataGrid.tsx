@@ -12,6 +12,7 @@ const InternalAccessRequestDataGrid = ({
     rows: InternalAccessRequestDataGridRow[];
   };
 }) => {
+  console.log("initial data", initialData);
   const columns = useMemo(() => internalAccessRequestColumns(), []);
   return (
     <DataGrid

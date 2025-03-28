@@ -14,8 +14,6 @@ export default async function getInternalAccessRequests(): Promise<
     "GET",
     "/dashboard/users",
   );
-  return {
-    rows: response,
-    row_count: response.length,
-  };
+
+  return response;
 }
