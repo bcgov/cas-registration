@@ -17,7 +17,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
     @patch(
         "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService.create_report_supplementary_version"
     )
-    def test_returns_data_as_provided_by_the_service(
+    def test_returns_data_as_provided_by_create_report_supplementary_version(
         self, mock_create_report_supplementary_version: MagicMock | AsyncMock
     ):
         # Arrange: Mock service method return value
@@ -43,3 +43,32 @@ class TestReportSupplementaryApi(CommonTestSetup):
 
         # Assert: Ensure the service method was called with the correct version_id
         mock_create_report_supplementary_version.assert_called_once_with(self.old_report_version.id)
+
+    @patch(
+        "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService.is_supplementary_report"
+    )
+    def test_returns_data_as_provided_by_is_supplementary_report(
+        self, mock_is_supplementary_report: MagicMock | AsyncMock
+    ):
+        # Arrange: Set the expected response from the service
+        expected_response = {"is_supplementary_report": True}
+        mock_is_supplementary_report.return_value = expected_response
+
+        # Act: Make GET request to the endpoint.
+        endpoint_under_test = "is_supplementary_report"
+        endpoint_under_test_kwargs = {"report_version_id": self.old_report_version.id}
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                endpoint_under_test,
+                kwargs=endpoint_under_test_kwargs,
+            ),
+        )
+
+        # Assert: Check the response status and that the response data matches the expected result
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service method was called with the correct report_version_id.
+        mock_is_supplementary_report.assert_called_once_with(self.old_report_version.id)
