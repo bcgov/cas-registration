@@ -7,6 +7,7 @@ from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_verification_service import ReportVerificationService
 from events.signals import report_submitted
+from common.lib import pgtrigger
 
 
 class ReportSubmissionService:
@@ -50,11 +51,12 @@ class ReportSubmissionService:
         ReportSubmissionService.validate_report(version_id)
         ReportSignOffService.save_report_sign_off(version_id, sign_off_data)
         # Mark the previous latest submitted version as not latest
-        ReportVersion.objects.filter(
-            report=report_version.report,
-            status=ReportVersion.ReportVersionStatus.Submitted,
-            is_latest_submitted=True,
-        ).update(is_latest_submitted=False)
+        with pgtrigger.ignore("reporting.ReportVersion:set_updated_audit_columns"):
+            ReportVersion.objects.filter(
+                report=report_version.report,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+                is_latest_submitted=True,
+            ).update(is_latest_submitted=False)
 
         # Set the new version as lastest submitted
         report_version.is_latest_submitted = True
