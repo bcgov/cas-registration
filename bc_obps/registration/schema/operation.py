@@ -86,7 +86,6 @@ class OperationInformationIn(ModelSchema):
     boundary_map: Optional[str] = None
     process_flow_diagram: Optional[str] = None
     naics_code_id: Optional[int] = None
-    opt_in: Optional[bool] = False
     secondary_naics_code_id: Optional[int] = None
     tertiary_naics_code_id: Optional[int] = None
     multiple_operators_array: Optional[List[MultipleOperatorIn]] = None
@@ -192,7 +191,6 @@ class OperationOut(ModelSchema):
             "id",
             'name',
             'type',
-            'opt_in',
             'regulated_products',
             'status',
             'activities',
@@ -229,7 +227,7 @@ class OperationCreateOut(ModelSchema):
 
     class Config:
         model = Operation
-        model_fields = ['id', 'name', 'type', 'naics_code', 'opt_in', 'regulated_products']
+        model_fields = ['id', 'name', 'type', 'naics_code', 'regulated_products']
         populate_by_name = True
 
 

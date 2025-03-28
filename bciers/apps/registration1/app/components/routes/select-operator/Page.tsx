@@ -25,7 +25,6 @@ export default async function MyOperatorPage() {
   const session = await auth();
   const userName = getUserFullName(session);
   const userOperator = await getUserOperator();
-  const isNew = userOperator.is_new;
   const { status, id, operatorId, operatorStatus, operatorLegalName } =
     userOperator;
   if (status === UserOperatorStatus.APPROVED) {
@@ -38,7 +37,7 @@ export default async function MyOperatorPage() {
 
   if (
     status === UserOperatorStatus.PENDING ||
-    (operatorStatus === OperatorStatus.DRAFT && !isNew)
+    operatorStatus === OperatorStatus.DRAFT
   ) {
     if (isNew) {
       return permanentRedirect(

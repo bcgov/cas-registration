@@ -14,7 +14,8 @@ from service.operator_service import OperatorService
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query
-from registration.utils import set_verification_columns
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 class UserOperatorService:
@@ -90,7 +91,6 @@ class UserOperatorService:
             business_structure=payload.business_structure,  # type: ignore[misc] # we use field validator which returns a BusinessStructure object
             # set as approved
             status=Operator.Statuses.APPROVED,
-            is_new=False,
         )
         operator: Operator = cls.save_operator(payload, operator_instance)
 
@@ -126,7 +126,6 @@ class UserOperatorService:
         sort_order: Optional[Literal["desc", "asc"]],
         filters: UserOperatorFilterSchema = Query(...),
     ) -> QuerySet[UserOperator]:
-
         user = UserDataAccessService.get_by_guid(user_guid)
         # This service is only available to IRC users
         if not user.is_irc_user():
@@ -173,7 +172,8 @@ class UserOperatorService:
         updated_role = payload.role
 
         if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
-            set_verification_columns(user_operator, admin_user_guid)
+            user_operator.verified_at = datetime.now(ZoneInfo("UTC"))
+            user_operator.verified_by_id = admin_user_guid
 
             if user_operator.status == UserOperator.Statuses.DECLINED:
                 # Set role to pending for now but we may want to add a new role for declined
