@@ -11,7 +11,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   checkComboBoxWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
-} from "@/tests/helpers/form";
+} from "@bciers/testConfig/helpers/form";
 
 const selectFieldLabel = "SelectWidget test field";
 const selectFieldRequiredLabel = `${selectFieldLabel}*`;

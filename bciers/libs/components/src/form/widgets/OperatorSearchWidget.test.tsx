@@ -6,7 +6,7 @@ import { actionHandler } from "@bciers/testConfig/mocks";
 import {
   checkComboBoxWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
-} from "@/tests/helpers/form";
+} from "@bciers/testConfig/helpers/form";
 
 const operatorSearchFieldLabel = "OperatorSearchWidget test field";
 const operatorSearchRequiredLabel = `${operatorSearchFieldLabel}*`;
