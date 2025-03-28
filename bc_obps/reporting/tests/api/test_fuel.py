@@ -1,22 +1,19 @@
-from django.test import Client
-import pytest
+from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
-pytestmark = pytest.mark.django_db
-client = Client()
-pytest.endpoint = "/api/reporting/fuel"
+endpoint = "/api/reporting/fuel"
 
 
-class TestActivityData:
+class TestFuelEndpoint(CommonTestSetup):
     def test_invalid_without_fuel_name(self):
-        response = client.get(f'{pytest.endpoint}')
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint)
         assert response.status_code == 422
 
     def test_invalid_fuel(self):
-        response = client.get(f'{pytest.endpoint}?fuel_name=non-existent')
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', f'{endpoint}?fuel_name=non-existent')
         assert response.status_code == 404
 
     def test_returns_fuel_data(self):
-        response = client.get('/api/reporting/fuel?fuel_name=Acetylene')
+        response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', '/api/reporting/fuel?fuel_name=Acetylene')
         assert response.status_code == 200
         assert response.json().get('name') == 'Acetylene'
         assert response.json().get('classification') == 'Exempted Non-biomass'

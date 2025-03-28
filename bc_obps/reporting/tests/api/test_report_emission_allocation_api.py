@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from registration.models.regulated_product import RegulatedProduct
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportEmissionAllocationApi(CommonTestSetup):
@@ -297,7 +298,7 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_emission_allocations",
-                kwargs={"report_version_id": self.report_version_id, "facility_id": self.facility_uuid},
+                kwargs={"version_id": self.report_version_id, "facility_id": self.facility_uuid},
             ),
         )
         # Assert: Verify response status code
@@ -339,7 +340,7 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
             self.mock_post_payload,
             custom_reverse_lazy(
                 "save_emission_allocation_data",
-                kwargs={"report_version_id": self.report_version_id, "facility_id": self.facility_uuid},
+                kwargs={"version_id": self.report_version_id, "facility_id": self.facility_uuid},
             ),
         )
         # Assert: Verify response status code
@@ -352,4 +353,12 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
             self.facility_uuid,
             self.mock_post_payload,
             self.test_user_guid,
+        )
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_emission_allocations", facility_id="uuid")
+        assert_report_version_ownership_is_validated(
+            "save_emission_allocation_data",
+            method="post",
+            facility_id="uuid",
         )

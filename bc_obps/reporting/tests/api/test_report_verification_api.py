@@ -4,6 +4,7 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.schema.report_verification import ReportVerificationIn
 from reporting.models.report_verification import ReportVerification
+from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
 class TestReportVerificationApi(CommonTestSetup):
@@ -47,7 +48,7 @@ class TestReportVerificationApi(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_report_verification_by_version_id",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -122,7 +123,7 @@ class TestReportVerificationApi(CommonTestSetup):
             payload.dict(),
             custom_reverse_lazy(
                 "save_report_verification",
-                kwargs={"report_version_id": self.report_version.id},
+                kwargs={"version_id": self.report_version.id},
             ),
         )
 
@@ -149,3 +150,8 @@ class TestReportVerificationApi(CommonTestSetup):
             assert visit_data["visit_type"] == expected_visit.visit_type
             assert visit_data["visit_coordinates"] == expected_visit.visit_coordinates
             assert visit_data["is_other_visit"] == expected_visit.is_other_visit
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("get_report_verification_by_version_id")
+        assert_report_version_ownership_is_validated("get_report_needs_verification")
+        assert_report_version_ownership_is_validated("save_report_verification", method="post")
