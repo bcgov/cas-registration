@@ -4,7 +4,7 @@ from django.core.files.storage import FileSystemStorage
 from storages.backends.gcloud import GoogleCloudStorage  # type: ignore
 
 # If we're in the CI environment, don't hit Google Cloud Storage
-if os.environ.get("CI", None) == "true":
+if settings.CI == "true" or settings.ENVIRONMENT == "local":
 
     class UnscannedLocal(FileSystemStorage):
         location = os.path.join(settings.MEDIA_ROOT, "unscanned")

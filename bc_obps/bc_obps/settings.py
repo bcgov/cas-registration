@@ -29,9 +29,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+ENVIRONMENT = os.environ.get("ENVIRONMENT")
+CI = os.environ.get("CI")
 
 # If we're in the CI environment, don't hit Google Cloud Storage
-if os.environ.get('CI', None) == 'true':
+if CI == 'true' or ENVIRONMENT == 'local':
     # Use local file storage for tests
     MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
     STORAGES = {
@@ -63,11 +65,11 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
-ENVIRONMENT = os.environ.get("ENVIRONMENT")
 BYPASS_ROLE_ASSIGNMENT = os.environ.get("BYPASS_ROLE_ASSIGNMENT", False) == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")
 
+# CHES API settings
 CHES_CLIENT_ID = os.environ.get("CHES_CLIENT_ID")
 CHES_CLIENT_SECRET = os.environ.get("CHES_CLIENT_SECRET")
 CHES_TOKEN_ENDPOINT = os.environ.get("CHES_TOKEN_ENDPOINT")
@@ -92,7 +94,7 @@ RLS_GRANT_APPS = [
 ]
 
 # Only apply RLS policies for compliance app if ENVIRONMENT is dev or test
-if ENVIRONMENT in ["dev", "test"]:
+if ENVIRONMENT in ["local", "dev", "test"]:
     RLS_GRANT_APPS += ["compliance"]
 
 # Apps that should not be included in production migrations
