@@ -1,10 +1,14 @@
-import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import {
+  TitleOnlyFieldTemplate,
+  FieldTemplateFullWidth,
+} from "@bciers/components/form/fields";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import {
   infoNote,
   SyncContactsButton,
-} from "@reporting/src/data/jsonSchema/personResponsibleInfoText";
+  AddressErrorWidget,
+} from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { Contact } from "@reporting/src/app/components/operations/types";
 
@@ -53,6 +57,7 @@ export const personResponsibleUiSchema: UiSchema = {
   },
   sync_button: {
     "ui:FieldTemplate": SyncContactsButton,
+    default: {}, // <--- Add a default so it always appears
   },
   person_responsible: {
     "ui:widget": "SelectWidget",
@@ -96,6 +101,11 @@ export const personResponsibleUiSchema: UiSchema = {
     },
     section4: {
       "ui:FieldTemplate": SectionFieldTemplate,
+      address_error: {
+        "ui:FieldTemplate": FieldTemplateFullWidth,
+        "ui:widget": AddressErrorWidget,
+        "ui:options": { label: false },
+      },
       street_address: {
         "ui:disabled": true,
       },
@@ -112,7 +122,10 @@ export const personResponsibleUiSchema: UiSchema = {
   },
 };
 
-export const createContactDetailsProperties = (userContact: Contact) => {
+export const createContactDetailsProperties = (
+  userContact: Contact,
+  addressError: string = "",
+) => {
   return {
     type: "object",
     properties: {
@@ -163,6 +176,10 @@ export const createContactDetailsProperties = (userContact: Contact) => {
         type: "object",
         title: "Address Information",
         properties: {
+          address_error: {
+            type: "string",
+            default: addressError,
+          },
           street_address: {
             type: "string",
             title: "Business Mailing Address",

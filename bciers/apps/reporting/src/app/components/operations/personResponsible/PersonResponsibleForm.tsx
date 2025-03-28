@@ -15,7 +15,7 @@ import {
 } from "@reporting/src/app/components/operations/types";
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
-import { NavigationInformation } from "../../taskList/types";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 
 interface Props {
   versionId: number;
@@ -35,6 +35,8 @@ const PersonResponsibleForm = ({
   const [contacts, setContacts] =
     useState<typeof initialContacts>(initialContacts);
   const [selectedContactId, setSelectedContactId] = useState<number>();
+  const [selectedContactAddressError, setSelectedContactAddressError] =
+    useState<string>();
   const [contactFormData, setContactFormData] = useState<any>();
   const [formData, setFormData] = useState({
     person_responsible: personResponsible
@@ -51,6 +53,7 @@ const PersonResponsibleForm = ({
         contacts?.items || [],
         selectedContactId,
         contactFormData,
+        selectedContactAddressError,
       );
       setSchema(updatedSchema);
     }
@@ -69,7 +72,16 @@ const PersonResponsibleForm = ({
       const newContactFormData: Contact = await getContact(
         `${selectedContact.id}`,
       );
-
+      // Check if any address field is missing or empty
+      const missingAddressInfo =
+        !newContactFormData.street_address?.toString().trim() ||
+        !newContactFormData.municipality?.toString().trim() ||
+        !newContactFormData.province?.toString().trim() ||
+        !newContactFormData.postal_code?.toString().trim();
+      const addressError = missingAddressInfo
+        ? `Missing address information.  <a href="/administration/contacts/${newContactFormData.id}?contacts_title=${newContactFormData.first_name} ${newContactFormData.last_name}/" target="_blank" rel="noopener noreferrer">Add contact's address information.</a>`
+        : "";
+      setSelectedContactAddressError(addressError);
       setSelectedContactId(newSelectedContactId);
       setContactFormData(newContactFormData);
       setFormData({
@@ -88,6 +100,10 @@ const PersonResponsibleForm = ({
   }, 300);
 
   const handleSave = async () => {
+    // Do not proceed if there is an address error for the selected contact
+    if (selectedContactAddressError) {
+      return false;
+    }
     const endpoint = `reporting/report-version/${versionId}/report-contact`;
     const method = "POST";
     const payload = {
@@ -110,15 +126,30 @@ const PersonResponsibleForm = ({
   const handleSync = async () => {
     const updatedContacts = await getContacts();
     setContacts(updatedContacts);
-    setSelectedContactId(undefined);
-    setContactFormData(undefined);
-    setFormData({ person_responsible: "" });
 
-    const updatedSchema = createPersonResponsibleSchema(
-      personResponsibleSchema,
-      updatedContacts.items,
-    );
-    setSchema(updatedSchema);
+    // If contact is selected, update form fields
+    if (selectedContactId) {
+      // Fetch the updated contact info based on the current selected contact
+      const updatedContact: Contact = await getContact(`${selectedContactId}`);
+      // Update state with the updated contact information
+      setContactFormData(updatedContact);
+      setFormData({
+        person_responsible:
+          `${updatedContact.first_name} ${updatedContact.last_name}`.trim(),
+      });
+    } else {
+      // If no contact is selected, reset form fields
+      setSelectedContactAddressError(undefined);
+      setSelectedContactId(undefined);
+      setContactFormData(undefined);
+      setFormData({ person_responsible: "" });
+
+      const updatedSchema = createPersonResponsibleSchema(
+        personResponsibleSchema,
+        updatedContacts.items,
+      );
+      setSchema(updatedSchema);
+    }
   };
 
   return (

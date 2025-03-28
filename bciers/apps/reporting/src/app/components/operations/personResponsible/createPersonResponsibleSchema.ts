@@ -17,7 +17,8 @@ export const createPersonResponsibleSchema = (
   schema: RJSFSchema,
   contactOptions: ContactRow[],
   contactId?: number,
-  contactData?: Contact, // Renamed parameter
+  contactData?: Contact,
+  addressError?: string,
 ): RJSFSchema => {
   const localSchema = JSON.parse(JSON.stringify(schema));
 
@@ -26,8 +27,10 @@ export const createPersonResponsibleSchema = (
   );
 
   if (contactId && contactData) {
-    localSchema.properties.contact_details =
-      createContactDetailsProperties(contactData);
+    localSchema.properties.contact_details = createContactDetailsProperties(
+      contactData,
+      addressError,
+    );
   }
 
   return localSchema;
