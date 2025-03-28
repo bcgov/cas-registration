@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import Tooltip from "@mui/material/Tooltip";
@@ -40,11 +39,11 @@ const ActionCellFactory = ({
         rel={openInNewTab ? "noopener noreferrer" : undefined}
       >
         {tooltipText ? (
-          <Tooltip className="flex align-center" title={tooltipText}>
-            <>
+          <Tooltip title={tooltipText} placement="top">
+            <span className="flex align-center">
               {cellText}
               {IconComponent}
-            </>
+            </span>
           </Tooltip>
         ) : (
           <>
