@@ -50,7 +50,7 @@ const FacilityReview: React.FC<Props> = ({
           return activityNameToIdMap.get(activityName); // No console.error() here, just return the ID (or undefined)
         })
         .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
-        .map(String), // Ensure all IDs are strings
+        .map(Number), // Ensure all IDs are numbers
     };
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(updatedFormData),
