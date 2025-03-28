@@ -28,7 +28,9 @@ export default function SignOffForm({
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const allChecked = (formData: SignOffFormItems) => {
-    return Object.values(formData).every((value) => value);
+    return (
+      Object.values(formData).every((value) => value) && formData.signature
+    );
   };
 
   const handleChange = (e: IChangeEvent) => {
