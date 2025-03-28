@@ -18,7 +18,7 @@ class Command(BaseCommand):
     apps_to_not_include_in_prod = settings.APPS_TO_NOT_INCLUDE_IN_PROD
 
     def handle(self, *args, **options):
-        environment = os.environ.get('ENVIRONMENT')
+        environment = settings.ENVIRONMENT
         if environment == 'prod':
             self.run_prod_migrations()
         else:
@@ -33,19 +33,18 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("Skipping fixture load: Data already exists."))
             return
 
-        if environment == 'test':
+        if environment == 'local':
+            call_command('load_fixtures')
+            call_command('load_reporting_fixtures')
+        elif environment == 'dev' and settings.CI != 'true':
+            call_command("pgtrigger", "disable", "--schema", "erc")
+            call_command('load_fixtures')
+            call_command('load_reporting_fixtures')
+            call_command("pgtrigger", "enable", "--schema", "erc")
+        elif environment == 'test':
             call_command("pgtrigger", "disable", "--schema", "erc")
             call_command('load_test_data')
             call_command("pgtrigger", "enable", "--schema", "erc")
-        elif environment == 'dev':
-            if settings.DEBUG:  # local dev
-                call_command('load_fixtures')
-                call_command('load_reporting_fixtures')
-            elif os.environ.get('CI') != 'true':  # dev not in CI
-                call_command("pgtrigger", "disable", "--schema", "erc")
-                call_command('load_fixtures')
-                call_command('load_reporting_fixtures')
-                call_command("pgtrigger", "enable", "--schema", "erc")
 
     def run_prod_migrations(self):
         self.stdout.write('Running default migrate command for all apps except specified exclusions...')
