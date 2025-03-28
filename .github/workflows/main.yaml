@@ -47,8 +47,6 @@ jobs:
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
     uses: ./.github/workflows/build-registration.yaml
-  build-registration1:
-    uses: ./.github/workflows/build-registration1.yaml
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
   test-code:
