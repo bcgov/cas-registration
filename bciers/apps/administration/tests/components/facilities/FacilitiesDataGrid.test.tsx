@@ -177,7 +177,7 @@ describe("FacilitiesDataGrid component", () => {
     });
   });
 
-  it("opens Action Cell links in new tab when navigating from Registration", async () => {
+  it("checks Action Cell links from Registration for new tab behavior and UI", async () => {
     render(
       <FacilityDataGrid
         operationId="randomOperationUUID"
@@ -186,22 +186,24 @@ describe("FacilitiesDataGrid component", () => {
       />,
     );
 
-    const actionCells = await screen.findAllByText("View Details");
-    expect(actionCells.length).toBe(mockResponse.rows.length);
+    const actionCells: HTMLSpanElement[] =
+      await screen.findAllByText("View Details");
+    expect(actionCells).toHaveLength(mockResponse.rows.length);
 
-    actionCells.forEach(async (actionCell) => {
-      expect(actionCell).toHaveAttribute("target", "_blank");
-      expect(actionCell).toHaveAttribute("rel", "noopener noreferrer");
+    actionCells.forEach((actionCell) => {
+      const tooltip = actionCell.parentElement;
+      expect(tooltip).toHaveAttribute("target", "_blank");
+      expect(tooltip).toHaveAttribute("rel", "noopener noreferrer");
 
       // check for the tooltip text
       userEvent.hover(actionCell);
-      expect(
-        await screen.findByText(/Link opens in a new tab/i),
-      ).toBeInTheDocument();
+      waitFor(() => {
+        expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
+      });
     });
 
     // check for the "open in new tab" icon in the action cells
-    expect(screen.getAllByTestId("OpenInNewIcon").length).toBe(
+    expect(screen.getAllByTestId("OpenInNewIcon")).toHaveLength(
       mockResponse.rows.length,
     );
   });
@@ -215,7 +217,7 @@ describe("FacilitiesDataGrid component", () => {
     );
 
     const actionCells = await screen.findAllByText("View Details");
-    expect(actionCells.length).toBe(mockResponse.rows.length);
+    expect(actionCells).toHaveLength(mockResponse.rows.length);
 
     actionCells.forEach((actionCell) => {
       expect(actionCell).not.toHaveAttribute("target", "_blank");
