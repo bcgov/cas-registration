@@ -28,21 +28,15 @@ class ReportValidationService:
     """
     A service to validate reports before submission
 
-    Strategy: independent, plug-in validators will
+    Strategy: independent, plug-in validators are collected at start-up time, then run in a sequence.
+    Errors are collected then returned in a dictionary.
     """
 
     validation_plugins = collect_validation_plugins()
 
     @staticmethod
     def validate_report_version(version_id: int) -> dict[str, ReportValidationError]:
-        """
-        Future implementation could create a specific exception housing all the issues a report would have
-        Django-ninja could then have a special way of parsing that error with a custom error code.
 
-        Validates that the report meets necessary requirements before submission:
-        - If report verification is required, ensures that a `ReportVerification` entry exists.
-        - If a verification statement is required, ensures the presence of a corresponding attachment.
-        """
         report_version = ReportVersion.objects.get(id=version_id)
 
         results: List[dict[str, ReportValidationError]] = [

@@ -10,6 +10,11 @@ from reporting.service.report_verification_service import ReportVerificationServ
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
+    """
+    Validates that the report meets necessary verification statement requirements before submission:
+        - If report verification is required, ensures that a `ReportVerification` entry exists.
+        - If a verification statement is required, ensures the presence of a corresponding attachment.
+    """
     # Check if verification is mandatory
     isVerificationMandatory = ReportVerificationService.get_report_needs_verification(report_version.id)
 
