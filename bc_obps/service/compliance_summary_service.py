@@ -46,7 +46,7 @@ class ComplianceSummaryService:
                 )
 
             # Calculate compliance data
-            compliance_data = ReportComplianceService.calculate_compliance(report_version_id)
+            compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
 
             # Create compliance summary
             summary = ComplianceSummary.objects.create(

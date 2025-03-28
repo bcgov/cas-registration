@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
 from .compliance_summary import ComplianceSummary
@@ -22,6 +23,16 @@ class ComplianceObligation(TimeStampedModel):
         NONE = "NONE", "None"
         ACCRUING = "ACCRUING", "Accruing"
         PAID = "PAID", "Paid"
+
+    COMPLIANCE_CHARGE_RATES = {
+        2024: Decimal('80.00'),
+        2025: Decimal('95.00'),
+        2026: Decimal('110.00'),
+        2027: Decimal('125.00'),
+        2028: Decimal('140.00'),
+        2029: Decimal('155.00'),
+        2030: Decimal('170.00'),
+    }
 
     compliance_summary = models.OneToOneField(
         ComplianceSummary,
@@ -52,6 +63,19 @@ class ComplianceObligation(TimeStampedModel):
         blank=False,
         null=False,
         db_comment="Deadline date for meeting excess emissions obligations (November 30 of the following year), UTC-based",
+    )
+
+    fee_amount_dollars = models.DecimalField(
+        max_digits=20, decimal_places=2, null=True, blank=True,
+        db_comment="The fee amount in CAD dollars"
+    )
+    fee_rate_dollars = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,
+        db_comment="The fee rate used to calculate the fee amount in CAD dollars per tCO2e"
+    )
+    fee_date = models.DateField(
+        null=True, blank=True,
+        db_comment="The date the fee was created"
     )
 
     history = HistoricalRecords(

@@ -1,9 +1,8 @@
 from datetime import date
-from decimal import Decimal
+from decimal import Decimal, ROUND_HALF_UP
 from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
-from service.compliance_fee_service import ComplianceFeeService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -43,6 +42,16 @@ class ComplianceObligationService:
         # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
         obligation_deadline = cls.get_obligation_deadline(report_version.report.reporting_year_id)
 
+        # Get the compliance charge rate for the reporting year
+        try:
+            fee_rate_dollars = ComplianceObligation.COMPLIANCE_CHARGE_RATES[reporting_year]
+        except KeyError:
+            raise ValueError(f"No compliance charge rate defined for year {reporting_year}")
+
+        # Calculate fee amount: emissions_amount_tco2e * fee rate
+        fee_amount_dollars = (emissions_amount * fee_rate_dollars).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        # Create the obligation with fee data
         obligation = ComplianceObligation.objects.create(
             compliance_summary=compliance_summary,
             emissions_amount_tco2e=emissions_amount,
@@ -50,20 +59,12 @@ class ComplianceObligationService:
             penalty_status=ComplianceObligation.PenaltyStatus.NONE,
             obligation_deadline=obligation_deadline,
             obligation_id=cls._get_obligation_id(report_version),
+            fee_amount_dollars=fee_amount_dollars,
+            fee_rate_dollars=fee_rate_dollars,
+            fee_date=date.today(),
         )
 
         logger.info(f"Created compliance obligation {obligation.id} for summary {compliance_summary_id}")
-
-        # Create the associated fee for this obligation
-        try:
-            fee = ComplianceFeeService.create_compliance_fee(obligation.id)
-            if fee:
-                logger.info(f"Created compliance fee {fee.id} for obligation {obligation.id}")
-            else:
-                logger.warning(f"Failed to create compliance fee for obligation {obligation.id}")
-        except Exception as e:
-            logger.error(f"Error creating compliance fee for obligation {obligation.id}: {str(e)}", exc_info=True)
-            # Continue with the process even if fee creation fails
 
         return obligation
 

@@ -2,6 +2,7 @@ import logging
 from typing import Dict, Any, Optional, cast, TypedDict, List, Literal
 import requests
 from django.conf import settings
+from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,44 @@ class FeeResponse(TypedDict):
     clientObjectId: str
     clientGUID: str
     fees: List[FeeItem]
+
+
+class InvoiceResponse(TypedDict):
+    clientObjectId: str
+    businessAreaCode: str
+    clientGUID: str
+    invoiceNumber: str
+
+
+class InvoiceCreationRequest(TypedDict):
+    paymentDueDate: str
+    businessAreaCode: str
+    fees: List[str]
+
+
+class FeeRequest(TypedDict):
+    """Type for fee creation request"""
+    clientId: str
+    amount: str
+    description: str
+    profileGroupName: str
+    businessAreaCode: str
+    effectiveDate: str
+    expiryDate: str
+    status: str
+
+
+class InvoiceRequest(TypedDict):
+    """Type for invoice creation request"""
+    clientId: str
+    feeIds: List[str]
+    dueDate: str
+    description: str
+
+
+class ELicensingAPIError(Exception):
+    """Exception for eLicensing API errors"""
+    pass
 
 
 class ELicensingAPIClient:
@@ -565,41 +604,59 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_invoice(self, invoice_data: Dict[str, Any]) -> Dict[str, Any]:
+    def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """
-        Creates an invoice.
+        Creates an invoice in eLicensing for a set of fees.
 
         Args:
-            invoice_data: Invoice data according to the API specification
+            client_id: The ID of the client
+            invoice_data: The invoice data to create
 
         Returns:
-            Response data
+            InvoiceResponse: The response from the API
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
-            requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/invoice"
+        response = self._make_request(
+            f"/client/{client_id}/invoice",
+            method='POST',
+            data=invoice_data,
+        )
+        response.raise_for_status()
+        return response.json()
 
-        response = self._make_request(endpoint, method='POST', data=invoice_data)
+    def create_fee(self, fee_data: FeeRequest) -> str:
+        """
+        Creates a fee in eLicensing
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
-            except ValueError as e:
-                logger.error(f"Error with invoice creation response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing invoice creation response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "create invoice")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+        Args:
+            fee_data (FeeRequest): The fee data
+
+        Returns:
+            str: The eLicensing fee ID
+
+        Raises:
+            ELicensingAPIError: If the request fails
+        """
+        response = self._make_request("POST", "/fees", data=fee_data)
+        return response["id"]
+
+    def create_invoice(self, invoice_data: InvoiceRequest) -> str:
+        """
+        Creates an invoice in eLicensing
+
+        Args:
+            invoice_data (InvoiceRequest): The invoice data
+
+        Returns:
+            str: The eLicensing invoice ID
+
+        Raises:
+            ELicensingAPIError: If the request fails
+        """
+        response = self._make_request("POST", "/invoices", data=invoice_data)
+        return response["id"]
 
 
 # Create a singleton instance
