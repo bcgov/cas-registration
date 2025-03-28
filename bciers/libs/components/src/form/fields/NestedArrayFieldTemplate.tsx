@@ -59,15 +59,13 @@ const NestedArrayFieldTemplate = ({
                   {customTitleName} {i + 1}
                 </span>
               )}
-              {i !== 0 && (
-                <button
-                  onClick={item.onDropIndexClick(item.index)}
-                  className="border-none bg-transparent"
-                  aria-label="Remove item"
-                >
-                  <DeleteForeverOutlinedIcon />
-                </button>
-              )}
+              <button
+                onClick={item.onDropIndexClick(item.index)}
+                className="border-none bg-transparent"
+                aria-label="Remove item"
+              >
+                <DeleteForeverOutlinedIcon />
+              </button>
               {{
                 ...item.children,
                 props: {
