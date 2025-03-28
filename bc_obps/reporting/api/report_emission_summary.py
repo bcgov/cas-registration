@@ -10,6 +10,8 @@ from reporting.schema.generic import Message
 from reporting.models import EmissionCategory
 from reporting.schema.emission_category import EmissionCategorySchema, EmissionSummarySchemaOut
 from reporting.api.permissions import approved_authorized_roles_report_version_composite_auth
+from decimal import Decimal
+
 
 ##### GET #####
 
@@ -42,3 +44,17 @@ def get_emission_summary_totals(request: HttpRequest, version_id: int, facility_
 )
 def get_operation_emission_summary_totals(request: HttpRequest, version_id: int) -> Tuple[int, dict]:
     return 200, EmissionCategoryService.get_operation_emission_summary_form_data(version_id)
+
+
+# Endpoint is for handling a pulp & paper edge case when industrial emissions overlap with excluded emissions
+@router.get(
+    "/report-version/{version_id}/facility-report/{facility_id}/overlapping_industrial_process_emissions",
+    response={200: Decimal, custom_codes_4xx: Message},
+    url_name="get_overlapping_industrial_process_emissions",
+    auth=authorize("approved_authorized_roles"),
+)
+def get_overlapping_industrial_process_emissions(
+    request: HttpRequest, version_id: int, facility_id: UUID
+) -> Tuple[int, Decimal]:
+    facility_report_id = FacilityReport.objects.get(report_version_id=version_id, facility_id=facility_id).pk
+    return 200, EmissionCategoryService.get_industrial_process_excluded_biomass_overlap_by_facility(facility_report_id)

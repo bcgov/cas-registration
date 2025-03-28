@@ -14,6 +14,8 @@ interface Props {
   initialData: ProductData[];
   schema: RJSFSchema;
   navigationInformation: NavigationInformation;
+  isPulpAndPaper: boolean;
+  overlappingIndustrialProcessEmissions: number;
 }
 
 const ProductionDataForm: React.FC<Props> = ({
@@ -23,6 +25,8 @@ const ProductionDataForm: React.FC<Props> = ({
   allowedProducts,
   initialData,
   navigationInformation,
+  isPulpAndPaper,
+  overlappingIndustrialProcessEmissions,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),
@@ -50,6 +54,19 @@ const ProductionDataForm: React.FC<Props> = ({
   };
 
   const onSubmit = async (data: any) => {
+    /*
+      Handle pulp & paper overlapping industrial process exception:
+      If pulp & paper is reported and there are industrial process emissions that are also categorized as excluded (ie: woody biomass)
+      Then the 'Pulp and paper: chemical pulp' product must be reported
+    */
+    if (isPulpAndPaper && overlappingIndustrialProcessEmissions > 0) {
+      if (!data.product_selection.includes("Pulp and paper: chemical pulp")) {
+        setErrors([
+          "Missing Product: 'Pulp and paper: chemical pulp'. Please add the product on the operation review page",
+        ]);
+        return false;
+      }
+    }
     const response = await postProductionData(
       report_version_id,
       facility_id,
