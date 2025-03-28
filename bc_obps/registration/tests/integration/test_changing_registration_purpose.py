@@ -203,7 +203,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
         assert self.operation.opted_in_operation is not None
-        assert self.operation.opt_in is True
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
         assert self.operation.opted_in_operation.meets_entire_operation_requirements is False
@@ -269,7 +268,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.regulated_products.count() > 0
         assert self.operation.activities == self.original_operation_record.activities
         assert self.operation.regulated_products == self.original_operation_record.regulated_products
-        assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
@@ -296,10 +294,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_opted_in_to_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Reporting Operation.
-        Should delete opted_in_operation_detail and regulated_products, and set opt_in to False.
+        Should delete opted_in_operation_detail and regulated_products.
         """
         assert self.operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
-        assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
@@ -314,10 +311,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_opted_in_to_potential_reporting(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Potential Reporting Operation.
-        Should delete opted_in_operation_detail and regulated_products, and set opt_in to False.
+        Should delete opted_in_operation_detail and regulated_products.
         """
         assert self.operation.registration_purpose == Operation.Purposes.POTENTIAL_REPORTING_OPERATION
-        assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
         assert self.operation.regulated_products.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
@@ -330,10 +326,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_opted_in_to_regulated(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to OBPS Regulated.
-        Should delete opted_in_operation_detail and set opt_in to False.
+        Should delete opted_in_operation_detail.
         """
         assert self.operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
-        assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert OptedInOperationDetail._base_manager.count() == 1
@@ -345,10 +340,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_opted_in_to_eio(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to Electricity Import Operation.
-        Should delete opted_in_operation_detail, documents, regulated_products, activities, NAICS codes, and set opt_in to False.
+        Should delete opted_in_operation_detail, documents, regulated_products, activities, NAICS codes.
         """
         assert self.operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert OptedInOperationDetail._base_manager.count() == 1
@@ -364,10 +358,9 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
     def _test_opted_in_to_new_entrant(self):
         """
         Tests operation registration data for situation where registration_purpose changes from Opted-in Operation to New Entrant.
-        Should delete opted_in_operation_detail, set opt_in to False, and add data for date_of_first_shipment and document upload for new_entrant_application.
+        Should delete opted_in_operation_detail and add data for date_of_first_shipment and document upload for new_entrant_application.
         """
         assert self.operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
-        assert self.operation.opt_in is False
         assert OptedInOperationDetail.objects.count() == 0
         if self.operation.status == Operation.Statuses.REGISTERED:
             assert OptedInOperationDetail._base_manager.count() == 1
@@ -458,7 +451,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert (
             self.operation.documents.filter(type=DocumentType.objects.get(name="new_entrant_application")).count() == 0
         )
-        assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
@@ -540,7 +532,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='process_flow_diagram')) is not None
         assert self.operation.documents.filter(type=DocumentType.objects.get(name='boundary_map')) is not None
         assert self.operation.naics_code is not None
-        assert self.operation.opt_in is True
         assert self.operation.opted_in_operation is not None
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
@@ -595,7 +586,6 @@ class TestChangingRegistrationPurpose(CommonTestSetup):
         """
         assert self.operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
         assert self.operation.opted_in_operation is not None
-        assert self.operation.opt_in is True
         assert self.operation.opted_in_operation.meets_section_3_emissions_requirements is False
         assert self.operation.opted_in_operation.meets_electricity_import_operation_criteria is True
         assert self.operation.opted_in_operation.meets_entire_operation_requirements is False

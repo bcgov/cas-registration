@@ -23,7 +23,6 @@ class TestCurrentUserOperatorEndpoint(CommonTestSetup):
         # Additional Assertions
         assert "id" in response_json
         assert "status" in response_json
-        assert "is_new" in response_json
         assert "operatorId" in response_json
         assert "operatorStatus" in response_json
         assert "operatorLegalName" in response_json

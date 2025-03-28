@@ -6,7 +6,7 @@ from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
 )
-from registration.models import TimeStampedModel, Address, BusinessStructure, User
+from registration.models import TimeStampedModel, Address, BusinessStructure
 from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
 from django.core.validators import RegexValidator, MaxValueValidator, MinValueValidator
@@ -79,23 +79,6 @@ class Operator(TimeStampedModel):
         choices=Statuses.choices,
         default=Statuses.DRAFT,
         db_comment="The status of an operator in the app (e.g. draft)",
-    )
-    verified_at = models.DateTimeField(
-        db_comment="The time an operator was verified by an IRC user",
-        blank=True,
-        null=True,
-    )
-    verified_by = models.ForeignKey(
-        User,
-        on_delete=models.DO_NOTHING,
-        db_comment="The IRC user who verified the operator",
-        blank=True,
-        null=True,
-        related_name="operators_verified_by",
-    )
-    is_new = models.BooleanField(
-        db_comment="Flag to indicate whether CAS internal staff need to explicitly approve the Operator at the same time that they're approving the request for prime admin access. (If a prime admin is requesting access to an existing operator, then the operator is not new and does need to be approved.)",
-        default=True,
     )
     history = HistoricalRecords(
         table_name='erc_history"."operator_history',
