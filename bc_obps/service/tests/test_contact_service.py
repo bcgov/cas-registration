@@ -123,7 +123,7 @@ class TestContactService:
         with pytest.raises(
             Exception, match="This contact is an 'Operation Representative' and must have all address-related fields."
         ):
-            ContactService.validate_operation_representative_address(op_rep_contact.id, incomplete_address_data)
+            ContactService._validate_operation_representative_address(op_rep_contact.id, incomplete_address_data)
 
         # Scenario 2: Operation Representative with complete address
         complete_address_data = {
@@ -134,18 +134,18 @@ class TestContactService:
         }
         mock_get_by_id.return_value = op_rep_contact
         # No exception should be raised
-        ContactService.validate_operation_representative_address(op_rep_contact.id, complete_address_data)
+        ContactService._validate_operation_representative_address(op_rep_contact.id, complete_address_data)
 
         # Scenario 3: Non-Operation Representative with missing address fields
         empty_address_data = {"street_address": "", "municipality": "", "province": "", "postal_code": ""}
         mock_get_by_id.return_value = non_op_rep_contact
         # No exception should be raised
-        ContactService.validate_operation_representative_address(non_op_rep_contact.id, empty_address_data)
+        ContactService._validate_operation_representative_address(non_op_rep_contact.id, empty_address_data)
 
 
 class TestUpdateContactService:
     @staticmethod
-    @patch("service.contact_service.ContactService.validate_operation_representative_address")
+    @patch("service.contact_service.ContactService._validate_operation_representative_address")
     @patch("service.contact_service.ContactDataAccessService.user_has_access")
     def test_update_contact_successfully(mock_user_has_access, mock_validate_operation_representative_address):
         # Setup
@@ -189,7 +189,7 @@ class TestUpdateContactService:
         assert updated_contact.address.municipality == "Updated City"
 
     @staticmethod
-    @patch("service.contact_service.ContactService.validate_operation_representative_address")
+    @patch("service.contact_service.ContactService._validate_operation_representative_address")
     @patch("service.contact_service.ContactDataAccessService.user_has_access")
     def test_update_contact_remove_address(mock_user_has_access, mock_validate_operation_representative_address):
         # Setup

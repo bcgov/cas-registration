@@ -92,7 +92,7 @@ class ContactService:
         address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
 
         # Prevent updating contact if the contact is an 'Operation Representative' and required address fields are missing
-        cls.validate_operation_representative_address(contact_id, address_data)
+        cls._validate_operation_representative_address(contact_id, address_data)
 
         # UPDATE CONTACT
         contact_data: Dict = payload.dict(include={*ContactIn.Meta.fields})
@@ -144,7 +144,7 @@ class ContactService:
             )
 
     @classmethod
-    def validate_operation_representative_address(cls, contact_id: int, address_data: DictStrAny) -> None:
+    def _validate_operation_representative_address(cls, contact_id: int, address_data: DictStrAny) -> None:
         """Raises an exception if the contact is an 'Operation Representative' and required address fields are missing."""
         contact = ContactDataAccessService.get_by_id(contact_id)
         if contact.business_role.role_name == "Operation Representative" and any(
