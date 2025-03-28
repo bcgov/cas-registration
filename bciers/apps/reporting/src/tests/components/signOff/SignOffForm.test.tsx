@@ -73,6 +73,10 @@ describe("SignOffForm Component", () => {
     fireEvent.click(recordsCheckbox);
     fireEvent.click(informationCheckbox);
     fireEvent.click(information2Checkbox);
+    const signatureField = screen.getByPlaceholderText(
+      "Enter your full name here",
+    );
+    fireEvent.change(signatureField, { target: { value: "John Doe" } });
 
     // Check that the submit button is enabled
     const submitButton = screen.getByText(/submit report/i);
