@@ -5,8 +5,11 @@ import { getContacts } from "@bciers/actions/api";
 import { getReportingPersonResponsible } from "@reporting/src/app/utils/getReportingPersonResponsible";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { personResponsibleSchema } from "@reporting/src/data/jsonSchema/personResponsible";
-import { HeaderStep, ReportingPage } from "../../taskList/types";
-import { getNavigationInformation } from "../../taskList/navigationInformation";
+import {
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 
 export default async function PersonResponsiblePage({
   version_id,
