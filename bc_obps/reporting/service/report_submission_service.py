@@ -22,7 +22,7 @@ class ReportSubmissionService:
 
         validation_result = ReportValidationService.validate_report_version(version_id)
 
-        # The validation service now returns erros, but to not change the system behaviour,
+        # The validation service now returns errors, but to not change the system behaviour,
         # we raise an error for now.
         for error_key, error in validation_result.items():
             raise ValidationError(error_key)

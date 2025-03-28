@@ -13,7 +13,7 @@ class ReportValidationError:
     Data type for validation error
 
     - severity: whether the validation passed
-    - message: dictionary
+    - message: human-readable explanation for the validation error
     """
 
     severity: Severity
