@@ -125,6 +125,7 @@ def compliance_obligation_baker(**kwargs) -> ComplianceObligation:
         "status": ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
         "penalty_status": ComplianceObligation.PenaltyStatus.NONE,
         "obligation_deadline": "2025-11-30",
+        "obligation_id": "21-0001-1-1",  # Default test obligation ID in format YY-OOOO-R-V
     }
 
     # If compliance_summary is not provided, create one
