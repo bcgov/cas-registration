@@ -104,12 +104,6 @@ class FeeRequest(TypedDict):
     status: str
 
 
-class InvoiceRequest(TypedDict):
-    """Type for invoice creation request"""
-    clientId: str
-    feeIds: List[str]
-    dueDate: str
-    description: str
 
 
 class ELicensingAPIError(Exception):
@@ -640,22 +634,6 @@ class ELicensingAPIClient:
             ELicensingAPIError: If the request fails
         """
         response = self._make_request("POST", "/fees", data=fee_data)
-        return response["id"]
-
-    def create_invoice(self, invoice_data: InvoiceRequest) -> str:
-        """
-        Creates an invoice in eLicensing
-
-        Args:
-            invoice_data (InvoiceRequest): The invoice data
-
-        Returns:
-            str: The eLicensing invoice ID
-
-        Raises:
-            ELicensingAPIError: If the request fails
-        """
-        response = self._make_request("POST", "/invoices", data=invoice_data)
         return response["id"]
 
 

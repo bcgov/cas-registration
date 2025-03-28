@@ -13,7 +13,6 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-# Create a singleton instance for use throughout this service
 elicensing_api_client = ELicensingAPIClient()
 
 
@@ -25,23 +24,17 @@ class OperatorELicensingService:
     """
 
     @classmethod
-    def _map_operator_to_client_data(
-        cls, operator: Operator, existing_link: Optional[ELicensingLink] = None
-    ) -> Dict[str, Any]:
+    def _map_operator_to_client_data(cls, operator: Operator) -> Dict[str, Any]:
         """
         Map operator data to eLicensing client data format.
 
         Args:
             operator: The operator object
-            existing_link: Optional existing link to use for the GUID
 
         Returns:
             A dictionary with client data in the format expected by the eLicensing API
         """
-        if existing_link is None:
-            raise ValueError("Cannot map operator to client data without an existing link")
-
-        client_guid = str(existing_link.elicensing_guid)
+        client_guid = str(uuid.uuid4())
 
         client_data = {
             "clientGUID": client_guid,
@@ -127,17 +120,18 @@ class OperatorELicensingService:
                 return existing_link
             
             # Map operator data to eLicensing format
-            client_data = cls._map_operator_to_client_data(operator, existing_link)
+            client_data = cls._map_operator_to_client_data(operator)
             
             # Make the API call
             try:
                 response = elicensing_api_client.create_client(client_data)
                 
-                # Create link with the client ID
+                # Create link with the client ID and GUID from the client data
                 client_link = ELicensingLinkService.create_link(
                     operator,
                     response['clientObjectId'],
-                    ELicensingLink.ObjectKind.CLIENT
+                    ELicensingLink.ObjectKind.CLIENT,
+                    elicensing_guid=client_data['clientGUID']
                 )
                 
                 logger.info(f"Successfully synced operator {operator_id} with eLicensing as client {response['clientObjectId']}")
