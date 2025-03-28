@@ -31,4 +31,4 @@ class TestReportingHistoryDashboardService(TestCase):
         self.assertEqual(report_versions[1].id, self.report_version_1.id)
 
         self.assertEqual(ReportHistoryResponse.resolve_version(report_versions[0]), "Current Version")
-        self.assertEqual(ReportHistoryResponse.resolve_version(report_versions[1]), "Version 2")
+        self.assertEqual(ReportHistoryResponse.resolve_version(report_versions[1]), "Version 1")

@@ -1,7 +1,7 @@
 "use client";
 import { GridColDef } from "@mui/x-data-grid";
 import ReportHistoryActionCell from "@reporting/src/app/components/reportHistory/ActionCell";
-import { formatDate } from "@reporting/src/app/utils/formatDate";
+import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 
@@ -21,7 +21,7 @@ const reportHistoryColumns = (): GridColDef[] => {
         if (!params.value) {
           return "";
         }
-        return formatDate(params.value, "YYYY-MM-DD HH:mm:ss");
+        return formatTimestamp(params.value);
       },
       width: 400,
     },

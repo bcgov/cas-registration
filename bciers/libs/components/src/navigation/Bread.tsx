@@ -11,6 +11,7 @@ type TBreadCrumbProps = {
   defaultLinks?: { label: string; href: string }[];
   zone?: string;
 };
+
 // 🛠️ Custom function to validate UUID using regex
 const isValidUUID = (segment: string): boolean => {
   const uuidRegex =
@@ -30,12 +31,6 @@ function unslugifyAndCapitalize(segment: string): string {
 // 🛠️ Function to check if a given value is numeric
 function isNumeric(value: string): boolean {
   return !isNaN(Number(value));
-}
-
-// 🛠️ Function to determine valid crumb link
-function isValidLink(segment: string): boolean {
-  const invalidWords = ["confirm", "received", "request-access"];
-  return !invalidWords.some((word) => segment.toLowerCase().includes(word));
 }
 
 const liStyle = "inline text-white text-lg";
@@ -69,9 +64,20 @@ export default function Bread({
   const slicedPathNames =
     lastLinkIndex !== -1 ? pathNames.slice(0, lastLinkIndex + 1) : pathNames;
 
-  // 🛠️ Function to transform path segment crumb content based on conditions: segmant paths; uuid; number
+  /**
+   * Transforms a path segment for use in the breadcrumb.
+   *
+   * This function processes each segment of the current URL path to determine
+   * how it should be displayed in the breadcrumb navigation. It omits numeric segments,
+   * applies special handling for UUIDs by checking for custom titles in the search params,
+   * and excludes segments like "facilities" when a "reports" segment is present.
+   *
+   * @param segment - The current URL path segment.
+   * @param index - The index of the current segment within the overall path.
+   * @returns The transformed segment as a string or null if the segment should be omitted.
+   */
   function transformPathSegment(segment: string, index: number): string | null {
-    // Check if "reports" is in the pathNames and the current segment is "Facilities"
+    // Omit "facilities" if "reports" exists in the path.
     if (
       pathNames.some((path) => path.toLowerCase() === "reports") &&
       segment.toLowerCase() === "facilities"
@@ -79,27 +85,51 @@ export default function Bread({
       return null;
     }
 
-    // Check if the current segment is an ID
+    // Check if the current segment is a valid UUID or numeric.
     if (isValidUUID(segment) || isNumeric(segment)) {
       const precedingSegment = pathNames[index - 1]
         ? unslugifyAndCapitalize(pathNames[index - 1])
         : "";
 
-      // Check if there is a title associated with the preceding segment
+      // If there is a title associated with the preceding segment, return it.
       if (
         precedingSegment &&
         crumbTitles[`${precedingSegment.toLowerCase()}_title`]
       )
         return crumbTitles[`${precedingSegment.toLowerCase()}_title`];
 
-      // If there's a title for the numeric/UUID segment itself, return it
-      // 🚨 If no title is found, omit the segment by returning null
+      // If there's a title for the numeric/UUID segment itself, return it.
+      // If no title is found, omit the segment by returning null.
       return crumbTitles?.title || null;
     }
 
-    // Return segment as-is
+    // For all other segments, return the segment as-is.
     return segment;
   }
+
+  // Build an array of visible breadcrumbs by filtering out any segments where transformPathSegment returns null.
+  // This ensures that only valid, displayable breadcrumb items are rendered (e.g. numeric segments are omitted).
+  const visibleCrumbs = slicedPathNames
+    // For each segment in slicedPathNames, create an object containing:
+    // - link: the original segment value,
+    // - index: its position in the array (used later to reconstruct the path),
+    // - content: the transformed value (processed based on whether capitalization is desired),
+    //   which may be null if the segment is to be omitted.
+    .map((link, index) => {
+      const content = capitalizeLinks
+        ? transformPathSegment(unslugifyAndCapitalize(link), index)
+        : transformPathSegment(link, index);
+      // If content is valid (not null), return an object with the link, its index, and the content.
+      // Otherwise, return null for this segment.
+      return content ? { link, index, content } : null;
+    })
+    // Filter out any null values from the array. This leaves us with only the breadcrumb items
+    // that have valid content, ensuring that no empty breadcrumb items (or trailing separators) are rendered.
+    .filter((crumb) => crumb !== null) as {
+    link: string;
+    index: number;
+    content: string;
+  }[];
 
   return (
     <div className="relative w-full">
@@ -120,29 +150,19 @@ export default function Bread({
                       ? unslugifyAndCapitalize(link.label)
                       : link.label}
                   </Link>
-                  {!isLastDefaultLink || pathNames.length > 0
+                  {!isLastDefaultLink || visibleCrumbs.length > 0
                     ? separator
                     : null}{" "}
                   {/* Conditionally render the separator */}
                 </li>
               );
             })}
-            {slicedPathNames.map((link, index) => {
-              if (!isValidLink(link)) return null; // Skip rendering invalid links
-              const isLastItem = index === slicedPathNames.length - 1;
-              const content = capitalizeLinks
-                ? transformPathSegment(unslugifyAndCapitalize(link), index)
-                : transformPathSegment(link, index);
-
-              // 🚨 Skip rendering if content is null (segment should be omitted)
-              if (!content) {
-                return null;
-              }
-
+            {visibleCrumbs.map((crumb, i) => {
+              const isLastItem = i === visibleCrumbs.length - 1;
               if (!isLastItem) {
-                // 🔗 create a link
+                // Create a link for all but the last breadcrumb item.
                 const path = `/${slicedPathNames
-                  .slice(0, index + 1)
+                  .slice(0, crumb.index + 1)
                   .join("/")}`;
                 const queryString = serializeSearchParams(searchParams);
                 const href = zone
@@ -150,25 +170,25 @@ export default function Bread({
                   : `${path}${queryString}`;
 
                 return (
-                  <li key={link} className={liStyle}>
+                  <li key={crumb.link} className={liStyle}>
                     <Link href={href} className={aStyle}>
-                      {content}
+                      {crumb.content}
                     </Link>
                     {separator}
                   </li>
                 );
               } else {
-                // Last item, no link, bold styling
+                // For the last breadcrumb item, do not add a separator and apply bold styling.
                 return (
                   <li
-                    key={link}
+                    key={crumb.link}
                     data-testid="breadcrumb-last-item"
                     className={liStyle}
                     style={{
                       fontWeight: "bold",
                     }}
                   >
-                    {content}
+                    {crumb.content}
                   </li>
                 );
               }

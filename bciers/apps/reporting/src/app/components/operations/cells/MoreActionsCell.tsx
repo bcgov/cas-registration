@@ -75,7 +75,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
             )}
           </MenuItem>
         )}
-        {!pending && (
+        {!pending && reportId && (
           <MenuItem
             onClick={async () =>
               router.push(`reports/report-history/${reportId}`)
@@ -83,6 +83,9 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           >
             Report History
           </MenuItem>
+        )}
+        {!pending && !reportId && (
+          <MenuItem disabled={true}>Report History</MenuItem>
         )}
       </Menu>
     </div>
