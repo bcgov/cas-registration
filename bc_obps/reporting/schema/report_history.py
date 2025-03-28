@@ -16,8 +16,14 @@ class ReportHistoryResponse(ModelSchema):
 
     @staticmethod
     def resolve_version(obj: Any) -> str:
-        if obj.version_number == 1:
+        all_ids = [version.id for version in obj._meta.model.objects.filter(report_id=obj.report_id)]
+        max_id = max(all_ids)
+        min_id = min(all_ids)
+
+        if obj.id == max_id:
             return "Current Version"
+        elif obj.id == min_id:
+            return "Version 1"
         return f"Version {obj.version_number}"
 
     @staticmethod
