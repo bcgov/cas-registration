@@ -154,7 +154,7 @@ class TestContactIdEndpoint(CommonTestSetup):
             # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
             assert Contact.objects.count() == 1
             # Assert that we are not creating a new address
-            assert Address.objects.count() == 2
+            assert Address.objects.count() == 2  # One for the contact and one for the operator
 
             contact_data_no_address = {
                 "first_name": "John",
@@ -190,32 +190,37 @@ class TestContactIdEndpoint(CommonTestSetup):
 
     def test_industry_user_admin_update_contact_by_adding_address(self):
         operator = baker.make_recipe('registration.tests.utils.operator')
-        contact = baker.make_recipe('registration.tests.utils.contact', operator=operator, address=None)
+        senior_officer_role = BusinessRole.objects.get(role_name='Senior Officer')
+        contact = baker.make_recipe(
+            'registration.tests.utils.contact', operator=operator, address=None, business_role=senior_officer_role
+        )
         TestUtils.authorize_current_user_as_operator_user(self, operator)
         # Assert that we have only one contact(to make sure we are updating the contact and not creating a new one)
         assert Contact.objects.count() == 1
         # Assert that we are not creating a new address
         assert Address.objects.count() == 1  # One for the operator
 
-        response = TestUtils.mock_put_with_auth_role(
-            self,
-            "industry_user",
-            self.content_type,
-            self.valid_contact_data,
-            custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
-        )
-        assert response.status_code == 200
-        assert Contact.objects.count() == 1
-        assert Address.objects.count() == 2  # One for the contact and one for the operator
+        with patch('registration.models.BusinessRole.objects.get', return_value=senior_officer_role) as mock_get:
+            response = TestUtils.mock_put_with_auth_role(
+                self,
+                "industry_user",
+                self.content_type,
+                self.valid_contact_data,
+                custom_reverse_lazy("update_contact", kwargs={"contact_id": contact.id}),
+            )
+            assert response.status_code == 200
+            mock_get.assert_called_once()
+            assert Contact.objects.count() == 1
+            assert Address.objects.count() == 2  # One for the contact and one for the operator
 
-        response_json: Dict = response.json()
-        assert response_json.get('first_name') == self.valid_contact_data.get('first_name')
-        assert response_json.get('last_name') == self.valid_contact_data.get('last_name')
-        assert response_json.get('email') == self.valid_contact_data.get('email')
-        assert response_json.get('phone_number') == self.valid_contact_data.get('phone_number')
-        assert response_json.get('position_title') == self.valid_contact_data.get('position_title')
-        assert response_json.get('street_address') == self.valid_contact_data.get('street_address')
-        assert response_json.get('municipality') == self.valid_contact_data.get('municipality')
-        assert response_json.get('province') == self.valid_contact_data.get('province')
-        assert response_json.get('postal_code') == self.valid_contact_data.get('postal_code')
-        assert Contact.objects.first().address is not None
+            response_json: Dict = response.json()
+            assert response_json.get('first_name') == self.valid_contact_data.get('first_name')
+            assert response_json.get('last_name') == self.valid_contact_data.get('last_name')
+            assert response_json.get('email') == self.valid_contact_data.get('email')
+            assert response_json.get('phone_number') == self.valid_contact_data.get('phone_number')
+            assert response_json.get('position_title') == self.valid_contact_data.get('position_title')
+            assert response_json.get('street_address') == self.valid_contact_data.get('street_address')
+            assert response_json.get('municipality') == self.valid_contact_data.get('municipality')
+            assert response_json.get('province') == self.valid_contact_data.get('province')
+            assert response_json.get('postal_code') == self.valid_contact_data.get('postal_code')
+            assert Contact.objects.first().address is not None
