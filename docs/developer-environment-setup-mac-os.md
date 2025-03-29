@@ -94,7 +94,6 @@ In the `bciers` directory:
 
 | Script          | Link                                                                                                                                         |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| yarn reg1       | [http://localhost:3000](http://localhost:3000)                                                                                               |
 | yarn dash       | [http://localhost:3000](http://localhost:3000)                                                                                               |
 | yarn reg        | [http://localhost:4000](http://localhost:4000)                                                                                               |
 | yarn report     | [http://localhost:5000](http://localhost:5000)                                                                                               |
