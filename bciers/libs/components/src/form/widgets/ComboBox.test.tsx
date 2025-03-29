@@ -5,7 +5,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   checkComboBoxWidgetValidationStyles,
   checkNoValidationErrorIsTriggered,
-} from "@/tests/helpers/form";
+} from "@bciers/testConfig/helpers/form";
 
 const comboBoxFieldLabel = "ComboBox test field";
 const comboBoxLabelRequired = `${comboBoxFieldLabel}*`;
