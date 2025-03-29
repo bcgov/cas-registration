@@ -52,6 +52,7 @@ export default function ContactForm({
         isCreatingState && !role.includes("cas") && <NewOperationMessage />
       }
       onSubmit={async (data: { formData?: any }) => {
+        setError(undefined);
         const updatedFormData = { ...formState, ...data.formData };
         setFormState(updatedFormData);
 

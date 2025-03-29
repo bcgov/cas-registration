@@ -4,6 +4,7 @@ from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.contact import Rls as ContactRls
+import pgtrigger
 
 
 class Contact(UserAndContactCommonInfo, TimeStampedModel):
@@ -43,6 +44,27 @@ class Contact(UserAndContactCommonInfo, TimeStampedModel):
                 name='unique_email_per_operator',
                 condition=models.Q(operator__isnull=False),
             )
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            pgtrigger.Trigger(
+                # Prevent setting address to NULL for Operation Representative
+                name="protect_address_null_update",
+                level=pgtrigger.Row,  # Row-level trigger
+                when=pgtrigger.Before,  # Trigger before the update
+                operation=pgtrigger.Update,  # Only for UPDATE operations
+                condition=pgtrigger.Q(
+                    old__address__isnull=False,  # Old address was not null
+                    new__address__isnull=True,  # New address is null
+                ),
+                func="""
+                    if new.business_role_id = 'Operation Representative'
+                    then
+                        raise exception 'Cannot set address to NULL for a contact with role Operation Representative';
+                    end if;
+                    return new;
+                """,
+            ),
         ]
 
     Rls = ContactRls

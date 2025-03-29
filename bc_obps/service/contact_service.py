@@ -13,6 +13,7 @@ from registration.schema import (
 from service.data_access_service.contact_service import ContactDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
+from ninja.types import DictStrAny
 from django.db import transaction
 from typing import cast, Union, Dict
 from registration.models.business_role import BusinessRole
@@ -88,11 +89,16 @@ class ContactService:
         if not ContactDataAccessService.user_has_access(user_guid, contact_id):
             raise Exception(UNAUTHORIZED_MESSAGE)
 
+        address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
+
+        # Prevent updating contact if the contact is an 'Operation Representative' and required address fields are missing
+        cls._validate_operation_representative_address(contact_id, address_data)
+
         # UPDATE CONTACT
         contact_data: Dict = payload.dict(include={*ContactIn.Meta.fields})
         contact = ContactDataAccessService.update_or_create(contact_id, contact_data)
+
         # UPDATE ADDRESS
-        address_data = payload.dict(include={'street_address', 'municipality', 'province', 'postal_code'})
         if any(address_data.values()):  # if any address data is provided
             address = AddressDataAccessService.upsert_address_from_data(address_data, contact.address_id)
             contact.address = address
@@ -136,3 +142,12 @@ class ContactService:
             raise Exception(
                 f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.'
             )
+
+    @classmethod
+    def _validate_operation_representative_address(cls, contact_id: int, address_data: DictStrAny) -> None:
+        """Raises an exception if the contact is an 'Operation Representative' and required address fields are missing."""
+        contact = ContactDataAccessService.get_by_id(contact_id)
+        if contact.business_role.role_name == "Operation Representative" and any(
+            not address_data.get(field) for field in ['street_address', 'municipality', 'province', 'postal_code']
+        ):
+            raise Exception("This contact is an 'Operation Representative' and must have all address-related fields.")
