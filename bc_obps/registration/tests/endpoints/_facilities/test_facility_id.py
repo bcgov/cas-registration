@@ -458,4 +458,4 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Assert
         assert response.status_code == 422
-        assert response.json().get('detail')[0].get('msg') == 'Input should be a valid decimal'
+        assert response.json().get('message') == "Latitude Of Largest Emissions: Input should be a valid decimal"

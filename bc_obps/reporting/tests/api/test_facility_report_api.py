@@ -31,7 +31,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version.id}/facility-report/1'
         response = TestUtils.mock_get_with_auth_role(self, 'cas_admin', endpoint_under_test)
         assert response.status_code == 422
-        assert "Input should be a valid UUID" in response.json()["detail"][0]["msg"]
+        assert "Facility Id: Input should be a valid UUID" in response.json()["message"]
 
     def test_returns_correct_data(self):
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report')

@@ -3,6 +3,7 @@ import os
 from django.db.models import QuerySet
 from typing import Any, TypeVar, Union, Iterable, Dict, Optional
 from django.core.exceptions import ValidationError
+from ninja.errors import ValidationError as NinjaValidationError
 from django.db import IntegrityError, models
 from registration.constants import DEFAULT_API_NAMESPACE
 import requests
@@ -57,17 +58,30 @@ def update_model_instance(
     return instance
 
 
-def generate_useful_error(error: ValidationError) -> Optional[str]:
+def generate_useful_error(error: Union[ValidationError, NinjaValidationError]) -> Optional[str]:
     """
     Generate a useful error message from a ValidationError.
     NOTE: this only returns the first error message until we can figure out a better way to handle multiple errors in the client side.
     """
-    for key, value in error.message_dict.items():
-        if key == '__all__':  # ignore adding formatted key for general error message like constraints
-            return value[0]  # Return the general error message directly
-        formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
-        return f"{formatted_key}: {value[0]}"
-    return None
+    if isinstance(error, NinjaValidationError):
+        # Just return the first error message if it is a NinjaValidationError (Like Unprocessable Entity)
+        errors_list = error.__dict__['errors']
+        if errors_list and isinstance(errors_list, list):
+            first_error = errors_list[0]
+            if 'loc' in first_error and 'msg' in first_error:
+                # Extract field name from loc tuple and capitalize it
+                field_path = first_error['loc']
+                field_name = field_path[-1]  # Last item in loc tuple is the field name
+                formatted_key = ' '.join(word.capitalize() for word in field_name.split('_'))
+                return f"{formatted_key}: {first_error['msg']}"
+        return None
+    else:
+        for key, value in error.message_dict.items():
+            if key == '__all__':  # ignore adding formatted key for general error message like constraints
+                return value[0]  # Return the general error message directly
+            formatted_key = ' '.join(word.capitalize() for word in key.split('_'))
+            return f"{formatted_key}: {value[0]}"
+        return None
 
 
 # File helpers

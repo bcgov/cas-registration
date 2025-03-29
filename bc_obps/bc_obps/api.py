@@ -1,4 +1,3 @@
-from typing import Type
 from django.http import HttpRequest, HttpResponse
 from ninja import NinjaAPI, Swagger
 from ninja.errors import ValidationError
@@ -7,6 +6,7 @@ from registration.api import router as registration_router
 from reporting.api import router as reporting_router
 from service.error_service.handle_exception import handle_exception
 from compliance.api import router as compliance_router
+from registration.utils import generate_useful_error
 
 # Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
 # Filtering is case sensitive matching the filter expression anywhere inside the tag.
@@ -17,9 +17,9 @@ api = NinjaAPI(
 
 # This is a custom exception handler for Ninja ValidationError, This helps to return a more detailed error message for Unprocessable Entity (422) responses
 @api.exception_handler(ValidationError)
-def custom_validation_errors(request: HttpRequest, exc: Type[ValidationError]) -> HttpResponse:
+def custom_validation_errors(request: HttpRequest, exc: ValidationError) -> HttpResponse:
     print(exc.errors)
-    return api.create_response(request, {"detail": exc.errors}, status=422)
+    return api.create_response(request, {"message": generate_useful_error(exc)}, status=422)
 
 
 api.add_exception_handler(Exception, handle_exception)  # Global exception handler
