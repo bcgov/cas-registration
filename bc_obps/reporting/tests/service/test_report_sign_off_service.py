@@ -1,7 +1,10 @@
 from django.test import TestCase
-from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
 from reporting.models.report_sign_off import ReportSignOff
-from reporting.service.report_sign_off_service import ReportSignOffService
+from reporting.service.report_sign_off_service import (
+    ReportSignOffAcknowledgements,
+    ReportSignOffData,
+    ReportSignOffService,
+)
 import pytest
 from model_bakery.baker import make_recipe
 
@@ -10,7 +13,7 @@ from model_bakery.baker import make_recipe
 class TestReportSignOffService(TestCase):
     def test_save_report_sign_off(self):
         # Arrange
-        data = ReportSignOffIn(
+        data = ReportSignOffData(
             acknowledgements=ReportSignOffAcknowledgements(
                 acknowledgement_of_review=True,
                 acknowledgement_of_records=True,

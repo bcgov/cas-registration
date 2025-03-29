@@ -1,14 +1,29 @@
+from dataclasses import dataclass
 import datetime
 from django.db import transaction
 from reporting.models.report_sign_off import ReportSignOff
-from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
 from django.core.exceptions import ValidationError
+
+
+@dataclass
+class ReportSignOffAcknowledgements:
+    acknowledgement_of_review: bool
+    acknowledgement_of_records: bool
+    acknowledgement_of_information: bool | None
+    acknowledgement_of_possible_costs: bool
+    acknowledgement_of_new_version: bool | None
+
+
+@dataclass
+class ReportSignOffData:
+    acknowledgements: ReportSignOffAcknowledgements
+    signature: str
 
 
 class ReportSignOffService:
     @classmethod
     @transaction.atomic
-    def save_report_sign_off(cls, report_version_id: int, data: ReportSignOffIn) -> ReportSignOff | None:
+    def save_report_sign_off(cls, report_version_id: int, data: ReportSignOffData) -> ReportSignOff | None:
         acknowledgements = data.acknowledgements
         if ReportSignOffService.validate_report_sign_off(acknowledgements):
             report_sign_off_record, _ = ReportSignOff.objects.update_or_create(
