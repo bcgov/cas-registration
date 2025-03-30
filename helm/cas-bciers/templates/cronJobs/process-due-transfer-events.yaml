@@ -32,4 +32,4 @@ spec:
               - -c
               - |
                 set -euo pipefail;
-                poetry run python manage.py process_due_transfer_events
+                .venv/bin/python manage.py process_due_transfer_events
