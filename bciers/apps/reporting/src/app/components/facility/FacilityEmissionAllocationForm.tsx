@@ -12,7 +12,6 @@ import { IChangeEvent } from "@rjsf/core";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { RJSFSchema } from "@rjsf/utils";
 
 // 📊 Interface for props passed to the component
@@ -24,8 +23,6 @@ interface Props {
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
-  taskListElements: TaskListElement[];
-  operationType: string;
   facilityType: string;
 }
 

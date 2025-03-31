@@ -7,12 +7,6 @@ import { ProductData } from "@bciers/types/form/productionData";
 import { postProductionData } from "@bciers/actions/api";
 import { NavigationInformation } from "../taskList/types";
 
-interface ProductionDataItem {
-  properties: {
-    production_methodology: RJSFSchema;
-  };
-}
-
 interface Props {
   report_version_id: number;
   facility_id: string;
@@ -22,7 +16,6 @@ interface Props {
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
-  facilityType: string;
 }
 
 const ProductionDataForm: React.FC<Props> = ({
@@ -34,7 +27,6 @@ const ProductionDataForm: React.FC<Props> = ({
   navigationInformation,
   isPulpAndPaper,
   overlappingIndustrialProcessEmissions,
-  facilityType,
 }) => {
   const initialFormData = {
     product_selection: initialData.map((i) => i.product_name),

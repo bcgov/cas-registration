@@ -15,7 +15,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 
 
 @router.get(
-    "report-version/{report_version_id}/facilities/{facility_id}/allocate-emissions",
+    "report-version/{version_id}/facilities/{facility_id}/allocate-emissions",
     response={200: ReportEmissionAllocationSchemaOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for product emissions allocations that have been saved for a facility""",
@@ -23,10 +23,10 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     auth=approved_industry_user_report_version_composite_auth,
 )
 def get_emission_allocations(
-    request: HttpRequest, report_version_id: int, facility_id: UUID
+    request: HttpRequest, version_id: int, facility_id: UUID
 ) -> tuple[Literal[200], ReportEmissionAllocationSchemaOut]:
     # Delegate the responsibility to the service
-    response_data = ReportEmissionAllocationService.get_emission_allocation_data(report_version_id, facility_id)
+    response_data = ReportEmissionAllocationService.get_emission_allocation_data(version_id, facility_id)
     return 200, response_data
 
 
