@@ -1,7 +1,7 @@
 "use client";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
-import { ComplianceSummaryReviewContent } from "./ComplianceSummaryReviewContent";
+import { ComplianceUnitsApplyContent } from "./ComplianceUnitsApplyContent";
 
 interface Props {
   formData: any;
@@ -9,23 +9,12 @@ interface Props {
   taskListElements: TaskListElement[];
 }
 
-export default function ComplianceSummaryReviewComponent({
+export default function ComplianceUnitsApplyComponent({
   formData,
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  // Uncomment after Review Compliance Summary will be completed
-
-  // const saveHandler = async () => {
-  //   console.log("save");
-  //   return true;
-  // };
-
-  // const onChangeHandler = () => {
-  //   console.log("change");
-  // };
-
-  const backUrl = `/compliance-summaries`;
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   return (
@@ -34,7 +23,7 @@ export default function ComplianceSummaryReviewComponent({
         taskListElements={taskListElements}
         title={formData.operation_name}
       >
-        <ComplianceSummaryReviewContent
+        <ComplianceUnitsApplyContent
           data={formData}
           backUrl={backUrl}
           continueUrl={saveAndContinueUrl}

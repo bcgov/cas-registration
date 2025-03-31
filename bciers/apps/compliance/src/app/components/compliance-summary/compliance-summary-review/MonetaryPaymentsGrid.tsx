@@ -1,6 +1,6 @@
 "use client";
 import { useState, useMemo } from "react";
-import { TitleRow } from "./TitleRow";
+import { TitleRow } from "../TitleRow";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import monetaryPaymentsColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsColumns";
@@ -15,16 +15,13 @@ export const MonetaryPaymentsGrid = ({ data }: any) => {
     [lastFocusedField, setLastFocusedField],
   );
 
-  // Get the columns from the columns file
   const columns = monetaryPaymentsColumns();
 
-  // Get the column groups from the column groups file
   const columnGroup = useMemo(
     () => monetaryPaymentsGroupColumns(SearchCell),
     [SearchCell],
   );
 
-  // Sample initial data (empty for now)
   const initialData = {
     rows: [
       {
@@ -36,7 +33,7 @@ export const MonetaryPaymentsGrid = ({ data }: any) => {
         referenceNumber: "-",
       },
     ],
-    row_count: 1, // The total number of rows (should match rows.length)
+    row_count: 1,
   };
 
   const gridData = data == "" ? initialData : data;

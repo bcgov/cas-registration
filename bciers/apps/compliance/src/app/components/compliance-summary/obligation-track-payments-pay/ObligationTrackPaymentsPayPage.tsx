@@ -6,16 +6,16 @@ import ObligationTrackPaymentsPayComponent from "./ObligationTrackPaymentsPayCom
 import { getComplianceSummary } from "../../../utils/getComplianceSummary";
 
 interface Props {
-  compliance_summary_id: number;
+  complianceSummaryId: number;
 }
 
 export default async function ObligationTrackPaymentsPayPage({
-  compliance_summary_id,
+  complianceSummaryId,
 }: Props) {
   const complianceSummary = await getComplianceSummary();
 
   const taskListElements = getComplianceSummaryTaskList(
-    compliance_summary_id,
+    complianceSummaryId,
     complianceSummary.reporting_year,
     ActivePage.PayObligationTrackPayments,
   );

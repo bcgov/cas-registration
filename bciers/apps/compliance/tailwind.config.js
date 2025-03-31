@@ -13,8 +13,10 @@ const { join } = require("path");
 module.exports = {
   presets: [require("../../tailwind-workspace-preset")],
   content: [
-    join(__dirname, "./app/**/*.{js,ts,jsx,tsx}"),
-    join(__dirname, "./app/components/**/*.{js,ts,jsx,tsx}"),
+    join(
+      __dirname,
+      "{src,components,app}/**/*!(*.stories|*.spec).{js,jsx,ts,tsx,html}",
+    ),
     ...createGlobPatternsForDependencies(__dirname),
   ],
   corePlugins: {

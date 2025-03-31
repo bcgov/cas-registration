@@ -1,7 +1,7 @@
 "use client";
-import { TitleRow } from "./TitleRow";
+import { TitleRow } from "../TitleRow";
 import { AutomaticOverduePenaltyAlertNote } from "@/compliance/src/app/components/compliance-summary/compliance-summary-review/AutomaticOverduePenaltyAlertNote";
-import { InfoRow } from "./InfoRow";
+import { InfoRow } from "../InfoRow";
 
 interface AutomaticOverduePenaltyProps {
   data: any;
@@ -10,16 +10,12 @@ interface AutomaticOverduePenaltyProps {
 export const AutomaticOverduePenalty = ({
   data,
 }: AutomaticOverduePenaltyProps) => {
-  // Use data from props
-
   return (
     <div style={{ width: "100%", marginBottom: "50px" }}>
       <TitleRow label="Automatic Overdue Penalty (as of Today):" />
 
-      {/* Alert Note */}
       <AutomaticOverduePenaltyAlertNote />
 
-      {/* Penalty Information Table */}
       <InfoRow label="Penalty Status:" value={data.penalty_status} />
       <InfoRow label="Penalty Type:" value={data.penalty_type} />
       <InfoRow

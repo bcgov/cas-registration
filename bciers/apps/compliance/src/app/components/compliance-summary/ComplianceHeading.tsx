@@ -2,10 +2,12 @@
 import React from "react";
 
 interface ComplianceHeadingProps {
+  title: string;
   className?: string;
 }
 
 export const ComplianceHeading: React.FC<ComplianceHeadingProps> = ({
+  title,
   className = "",
 }) => {
   return (
@@ -16,7 +18,7 @@ export const ComplianceHeading: React.FC<ComplianceHeadingProps> = ({
         className="form-heading"
         style={{ borderTopWidth: "1px", borderBottomWidth: "1px" }}
       >
-        Report Information
+        {title}
       </div>
     </div>
   );
