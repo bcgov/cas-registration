@@ -88,5 +88,6 @@ export const buildFacilityReviewUiSchema = (
   },
   sync_button: {
     "ui:FieldTemplate": SyncFacilitiesButton,
+    default: {},
   },
 });
