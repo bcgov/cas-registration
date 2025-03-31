@@ -104,7 +104,7 @@ class TestFacilityReportService(TestCase):
         assert updated_facility_report.facility_name == 'New Name'
         assert updated_facility_report.facility_type == 'Medium Facility'
         assert updated_facility_report.facility_bcghgid == facility_report.facility_bcghgid
-    
+
     @staticmethod
     def test_saves_facility_report_form_data_deletes_removed_activity_report_data():
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report', facility_bcghgid='abc')
@@ -153,7 +153,6 @@ class TestFacilityReportService(TestCase):
     @staticmethod
     def test_deleting_report_activity_data_cascades_correctly():
         cascading_models_names = {m.__name__ for m in get_cascading_models(ReportActivity)}
-        print(cascading_models_names)
 
         assert cascading_models_names == {
             "ReportEmission",
