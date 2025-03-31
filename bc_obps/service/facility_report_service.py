@@ -11,13 +11,9 @@ from django.db.models import F
 
 class FacilityReportService:
     @classmethod
-    def get_facility_report_by_version_and_id(
-        cls, report_version_id: int, facility_id: UUID
-    ) -> Optional[FacilityReport]:
-        return (
-            FacilityReport.objects.filter(report_version_id=report_version_id, facility_id=facility_id)
-            .annotate(operation_id=F('report_version__report__operation_id'))
-            .first()
+    def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
+        return FacilityReport.objects.annotate(operation_id=F('report_version__report__operation_id')).get(
+            report_version_id=report_version_id, facility_id=facility_id
         )
 
     @classmethod
