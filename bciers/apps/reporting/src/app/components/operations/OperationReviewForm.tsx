@@ -4,25 +4,38 @@ import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
-import { operationReviewUiSchema } from "@reporting/src/data/jsonSchema/operations";
+import {
+  buildOperationReviewSchema,
+  operationReviewUiSchema,
+} from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
-import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
-import { buildReviewFacilitiesSchema } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilities";
+import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 
 interface Props {
   formData: any;
   version_id: number;
   schema: RJSFSchema;
   navigationInformation: NavigationInformation;
+  reportType: string;
+  reportingWindowEnd: string;
+  allActivities: any[];
+  allRegulatedProducts: any[];
+  allRepresentatives: any[];
+  showRegulatedProducts?: boolean;
 }
-
 export default function OperationReviewForm({
   formData,
   version_id,
   schema,
   navigationInformation,
+  reportType,
+  reportingWindowEnd,
+  allActivities,
+  allRegulatedProducts,
+  allRepresentatives,
+  showRegulatedProducts,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
@@ -64,14 +77,19 @@ export default function OperationReviewForm({
   };
 
   const handleSync = async () => {
-    const newData = await getOperationFacilitiesList(version_id);
-    setSchema(
-      buildReviewFacilitiesSchema(
-        newData.current_facilities,
-        newData.past_facilities,
+    const newData = await getUpdatedReportOperationDetails(version_id);
+    setPageSchema(
+      buildOperationReviewSchema(
+        newData,
+        reportingWindowEnd,
+        allActivities,
+        allRegulatedProducts,
+        allRepresentatives,
+        reportType,
+        showRegulatedProducts,
       ),
     );
-    setFacilitiesData(newData);
+    setFormDataState(newData);
   };
 
   const confirmReportTypeChange = async () => {
