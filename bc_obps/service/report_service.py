@@ -159,3 +159,40 @@ class ReportService:
     def get_registration_purpose_by_version_id(version_id: int) -> dict:
         registration_purpose = ReportOperation.objects.get(report_version__id=version_id).registration_purpose
         return {"registration_purpose": registration_purpose}
+
+    @classmethod
+    @transaction.atomic()
+    def update_report_operation(cls, version_id: int) -> ReportOperation:
+        report_operation = ReportOperation.objects.get(report_version__id=version_id)
+        operation = report_operation.report_version.report.operation
+        operator = report_operation.report_version.report.operator
+        report_operation.operation_name = operation.name
+        report_operation.operation_type = operation.type
+        report_operation.operation_bcghgid = operation.bcghg_id.id if operation.bcghg_id else None
+        report_operation.bc_obps_regulated_operation_id = (
+            operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
+        )
+        report_operation.registration_purpose = operation.registration_purpose
+        report_operation.operator_legal_name = operator.legal_name
+        report_operation.operator_trade_name = operator.trade_name
+
+        existing_representatives = ReportOperationRepresentative.objects.filter(report_version__id=version_id)
+        existing_names = {rep.representative_name for rep in existing_representatives}
+        contact_names = {contact.get_full_name() for contact in operation.contacts.all()}
+
+        new_representatives = [
+            ReportOperationRepresentative(
+                report_version=report_operation.report_version,
+                representative_name=contact.get_full_name(),
+                selected_for_report=True,
+            )
+            for contact in operation.contacts.all()
+            if contact.get_full_name() not in existing_names
+        ]
+        ReportOperationRepresentative.objects.bulk_create(new_representatives)
+
+        # Remove outdated representatives
+        existing_representatives.filter(representative_name__in=(existing_names - contact_names)).delete()
+
+        report_operation.save()
+        return ReportService.get_report_operation_by_version_id(version_id)
