@@ -38,8 +38,8 @@ from .report_verification_visit import ReportVerificationVisit
 from .report_attachment import ReportAttachment
 from .naics_regulatory_value import NaicsRegulatoryValue
 from .product_emission_intensity import ProductEmissionIntensity
+from .report_emission_allocation import ReportEmissionAllocation
 from .report_product_emission_allocation import ReportProductEmissionAllocation
-from .report_emission_allocation_no_product import ReportEmissionAllocationNoProduct
 from .report_operation_representative import ReportOperationRepresentative
 from .report_sign_off import ReportSignOff
 
@@ -62,6 +62,8 @@ __all__ = [
     "ReportActivity",
     "ReportSourceType",
     "ReportEmission",
+    "ReportEmissionAllocation",
+    "ReportProductEmissionAllocation",
     "ReportMethodology",
     "ReportFuel",
     "ReportUnit",
@@ -81,7 +83,6 @@ __all__ = [
     "ReportAttachment",
     "NaicsRegulatoryValue",
     "ProductEmissionIntensity",
-    "ReportProductEmissionAllocation",
     "ReportOperationRepresentative",
     "ReportSignOff",
 ]

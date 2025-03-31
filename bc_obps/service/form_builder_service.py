@@ -9,7 +9,7 @@ from reporting.models import (
     ActivityJsonSchema,
     ActivitySourceTypeJsonSchema,
     CustomMethodologySchema,
-    FacilityReport
+    FacilityReport,
 )
 from typing import Dict, List, Optional, Any
 from django.db.models import QuerySet
@@ -113,7 +113,7 @@ def handle_gas_types(
     activity_id: int,
     source_type_id: int,
     config_id: int,
-    add_not_applicable_methodology: str,
+    add_not_applicable_methodology: bool,
 ) -> None:
     # Convert QuerySet to a list for efficient iteration without extra database hits
     config_elements_list = list(config_element_for_gas_types)
@@ -330,7 +330,9 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
 
     # Get facility type with id to determine adding "not applicable" methodology
     facility_type = FacilityReport.objects.get(facility_id=facility_id).facility_type
-    add_not_applicable_methodology = True if facility_type=='Small Aggregate' or facility_type=='Medium Facility' else False
+    add_not_applicable_methodology = (
+        True if facility_type == 'Small Aggregate' or facility_type == 'Medium Facility' else False
+    )
 
     rjsf_schema: Dict = activity_schema.json_schema
     # Fetch valid config elements for the activity
@@ -355,7 +357,9 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
             }
             rjsf_schema["properties"]["sourceTypes"]["properties"][
                 first_valid_config_elements.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, first_valid_config_elements.source_type_id, add_not_applicable_methodology)
+            ] = build_source_type_schema(
+                config_id, activity, first_valid_config_elements.source_type_id, add_not_applicable_methodology
+            )
 
     # If there are multiple config elements for an activity, the user may choose which ones apply. The IDs of the selected source_types are passed as a list in the parameters & we add those schemas to the activity schema.
     else:
@@ -381,7 +385,9 @@ def build_schema(config_id: int, activity: int, source_types: List[str] | List[i
             valid_config_element = valid_config_elements.get(source_type__id=source_type)
             rjsf_schema["properties"]["sourceTypes"]["properties"][
                 valid_config_element.source_type.json_key
-            ] = build_source_type_schema(config_id, activity, valid_config_element.source_type_id, add_not_applicable_methodology)
+            ] = build_source_type_schema(
+                config_id, activity, valid_config_element.source_type_id, add_not_applicable_methodology
+            )
 
     return json.dumps({"schema": rjsf_schema})
 

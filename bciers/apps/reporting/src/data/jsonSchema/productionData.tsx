@@ -11,7 +11,7 @@ export const buildProductionDataSchema = (
   compliance_period_start: string,
   compliance_period_end: string,
   product_selection: string[],
-  production_methodology_options: string[]
+  production_methodology_options: string[],
 ) =>
   ({
     type: "object",

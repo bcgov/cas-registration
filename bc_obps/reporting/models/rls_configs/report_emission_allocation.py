@@ -16,4 +16,4 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.REPORT_EMISSION_ALLOCATION_NO_PRODUCT)
+    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.REPORT_EMISSION_ALLOCATION)
