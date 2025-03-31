@@ -3,6 +3,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import CheckboxGroupWidget from "@bciers/components/form/widgets/CheckboxGroupWidget";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
+import { infoNote } from "@reporting/src/data/jsonSchema/reviewFacilityInfoText";
 
 export interface ActivityData {
   name: string;
@@ -15,6 +16,7 @@ export const buildFacilitySchema = (activities: ActivityData[]) =>
     type: "object",
     title: "Review Facility Information",
     properties: {
+      info_note: { type: "object", readOnly: true },
       facility_name: { type: "string", title: "Facility name" },
       facility_type: {
         type: "string",
@@ -49,10 +51,17 @@ export const buildFacilitySchema = (activities: ActivityData[]) =>
     },
   }) as RJSFSchema;
 
-export const facilityReviewUiSchema = {
+export const buildFacilityReviewUiSchema = (
+  operationId: string,
+  facility_id: string,
+) => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
+  info_note: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": infoNote(operationId, facility_id),
+  },
   facility_name: {
     "ui:readonly": true,
     "ui:options": { style: { width: "100%", textAlign: "left" } },
@@ -80,4 +89,4 @@ export const facilityReviewUiSchema = {
   sync_button: {
     "ui:FieldTemplate": SyncFacilitiesButton,
   },
-};
+});

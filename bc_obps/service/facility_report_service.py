@@ -6,12 +6,19 @@ from registration.models import Activity, Facility
 from reporting.models.facility_report import FacilityReport
 from reporting.schema.facility_report import FacilityReportIn, FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
+from django.db.models import F
 
 
 class FacilityReportService:
     @classmethod
-    def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
-        return FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+    def get_facility_report_by_version_and_id(
+        cls, report_version_id: int, facility_id: UUID
+    ) -> Optional[FacilityReport]:
+        return (
+            FacilityReport.objects.filter(report_version_id=report_version_id, facility_id=facility_id)
+            .annotate(operation_id=F('report_version__report__operation_id'))
+            .first()
+        )
 
     @classmethod
     def get_facility_report_by_version_id(cls, report_version_id: int) -> Optional[Tuple[UUID]]:
@@ -95,9 +102,9 @@ class FacilityReportService:
 
     @classmethod
     @transaction.atomic()
-    def update_facility_report(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
+    def update_facility_report(cls, version_id: int, facility_id: UUID) -> FacilityReport:
         facility = Facility.objects.get(id=facility_id)
-        facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+        facility_report = FacilityReport.objects.get(report_version_id=version_id, facility_id=facility_id)
 
         facility_report.facility_name = facility.name
         facility_report.facility_type = facility.type

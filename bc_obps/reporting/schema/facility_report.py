@@ -29,6 +29,8 @@ class FacilityReportOut(ModelSchema):
         model = FacilityReport
         fields = ['facility_name', 'facility_type', 'facility_bcghgid', 'activities', 'facility']
 
+    operation_id: Optional[UUID] = None
+
 
 class FacilityReportIn(ModelSchema):
     """
