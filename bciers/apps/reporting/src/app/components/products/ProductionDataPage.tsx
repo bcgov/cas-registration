@@ -57,8 +57,6 @@ export default async function ProductionDataPage({
       await getOverlappingIndustrialProcessEmissions(version_id, facility_id);
   }
 
-  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
-    .facility_type;
   const navInfo = await getNavigationInformation(
     HeaderStep.ReportInformation,
     ReportingPage.ProductionData,
@@ -82,7 +80,6 @@ export default async function ProductionDataPage({
       overlappingIndustrialProcessEmissions={
         overlappingIndustrialProcessEmissions
       }
-      facilityType={facilityType}
     />
   );
 }
