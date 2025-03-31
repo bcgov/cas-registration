@@ -8,6 +8,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.service.report_verification_service import ReportVerificationService
 from events.signals import report_submitted
 from common.lib import pgtrigger
+from django.db import transaction
 
 
 class ReportSubmissionService:
@@ -45,6 +46,7 @@ class ReportSubmissionService:
             raise Exception("verification_statement")
 
     @staticmethod
+    @transaction.atomic()
     def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffIn) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
