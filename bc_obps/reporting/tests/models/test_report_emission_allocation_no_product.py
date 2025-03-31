@@ -1,7 +1,7 @@
 import pytest
 from django.core.exceptions import ValidationError
-from reporting.models.report_emission_allocation_no_product import (
-    ReportEmissionAllocationNoProduct,
+from bc_obps.reporting.models.report_emission_allocation import (
+    ReportEmissionAllocation,
 )
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -11,12 +11,12 @@ from reporting.tests.utils.immutable_report_version import (
 )
 
 
-class ReportEmissionAllocationNoProductModelTest(BaseTestCase):
+class ReportEmissionAllocationModelTest(BaseTestCase):
     @classmethod
     def setUpTestData(cls):
         facility_report = make_recipe("reporting.tests.utils.facility_report")
         cls.test_object = make(
-            ReportEmissionAllocationNoProduct,
+            ReportEmissionAllocation,
             report_version=facility_report.report_version,
             facility_report=facility_report,
             allocation_methodology="Other",
@@ -44,18 +44,18 @@ class ReportEmissionAllocationNoProductModelTest(BaseTestCase):
             match="A value for allocation_other_methodology_description must be provided if allocation_methodology is 'Other'",
         ):
             make(
-                ReportEmissionAllocationNoProduct,
+                ReportEmissionAllocation,
                 report_version=facility_report.report_version,
                 facility_report=facility_report,
-                allocation_methodology=ReportEmissionAllocationNoProduct.AllocationMethodologyChoices.OTHER,
+                allocation_methodology=ReportEmissionAllocation.AllocationMethodologyChoices.OTHER,
                 allocation_other_methodology_description=None,
             )
 
         make(
-            ReportEmissionAllocationNoProduct,
+            ReportEmissionAllocation,
             report_version=facility_report.report_version,
             facility_report=facility_report,
-            allocation_methodology=ReportEmissionAllocationNoProduct.AllocationMethodologyChoices.NOT_APPLICABLE,
+            allocation_methodology=ReportEmissionAllocation.AllocationMethodologyChoices.NOT_APPLICABLE,
             allocation_other_methodology_description=None,
         )
 

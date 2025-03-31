@@ -4,14 +4,14 @@ from reporting.models import report_version
 from reporting.models.facility_report import FacilityReport
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.report_emission_allocation_no_product import (
-    Rls as ReportEmissionAllocationNoProductRls,
+from reporting.models.rls_configs.report_emission_allocation import (
+    Rls as ReportEmissionAllocationRls,
 )
 
 
-class ReportEmissionAllocationNoProduct(TimeStampedModel):
+class ReportEmissionAllocation(TimeStampedModel):
     """
-    A model to store the methodology associated with the allocation of emissions IF there's no products
+    A model to store the emission allocation information of a facility report
     """
 
     class AllocationMethodologyChoices(models.TextChoices):
@@ -44,9 +44,9 @@ class ReportEmissionAllocationNoProduct(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table = 'erc"."report_emission_allocation_no_product'
+        db_table = 'erc"."report_emission_allocation'
         db_table_comment = (
-            "A table to store the methodology associated with the allocation of emissions IF there's no products"
+            "A table to store the emission allocation information of a facility report"
         )
         app_label = "reporting"
         constraints = [
@@ -55,11 +55,11 @@ class ReportEmissionAllocationNoProduct(TimeStampedModel):
                     "report_version",
                     "facility_report",
                 ],
-                name="no_product_unique_report_emission_allocation",
-                violation_error_message="A FacilityReport can only have one ReportEmissionAllocationNoProduct per Report",
+                name="unique_report_emission_allocation",
+                violation_error_message="A FacilityReport can only have one ReportEmissionAllocation per Report",
             ),
             models.CheckConstraint(
-                name="no_product_allocation_other_methodology_must_have_description",
+                name="allocation_other_methodology_must_have_description",
                 check=~Q(
                     allocation_methodology="Other",
                     allocation_other_methodology_description__isnull=True,
@@ -72,4 +72,4 @@ class ReportEmissionAllocationNoProduct(TimeStampedModel):
             immutable_report_version_trigger(),
         ]
 
-    Rls = ReportEmissionAllocationNoProductRls
+    Rls = ReportEmissionAllocationRls

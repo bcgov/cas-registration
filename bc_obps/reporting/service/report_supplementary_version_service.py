@@ -7,6 +7,7 @@ from reporting.models import (
     ReportAdditionalData,
     ReportAttachment,
     ReportEmission,
+    ReportEmissionAllocation,
     ReportFuel,
     ReportMethodology,
     ReportNewEntrant,
