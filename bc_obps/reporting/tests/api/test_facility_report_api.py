@@ -118,3 +118,34 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
         assert_report_version_ownership_is_validated("get_facility_report_list")
         assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
+
+    @patch("service.facility_report_service.FacilityReportService.update_facility_report")
+    def test_update_facility_report_api(self, mock_update: MagicMock):
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        TestUtils.authorize_current_user_as_operator_user(self, operator=facility_report.report_version.report.operator)
+
+        updated_facility_report = baker.prepare(
+            'reporting.FacilityReport', id=facility_report.id, facility_name="UPDATED"
+        )
+        mock_update.return_value = updated_facility_report
+
+        endpoint_under_test = f'/api/reporting/report-version/{facility_report.report_version_id}/facility-report/{facility_report.facility_id}/update'
+        request_data = {
+            "facility_name": "UPDATED",
+            "facility_type": "Single Facility Operation",
+            "facility_bcghgid": "xyz98765",
+            "activities": ["1", "2", "3"],
+            "products": [],
+        }
+
+        response = TestUtils.mock_put_with_auth_role(
+            self,
+            'industry_user',
+            self.content_type,
+            request_data,
+            endpoint_under_test,
+        )
+
+        assert response.status_code == 200
+        assert response.json()['facility_name'] == "UPDATED"
+        mock_update.assert_called_once_with(facility_report.report_version_id, facility_report.facility_id)

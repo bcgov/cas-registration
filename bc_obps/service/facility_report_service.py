@@ -2,16 +2,19 @@ from uuid import UUID
 from django.db import transaction
 from typing import List, Optional, Tuple, cast
 from ninja import Query
-from registration.models import Activity
+from registration.models import Activity, Facility
 from reporting.models.facility_report import FacilityReport
 from reporting.schema.facility_report import FacilityReportIn, FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
+from django.db.models import F
 
 
 class FacilityReportService:
     @classmethod
     def get_facility_report_by_version_and_id(cls, report_version_id: int, facility_id: UUID) -> FacilityReport:
-        return FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+        return FacilityReport.objects.annotate(operation_id=F('report_version__report__operation_id')).get(
+            report_version_id=report_version_id, facility_id=facility_id
+        )
 
     @classmethod
     def get_facility_report_by_version_id(cls, report_version_id: int) -> Optional[Tuple[UUID]]:
@@ -92,3 +95,17 @@ class FacilityReportService:
             FacilityReport.objects.filter(report_version_id=version_id, facility_id=facility_id).update(
                 is_completed=is_completed
             )
+
+    @classmethod
+    @transaction.atomic()
+    def update_facility_report(cls, version_id: int, facility_id: UUID) -> FacilityReport:
+        facility = Facility.objects.get(id=facility_id)
+        facility_report = FacilityReport.objects.get(report_version_id=version_id, facility_id=facility_id)
+
+        facility_report.facility_name = facility.name
+        facility_report.facility_type = facility.type
+        facility_report.facility_bcghgid = str(facility.bcghg_id.id) if facility.bcghg_id else None
+
+        facility_report.save()
+
+        return facility_report
