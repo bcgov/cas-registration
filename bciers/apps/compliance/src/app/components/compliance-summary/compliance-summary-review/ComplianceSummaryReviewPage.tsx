@@ -9,13 +9,13 @@ interface Props {
   compliance_summary_id: number;
 }
 
-export default async function ComplianceSummaryReviewPage({
-  compliance_summary_id,
-}: Props) {
-  const complianceSummary = await getComplianceSummary();
+export default async function ComplianceSummaryReviewPage(props: Props) {
+  const complianceSummaryId = props.compliance_summary_id;
 
+  const complianceSummary = await getComplianceSummary();
+  console.log(complianceSummaryId);
   const taskListElements = getComplianceSummaryTaskList(
-    compliance_summary_id,
+    complianceSummaryId,
 
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,
@@ -24,7 +24,7 @@ export default async function ComplianceSummaryReviewPage({
   return (
     <ComplianceSummaryReviewComponent
       formData={complianceSummary}
-      compliance_summary_id={compliance_summary_id}
+      complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     />
   );

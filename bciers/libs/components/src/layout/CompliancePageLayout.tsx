@@ -3,31 +3,15 @@
 import { Box } from "@mui/material";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ComplianceSummaryTaskList from "@bciers/components/navigation/complianceSummaryTaskList/ComplianceSummaryTaskList";
-import { PageContent } from "@/compliance/src/app/components/compliance-summary/compliance-summary-review/PageContent";
 
 interface Props {
-  initialStep: number;
-  steps: string[];
   taskListElements: TaskListElement[];
   title?: string;
-  hideTaskList?: boolean;
-  formData: any;
-  backUrl: string;
-  continueUrl: string;
-  onChange: any;
-  onSubmit: any;
-  // errors: any;
-  noSaveButton: any;
+  children?: React.ReactNode;
 }
 
 const CompliancePageLayout: React.FC<Props> = (props) => {
-  const {
-    backUrl,
-    continueUrl,
-    formData,
-    taskListElements,
-    title = "Compliance Summary",
-  } = props;
+  const { taskListElements, title = "Compliance Summary", children } = props;
 
   return (
     <Box sx={{ p: 3 }}>
@@ -38,13 +22,7 @@ const CompliancePageLayout: React.FC<Props> = (props) => {
         <div className="hidden md:block">
           <ComplianceSummaryTaskList elements={taskListElements} />
         </div>
-        <div className="w-full">
-          <PageContent
-            data={formData}
-            backUrl={backUrl}
-            continueUrl={continueUrl}
-          />
-        </div>
+        <div className="w-full">{children}</div>
       </div>
     </Box>
   );
