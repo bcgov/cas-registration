@@ -413,6 +413,11 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT},
         },
         {
+            "method": "put",
+            "endpoint_name": "update_facility_report",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
+        {
             "method": "get",
             "endpoint_name": "get_emission_summary_totals",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},

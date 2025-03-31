@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import {
   ActivityData,
-  facilityReviewUiSchema,
+  buildFacilityReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/facilities";
 import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
@@ -12,6 +12,7 @@ import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpd
 
 interface Props {
   version_id: number;
+  operationId: string;
   facility_id: string;
   activitiesData: ActivityData[];
   navigationInformation: NavigationInformation;
@@ -19,37 +20,42 @@ interface Props {
   schema: RJSFSchema;
 }
 
-interface Activity {
-  name: string;
-  id: number;
+interface UpdatedFacilityData {
+  facility_name: string;
+  facility_type: string;
+  facility_bcghgid: string;
 }
 
 const FacilityReview: React.FC<Props> = ({
   version_id,
+  operationId,
   facility_id,
   activitiesData,
   navigationInformation,
   formsData,
   schema,
 }) => {
-  const [formData, setFormData] = useState<any>(formsData);
+  const [formData, setFormData] = useState<object>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
+  const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
 
     const activityNameToIdMap = new Map(
-      activitiesData.map((activity: Activity) => [activity.name, activity.id]),
+      activitiesData.map((activity: ActivityData) => [
+        activity.name,
+        activity.id,
+      ]),
     );
-
     const updatedFormData = {
       ...formData,
-      activities: formData.activities
+      activities: (formData as any).activities
         .map((activityName: string) => {
-          return activityNameToIdMap.get(activityName); // No console.error() here, just return the ID (or undefined)
+          return activityNameToIdMap.get(activityName);
         })
-        .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
-        .map(String), // Ensure all IDs are strings
+        .filter((id: number | undefined) => id !== undefined)
+        .map(String),
     };
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(updatedFormData),
@@ -63,11 +69,9 @@ const FacilityReview: React.FC<Props> = ({
     return true;
   };
   const handleSync = async () => {
-    const updatedFacilityData = await getUpdatedFacilityReportDetails(
-      version_id,
-      facility_id,
-    );
-    setFormData((prevFormData: any) => ({
+    const updatedFacilityData: UpdatedFacilityData =
+      await getUpdatedFacilityReportDetails(version_id, facility_id);
+    setFormData((prevFormData: object) => ({
       ...prevFormData,
       facility_name: updatedFacilityData.facility_name,
       facility_type: updatedFacilityData.facility_type,
@@ -79,9 +83,9 @@ const FacilityReview: React.FC<Props> = ({
     <MultiStepFormWithTaskList
       schema={schema}
       uiSchema={{
-        ...facilityReviewUiSchema,
+        ...uiSchema,
         sync_button: {
-          ...facilityReviewUiSchema.sync_button,
+          ...uiSchema.sync_button,
           "ui:options": {
             onSync: handleSync,
           },
@@ -89,8 +93,8 @@ const FacilityReview: React.FC<Props> = ({
       }}
       formData={formData}
       onSubmit={handleSubmit}
-      onChange={(data: any) => {
-        setFormData((prevFormData: any) => ({
+      onChange={(data: { formData: object }) => {
+        setFormData((prevFormData: object) => ({
           ...prevFormData,
           ...data.formData,
         }));

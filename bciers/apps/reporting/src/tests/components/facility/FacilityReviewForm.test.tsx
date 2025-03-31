@@ -39,32 +39,35 @@ const mockMultiStepFormWithTaskList = MultiStepFormWithTaskList as ReturnType<
   typeof vi.fn
 >;
 
+const mockActivitiesData: {
+  name: string;
+  id: number;
+  applicable_to: string;
+}[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
+const mockSchema = { testSchema: true };
+const mockFormData = { activities: ["Activity 1"] };
+
+const renderFacilityReview = (formData = mockFormData) => (
+  <FacilityReview
+    version_id={1000}
+    facility_id="abcd"
+    activitiesData={mockActivitiesData}
+    navigationInformation={dummyNavigationInformation}
+    formsData={formData}
+    schema={mockSchema}
+    operationId="1234"
+  />
+);
+
 describe("The FacilityReview component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
 
   it("calls the actionHandler on form submission", async () => {
-    const mockActivitiesData: {
-      name: string;
-      id: number;
-      applicable_to: string;
-    }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
-    const mockFormData = { activities: ["Activity 1"] };
-    const mockSchema = { testSchema: true };
-
     mockActionHandler.mockResolvedValue({}); // Mocking successful response
 
-    render(
-      <FacilityReview
-        version_id={1000}
-        facility_id="abcd"
-        activitiesData={mockActivitiesData}
-        navigationInformation={dummyNavigationInformation}
-        formsData={mockFormData}
-        schema={mockSchema}
-      />,
-    );
+    render(renderFacilityReview());
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     await act(() => calledProps.onSubmit());
@@ -78,24 +81,7 @@ describe("The FacilityReview component", () => {
   });
 
   it("updates the form data when onChange is called", async () => {
-    const mockActivitiesData: {
-      name: string;
-      id: number;
-      applicable_to: string;
-    }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
-    const mockFormData = { activities: [] };
-    const mockSchema = { testSchema: true };
-
-    render(
-      <FacilityReview
-        version_id={1000}
-        facility_id="abcd"
-        activitiesData={mockActivitiesData}
-        navigationInformation={dummyNavigationInformation}
-        formsData={mockFormData}
-        schema={mockSchema}
-      />,
-    );
+    render(renderFacilityReview());
 
     const changeHandlerUnderTest =
       mockMultiStepFormWithTaskList.mock.calls[0][0].onChange;
@@ -115,26 +101,9 @@ describe("The FacilityReview component", () => {
   });
 
   it("handles form errors correctly", async () => {
-    const mockActivitiesData: {
-      name: string;
-      id: number;
-      applicable_to: string;
-    }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
-    const mockFormData = { activities: ["Activity 1"] };
-    const mockSchema = { testSchema: true };
-
     mockActionHandler.mockResolvedValue({ error: "Some error occurred" });
 
-    const { getByText } = render(
-      <FacilityReview
-        version_id={1000}
-        facility_id="abcd"
-        activitiesData={mockActivitiesData}
-        navigationInformation={dummyNavigationInformation}
-        formsData={mockFormData}
-        schema={mockSchema}
-      />,
-    );
+    const { getByText } = render(renderFacilityReview());
 
     const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
     await act(() => calledProps.onSubmit());

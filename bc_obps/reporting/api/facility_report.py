@@ -38,7 +38,7 @@ from reporting.api.permissions import (
 )
 def get_facility_report_form_data(
     request: HttpRequest, version_id: int, facility_id: UUID
-) -> Tuple[Literal[200], FacilityReport]:
+) -> Tuple[Literal[200], Optional[FacilityReport]]:
     facility_report = FacilityReportService.get_facility_report_by_version_and_id(version_id, facility_id)
     return 200, facility_report
 
