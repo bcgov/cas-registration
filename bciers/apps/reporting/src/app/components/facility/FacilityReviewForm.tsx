@@ -48,7 +48,7 @@ const FacilityReview: React.FC<Props> = ({
         activity.id,
       ]),
     );
-const updatedFormData = {
+    const updatedFormData = {
       ...formData,
       activities: (formData as any).activities
         .map((activityName: string) => {
