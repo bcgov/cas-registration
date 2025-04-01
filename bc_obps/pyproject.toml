@@ -36,7 +36,7 @@ ipdb = "^0.13.13"
 pytest-cov = "^4.1.0"
 django-silk = "^5.1.0"
 pytest-mock = "^3.14.0"
-ruff = "^0.4.2"
+ruff = "^0.11.2"
 mypy = "^1.10.0"
 django-stubs = {extras = ["compatible-mypy"], version = "^5.0.0"}
 types-requests = "^2.31.0.20240406"
