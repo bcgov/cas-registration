@@ -118,7 +118,7 @@ Our apps use chained middlewares to improves code readability, and maintainabili
 
 ### Routing and Folder Structure
 
-The Registration1 and Registration code is organized into sub-folders based on a identity provider, an application role, and dashboard folder, or just dashboard folder for routes available for authenticated users without an authorization role. As mentioned, the middleware dynamically rewrites the request URL based on the Auth.js JWT properties of identity_provider and user role so to match our sub-folder structure. So route URL segments such as registration1 `http://localhost:3000/dashboard/operations` would get mapped to nested folder `bciers/apps/registration1/app/(authenticated)/bceidbusiness/industry_user/dashboard/operations' for an authenticated industry user.
+The Registration code is organized into sub-folders based on the identity provider, an application role, and dashboard folder, or just dashboard folder for routes available for authenticated users without an authorization role. As mentioned, the middleware dynamically rewrites the request URL based on the Auth.js JWT properties of identity_provider and user role so to match our sub-folder structure. So route URL segments such as registration `http://localhost:3000/dashboard/operations` would get mapped to nested folder `bciers/apps/registration/app/(authenticated)/bceidbusiness/industry_user/dashboard/operations' for an authenticated industry user.
 
 For our multi-zone apps, the dashboard app manages the main domain and rewites request to the appropriate zone as defined in `bciers/apps/dashboard/next.config.js` and `bciers/apps/dashboard/middlewares/withAuthorizationDashboard.ts`.
 
@@ -200,13 +200,13 @@ The pattern for the query string parameter should follow the format `{name-of-pr
 
 [Material-UI (MUI)](https://mui.com/material-ui/getting-started/) is a popular open-source UI framework for React applications that is based on Google's Material Design guidelines. It provides a wide range of reusable and customizable components and styles to help you build modern, attractive, and responsive web applications
 
-Material-UI has been configured for Next.js app router using a theme registry component (/cas-registration/bciers/apps/registration1/app/components/theme/ThemeRegistry.tsx) as a provider to the children within the root layout (/cas-registration/bciers/apps/registration1/app/layout.tsx) and providing config option in bciers/apps/registration1/next.config.js.
+Material-UI has been configured for Next.js app router using a theme registry component (/cas-registration/bciers/libs/components/src/theme/ThemeRegistry.tsx) as a provider to the children within the root layout (/cas-registration/bciers/apps/registration/app/layout.tsx) and providing config option in bciers/apps/registration/next.config.js.
 
 ### Tailwind CSS
 
 [Tailwind CSS](https://tailwindcss.com/) is a popular utility-first CSS framework that is designed to simplify and streamline the process of building modern, responsive web interfaces. It focuses on providing a set of highly reusable utility classes that you can apply directly to your HTML elements to style and structure.
 
-Tailwind has been configured to work with MUI within bciers/apps/registration1/tailwind.config.js as per [intergration documentation](https://mui.com/material-ui/guides/interoperability/#tailwind-css)
+Tailwind has been configured to work with MUI within bciers/apps/registration/tailwind.config.js as per [integration documentation](https://mui.com/material-ui/guides/interoperability/#tailwind-css)
 
 You can use Tailwind CSS classes to style Material-UI components by applying the classes directly to the Material-UI components in your JSX.
 

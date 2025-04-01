@@ -144,10 +144,10 @@ cd bci && yarn dev-all
 cd bc_obps && make run
 ```
 
-To run Registration1 e2e test, just run the `reg1` app before running the tests:
+To run Registration e2e test, just run the `reg` app before running the tests:
 
 ```bash
-cd bciers && yarn reg1
+cd bciers && yarn reg
 cd bc_obps && make run
 ```
 
@@ -157,13 +157,13 @@ Run tests from new terminal command:
 Run tests in the background using terminal command `yarn <app shortform>:e2e:ci`. These commands are located in `package.json`:
 
 ```bash
-cd bciers && yarn reg1:e2e
+cd bciers && yarn reg:e2e
 ```
 
 Run tests with the Playwright GUI using terminal command:
 
 ```bash
-cd bciers && yarn reg1:e2e:ui
+cd bciers && yarn reg:e2e:ui
 ```
 
 pre-commit run --all-files
@@ -176,7 +176,7 @@ The HTML report shows you a report of all your tests that have been ran and on w
 For debugging CI, you can download the HTML report artifact found in `GitHub\Actions\Test Registration App\Artifacts\ playwright-report` and extract the files to `bciers/playwright-report`. To view the downloaded the HTML report artifact locally run terminal command:
 
 ```bash
-cd bciers && yarn reg1:e2e:report
+cd bciers && yarn reg:e2e:report
 
 ```
 
@@ -186,7 +186,7 @@ cd bciers && yarn reg1:e2e:report
 
 If you are running into issues with your tests in CI, you can uncomment the Playwright html report upload steps in our GitHub Actions e2e workflow files. This will allow you to download the HTML report artifact from the CI job and view it locally if more context is needed than what is displayed in the failed job.
 
-These commented jobs are located in the `bciers/.github/workflows` directory in `test-nx-project-e2e.yaml` and `test-registration1-e2e.yaml`.
+These commented jobs are located in the `bciers/.github/workflows` directory in `test-nx-project-e2e.yaml`.
 
 #### Traces
 

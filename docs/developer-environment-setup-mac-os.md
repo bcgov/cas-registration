@@ -23,7 +23,7 @@ In `bciers` directory, create a `bciers/.env` file from the `bciers/.env.example
 
 In `bciers` directory, create a `bciers/.env.local` file from the `bciers/.env.local.example` file. See the 1Password `Clean Growth Digital Services Team` vault for the `bciers/.env.local` values in document `OBPS FE env.local`.
 
-In `bciers/apps/registration1/e2e` directory, create a `bciers/apps/registration1/e2e/.env.local` file from the `bciers/apps/registration1/e2e/.env.local.example` file. See `bciers/apps/registration1/e2e/.env.local` file for directions to the 1password values.
+In `bciers/apps/registration/e2e` directory, create a `bciers/apps/registration/e2e/.env.local` file from the `bciers/apps/registration/e2e/.env.local.example` file. See `bciers/apps/registration/e2e/.env.local` file for directions to the 1password values.
 
 In `bciers/apps/registration/e2e` directory, create a `bciers/apps//e2e/.env.local` file from the `bciers/apps/registration/e2e/.env.local.example` file. See `bciers/apps/registration/e2e/.env.local` file for directions to the 1password values.
 
