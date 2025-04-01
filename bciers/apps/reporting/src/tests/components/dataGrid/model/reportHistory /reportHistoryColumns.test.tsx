@@ -43,8 +43,20 @@ describe("reportHistoryColumns function", () => {
 
   it("renders an empty string if updated_at is null", () => {
     const columns = reportHistoryColumns();
-    const params = { value: null };
-    expect(columns[1].renderCell(params)).toBe("");
+    const params = { row: { status: "Submitted", submitted_by: null } };
+    expect(columns[1].renderCell(params)).toBe("—");
+  });
+
+  it("renders 'Not yet submitted' if status is DRAFT", () => {
+    const columns = reportHistoryColumns();
+    const params = { row: { status: "Draft", submitted_by: null } };
+    expect(columns[1].renderCell(params)).toBe("Not yet submitted");
+  });
+
+  it("renders 'N/A' if status is DRAFT in SubmittedByCell", () => {
+    const columns = reportHistoryColumns();
+    const params = { row: { status: "Draft", submitted_by: null } };
+    expect(columns[2].renderCell(params)).toBe("N/A");
   });
 
   it("renders the Actions column correctly", () => {

@@ -6,14 +6,12 @@ import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
 const UpdatedAtCell = ({ row, value }: GridRenderCellParams) => {
   if (row.status === ReportOperationStatus.DRAFT) {
-    return "Not Submitted";
+    return "Not yet submitted";
   }
   return value ? formatTimestamp(value) : "—";
 };
 const SubmittedByCell = ({ row }: GridRenderCellParams) => {
-  return row.status === ReportOperationStatus.DRAFT
-    ? "N/A"
-    : row.submitted_by || "—";
+  return row.status === ReportOperationStatus.DRAFT ? "N/A" : row.submitted_by;
 };
 
 const reportHistoryColumns = (): GridColDef[] => {
