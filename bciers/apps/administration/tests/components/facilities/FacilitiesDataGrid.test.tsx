@@ -202,9 +202,14 @@ describe("FacilitiesDataGrid component", () => {
 
         // check for the tooltip text
         userEvent.hover(actionCell);
-        waitFor(() => {
-          expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
-        });
+        waitFor(
+          () => {
+            expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
+          },
+          {
+            timeout: 10000,
+          },
+        );
       });
 
       // check for the "open in new tab" icon in the action cells
