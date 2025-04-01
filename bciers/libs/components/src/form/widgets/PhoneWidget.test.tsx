@@ -5,7 +5,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   checkNoValidationErrorIsTriggered,
   checkTextWidgetValidationStyles,
-} from "@/tests/helpers/form";
+} from "@bciers/testConfig/helpers/form";
 
 const phoneWidgetLabel = "PhoneWidget test field";
 const phoneRequiredLabel = `${phoneWidgetLabel}*`;

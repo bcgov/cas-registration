@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { OperatorsSearchParams } from "@/app/components/userOperators/types";
+import { OperatorsSearchParams } from "@/administration/app/components/operators/types";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import UserOperatorsPage from "@/administration/app/components/userOperators/UserOperatorsPage";
 
