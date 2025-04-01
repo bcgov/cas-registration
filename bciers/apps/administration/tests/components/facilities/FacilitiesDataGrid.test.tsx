@@ -177,41 +177,42 @@ describe("FacilitiesDataGrid component", () => {
     });
   });
 
-  it("checks Action Cell links from Registration for new tab behavior and UI", async () => {
-    render(
-      <FacilityDataGrid
-        operationId="randomOperationUUID"
-        initialData={mockResponse}
-        fromRegistration={true}
-      />,
-    );
-
-    const actionCells: HTMLSpanElement[] =
-      await screen.findAllByText("View Details");
-    expect(actionCells).toHaveLength(mockResponse.rows.length);
-
-    actionCells.forEach((actionCell) => {
-      const tooltip = actionCell.parentElement;
-      expect(tooltip).toHaveAttribute("target", "_blank");
-      expect(tooltip).toHaveAttribute("rel", "noopener noreferrer");
-
-      // check for the tooltip text
-      userEvent.hover(actionCell);
-      waitFor(
-        () => {
-          expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
-        },
-        {
-          timeout: 10000,
-        },
+  it(
+    "checks Action Cell links from Registration for new tab behavior and UI",
+    {
+      timeout: 10000,
+    },
+    async () => {
+      render(
+        <FacilityDataGrid
+          operationId="randomOperationUUID"
+          initialData={mockResponse}
+          fromRegistration={true}
+        />,
       );
-    });
 
-    // check for the "open in new tab" icon in the action cells
-    expect(screen.getAllByTestId("OpenInNewIcon")).toHaveLength(
-      mockResponse.rows.length,
-    );
-  });
+      const actionCells: HTMLSpanElement[] =
+        await screen.findAllByText("View Details");
+      expect(actionCells).toHaveLength(mockResponse.rows.length);
+
+      actionCells.forEach((actionCell) => {
+        const tooltip = actionCell.parentElement;
+        expect(tooltip).toHaveAttribute("target", "_blank");
+        expect(tooltip).toHaveAttribute("rel", "noopener noreferrer");
+
+        // check for the tooltip text
+        userEvent.hover(actionCell);
+        waitFor(() => {
+          expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
+        });
+      });
+
+      // check for the "open in new tab" icon in the action cells
+      expect(screen.getAllByTestId("OpenInNewIcon")).toHaveLength(
+        mockResponse.rows.length,
+      );
+    },
+  );
 
   it("opens Action Cells links in the same tab when coming from Administration module", async () => {
     render(
