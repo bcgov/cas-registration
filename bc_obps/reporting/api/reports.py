@@ -17,12 +17,12 @@ from reporting.schema.report_operation import ReportOperationIn, ReportOperation
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
-from ..models import ReportingYear, ReportVersion
 from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
     approved_authorized_roles_report_version_composite_auth,
 )
+from reporting.models import ReportingYear, ReportVersion, ReportOperation
 
 
 @router.post(
@@ -30,7 +30,6 @@ from reporting.api.permissions import (
     response={201: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
-    pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
     This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
     auth=compose_auth(authorize("approved_industry_user"), check_operation_ownership()),
 )
@@ -61,9 +60,9 @@ def get_report_operation_by_version_id(request: HttpRequest, version_id: int) ->
 )
 def save_report(
     request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[201], ReportOperationOut]:
+) -> Tuple[Literal[201], ReportOperation]:
     report_operation = ReportService.save_report_operation(version_id, payload)
-    return 201, report_operation  # type: ignore
+    return 201, report_operation
 
 
 @router.post(
@@ -113,7 +112,7 @@ def get_regulated_products_by_version_id(
     description="Retrieve the report type for a specific reporting version, including the reporting year and due date.",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_type_by_version(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
+def get_report_type_by_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
     report_type = ReportService.get_report_type_by_version_id(version_id)
     return 200, report_type
 

@@ -54,8 +54,8 @@ const FacilityReview: React.FC<Props> = ({
         .map((activityName: string) => {
           return activityNameToIdMap.get(activityName);
         })
-        .filter((id: number | undefined) => id !== undefined)
-        .map(String),
+        .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
+        .map(Number), // Ensure all IDs are numbers
     };
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(updatedFormData),

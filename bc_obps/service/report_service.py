@@ -1,19 +1,49 @@
 from uuid import UUID
+from django.db.models import Case, When, Value, BooleanField
 from django.db import transaction
 from django.db.models import QuerySet
-from django.db.models import Case, When, Value, BooleanField
-from registration.models import Activity, RegulatedProduct
+from registration.models import Activity
+from registration.models import RegulatedProduct
 from registration.models.operation import Operation
 from reporting.models import ReportOperationRepresentative
 from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_operation import ReportOperationIn
 from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
 from service.report_version_service import ReportVersionService
 from django.forms.models import model_to_dict
+from service.facility_report_service import FacilityReportService, SaveFacilityReportData
+from typing import Any, List, Optional
+
+
+class SaveReportOperationData:
+    def __init__(
+        self,
+        operator_legal_name: str,
+        operation_name: str,
+        operation_type: str,
+        registration_purpose: str,
+        bc_obps_regulated_operation_id: str,
+        activities: List[int],
+        regulated_products: List[int],
+        operation_report_type: str,
+        operation_representative_name: List[int],
+        operator_trade_name: Optional[str] = None,
+        operation_bcghgid: Optional[str] = None,
+    ):
+        self.operator_legal_name = operator_legal_name
+        self.operation_name = operation_name
+        self.operation_type = operation_type
+        self.registration_purpose = registration_purpose
+        self.bc_obps_regulated_operation_id = bc_obps_regulated_operation_id
+        self.activities = activities
+        self.regulated_products = regulated_products
+        self.operation_report_type = operation_report_type
+        self.operation_representative_name = operation_representative_name
+        self.operator_trade_name = operator_trade_name
+        self.operation_bcghgid = operation_bcghgid
 
 
 class ReportService:
@@ -64,7 +94,7 @@ class ReportService:
 
     @classmethod
     @transaction.atomic
-    def save_report_operation(cls, report_version_id: int, data: ReportOperationIn) -> ReportOperation:
+    def save_report_operation(cls, report_version_id: int, data: Any) -> ReportOperation:
         # Fetch the existing report operation
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
 
@@ -92,11 +122,24 @@ class ReportService:
         report_operation.regulated_products.set(regulated_products)
         report_operation.save()
 
-        facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(report_version__id=report_version_id)
-        if activities:
+        if report_operation.operation_type == 'Linear Facilities Operation':
+            facility_reports: QuerySet[FacilityReport] = FacilityReport.objects.filter(
+                report_version__id=report_version_id
+            )
             for f in facility_reports:
-                f.activities.set(activities)
-                f.save()
+                FacilityReportService.set_activities_for_facility_report(facility_report=f, activities=data.activities)
+        else:
+            facility_report: FacilityReport = FacilityReport.objects.get(report_version__id=report_version_id)
+            facility_report_save_data = SaveFacilityReportData(
+                facility_name=report_operation.operation_name,
+                facility_type=facility_report.facility_type,
+                activities=data.activities,
+            )
+            FacilityReportService.save_facility_report(
+                report_version_id=facility_report.report_version_id,
+                facility_id=facility_report.facility_id,
+                data=facility_report_save_data,
+            )
 
         return report_operation
 

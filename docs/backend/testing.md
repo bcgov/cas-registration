@@ -17,6 +17,7 @@ The easiest way to run these tests locally is by using commands from the Makefil
 > make pythontests ARGS='-k <TestClassname>' # run pytest for a specific class, e.g. make pythontests ARGS='-k TestNaicsCodeEndpoint'
 > make pythontests ARGS='-k <test_name>' # run pytest for a specific test, e.g. make pythontests ARGS='-k test_get_method_for_200_status' (note: if any tests have the same name, even if they're within different classes, this command will run them all)
 > make pythontests ARGS='--lf'  # run pytest with the --last-failed flag to re-run only the tests that failed in the last run
+> make pythontests ARGS='--reuse-db'  # run pytest with the --reuse-db flag. This flag will cause the db to persist & subsequent tests will reuse that db instance, which saves time when running a single test file & resetting the db entirely is not necessary.
 ```
 
 ## Testing Helpers
