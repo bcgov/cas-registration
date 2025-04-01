@@ -12,7 +12,7 @@ describe("FacilityPageBanner component", () => {
 
     expect(
       screen.getByText(
-        "This link has opened in a new tab. To go back to the previous page, close this tab.",
+        "This link opened in a new tab. If you make edits here, refresh the previous tab to see the updates. To go back, close this tab.",
       ),
     ).toBeVisible();
   });
