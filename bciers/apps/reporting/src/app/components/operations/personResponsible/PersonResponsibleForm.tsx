@@ -16,6 +16,7 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
 
 interface Props {
   versionId: number;
@@ -167,6 +168,17 @@ const PersonResponsibleForm = ({
             ...personResponsibleUiSchema.sync_button,
             "ui:options": {
               onSync: handleSync,
+            },
+          },
+          contact_details: {
+            ...personResponsibleUiSchema.contact_details,
+            section4: {
+              ...personResponsibleUiSchema.contact_details.section4,
+              address_error: {
+                ...personResponsibleUiSchema.contact_details.section4
+                  .address_error,
+                "ui:widget": AddressErrorWidget,
+              },
             },
           },
         }}
