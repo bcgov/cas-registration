@@ -1,5 +1,5 @@
 import { FormReport } from "./FormReport";
-import { ComplianceHeading } from "./ComplianceHeading";
+import { ComplianceHeading } from "../ComplianceHeading";
 import { ComplianceObligation } from "./ComplianceObligation";
 import { ComplianceUnitsGrid } from "./ComplianceUnitsGrid";
 import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
@@ -7,26 +7,27 @@ import { OutstandingComplianceObligation } from "./OutstandingComplianceObligati
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
 
-interface PageContentProps {
+interface Props {
   continueUrl: string;
   backUrl?: string;
   data: any;
+  complianceSummaryId?: number;
 }
 
-export function PageContent(props: PageContentProps) {
-  const { backUrl, continueUrl, data } = props;
+export function ComplianceSummaryReviewContent(props: Props) {
+  const { backUrl, continueUrl, data, complianceSummaryId } = props;
 
-  // Handler for Generate Compliance Invoice button
-  const handleGenerateInvoice = () => {
-    // Handle invoice generation
-  };
+  const handleGenerateInvoice = () => {};
 
   return (
     <div className="w-full">
-      <ComplianceHeading />
+      <ComplianceHeading title="Report Information" />
       <FormReport data={data} />
       <ComplianceObligation data={data} />
-      <ComplianceUnitsGrid data={""} />
+      <ComplianceUnitsGrid
+        data={""}
+        complianceSummaryId={complianceSummaryId}
+      />
       <MonetaryPaymentsGrid data={""} />
       <OutstandingComplianceObligation data={data} />
       <AutomaticOverduePenalty data={data} />
@@ -35,15 +36,11 @@ export function PageContent(props: PageContentProps) {
         key="form-buttons"
         backUrl={backUrl}
         continueUrl={continueUrl}
-        generateInvoice={handleGenerateInvoice}
-        // isSaving={isSaving}
-        // isSuccess={isSuccess}
-        // isRedirecting={isRedirecting}
-        // saveButtonDisabled={saveButtonDisabled}
-        // submitButtonDisabled={submitButtonDisabled}
-        // saveAndContinue={onSubmit ? onSaveAndContinue : undefined}
-        // buttonText={buttonText}
-        // noSaveButton={noSaveButton}
+        backButtonDisabled={false}
+        middleButtonDisabled={false}
+        submitButtonDisabled={false}
+        middleButtonText="Generate Compliance Invoice"
+        onMiddleButtonClick={handleGenerateInvoice}
       />
     </div>
   );
