@@ -43,7 +43,11 @@ class ELicensingLinkService:
 
     @classmethod
     def create_link(
-        cls, model_instance: models.Model, elicensing_object_id: str, elicensing_object_kind: str, elicensing_guid: uuid.UUID
+        cls,
+        model_instance: models.Model,
+        elicensing_object_id: str,
+        elicensing_object_kind: str,
+        elicensing_guid: uuid.UUID,
     ) -> ELicensingLink:
         """
         Creates a link between a model instance and an eLicensing object.
@@ -63,5 +67,5 @@ class ELicensingLinkService:
             object_id=model_instance.id,
             elicensing_object_id=elicensing_object_id,
             elicensing_object_kind=elicensing_object_kind,
-            elicensing_guid=elicensing_guid
+            elicensing_guid=elicensing_guid,
         )

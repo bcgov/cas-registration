@@ -684,11 +684,7 @@ class TestELicensingAPIClient:
 
         # Set up test data
         client_id = "test-id"
-        invoice_data = {
-            "paymentDueDate": "2025-12-31",
-            "businessAreaCode": "OBPS",
-            "fees": ["fee-id-1", "fee-id-2"]
-        }
+        invoice_data = {"paymentDueDate": "2025-12-31", "businessAreaCode": "OBPS", "fees": ["fee-id-1", "fee-id-2"]}
 
         # Set up mock response
         mock_response = MagicMock()
@@ -697,7 +693,7 @@ class TestELicensingAPIClient:
             "clientObjectId": "test-id",
             "businessAreaCode": "OBPS",
             "clientGUID": "test-guid",
-            "invoiceNumber": "INV-001"
+            "invoiceNumber": "INV-001",
         }
         mock_post.return_value = mock_response
 
@@ -709,7 +705,7 @@ class TestELicensingAPIClient:
             'https://test-api.example.com/client/test-id/invoice',
             headers=client._get_headers(),
             json=invoice_data,
-            timeout=30
+            timeout=30,
         )
 
         # Check that we got the expected response
@@ -717,5 +713,5 @@ class TestELicensingAPIClient:
             "clientObjectId": "test-id",
             "businessAreaCode": "OBPS",
             "clientGUID": "test-guid",
-            "invoiceNumber": "INV-001"
+            "invoiceNumber": "INV-001",
         }

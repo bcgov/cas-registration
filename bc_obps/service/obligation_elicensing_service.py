@@ -1,8 +1,6 @@
 import logging
 import uuid
 from typing import Optional, Dict, Any
-from django.db import transaction
-from datetime import date
 
 from compliance.models import ComplianceObligation, ELicensingLink
 from service.operator_elicensing_service import OperatorELicensingService
@@ -13,6 +11,7 @@ import requests
 logger = logging.getLogger(__name__)
 
 elicensing_api_client = ELicensingAPIClient()
+
 
 class ObligationELicensingService:
     """
@@ -26,38 +25,40 @@ class ObligationELicensingService:
         """
         Processes the full eLicensing integration for a compliance obligation.
         This includes creating a fee and syncing it with eLicensing.
-        
+
         Args:
             obligation_id: The ID of the compliance obligation to process
-            
+
         Returns:
             bool: True if all integration steps completed successfully, False otherwise
         """
         try:
             # Validate the obligation exists
             obligation = ComplianceObligation.objects.get(id=obligation_id)
-            
+
             # Ensure client exists in eLicensing
-            client_link = OperatorELicensingService.sync_client_with_elicensing(obligation.compliance_summary.report.operation.operator.id)
+            client_link = OperatorELicensingService.sync_client_with_elicensing(
+                obligation.compliance_summary.report.operation.operator.id
+            )
             if not client_link:
                 logger.warning(f"Failed to ensure client exists for obligation {obligation_id}")
                 return False
-                
+
             # Create fee in eLicensing
             fee_link = cls.sync_fee_with_elicensing(obligation_id, client_link)
             if not fee_link:
                 logger.warning(f"Failed to sync fee for obligation {obligation_id} with eLicensing")
                 return False
-                
+
             # Create invoice in eLicensing
             invoice_link = cls.sync_invoice_with_elicensing(obligation_id, client_link, fee_link)
             if not invoice_link:
                 logger.warning(f"Failed to sync invoice for obligation {obligation_id} with eLicensing")
                 return False
-                
+
             logger.info(f"Successfully processed obligation {obligation_id} integration with eLicensing")
             return True
-            
+
         except ComplianceObligation.DoesNotExist:
             logger.error(f"Compliance obligation with ID {obligation_id} does not exist")
             return False
@@ -67,25 +68,25 @@ class ObligationELicensingService:
         except Exception as e:
             logger.error(f"Unexpected error processing obligation {obligation_id} integration: {str(e)}", exc_info=True)
             return False
-    
+
     @classmethod
     def _ensure_client_exists(cls, obligation: ComplianceObligation) -> Optional[ELicensingLink]:
         """
         Ensures the client exists in eLicensing for the given obligation.
-        
+
         Args:
             obligation: The compliance obligation
-            
+
         Returns:
             The ELicensingLink object for the client if successful, None otherwise
         """
         try:
             # Get the operator from the obligation's compliance summary
             operator = obligation.compliance_summary.report.operation.operator
-            
+
             # Use OperatorELicensingService to ensure client exists
             return OperatorELicensingService.sync_client_with_elicensing(operator.id)
-            
+
         except Exception as e:
             logger.error(f"Error ensuring client exists for obligation {obligation.id}: {str(e)}", exc_info=True)
             return None
@@ -107,7 +108,7 @@ class ObligationELicensingService:
             "feeProfileGroupName": "OBPS Compliance Obligation",
             "feeDescription": f"{obligation.compliance_summary.compliance_period.reporting_year.reporting_year} GGIRCA Compliance Obligation",
             "feeAmount": float(obligation.fee_amount_dollars),
-            "feeDate": obligation.fee_date.strftime("%Y-%m-%d")
+            "feeDate": obligation.fee_date.strftime("%Y-%m-%d"),
         }
 
     @classmethod
@@ -125,61 +126,60 @@ class ObligationELicensingService:
         return {
             "paymentDueDate": obligation.obligation_deadline.strftime("%Y-%m-%d"),
             "businessAreaCode": "OBPS",
-            "fees": [fee_id]
+            "fees": [fee_id],
         }
 
     @classmethod
     def sync_fee_with_elicensing(cls, obligation_id: int, client_link: ELicensingLink) -> Optional[ELicensingLink]:
         """
         Creates a fee in eLicensing for a compliance obligation.
-        
+
         Args:
             obligation_id: The ID of the compliance obligation
             client_link: The ELicensingLink for the client
-            
+
         Returns:
             The ELicensingLink object for the fee if successful, None otherwise
         """
         try:
             obligation = ComplianceObligation.objects.get(id=obligation_id)
             client_id = client_link.elicensing_object_id
-            
+
             fee_data = cls._map_obligation_to_fee_data(obligation)
-            
+
             # Create fee in eLicensing
             response = elicensing_api_client.create_fees(client_id, {"fees": [fee_data]})
-            
+
             if not response or "fees" not in response or not response["fees"]:
                 logger.error(f"Failed to create fee in eLicensing for obligation {obligation_id}")
                 return None
-                
+
             fee_object_id = response["fees"][0]["feeObjectId"]
             elicensing_guid = response["fees"][0]["feeGUID"]
-            
+
             # Create link between obligation and eLicensing fee
             fee_link = ELicensingLinkService.create_link(
-                obligation,
-                fee_object_id,
-                ELicensingLink.ObjectKind.FEE,
-                elicensing_guid
+                obligation, fee_object_id, ELicensingLink.ObjectKind.FEE, elicensing_guid
             )
-            
+
             return fee_link
-            
+
         except Exception as e:
             logger.error(f"Error syncing fee with eLicensing for obligation {obligation_id}: {str(e)}", exc_info=True)
             return None
 
     @classmethod
-    def sync_invoice_with_elicensing(cls, obligation_id: int, client_link: ELicensingLink, fee_link: ELicensingLink) -> Optional[ELicensingLink]:
+    def sync_invoice_with_elicensing(
+        cls, obligation_id: int, client_link: ELicensingLink, fee_link: ELicensingLink
+    ) -> Optional[ELicensingLink]:
         """
         Creates an invoice in eLicensing for a compliance obligation.
-        
+
         Args:
             obligation_id: The ID of the compliance obligation
             client_link: The ELicensingLink for the client
             fee_link: The ELicensingLink for the fee
-            
+
         Returns:
             The ELicensingLink object for the invoice if successful, None otherwise
         """
@@ -187,39 +187,37 @@ class ObligationELicensingService:
             obligation = ComplianceObligation.objects.get(id=obligation_id)
             client_id = client_link.elicensing_object_id
             fee_id = fee_link.elicensing_object_id
-            
+
             invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_id)
-            
+
             # Create invoice in eLicensing
             response = elicensing_api_client.create_invoice(client_id, invoice_data)
-            
+
             if not response or "invoiceNumber" not in response:
                 logger.error(f"Failed to create invoice in eLicensing for obligation {obligation_id}")
                 return None
-                
+
             invoice_number = response["invoiceNumber"]
-            
+
             # Create link between obligation and eLicensing invoice
             invoice_link = ELicensingLinkService.create_link(
-                obligation,
-                invoice_number,
-                ELicensingLink.ObjectKind.INVOICE,
-                elicensing_guid=invoice_number
+                obligation, invoice_number, ELicensingLink.ObjectKind.INVOICE, elicensing_guid=invoice_number
             )
-            
+
             return invoice_link
-            
+
         except Exception as e:
-            logger.error(f"Error syncing invoice with eLicensing for obligation {obligation_id}: {str(e)}", exc_info=True)
+            logger.error(
+                f"Error syncing invoice with eLicensing for obligation {obligation_id}: {str(e)}", exc_info=True
+            )
             return None
 
-    
         """
         Ensures a fee exists for the given obligation, creating one if needed.
-        
+
         Args:
             obligation_id: The ID of the compliance obligation
-            
+
         Returns:
             The ComplianceFee object if it exists or was created successfully, None otherwise
         """
@@ -228,10 +226,10 @@ class ObligationELicensingService:
             existing_fees = ComplianceFee.objects.filter(compliance_obligation_id=obligation_id)
             if existing_fees.exists():
                 return existing_fees.first()
-                
+
             # Create a new fee if one doesn't exist
             return ComplianceFeeService.create_compliance_fee(obligation_id)
-            
+
         except Exception as e:
             logger.error(f"Error ensuring fee for obligation {obligation_id}: {str(e)}", exc_info=True)
-            return None 
+            return None

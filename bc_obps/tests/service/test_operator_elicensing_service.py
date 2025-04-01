@@ -161,20 +161,18 @@ class TestOperatorELicensingService:
     @pytest.mark.django_db
     @patch('service.operator_elicensing_service.ELicensingLink')
     @patch('service.operator_elicensing_service.ELicensingLinkService')
-    def test_sync_client_with_elicensing_existing_client(
-        self, mock_link_service, mock_operator, mock_client_link
-    ):
+    def test_sync_client_with_elicensing_existing_client(self, mock_link_service, mock_operator, mock_client_link):
         """Test sync_client_with_elicensing when client already exists"""
         # Setup mock operator
         mock_operator.id = uuid.uuid4()
-        
+
         # Setup mock for existing link
         mock_link_service.get_link_for_model.return_value = mock_client_link
         mock_client_link.elicensing_object_id = "12345"
-        
+
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
-        
+
         # Assert that the existing link was returned
         assert result == mock_client_link
         mock_link_service.get_link_for_model.assert_called_once_with(
@@ -184,17 +182,15 @@ class TestOperatorELicensingService:
     @pytest.mark.django_db
     @patch('service.operator_elicensing_service.ELicensingLink')
     @patch('service.operator_elicensing_service.ELicensingLinkService')
-    def test_sync_client_with_elicensing_operator_not_found(
-        self, mock_link_service, mock_operator
-    ):
+    def test_sync_client_with_elicensing_operator_not_found(self, mock_link_service, mock_operator):
         """Test sync_client_with_elicensing when operator does not exist"""
         # Setup mock operator and mock it not being found
         mock_operator.id = uuid.uuid4()
         mock_operator.objects.get.side_effect = Operator.DoesNotExist
-        
+
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
-        
+
         # Assert result is None
         assert result is None
 
@@ -213,29 +209,26 @@ class TestOperatorELicensingService:
         mock_link_service,
         mock_content_type,
         mock_operator,
-        mock_client_link
+        mock_client_link,
     ):
         """Test sync_client_with_elicensing successfully creates a new client"""
         # Setup mock operator
         mock_operator.id = uuid.uuid4()
-        
+
         # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        
+
         # Setup successful API call
-        mock_api_client.create_client.return_value = {
-            "clientObjectId": "54321",
-            "clientGUID": str(uuid.uuid4())
-        }
-        
+        mock_api_client.create_client.return_value = {"clientObjectId": "54321", "clientGUID": str(uuid.uuid4())}
+
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
-        
+
         # Assert result is the new link
         assert result == mock_client_link
         assert mock_client_link.elicensing_object_id == "54321"
         assert mock_client_link.sync_status == "SUCCESS"
-        
+
         # Assert save was called
         assert mock_client_link.save.called
 
@@ -254,21 +247,21 @@ class TestOperatorELicensingService:
         mock_link_service,
         mock_content_type,
         mock_operator,
-        mock_client_link
+        mock_client_link,
     ):
         """Test sync_client_with_elicensing handles invalid API responses by returning None"""
         # Setup mock operator
         mock_operator.id = uuid.uuid4()
-        
+
         # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        
+
         # Setup invalid API response
         mock_api_client.create_client.side_effect = ValueError("Invalid response from API")
-        
+
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
-        
+
         # Assert result is None
         assert result is None
         assert mock_client_link.sync_status == "FAILED"
@@ -288,21 +281,21 @@ class TestOperatorELicensingService:
         mock_link_service,
         mock_content_type,
         mock_operator,
-        mock_client_link
+        mock_client_link,
     ):
         """Test sync_client_with_elicensing handles RequestException properly"""
         # Setup mock operator
         mock_operator.id = uuid.uuid4()
-        
+
         # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        
+
         # Setup API raising RequestException
         mock_api_client.create_client.side_effect = requests.RequestException("Connection failed")
-        
+
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
-        
+
         # Assert result is None
         assert result is None
         assert mock_client_link.sync_status == "FAILED"
@@ -322,23 +315,23 @@ class TestOperatorELicensingService:
         mock_link_service,
         mock_content_type,
         mock_operator,
-        mock_client_link
+        mock_client_link,
     ):
         """Test sync_client_with_elicensing handles HTTPError properly"""
         # Setup mock operator
         mock_operator.id = uuid.uuid4()
-        
+
         # No existing link
         mock_link_service.get_link_for_model.return_value = None
-        
+
         # Setup API raising HTTPError
         mock_response = MagicMock()
         mock_response.raise_for_status.side_effect = requests.HTTPError("404 Not Found")
         mock_api_client.create_client.side_effect = requests.HTTPError("404 Not Found", response=mock_response)
-        
+
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
-        
+
         # Assert result is None
         assert result is None
         assert mock_client_link.sync_status == "FAILED"

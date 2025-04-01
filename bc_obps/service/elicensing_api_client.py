@@ -2,7 +2,6 @@ import logging
 from typing import Dict, Any, Optional, cast, TypedDict, List, Literal
 import requests
 from django.conf import settings
-from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
@@ -48,6 +47,7 @@ FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative
 
 class FeeCreationItem(TypedDict):
     """Type definition for a fee item in the fee creation request"""
+
     businessAreaCode: str
     feeGUID: str
     feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
@@ -58,11 +58,13 @@ class FeeCreationItem(TypedDict):
 
 class FeeCreationRequest(TypedDict):
     """Type definition for the fee creation request to eLicensing API"""
+
     fees: List[FeeCreationItem]
 
 
 class FeeItem(TypedDict):
     """Type definition for a fee item in the eLicensing API response"""
+
     feeGUID: str
     feeObjectId: str
     businessAreaCode: Optional[str]
@@ -74,6 +76,7 @@ class FeeItem(TypedDict):
 
 class FeeResponse(TypedDict):
     """Type definition for the fee creation response from eLicensing API"""
+
     clientObjectId: str
     clientGUID: str
     fees: List[FeeItem]
@@ -94,6 +97,7 @@ class InvoiceCreationRequest(TypedDict):
 
 class FeeRequest(TypedDict):
     """Type for fee creation request"""
+
     clientId: str
     amount: str
     description: str
@@ -104,10 +108,9 @@ class FeeRequest(TypedDict):
     status: str
 
 
-
-
 class ELicensingAPIError(Exception):
     """Exception for eLicensing API errors"""
+
     pass
 
 
@@ -437,13 +440,13 @@ class ELicensingAPIClient:
         for fee in fees_data.get("fees", []):
             if not fee.get("feeProfileGroupName"):
                 raise ValueError("feeProfileGroupName is mandatory for each fee")
-            
+
             if fee.get("feeProfileGroupName") not in ["OBPS Compliance Obligation", "OBPS Administrative Penalty"]:
                 raise ValueError(
                     f"Invalid feeProfileGroupName: {fee.get('feeProfileGroupName')}. "
                     f"Must be one of: 'OBPS Compliance Obligation', 'OBPS Administrative Penalty'"
                 )
-                
+
             if not fee.get("feeDescription"):
                 raise ValueError("feeDescription is mandatory for each fee")
 

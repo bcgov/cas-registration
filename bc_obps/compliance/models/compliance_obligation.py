@@ -66,17 +66,16 @@ class ComplianceObligation(TimeStampedModel):
     )
 
     fee_amount_dollars = models.DecimalField(
-        max_digits=20, decimal_places=2, null=True, blank=True,
-        db_comment="The fee amount in CAD dollars"
+        max_digits=20, decimal_places=2, null=True, blank=True, db_comment="The fee amount in CAD dollars"
     )
     fee_rate_dollars = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True,
-        db_comment="The fee rate used to calculate the fee amount in CAD dollars per tCO2e"
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_comment="The fee rate used to calculate the fee amount in CAD dollars per tCO2e",
     )
-    fee_date = models.DateField(
-        null=True, blank=True,
-        db_comment="The date the fee was created"
-    )
+    fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
 
     history = HistoricalRecords(
         table_name='erc_history"."compliance_obligation_history',

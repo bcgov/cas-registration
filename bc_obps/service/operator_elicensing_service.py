@@ -3,8 +3,6 @@ import uuid
 from typing import Dict, Any, Optional
 
 from django.db import transaction
-from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 from service.elicensing_api_client import ELicensingAPIClient
 from service.elicensing_link_service import ELicensingLinkService
 from registration.models.operator import Operator
@@ -97,50 +95,54 @@ class OperatorELicensingService:
         """
         Syncs an operator with the eLicensing system by creating a client record.
         If a client already exists, returns the existing link.
-        
+
         Args:
             operator_id: The UUID of the operator to sync
-            
+
         Returns:
             The ELicensingLink object if successful, None if there was an error
-            
+
         Raises:
             Operator.DoesNotExist: If the operator doesn't exist
         """
         try:
             operator = Operator.objects.get(id=operator_id)
-            
+
             # Check if a client already exists for this operator
             existing_link = ELicensingLinkService.get_link_for_model(
                 Operator, operator_id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
             )
-            
+
             if existing_link and existing_link.elicensing_object_id is not None:
-                logger.info(f"Operator {operator_id} already has eLicensing client with ID {existing_link.elicensing_object_id}")
+                logger.info(
+                    f"Operator {operator_id} already has eLicensing client with ID {existing_link.elicensing_object_id}"
+                )
                 return existing_link
-            
+
             # Map operator data to eLicensing format
             client_data = cls._map_operator_to_client_data(operator)
-            
+
             # Make the API call
             try:
                 response = elicensing_api_client.create_client(client_data)
-                
+
                 # Create link with the client ID and GUID from the client data
                 client_link = ELicensingLinkService.create_link(
                     operator,
                     response['clientObjectId'],
                     ELicensingLink.ObjectKind.CLIENT,
-                    elicensing_guid=client_data['clientGUID']
+                    elicensing_guid=client_data['clientGUID'],
                 )
-                
-                logger.info(f"Successfully synced operator {operator_id} with eLicensing as client {response['clientObjectId']}")
+
+                logger.info(
+                    f"Successfully synced operator {operator_id} with eLicensing as client {response['clientObjectId']}"
+                )
                 return client_link
-                
+
             except requests.RequestException as e:
                 logger.error(f"eLicensing API request failed for operator {operator_id}: {str(e)}")
                 return None
-                
+
         except Operator.DoesNotExist:
             logger.error(f"Operator with ID {operator_id} does not exist")
             return None

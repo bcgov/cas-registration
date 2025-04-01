@@ -143,7 +143,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-        
+
         # Mock fee creation failure
         mock_create_fee.return_value = None
 
@@ -175,7 +175,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-        
+
         # Mock exception during fee creation
         mock_create_fee.side_effect = Exception("Error creating fee")
 

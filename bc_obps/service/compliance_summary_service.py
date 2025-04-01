@@ -71,25 +71,25 @@ class ComplianceSummaryService:
                 ComplianceObligationService.create_compliance_obligation(
                     summary.id, compliance_data.excess_emissions, report_version
                 )
-                
+
                 # Integration operation - handle eLicensing integration
                 try:
                     # This is done outside of the main transaction to prevent rollback if integration fails
-                    transaction.on_commit(
-                        lambda: cls._process_obligation_integration(obligation.id)
-                    )
+                    transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
                 except Exception as e:
-                    logger.error(f"Error scheduling eLicensing integration for obligation {obligation.id}: {str(e)}", 
-                                 exc_info=True)
+                    logger.error(
+                        f"Error scheduling eLicensing integration for obligation {obligation.id}: {str(e)}",
+                        exc_info=True,
+                    )
 
             return summary
-            
+
     @classmethod
     def _process_obligation_integration(cls, obligation_id: int) -> None:
         """
         Process the eLicensing integration for an obligation.
         This is executed after the transaction is committed.
-        
+
         Args:
             obligation_id: The ID of the obligation to process
         """
@@ -100,8 +100,9 @@ class ComplianceSummaryService:
             else:
                 logger.warning(f"Failed to process eLicensing integration for obligation {obligation_id}")
         except Exception as e:
-            logger.error(f"Unexpected error in obligation eLicensing integration for {obligation_id}: {str(e)}", 
-                         exc_info=True)
+            logger.error(
+                f"Unexpected error in obligation eLicensing integration for {obligation_id}: {str(e)}", exc_info=True
+            )
 
     @classmethod
     def _create_compliance_products(
