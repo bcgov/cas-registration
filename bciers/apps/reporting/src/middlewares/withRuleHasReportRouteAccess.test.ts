@@ -302,6 +302,8 @@ describe("withRuleHasReportRouteAccess middleware", () => {
           "review-facility-information",
           "end-of-facility-report",
           "operation-emission-summary",
+          "submitted",
+          "submission",
         ],
       },
     });

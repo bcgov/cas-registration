@@ -32,7 +32,6 @@ export default async function reviewDataFactory(
   // Fetch facilities for this report version
   const listFacilities = (await getOperationFacilitiesList(versionId)) || [];
   const currentFacilities = listFacilities.current_facilities;
-  const facilityId = currentFacilities[0].facility_id;
 
   // Mapping from ReportingPage to the corresponding factory function
   const factoryMapping: Partial<
@@ -57,14 +56,7 @@ export default async function reviewDataFactory(
       if (factoryFn) {
         let pageData: ReviewData[] = [];
         // Determine parameters based on the ReportingPage
-        switch (page) {
-          case ReportingPage.Activities:
-            pageData = await factoryFn(versionId, currentFacilities, flow);
-            break;
-          default:
-            pageData = await factoryFn(versionId, facilityId);
-            break;
-        }
+        pageData = await factoryFn(versionId, currentFacilities, flow);
         reviewData.push(...pageData);
       }
     }
