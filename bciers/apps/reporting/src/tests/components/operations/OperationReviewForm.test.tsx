@@ -79,6 +79,10 @@ describe("OperationReviewForm Component", () => {
         version_id={1}
         navigationInformation={dummyNavigationInformation}
         schema={schema}
+        allActivities={[]}
+        allRegulatedProducts={[]}
+        reportType={reportType}
+        reportingWindowEnd={``}
       />,
     );
   };

@@ -6,7 +6,7 @@ import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
 import {
   buildOperationReviewSchema,
-  operationReviewUiSchema,
+  buildOperationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,6 @@ interface Props {
   reportingWindowEnd: string;
   allActivities: any[];
   allRegulatedProducts: any[];
-  allRepresentatives: any[];
   showRegulatedProducts?: boolean;
 }
 export default function OperationReviewForm({
@@ -34,7 +33,6 @@ export default function OperationReviewForm({
   reportingWindowEnd,
   allActivities,
   allRegulatedProducts,
-  allRepresentatives,
   showRegulatedProducts,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
@@ -45,6 +43,7 @@ export default function OperationReviewForm({
   const [apiError, setApiError] = useState<string | null>(null);
 
   const router = useRouter();
+  const uiSchema = buildOperationReviewUiSchema(formData.operation_id);
 
   const saveHandler = async () => {
     const method = "POST";
@@ -84,7 +83,7 @@ export default function OperationReviewForm({
         reportingWindowEnd,
         allActivities,
         allRegulatedProducts,
-        allRepresentatives,
+        newData.report_operation_representatives,
         reportType,
         showRegulatedProducts,
       ),
@@ -137,9 +136,9 @@ export default function OperationReviewForm({
         taskListElements={navigationInformation.taskList}
         schema={pageSchema}
         uiSchema={{
-          ...operationReviewUiSchema,
+          ...uiSchema,
           sync_button: {
-            ...operationReviewUiSchema.sync_button,
+            ...uiSchema.sync_button,
             "ui:options": {
               onSync: handleSync,
             },
