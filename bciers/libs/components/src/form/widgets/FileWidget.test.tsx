@@ -4,7 +4,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { useSession } from "@bciers/testConfig/mocks";
 import { Session } from "@bciers/testConfig/types";
-import { checkNoValidationErrorIsTriggered } from "@/tests/helpers/form";
+import { checkNoValidationErrorIsTriggered } from "@bciers/testConfig/helpers/form";
 
 const fileFieldLabel = "FileWidget test field";
 const fileLabelRequired = `${fileFieldLabel}*`;

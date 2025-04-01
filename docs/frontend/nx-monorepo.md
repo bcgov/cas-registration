@@ -34,7 +34,6 @@ When running commands, Nx has two patterns you can use
 | `dashboard`      | `/bciers/apps/dashboard`          | application |
 | `registration`   | `/bciers/apps/registration`       | application |
 | `reporting`      | `/bciers/apps/reporting`          | application |
-| `registration1`  | `/bciers/apps/registration1`      | application |
 | `administration` | `/bciers/apps/administration`     | application |
 | `compliance`     | `/bciers/apps/compliance`         | application |
 | `actions`        | `/bciers/libs/shared/actions`     | library     |

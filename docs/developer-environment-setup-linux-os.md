@@ -275,14 +275,13 @@ The frontend is organized as a monorepo using Nx, containing multiple applicatio
 
 ### Applications
 
-| Application      | Path                          | Description                          |
-| ---------------- | ----------------------------- | ------------------------------------ |
-| `dashboard`      | `/bciers/apps/dashboard`      | Dashboard application                |
-| `registration`   | `/bciers/apps/registration`   | Registration application             |
-| `reporting`      | `/bciers/apps/reporting`      | Reporting application                |
-| `registration1`  | `/bciers/apps/registration1`  | Alternative registration application |
-| `administration` | `/bciers/apps/administration` | Administration interface             |
-| `coam`           | `/bciers/apps/coam`           | COAM application                     |
+| Application      | Path                          | Description              |
+| ---------------- | ----------------------------- | ------------------------ |
+| `dashboard`      | `/bciers/apps/dashboard`      | Dashboard application    |
+| `registration`   | `/bciers/apps/registration`   | Registration application |
+| `reporting`      | `/bciers/apps/reporting`      | Reporting application    |
+| `administration` | `/bciers/apps/administration` | Administration interface |
+| `coam`           | `/bciers/apps/coam`           | COAM application         |
 
 ### Shared Libraries
 

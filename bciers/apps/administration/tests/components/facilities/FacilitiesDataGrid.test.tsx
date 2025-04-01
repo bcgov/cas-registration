@@ -194,12 +194,12 @@ describe("FacilitiesDataGrid component", () => {
       const tooltip = actionCell.parentElement;
       expect(tooltip).toHaveAttribute("target", "_blank");
       expect(tooltip).toHaveAttribute("rel", "noopener noreferrer");
+    });
 
-      // check for the tooltip text
-      userEvent.hover(actionCell);
-      waitFor(() => {
-        expect(screen.findByText(/Link opens in a new tab/i)).toBeVisible();
-      });
+    // check for the tooltip text(Only checking one to bypass CI issues)
+    await userEvent.hover(actionCells[0]);
+    await waitFor(() => {
+      expect(screen.getByText(/Link opens in a new tab/i)).toBeVisible();
     });
 
     // check for the "open in new tab" icon in the action cells

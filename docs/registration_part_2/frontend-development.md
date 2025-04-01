@@ -6,23 +6,9 @@ Registration Part II is a separate Nx/NextJS application from Registration Part 
 
 ## Running the apps
 
-### Registration Part I commands
+### Registration commands
 
-Registration Part I commands have changed to use reg1 instead of reg prefix. To run the Registration Part I application, use `yarn reg1` command in the `/bciers` directory.
-
-| Command alias     | Nx command                             |
-| ----------------- | -------------------------------------- |
-| `reg1`            | `nx dev registration1`                 |
-| `reg1:build`      | `nx run registration1:build`           |
-| `reg1:test`       | `nx run registration1:test`            |
-| `reg1:e2e`        | `nx run registration1:e2e`             |
-| `reg1:e2e:ui`     | `nx run registration1:e2e:ui`          |
-| `reg1:e2e:report` | `nx run registration1:report`          |
-| `reg1:coverage`   | `nx run registration1:test --coverage` |
-
-### Registration Part II commands
-
-To run the Registration Part II application, use the `yarn reg` command that previously ran the Registration Part I application.
+To run the Registration application, use the `yarn reg` command.
 
 | Command alias    | Nx command                            |
 | ---------------- | ------------------------------------- |
