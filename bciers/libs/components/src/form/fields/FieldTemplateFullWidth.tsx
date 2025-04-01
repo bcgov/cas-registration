@@ -1,3 +1,4 @@
+"use client";
 import { FieldTemplateProps } from "@rjsf/utils";
 
 const FieldTemplateFullWidth = ({
