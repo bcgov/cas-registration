@@ -1,12 +1,12 @@
 "use client";
 
 import ComponentAccordion from "@bciers/components/form/ComponentAccordion";
-import { UserOperatorFormData } from "@/app/components/form/formDataTypes";
+import { UserOperatorFormData } from "@/administration/app/components/userOperators/types";
 import UserOperatorReview from "./UserOperatorReview";
 import {
   userOperatorAdministrationSchema,
   userOperatorAdministrationUiSchema,
-} from "../../data/jsonSchema/userOperator";
+} from "@/administration/app/data/jsonSchema/userOperator";
 import OperatorForm from "../operators/OperatorForm";
 import FormBase from "@bciers/components/form/FormBase";
 import { RJSFSchema } from "@rjsf/utils";
