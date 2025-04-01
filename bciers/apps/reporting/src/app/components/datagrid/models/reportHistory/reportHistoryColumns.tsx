@@ -1,9 +1,20 @@
 "use client";
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import ReportHistoryActionCell from "@reporting/src/app/components/reportHistory/ActionCell";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
+import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
-export const OPERATOR_COLUMN_INDEX = 1;
+const UpdatedAtCell = ({ row, value }: GridRenderCellParams) => {
+  if (row.status === ReportOperationStatus.DRAFT) {
+    return "Not Submitted";
+  }
+  return value ? formatTimestamp(value) : "—";
+};
+const SubmittedByCell = ({ row }: GridRenderCellParams) => {
+  return row.status === ReportOperationStatus.DRAFT
+    ? "N/A"
+    : row.submitted_by || "—";
+};
 
 const reportHistoryColumns = (): GridColDef[] => {
   return [
@@ -17,17 +28,13 @@ const reportHistoryColumns = (): GridColDef[] => {
       field: "updated_at",
       headerName: "Date of submission",
       sortable: false,
-      renderCell: (params) => {
-        if (!params.value) {
-          return "";
-        }
-        return formatTimestamp(params.value);
-      },
+      renderCell: UpdatedAtCell,
       width: 400,
     },
     {
       field: "submitted_by",
       headerName: "Submitted by",
+      renderCell: SubmittedByCell,
       sortable: false,
       width: 400,
     },
