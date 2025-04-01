@@ -1,5 +1,6 @@
 export const endpointAllowList = [
   "registration/user/user-app-role",
+  // "registration/user/user-is-archived",
   "registration/user-operators/current/is-current-user-approved-admin",
   "registration/user/user-profile",
   "registration/v1/user/user-app-role",

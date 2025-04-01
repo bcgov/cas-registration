@@ -1,3 +1,11 @@
+import InternalAccessRequestsPage from "@/administration/app/components/users/InternalAccessRequestsPage";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
+
 export default function Page() {
-  return <h1>TO DO: Users Page</h1>;
+  return (
+    <Suspense fallback={<Loading />}>
+      <InternalAccessRequestsPage />
+    </Suspense>
+  );
 }
