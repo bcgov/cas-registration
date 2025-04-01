@@ -115,37 +115,6 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             json_data=self.old_facility_activity.json_data,
         )
 
-    def test_is_initial_submission_returns_false_when_no_other_submitted_version_exists(self):
-        """
-        Test that is_initial_submission returns False when there is no other submitted
-        ReportVersion for the same report.
-        """
-        result = ReportSupplementaryVersionService.is_initial_submission(self.old_report_version.id)
-        self.assertEqual(
-            result,
-            {"is_initial_submission": False},
-            "Expected no supplementary report when no other submitted versions exist for the report.",
-        )
-
-    def test_is_initial_submission_returns_true_when_another_submitted_version_exists(self):
-        """
-        Test that is_initial_submission returns True when another submitted ReportVersion
-        for the same report exists.
-        """
-        # Create a supplementary ReportVersion for the same report.
-        make_recipe(
-            'reporting.tests.utils.report_version',
-            report=self.old_report_version.report,  # Ensure it belongs to the same report.
-            status=ReportVersion.ReportVersionStatus.Submitted,
-        )
-
-        result = ReportSupplementaryVersionService.is_initial_submission(self.old_report_version.id)
-        self.assertEqual(
-            result,
-            {"is_initial_submission": True},
-            "Expected a supplementary report when another submitted version exists for the report.",
-        )
-
     def test_create_report_supplementary_version(self):
         # ACT: Call the method to create a supplementary version.
         new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)
