@@ -96,7 +96,8 @@
             "links": [
               {
                 "title": "Access Requests",
-                "href": "/tbd/"
+                "href": "/administration/users/",
+                "allowedRoles": ["cas_admin"]
               },
               {
                 "title": "Invite User (by Email)",
