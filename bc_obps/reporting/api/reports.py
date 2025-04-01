@@ -17,6 +17,7 @@ from reporting.schema.report_operation import ReportOperationIn, ReportOperation
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
+from ..models import ReportingYear, ReportVersion
 from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
@@ -143,14 +144,13 @@ def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int
     return 200, response_data
 
 
-@router.put(
+@router.get(
     "/report-version/{version_id}/report-operation/update",
     response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Updates the facility report details by version_id and facility_id.",
     auth=approved_authorized_roles_report_version_composite_auth,
 )
-def update_facility_report(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportOperation]:
+def get_update_report(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
     report_operation = ReportService.update_report_operation(version_id)
-    print('report_operation', report_operation)
     return 200, report_operation

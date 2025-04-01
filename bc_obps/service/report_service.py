@@ -90,6 +90,7 @@ class ReportService:
             ],
             "operation_report_type": report_version.report_type,
             "operation_report_status": report_version.status,
+            "operation_id": report_operation.report_version.report.operation.id,
         }
 
     @classmethod
@@ -162,7 +163,7 @@ class ReportService:
 
     @classmethod
     @transaction.atomic()
-    def update_report_operation(cls, version_id: int) -> ReportOperation:
+    def update_report_operation(cls, version_id: int) -> dict:
         report_operation = ReportOperation.objects.get(report_version__id=version_id)
         operation = report_operation.report_version.report.operation
         operator = report_operation.report_version.report.operator
@@ -172,7 +173,7 @@ class ReportService:
         report_operation.bc_obps_regulated_operation_id = (
             operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
         )
-        report_operation.registration_purpose = operation.registration_purpose
+        report_operation.registration_purpose = operation.registration_purpose if operation.registration_purpose else ""
         report_operation.operator_legal_name = operator.legal_name
         report_operation.operator_trade_name = operator.trade_name
 
@@ -195,4 +196,4 @@ class ReportService:
         existing_representatives.filter(representative_name__in=(existing_names - contact_names)).delete()
 
         report_operation.save()
-        return ReportService.get_report_operation_by_version_id(version_id)
+        return cls.get_report_operation_by_version_id(version_id)

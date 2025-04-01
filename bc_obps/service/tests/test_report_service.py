@@ -221,3 +221,31 @@ class TestReportService(TestCase):
         retrieved_data = ReportService.get_registration_purpose_by_version_id(version_id=self.report_version.id)
         self.assertIsNotNone(retrieved_data)
         self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)
+
+    def test_update_report_service(self):
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+
+        # Modify the related operation and operator
+        operation.name = "New Operation Name"
+        operation.type = Operation.Types.SFO
+        operator.trade_name = "New Trade Name"
+        operator.legal_name = "New Legal Name"
+
+        operation.save()
+        operator.save()
+
+        # Call the update method
+        ReportService.update_report_operation(report_version.id)
+
+        # Refresh the report_operation from DB
+        report_operation.refresh_from_db()
+
+        # Validate updates
+        assert report_operation.operation_name == "New Operation Name"
+        assert report_operation.operator_trade_name == "New Trade Name"
+        assert report_operation.operator_legal_name == "New Legal Name"
+        assert report_operation.operation_type == Operation.Types.SFO

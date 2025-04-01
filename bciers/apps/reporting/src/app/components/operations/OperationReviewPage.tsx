@@ -41,7 +41,7 @@ export default async function OperationReviewPage({
       version_id={version_id}
       schema={schema}
       navigationInformation={navigationInformation}
-      reportType={reportType}
+      reportType={reportType.report_type}
       reportingWindowEnd={reportingWindowEnd}
       allActivities={allActivities}
       allRegulatedProducts={allRegulatedProducts}

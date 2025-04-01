@@ -124,3 +124,24 @@ class TestReportsEndpoint(CommonTestSetup):
         assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
         assert_report_version_ownership_is_validated("get_report_type_by_version")
         assert_report_version_ownership_is_validated("get_registration_purpose_by_version_id")
+
+    @patch("service.report_service.ReportService.update_report_operation")
+    def test_update_report_operation(self, mock_update: MagicMock):
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        report_operation = baker.make_recipe("reporting.tests.utils.report_operation", report_version=report_version)
+        updated_report_operation = baker.prepare(
+            'reporting.ReportOperation', id=report_operation.id, operation_name="UPDATED"
+        )
+
+        mock_update.return_value = updated_report_operation
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_update_report",
+                kwargs={"version_id": report_version.id},
+            ),
+        )
+        mock_update.assert_called_once_with(report_operation.report_version_id)
