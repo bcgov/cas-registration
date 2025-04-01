@@ -45,21 +45,16 @@ class TestReportSupplementaryApi(CommonTestSetup):
         # Assert: Ensure the service method was called with the correct version_id
         mock_create_report_supplementary_version.assert_called_once_with(self.old_report_version.id)
 
-    def test_validates_report_version_id(self):
-        assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
-    @patch(
-        "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService.is_initial_submission"
-    )
-    def test_returns_data_as_provided_by_is_initial_submission(
-        self, mock_is_initial_submission: MagicMock | AsyncMock
-    ):
-        # Arrange: Set the expected response from the service
-        expected_response = {"is_initial_submission": True}
-        mock_is_initial_submission.return_value = expected_response
+    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    def test_returns_data_as_provided_by_is_initial_version(self, mock_is_initial_report_version: MagicMock):
+        # Arrange: If the service returns True (is_initial), then the endpoint should return False.
+        is_initial = True
+        mock_is_initial_report_version.return_value = is_initial
+        expected_response = {"is_supplementary_report_version": not is_initial}  # Expected: False
 
         # Act: Make GET request to the endpoint.
-        endpoint_under_test = "is_initial_submission"
-        endpoint_under_test_kwargs = {"report_version_id": self.old_report_version.id}
+        endpoint_under_test = "is_supplementary_report_version"
+        endpoint_under_test_kwargs = {"version_id": self.old_report_version.id}
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -69,9 +64,13 @@ class TestReportSupplementaryApi(CommonTestSetup):
             ),
         )
 
-        # Assert: Check the response status and that the response data matches the expected result
+        # Assert: Check the response status and that the response data matches the expected result.
         assert response.status_code == 200
         assert response.json() == expected_response
 
         # Verify that the service method was called with the correct report_version_id.
-        mock_is_initial_submission.assert_called_once_with(self.old_report_version.id)
+        mock_is_initial_report_version.assert_called_once_with(self.old_report_version.id)
+
+    def test_validates_report_version_id(self):
+        assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
+        assert_report_version_ownership_is_validated("is_supplementary_report_version")

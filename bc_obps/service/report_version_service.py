@@ -5,6 +5,7 @@ from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
 from service.data_access_service.facility_service import FacilityDataAccessService
 from reporting.models import ReportOperationRepresentative
+from django.db.models import Min, F
 
 
 class ReportVersionService:
@@ -73,3 +74,28 @@ class ReportVersionService:
         new_report_version = ReportVersionService.create_report_version(report_version.report, new_report_type)
 
         return new_report_version
+
+    @staticmethod
+    def is_initial_report_version(version_id: int) -> bool:
+        """
+        Checks if this report version is the initial report version by determining
+        whether the given ReportVersion is the earliest version for the report
+
+        Args:
+            version_id: The unique identifier of the report version.
+
+        Returns:
+            True if the version is the earliest version for the report else returns False.
+        """
+
+        is_initial_report_version: bool = (
+            ReportVersion.objects.filter(
+                id=version_id,
+            )
+            .annotate(min_report_version=Min("report__report_versions__id"))
+            .filter(id=F("min_report_version"))
+            .exists()
+        )
+
+        # Return whether this is the first report version
+        return is_initial_report_version

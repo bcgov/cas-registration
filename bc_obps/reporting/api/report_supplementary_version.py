@@ -1,24 +1,25 @@
 from typing import Literal, Tuple
-from typing import Dict, Literal, Tuple
-from common.permissions import authorize
+from typing import Dict
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.service.report_supplementary_version_service import ReportSupplementaryVersionService
+from service.report_version_service import ReportVersionService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 
 @router.get(
-    "/report-version/{report_version_id}/is-initial-submission",
+    "/report-version/{version_id}/is-supplementary-report-version",
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Checks if this report version is a supplementary report version.""",
-    auth=authorize("approved_industry_user"),
+    description="""Checks if this is a supplementary report version or, not the initial version.""",
+    auth=approved_industry_user_report_version_composite_auth,
 )
-def is_initial_submission(request: HttpRequest, report_version_id: int) -> Tuple[Literal[200], Dict[str, bool]]:
-    return 200, ReportSupplementaryVersionService.is_initial_submission(report_version_id)
+def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], Dict[str, bool]]:
+    is_initial = ReportVersionService.is_initial_report_version(version_id)
+    return 200, {"is_supplementary_report_version": not is_initial}
 
 
 @router.post(

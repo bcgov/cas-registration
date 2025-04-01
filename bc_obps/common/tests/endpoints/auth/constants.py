@@ -237,8 +237,8 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "is_initial_submission",
-            "kwargs": {"report_version_id": MOCK_INT},
+            "endpoint_name": "is_supplementary_report_version",
+            "kwargs": {"version_id": MOCK_INT},
         },
         {
             "method": "post",
