@@ -22,9 +22,10 @@ const paths = {
   onboarding: "onboarding",
   dashboard: "dashboard",
   profile: "profile",
+  declined: "declined",
 };
 export const authAllowedPaths = [paths.dashboard, paths.profile];
-const unauthAllowedPaths = [paths.auth, paths.unauth];
+const unauthAllowedPaths = [paths.auth, paths.unauth, paths.declined];
 
 // Middleware for authorization
 export const withAuthorizationDashboard: MiddlewareFactory = (
@@ -40,7 +41,7 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
 
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
-
+    // brianna here
     if (token) {
       // Handle user without token.user.app_role
       if (!token.app_role || token.app_role === "") {
