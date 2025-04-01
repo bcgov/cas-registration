@@ -1,5 +1,5 @@
-import { InfoRow } from "./InfoRow";
-import { TitleRow } from "./TitleRow";
+import { InfoRow } from "../InfoRow";
+import { TitleRow } from "../TitleRow";
 
 export const ComplianceObligation = ({ data }: any) => {
   return (

@@ -5,7 +5,7 @@ export const getComplianceSummary = async () => {
   // TODO: Uncomment this code after the backend is implemented
   /*
     const data = await actionHandler(
-        `compliance/summaries/${compliance_summary_id}`,
+        `compliance/summaries/${complianceSummaryId}`,
         "GET",
         "",
     );

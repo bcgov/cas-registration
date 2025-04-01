@@ -1,6 +1,7 @@
 "use client";
 import { useState, useMemo } from "react";
-import { TitleRow } from "./TitleRow";
+import { useRouter } from "next/navigation";
+import { TitleRow } from "../TitleRow";
 import { ComplianceUnitsAlertNote } from "@/compliance/src/app/components/compliance-summary/compliance-summary-review/ComplianceUnitsAlertNote";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { Box, Button } from "@mui/material";
@@ -12,7 +13,16 @@ import {
   BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
 } from "@bciers/styles";
 
-export const ComplianceUnitsGrid = ({ data }: any) => {
+interface ComplianceUnitsGridProps {
+  data: any;
+  complianceSummaryId?: number;
+}
+
+export const ComplianceUnitsGrid = ({
+  data,
+  complianceSummaryId,
+}: ComplianceUnitsGridProps) => {
+  const router = useRouter();
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -20,21 +30,22 @@ export const ComplianceUnitsGrid = ({ data }: any) => {
     [lastFocusedField, setLastFocusedField],
   );
 
-  // Handler for Apply Compliance Units button
   const handleApplyComplianceUnits = () => {
-    console.log("Apply Compliance Units clicked");
+    console.log(complianceSummaryId);
+    if (complianceSummaryId) {
+      router.push(
+        `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
+      );
+    }
   };
 
-  // Get the columns from the columns file
   const columns = complianceUnitsColumns();
 
-  // Get the column groups from the column groups file
   const columnGroup = useMemo(
     () => complianceUnitsGroupColumns(SearchCell),
     [SearchCell],
   );
 
-  // Sample initial data (empty for now)
   const initialData = {
     rows: [
       {
@@ -47,7 +58,6 @@ export const ComplianceUnitsGrid = ({ data }: any) => {
         equivalentValue: "-",
         status: "-",
       },
-      // More rows as needed
     ],
     row_count: 1, // The total number of rows (should match rows.length)
   };
