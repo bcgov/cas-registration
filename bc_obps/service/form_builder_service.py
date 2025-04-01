@@ -253,6 +253,11 @@ def build_source_type_schema(
     activity_id: int,
     source_type_id: int,
 ) -> Dict:
+    # PIERRE: caching should happen here. These are completely static. We could either:
+    # - Cache at compile time
+    # - Cache at bootstrap time
+    # - Cache at access time
+
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
             activity_id=activity_id,
