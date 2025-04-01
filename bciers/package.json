@@ -45,9 +45,6 @@
   },
   "private": true,
   "module": "commonjs",
-  "workspaces": [
-    "apps/registration1"
-  ],
   "dependencies": {
     "@babel/traverse": "^7.23.2",
     "@bcgov/bc-sans": "^2.1.0",
