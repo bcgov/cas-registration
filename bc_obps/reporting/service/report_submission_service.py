@@ -17,6 +17,7 @@ class ReportSubmissionService:
     """
 
     @staticmethod
+    @transaction.atomic()
     def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffIn) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
