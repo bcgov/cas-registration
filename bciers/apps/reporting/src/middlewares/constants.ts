@@ -104,4 +104,5 @@ export const reportRoutesReportingOperation = [
   "attachments",
   "sign-off",
   ...reportRoutesLFO,
+  ...reportRoutesSubmitted,
 ];

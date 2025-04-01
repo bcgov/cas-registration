@@ -9,16 +9,16 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   const reportingOperationData = await getReportingOperation(versionId);
 
-  const params = await getOperationSchemaParameters(versionId);
+  const schemaData = await getOperationSchemaParameters(versionId);
   const schema: any = buildOperationReviewSchema(
-    params.reportOperation,
-    params.reportingWindowEnd,
-    params.allActivities,
-    params.allRegulatedProducts,
-    params.allRepresentatives,
-    params.reportType,
-    params.showRegulatedProducts,
-    params.showBoroId,
+    schemaData.reportOperation,
+    schemaData.reportingWindowEnd,
+    schemaData.allActivities,
+    schemaData.allRegulatedProducts,
+    schemaData.allRepresentatives,
+    schemaData.reportType,
+    schemaData.showRegulatedProducts,
+    schemaData.showBoroId,
   );
 
   // Purpose note doesn't show up on the final review page
