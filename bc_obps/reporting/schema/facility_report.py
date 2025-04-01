@@ -40,7 +40,7 @@ class FacilityReportIn(ModelSchema):
     facility_name: str
     facility_type: str
     facility_bcghgid: Optional[str]
-    activities: List[str]
+    activities: List[int]
 
     class Meta:
         alias_generator = to_snake

@@ -76,7 +76,7 @@ describe("The FacilityReview component", () => {
       "reporting/report-version/1000/facility-report/abcd",
       "POST",
       "reporting/report-version/1000/facility-report/abcd",
-      { body: '{"activities":["1"]}' },
+      { body: '{"activities":[1]}' },
     );
   });
 

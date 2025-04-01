@@ -1,12 +1,23 @@
 from uuid import UUID
 from django.db import transaction
-from typing import List, Optional, Tuple, cast
+from typing import Any, List, Optional, Tuple, cast
 from ninja import Query
 from registration.models import Activity, Facility
+from reporting.models import ReportActivity, ReportProductEmissionAllocation
 from reporting.models.facility_report import FacilityReport
-from reporting.schema.facility_report import FacilityReportIn, FacilityReportListInSchema, FacilityReportFilterSchema
+from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
 from django.db.models import F
+
+
+class SaveFacilityReportData:
+    def __init__(
+        self, facility_name: str, facility_type: str, activities: List[int], facility_bcghgid: Optional[str] = None
+    ):
+        self.facility_name = facility_name
+        self.facility_type = facility_type
+        self.facility_bcghgid = facility_bcghgid
+        self.activities = activities
 
 
 class FacilityReportService:
@@ -32,21 +43,30 @@ class FacilityReportService:
         return list(facility_report.activities.values_list('id', flat=True))
 
     @classmethod
+    def set_activities_for_facility_report(cls, facility_report: FacilityReport, activities: List[int]) -> None:
+        facility_report.activities.set(Activity.objects.filter(id__in=activities))
+        # If activities are removed from a facility_report, then the corresponding report_activity data must be delete-cascaded
+        ReportActivity.objects.filter(facility_report_id=facility_report.id).exclude(
+            activity_id__in=activities
+        ).delete()
+        # If activities are removed from a facility report, then the allocation of emissions to products must be deleted & re-allocated by the user
+        ReportProductEmissionAllocation.objects.filter(facility_report_id=facility_report.id).delete()
+
+    @classmethod
     @transaction.atomic()
-    def save_facility_report(
-        cls, report_version_id: int, facility_id: UUID, data: FacilityReportIn, user_guid: UUID
-    ) -> FacilityReport:
+    def save_facility_report(cls, report_version_id: int, facility_id: UUID, data: Any) -> FacilityReport:
         """
         Update a facility report and its related activities.
 
         Args:
             report_version_id (int): The ID of the report version.
             facility_id (int): The ID of the facility.
-            data (FacilityReportIn): The input data for the facility report.
+            data (SaveFacilityReportData): The input data for the facility report.
 
         Returns:
             FacilityReport: The updated or created FacilityReport instance.
         """
+
         # Update FacilityReport instance
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
         facility_report.facility_name = data.facility_name.strip()
@@ -54,7 +74,7 @@ class FacilityReportService:
 
         # Update ManyToMany fields (activities)
         if data.activities:
-            facility_report.activities.set(Activity.objects.filter(id__in=data.activities))
+            cls.set_activities_for_facility_report(facility_report=facility_report, activities=data.activities)
 
         # Save the updated FacilityReport instance
         facility_report.save()
