@@ -3,10 +3,9 @@ import Note from "@bciers/components/layout/Note";
 import { fetchDashboardData } from "@bciers/actions";
 import { ContentItem } from "@bciers/types/tiles";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
-import Card from "@mui/material/Card";
-import Typography from "@mui/material/Typography";
 import evalDashboardRules from "@bciers/utils/src/evalDashboardRules";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 
 export default async function Page() {
   const role = await getSessionRole();
@@ -28,20 +27,21 @@ export default async function Page() {
   return (
     <div>
       {role === FrontEndRoles.CAS_PENDING ? (
-        <Card
+        <section
+          className="text-center my-20 text-2xl flex flex-col gap-3"
           data-testid="dashboard-pending-message"
-          sx={{ padding: 2, margin: 2, border: "none", boxShadow: "none" }}
         >
-          <Typography variant="h5" component="div">
-            Welcome to B.C. Industrial Emissions Reporting System
-          </Typography>
-          <Typography variant="body1" color="textSecondary" component="div">
-            Your access request is pending approval.
-          </Typography>
-          <Typography variant="body1" color="textSecondary" component="div">
-            Once approved, you can log back in with access to the system.
-          </Typography>
-        </Card>
+          <span>
+            <AccessTimeFilledIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
+          </span>
+          <div style={{ fontSize: "16px" }}>
+            <p>By logging in, you have automatically requested access.</p>
+            <p>
+              Once approved, you will receive a confirmation email. You can then
+              log back in using your IDIR.
+            </p>
+          </div>
+        </section>
       ) : (
         <>
           {isIndustryUser && (
