@@ -4,7 +4,7 @@ from registration.models import (
     AppRole,
 )
 from django.core.exceptions import ValidationError
-from registration.tests.constants import DOCUMENT_FIXTURE, USER_FIXTURE
+from registration.tests.constants import DOCUMENT_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE
 
 
 class UserModelTest(BaseTestCase):
@@ -14,6 +14,7 @@ class UserModelTest(BaseTestCase):
     def setUpTestData(cls):
         cls.test_object = User.objects.get(user_guid="3fa85f64-5717-4562-b3fc-2c963f66afa6")
         cls.field_data = [
+            *TIMESTAMP_COMMON_FIELDS,
             ("first_name", "first name", 1000, None),
             ("last_name", "last name", 1000, None),
             ("position_title", "position title", 1000, None),
@@ -31,6 +32,9 @@ class UserModelTest(BaseTestCase):
             ("user_operators", "user operator", None, None),
             ("user_operators_verified_by", "user operator", None, None),
             # related models by TimestampedModel
+            ("user_created", "user", None, None),
+            ("user_updated", "user", None, None),
+            ("user_archived", "user", None, None),
             ("document_created", "document", None, None),
             ("document_updated", "document", None, None),
             ("document_archived", "document", None, None),
