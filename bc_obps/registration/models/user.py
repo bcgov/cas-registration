@@ -4,12 +4,13 @@ from common.enums import Schemas
 from registration.constants import USER_CACHE_PREFIX
 from registration.enums.enums import RegistrationTableNames
 from registration.models import UserAndContactCommonInfo, AppRole
+from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
 from django.core.cache import cache
 from registration.models.rls_configs.user import Rls as UserRls
 
 
-class User(UserAndContactCommonInfo):
+class User(UserAndContactCommonInfo, TimeStampedModel):
     user_guid = models.UUIDField(primary_key=True, db_comment="A GUID to identify the user")
     business_guid = models.UUIDField(db_comment="A GUID to identify the business")
     bceid_business_name = models.CharField(
@@ -27,7 +28,7 @@ class User(UserAndContactCommonInfo):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    class Meta:
+    class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing information about app users. Industry users are all associated with a business and are identified via their Business BCEID."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.USER.value}'
 
