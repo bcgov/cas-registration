@@ -7,7 +7,6 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import {
   infoNote,
   SyncContactsButton,
-  AddressErrorWidget,
 } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
 import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
 import { Contact } from "@reporting/src/app/components/operations/types";
@@ -103,7 +102,6 @@ export const personResponsibleUiSchema: UiSchema = {
       "ui:FieldTemplate": SectionFieldTemplate,
       address_error: {
         "ui:FieldTemplate": FieldTemplateFullWidth,
-        "ui:widget": AddressErrorWidget,
         "ui:options": { label: false },
       },
       street_address: {
