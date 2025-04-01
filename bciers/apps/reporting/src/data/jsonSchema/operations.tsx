@@ -7,7 +7,10 @@ import {
 } from "./reviewOperationInformationText";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 import selectWidget from "@bciers/components/form/widgets/SelectWidget";
-import { SIMPLE_REPORT } from "@reporting/src/app/utils/constants";
+import {
+  ANNUAL_REPORT,
+  SIMPLE_REPORT,
+} from "@reporting/src/app/utils/constants";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
@@ -16,8 +19,9 @@ export const buildOperationReviewSchema = (
   allActivities: any[],
   allRegulatedProducts: any[],
   allRepresentatives: any[],
-  reportType: { report_type: string },
+  reportType: string,
   showRegulatedProducts: boolean,
+  showBoroId: boolean,
 ) =>
   ({
     type: "object",
@@ -36,9 +40,8 @@ export const buildOperationReviewSchema = (
         type: "string",
         title:
           "Select what type of report you are filling. If you are uncertain about which report type your operation should complete, please contact GHGRegulator@gov.bc.ca.",
-        enum: ["Annual Report", "Simple Report"],
-        description:
-          reportType.report_type === SIMPLE_REPORT ? reportTypeHelperText : "",
+        enum: [ANNUAL_REPORT, SIMPLE_REPORT],
+        description: reportType === SIMPLE_REPORT ? reportTypeHelperText : "",
       },
 
       operation_representative_name: {
@@ -79,7 +82,12 @@ export const buildOperationReviewSchema = (
         title: "Registration Purpose",
       },
       operation_bcghgid: { type: ["string", "null"], title: "BCGHG ID" },
-      bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
+      ...(showBoroId && {
+        bc_obps_regulated_operation_id: {
+          type: "string",
+          title: "BORO ID",
+        },
+      }),
     },
 
     dependencies: {
@@ -88,7 +96,7 @@ export const buildOperationReviewSchema = (
           {
             properties: {
               operation_report_type: {
-                enum: ["Annual Report"],
+                enum: [ANNUAL_REPORT],
               },
               activities: {
                 type: "array",
@@ -119,7 +127,7 @@ export const buildOperationReviewSchema = (
           {
             properties: {
               operation_report_type: {
-                enum: ["Simple Report"],
+                enum: [ANNUAL_REPORT],
               },
             },
           },

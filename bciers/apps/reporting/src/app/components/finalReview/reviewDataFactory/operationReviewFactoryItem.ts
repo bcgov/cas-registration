@@ -3,44 +3,22 @@ import {
   operationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { ReviewDataFactoryItem } from "./factory";
+import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-import { formatDate } from "@reporting/src/app/utils/formatDate";
-import { getReportType } from "@reporting/src/app/utils/getReportType";
-import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
-import { getRegulatedProducts } from "@bciers/actions/api";
-import {
-  ELECTRICITY_IMPORT_OPERATION,
-  POTENTIAL_REPORTING_OPERATION,
-  REPORTING_OPERATION,
-} from "@reporting/src/app/utils/constants";
 
 const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   const reportingOperationData = await getReportingOperation(versionId);
 
-  const reportingYear = await getReportingYear();
-  const reportingWindowEnd = formatDate(
-    reportingYear.reporting_window_end,
-    "MMM DD YYYY",
-  );
-
-  const allActivities = await getAllActivities();
-  const allRegulatedProducts = await getRegulatedProducts();
-  const reportType = await getReportType(versionId);
-  const showRegulatedProducts = ![
-    ELECTRICITY_IMPORT_OPERATION,
-    REPORTING_OPERATION,
-    POTENTIAL_REPORTING_OPERATION,
-  ].includes(reportingOperationData.registration_purpose);
-
+  const schemaData = await getOperationSchemaParameters(versionId);
   const schema: any = buildOperationReviewSchema(
-    reportingOperationData,
-    reportingWindowEnd,
-    allActivities,
-    allRegulatedProducts,
-    reportingOperationData.report_operation_representatives,
-    reportType,
-    showRegulatedProducts,
+    schemaData.reportOperation,
+    schemaData.reportingWindowEnd,
+    schemaData.allActivities,
+    schemaData.allRegulatedProducts,
+    schemaData.allRepresentatives,
+    schemaData.reportType,
+    schemaData.showRegulatedProducts,
+    schemaData.showBoroId,
   );
 
   // Purpose note doesn't show up on the final review page
