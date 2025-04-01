@@ -50,6 +50,7 @@ class TestEndpointPermissions(TestCase):
             "create_user_profile",
             "get_user_profile",
             "get_user_role",
+            'check_is_user_archived',
             # TODO: Pending on the answer from Reporting Team
             "get_activities",
             "get_fuel_data",

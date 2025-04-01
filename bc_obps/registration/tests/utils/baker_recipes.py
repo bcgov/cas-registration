@@ -89,10 +89,12 @@ operator_for_operation = Recipe(
 )
 
 
-industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="industry_user"))
-cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
-cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
-cas_director = Recipe(User, app_role=AppRole.objects.get(role_name="cas_director"))
+industry_operator_user = Recipe(
+    User, app_role=AppRole.objects.get(role_name="industry_user"), archived_at=None, archived_by=None
+)
+cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"), archived_at=None, archived_by=None)
+cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"), archived_at=None, archived_by=None)
+cas_director = Recipe(User, app_role=AppRole.objects.get(role_name="cas_director"), archived_at=None, archived_by=None)
 
 operation = Recipe(
     Operation,
