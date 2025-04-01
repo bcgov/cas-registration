@@ -3,9 +3,14 @@ import operationReviewFactoryItem from "./operationReviewFactoryItem";
 import personResponsibleFactoryItem from "./personResponsibleFactoryItem";
 import facilityActivitiesFactoryItem from "./facilityActivitiesFactoryItem";
 import additionalReportingDataFactoryItem from "./additionalReportingDataFactoryItem";
+import newEntrantInformationFactoryItem from "./newEntrantInformationFactoryItem";
 import complianceSummaryFactoryItem from "./complianceSummaryFactoryItem";
 import operationEmissionSummaryFactoryItem from "./operationEmissionSummaryFactoryItem";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
+import {
+  ReportingPage,
+  ReportingFlowDescription,
+} from "@reporting/src/app/components/taskList/types";
 
 export type ReviewData = {
   schema: RJSFSchema;
@@ -22,23 +27,40 @@ export type ReviewDataFactoryItem = (
 
 export default async function reviewDataFactory(
   versionId: number,
+  flow: ReportingFlowDescription,
 ): Promise<ReviewData[]> {
   // Fetch facilities for this report version
   const listFacilities = (await getOperationFacilitiesList(versionId)) || [];
   const currentFacilities = listFacilities.current_facilities;
-  const facilityId = currentFacilities[0].facility_id;
-  const operationType = currentFacilities.length > 1 ? "LFO" : "SFO";
 
-  let reviewData: ReviewData[] = [
-    ...(await operationReviewFactoryItem(versionId, facilityId)),
-    ...(await personResponsibleFactoryItem(versionId, facilityId)),
-    ...(await facilityActivitiesFactoryItem(versionId, currentFacilities)),
-    ...(await additionalReportingDataFactoryItem(versionId, facilityId)),
-    ...(operationType === "LFO"
-      ? await operationEmissionSummaryFactoryItem(versionId, facilityId)
-      : []),
-    ...(await complianceSummaryFactoryItem(versionId, facilityId)),
-  ];
+  // Mapping from ReportingPage to the corresponding factory function
+  const factoryMapping: Partial<
+    Record<ReportingPage, (...args: any[]) => Promise<ReviewData[]>>
+  > = {
+    [ReportingPage.ReviewOperationInfo]: operationReviewFactoryItem,
+    [ReportingPage.PersonResponsible]: personResponsibleFactoryItem,
+    [ReportingPage.Activities]: facilityActivitiesFactoryItem,
+    [ReportingPage.AdditionalReportingData]: additionalReportingDataFactoryItem,
+    [ReportingPage.NewEntrantInformation]: newEntrantInformationFactoryItem,
+    [ReportingPage.OperationEmissionSummary]:
+      operationEmissionSummaryFactoryItem,
+    [ReportingPage.ComplianceSummary]: complianceSummaryFactoryItem,
+  };
+
+  let reviewData: ReviewData[] = [];
+  // Iterate over the provided flow's header steps and their associated pages
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for (const [headerStep, pages] of Object.entries(flow)) {
+    for (const page of pages) {
+      const factoryFn = factoryMapping[page];
+      if (factoryFn) {
+        let pageData: ReviewData[] = [];
+        // Determine parameters based on the ReportingPage
+        pageData = await factoryFn(versionId, currentFacilities, flow);
+        reviewData.push(...pageData);
+      }
+    }
+  }
 
   return reviewData;
 }

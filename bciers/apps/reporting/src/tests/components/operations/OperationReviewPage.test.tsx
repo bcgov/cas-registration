@@ -1,115 +1,105 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, beforeEach, vi } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import OperationReviewPage from "@reporting/src/app/components/operations/OperationReviewPage";
-import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivities";
+import OperationReviewForm from "@reporting/src/app/components/operations/OperationReviewForm";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-import { getReportType } from "@reporting/src/app/utils/getReportType";
-import { getRegulatedProducts } from "@bciers/actions/api";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { HasReportVersion } from "@reporting/src/app/utils//defaultPageFactoryTypes";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
-import { dummyNavigationInformation } from "../taskList/utils";
-import { useRouter } from "@bciers/testConfig/mocks";
+import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
+import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
+import {
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
 
 // ✨ Mock the utility functions
-vi.mock("@reporting/src/app/utils/getAllReportingActivities", () => ({
-  getAllActivities: vi.fn(),
-}));
 vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
   getReportingOperation: vi.fn(),
 }));
-vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
-  getReportingYear: vi.fn(),
-}));
-vi.mock("@reporting/src/app/utils/getReportType", () => ({
-  getReportType: vi.fn(),
-}));
-vi.mock("@bciers/actions/api", () => ({
-  getRegulatedProducts: vi.fn(),
-}));
+
 vi.mock("@reporting/src/app/utils/getFacilityReport", () => ({
   getFacilityReport: vi.fn(),
 }));
+
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
 }));
 
-// 🏷 Constants
-// Mock data for each function
-const mockActivities = [{ id: 1, name: "Activity 1" }];
-const mockRegulatedProducts = [{ id: 1, name: "Product 1" }];
-const mockReportingYear = {
-  reporting_year: 2024,
-  report_due_date: "2024-12-31",
-};
-const mockReportType = { report_type: "Annual Report" };
-const mockFacilityReport = {
-  facility_id: 2344,
-  operation_type: "Single Facility Operation",
-};
-const mockReportOperation = {
-  report_operation: {
-    operation_representative_name: [4],
-    operation_type: "Test Operation",
-    registration_purpose: "Test Purpose",
-  },
-  report_operation_representatives: [
-    { id: 4, representative_name: "Shon Doe" },
-  ],
-};
+vi.mock("@reporting/src/data/jsonSchema/operations", () => ({
+  buildOperationReviewSchema: vi.fn(),
+}));
 
-const props: HasReportVersion = {
-  version_id: 1,
-};
+vi.mock(
+  "@reporting/src/app/components/operations/getOperationSchemaParameters",
+  () => ({
+    getOperationSchemaParameters: vi.fn(),
+  }),
+);
 
-describe("OperationReviewPage Component", () => {
-  beforeEach(() => {
-    // ✨ Mocking the responses of the utility functions
-    (getAllActivities as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-      mockActivities,
-    );
-    (getReportingOperation as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockReportOperation,
-    );
-    (getReportingYear as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockReportingYear,
-    );
-    (getReportType as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockReportType,
-    );
-    (getRegulatedProducts as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockRegulatedProducts,
-    );
-    (getFacilityReport as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockFacilityReport,
-    );
-    (getNavigationInformation as ReturnType<typeof vi.fn>).mockResolvedValue(
-      dummyNavigationInformation,
-    );
-    useRouter.mockReturnValue({
-      refresh: vi.fn(),
-    });
-  });
+describe("OperationReviewPage", () => {
+  it("renders OperationReviewForm with correct props", async () => {
+    const reportVersion = { version_id: 1 };
 
-  it("renders the form correctly with transformed props", async () => {
-    render(await OperationReviewPage(props));
+    // Fake data returned by the mocks
+    const fakeReportOperation = { foo: "bar" };
+    const fakeFacilityReport = { facility_id: "facility-123" };
+    const fakeNavigationInformation = { nav: "info" };
+    const fakeParams = {
+      reportOperation: { op: "op" },
+      reportingWindowEnd: "Dec 31 2025",
+      allActivities: [{ id: 1, name: "Activity 1" }],
+      allRegulatedProducts: [{ id: 10, name: "Product 1" }],
+      allRepresentatives: [{ id: 100, representative_name: "Rep 1" }],
+      reportType: { report_type: "Simple Report" },
+      showRegulatedProducts: true,
+      showBoroId: false,
+    };
+    const fakeSchema = { schema: "my schema" };
 
-    await waitFor(() => {
-      expect(getReportingOperation).toHaveBeenCalledWith(1);
-      expect(getAllActivities).toHaveBeenCalled();
-      expect(getRegulatedProducts).toHaveBeenCalled();
-      expect(getReportingYear).toHaveBeenCalled();
-      expect(getReportType).toHaveBeenCalledWith(1);
-      expect(getFacilityReport).toHaveBeenCalledWith(1);
-    });
-    await waitFor(() => {
-      expect(
-        screen.getByText("Review Operation Information"),
-      ).toBeInTheDocument();
-    });
+    // Set up mock implementations
+    (getReportingOperation as any).mockResolvedValue(fakeReportOperation);
+    (getFacilityReport as any).mockResolvedValue(fakeFacilityReport);
+    (getNavigationInformation as any).mockResolvedValue(
+      fakeNavigationInformation,
+    );
+    (getOperationSchemaParameters as any).mockResolvedValue(fakeParams);
+    (buildOperationReviewSchema as any).mockReturnValue(fakeSchema);
 
-    expect(screen.getByText(/Back/i)).toBeInTheDocument();
-    expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
+    // Call the page
+    const result = await OperationReviewPage(reportVersion);
+
+    // Verify that the returned element is an OperationReviewForm with the expected props
+    expect(result).toBeDefined();
+    expect(result.type).toBe(OperationReviewForm);
+    expect(result.props.formData).toEqual(fakeReportOperation);
+    expect(result.props.version_id).toEqual(reportVersion.version_id);
+    expect(result.props.schema).toEqual(fakeSchema);
+    expect(result.props.navigationInformation).toEqual(
+      fakeNavigationInformation,
+    );
+
+    // Verify that the dependent functions were called with the expected parameters
+    expect(getReportingOperation).toHaveBeenCalledWith(
+      reportVersion.version_id,
+    );
+    expect(getFacilityReport).toHaveBeenCalledWith(reportVersion.version_id);
+    expect(getNavigationInformation).toHaveBeenCalledWith(
+      HeaderStep.OperationInformation,
+      ReportingPage.ReviewOperationInfo,
+      reportVersion.version_id,
+      fakeFacilityReport.facility_id,
+    );
+    expect(getOperationSchemaParameters).toHaveBeenCalledWith(
+      reportVersion.version_id,
+    );
+    expect(buildOperationReviewSchema).toHaveBeenCalledWith(
+      fakeParams.reportOperation,
+      fakeParams.reportingWindowEnd,
+      fakeParams.allActivities,
+      fakeParams.allRegulatedProducts,
+      fakeParams.allRepresentatives,
+      fakeParams.reportType,
+      fakeParams.showRegulatedProducts,
+      fakeParams.showBoroId,
+    );
   });
 });

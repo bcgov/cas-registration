@@ -70,18 +70,7 @@ export enum AppRoutes {
   VERIFICATION = "/verification",
 }
 
-// App routes for EIO operations
-export const reportRoutesEIO = [
-  "review-operation-information",
-  "person-responsible",
-  "electricity-import-data",
-  "final-review",
-  "verification",
-  "attachments",
-  "sign-off",
-];
-
-// App routes for LFO operations
+// App routes restricted to LFO operations
 export const reportRoutesLFO = [
   "review-facilities",
   "report-information",
@@ -90,10 +79,30 @@ export const reportRoutesLFO = [
   "operation-emission-summary",
 ];
 
+// App routes restricted to New Entrant
+export const restrictedRoutesNewEntrant = ["new-entrant-information"];
+
+// App routes restricted to EIO
+export const restrictedRoutesEIO = ["electricity-import-data"];
+
+// App routes restricted to Submitted
+export const restrictedRoutesSubmitted = ["submitted", "submission"];
+
 // App routes for submitted report
 export const reportRoutesSubmitted = ["submitted", "submission"];
 
-// App routes restricted to New Entrant
-export const restrictedRoutesNewEntrant = ["new-entrant-information"];
-// App routes restricted to EIO
-export const restrictedRoutesEIO = ["electricity-import-data"];
+// App routes for Reporting Operation operations
+export const reportRoutesReportingOperation = [
+  "review-operation-information",
+  "person-responsible",
+  "activities",
+  "non-attributable",
+  "emission-summary",
+  "additional-reporting-data",
+  "final-review",
+  "verification",
+  "attachments",
+  "sign-off",
+  ...reportRoutesLFO,
+  ...reportRoutesSubmitted,
+];
