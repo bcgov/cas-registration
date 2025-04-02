@@ -73,7 +73,6 @@
       "name": "SFO Facility 5",
       "type": "Single Facility",
       "swrs_facility_id": 1022,
-      "bcghg_id": "23219990005",
       "address": 9,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -89,7 +88,6 @@
       "name": "SFO Facility 6",
       "type": "Single Facility",
       "swrs_facility_id": 1022,
-      "bcghg_id": "23219990006",
       "address": 10,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -105,7 +103,6 @@
       "name": "SFO Facility 7",
       "type": "Single Facility",
       "swrs_facility_id": 1022,
-      "bcghg_id": "23219990007",
       "address": 11,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
@@ -121,7 +118,6 @@
       "name": "SFO Facility 8",
       "type": "Single Facility",
       "swrs_facility_id": 1022,
-      "bcghg_id": "23219990008",
       "address": 12,
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
