@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0100_address_protect_fields_empty_update_and_more'),
+        ('registration', '0101_V2_2_0'),
     ]
 
     operations = [
