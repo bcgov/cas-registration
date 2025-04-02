@@ -1,3 +1,4 @@
+from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup
 from registration.tests.utils.helpers import TestUtils
 from registration.utils import custom_reverse_lazy
@@ -6,7 +7,7 @@ from model_bakery import baker
 
 class TestOperationBcghgIdEndpoint(CommonTestSetup):
     def test_authorized_role_can_issue_id(self):
-        operation = baker.make_recipe('registration.tests.utils.operation')
+        operation = baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED)
 
         response = TestUtils.mock_patch_with_auth_role(
             self,
