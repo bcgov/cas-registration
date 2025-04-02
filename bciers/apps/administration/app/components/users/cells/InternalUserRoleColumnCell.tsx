@@ -48,7 +48,6 @@ const InternalUserRoleColumnCell = (
         <MenuItem value="cas_analyst">Analyst</MenuItem>
         <MenuItem value="cas_director">Director</MenuItem>
         <MenuItem value="cas_view_only">View-only</MenuItem>
-        <MenuItem value="cas_pending">Pending</MenuItem>
       </Select>
     </FormControl>
   );

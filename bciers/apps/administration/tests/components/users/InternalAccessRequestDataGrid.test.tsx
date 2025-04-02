@@ -101,7 +101,10 @@ describe("Access Requests DataGrid", () => {
     ).toBeVisible();
 
     const thirdRow = screen.getAllByRole("row")[3];
-    expect(within(thirdRow).getAllByText("Pending")).toHaveLength(2); // role and status are both pending
+    expect(within(thirdRow).getByText("Pending")).toBeVisible();
+    expect(
+      within(thirdRow).getByDisplayValue("cas_pending"),
+    ).toBeInTheDocument(); // empty role dropdown
     expect(
       within(thirdRow).getByRole("button", { name: "Approve" }),
     ).toBeVisible();
@@ -120,7 +123,6 @@ describe("Access Requests DataGrid", () => {
   it("user can EDIT the request", async () => {
     handleInternalAccessRequest.mockResolvedValue({
       app_role: "cas_pending",
-
       first_name: "Declined",
       last_name: "Deborah",
       archived_at: null,
@@ -137,7 +139,10 @@ describe("Access Requests DataGrid", () => {
       false,
     );
     // Check grid updated
-    expect(within(deborahRow).getAllByText("Pending")).toHaveLength(2);
+    expect(within(deborahRow).getByText("Pending")).toBeVisible();
+    expect(
+      within(deborahRow).getByDisplayValue("cas_pending"),
+    ).toBeInTheDocument(); // we expect this to be in the document but not be visible because pending isn't a dropdown option
     expect(
       within(deborahRow).getByRole("button", { name: "Approve" }),
     ).toBeVisible();
@@ -158,7 +163,7 @@ describe("Access Requests DataGrid", () => {
     });
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
     const pollyRow = screen.getAllByRole("row")[3];
-    await userEvent.click(within(pollyRow).getAllByText("Pending")[0]);
+    await userEvent.click(within(pollyRow).getByLabelText("User Role"));
     await userEvent.click(screen.getByRole("option", { name: /Admin/i }));
 
     const approveButton = screen.getByRole("button", { name: "Approve" });
@@ -235,7 +240,6 @@ describe("Access Requests DataGrid", () => {
   it("displays a spinner and disables the button while loading", async () => {
     handleInternalAccessRequest.mockResolvedValue({
       app_role: "cas_pending",
-
       first_name: "Declined",
       last_name: "Deborah",
       archived_at: null,
