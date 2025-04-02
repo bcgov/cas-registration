@@ -229,18 +229,15 @@ class TestReportService(TestCase):
         report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
         report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
 
-        # Modify the related operation and operator
         operation.name = "New Operation Name"
         operation.type = Operation.Types.SFO
-
+        operation.registration_purpose = Operation.Purposes.REPORTING_OPERATION
         operation.save()
 
-        # Call the update method
         ReportService.update_report_operation(report_version.id)
 
-        # Refresh the report_operation from DB
         report_operation.refresh_from_db()
 
-        # Validate updates
         assert report_operation.operation_name == "New Operation Name"
         assert report_operation.operation_type == Operation.Types.SFO
+        assert report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
