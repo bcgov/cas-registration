@@ -2,7 +2,10 @@ import InfoIcon from "@mui/icons-material/Info";
 import { Box, Link, Paper, Typography } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import React from "react";
-export const purposeNote = (operation_id: string) => (
+export const purposeNote = (
+  operationId: string = "",
+  operationName: string = "",
+) => (
   <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
@@ -12,7 +15,7 @@ export const purposeNote = (operation_id: string) => (
         report. To apply Operation information edits to all of your reports,
         please edit this information in{" "}
         <Link
-          href={`/administration/operations/${operation_id}`}
+          href={`/administration/operations/${operationId}?operations_title=${operationName}`}
           target="_blank"
           rel="noopener noreferrer"
           sx={{ color: "inherit", textDecoration: "none" }}

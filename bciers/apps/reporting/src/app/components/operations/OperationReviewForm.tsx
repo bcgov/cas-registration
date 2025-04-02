@@ -12,6 +12,7 @@ import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
+import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 
 interface Props {
   formData: any;
@@ -45,7 +46,6 @@ export default function OperationReviewForm({
   const [apiError, setApiError] = useState<string | null>(null);
 
   const router = useRouter();
-  const uiSchema = buildOperationReviewUiSchema(formData.operation_id);
 
   const saveHandler = async () => {
     const method = "POST";
@@ -93,6 +93,10 @@ export default function OperationReviewForm({
     );
     setFormDataState(newData);
   };
+  const uiSchema = buildOperationReviewUiSchema(
+    formData.operation_id,
+    formData.operation_name,
+  );
 
   const confirmReportTypeChange = async () => {
     const method = "POST";
@@ -142,6 +146,7 @@ export default function OperationReviewForm({
           ...uiSchema,
           sync_button: {
             ...uiSchema.sync_button,
+            "ui:FieldTemplate": SyncFacilitiesButton,
             "ui:options": {
               onSync: handleSync,
             },

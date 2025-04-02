@@ -23,14 +23,13 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
 
   // Purpose note doesn't show up on the final review page
   delete schema.properties.purpose_note;
+  delete schema.properties.sync_button;
 
   return [
     {
       schema: schema,
       data: reportingOperationData,
-      uiSchema: buildOperationReviewUiSchema(
-        schemaData.reportOperation.operation_id,
-      ),
+      uiSchema: buildOperationReviewUiSchema(),
     },
   ];
 };

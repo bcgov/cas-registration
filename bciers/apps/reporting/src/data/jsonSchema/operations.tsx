@@ -11,7 +11,6 @@ import {
   ANNUAL_REPORT,
   SIMPLE_REPORT,
 } from "@reporting/src/app/utils/constants";
-import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
@@ -93,7 +92,7 @@ export const buildOperationReviewSchema = (
       sync_button: {
         type: "object",
         properties: {
-          label: { type: "string", default: "Sync Facilities" },
+          label: { type: "string" },
           disabled: { type: "boolean", default: false },
         },
       },
@@ -145,7 +144,10 @@ export const buildOperationReviewSchema = (
     },
   }) as unknown as RJSFSchema;
 
-export const buildOperationReviewUiSchema = (operationId: string) => ({
+export const buildOperationReviewUiSchema = (
+  operationId?: string,
+  operationName?: string,
+) => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -175,7 +177,7 @@ export const buildOperationReviewUiSchema = (operationId: string) => ({
   },
   purpose_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": purposeNote(operationId),
+    "ui:title": purposeNote(operationId, operationName || ""),
   },
 
   date_info: {
@@ -243,7 +245,5 @@ export const buildOperationReviewUiSchema = (operationId: string) => ({
     "ui:placeholder": "Operation representative",
     uniqueItems: true,
   },
-  sync_button: {
-    "ui:FieldTemplate": SyncFacilitiesButton,
-  },
+  sync_button: {},
 });
