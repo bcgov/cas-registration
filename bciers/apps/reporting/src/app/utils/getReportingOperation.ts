@@ -8,6 +8,5 @@ export async function getReportingOperation(reportVersionId: number) {
       `Failed to fetch the operation for report version ${reportVersionId}.`,
     );
   }
-  console.log("response", response);
   return response;
 }
