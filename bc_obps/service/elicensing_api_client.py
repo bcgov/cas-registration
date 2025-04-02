@@ -1,40 +1,43 @@
 import logging
-from typing import Dict, Any, Optional, cast, TypedDict, List, Literal
+from typing import Dict, Any, Optional, cast, List, Literal
 import requests
 from django.conf import settings
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
 
-class ClientResponse(TypedDict, total=False):
+@dataclass
+class ClientResponse:
     """Type definition for the client response from eLicensing API"""
 
     clientObjectId: str
     clientGUID: str
     companyName: str
-    lastName: Optional[str]
-    doingBusinessAs: Optional[str]
-    firstName: Optional[str]
-    middleName: Optional[str]
-    title: Optional[str]
-    businessPhone: Optional[str]
-    homeNumber: Optional[str]
-    cellularNumber: Optional[str]
-    faxNumber: Optional[str]
-    businessPhoneExt: Optional[str]
-    bcCompanyRegistrationNumber: Optional[str]
-    bcCompanySocietyNumber: Optional[str]
-    email: Optional[str]
-    dateOfBirth: Optional[str]
-    addressLine1: str
-    addressLine2: Optional[str]
-    city: str
-    stateProvince: str
-    postalCode: str
-    country: Optional[str]
+    lastName: Optional[str] = None
+    doingBusinessAs: Optional[str] = None
+    firstName: Optional[str] = None
+    middleName: Optional[str] = None
+    title: Optional[str] = None
+    businessPhone: Optional[str] = None
+    homeNumber: Optional[str] = None
+    cellularNumber: Optional[str] = None
+    faxNumber: Optional[str] = None
+    businessPhoneExt: Optional[str] = None
+    bcCompanyRegistrationNumber: Optional[str] = None
+    bcCompanySocietyNumber: Optional[str] = None
+    email: Optional[str] = None
+    dateOfBirth: Optional[str] = None
+    addressLine1: str = ""
+    addressLine2: Optional[str] = None
+    city: str = ""
+    stateProvince: str = ""
+    postalCode: str = ""
+    country: Optional[str] = None
 
 
-class ClientCreationResponse(TypedDict):
+@dataclass
+class ClientCreationResponse:
     """Type definition for the client creation response from eLicensing API"""
 
     clientObjectId: str
@@ -45,7 +48,8 @@ class ClientCreationResponse(TypedDict):
 FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
 
 
-class FeeCreationItem(TypedDict):
+@dataclass
+class FeeCreationItem:
     """Type definition for a fee item in the fee creation request"""
 
     businessAreaCode: str
@@ -56,25 +60,28 @@ class FeeCreationItem(TypedDict):
     feeDate: str  # Format: YYYY-MM-DD
 
 
-class FeeCreationRequest(TypedDict):
+@dataclass
+class FeeCreationRequest:
     """Type definition for the fee creation request to eLicensing API"""
 
     fees: List[FeeCreationItem]
 
 
-class FeeItem(TypedDict):
+@dataclass
+class FeeItem:
     """Type definition for a fee item in the eLicensing API response"""
 
     feeGUID: str
     feeObjectId: str
-    businessAreaCode: Optional[str]
-    feeProfileGroupName: Optional[str]
-    feeDescription: Optional[str]
-    feeAmount: Optional[float]
-    feeDate: Optional[str]
+    businessAreaCode: Optional[str] = None
+    feeProfileGroupName: Optional[str] = None
+    feeDescription: Optional[str] = None
+    feeAmount: Optional[float] = None
+    feeDate: Optional[str] = None
 
 
-class FeeResponse(TypedDict):
+@dataclass
+class FeeResponse:
     """Type definition for the fee creation response from eLicensing API"""
 
     clientObjectId: str
@@ -82,20 +89,23 @@ class FeeResponse(TypedDict):
     fees: List[FeeItem]
 
 
-class InvoiceResponse(TypedDict):
+@dataclass
+class InvoiceResponse:
     clientObjectId: str
     businessAreaCode: str
     clientGUID: str
     invoiceNumber: str
 
 
-class InvoiceCreationRequest(TypedDict):
+@dataclass
+class InvoiceCreationRequest:
     paymentDueDate: str
     businessAreaCode: str
     fees: List[str]
 
 
-class FeeRequest(TypedDict):
+@dataclass
+class FeeRequest:
     """Type for fee creation request"""
 
     clientId: str
@@ -266,7 +276,10 @@ class ELicensingAPIClient:
                 if 'clientGUID' not in json_response or not json_response['clientGUID']:
                     raise ValueError(f"Missing or empty clientGUID in response: {json_response}")
 
-                return cast(ClientCreationResponse, json_response)
+                return ClientCreationResponse(
+                    clientObjectId=json_response['clientObjectId'],
+                    clientGUID=json_response['clientGUID']
+                )
             except ValueError as e:
                 logger.error(f"Error with client creation response: {str(e)}, Response: {response.text}")
                 raise
@@ -318,7 +331,7 @@ class ELicensingAPIClient:
                     if field not in json_response or not json_response[field]:
                         raise ValueError(f"Missing or empty required field '{field}' in response: {json_response}")
 
-                return cast(ClientResponse, json_response)
+                return ClientResponse(**json_response)
             except ValueError as e:
                 logger.error(f"Error with client query response: {str(e)}, Response: {response.text}")
                 raise
@@ -437,22 +450,37 @@ class ELicensingAPIClient:
             requests.HTTPError: If the API returns an error response
         """
         # Validate mandatory fields
-        for fee in fees_data.get("fees", []):
-            if not fee.get("feeProfileGroupName"):
+        for fee in fees_data.fees:
+            if not fee.feeProfileGroupName:
                 raise ValueError("feeProfileGroupName is mandatory for each fee")
 
-            if fee.get("feeProfileGroupName") not in ["OBPS Compliance Obligation", "OBPS Administrative Penalty"]:
+            if fee.feeProfileGroupName not in ["OBPS Compliance Obligation", "OBPS Administrative Penalty"]:
                 raise ValueError(
-                    f"Invalid feeProfileGroupName: {fee.get('feeProfileGroupName')}. "
+                    f"Invalid feeProfileGroupName: {fee.feeProfileGroupName}. "
                     f"Must be one of: 'OBPS Compliance Obligation', 'OBPS Administrative Penalty'"
                 )
 
-            if not fee.get("feeDescription"):
+            if not fee.feeDescription:
                 raise ValueError("feeDescription is mandatory for each fee")
 
         endpoint = f"/client/{client_id}/fees"
+        
+        # Convert dataclass to dict for API request
+        fees_dict = {
+            "fees": [
+                {
+                    "businessAreaCode": fee.businessAreaCode,
+                    "feeGUID": fee.feeGUID,
+                    "feeProfileGroupName": fee.feeProfileGroupName,
+                    "feeDescription": fee.feeDescription,
+                    "feeAmount": fee.feeAmount,
+                    "feeDate": fee.feeDate
+                }
+                for fee in fees_data.fees
+            ]
+        }
 
-        response = self._make_request(endpoint, method='POST', data=fees_data)
+        response = self._make_request(endpoint, method='POST', data=fees_dict)
 
         if response.status_code == 200:
             try:
@@ -468,14 +496,14 @@ class ELicensingAPIClient:
                 if 'fees' not in json_response or not isinstance(json_response['fees'], list):
                     raise ValueError(f"Missing or invalid fees array in response: {json_response}")
 
-                # Validate each fee in the response
-                for fee in json_response['fees']:
-                    if 'feeGUID' not in fee:
-                        raise ValueError(f"Missing feeGUID in fee response: {fee}")
-                    if 'feeObjectId' not in fee:
-                        raise ValueError(f"Missing feeObjectId in fee response: {fee}")
-
-                return cast(FeeResponse, json_response)
+                # Convert fees to FeeItem objects
+                fees = [FeeItem(**fee) for fee in json_response['fees']]
+                
+                return FeeResponse(
+                    clientObjectId=json_response['clientObjectId'],
+                    clientGUID=json_response['clientGUID'],
+                    fees=fees
+                )
             except ValueError as e:
                 logger.error(f"Error parsing fee creation response: {str(e)}, Response: {response.text}")
                 raise
@@ -615,13 +643,21 @@ class ELicensingAPIClient:
         Raises:
             requests.RequestException: If the API request fails
         """
+        # Convert dataclass to dict for API request
+        invoice_dict = {
+            "paymentDueDate": invoice_data.paymentDueDate,
+            "businessAreaCode": invoice_data.businessAreaCode,
+            "fees": invoice_data.fees
+        }
+        
         response = self._make_request(
             f"/client/{client_id}/invoice",
             method='POST',
-            data=invoice_data,
+            data=invoice_dict,
         )
         response.raise_for_status()
-        return response.json()
+        json_response = response.json()
+        return InvoiceResponse(**json_response)
 
     def create_fee(self, fee_data: FeeRequest) -> str:
         """
@@ -636,7 +672,19 @@ class ELicensingAPIClient:
         Raises:
             ELicensingAPIError: If the request fails
         """
-        response = self._make_request("POST", "/fees", data=fee_data)
+        # Convert dataclass to dict for API request
+        fee_dict = {
+            "clientId": fee_data.clientId,
+            "amount": fee_data.amount,
+            "description": fee_data.description,
+            "profileGroupName": fee_data.profileGroupName,
+            "businessAreaCode": fee_data.businessAreaCode,
+            "effectiveDate": fee_data.effectiveDate,
+            "expiryDate": fee_data.expiryDate,
+            "status": fee_data.status
+        }
+        
+        response = self._make_request("POST", "/fees", data=fee_dict)
         return response["id"]
 
 
