@@ -1,3 +1,13 @@
+# [2.2.0](https://github.com/bcgov/cas-registration/compare/v2.1.1...v2.2.0) (2025-04-02)
+
+### Bug Fixes
+
+- delete report data for removed activities ([4676d22](https://github.com/bcgov/cas-registration/commit/4676d22379b5c32b4960ee1e4f179955d6eea692))
+
+### Features
+
+- authorize method accepts extra validation functions ([79d3bc6](https://github.com/bcgov/cas-registration/commit/79d3bc6fba051c620495b8c6e52b492750863157))
+
 ## [2.1.1](https://github.com/bcgov/cas-registration/compare/v2.0.1...v2.1.1) (2025-03-27)
 
 # [2.1.0](https://github.com/bcgov/cas-registration/compare/v2.0.1...v2.1.0) (2025-03-27)
