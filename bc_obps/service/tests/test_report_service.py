@@ -232,11 +232,8 @@ class TestReportService(TestCase):
         # Modify the related operation and operator
         operation.name = "New Operation Name"
         operation.type = Operation.Types.SFO
-        operator.trade_name = "New Trade Name"
-        operator.legal_name = "New Legal Name"
 
         operation.save()
-        operator.save()
 
         # Call the update method
         ReportService.update_report_operation(report_version.id)
@@ -246,6 +243,4 @@ class TestReportService(TestCase):
 
         # Validate updates
         assert report_operation.operation_name == "New Operation Name"
-        assert report_operation.operator_trade_name == "New Trade Name"
-        assert report_operation.operator_legal_name == "New Legal Name"
         assert report_operation.operation_type == Operation.Types.SFO

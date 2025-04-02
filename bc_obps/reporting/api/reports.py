@@ -17,7 +17,6 @@ from reporting.schema.report_operation import ReportOperationIn, ReportOperation
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
-from ..models import ReportingYear, ReportVersion
 from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
@@ -35,20 +34,6 @@ from reporting.models import ReportingYear, ReportVersion, ReportOperation
     auth=compose_auth(authorize("approved_industry_user"), check_operation_ownership()),
 )
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
-    report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
-    return 201, report_version_id
-
-
-@router.post(
-    "/update-report",
-    response={201: int, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Starts a report for a given operation and reporting year, by creating the underlying data structures and
-    pre-populating them with facility, operation and operator information. Returns the id of the report that was created.
-    This endpoint only allows the creation of a report for an operation / operator to which the current user has access.""",
-    auth=authorize("approved_industry_user"),
-)
-def update_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report_version_id
 
