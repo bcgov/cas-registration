@@ -84,6 +84,7 @@ export default async function ActivityInit({
   const jsonSchema = await fetchSchema();
   return (
     <ActivityForm
+      key={currentActivity.id}
       activityData={activityDataObject}
       activityFormData={formData}
       currentActivity={currentActivity}
