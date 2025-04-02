@@ -10,18 +10,17 @@ export const purposeNote = (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
-        The information shown on this page is data entered in Administration.
-        You can edit Operation Information here but it will only apply to this
-        report. To apply Operation information edits to all of your reports,
-        please edit this information in{" "}
+        Any edits to operation information made here will only apply to this
+        report. You can{" "}
         <Link
           href={`/administration/operations/${operationId}?operations_title=${operationName}`}
           target="_blank"
           rel="noopener noreferrer"
           sx={{ color: "inherit", textDecoration: "none" }}
         >
-          Administration.
-        </Link>
+          update operation information
+        </Link>{" "}
+        in the operations page.
       </Typography>
     </Box>
   </Paper>
