@@ -24,16 +24,6 @@ class ComplianceObligation(TimeStampedModel):
         ACCRUING = "ACCRUING", "Accruing"
         PAID = "PAID", "Paid"
 
-    COMPLIANCE_CHARGE_RATES = {
-        2024: Decimal('80.00'),
-        2025: Decimal('95.00'),
-        2026: Decimal('110.00'),
-        2027: Decimal('125.00'),
-        2028: Decimal('140.00'),
-        2029: Decimal('155.00'),
-        2030: Decimal('170.00'),
-    }
-
     compliance_summary = models.OneToOneField(
         ComplianceSummary,
         on_delete=models.PROTECT,
