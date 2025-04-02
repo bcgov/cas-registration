@@ -41,12 +41,12 @@ export default async function OperationReviewPage({
       version_id={version_id}
       schema={schema}
       navigationInformation={navigationInformation}
-      reportType={reportType.report_type}
-      reportingWindowEnd={reportingWindowEnd}
-      allActivities={allActivities}
-      allRegulatedProducts={allRegulatedProducts}
-      allRepresentatives={allRepresentatives}
-      showRegulatedProducts={showRegulatedProducts}
+      reportType={params.reportType}
+      reportingWindowEnd={params.reportingWindowEnd}
+      allActivities={params.allActivities}
+      allRegulatedProducts={params.allRegulatedProducts}
+      showRegulatedProducts={params.showRegulatedProducts}
+      showBoroId={params.showBoroId}
     />
   );
 }

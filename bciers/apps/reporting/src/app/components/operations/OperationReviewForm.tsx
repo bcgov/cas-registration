@@ -22,7 +22,8 @@ interface Props {
   reportingWindowEnd: string;
   allActivities: any[];
   allRegulatedProducts: any[];
-  showRegulatedProducts?: boolean;
+  showRegulatedProducts: boolean;
+  showBoroId: boolean;
 }
 export default function OperationReviewForm({
   formData,
@@ -34,6 +35,7 @@ export default function OperationReviewForm({
   allActivities,
   allRegulatedProducts,
   showRegulatedProducts,
+  showBoroId,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
@@ -86,6 +88,7 @@ export default function OperationReviewForm({
         newData.report_operation_representatives,
         reportType,
         showRegulatedProducts,
+        showBoroId,
       ),
     );
     setFormDataState(newData);

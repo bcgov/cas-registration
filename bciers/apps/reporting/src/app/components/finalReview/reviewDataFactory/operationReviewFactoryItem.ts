@@ -1,6 +1,6 @@
 import {
   buildOperationReviewSchema,
-  operationReviewUiSchema,
+  buildOperationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { ReviewDataFactoryItem } from "./factory";
 import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
@@ -28,7 +28,9 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     {
       schema: schema,
       data: reportingOperationData,
-      uiSchema: operationReviewUiSchema,
+      uiSchema: buildOperationReviewUiSchema(
+        schemaData.reportOperation.operation_id,
+      ),
     },
   ];
 };

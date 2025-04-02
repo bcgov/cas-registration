@@ -145,7 +145,7 @@ export const buildOperationReviewSchema = (
     },
   }) as unknown as RJSFSchema;
 
-export const operationReviewUiSchema = {
+export const buildOperationReviewUiSchema = (operationId: string) => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -175,7 +175,7 @@ export const operationReviewUiSchema = {
   },
   purpose_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": purposeNote,
+    "ui:title": purposeNote(operationId),
   },
 
   date_info: {
@@ -246,4 +246,4 @@ export const operationReviewUiSchema = {
   sync_button: {
     "ui:FieldTemplate": SyncFacilitiesButton,
   },
-};
+});
