@@ -222,6 +222,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="compliance_summary_id" nullable="true" remarks="The compliance summary this obligation belongs to" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="obligation_id" nullable="false" remarks="A human-readable identifier for the obligation in format YY-OOOO-R-V" size="30" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="compliance_obligation_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -588,29 +589,25 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="type" nullable="false" remarks="The type of an operation" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="swrs_facility_id" nullable="true" remarks="An operation's SWRS facility ID. Only needed if the operation submitted a report the previous year." size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="bcghg_id_id" nullable="true" remarks="An operation's BCGHG identifier." size="255" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="opt_in" nullable="true" remarks="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="id" nullable="false" remarks="Primary key to identify the operation" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="operation_has_multiple_operators" nullable="false" remarks="Whether or not the operation has multiple operators" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="verified_at" nullable="true" remarks="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS." size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="submission_date" nullable="true" remarks="The time the user submitted the operation registration request" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="status" nullable="false" remarks="The status of an operation in the app (e.g. pending review)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="true" defaultValue="null" digits="0" id="14" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="bc_obps_regulated_operation_id" nullable="true" remarks="The BC OBPS regulated operation ID of an operation when operation is approved" size="255" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="naics_code_id" nullable="true" remarks="This column refers to an operation's primary NAICS code." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="operator_id" nullable="true" remarks="The operator who owns the operation" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="verified_by_id" nullable="true" remarks="The IRC user who verified the operator" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="opted_in_operation_id" nullable="true" remarks="Details about the operation if it is opted in" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="27" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="28" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="29" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="id" nullable="false" remarks="Primary key to identify the operation" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="submission_date" nullable="true" remarks="The time the user submitted the operation registration request" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="status" nullable="false" remarks="The status of an operation in the app (e.g. pending review)" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="11" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="bc_obps_regulated_operation_id" nullable="true" remarks="The BC OBPS regulated operation ID of an operation when operation is approved" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="naics_code_id" nullable="true" remarks="This column refers to an operation's primary NAICS code." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="operator_id" nullable="true" remarks="The operator who owns the operation" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="opted_in_operation_id" nullable="true" remarks="Details about the operation if it is opted in" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="operation_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -657,9 +654,6 @@
          <index name="operation_history_updated_by_id_dcccc36f" unique="false">
             <column ascending="true" name="updated_by_id"/>
          </index>
-         <index name="operation_history_verified_by_id_c32c3d8e" unique="false">
-            <column ascending="true" name="verified_by_id"/>
-         </index>
       </table>
       <table name="operator_history" remarks="" schema="erc_history" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -673,20 +667,17 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="bc_corporate_registry_number" nullable="true" remarks="The BC corporate registry number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="website" nullable="true" remarks="The website address of an operator" size="200" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="status" nullable="false" remarks="The status of an operator in the app (e.g. draft)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="verified_at" nullable="true" remarks="The time an operator was verified by an IRC user" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="is_new" nullable="false" remarks="Flag to indicate whether CAS internal staff need to explicitly approve the Operator at the same time that they're approving the request for prime admin access. (If a prime admin is requesting access to an existing operator, then the operator is not new and does need to be approved.)" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="true" defaultValue="null" digits="0" id="14" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="15" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="business_structure_id" nullable="true" remarks="The business structure of an operator" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="mailing_address_id" nullable="true" remarks="The mailing address of an operator" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="physical_address_id" nullable="true" remarks="The physical address of an operator (where the operator is physically located)" size="19" type="int8" typeCode="-5"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="verified_by_id" nullable="true" remarks="The IRC user who verified the operator" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="12" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="business_structure_id" nullable="true" remarks="The business structure of an operator" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="mailing_address_id" nullable="true" remarks="The mailing address of an operator" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="physical_address_id" nullable="true" remarks="The physical address of an operator (where the operator is physically located)" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="operator_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -729,9 +720,6 @@
          </index>
          <index name="operator_history_updated_by_id_623a5b02" unique="false">
             <column ascending="true" name="updated_by_id"/>
-         </index>
-         <index name="operator_history_verified_by_id_165d0bf6" unique="false">
-            <column ascending="true" name="verified_by_id"/>
          </index>
       </table>
       <table name="opted_in_operation_detail_history" remarks="" schema="erc_history" type="TABLE">

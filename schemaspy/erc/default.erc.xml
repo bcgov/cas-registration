@@ -306,6 +306,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="compliance_summary_id" nullable="false" remarks="The compliance summary this obligation belongs to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="compliance_obligatio_compliance_summary_i_ac6e5790_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_summary"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="obligation_id" nullable="false" remarks="A human-readable identifier for the obligation in format YY-OOOO-R-V" size="30" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_obligation_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -498,7 +499,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="300" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="291" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -1221,8 +1222,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="bcghg_id_id" nullable="true" remarks="An operation's BCGHG identifier." size="255" type="varchar" typeCode="12">
             <parent column="id" foreignKey="operation_bcghg_id_id_efe89a02_fk_bc_greenhouse_gas_id_id" implied="false" onDeleteCascade="false" schema="erc" table="bc_greenhouse_gas_id"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="opt_in" nullable="true" remarks="Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="id" nullable="false" remarks="Primary key to identify the operation" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="id" nullable="false" remarks="Primary key to identify the operation" size="2147483647" type="uuid" typeCode="1111">
             <child column="operation_id" foreignKey="closure_event_operation_id_5f6fdf6f_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="closure_event"/>
             <child column="operation_id" foreignKey="document_operation_id_341c850d_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
             <child column="operation_id" foreignKey="facility_operation_id_85a22241_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
@@ -1239,42 +1239,37 @@
             <child column="operation_id" foreignKey="transfer_event_operation_id_9dedc582_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
             <child column="to_operation_id" foreignKey="transfer_event_to_operation_id_9838b42e_fk_operation_id" implied="false" onDeleteCascade="false" schema="erc" table="transfer_event"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="operation_has_multiple_operators" nullable="false" remarks="Whether or not the operation has multiple operators" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="verified_at" nullable="true" remarks="The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS." size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="submission_date" nullable="true" remarks="The time the user submitted the operation registration request" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="status" nullable="false" remarks="The status of an operation in the app (e.g. pending review)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="submission_date" nullable="true" remarks="The time the user submitted the operation registration request" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="status" nullable="false" remarks="The status of an operation in the app (e.g. pending review)" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operation_archived_by_id_95d2dc7e_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="bc_obps_regulated_operation_id" nullable="true" remarks="The BC OBPS regulated operation ID of an operation when operation is approved" size="255" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="bc_obps_regulated_operation_id" nullable="true" remarks="The BC OBPS regulated operation ID of an operation when operation is approved" size="255" type="varchar" typeCode="12">
             <parent column="id" foreignKey="operation_bc_obps_regulated_op_c3fd36bf_fk_bc_obps_r" implied="false" onDeleteCascade="false" schema="erc" table="bc_obps_regulated_operation"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operation_created_by_id_4c2c2999_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="naics_code_id" nullable="true" remarks="This column refers to an operation's primary NAICS code." size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="naics_code_id" nullable="true" remarks="This column refers to an operation's primary NAICS code." size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="operation_naics_code_id_68193099_fk_naics_code_id" implied="false" onDeleteCascade="false" schema="erc" table="naics_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="operator_id" nullable="false" remarks="The operator who owns the operation" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="operator_id" nullable="false" remarks="The operator who owns the operation" size="2147483647" type="uuid" typeCode="1111">
             <parent column="id" foreignKey="operation_operator_id_fdf52598_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operation_updated_by_id_71a5e73f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="verified_by_id" nullable="true" remarks="The IRC user who verified the operator" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="user_guid" foreignKey="operation_verified_by_id_648dd39d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="opted_in_operation_id" nullable="true" remarks="Details about the operation if it is opted in" size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="opted_in_operation_id" nullable="true" remarks="Details about the operation if it is opted in" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="operation_opted_in_operation_i_7356556a_fk_opted_in_" implied="false" onDeleteCascade="false" schema="erc" table="opted_in_operation_detail"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="secondary_naics_code_id" nullable="true" remarks="This column refers to an operation's secondary NAICS code." size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="operation_secondary_naics_code_id_22c7218b_fk_naics_code_id" implied="false" onDeleteCascade="false" schema="erc" table="naics_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="tertiary_naics_code_id" nullable="true" remarks="This column refers to an operation's tertiary NAICS code." size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="operation_tertiary_naics_code_id_5ecf3562_fk_naics_code_id" implied="false" onDeleteCascade="false" schema="erc" table="naics_code"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="date_of_first_shipment" nullable="true" remarks="The date of the operation's first shipment (determines which application and statutory declaration template should be used)" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="registration_purpose" nullable="true" remarks="The industry user-selected registration purpose (category). This field is only relevant to Registration 2 module (where it is required for an operation to be registered)." size="1000" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="operation_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -1323,12 +1318,6 @@
          </index>
          <index name="operation_updated_by_id_71a5e73f" unique="false">
             <column ascending="true" name="updated_by_id"/>
-         </index>
-         <index name="operation_verified_by_id_648dd39d" unique="false">
-            <column ascending="true" name="verified_by_id"/>
-         </index>
-         <index name="operation_verified_by_idx" unique="false">
-            <column ascending="true" name="verified_by_id"/>
          </index>
          <index name="operator_idx" unique="false">
             <column ascending="true" name="operator_id"/>
@@ -1479,28 +1468,23 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="bc_corporate_registry_number" nullable="true" remarks="The BC corporate registry number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="website" nullable="true" remarks="The website address of an operator" size="200" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="status" nullable="false" remarks="The status of an operator in the app (e.g. draft)" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="11" name="verified_at" nullable="true" remarks="The time an operator was verified by an IRC user" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="is_new" nullable="false" remarks="Flag to indicate whether CAS internal staff need to explicitly approve the Operator at the same time that they're approving the request for prime admin access. (If a prime admin is requesting access to an existing operator, then the operator is not new and does need to be approved.)" size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operator_archived_by_id_4aba8126_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="business_structure_id" nullable="true" remarks="The business structure of an operator" size="1000" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="business_structure_id" nullable="true" remarks="The business structure of an operator" size="1000" type="varchar" typeCode="12">
             <parent column="name" foreignKey="operator_business_structure_i_12823845_fk_business_" implied="false" onDeleteCascade="false" schema="erc" table="business_structure"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operator_created_by_id_23e006c1_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="mailing_address_id" nullable="true" remarks="The mailing address of an operator" size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="mailing_address_id" nullable="true" remarks="The mailing address of an operator" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="operator_mailing_address_id_48049428_fk_address_id" implied="false" onDeleteCascade="false" schema="erc" table="address"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="physical_address_id" nullable="true" remarks="The physical address of an operator (where the operator is physically located)" size="19" type="int8" typeCode="-5">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="physical_address_id" nullable="true" remarks="The physical address of an operator (where the operator is physically located)" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="operator_physical_address_id_1e2755e1_fk_address_id" implied="false" onDeleteCascade="false" schema="erc" table="address"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="operator_updated_by_id_b8092673_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
-         </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="verified_by_id" nullable="true" remarks="The IRC user who verified the operator" size="2147483647" type="uuid" typeCode="1111">
-            <parent column="user_guid" foreignKey="operator_verified_by_id_48343d3c_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="operator_pkey" unique="true">
@@ -1541,9 +1525,6 @@
          </index>
          <index name="operator_updated_by_id_b8092673" unique="false">
             <column ascending="true" name="updated_by_id"/>
-         </index>
-         <index name="operator_verified_by_id_48343d3c" unique="false">
-            <column ascending="true" name="verified_by_id"/>
          </index>
       </table>
       <table name="opted_in_operation_detail" remarks="Table containing details about operations that have opted in" schema="erc" type="TABLE">
@@ -3293,14 +3274,12 @@
             <child column="archived_by_id" foreignKey="operation_archived_by_id_95d2dc7e_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="created_by_id" foreignKey="operation_created_by_id_4c2c2999_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="updated_by_id" foreignKey="operation_updated_by_id_71a5e73f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
-            <child column="verified_by_id" foreignKey="operation_verified_by_id_648dd39d_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="archived_by_id" foreignKey="operation_designated_archived_by_id_7bb5528d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="operation_designated_operator_timeline"/>
             <child column="created_by_id" foreignKey="operation_designated_created_by_id_95fe4b42_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="operation_designated_operator_timeline"/>
             <child column="updated_by_id" foreignKey="operation_designated_updated_by_id_c262e734_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="operation_designated_operator_timeline"/>
             <child column="archived_by_id" foreignKey="operator_archived_by_id_4aba8126_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
             <child column="created_by_id" foreignKey="operator_created_by_id_23e006c1_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
             <child column="updated_by_id" foreignKey="operator_updated_by_id_b8092673_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
-            <child column="verified_by_id" foreignKey="operator_verified_by_id_48343d3c_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
             <child column="archived_by_id" foreignKey="opted_in_operation_d_archived_by_id_8fc43712_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="opted_in_operation_detail"/>
             <child column="created_by_id" foreignKey="opted_in_operation_d_created_by_id_b56cec81_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="opted_in_operation_detail"/>
             <child column="updated_by_id" foreignKey="opted_in_operation_d_updated_by_id_deea2fa1_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="opted_in_operation_detail"/>

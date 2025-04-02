@@ -228,23 +228,6 @@
                                     <td><p>An operation&rsquo;s BCGHG identifier.</p></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="opt_in">opt_in</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Whether or not the operation is required to register or is simply opting in. Only needed if the operation did not report the previous year.</p></td>
-                                </tr>
-                                <tr>
                                     <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="id">id</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
@@ -260,40 +243,6 @@
                                         </table>
                                     </td>
                                     <td><p>Primary key to identify the operation</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="operation_has_multiple_operators">operation_has_multiple_operators</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Whether or not the operation has multiple operators</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="verified_at">verified_at</span></td>
-                                    <td>timestamptz</td>
-                                    <td>35,6</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The time the operation was verified by an IRC user. If exists, the operation is registered for OBPS.</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="submission_date">submission_date</span></td>
@@ -517,23 +466,6 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="verified_by_id">verified_by_id</span></td>
-                                    <td>uuid</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The IRC user who verified the operator</p></td>
-                                </tr>
-                                <tr>
                                     <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="opted_in_operation_id">opted_in_operation_id</span></td>
                                     <td>int8</td>
                                     <td>19</td>
@@ -738,12 +670,6 @@
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>updated_by_id</td>
                                 </tr>
-                                <tr>
-                                    <td title='Indexed'>operation_history_verified_by_id_c32c3d8e</td>
-                                    <td>Performance</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>verified_by_id</td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
@@ -766,7 +692,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="operation_history.html" target="_top" title="operation_history" alt="" coords="5,5,465,955">
+<area shape="rect" id="node1" href="operation_history.html" target="_top" title="operation_history" alt="" coords="5,5,447,837">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/operation_history.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
