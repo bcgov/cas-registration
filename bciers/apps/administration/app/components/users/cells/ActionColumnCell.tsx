@@ -75,7 +75,8 @@ const ActionColumnCell = (
 
     const res = await handleInternalAccessRequest(
       id,
-      action === Actions.EDIT ? InternalFrontEndRoles.CAS_PENDING : role,
+      // if we're editing or decling, we set the role to pending
+      action !== Actions.APPROVE ? InternalFrontEndRoles.CAS_PENDING : role,
       action === Actions.DECLINE ? true : false,
     );
 
