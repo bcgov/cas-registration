@@ -49,9 +49,8 @@ class TestGetIfAuthorized:
             operator=operator,
             role=UserOperator.Roles.ADMIN,
         )
-        owning_operation: Operation = operation_baker(operator.id)
-        facility = baker.make_recipe('registration.tests.utils.facility')
-        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
+        owning_operation: Operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=owning_operation)
 
         result = FacilityService.get_if_authorized(user.user_guid, facility.id)
         assert result == facility
@@ -508,16 +507,16 @@ class TestGenerateBcghgId:
     @staticmethod
     def test_generates_bcghg_id():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline')
-        timeline.operation.operator = approved_user_operator.operator
-        timeline.operation.save()
-        timeline.end_date = None
-        timeline.save()
-
-        FacilityService.generate_bcghg_id(approved_user_operator.user.user_guid, timeline.facility.id)
-        timeline.facility.refresh_from_db()
-        assert timeline.facility.bcghg_id is not None
-        assert timeline.facility.bcghg_id.issued_by == approved_user_operator.user
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
+        FacilityService.generate_bcghg_id(approved_user_operator.user.user_guid, facility.id)
+        facility.refresh_from_db()
+        assert facility.bcghg_id is not None
+        assert facility.bcghg_id.issued_by == approved_user_operator.user
 
 
 class TestUpdateFacilitysOperation:

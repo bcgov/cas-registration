@@ -1,3 +1,4 @@
+from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup
 from registration.tests.utils.helpers import TestUtils
 from registration.utils import custom_reverse_lazy
@@ -6,7 +7,11 @@ from model_bakery import baker
 
 class TestFacilityBcghgIdEndpoint(CommonTestSetup):
     def test_authorized_role_can_issue_id(self):
-        timeline = baker.make_recipe('registration.tests.utils.facility_designated_operation_timeline', end_date=None)
+        operation = baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED)
+        facility = baker.make_recipe(
+            'registration.tests.utils.facility',
+            operation=operation,
+        )
         response = TestUtils.mock_patch_with_auth_role(
             self,
             'cas_director',
@@ -14,7 +19,7 @@ class TestFacilityBcghgIdEndpoint(CommonTestSetup):
             {},
             custom_reverse_lazy(
                 "facility_bcghg_id",
-                kwargs={'facility_id': timeline.facility.id},
+                kwargs={'facility_id': facility.id},
             ),
         )
         assert response.status_code == 200

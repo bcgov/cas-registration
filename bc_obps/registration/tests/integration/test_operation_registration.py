@@ -13,16 +13,12 @@ class TestOperationRegistration(CommonTestSetup):
         self.approved_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', user=self.user
         )
-        self.bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
-        self.boro_id = baker.make_recipe('registration.tests.utils.boro_id')
         # add some random contacts and facilities so we can test that they are not overridden
         random_contacts = baker.make_recipe('registration.tests.utils.contact', _quantity=5)
         self.operation = baker.make_recipe(
             'registration.tests.utils.operation',
             created_by=self.user,
             operator=self.approved_user_operator.operator,
-            bcghg_id=self.bcghg_id,
-            bc_obps_regulated_operation=self.boro_id,
             contacts=random_contacts,
             type=operation_type,
         )
@@ -183,6 +179,34 @@ class TestOperationRegistration(CommonTestSetup):
         self.operation.refresh_from_db()
         self.updated_at = self.operation.updated_at  # save the updated_at timestamp to compare later
 
+    def _assign_boro_id(self):
+        response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "cas_director",
+            self.content_type,
+            {},
+            custom_reverse_lazy("operation_boro_id", kwargs={'operation_id': self.operation.id}),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+        # save the generated boro_id to compare later
+        self.boro_id = self.operation.bc_obps_regulated_operation.id
+
+    def _assign_bcghg_id(self):
+        response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "cas_director",
+            self.content_type,
+            {},
+            custom_reverse_lazy("operation_bcghg_id", kwargs={'operation_id': self.operation.id}),
+        )
+        if response.status_code != 200:
+            raise Exception(response.json())
+        self.operation.refresh_from_db()
+        # save the generated bcghg_id to compare later
+        self.bcghg_id = self.operation.bcghg_id.id
+
     @pytest.mark.parametrize("operation_type", [Operation.Types.SFO, Operation.Types.LFO])
     @pytest.mark.parametrize(
         "purpose", [p for p in Operation.Purposes if p != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION]
@@ -207,11 +231,16 @@ class TestOperationRegistration(CommonTestSetup):
         #### Registration Submission ####
         self._set_registration_submission()
 
+        if self.operation.is_regulated_operation:
+            #### Assign BCGHG ID ####
+            self._assign_bcghg_id()
+            #### Assign Boro ID ####
+            self._assign_boro_id()
+
         # Assertions
         assert self.operation.name == f'{purpose} name'
         assert self.operation.type == operation_type
         assert self.operation.operator_id == self.approved_user_operator.operator_id
-        assert self.operation.bcghg_id_id == self.bcghg_id.id
 
         if purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             assert self.operation.naics_code_id == 1
@@ -290,7 +319,16 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.status == Operation.Statuses.REGISTERED
         assert self.operation.registration_purpose is not None
 
-    def test_operation_registration_workflow_EIO(self):
+        if self.operation.is_regulated_operation:
+            assert self.operation.bcghg_id is not None
+            assert self.operation.bc_obps_regulated_operation is not None
+            assert self.operation.bcghg_id_id == self.bcghg_id
+            assert self.operation.bc_obps_regulated_operation_id == self.boro_id
+        else:
+            assert self.operation.bcghg_id is None
+            assert self.operation.bc_obps_regulated_operation is None
+
+    def test_operation_registration_workflow_eio(self):
         #### prepare test data
         self._prepare_test_data(Operation.Types.EIO)
         #### Operation Information Form ####
@@ -304,9 +342,8 @@ class TestOperationRegistration(CommonTestSetup):
         assert self.operation.name == f'{Operation.Purposes.ELECTRICITY_IMPORT_OPERATION} name'
         assert self.operation.type == Operation.Types.EIO
         assert self.operation.operator_id == self.approved_user_operator.operator_id
-        assert self.operation.bcghg_id_id == self.bcghg_id.id
         assert self.operation.opted_in_operation_id is None
-        assert not self.operation.regulated_products.exists()
+        assert self.operation.regulated_products.exists() is False
 
         # make sure we have the facility
         assert self.operation.facilities.count() == 1
