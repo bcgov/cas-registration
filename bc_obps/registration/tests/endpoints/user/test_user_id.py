@@ -24,5 +24,8 @@ class TestUserEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_json = response.json()
         assert sorted(response_json.keys()) == sorted(['first_name', 'last_name', 'app_role', 'archived_at'])
-        assert response_json['app_role']['role_name'] == 'cas_director'
+        assert response_json['app_role'] == 'cas_director'
         assert response_json['archived_at'] is None
+        user.refresh_from_db()
+        assert user.app_role.role_name == 'cas_director'
+        assert user.archived_at is None
