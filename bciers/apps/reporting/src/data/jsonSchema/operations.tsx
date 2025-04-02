@@ -127,7 +127,7 @@ export const buildOperationReviewSchema = (
           {
             properties: {
               operation_report_type: {
-                enum: [ANNUAL_REPORT],
+                enum: [SIMPLE_REPORT],
               },
             },
           },
