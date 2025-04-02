@@ -1,4 +1,5 @@
 import json
+from django.core.cache import caches
 from service.utils.get_report_valid_date_from_version_id import (
     get_report_valid_date_from_version_id,
 )
@@ -41,7 +42,7 @@ def handle_methodologies(
 
     # Create a mapping for quick lookup
     fetched_config_map = {
-        (elem.gas_type.id, elem.methodology_id): list(elem.reporting_fields.all())
+        (elem.gas_type.id, elem.methodology_id): list(elem.prefetched_reporting_fields)  # type: ignore
         for elem in fetched_configuration_elements
     }
 
@@ -253,10 +254,12 @@ def build_source_type_schema(
     activity_id: int,
     source_type_id: int,
 ) -> Dict:
-    # PIERRE: caching should happen here. These are completely static. We could either:
-    # - Cache at compile time
-    # - Cache at bootstrap time
-    # - Cache at access time
+
+    form_builder_cache = caches["form_builder"]
+    cache_key = f"{config_id}-{activity_id}-{source_type_id}"
+    cache_hit: Dict = form_builder_cache.get(cache_key)
+    if cache_hit:
+        return cache_hit
 
     try:
         source_type_schema = ActivitySourceTypeJsonSchema.objects.get(
@@ -293,7 +296,11 @@ def build_source_type_schema(
         source_type_id,
         config_id,
     )
-    return handle_source_type_schema(source_type_schema, gas_type_enum, gas_type_one_of)
+
+    json_schema = handle_source_type_schema(source_type_schema, gas_type_enum, gas_type_one_of)
+    form_builder_cache.set(cache_key, json_schema)
+
+    return json_schema
 
 
 # build_schema will dynamically create a form depending on the parameters passed
