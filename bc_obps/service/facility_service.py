@@ -147,8 +147,7 @@ class FacilityService:
         facility: Facility = FacilityDataAccessService.get_by_id(facility_id)
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if user.is_industry_user():
-            owner: Operation = facility.current_designated_operation
-            if not owner.user_has_access(user.user_guid):
+            if not facility.operation.user_has_access(user.user_guid):
                 raise Exception(UNAUTHORIZED_MESSAGE)
         return facility
 
