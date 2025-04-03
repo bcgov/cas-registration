@@ -13,19 +13,30 @@ import { useRouter } from "next/navigation";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 import postSupplementaryReportVersion from "@reporting/src/app/utils/postSupplementaryReportVersion";
+import deleteReportVersion from "@reporting/src/app/utils/deleteReportVersion";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
-type ConfirmAction = "discard" | "supplementary" | null;
+type ConfirmAction = "delete" | "supplementary" | null;
 
 const MoreActionsCell = (params: GridRenderCellParams) => {
   const reportVersionId = params?.row?.report_version_id;
   const reportId = params?.row?.report_id;
   const reportStatus = params?.row?.report_status;
-
   const [pending, startTransition] = useTransition();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [confirmAction, setConfirmAction] = React.useState<ConfirmAction>(null);
+  const [isSupplementaryReport, setIsSupplementaryReport] =
+    React.useState<boolean>(false);
   const open = Boolean(anchorEl);
   const router = useRouter();
+
+  // Determine if Report History should be enabled:
+  // If there's a reportId and either we have a reportVersionId,
+  // or there is no reportVersionId but isSupplementaryReport is true.
+  const showReportHistoryEnabled =
+    Boolean(reportId) &&
+    ((reportVersionId !== undefined && reportVersionId !== null) ||
+      (!reportVersionId && isSupplementaryReport));
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -36,7 +47,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   };
 
   // Open the confirmation dialog for the given action.
-  const openConfirmation = (action: "discard" | "supplementary") => {
+  const openConfirmation = (action: "delete" | "supplementary") => {
     setConfirmAction(action);
   };
 
@@ -46,18 +57,16 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
     handleClose();
   };
 
-  // Handle the confirmed discard action.
+  // Handle the confirmed delete action.
   const confirmDiscard = async () => {
     setConfirmAction(null);
     await startTransition(async () => {
-      console.log(
-        "Discard draft confirmed for report version:",
-        reportVersionId,
-      );
-      const delay = (ms: number) =>
-        new Promise((resolve) => setTimeout(resolve, ms));
-      await delay(2000);
+      // delete report version
+      await deleteReportVersion(reportVersionId);
+      // close menu
       handleClose();
+      // refetch the grid data
+      router.refresh();
     });
   };
 
@@ -65,34 +74,47 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
   const confirmSupplementaryReport = async () => {
     setConfirmAction(null);
     await startTransition(async () => {
+      // create supplementary report
       const response = await postSupplementaryReportVersion(reportVersionId);
+      //navigate to new report version
       if (response && !response.error) {
         router.push(`/reports/${response}/review-operation-information`);
       }
-      // Keep the menu open during the async operation so the spinner is visible.
+      // close menu
       handleClose();
     });
   };
 
   // Determine the confirmation dialog content based on the action.
   const getConfirmationContent = () => {
-    if (confirmAction === "discard") {
+    if (confirmAction === "delete") {
       return {
-        title: "Discard Draft?",
-        message: "Are you sure you want to discard this draft?",
+        title: "Confirmation",
+        message: isSupplementaryReport
+          ? "Please confirm that you would like to delete this draft supplementary report. This operation’s report will revert back to the last submitted version."
+          : "Please confirm that you would like to delete this draft report.",
         onConfirm: confirmDiscard,
+        confirmButtonLabel: "Delete draft",
       };
     } else if (confirmAction === "supplementary") {
       return {
-        title: "Create Supplementary Report?",
-        message: "Are you sure you want to create a supplementary report?",
+        title: "Confirmation",
+        message:
+          "Please confirm that you would like to create a supplementary report. The currently submitted report will remain unchanged.",
         onConfirm: confirmSupplementaryReport,
+        confirmButtonLabel: "Create supplementary report",
       };
     }
-    return { title: "", message: "", onConfirm: () => {} };
+    return {
+      title: "",
+      message: "",
+      onConfirm: () => {},
+      confirmButtonLabel: "Confirm",
+    };
   };
 
-  const { title, message, onConfirm } = getConfirmationContent();
+  const { title, message, onConfirm, confirmButtonLabel } =
+    getConfirmationContent();
 
   return (
     <div>
@@ -118,7 +140,6 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           <MenuItem
             disabled={pending}
             onClick={() => {
-              //❗By defaut errors in event handlers don't bubble to Error Boundaries
               // Wrapping event handlers in startTransition allows errors to propagate to the Error Boundary.
               startTransition(async () => {
                 openConfirmation("supplementary");
@@ -128,7 +149,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
             {pending ? (
               <CircularProgress size={20} />
             ) : (
-              "Create Supplementary Report"
+              "Create supplementary report"
             )}
           </MenuItem>
         )}
@@ -136,25 +157,34 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
           <MenuItem
             disabled={pending}
             onClick={() => {
+              // Perform the API call and set the state based on its response before opening the confirmation dialog.
               startTransition(async () => {
-                openConfirmation("discard");
+                const response =
+                  await getIsSupplementaryReport(reportVersionId);
+                setIsSupplementaryReport(
+                  response.is_supplementary_report_version,
+                );
+                openConfirmation("delete");
               });
             }}
           >
-            {pending ? <CircularProgress size={20} /> : "Discard Draft"}
+            {pending ? <CircularProgress size={20} /> : "Delete draft"}
           </MenuItem>
         )}
-        {!pending && reportId && (
+        {!pending && reportId && showReportHistoryEnabled && (
           <MenuItem
             onClick={async () =>
               router.push(`reports/report-history/${reportId}`)
             }
           >
-            Report History
+            Report history
           </MenuItem>
         )}
+        {!pending && reportId && !showReportHistoryEnabled && (
+          <MenuItem disabled={true}>Report history</MenuItem>
+        )}
         {!pending && !reportId && (
-          <MenuItem disabled={true}>Report History</MenuItem>
+          <MenuItem disabled={true}>Report history</MenuItem>
         )}
       </Menu>
       {/* Custom Confirmation Dialog */}
@@ -176,7 +206,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
             variant="contained"
             aria-label="Confirm"
           >
-            Confirm
+            {confirmButtonLabel}
           </Button>
         </DialogActions>
       </Dialog>
