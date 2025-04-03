@@ -73,6 +73,19 @@ class ReportService:
         return report_version.id
 
     @classmethod
+    @transaction.atomic()
+    def delete_report_version(cls, report_version_id: int) -> bool:
+        """
+        Deletes report version with the given report_version_id if status is DRAFT
+        Returns True if deletion is successful, False otherwise.
+        """
+        deleted, _ = ReportVersion.objects.filter(
+            id=report_version_id,
+            status=ReportVersion.ReportVersionStatus.Draft
+        ).delete()
+        return deleted > 0
+
+    @classmethod
     def get_report_operation_by_version_id(cls, report_version_id: int) -> dict:
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
         report_operation_representatives = ReportOperationRepresentative.objects.filter(

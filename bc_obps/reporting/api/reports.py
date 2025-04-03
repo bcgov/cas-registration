@@ -139,3 +139,13 @@ def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int
 def get_update_report(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
     report_operation = ReportService.update_report_operation(version_id)
     return 200, report_operation
+@router.delete(
+     "/report-version/{version_id}",
+    response={200: dict, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Deletes the records associated with the given report version ID.""",
+    auth=approved_industry_user_report_version_composite_auth,
+)
+def delete_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
+    response_data = ReportService.delete_report_version(version_id)
+    return 200, response_data
