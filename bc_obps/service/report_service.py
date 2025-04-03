@@ -10,7 +10,6 @@ from reporting.models.report import Report
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_version import ReportVersion
-from service.data_access_service.report_service import ReportDataAccessService
 from service.data_access_service.reporting_year import ReportingYearDataAccessService
 from service.report_version_service import ReportVersionService
 from django.forms.models import model_to_dict
@@ -50,40 +49,48 @@ class ReportService:
     @classmethod
     @transaction.atomic()
     def create_report(cls, operation_id: UUID, reporting_year: int) -> int:
-        if ReportDataAccessService.report_exists(operation_id, reporting_year):
-            raise Exception("A report already exists for this operation and year, unable to create a new one.")
-
-        # Fetching report context
-        operation = (
-            Operation.objects.select_related("operator")
-            .prefetch_related("activities", "regulated_products")
-            .get(id=operation_id)
-        )
-        operator = operation.operator
-
-        # Creating report object
-
-        report = Report.objects.create(
-            operation=operation,
-            operator=operator,
-            reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
-        )
-
-        report_version = ReportVersionService.create_report_version(report)
-        return report_version.id
-
-    @classmethod
-    @transaction.atomic()
-    def delete_report_version(cls, report_version_id: int) -> bool:
         """
-        Deletes report version with the given report_version_id if status is DRAFT
-        Returns True if deletion is successful, False otherwise.
+        Creates a report and its associated report version.
+
+        If a report already exists for the given operation and reporting year, then:
+        - If there is an existing ReportVersion with a 'Draft' status, its ID is returned.
+        - Otherwise, a new report version is created and its ID returned.
+
+        If no report exists, the report is created first along with a new report version.
         """
-        deleted, _ = ReportVersion.objects.filter(
-            id=report_version_id,
-            status=ReportVersion.ReportVersionStatus.Draft
-        ).delete()
-        return deleted > 0
+
+        # Try to fetch an existing report based on operation and reporting year.
+        report = Report.objects.filter(
+            operation_id=operation_id, reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year)
+        ).first()
+
+        # If no report exists, create a new one.
+        if report is None:
+            # Fetch operation context.
+            operation = (
+                Operation.objects.select_related("operator")
+                .prefetch_related("activities", "regulated_products")
+                .get(id=operation_id)
+            )
+            operator = operation.operator
+
+            # Create a new report using the operation context.
+            report = Report.objects.create(
+                operation=operation,
+                operator=operator,
+                reporting_year=ReportingYearDataAccessService.get_by_year(reporting_year),
+            )
+
+        # Look for an existing ReportVersion in Draft status.
+        draft_version = report.report_versions.filter(status=ReportVersion.ReportVersionStatus.Draft).first()
+
+        if draft_version:
+            # If a draft report version exists, return its ID.
+            return draft_version.id
+        else:
+            # If no draft exists, create a new report version.
+            report_version = ReportVersionService.create_report_version(report)
+            return report_version.id
 
     @classmethod
     def get_report_operation_by_version_id(cls, report_version_id: int) -> dict:

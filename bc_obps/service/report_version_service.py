@@ -59,9 +59,14 @@ class ReportVersionService:
         return report_version
 
     @staticmethod
-    def delete_report_version(report_version_id: int) -> None:
-        report_version = ReportVersion.objects.get(id=report_version_id)
-        report_version.delete()
+    @transaction.atomic()
+    def delete_report_version(report_version_id: int) -> bool:
+        """
+        Deletes report version with the given report_version_id
+        Returns True if deletion is successful, False otherwise.
+        """
+        deleted, _ = ReportVersion.objects.filter(id=report_version_id).delete()
+        return deleted > 0
 
     @staticmethod
     @transaction.atomic

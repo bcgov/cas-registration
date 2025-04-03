@@ -18,7 +18,6 @@ export default async function FacilityReviewPage({
   const selectedActivities = activitiesData.filter((item: { id: any }) =>
     facilityData.activities.includes(item.id),
   );
-  console.log("facilityData", facilityData);
 
   const navInfo = await getNavigationInformation(
     HeaderStep.ReportInformation,

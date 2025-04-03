@@ -10,7 +10,7 @@ from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 from reporting.models import Report, ReportVersion
-from reporting.tests.utils.bakers import report_baker, reporting_year_baker
+from reporting.tests.utils.bakers import reporting_year_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
@@ -51,21 +51,6 @@ class TestReportsEndpoint(CommonTestSetup):
 
         assert response.status_code == 404
         assert response.json()["message"] == "Not Found"
-
-    def test_error_if_report_exists(self):
-        report = report_baker()
-
-        request_data = {
-            "operation_id": str(report.operation.id),
-            "reporting_year": report.reporting_year.reporting_year,
-        }
-        response = self.send_authorized_post_request(request_data, report.operation)
-
-        assert response.status_code == 400
-        assert (
-            response.json()["message"]
-            == "A report already exists for this operation and year, unable to create a new one."
-        )
 
     def test_creates_report_and_returns_http_created(self):
         operation = operation_baker()
@@ -145,3 +130,29 @@ class TestReportsEndpoint(CommonTestSetup):
             ),
         )
         mock_update.assert_called_once_with(report_operation.report_version_id)
+
+    @patch("service.report_version_service.ReportVersionService.delete_report_version")
+    def test_returns_data_as_provided_by_delete_report_version(self, mock_delete_report_version: MagicMock):
+        # Arrange: Set up the expected value from the service
+        expected_success = True
+        mock_delete_report_version.return_value = expected_success
+        expected_response = {"success": expected_success}
+
+        # Use report version ID from test setup
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        version_id = report_version.id
+
+        # Act: Make DELETE request to the endpoint
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        response = TestUtils.mock_delete_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("delete_report_version", kwargs={"version_id": version_id}),
+        )
+
+        # Assert: Check the response status and data
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service method was called with the correct report_version_id
+        mock_delete_report_version.assert_called_once_with(version_id)
