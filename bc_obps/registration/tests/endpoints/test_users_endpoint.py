@@ -30,7 +30,6 @@ class TestGetInternalUsersEndpoint(CommonTestSetup):
         # Assert: Validate the response structure and data
         response_json = response.json()
         assert len(response_json) == 4
-        # assert response_json.keys() == {'count', 'items'}
         assert sorted(response_json[0].keys()) == sorted(['role', 'id', 'name', 'email', 'archived_at'])
 
     def test_unauthorized_user_cannot_get(self):
