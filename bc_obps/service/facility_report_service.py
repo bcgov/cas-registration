@@ -3,7 +3,7 @@ from django.db import transaction
 from typing import Any, List, Optional, Tuple, cast
 from ninja import Query
 from registration.models import Activity, Facility
-from reporting.models import ReportActivity, ReportProductEmissionAllocation
+from reporting.models import ReportActivity, ReportEmissionAllocation, ReportProductEmissionAllocation
 from reporting.models.facility_report import FacilityReport
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
@@ -50,7 +50,10 @@ class FacilityReportService:
             activity_id__in=activities
         ).delete()
         # If activities are removed from a facility report, then the allocation of emissions to products must be deleted & re-allocated by the user
-        ReportProductEmissionAllocation.objects.filter(facility_report_id=facility_report.id).delete()
+        report_emission_allocation = ReportEmissionAllocation.objects.filter(
+            facility_report_id=facility_report.id
+        ).first()
+        ReportProductEmissionAllocation.objects.filter(report_emission_allocation=report_emission_allocation).delete()
 
     @classmethod
     @transaction.atomic()

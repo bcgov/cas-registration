@@ -1,6 +1,6 @@
 import pytest
 from django.core.exceptions import ValidationError
-from bc_obps.reporting.models.report_emission_allocation import (
+from reporting.models.report_emission_allocation import (
     ReportEmissionAllocation,
 )
 from common.tests.utils.helpers import BaseTestCase
@@ -34,6 +34,12 @@ class ReportEmissionAllocationModelTest(BaseTestCase):
                 None,
                 None,
             ),
+            (
+                "reportproductemissionallocation_records",
+                "report product emission allocation",
+                None,
+                0,
+            ),
         ]
 
     def test_allow_null_description_if_methodology_is_not_other(self):
@@ -60,4 +66,4 @@ class ReportEmissionAllocationModelTest(BaseTestCase):
         )
 
     def test_immutable_after_report_version_submitted(self):
-        assert_immutable_report_version("reporting.tests.utils.report_product_emission_allocation")
+        assert_immutable_report_version("reporting.tests.utils.report_emission_allocation")

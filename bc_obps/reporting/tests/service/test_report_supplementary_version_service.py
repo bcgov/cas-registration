@@ -115,6 +115,13 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             json_data=self.old_facility_activity.json_data,
         )
 
+        # Create a reportEmissionAllocation for the report
+        self.old_report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation",
+            report_version=self.old_report_version,
+            facility_report=self.old_facility_report,
+        )
+
     def test_create_report_supplementary_version(self):
         # ACT: Call the method to create a supplementary version.
         new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)

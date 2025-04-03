@@ -1,6 +1,5 @@
 from datetime import date, timedelta, datetime
 from typing import Any
-from bc_obps.reporting.models.report_emission_allocation import ReportEmissionAllocation
 from model_bakery import baker
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_methodology import ReportMethodology
@@ -29,6 +28,7 @@ from reporting.models.report_activity import ReportActivity
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_emission import ReportEmission
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
@@ -263,6 +263,7 @@ report_emission_allocation = Recipe(
 
 report_product_emission_allocation = Recipe(
     ReportProductEmissionAllocation,
+    report_version=foreign_key(report_version),
     report_emission_allocation=foreign_key(report_emission_allocation),
     report_product=foreign_key(report_product),
     emission_category=foreign_key(emission_category),

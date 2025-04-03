@@ -2,12 +2,8 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
-<<<<<<< HEAD
 import { dummyNavigationInformation } from "../taskList/utils";
-=======
-import { OperationTypes } from "@bciers/utils/src/enums";
 import userEvent from "@testing-library/user-event";
->>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -111,13 +107,10 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
-=======
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
         facilityType=""
->>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -152,13 +145,10 @@ describe("FacilityEmissionAllocationForm component", () => {
             },
           ],
         }}
-<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
-=======
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
-        facilityType="Large Facility"
->>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        facilityType={""}
       />,
     );
     expect(
@@ -174,13 +164,10 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
-=======
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
         facilityType="Large Facility"
->>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -204,13 +191,10 @@ describe("FacilityEmissionAllocationForm component", () => {
           facility_id={config.mockFacilityId}
           orderedActivities={[]}
           initialData={mockInitialData}
-<<<<<<< HEAD
           navigationInformation={dummyNavigationInformation}
-=======
-          taskListElements={[]}
-          operationType={OperationTypes.LFO}
           facilityType="Large Facility"
->>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
+          isPulpAndPaper={false}
+          overlappingIndustrialProcessEmissions={0}
         />,
       );
       // POST submit and assert the result
@@ -224,13 +208,10 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-<<<<<<< HEAD
         navigationInformation={dummyNavigationInformation}
-=======
-        taskListElements={[]}
-        operationType={OperationTypes.LFO}
         facilityType="Large Facility"
->>>>>>> 55a8703bf (chore: Add not applicable as an option to allocation of emission page IF small or medium facility + tests)
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -252,9 +233,16 @@ describe("FacilityEmissionAllocationForm component", () => {
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-        taskListElements={[]}
-        operationType={"Linear Facility Operation"}
         facilityType={"Small Aggregate"}
+        navigationInformation={{
+          taskList: [],
+          continueUrl: "",
+          backUrl: "",
+          headerSteps: [],
+          headerStepIndex: 0,
+        }}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 

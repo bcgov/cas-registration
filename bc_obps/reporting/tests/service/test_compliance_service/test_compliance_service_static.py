@@ -102,27 +102,31 @@ class TestComplianceSummaryService(TestCase):
 
     def test_get_allocated_emissions_by_report_product_emission_category(self):
         ## SETUP ##
+        emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation",
+        )
         allocation_1 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal('1000.0001'),
         )
         allocation_2 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
-            report_version=allocation_1.report_version,
+            report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
             report_product=allocation_1.report_product,
             allocated_quantity=Decimal('2000.0002'),
         )
         allocation_3 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
-            report_version=allocation_1.report_version,
+            report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=3),
             allocated_quantity=Decimal('6000.0006'),
         )
         allocation_4 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
-            report_version=allocation_1.report_version,
+            report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=12),
             report_product=allocation_3.report_product,
             allocated_quantity=Decimal('500.0005'),
@@ -207,25 +211,32 @@ class TestComplianceSummaryService(TestCase):
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal('1000.0001'),
         )
+        emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation",
+            report_version=allocation_1.report_version,
+        )
         allocation_2 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=emission_allocation,
             report_version=allocation_1.report_version,
-            emission_category=EmissionCategory.objects.get(pk=2),
             report_product=allocation_1.report_product,
+            emission_category=EmissionCategory.objects.get(pk=2),
             allocated_quantity=Decimal('2000.0002'),
         )
         make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=emission_allocation,
             report_version=allocation_1.report_version,
-            emission_category=EmissionCategory.objects.get(pk=3),
             report_product=allocation_1.report_product,
+            emission_category=EmissionCategory.objects.get(pk=3),
             allocated_quantity=Decimal('6000.0006'),
         )
         allocation_4 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=emission_allocation,
             report_version=allocation_1.report_version,
-            emission_category=EmissionCategory.objects.get(pk=12),
             report_product=allocation_1.report_product,
+            emission_category=EmissionCategory.objects.get(pk=12),
             allocated_quantity=Decimal('500.0005'),
         )
 
@@ -239,6 +250,7 @@ class TestComplianceSummaryService(TestCase):
         # Add a fog product
         fog_product_allocation = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=emission_allocation,
             report_version=allocation_1.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal('12.0'),
