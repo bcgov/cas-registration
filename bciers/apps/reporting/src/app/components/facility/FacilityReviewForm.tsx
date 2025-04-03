@@ -9,6 +9,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "../taskList/types";
 import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface Props {
   version_id: number;
@@ -18,12 +19,6 @@ interface Props {
   navigationInformation: NavigationInformation;
   formsData: object;
   schema: RJSFSchema;
-}
-
-interface UpdatedFacilityData {
-  facility_name: string;
-  facility_type: string;
-  facility_bcghgid: string;
 }
 
 const FacilityReview: React.FC<Props> = ({
@@ -38,6 +33,7 @@ const FacilityReview: React.FC<Props> = ({
   const [formData, setFormData] = useState<object>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
@@ -69,44 +65,61 @@ const FacilityReview: React.FC<Props> = ({
     return true;
   };
   const handleSync = async () => {
-    const updatedFacilityData: UpdatedFacilityData =
-      await getUpdatedFacilityReportDetails(version_id, facility_id);
+    const getUpdatedFacilityData = await getUpdatedFacilityReportDetails(
+      version_id,
+      facility_id,
+    );
+
+    if (getUpdatedFacilityData.error) {
+      setErrors(["Unable to sync data"]);
+      return;
+    }
+
     setFormData((prevFormData: object) => ({
       ...prevFormData,
-      facility_name: updatedFacilityData.facility_name,
-      facility_type: updatedFacilityData.facility_type,
-      facility_bcghgid: updatedFacilityData.facility_bcghgid,
+      facility_name: getUpdatedFacilityData.facility_name,
+      facility_type: getUpdatedFacilityData.facility_type,
+      facility_bcghgid: getUpdatedFacilityData.facility_bcghgid,
     }));
+    setErrors(undefined);
+    setIsSnackbarOpen(true);
   };
 
   return (
-    <MultiStepFormWithTaskList
-      schema={schema}
-      uiSchema={{
-        ...uiSchema,
-        sync_button: {
-          ...uiSchema.sync_button,
-          "ui:options": {
-            onSync: handleSync,
+    <>
+      <MultiStepFormWithTaskList
+        schema={schema}
+        uiSchema={{
+          ...uiSchema,
+          sync_button: {
+            ...uiSchema.sync_button,
+            "ui:options": {
+              onSync: handleSync,
+            },
           },
-        },
-      }}
-      formData={formData}
-      onSubmit={handleSubmit}
-      onChange={(data: { formData: object }) => {
-        setFormData((prevFormData: object) => ({
-          ...prevFormData,
-          ...data.formData,
-        }));
-      }}
-      continueUrl={navigationInformation.continueUrl}
-      initialStep={navigationInformation.headerStepIndex}
-      steps={navigationInformation.headerSteps}
-      backUrl={navigationInformation.backUrl}
-      saveButtonDisabled={false}
-      taskListElements={navigationInformation.taskList}
-      errors={errors}
-    />
+        }}
+        formData={formData}
+        onSubmit={handleSubmit}
+        onChange={(data: { formData: object }) => {
+          setFormData((prevFormData: object) => ({
+            ...prevFormData,
+            ...data.formData,
+          }));
+        }}
+        continueUrl={navigationInformation.continueUrl}
+        initialStep={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
+        backUrl={navigationInformation.backUrl}
+        saveButtonDisabled={false}
+        taskListElements={navigationInformation.taskList}
+        errors={errors}
+      />
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message="Changes synced successfully"
+        setIsSnackbarOpen={setIsSnackbarOpen}
+      />
+    </>
   );
 };
 
