@@ -3,22 +3,24 @@ import { Box, Link, Paper, Typography } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import React from "react";
 export const purposeNote = (
+  operationId: string = "",
+  operationName: string = "",
+) => (
   <Paper sx={{ p: 2, mb: 3, bgcolor: LIGHT_BLUE_BG_COLOR, color: BC_GOV_TEXT }}>
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
-        The information shown on this page is data entered in Administration.
-        You can edit Operation Information here but it will only apply to this
-        report. To apply Operation information edits to all of your reports,
-        please edit this information in{" "}
+        Any edits to operation information made here will only apply to this
+        report. You can{" "}
         <Link
-          href="/administration"
+          href={`/administration/operations/${operationId}?operations_title=${operationName}`}
           target="_blank"
           rel="noopener noreferrer"
           sx={{ color: "inherit", textDecoration: "none" }}
         >
-          Administration.
-        </Link>
+          update operation information
+        </Link>{" "}
+        in the operations page.
       </Typography>
     </Box>
   </Paper>

@@ -4,27 +4,44 @@ import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
-import { operationReviewUiSchema } from "@reporting/src/data/jsonSchema/operations";
+import {
+  buildOperationReviewSchema,
+  buildOperationReviewUiSchema,
+} from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
+import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
+import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 
 interface Props {
   formData: any;
   version_id: number;
   schema: RJSFSchema;
   navigationInformation: NavigationInformation;
+  reportType: string;
+  reportingWindowEnd: string;
+  allActivities: any[];
+  allRegulatedProducts: any[];
+  showRegulatedProducts: boolean;
+  showBoroId: boolean;
 }
-
 export default function OperationReviewForm({
   formData,
   version_id,
   schema,
   navigationInformation,
+  reportType,
+  reportingWindowEnd,
+  allActivities,
+  allRegulatedProducts,
+  showRegulatedProducts,
+  showBoroId,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
+  const [pageSchema, setPageSchema] = useState(schema);
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -59,6 +76,27 @@ export default function OperationReviewForm({
 
     setFormDataState(updatedFormData);
   };
+
+  const handleSync = async () => {
+    const newData = await getUpdatedReportOperationDetails(version_id);
+    setPageSchema(
+      buildOperationReviewSchema(
+        newData,
+        reportingWindowEnd,
+        allActivities,
+        allRegulatedProducts,
+        newData.report_operation_representatives,
+        reportType,
+        showRegulatedProducts,
+        showBoroId,
+      ),
+    );
+    setFormDataState(newData);
+  };
+  const uiSchema = buildOperationReviewUiSchema(
+    formData.operation_id,
+    formData.operation_name,
+  );
 
   const confirmReportTypeChange = async () => {
     const method = "POST";
@@ -103,8 +141,17 @@ export default function OperationReviewForm({
         initialStep={navigationInformation.headerStepIndex}
         steps={navigationInformation.headerSteps}
         taskListElements={navigationInformation.taskList}
-        schema={schema}
-        uiSchema={operationReviewUiSchema}
+        schema={pageSchema}
+        uiSchema={{
+          ...uiSchema,
+          sync_button: {
+            ...uiSchema.sync_button,
+            "ui:FieldTemplate": SyncFacilitiesButton,
+            "ui:options": {
+              onSync: handleSync,
+            },
+          },
+        }}
         formData={formDataState}
         onSubmit={saveHandler}
         onChange={onChangeHandler}

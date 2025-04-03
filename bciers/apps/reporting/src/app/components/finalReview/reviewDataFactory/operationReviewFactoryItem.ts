@@ -1,6 +1,6 @@
 import {
   buildOperationReviewSchema,
-  operationReviewUiSchema,
+  buildOperationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { ReviewDataFactoryItem } from "./factory";
 import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
@@ -23,12 +23,13 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
 
   // Purpose note doesn't show up on the final review page
   delete schema.properties.purpose_note;
+  delete schema.properties.sync_button;
 
   return [
     {
       schema: schema,
       data: reportingOperationData,
-      uiSchema: operationReviewUiSchema,
+      uiSchema: buildOperationReviewUiSchema(),
     },
   ];
 };
