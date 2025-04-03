@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from ninja import ModelSchema, Schema
 
 from reporting.models import ReportOperationRepresentative
@@ -47,6 +49,7 @@ class ReportOperationSchemaOut(ReportOperationOut):
     operation_representative_name: List[int]  # IDs of selected representatives
     operation_report_type: str
     operation_report_status: str
+    operation_id: UUID
 
 
 class ReportOperationIn(Schema):

@@ -88,6 +88,13 @@ export const buildOperationReviewSchema = (
           title: "BORO ID",
         },
       }),
+      sync_button: {
+        type: "object",
+        properties: {
+          label: { type: "string" },
+          disabled: { type: "boolean", default: false },
+        },
+      },
     },
 
     dependencies: {
@@ -136,9 +143,28 @@ export const buildOperationReviewSchema = (
     },
   }) as unknown as RJSFSchema;
 
-export const operationReviewUiSchema = {
+export const buildOperationReviewUiSchema = (
+  operationId?: string,
+  operationName?: string,
+) => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  "ui:order": [
+    "purpose_note",
+    "date_info",
+    "operation_report_type",
+    "operation_representative_name",
+    "operator_legal_name",
+    "operator_trade_name",
+    "operation_name",
+    "operation_type",
+    "registration_purpose",
+    "operation_bcghgid",
+    "bc_obps_regulated_operation_id",
+    "activities",
+    "regulated_products",
+    "sync_button",
+  ],
   operator_legal_name: {
     "ui:options": commonUiOptions,
   },
@@ -150,7 +176,7 @@ export const operationReviewUiSchema = {
   },
   purpose_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": purposeNote,
+    "ui:title": purposeNote(operationId, operationName || ""),
   },
 
   date_info: {
@@ -218,4 +244,5 @@ export const operationReviewUiSchema = {
     "ui:placeholder": "Operation representative",
     uniqueItems: true,
   },
-};
+  sync_button: {},
+});
