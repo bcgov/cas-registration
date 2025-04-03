@@ -96,7 +96,10 @@ const showScanStatus = (status: FileScanStatus | undefined | null) => {
     return (
       <div className="flex items-center justify-between">
         <div className="flex flex-col">
-          <span>File is uploaded upon saving</span>
+          <span>
+            Uploading. You may continue to the next page while the file is being
+            scanned for viruses.
+          </span>
         </div>
       </div>
     );
