@@ -11,12 +11,9 @@ interface Props {
 
 export default async function ComplianceSummaryReviewPage(props: Props) {
   const complianceSummaryId = props.compliance_summary_id;
-
-  const complianceSummary = await getComplianceSummary();
-  console.log(complianceSummaryId);
+  const complianceSummary = await getComplianceSummary(complianceSummaryId);
   const taskListElements = getComplianceSummaryTaskList(
     complianceSummaryId,
-
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,
   );

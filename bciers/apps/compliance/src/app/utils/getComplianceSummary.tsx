@@ -1,42 +1,68 @@
-// import { ComplianceSummary } from "@/compliance/src/app/components/compliance-summaries/types";
-// import { actionHandler } from "@bciers/actions";
+import { actionHandler } from "@bciers/actions";
 
-export const getComplianceSummary = async () => {
-  // TODO: Uncomment this code after the backend is implemented
-  /*
-    const data = await actionHandler(
-        `compliance/summaries/${complianceSummaryId}`,
-        "GET",
-        "",
-    );
+const COMPLIANCE_CHARGE_RATES: Record<number, number> = {
+  2024: 80,
+  2025: 95,
+  2026: 110,
+  2027: 125,
+  2028: 140,
+  2029: 155,
+  2030: 170,
+};
 
-    if (data?.error) {
-        throw new Error(`Failed to fetch compliance summary: ${data.error}`);
-    }
+export interface ComplianceSummary {
+  operation_name: string;
+  reporting_year: number;
+  emissions_attributable_for_compliance: number;
+  emission_limit: number;
+  excess_emissions: number;
+  obligation_id: string;
+  compliance_charge_rate: number;
+  equivalent_value: number;
+  penalty_status?: string;
+  penalty_type?: string;
+  penalty_rate_daily?: number;
+  days_late?: number;
+  accumulated_penalty?: number;
+  accumulated_compounding?: number;
+  penalty_today?: number;
+  faa_interest?: number;
+  total_amount?: number;
+}
 
-    if (!data || typeof data !== "object") {
-        throw new Error(
-            "Invalid response format from compliance summary endpoint",
-        );
-    }
+const parseDecimal = (value: string | number | null | undefined): number => {
+  if (value === null || value === undefined) return 0;
+  return typeof value === "number" ? value : parseFloat(value) || 0;
+};
 
-    return data;
-    */
+export const getComplianceSummary = async (
+  complianceSummaryId: number,
+): Promise<ComplianceSummary> => {
+  const data = await actionHandler(
+    `compliance/summaries/${complianceSummaryId}`,
+    "GET",
+    "",
+  );
 
-  // Mock data for development - remove when backend is implemented
-  const mock = {
-    operation_name: "Operation 2",
+  if (data?.error) {
+    throw new Error(`Failed to fetch compliance summary: ${data.error}`);
+  }
 
-    reporting_year: 2024,
-    emissions_attributable_for_compliance: "8000.0000",
-    emission_limit: "8000.0000",
-    excess_emissions: 0.0,
-
-    obligation_id: "24-0001-1-1",
-    compliance_change_rate: 80.0,
-    equivalent_value: 0, // calculated in schema excess_emissions * compliance_change_rate
-
-    // Penalty information
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid response format from compliance summary endpoint");
+  }
+  const chargeRate = COMPLIANCE_CHARGE_RATES[data.reporting_year] || 80.0;
+  const pageData = {
+    operation_name: data.operation_name,
+    reporting_year: data.reporting_year,
+    emissions_attributable_for_compliance: parseDecimal(
+      data.emissions_attributable_for_compliance,
+    ),
+    emission_limit: parseDecimal(data.emission_limit),
+    excess_emissions: parseDecimal(data.excess_emissions),
+    obligation_id: data.obligation_id,
+    compliance_charge_rate: chargeRate,
+    equivalent_value: parseDecimal(data.excess_emissions) * chargeRate,
     penalty_status: "Accruing",
     penalty_type: "Automatic Overdue",
     penalty_rate_daily: 0.38,
@@ -48,5 +74,5 @@ export const getComplianceSummary = async () => {
     total_amount: 91.55,
   };
 
-  return mock;
+  return pageData;
 };

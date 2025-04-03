@@ -6,12 +6,11 @@ import { getComplianceUnitsApplyData } from "../../../utils/getComplianceUnitsAp
 import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
 
 interface Props {
-  complianceSummaryId: number;
+  compliance_summary_id: number;
 }
+export default async function ComplianceUnitsApplyPage(props: Props) {
+  const complianceSummaryId = props.compliance_summary_id;
 
-export default async function ComplianceUnitsApplyPage({
-  complianceSummaryId,
-}: Props) {
   const complianceUnitsData = await getComplianceUnitsApplyData();
 
   const taskListElements = getComplianceSummaryTaskList(
