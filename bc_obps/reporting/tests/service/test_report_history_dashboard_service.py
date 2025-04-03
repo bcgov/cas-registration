@@ -1,7 +1,6 @@
 from django.test import TestCase
 from model_bakery import baker
 from reporting.service.report_history_dashboard_service import ReportingHistoryDashboardService
-from reporting.schema.report_history import ReportHistoryResponse
 
 
 class TestReportingHistoryDashboardService(TestCase):
@@ -30,5 +29,5 @@ class TestReportingHistoryDashboardService(TestCase):
         self.assertEqual(report_versions[0].id, self.report_version_2.id)
         self.assertEqual(report_versions[1].id, self.report_version_1.id)
 
-        self.assertEqual(ReportHistoryResponse.resolve_version(report_versions[0]), "Current Version")
-        self.assertEqual(ReportHistoryResponse.resolve_version(report_versions[1]), "Version 1")
+        self.assertEqual(report_versions[0].version, "Current Version")
+        self.assertEqual(report_versions[1].version, "Version 1")
