@@ -9,6 +9,7 @@ import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWith
 import { RJSFSchema } from "@rjsf/utils";
 import { NavigationInformation } from "../taskList/types";
 import { getUpdatedFacilityReportDetails } from "@reporting/src/app/utils/getUpdatedFacilityReportDetails";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface Props {
   version_id: number;
@@ -38,6 +39,7 @@ const FacilityReview: React.FC<Props> = ({
   const [formData, setFormData] = useState<object>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
@@ -77,36 +79,44 @@ const FacilityReview: React.FC<Props> = ({
       facility_type: updatedFacilityData.facility_type,
       facility_bcghgid: updatedFacilityData.facility_bcghgid,
     }));
+    setIsSnackbarOpen(true);
   };
 
   return (
-    <MultiStepFormWithTaskList
-      schema={schema}
-      uiSchema={{
-        ...uiSchema,
-        sync_button: {
-          ...uiSchema.sync_button,
-          "ui:options": {
-            onSync: handleSync,
+    <>
+      <MultiStepFormWithTaskList
+        schema={schema}
+        uiSchema={{
+          ...uiSchema,
+          sync_button: {
+            ...uiSchema.sync_button,
+            "ui:options": {
+              onSync: handleSync,
+            },
           },
-        },
-      }}
-      formData={formData}
-      onSubmit={handleSubmit}
-      onChange={(data: { formData: object }) => {
-        setFormData((prevFormData: object) => ({
-          ...prevFormData,
-          ...data.formData,
-        }));
-      }}
-      continueUrl={navigationInformation.continueUrl}
-      initialStep={navigationInformation.headerStepIndex}
-      steps={navigationInformation.headerSteps}
-      backUrl={navigationInformation.backUrl}
-      saveButtonDisabled={false}
-      taskListElements={navigationInformation.taskList}
-      errors={errors}
-    />
+        }}
+        formData={formData}
+        onSubmit={handleSubmit}
+        onChange={(data: { formData: object }) => {
+          setFormData((prevFormData: object) => ({
+            ...prevFormData,
+            ...data.formData,
+          }));
+        }}
+        continueUrl={navigationInformation.continueUrl}
+        initialStep={navigationInformation.headerStepIndex}
+        steps={navigationInformation.headerSteps}
+        backUrl={navigationInformation.backUrl}
+        saveButtonDisabled={false}
+        taskListElements={navigationInformation.taskList}
+        errors={errors}
+      />
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message="Changes synced successfully"
+        setIsSnackbarOpen={setIsSnackbarOpen}
+      />
+    </>
   );
 };
 
