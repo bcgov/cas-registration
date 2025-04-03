@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface Props {
   formData: any;
@@ -44,6 +45,7 @@ export default function OperationReviewForm({
   const [pageSchema, setPageSchema] = useState(schema);
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   const router = useRouter();
 
@@ -91,7 +93,9 @@ export default function OperationReviewForm({
         showBoroId,
       ),
     );
+
     setFormDataState(newData);
+    setIsSnackbarOpen(true);
   };
   const uiSchema = buildOperationReviewUiSchema(
     formData.operation_id,
@@ -158,6 +162,11 @@ export default function OperationReviewForm({
         backUrl={navigationInformation.backUrl}
         continueUrl={navigationInformation.continueUrl}
         errors={errors}
+      />
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message="Changes synced successfully"
+        setIsSnackbarOpen={setIsSnackbarOpen}
       />
     </>
   );
