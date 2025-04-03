@@ -1,4 +1,4 @@
-from django.db.models import Window, QuerySet, Case, When, Value, CharField
+from django.db.models import Window, QuerySet, Case, When, Value, CharField, IntegerField
 from django.db.models.functions import RowNumber, Cast, Concat
 from django.db.models import F
 from reporting.models import ReportVersion
@@ -11,14 +11,14 @@ class ReportingHistoryDashboardService:
 
     @classmethod
     def get_report_versions_for_report_history_dashboard(cls, report_id: int) -> QuerySet[ReportVersion]:
-        total_versions = ReportVersion.objects.filter(report_id=report_id).count()
+        filtered_versions = ReportVersion.objects.filter(report_id=report_id)
         report_versions = (
-            ReportVersion.objects.filter(report_id=report_id)
+            filtered_versions.annotate(total_count=Cast(filtered_versions.count(), IntegerField()))
             .annotate(version_number=Window(expression=RowNumber(), order_by=F("id").desc()))
             .annotate(
                 version=Case(
                     When(version_number=1, then=Value("Current Version")),
-                    default=Concat(Value("Version "), Cast(total_versions - F("version_number") + 1, CharField())),
+                    default=Concat(Value("Version "), Cast(F('total_count') - F("version_number") + 1, CharField())),
                     output_field=CharField(),
                 )
             )
