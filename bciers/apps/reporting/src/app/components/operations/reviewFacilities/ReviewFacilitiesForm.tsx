@@ -11,7 +11,6 @@ import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperatio
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../../taskList/types";
 import SnackBar from "@bciers/components/form/components/SnackBar";
-
 interface Props {
   initialData: any;
   version_id: number;
