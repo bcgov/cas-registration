@@ -88,7 +88,6 @@ export const buildOperationReviewSchema = (
           title: "BORO ID",
         },
       }),
-      bc_obps_regulated_operation_id: { type: "string", title: "BORO ID" },
       sync_button: {
         type: "object",
         properties: {
