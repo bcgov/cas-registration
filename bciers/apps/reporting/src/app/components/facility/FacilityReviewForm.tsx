@@ -21,12 +21,6 @@ interface Props {
   schema: RJSFSchema;
 }
 
-interface UpdatedFacilityData {
-  facility_name: string;
-  facility_type: string;
-  facility_bcghgid: string;
-}
-
 const FacilityReview: React.FC<Props> = ({
   version_id,
   operationId,
@@ -71,14 +65,23 @@ const FacilityReview: React.FC<Props> = ({
     return true;
   };
   const handleSync = async () => {
-    const updatedFacilityData: UpdatedFacilityData =
-      await getUpdatedFacilityReportDetails(version_id, facility_id);
+    const getUpdatedFacilityData = await getUpdatedFacilityReportDetails(
+      version_id,
+      facility_id,
+    );
+
+    if (getUpdatedFacilityData.error) {
+      setErrors(["Unable to sync data"]);
+      return;
+    }
+
     setFormData((prevFormData: object) => ({
       ...prevFormData,
-      facility_name: updatedFacilityData.facility_name,
-      facility_type: updatedFacilityData.facility_type,
-      facility_bcghgid: updatedFacilityData.facility_bcghgid,
+      facility_name: getUpdatedFacilityData.facility_name,
+      facility_type: getUpdatedFacilityData.facility_type,
+      facility_bcghgid: getUpdatedFacilityData.facility_bcghgid,
     }));
+    setErrors(undefined);
     setIsSnackbarOpen(true);
   };
 

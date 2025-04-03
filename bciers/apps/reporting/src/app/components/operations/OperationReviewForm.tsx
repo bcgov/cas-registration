@@ -81,6 +81,11 @@ export default function OperationReviewForm({
 
   const handleSync = async () => {
     const newData = await getUpdatedReportOperationDetails(version_id);
+    if (newData.error) {
+      setErrors(["Unable to sync data"]);
+      return;
+    }
+
     setPageSchema(
       buildOperationReviewSchema(
         newData,
@@ -95,6 +100,7 @@ export default function OperationReviewForm({
     );
 
     setFormDataState(newData);
+    setErrors(undefined);
     setIsSnackbarOpen(true);
   };
   const uiSchema = buildOperationReviewUiSchema(
