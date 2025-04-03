@@ -88,5 +88,6 @@
       "library": {}
     }
   },
-  "neverConnectToCloud": true
+  "neverConnectToCloud": true,
+  "useLegacyCache": true
 }

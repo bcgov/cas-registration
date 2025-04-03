@@ -1,6 +1,11 @@
 {
   "extends": ["next", "../../.eslintrc.json", "prettier"],
-  "ignorePatterns": ["!**/*", ".next/**/*"],
+  "ignorePatterns": [
+    "!**/*",
+    ".next/**/*",
+    "**/vite.config.*.timestamp*",
+    "**/vitest.config.*.timestamp*"
+  ],
   "parserOptions": {
     "project": ["apps/administration/tsconfig(.*)?.json"],
     "tsConfigRootDir": "./"
