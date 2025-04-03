@@ -18,7 +18,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
     @patch(
         "reporting.service.report_supplementary_version_service.ReportSupplementaryVersionService.create_report_supplementary_version"
     )
-    def test_returns_data_as_provided_by_the_service(
+    def test_returns_data_as_provided_by_create_report_supplementary_version(
         self, mock_create_report_supplementary_version: MagicMock | AsyncMock
     ):
         # Arrange: Mock service method return value
@@ -45,5 +45,32 @@ class TestReportSupplementaryApi(CommonTestSetup):
         # Assert: Ensure the service method was called with the correct version_id
         mock_create_report_supplementary_version.assert_called_once_with(self.old_report_version.id)
 
+    @patch("service.report_version_service.ReportVersionService.is_initial_report_version")
+    def test_returns_data_as_provided_by_is_initial_version(self, mock_is_initial_report_version: MagicMock):
+        # Arrange: If the service returns True (is_initial), then the endpoint should return False.
+        is_initial = True
+        mock_is_initial_report_version.return_value = is_initial
+        expected_response = {"is_supplementary_report_version": not is_initial}  # Expected: False
+
+        # Act: Make GET request to the endpoint.
+        endpoint_under_test = "is_supplementary_report_version"
+        endpoint_under_test_kwargs = {"version_id": self.old_report_version.id}
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                endpoint_under_test,
+                kwargs=endpoint_under_test_kwargs,
+            ),
+        )
+
+        # Assert: Check the response status and that the response data matches the expected result.
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service method was called with the correct report_version_id.
+        mock_is_initial_report_version.assert_called_once_with(self.old_report_version.id)
+
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("create_report_supplementary_version", method="post")
+        assert_report_version_ownership_is_validated("is_supplementary_report_version")
