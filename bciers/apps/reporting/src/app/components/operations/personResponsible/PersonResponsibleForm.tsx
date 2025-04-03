@@ -129,6 +129,7 @@ const PersonResponsibleForm = ({
   const handleSync = async () => {
     const updatedContacts = await getContacts();
     setContacts(updatedContacts);
+    setIsSnackbarOpen(true);
 
     // If contact is selected, update form fields
     if (selectedContactId) {
@@ -140,7 +141,6 @@ const PersonResponsibleForm = ({
         person_responsible:
           `${updatedContact.first_name} ${updatedContact.last_name}`.trim(),
       });
-      setIsSnackbarOpen(true);
     } else {
       // If no contact is selected, reset form fields
       setSelectedContactAddressError(undefined);
