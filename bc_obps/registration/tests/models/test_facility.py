@@ -1,5 +1,5 @@
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
-from registration.models.naics_code import NaicsCode
+from itertools import cycle
+from django.db.utils import ProgrammingError
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import Facility, Operation
 from model_bakery import baker
@@ -55,22 +55,61 @@ class FacilityModelTest(BaseTestCase):
             ("temporary_shutdown_events", "temporary shutdown event", None, None),
         ]
 
-    # More general BCGHG ID generation tests are in test_utils
-    def test_generate_unique_bcghg_id_multiple_existing_ids_facility(self):
-        existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
-        for existing_id in existing_ids:
-            baker.make_recipe(
-                'registration.tests.utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id)
-            )
-        facility_designated_operation_timeline = baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline', facility=self.test_object, end_date=None
-        )
-        facility_designated_operation_timeline.operation.type = Operation.Types.SFO
-        facility_designated_operation_timeline.operation.naics_code = baker.make(NaicsCode, naics_code='322121')
-        facility_designated_operation_timeline.operation.save()
 
-        self.test_object.bcghg_id = None
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
-        self.test_object.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-        expected_id = '13221210004'
-        assert self.test_object.bcghg_id.pk == expected_id
+class FacilityTriggerTests(BaseTestCase):
+    def setUp(self):
+        self.registered_operation = baker.make_recipe(
+            "registration.tests.utils.operation", status=Operation.Statuses.REGISTERED
+        )
+        self.non_registered_operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            status=cycle([Operation.Statuses.DRAFT, Operation.Statuses.NOT_STARTED, Operation.Statuses.DECLINED]),
+        )
+        self.facility_with_registered_op = baker.make_recipe(
+            "registration.tests.utils.facility", operation=self.registered_operation
+        )
+        self.facility_with_non_registered_op = baker.make_recipe(
+            "registration.tests.utils.facility", operation=self.non_registered_operation
+        )
+
+    def test_insert_null_bcghg_id_any_operation_status(self):
+        # Test that a Facility can be created with null bcghg_id regardless of Operation status
+        self.assertIsNone(self.facility_with_registered_op.bcghg_id)
+        self.assertIsNone(self.facility_with_non_registered_op.bcghg_id)
+
+    def test_insert_bcghg_id_with_non_registered_operation(self):
+        # Test that setting bcghg_id fails if the related Operation isn't Registered
+        with self.assertRaises(ProgrammingError) as cm:
+            self.facility_with_non_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+            self.facility_with_non_registered_op.save()
+        self.assertIn(
+            "Cannot assign bcghg_id to Facility unless the related Operation status is Registered",
+            str(cm.exception),
+        )
+
+    def test_insert_bcghg_id_with_registered_operation(self):
+        # Test that setting bcghg_id succeeds if the related Operation is Registered
+        self.facility_with_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.facility_with_registered_op.save()
+        self.assertIsNotNone(self.facility_with_registered_op.bcghg_id)
+
+    def test_insert_new_facility_with_bcghg_id_and_non_registered_operation(self):
+        # Test that creating a new Facility with bcghg_id and non-Registered Operation fails
+        with self.assertRaises(ProgrammingError) as cm:
+            baker.make_recipe(
+                "registration.tests.utils.facility",
+                operation=self.non_registered_operation,
+                bcghg_id=baker.make_recipe("registration.tests.utils.bcghg_id"),
+            )
+        self.assertIn(
+            "Cannot assign bcghg_id to Facility unless the related Operation status is Registered",
+            str(cm.exception),
+        )
+
+    def test_change_operation_status_then_assign_bcghg_id(self):
+        # Test that changing the Operation status to Registered allows assigning bcghg_id
+        self.non_registered_operation.status = Operation.Statuses.REGISTERED
+        self.non_registered_operation.save()
+        self.facility_with_non_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.facility_with_non_registered_op.save()
+        self.assertIsNotNone(self.facility_with_non_registered_op.bcghg_id)

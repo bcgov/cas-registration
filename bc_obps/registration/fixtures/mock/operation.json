@@ -247,7 +247,6 @@
       "name": "Bojangles EIO - Draft",
       "type": "Electricity Import Operation",
       "naics_code": 21,
-      "bcghg_id": "23219990013",
       "status": "Draft",
       "registration_purpose": "Electricity Import Operation"
     }
@@ -261,7 +260,6 @@
       "name": "Brine LFO - Draft",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
-      "bcghg_id": "23219990014",
       "regulated_products": [3],
       "status": "Draft",
       "activities": [1, 5],
@@ -277,7 +275,6 @@
       "name": "Bling LFO - Draft",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
-      "bcghg_id": "23219990015",
       "status": "Draft",
       "activities": [1],
       "registration_purpose": "Potential Reporting Operation"
@@ -310,7 +307,6 @@
       "name": "Blue LFO - Not Started",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
-      "bcghg_id": "23219990017",
       "status": "Not Started",
       "activities": [1, 5]
     }

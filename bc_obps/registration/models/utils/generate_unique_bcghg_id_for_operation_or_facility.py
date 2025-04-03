@@ -12,10 +12,13 @@ def generate_unique_bcghg_id_for_operation_or_facility(record: Operation | Facil
     if record.bcghg_id:
         return None
 
-    operation = record.current_designated_operation if isinstance(record, Facility) else record
+    operation = record.operation if isinstance(record, Facility) else record
 
     if not operation.naics_code:
         raise ValueError('BCGHG cannot be generated. Missing NAICS code.')
+
+    if operation.status != Operation.Statuses.REGISTERED:
+        raise ValueError('Operation must be registered before generating a BCGHG ID.')
 
     if operation.type == Operation.Types.SFO:
         first_digit = '1'

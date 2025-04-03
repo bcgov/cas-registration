@@ -17,13 +17,13 @@ from registration.models import (
     UserOperator,
     OptedInOperationDetail,
 )
-
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from registration.models.document import Document
 from registration.models.document_type import DocumentType
 from registration.models.rls_configs.operation import Rls as OperationRls
+import pgtrigger
 
 
 class Operation(TimeStampedModel):
@@ -171,6 +171,34 @@ class Operation(TimeStampedModel):
         ]
         indexes = [
             models.Index(fields=["status"], name="operation_status_idx"),
+        ]
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            pgtrigger.Trigger(
+                name="restrict_bcghg_id_unless_registered",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__bcghg_id__isnull=False),
+                func="""
+                    if new.status != 'Registered'
+                    then
+                        raise exception 'Cannot assign bcghg_id to Operation unless status is Registered';
+                    end if;
+                    return new;
+                """,
+            ),
+            pgtrigger.Trigger(
+                name="restrict_boro_id_unless_registered",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__bc_obps_regulated_operation__isnull=False),
+                func="""
+                    if new.status != 'Registered' then
+                        raise exception 'Cannot assign bc_obps_regulated_operation to Operation unless status is Registered';
+                    end if;
+                    return new;
+                """,
+            ),
         ]
 
     Rls = OperationRls

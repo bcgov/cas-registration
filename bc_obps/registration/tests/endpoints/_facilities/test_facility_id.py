@@ -2,9 +2,9 @@ import math
 from datetime import datetime
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from model_bakery import baker
-from registration.models import Facility, Operation, WellAuthorizationNumber
+from registration.models import Facility, WellAuthorizationNumber
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from registration.tests.utils.bakers import operation_baker, operator_baker
+from registration.tests.utils.bakers import operation_baker
 from registration.utils import custom_reverse_lazy
 
 
@@ -66,13 +66,11 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
     # GET
     def test_industry_users_can_get_their_own_facilities(self):
-
-        operator = operator_baker()
+        operator = baker.make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator)
-        owning_operation: Operation = operation_baker(operator.id)
-        facility = baker.make_recipe('registration.tests.utils.facility')
+        owning_operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=owning_operation)
 
-        baker.make(FacilityDesignatedOperationTimeline, operation=owning_operation, facility=facility)
         response = TestUtils.mock_get_with_auth_role(
             self,
             endpoint=custom_reverse_lazy("get_facility", kwargs={"facility_id": facility.id}),

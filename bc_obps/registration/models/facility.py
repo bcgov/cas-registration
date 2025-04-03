@@ -7,6 +7,7 @@ from registration.models import Address, TimeStampedModel, Operation
 from simple_history.models import HistoricalRecords
 from django.core.validators import MaxValueValidator, MinValueValidator
 from registration.models.rls_configs.facility import Rls as FacilityRls
+import pgtrigger
 
 
 class Facility(TimeStampedModel):
@@ -86,15 +87,28 @@ class Facility(TimeStampedModel):
         db_table_comment = "Contains data on facilities that emit carbon emissions and must report them to Clean Growth. A Linear Facilities Operation is made up of several different facilities whereas a Single Facility Operation has only one facility. In the case of a single facility operation, much of the data in this table will overlap with the parent record in the operation table."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.FACILITY.value}'
         verbose_name_plural = "Facilities"
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            pgtrigger.Trigger(
+                name="restrict_bcghg_id_unless_operation_registered",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__bcghg_id__isnull=False),
+                func="""
+                    if (
+                        select status
+                        from erc.operation
+                        where erc.operation.id = new.operation_id
+                    ) != 'Registered'
+                    then
+                        raise exception 'Cannot assign bcghg_id to Facility unless the related Operation status is Registered';
+                    end if;
+                    return new;
+                """,
+            ),
+        ]
 
     Rls = FacilityRls
-
-    @property
-    def current_designated_operation(self) -> Operation:
-        """
-        Returns the current designated operation of the facility.
-        """
-        return self.designated_operations.get(end_date__isnull=True).operation
 
     def generate_unique_bcghg_id(self, user_guid: uuid.UUID) -> None:
         from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
