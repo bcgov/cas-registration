@@ -8,7 +8,6 @@ import {
   BC_GOV_BACKGROUND_COLOR_GREY,
 } from "@bciers/styles";
 import { Box, Button } from "@mui/material";
-import { useRouter } from "next/navigation";
 
 interface ComplianceStepButtonsProps {
   backUrl?: string;
@@ -57,8 +56,6 @@ const ComplianceStepButtons: React.FunctionComponent<
   customButtons,
   children,
 }) => {
-  const router = useRouter();
-
   return (
     <Box
       sx={{
@@ -72,13 +69,7 @@ const ComplianceStepButtons: React.FunctionComponent<
         {(backUrl || onBackClick) && (
           <Button
             variant="outlined"
-            onClick={
-              onBackClick
-                ? onBackClick
-                : backUrl
-                ? () => router.push(backUrl)
-                : undefined
-            }
+            onClick={onBackClick}
             disabled={backButtonDisabled}
             data-testid="back-button"
             sx={{
@@ -107,7 +98,9 @@ const ComplianceStepButtons: React.FunctionComponent<
             disabled={middleButtonDisabled}
             data-testid="middle-button"
             sx={{
-              padding: "16px 41px",
+              width: "240px",
+              height: "50px",
+              padding: 0,
               borderColor: BC_GOV_BACKGROUND_COLOR_BLUE,
               color: BC_GOV_LINKS_COLOR,
               "&:hover": {
@@ -128,13 +121,7 @@ const ComplianceStepButtons: React.FunctionComponent<
         {(continueUrl || onContinueClick) && (
           <Button
             variant="contained"
-            onClick={
-              onContinueClick
-                ? onContinueClick
-                : continueUrl
-                ? () => router.push(continueUrl)
-                : undefined
-            }
+            onClick={onContinueClick}
             disabled={submitButtonDisabled}
             data-testid="continue-button"
             sx={{
