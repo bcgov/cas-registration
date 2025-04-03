@@ -40,7 +40,8 @@ class ReportEmissionAllocationService:
             report_version_id=report_version_id, facility_report_id=facility_report_id
         ).first()
         report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
-            report_emission_allocation=report_emission_allocation
+            report_emission_allocation=report_emission_allocation,
+            report_version_id=report_version_id,
         )
 
         # Step 5: Construct the response data
@@ -132,6 +133,7 @@ class ReportEmissionAllocationService:
             for product in allocations.products:
                 if product.allocated_quantity == 0:  # if the allocated quantity is 0, delete any existing allocation
                     existing_allocation = ReportProductEmissionAllocation.objects.filter(
+                        report_version_id=report_version_id,
                         report_emission_allocation=report_emission_allocation.id,
                         report_product_id=product.report_product_id,
                         emission_category_id=allocations.emission_category_id,
@@ -142,6 +144,7 @@ class ReportEmissionAllocationService:
 
                 report_emission_allocation_record, _ = ReportProductEmissionAllocation.objects.update_or_create(
                     report_emission_allocation=report_emission_allocation,
+                    report_version_id=report_version_id,
                     report_product_id=product.report_product_id,
                     emission_category_id=allocations.emission_category_id,
                     defaults={

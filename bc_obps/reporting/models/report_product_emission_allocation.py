@@ -1,4 +1,6 @@
 from django.db import models
+from reporting.models import report_version
+from reporting.models.triggers import immutable_report_version_trigger
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report_product import ReportProduct
@@ -16,6 +18,12 @@ class ReportProductEmissionAllocation(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="%(class)s_records",
         db_comment="The report emission allocation this emission data belongs to",
+    )
+    report_version = models.ForeignKey(
+        report_version.ReportVersion,
+        on_delete=models.CASCADE,
+        related_name="%(class)s_records",
+        db_comment="The report version this data is associated with",
     )
     report_product = models.ForeignKey(
         ReportProduct,
@@ -43,6 +51,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
             models.UniqueConstraint(
                 fields=[
                     "report_emission_allocation",
+                    "report_version",
                     "report_product",
                     "emission_category",
                 ],
@@ -52,6 +61,7 @@ class ReportProductEmissionAllocation(TimeStampedModel):
         ]
         triggers = [
             *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
         ]
 
     Rls = ReportProductEmissionAllocationRls
