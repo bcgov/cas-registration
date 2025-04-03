@@ -137,7 +137,7 @@ describe("The attachments form", () => {
     expect(mockAttachmentElement).toHaveBeenNthCalledWith(
       1,
       {
-        error: "Must be present",
+        error: "Verification statement is required",
         fileId: undefined,
         fileName: undefined,
         onFileChange: expect.any(Function),
@@ -165,7 +165,9 @@ describe("The attachments form", () => {
     });
 
     expect(mockPostAttachments).not.toHaveBeenCalled();
-    expect(screen.queryByText("Must be present")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Verification statement is required"),
+    ).not.toBeInTheDocument();
   });
 
   it("submits the changed files along with their type", async () => {
