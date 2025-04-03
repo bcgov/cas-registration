@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.tests.utils.bakers import activity_baker
 from service.facility_report_service import FacilityReportService
 from reporting.schema.facility_report import FacilityReportIn
@@ -124,8 +125,12 @@ class TestFacilityReportService(TestCase):
         emission_2 = baker.make_recipe('reporting.tests.utils.report_emission', report_fuel_id=fuel_2.id)
         baker.make_recipe('reporting.tests.utils.report_methodology', report_emission_id=emission_1.id)
         baker.make_recipe('reporting.tests.utils.report_methodology', report_emission_id=emission_2.id)
+        report_emission_allocation = baker.make_recipe(
+            'reporting.tests.utils.report_emission_allocation', facility_report_id=facility_report.id
+        )
         baker.make_recipe(
-            'reporting.tests.utils.report_product_emission_allocation', facility_report_id=facility_report.id
+            'reporting.tests.utils.report_product_emission_allocation',
+            report_emission_allocation=report_emission_allocation,
         )
 
         data = FacilityReportIn(
@@ -148,7 +153,15 @@ class TestFacilityReportService(TestCase):
         assert ReportEmission.objects.filter(report_fuel_id=fuel_2.id).count() == 0
         assert ReportMethodology.objects.filter(report_emission_id=emission_2.id).count() == 0
         # ReportProductEmissionAllocation objects are not cascaded by the ReportActivity delete, but should also be cleared & re-entered if an activity is removed from the set
-        assert ReportProductEmissionAllocation.objects.filter(facility_report=facility_report.id).count() == 0
+        report_emission_allocation_obj = ReportEmissionAllocation.objects.filter(
+            facility_report_id=facility_report.id
+        ).first()
+        assert (
+            ReportProductEmissionAllocation.objects.filter(
+                report_emission_allocation=report_emission_allocation_obj
+            ).count()
+            == 0
+        )
 
     @staticmethod
     def test_deleting_report_activity_data_cascades_correctly():

@@ -208,7 +208,8 @@ describe("The FacilityEmissionAllocationPage component", () => {
     (getFacilityReportDetails as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       justFacilityReportTypeLarge,
     );
-    (getOverlappingIndustrialProcessEmissions as ReturnType<typeof vi.fn>
+    (
+      getOverlappingIndustrialProcessEmissions as ReturnType<typeof vi.fn>
     ).mockResolvedValueOnce(0.0);
     // Render the page with the `versionId` prop
     render(

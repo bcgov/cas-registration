@@ -115,11 +115,8 @@ class ComplianceService:
     def get_allocated_emissions_by_report_product_emission_category(
         report_version_id: int, product_id: int, emission_category_ids: List[int]
     ) -> Decimal:
-        reportEmission = ReportEmissionAllocation.objects.filter(
-            report_version_id=report_version_id,
-        ).first()
         records = ReportProductEmissionAllocation.objects.filter(
-            report_emission_allocation=reportEmission,
+            report_version_id=report_version_id,
             report_product__product_id=product_id,
             emission_category_id__in=emission_category_ids,
         )
@@ -151,6 +148,7 @@ class ComplianceService:
         fog_record = ReportEmissionAllocation.objects.filter(report_version_id=report_version_id).first()
         fog_records = ReportProductEmissionAllocation.objects.filter(
             report_emission_allocation=fog_record,
+            report_version_id=report_version_id,
             report_product__product_id=39,  # Special Fat, Oil & Grease product
         )
         fog_allocated_amount = fog_records.aggregate(allocated_sum=Sum('allocated_quantity'))
