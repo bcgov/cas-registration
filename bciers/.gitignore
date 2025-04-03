@@ -64,3 +64,6 @@ out
 # Vite(st) temporary config files
 vite.config.**s.timestamp-*
 vitest.config.**s.timestamp-*
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
