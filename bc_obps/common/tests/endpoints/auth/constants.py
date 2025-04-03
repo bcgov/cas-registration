@@ -298,11 +298,6 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_basic_gas_types",
         },
-        {
-            "method": "delete",
-            "endpoint_name": "delete_report_version",
-            "kwargs": {"version_id": MOCK_INT},
-        },
     ],
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},
@@ -430,6 +425,11 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_update_report",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "delete",
+            "endpoint_name": "delete_report_version",
             "kwargs": {"version_id": MOCK_INT},
         },
         {

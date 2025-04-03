@@ -30,8 +30,12 @@ const OperationDataGrid = ({
     [SearchCell],
   );
 
+  // Create a key based on the initialData that will change when the data changes.
+  const gridKey = useMemo(() => JSON.stringify(initialData), [initialData]);
+
   return (
     <DataGrid
+      key={gridKey} // This forces a remount when initialData changes.
       columns={columns}
       columnGroupModel={columnGroup}
       fetchPageData={fetchOperationsPageData}
