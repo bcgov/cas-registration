@@ -84,6 +84,12 @@ export default function Bread({
     ) {
       return null;
     }
+    // Omit select operator related segments
+    if (
+      pathNames.includes("select-operator") &&
+      ["received", "request access", "confirm"].includes(segment.toLowerCase())
+    )
+      return null;
 
     // Check if the current segment is a valid UUID or numeric.
     if (isValidUUID(segment) || isNumeric(segment)) {
