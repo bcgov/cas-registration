@@ -10,6 +10,7 @@ import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../../taskList/types";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface Props {
   initialData: any;
@@ -48,6 +49,7 @@ export default function LFOFacilitiesForm({
   const [deselectedFacilities, setDeselectedFacilities] = useState<string[]>(
     [],
   );
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [continueAfterSubmit, setContinueAfterSubmit] =
     useState<boolean>(false);
   const [schema, setSchema] = useState<any>(
@@ -202,6 +204,7 @@ export default function LFOFacilitiesForm({
       ),
     );
     setFacilitiesData(newData);
+    setIsSnackbarOpen(true);
   };
 
   return (
@@ -253,6 +256,11 @@ export default function LFOFacilitiesForm({
         backUrl={navigationInformation.backUrl}
         saveButtonDisabled={submittingDisabled}
         submitButtonDisabled={submittingDisabled}
+      />
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message="Changes synced successfully"
+        setIsSnackbarOpen={setIsSnackbarOpen}
       />
     </>
   );
