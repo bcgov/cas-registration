@@ -104,7 +104,10 @@ describe("RJSF FileWidget", () => {
         "Security risk found. Check for viruses or upload a different file.",
       ),
     ).toBeVisible();
-    expect(screen.getByRole("link", { name: "Preview" })).not.toBeVisible();
+
+    expect(
+      screen.queryByRole("link", { name: "Preview" }),
+    ).not.toBeInTheDocument();
   });
 
   it("should render the file value when formData is provided and scanStatus is Clean", async () => {
