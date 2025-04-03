@@ -31,7 +31,7 @@ def reverse_additional_methodology_data(apps, schema_monitor):
 
 class Migration(migrations.Migration):
 
-    dependencies = [('reporting', '0079_V2_1_1')]
+    dependencies = [('reporting', '0080_V2_2_0')]
 
     operations = [
         migrations.RunPython(
