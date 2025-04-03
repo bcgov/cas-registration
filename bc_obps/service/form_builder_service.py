@@ -258,6 +258,7 @@ def build_source_type_schema(
     form_builder_cache = caches["form_builder"]
     cache_key = f"{config_id}-{activity_id}-{source_type_id}"
     cache_hit: Dict = form_builder_cache.get(cache_key)
+
     if cache_hit:
         return cache_hit
 
