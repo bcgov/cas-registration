@@ -67,6 +67,7 @@ class TestReportService(TestCase):
             operation = operation_baker(
                 type=Operation.Types.LFO,
                 bc_obps_regulated_operation=bc_obps_regulated_operation_baker(),
+                status=Operation.Statuses.REGISTERED,
             )
             operation.activities.add(
                 Activity.objects.get(name="Magnesium production"),

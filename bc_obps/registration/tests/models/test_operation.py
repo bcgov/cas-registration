@@ -1,17 +1,15 @@
 from datetime import datetime
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
     BcObpsRegulatedOperation,
-    NaicsCode,
     Activity,
     RegulatedProduct,
-    Operator,
     Operation,
     User,
 )
 from model_bakery import baker
 from django.core.exceptions import ValidationError
+from django.db import ProgrammingError, transaction
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
@@ -24,6 +22,7 @@ from registration.tests.constants import (
     USER_FIXTURE,
 )
 from registration.tests.utils.bakers import operation_baker
+from itertools import cycle
 
 
 class OperationModelTest(BaseTestCase):
@@ -96,18 +95,18 @@ class OperationModelTest(BaseTestCase):
 
     def test_unique_boro_id_per_operation(self):
         boro_id_instance = baker.make(BcObpsRegulatedOperation, id='22-0001')
-        operation_instance: Operation = operation_baker()
+        operation_instance: Operation = baker.make_recipe(
+            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED
+        )
+
         operation_instance.bc_obps_regulated_operation = boro_id_instance
         operation_instance.save(update_fields=['bc_obps_regulated_operation'])
 
         with self.assertRaises(ValidationError, msg="Operation with this Bc obps regulated operation already exists."):
-            baker.make(
-                Operation,
+            baker.make_recipe(
+                'registration.tests.utils.operation',
                 bc_obps_regulated_operation=boro_id_instance,
-                name='test',
-                type='test',
-                naics_code=NaicsCode.objects.first(),
-                operator=Operator.objects.first(),
+                status=Operation.Statuses.REGISTERED,
             )
 
     def test_generate_unique_boro_id_existing_id(self):
@@ -135,18 +134,12 @@ class OperationModelTest(BaseTestCase):
         current_year = datetime.now().year % 100
         # Case: Multiple existing BORO IDs for the current year
         existing_ids = [f"{current_year:02d}-0002", f"{current_year:02d}-0003", f"{current_year:02d}-0001"]
-        Operation.objects.bulk_create(
-            [
-                Operation(
-                    name="test",
-                    type="test",
-                    naics_code=NaicsCode.objects.first(),
-                    operator=Operator.objects.first(),
-                    bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
-                )
-                for existing_id in existing_ids
-            ]
-        )
+        for existing_id in existing_ids:
+            baker.make_recipe(
+                'registration.tests.utils.operation',
+                bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
+                status=Operation.Statuses.REGISTERED,
+            )
 
         self.test_object.bc_obps_regulated_operation = None
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
@@ -160,18 +153,12 @@ class OperationModelTest(BaseTestCase):
     def test_generate_unique_boro_id_multiple_existing_ids_different_year(self):
         # Case: Multiple existing BORO IDs for the current year
         existing_ids = ["22-0001", "22-0002", "22-0003"]
-        Operation.objects.bulk_create(
-            [
-                Operation(
-                    name="test",
-                    type="test",
-                    naics_code=NaicsCode.objects.first(),
-                    operator=Operator.objects.first(),
-                    bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
-                )
-                for existing_id in existing_ids
-            ]
-        )
+        for existing_id in existing_ids:
+            baker.make_recipe(
+                'registration.tests.utils.operation',
+                bc_obps_regulated_operation=baker.make(BcObpsRegulatedOperation, id=existing_id),
+                status=Operation.Statuses.REGISTERED,
+            )
 
         self.test_object.bc_obps_regulated_operation = None
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
@@ -190,22 +177,6 @@ class OperationModelTest(BaseTestCase):
 
         with self.assertRaises(ValidationError, msg="Operation with this Swrs facility id already exists."):
             invalid_operation.save()
-
-    # More general BCGHG ID generation tests are in test_utils
-    def test_generate_unique_bcghg_id_multiple_existing_ids(self):
-        existing_ids = ['13221210001', '13221210002', '13221210003', '23221210001', '23221210002', '14862100001']
-        for existing_id in existing_ids:
-            baker.make_recipe(
-                'registration.tests.utils.operation', bcghg_id=baker.make(BcGreenhouseGasId, id=existing_id)
-            )
-
-        self.test_object.bcghg_id = None
-        self.test_object.type = Operation.Types.SFO
-        self.test_object.naics_code = baker.make(NaicsCode, naics_code='322121')
-        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
-        self.test_object.generate_unique_bcghg_id(user_guid=cas_director.user_guid)
-        expected_id = '13221210004'
-        assert self.test_object.bcghg_id.pk == expected_id
 
     def test_user_has_access_to_operation(self):
         random_user_operator = baker.make_recipe('registration.tests.utils.user_operator')
@@ -226,4 +197,81 @@ class OperationModelTest(BaseTestCase):
         self.assertTrue(
             operation_for_approved_user_operator.user_has_access(approved_user_operator.user.user_guid),
             "There is an approved user-operator association.",
+        )
+
+
+class OperationTriggerTests(BaseTestCase):
+    def setUp(self):
+        self.registered_operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            status=Operation.Statuses.REGISTERED,
+        )
+        self.non_registered_operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            status=cycle(
+                [
+                    Operation.Statuses.DRAFT,
+                    Operation.Statuses.NOT_STARTED,
+                    Operation.Statuses.DECLINED,
+                ]
+            ),
+        )
+
+    def test_initial_values_null(self):
+        self.assertIsNone(self.registered_operation.bc_obps_regulated_operation)
+        self.assertIsNone(self.registered_operation.bcghg_id)
+
+    def test_assign_id_with_non_registered_status_fails(self):
+        fields = {
+            "bc_obps_regulated_operation": "registration.tests.utils.boro_id",
+            "bcghg_id": "registration.tests.utils.bcghg_id",
+        }
+
+        for field, recipe in fields.items():
+            field_instance = baker.make_recipe(recipe)
+            with self.assertRaises(ProgrammingError) as cm:
+                setattr(self.non_registered_operation, field, field_instance)
+                with transaction.atomic():
+                    self.non_registered_operation.save()
+            self.assertIn(
+                f"Cannot assign {field} to Operation unless status is Registered",
+                str(cm.exception),
+            )
+
+    def test_assign_both_ids_with_registered_status_succeeds(self):
+        self.registered_operation.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.registered_operation.bc_obps_regulated_operation = baker.make_recipe("registration.tests.utils.boro_id")
+        self.registered_operation.save()
+        self.assertIsNotNone(self.registered_operation.bcghg_id)
+        self.assertIsNotNone(self.registered_operation.bc_obps_regulated_operation)
+
+    def test_change_status_then_assign_id_succeeds(self):
+        self.non_registered_operation.status = Operation.Statuses.REGISTERED
+        self.non_registered_operation.save()
+        self.non_registered_operation.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.non_registered_operation.save()
+        self.assertIsNotNone(self.non_registered_operation.bcghg_id)
+
+    def test_prevent_status_change_from_registered_with_assigned_ids(self):
+        # Ensure changing status from 'REGISTERED' prevents updates while retaining IDs
+        self.registered_operation.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
+        self.registered_operation.bc_obps_regulated_operation = baker.make_recipe("registration.tests.utils.boro_id")
+        self.registered_operation.save()
+
+        self.registered_operation.status = Operation.Statuses.DRAFT
+        with self.assertRaises(ProgrammingError):
+            self.registered_operation.save()
+        self.assertIsNotNone(self.registered_operation.bcghg_id)
+
+    def test_create_operation_with_id_and_non_registered_status_fails(self):
+        # Ensure creating an operation with an ID and non-Registered status fails
+        with self.assertRaises(ProgrammingError) as cm:
+            baker.make_recipe(
+                "registration.tests.utils.operation",
+                status=Operation.Statuses.DRAFT,
+                bcghg_id=baker.make_recipe("registration.tests.utils.bcghg_id"),
+            )
+        self.assertIn(
+            "Cannot assign bcghg_id to Operation unless status is Registered",
+            str(cm.exception),
         )
