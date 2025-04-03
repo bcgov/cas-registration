@@ -18,7 +18,7 @@ export default function RequestAccessButton({
   isAdminRequest = false,
 }: Readonly<RequestAccessButtonProps>) {
   const router = useRouter();
-  const [errorList, setErrorList] = useState([] as any[]);
+  const [error, setError] = useState(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const label = isAdminRequest
@@ -32,8 +32,8 @@ export default function RequestAccessButton({
   const handleRequestAccess = async () => {
     setIsSubmitting(true);
     const response = await actionHandler(endpointUrl, "POST", "");
-    if (response.error) {
-      setErrorList([{ message: response.error }]);
+    if (response?.error) {
+      setError(response.error);
       setIsSubmitting(false);
       return;
     }
@@ -45,12 +45,13 @@ export default function RequestAccessButton({
 
   return (
     <>
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e.message}
+      <div className="min-h-6 flex justify-center">
+        {error && (
+          <Alert severity="error" className="w-2/3">
+            <div dangerouslySetInnerHTML={{ __html: error }}></div>
           </Alert>
-        ))}
+        )}
+      </div>
       <Button
         className="my-10"
         sx={{ textTransform: "none" }} //to remove uppercase text
