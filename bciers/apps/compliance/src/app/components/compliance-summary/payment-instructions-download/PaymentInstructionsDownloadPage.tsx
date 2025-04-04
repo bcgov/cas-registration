@@ -6,13 +6,13 @@ import PaymentInstructionsDownloadComponent from "./PaymentInstructionsDownloadC
 import { getComplianceSummary } from "../../../utils/getComplianceSummary";
 
 interface Props {
-  complianceSummaryId: number;
+  compliance_summary_id: number;
 }
 
-export default async function PaymentInstructionsDownloadPage({
-  complianceSummaryId,
-}: Props) {
-  const complianceSummary = await getComplianceSummary();
+export default async function PaymentInstructionsDownloadPage(props: Props) {
+  const complianceSummaryId = props.compliance_summary_id;
+
+  const complianceSummary = await getComplianceSummary(complianceSummaryId);
 
   const taskListElements = getComplianceSummaryTaskList(
     complianceSummaryId,
