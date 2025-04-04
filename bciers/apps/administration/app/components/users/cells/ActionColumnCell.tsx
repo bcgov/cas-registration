@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import handleInternalAccessRequest from "@bciers/actions/api/handleInternalAccessRequest";
 
 export const formatRole = (role: InternalFrontEndRoles) => {
+  // this function transforms internal role names (which are prefixed with "cas_") into the format we want to display in the grid (no prefix, capitalized)
   return role
     .split("_")
     .slice(1)
@@ -22,29 +23,20 @@ export const formatRole = (role: InternalFrontEndRoles) => {
 };
 
 // We don't have a status field on the user model, so we infer it from the role
+const roleStatusMap = new Map<InternalFrontEndRoles, Status>([
+  [InternalFrontEndRoles.CAS_ADMIN, Status.APPROVED],
+  [InternalFrontEndRoles.CAS_ANALYST, Status.APPROVED],
+  [InternalFrontEndRoles.CAS_DIRECTOR, Status.APPROVED],
+  [InternalFrontEndRoles.CAS_VIEW_ONLY, Status.APPROVED],
+  [InternalFrontEndRoles.CAS_PENDING, Status.PENDING],
+]);
+
 export const inferStatus = (
   role: InternalFrontEndRoles,
   archivedAt: string | undefined,
-) => {
-  let status;
-  if (archivedAt) {
-    status = Status.DECLINED;
-    return status;
-  }
-  switch (role) {
-    case InternalFrontEndRoles.CAS_ADMIN:
-    case InternalFrontEndRoles.CAS_ANALYST:
-    case InternalFrontEndRoles.CAS_DIRECTOR:
-    case InternalFrontEndRoles.CAS_VIEW_ONLY:
-      status = Status.APPROVED;
-      break;
-    case InternalFrontEndRoles.CAS_PENDING:
-      status = Status.PENDING;
-      break;
-    default:
-      break;
-  }
-  return status;
+): Status | undefined => {
+  if (archivedAt) return Status.DECLINED;
+  return roleStatusMap.get(role);
 };
 
 const ActionColumnCell = (
@@ -75,9 +67,9 @@ const ActionColumnCell = (
 
     const res = await handleInternalAccessRequest(
       id,
-      // if we're editing or decling, we set the role to pending
+      // if we're editing or declining, we set the role to pending
       action !== Actions.APPROVE ? InternalFrontEndRoles.CAS_PENDING : role,
-      action === Actions.DECLINE ? true : false,
+      action === Actions.DECLINE,
     );
 
     if (res?.error) {
@@ -160,13 +152,8 @@ const ActionColumnCell = (
   return (
     <>
       <Stack direction="row" spacing={1}>
-        {email === params?.row.email ? (
-          <></>
-        ) : status === Status.PENDING ? (
-          approveDeclineButton
-        ) : (
-          editButton
-        )}
+        {email !== params?.row.email &&
+          (status === Status.PENDING ? approveDeclineButton : editButton)}
       </Stack>
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}
