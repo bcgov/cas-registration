@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from uuid import uuid4
 from zoneinfo import ZoneInfo
+from django.db.models import signals
 from registration.models.facility import Facility
 from registration.models.contact import Contact
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
@@ -24,6 +25,7 @@ from registration.schema import (
     MultipleOperatorIn,
     OperationInformationIn,
 )
+from registration.signals import check_document_file_status
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.operation_service import OperationService
 from registration.models.multiple_operator import MultipleOperator
@@ -35,7 +37,7 @@ from registration.models.operation_designated_operator_timeline import Operation
 pytestmark = pytest.mark.django_db
 
 
-def set_up_valid_mock_operation(purpose: Operation.Purposes):
+def set_up_valid_mock_operation(purpose: Operation.Purposes, document_scan_status: Document.FileStatus = "Clean"):
     # create operation and purpose
     operation = baker.make_recipe(
         'registration.tests.utils.operation', status=Operation.Statuses.DRAFT, registration_purpose=purpose
@@ -58,10 +60,14 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes):
 
     # docs
     boundary_map = baker.make_recipe(
-        'registration.tests.utils.document', type=DocumentType.objects.get(name='boundary_map')
+        "registration.tests.utils.document",
+        type=DocumentType.objects.get(name="boundary_map"),
+        status=document_scan_status,
     )
     process_flow_diagram = baker.make_recipe(
-        'registration.tests.utils.document', type=DocumentType.objects.get(name='process_flow_diagram')
+        "registration.tests.utils.document",
+        type=DocumentType.objects.get(name="process_flow_diagram"),
+        status=document_scan_status,
     )
 
     operation.documents.set([boundary_map, process_flow_diagram])
@@ -69,7 +75,9 @@ def set_up_valid_mock_operation(purpose: Operation.Purposes):
     if purpose == Operation.Purposes.NEW_ENTRANT_OPERATION:
         # statutory dec if new entrant
         new_entrant_application = baker.make_recipe(
-            'registration.tests.utils.document', type=DocumentType.objects.get(name='new_entrant_application')
+            'registration.tests.utils.document',
+            type=DocumentType.objects.get(name='new_entrant_application'),
+            status=document_scan_status,
         )
         operation.documents.add(new_entrant_application)
         operation.date_of_first_shipment = "On or after April 1, 2024"
@@ -1060,6 +1068,36 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
         with pytest.raises(Exception, match="Operation must have a process flow diagram and a boundary map."):
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
+
+    @staticmethod
+    def test_raises_exception_if_documents_are_quarantined():
+        # Disconnect the signal handler which checks malware scan status
+        signals.post_save.disconnect(check_document_file_status, sender=Document)
+
+        operation = set_up_valid_mock_operation(
+            Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
+        )
+
+        with pytest.raises(
+            Exception,
+            match="Virus detected in test.pdf, test.pdf. Please go back and replace these attachments before submitting.",
+        ):
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
+        signals.post_save.connect(check_document_file_status, sender=Document)
+
+    @staticmethod
+    def test_raises_exception_if_documents_are_still_unscanned():
+        # Disconnect the signal handler which checks malware scan status
+        signals.post_save.disconnect(check_document_file_status, sender=Document)
+
+        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
+
+        with pytest.raises(
+            Exception,
+            match="Please wait. Your attachments are being scanned for viruses, this may take a few minutes.",
+        ):
+            OperationService.raise_exception_if_operation_missing_registration_information(operation)
+        signals.post_save.connect(check_document_file_status, sender=Document)
 
     @staticmethod
     def test_raises_exception_if_one_of_the_documents_is_missing():
