@@ -133,12 +133,16 @@ class ReportService:
             )
             for f in facility_reports:
                 FacilityReportService.set_activities_for_facility_report(facility_report=f, activities=data.activities)
+                FacilityReportService.prune_report_product_data_for_facility_report(
+                    facility_report=f, regulated_products=data.regulated_products
+                )
         else:
             facility_report: FacilityReport = FacilityReport.objects.get(report_version__id=report_version_id)
             facility_report_save_data = SaveFacilityReportData(
                 facility_name=report_operation.operation_name,
                 facility_type=facility_report.facility_type,
                 activities=data.activities,
+                regulated_products=data.regulated_products,
             )
             FacilityReportService.save_facility_report(
                 report_version_id=facility_report.report_version_id,
