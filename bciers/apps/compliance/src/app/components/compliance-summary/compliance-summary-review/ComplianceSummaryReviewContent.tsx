@@ -1,3 +1,4 @@
+"use-client";
 import { FormReport } from "./FormReport";
 import { ComplianceHeading } from "../ComplianceHeading";
 import { ComplianceObligation } from "./ComplianceObligation";
@@ -6,6 +7,8 @@ import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
 import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
+import { downloadInvoice } from "../../../actions/downloadInvoice";
+import { useState } from "react";
 
 interface Props {
   continueUrl: string;
@@ -16,8 +19,42 @@ interface Props {
 
 export function ComplianceSummaryReviewContent(props: Props) {
   const { backUrl, continueUrl, data, complianceSummaryId } = props;
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
-  const handleGenerateInvoice = () => {};
+  const handleGenerateInvoice = async () => {
+    if (!complianceSummaryId) {
+      return;
+    }
+
+    try {
+      setIsGeneratingInvoice(true);
+
+      const result = await downloadInvoice(complianceSummaryId);
+
+      if (!result.success || !result.data) {
+        throw new Error(result.error || "Error generating invoice");
+      }
+
+      const { base64Data, contentType } = result.data;
+
+      const byteArray = Uint8Array.from(atob(base64Data), (c) =>
+        c.charCodeAt(0),
+      );
+      const blob = new Blob([byteArray], { type: contentType });
+
+      const url = window.URL.createObjectURL(blob);
+
+      window.open(url, "_blank");
+
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 5000);
+    } catch (error) {
+      throw new Error(error as string);
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -37,9 +74,13 @@ export function ComplianceSummaryReviewContent(props: Props) {
         backUrl={backUrl}
         continueUrl={continueUrl}
         backButtonDisabled={false}
-        middleButtonDisabled={false}
+        middleButtonDisabled={isGeneratingInvoice}
         submitButtonDisabled={false}
-        middleButtonText="Generate Compliance Invoice"
+        middleButtonText={
+          isGeneratingInvoice
+            ? "Generating Invoice..."
+            : "Generate Compliance Invoice"
+        }
         onMiddleButtonClick={handleGenerateInvoice}
       />
     </div>
