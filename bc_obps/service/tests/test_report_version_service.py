@@ -84,6 +84,7 @@ class TestReportVersionService(TestCase):
             "ReportAdditionalData",
             "ReportVerification",
             "ReportVerificationVisit",
+            "ReportEmissionAllocation",
             "ReportProductEmissionAllocation",
         }
 

@@ -7,6 +7,7 @@ import { getReportInformationTasklist } from "@reporting/src/app/utils/getReport
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
+import { getFacilityReportDetails } from "../../utils/getFacilityReportDetails";
 
 export default async function ProductionDataPage({
   version_id,
@@ -21,10 +22,14 @@ export default async function ProductionDataPage({
     unit: p.unit,
   }));
 
+  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
+    .facility_type;
+
   const schema: any = buildProductionDataSchema(
     "Jan 1",
     "Dec 31",
     allowedProductNames,
+    facilityType,
   );
   const tasklistData = await getReportInformationTasklist(
     version_id,

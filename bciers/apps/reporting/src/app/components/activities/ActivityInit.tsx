@@ -74,7 +74,7 @@ export default async function ActivityInit({
 
   const fetchSchema = async () => {
     const schema = await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}${sourceTypeQueryString}`,
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${versionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
       "GET",
       "",
     );

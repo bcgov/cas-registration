@@ -1,4 +1,5 @@
 from decimal import Decimal
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report import Report
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
@@ -22,6 +23,7 @@ class ComplianceTestInfrastructure:
     report_product_1: ReportProduct
     report_product_2: ReportProduct
     report_product_3: ReportProduct
+    report_emission_allocation: ReportEmissionAllocation
     allocation_1: ReportProductEmissionAllocation
     allocation_2: ReportProductEmissionAllocation
     allocation_3: ReportProductEmissionAllocation
@@ -94,8 +96,12 @@ class ComplianceTestInfrastructure:
             production_data_apr_dec=Decimal('15000'),
         )
 
+        t.report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation", report_version=t.report_version_1
+        )
         t.allocation_1 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_1,
             emission_category=EmissionCategory.objects.get(pk=1),  # Flaring Product 1
@@ -103,6 +109,7 @@ class ComplianceTestInfrastructure:
         )
         t.allocation_2 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=3),  # Industrial Process Product 2
             report_product=t.report_product_2,
@@ -110,6 +117,7 @@ class ComplianceTestInfrastructure:
         )
         t.allocation_3 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=4),  # Mobile Product 3
             report_product=t.report_product_3,
@@ -117,6 +125,7 @@ class ComplianceTestInfrastructure:
         )
         t.allocation_4 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=5),  # GSC Product 1
             report_product=t.report_product_1,
@@ -124,6 +133,7 @@ class ComplianceTestInfrastructure:
         )
         t.allocation_5 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             emission_category=EmissionCategory.objects.get(pk=12),  # Excluded nonbio Product 1
             report_product=t.report_product_1,
@@ -131,6 +141,7 @@ class ComplianceTestInfrastructure:
         )
         t.allocation_6 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
             report_version=t.report_version_1,
             report_product=t.report_product_2,
             emission_category=EmissionCategory.objects.get(pk=4),  # Mobile Product 2

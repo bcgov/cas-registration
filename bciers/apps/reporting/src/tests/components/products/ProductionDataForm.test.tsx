@@ -38,6 +38,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
+        facilityType={""}
       />,
     );
 
@@ -55,6 +56,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
+        facilityType={""}
       />,
     );
 
@@ -93,6 +95,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
+        facilityType={""}
       />,
     );
 
@@ -148,6 +151,7 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
+        facilityType={""}
       />,
     );
 

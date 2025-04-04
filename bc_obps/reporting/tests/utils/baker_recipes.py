@@ -28,6 +28,7 @@ from reporting.models.report_activity import ReportActivity
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models.report_emission import ReportEmission
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_fuel import ReportFuel
 from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.models.report_source_type import ReportSourceType
@@ -254,10 +255,16 @@ report_operation_representative = Recipe(
     selected_for_report=True,
 )
 
+report_emission_allocation = Recipe(
+    ReportEmissionAllocation,
+    report_version=foreign_key(report_version),
+    facility_report=foreign_key(facility_report),
+)
+
 report_product_emission_allocation = Recipe(
     ReportProductEmissionAllocation,
     report_version=foreign_key(report_version),
-    facility_report=foreign_key(facility_report),
+    report_emission_allocation=foreign_key(report_emission_allocation),
     report_product=foreign_key(report_product),
     emission_category=foreign_key(emission_category),
 )

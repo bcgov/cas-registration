@@ -43,8 +43,8 @@ class FacilityReportModelTest(BaseTestCase):
                 0,
             ),
             (
-                "reportproductemissionallocation_records",
-                "report product emission allocation",
+                "reportemissionallocation_records",
+                "report emission allocation",
                 None,
                 0,
             ),

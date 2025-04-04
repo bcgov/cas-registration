@@ -35,7 +35,12 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       : "";
 
     const schema = safeJsonParse(
-      await getActivitySchema(versionId, activity.id, sourceTypeQueryString),
+      await getActivitySchema(
+        versionId,
+        activity.id,
+        sourceTypeQueryString,
+        facilityId,
+      ),
     ).schema;
     activityReviewData.push({
       schema: schema,

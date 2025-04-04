@@ -48,6 +48,12 @@ class ReportVersionTest(BaseTestCase):
                 0,
             ),
             (
+                "reportemissionallocation_records",
+                "report emission allocation",
+                None,
+                0,
+            ),
+            (
                 "report_operation_representatives",
                 "report operation representative",
                 None,

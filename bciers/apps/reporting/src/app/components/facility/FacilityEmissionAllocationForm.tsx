@@ -22,6 +22,7 @@ interface Props {
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
+  facilityType: string;
 }
 
 interface FormData {
@@ -146,7 +147,6 @@ export default function FacilityEmissionAllocationForm({
   }));
 
   // State for submit button disable
-
   const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -276,6 +276,7 @@ export default function FacilityEmissionAllocationForm({
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
       backUrl={navigationInformation.backUrl}
+      saveButtonDisabled={submitButtonDisabled}
       onChange={handleChange}
       onSubmit={handleSubmit}
       continueUrl={navigationInformation.continueUrl}

@@ -57,6 +57,7 @@ describe("ActivityForm component", () => {
         reportVersionId={1}
         facilityId={mockUUID}
         initialSelectedSourceTypeIds={[]}
+        facilityType=""
       />,
     );
     await act(async () => {
@@ -116,6 +117,7 @@ describe("ActivityForm component", () => {
         reportVersionId={1}
         facilityId={mockUUID}
         initialSelectedSourceTypeIds={[]}
+        facilityType=""
       />,
     );
     await act(async () => {

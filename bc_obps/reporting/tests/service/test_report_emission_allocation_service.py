@@ -1,15 +1,13 @@
 from decimal import Decimal
 from django.test import TestCase
+from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
 from reporting.models.emission_category import EmissionCategory
-from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationsSchemaIn
-from reporting.models.report_emission import ReportEmission
-from reporting.models.report_fuel import ReportFuel
-from reporting.models.report_source_type import ReportSourceType
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
 from reporting.models.report_product import ReportProduct
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
-from model_bakery.baker import make
+from model_bakery.baker import make_recipe
 
 
 class TestReportEmissionAllocationService(TestCase):
@@ -77,23 +75,23 @@ class TestReportEmissionAllocationService(TestCase):
         )
 
         report_activity = self.test_infrastructure.make_report_activity()
-        report_source_type = make(
-            ReportSourceType,
+        report_source_type = make_recipe(
+            "reporting.tests.utils.report_source_type",
             activity_source_type_base_schema=activity_source_type,
             source_type=activity_source_type.source_type,
             report_activity=report_activity,
             report_version=self.test_infrastructure.report_version,
             json_data={"test_report_source_type": "yes"},
         )
-        report_fuel = make(
-            ReportFuel,
+        report_fuel = make_recipe(
+            "reporting.tests.utils.report_fuel",
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
             json_data={"test_report_unit": True},
             report_unit=None,
         )
-        report_fuel_excluded = make(
-            ReportFuel,
+        report_fuel_excluded = make_recipe(
+            "reporting.tests.utils.report_fuel",
             fuel_type_id=64,
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
@@ -101,23 +99,23 @@ class TestReportEmissionAllocationService(TestCase):
             report_unit=None,
         )
 
-        report_emission_1 = make(
-            ReportEmission,
+        report_emission_1 = make_recipe(
+            "reporting.tests.utils.report_emission",
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
             json_data={"equivalentEmission": 25.9998},
         )
 
-        report_emission_2 = make(
-            ReportEmission,
+        report_emission_2 = make_recipe(
+            "reporting.tests.utils.report_emission",
             report_fuel=report_fuel,
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
             json_data={"equivalentEmission": 275.0001},
         )
-        report_emission_excluded = make(
-            ReportEmission,
+        report_emission_excluded = make_recipe(
+            "reporting.tests.utils.report_emission",
             report_fuel=report_fuel_excluded,
             report_source_type=report_source_type,
             report_version=self.test_infrastructure.report_version,
@@ -128,15 +126,15 @@ class TestReportEmissionAllocationService(TestCase):
         report_emission_2.emission_categories.set([self.FLARING_CATEGORY_ID])
         report_emission_excluded.emission_categories.set([self.WOODY_BIOMASS_CATEGORY_ID])
 
-        report_product_1 = make(
-            ReportProduct,
+        report_product_1 = make_recipe(
+            "reporting.tests.utils.report_product",
             id=3,
             report_version=self.test_infrastructure.report_version,
             facility_report=self.test_infrastructure.facility_report,
             product_id=1,  #  "BC-specific refinery complexity throughput"
         )
-        report_product_2 = make(
-            ReportProduct,
+        report_product_2 = make_recipe(
+            "reporting.tests.utils.report_product",
             id=4,
             report_version=self.test_infrastructure.report_version,
             facility_report=self.test_infrastructure.facility_report,
@@ -164,7 +162,7 @@ class TestReportEmissionAllocationService(TestCase):
             "allocation_other_methodology_description": "test",
         }
 
-        self.post_payload = ReportProductEmissionAllocationsSchemaIn(
+        self.post_payload = ReportEmissionAllocationsSchemaIn(
             report_product_emission_allocations=self.create_mock_allocation_array(
                 report_product1=report_product_1, report_product2=report_product_2, test_stage=2
             ),
@@ -172,7 +170,7 @@ class TestReportEmissionAllocationService(TestCase):
             allocation_other_methodology_description="test",
         )
 
-        self.post_payload2 = ReportProductEmissionAllocationsSchemaIn(
+        self.post_payload2 = ReportEmissionAllocationsSchemaIn(
             report_product_emission_allocations=self.create_mock_allocation_array(
                 report_product1=report_product_1, report_product2=report_product_2, test_stage=3
             ),
@@ -192,32 +190,40 @@ class TestReportEmissionAllocationService(TestCase):
             {"category": self.FLARING_CATEGORY_ID, "quantity": self.ALLOCATION_AMOUNT_2},
         ]
 
-        for product, data in zip(report_products, emission_data):
-            make(
-                ReportProductEmissionAllocation,
-                report_version=self.test_infrastructure.report_version,
-                facility_report=self.test_infrastructure.facility_report,
-                report_product=product,
-                emission_category_id=data["category"],
-                allocated_quantity=data["quantity"],
-                allocation_methodology="Other",
-                allocation_other_methodology_description="test",
-            )
-        # Arrange: Create an emission allocation to an excluded category
-        make(
-            ReportProductEmissionAllocation,
+        # Create ReportEmissionAllocation to hold the product allocations
+        report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation",
             report_version=self.test_infrastructure.report_version,
             facility_report=self.test_infrastructure.facility_report,
-            report_product=report_products[1],
-            emission_category_id=self.WOODY_BIOMASS_CATEGORY_ID,
-            allocated_quantity=self.ALLOCATION_AMOUNT_3,
             allocation_methodology="Other",
             allocation_other_methodology_description="test",
         )
 
+        for product, data in zip(report_products, emission_data):
+            make_recipe(
+                "reporting.tests.utils.report_product_emission_allocation",
+                report_emission_allocation=report_emission_allocation,
+                report_version=self.test_infrastructure.report_version,
+                report_product=product,
+                emission_category_id=data["category"],
+                allocated_quantity=data["quantity"],
+            )
+        # Arrange: Create an emission allocation to an excluded category
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=report_emission_allocation,
+            report_version=self.test_infrastructure.report_version,
+            report_product=report_products[1],
+            emission_category_id=self.WOODY_BIOMASS_CATEGORY_ID,
+            allocated_quantity=self.ALLOCATION_AMOUNT_3,
+        )
+
         # Assert: Report product emission allocations were created
-        report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
+        report_emission_allocations = ReportEmissionAllocation.objects.filter(
             facility_report=self.test_infrastructure.facility_report
+        ).first()
+        report_product_emission_allocations = ReportProductEmissionAllocation.objects.filter(
+            report_emission_allocation=report_emission_allocations
         )
 
         assert (
@@ -228,21 +234,18 @@ class TestReportEmissionAllocationService(TestCase):
         expected_data = [
             {
                 "report_version_id": self.test_infrastructure.report_version.id,
-                "facility_report_id": self.test_infrastructure.facility_report.id,
                 "report_product_id": report_products[0].id,
                 "emission_category_id": self.FLARING_CATEGORY_ID,
                 "allocated_quantity": self.ALLOCATION_AMOUNT_1,  # sorted_report_product_data[0]["annual_production"],
             },
             {
                 "report_version_id": self.test_infrastructure.report_version.id,
-                "facility_report_id": self.test_infrastructure.facility_report.id,
                 "report_product_id": report_products[1].id,
                 "emission_category_id": self.FLARING_CATEGORY_ID,
                 "allocated_quantity": self.ALLOCATION_AMOUNT_2,  # sorted_report_product_data[1]["annual_production"],
             },
             {
                 "report_version_id": self.test_infrastructure.report_version.id,
-                "facility_report_id": self.test_infrastructure.facility_report.id,
                 "report_product_id": report_products[1].id,
                 "emission_category_id": self.WOODY_BIOMASS_CATEGORY_ID,
                 "allocated_quantity": self.ALLOCATION_AMOUNT_3,
@@ -255,9 +258,6 @@ class TestReportEmissionAllocationService(TestCase):
         ):
             self.assertEqual(
                 allocation.report_version_id, expected["report_version_id"], "Mismatched report version ID"
-            )
-            self.assertEqual(
-                allocation.facility_report_id, expected["facility_report_id"], "Mismatched facility report ID"
             )
             self.assertEqual(
                 allocation.report_product_id, expected["report_product_id"], "Mismatched report product ID"

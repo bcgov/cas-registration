@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import FacilityEmissionAllocationForm from "@reporting/src/app/components/facility/FacilityEmissionAllocationForm";
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { dummyNavigationInformation } from "../taskList/utils";
+import userEvent from "@testing-library/user-event";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -17,6 +18,7 @@ const config = {
   buttons: {
     cancel: "Back",
     saveAndContinue: "Save & Continue",
+    continue: "Continue",
   },
   mockVersionId: 3,
   mockFacilityId: "abc",
@@ -106,6 +108,9 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         navigationInformation={dummyNavigationInformation}
+        facilityType=""
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -141,11 +146,14 @@ describe("FacilityEmissionAllocationForm component", () => {
           ],
         }}
         navigationInformation={dummyNavigationInformation}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        facilityType={""}
       />,
     );
     expect(
       screen.getByRole("button", {
-        name: config.buttons.saveAndContinue,
+        name: config.buttons.continue,
       }),
     ).toBeDisabled();
   });
@@ -157,6 +165,9 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         navigationInformation={dummyNavigationInformation}
+        facilityType="Large Facility"
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -181,6 +192,9 @@ describe("FacilityEmissionAllocationForm component", () => {
           orderedActivities={[]}
           initialData={mockInitialData}
           navigationInformation={dummyNavigationInformation}
+          facilityType="Large Facility"
+          isPulpAndPaper={false}
+          overlappingIndustrialProcessEmissions={0}
         />,
       );
       // POST submit and assert the result
@@ -195,6 +209,9 @@ describe("FacilityEmissionAllocationForm component", () => {
         orderedActivities={[]}
         initialData={mockInitialData}
         navigationInformation={dummyNavigationInformation}
+        facilityType="Large Facility"
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -207,5 +224,33 @@ describe("FacilityEmissionAllocationForm component", () => {
     // Assert that the router's push method was called with the expected route
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledWith("back");
+  });
+
+  it("renders a Not Applicable option for methodology if report type is small or medium", async () => {
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={mockInitialData}
+        facilityType={"Small Aggregate"}
+        navigationInformation={{
+          taskList: [],
+          continueUrl: "",
+          backUrl: "",
+          headerSteps: [],
+          headerStepIndex: 0,
+        }}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
+    );
+    const methodology = screen.getAllByText(/Not Applicable/i)[0];
+    expect(methodology).toBeInTheDocument();
+    expect(methodology).toBeVisible();
   });
 });
