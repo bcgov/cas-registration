@@ -87,7 +87,7 @@ const showScanStatus = (status: FileScanStatus | undefined | null) => {
       <div className="flex items-center justify-between text-red-500 text-sm">
         <AlertIcon />
         <span className="ml-2">
-          Security risk found. Check for viruses or upload a different file.
+          Security risk found. Check for malware or upload a different file.
         </span>
       </div>
     );
@@ -98,7 +98,7 @@ const showScanStatus = (status: FileScanStatus | undefined | null) => {
         <div className="flex flex-col">
           <span>
             Uploading. You may continue to the next page while the file is being
-            scanned for viruses.
+            scanned for malware.
           </span>
         </div>
       </div>
