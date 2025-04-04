@@ -15,7 +15,7 @@ export const newEntrantSchema: RJSFSchema = {
     },
     authorization_date: {
       type: "string",
-      title: "Date of authorization",
+      title: "Authorization Date",
     },
     first_shipment_date: {
       type: "string",
