@@ -1,11 +1,17 @@
 # Example:
 # from . import example_validator
 
-from . import mandatory_verification_statement
+from . import (
+    mandatory_verification_statement,
+    operation_boroid_bcghgid_presence,
+    facility_bcghgid_presence,
+)
 
 
 __all__ = [
     # Example:
     # "example_validator",
     "mandatory_verification_statement",
+    "operation_boroid_bcghgid_presence",
+    "facility_bcghgid_presence",
 ]
