@@ -138,13 +138,13 @@ class TestOperationService:
         assert result[0] == users_unregistered_operation
 
     @staticmethod
-    def test_update_operation_status_success():
+    def test_submit_registration_success():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
         users_operation.operator = approved_user_operator.operator
         users_operation.save()
 
-        updated_operation = OperationService.update_status(
+        updated_operation = OperationService.submit_registration(
             approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
         )
         updated_operation.refresh_from_db()
@@ -157,7 +157,7 @@ class TestOperationService:
         assert updated_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
 
     @staticmethod
-    def test_update_operation_status_fail():
+    def test_submit_registration_fail():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
             'registration.tests.utils.operation',
@@ -167,12 +167,12 @@ class TestOperationService:
         users_operation.contacts.set([])
 
         with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
-            OperationService.update_status(
+            OperationService.submit_registration(
                 approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
             )
 
     @staticmethod
-    def test_raises_error_if_operation_does_not_belong_to_user_when_updating_status():
+    def test_raises_error_if_operation_does_not_belong_to_user_when_submitting_registration():
         user = baker.make_recipe(
             'registration.tests.utils.industry_operator_user',
         )
@@ -185,7 +185,7 @@ class TestOperationService:
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationService.update_status(
+            OperationService.submit_registration(
                 approved_user_operator.user.user_guid, operation.id, Operation.Statuses.REGISTERED
             )
 
