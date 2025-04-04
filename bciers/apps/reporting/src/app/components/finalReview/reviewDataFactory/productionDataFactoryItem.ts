@@ -8,20 +8,13 @@ const productionDataFactoryItem: ReviewDataFactoryItem = async (
   facilityId,
 ) => {
   const productionData = await getProductionData(versionId, facilityId);
-
   const facilityType = (await getFacilityReportDetails(versionId, facilityId))
     .facility_type;
-  const productionMethodology = ["Small Aggregate", "Medium Facility"].includes(
-    facilityType,
-  )
-    ? ["Not Applicable", "OBPS Calculator", "other"]
-    : ["OBPS Calculator", "other"];
-
   const schema: any = buildProductionDataSchema(
     "Jan 1",
     "Dec 31",
     productionData.allowed_products.map((p) => p.name),
-    productionMethodology,
+    facilityType,
   );
 
   return [

@@ -211,9 +211,6 @@ class ReportSupplementaryVersionService:
             ReportSupplementaryVersionService.clone_report_version_facility_non_attributable_emissions(
                 old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
             )
-            ReportSupplementaryVersionService.clone_report_version_facility_emission_allocation(
-                old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
-            )
             ReportSupplementaryVersionService.clone_report_version_facility_product_data(
                 old_report_version, new_report_version, facility_report_to_clone, cloned_facility_report
             )
@@ -460,6 +457,17 @@ class ReportSupplementaryVersionService:
         old_facility_report_to_clone: FacilityReport,
         new_facility_report: FacilityReport,
     ) -> None:
+        # Clone the parent ReportEmissionAllocation
+        emission_allocation_to_copy = ReportEmissionAllocation.objects.filter(
+            report_version_id=old_report_version,
+            facility_report=old_facility_report_to_clone,
+        ).first()
+        if emission_allocation_to_copy:
+            emission_allocation_to_copy.pk = None
+            emission_allocation_to_copy._state.adding = True
+            emission_allocation_to_copy.report_version = new_report_version
+            emission_allocation_to_copy.save()
+
         # Retrieve ReportProduct entries for the old facility report.
         old_report_products_to_clone = ReportProduct.objects.filter(
             report_version=old_report_version, facility_report=old_facility_report_to_clone
@@ -477,24 +485,6 @@ class ReportSupplementaryVersionService:
                 old_report_product_to_clone=old_report_product_to_clone,
                 new_report_product=cloned_report_product,
             )
-
-    @staticmethod
-    def clone_report_version_facility_emission_allocation(
-        old_report_version: ReportVersion,
-        new_report_version: ReportVersion,
-        old_facility_report: FacilityReport,
-        new_facility_report: FacilityReport,
-    ) -> None:
-        old_emission_allocation = ReportEmissionAllocation.objects.filter(
-            report_version_id=old_report_version,
-            facility_report=old_facility_report,
-        ).first()
-        if old_emission_allocation:
-            cloned_allocation = copy.deepcopy(old_emission_allocation)
-            cloned_allocation.pk = None
-            cloned_allocation.report_version = new_report_version
-            cloned_allocation.facility_report = new_facility_report
-            cloned_allocation.save()
 
     @staticmethod
     def clone_report_version_facility_product_emission_allocations(
