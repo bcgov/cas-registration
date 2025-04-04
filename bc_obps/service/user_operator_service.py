@@ -158,17 +158,18 @@ class UserOperatorService:
         admin_user: User = UserDataAccessService.get_by_guid(admin_user_guid)
         user_operator: UserOperator = UserOperatorDataAccessService.get_user_operator_by_id(user_operator_id)
 
-        # industry users can only update the status of user_operators from the same operator as themselves
         if admin_user.is_industry_user():
-            # operator_business_guid can be None if no admins are approved yet (business_guids come from admin users)
             try:
                 operator_business_guid = OperatorDataAccessService.get_operators_business_guid(
                     user_operator.operator.id
                 )
             except Exception:
+                # operator_business_guid can be None if no admins are approved yet (business_guids come from admin users)
                 operator_business_guid = None
             if operator_business_guid != admin_user.business_guid:
+                # industry users can only update the status of user_operators from the same operator as themselves
                 raise PermissionError("Your user is not associated with this operator.")
+            access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
 
         user_operator.status = payload.status  # type: ignore[attr-defined]
         updated_role = payload.role
@@ -197,19 +198,10 @@ class UserOperatorService:
                         "business_role": BusinessRole.objects.get(role_name="Operation Representative"),
                     },
                 )
-            access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
 
             if admin_user.is_irc_user():
-                if user_operator.status == UserOperator.Statuses.DECLINED:
-                    access_request_type = AccessRequestTypes.ADMIN
-                else:
-                    # use the email template for new operator and admin approval if the creator of the operator is the same as the user who requested access
-                    # Otherwise, use the email template for admin approval
-                    access_request_type = (
-                        AccessRequestTypes.NEW_OPERATOR_AND_ADMIN
-                        if user_operator.operator.created_by == user_operator.user
-                        else AccessRequestTypes.ADMIN
-                    )
+                access_request_type = AccessRequestTypes.ADMIN
+
             # Send email to user if their request was approved or declined (using the appropriate email template)
             send_operator_access_request_email(
                 AccessRequestStates(user_operator.status),
