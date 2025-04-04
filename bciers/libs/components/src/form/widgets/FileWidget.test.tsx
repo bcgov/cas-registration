@@ -83,7 +83,7 @@ describe("RJSF FileWidget", () => {
 
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
@@ -105,7 +105,7 @@ describe("RJSF FileWidget", () => {
 
     expect(
       screen.getByText(
-        "Security risk found. Check for viruses or upload a different file.",
+        "Security risk found. Check for malware or upload a different file.",
       ),
     ).toBeVisible();
 
@@ -136,7 +136,7 @@ describe("RJSF FileWidget", () => {
 
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
@@ -190,7 +190,7 @@ describe("RJSF FileWidget", () => {
     await userEvent.upload(input, mockKmlFile);
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
@@ -201,7 +201,7 @@ describe("RJSF FileWidget", () => {
     await userEvent.upload(input, mockKmzFile);
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
@@ -236,7 +236,7 @@ describe("RJSF FileWidget", () => {
 
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
@@ -248,7 +248,7 @@ describe("RJSF FileWidget", () => {
 
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
@@ -276,7 +276,7 @@ describe("RJSF FileWidget", () => {
 
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for viruses.",
+        "Uploading. You may continue to the next page while the file is being scanned for malware.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(

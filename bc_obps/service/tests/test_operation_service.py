@@ -1076,7 +1076,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
         with pytest.raises(
             Exception,
-            match="Virus detected in test.pdf, test.pdf. Please go back and replace these attachments before submitting.",
+            match="Potential threat detected in test.pdf, test.pdf. Please go back and replace these attachments before submitting.",
         ):
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
@@ -1087,7 +1087,7 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
         with pytest.raises(
             Exception,
-            match="Please wait. Your attachments are being scanned for viruses, this may take a few minutes.",
+            match="Please wait. Your attachments are being scanned for malware, this may take a few minutes.",
         ):
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
