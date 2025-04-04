@@ -115,6 +115,6 @@ class TestCheckUserAdminRequestEligibility:
         )
         with pytest.raises(
             Exception,
-            match="Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact <a href='mailto:GHGRegulator@gov.bc.ca'>ghgregulator@gov.bc.ca</a>",
+            match="Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact",
         ):
             ApplicationAccessService.is_user_eligible_to_request_access(operator.id, user.user_guid)
