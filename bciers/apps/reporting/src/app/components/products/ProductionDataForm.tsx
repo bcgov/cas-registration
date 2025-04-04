@@ -97,8 +97,6 @@ const ProductionDataForm: React.FC<Props> = ({
       onChange={(data) => onChange(data.formData)}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
-      saveButtonDisabled={errors && errors.length > 0}
-      submitButtonDisabled={errors && errors.length > 0}
     />
   );
 };

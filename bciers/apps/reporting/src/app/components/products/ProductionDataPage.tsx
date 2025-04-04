@@ -24,17 +24,12 @@ export default async function ProductionDataPage({
 
   const facilityType = (await getFacilityReportDetails(version_id, facility_id))
     .facility_type;
-  const productionMethodology = ["Small Aggregate", "Medium Facility"].includes(
-    facilityType,
-  )
-    ? ["Not Applicable", "OBPS Calculator", "other"]
-    : ["OBPS Calculator", "other"];
 
   const schema: any = buildProductionDataSchema(
     "Jan 1",
     "Dec 31",
     allowedProductNames,
-    productionMethodology,
+    facilityType,
   );
   const tasklistData = await getReportInformationTasklist(
     version_id,
