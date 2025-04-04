@@ -10,6 +10,7 @@ class UserDataAccessService:
     @classmethod
     def get_by_guid(cls, user_guid: UUID, include_archived: bool = False) -> User:
         if include_archived:
+            # we need to use _base_manager when we want to retrieve archived records because TimeStampedModelManager's get_queryset only returns non-archived records
             return User._base_manager.get(user_guid=user_guid)
         else:
             return User.objects.get(user_guid=user_guid)
@@ -88,4 +89,5 @@ class UserDataAccessService:
 
     @classmethod
     def get_internal_users_including_archived(cls) -> QuerySet[User]:
+        # we need to use _base_manager when we want to retrieve archived records because TimeStampedModelManager's get_queryset only returns non-archived records
         return User._base_manager.all().filter(app_role__role_name__icontains="cas")

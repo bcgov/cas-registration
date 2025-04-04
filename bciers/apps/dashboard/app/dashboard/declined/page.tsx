@@ -1,5 +1,3 @@
-"use client";
-
 import { AlertIcon } from "@bciers/components/icons";
 
 export default function Page() {
