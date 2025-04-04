@@ -1,5 +1,3 @@
-"use client";
-
 import { Status } from "@bciers/utils/src/enums";
 import { Chip, ChipOwnProps } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";

@@ -350,8 +350,6 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "list_user_operators"},
         {"method": "get", "endpoint_name": "list_transfer_events"},
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
-        {"method": "get", "endpoint_name": "get_internal_users"},
-        {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},
     ],
     "approved_authorized_roles": [
         {
@@ -484,5 +482,9 @@ ENDPOINTS = {
         {"method": "post", "endpoint_name": "create_transfer_event"},
         {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
+    ],
+    "cas_admin": [
+        {"method": "get", "endpoint_name": "get_internal_users"},
+        {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},
     ],
 }

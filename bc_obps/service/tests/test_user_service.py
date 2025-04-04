@@ -1,5 +1,6 @@
 import pytest
 from registration.models.app_role import AppRole
+from registration.schema.user import UserUpdateRoleIn
 from registration.tests.utils.bakers import (
     user_baker,
     user_operator_baker,
@@ -10,6 +11,7 @@ from registration.models.user_operator import UserOperator
 from registration.tests.utils.bakers import operator_baker
 from model_bakery import baker
 from service.user_service import UserService
+from datetime import datetime
 
 pytestmark = pytest.mark.django_db
 
@@ -62,3 +64,59 @@ class TestUserService:
         )
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             UserService.get_if_authorized(user.pk, target_user.pk)
+
+    @staticmethod
+    def test_update_user_role_fail():
+        updating_user = baker.make_recipe('registration.tests.utils.cas_admin')
+        user_to_update = updating_user
+        with pytest.raises(Exception, match='You cannot change your own user role.'):
+            UserService.update_user_role(
+                updating_user.user_guid,
+                user_to_update.user_guid,
+                UserUpdateRoleIn(app_role='cas_director', archive=False),
+            )
+
+    @staticmethod
+    def test_update_user_role_change_success():
+        updating_user = baker.make_recipe('registration.tests.utils.cas_admin')
+        user_to_update = baker.make_recipe('registration.tests.utils.cas_pending')
+
+        UserService.update_user_role(
+            updating_user.user_guid, user_to_update.user_guid, UserUpdateRoleIn(app_role='cas_director', archive=False)
+        )
+
+        user_to_update.refresh_from_db()
+        assert user_to_update.app_role.role_name == 'cas_director'
+        assert user_to_update.archived_at is None
+        assert user_to_update.archived_by is None
+
+    @staticmethod
+    def test_update_user_role_archive_success():
+        updating_user = baker.make_recipe('registration.tests.utils.cas_admin')
+        user_to_update = baker.make_recipe('registration.tests.utils.cas_analyst')
+
+        UserService.update_user_role(
+            updating_user.user_guid, user_to_update.user_guid, UserUpdateRoleIn(app_role='cas_pending', archive=True)
+        )
+
+        user_to_update.refresh_from_db()
+        assert user_to_update.app_role.role_name == 'cas_pending'
+        assert user_to_update.archived_at is not None
+        assert user_to_update.archived_by == updating_user
+
+    @staticmethod
+    def test_update_user_role_unarchive_success():
+        updating_user = baker.make_recipe('registration.tests.utils.cas_admin')
+        user_to_update = baker.make_recipe('registration.tests.utils.cas_pending', archived_at=datetime.now())
+
+        UserService.update_user_role(
+            updating_user.user_guid,
+            user_to_update.user_guid,
+            UserUpdateRoleIn(app_role='cas_analyst', archive=False),
+            True,
+        )
+
+        user_to_update.refresh_from_db()
+        assert user_to_update.app_role.role_name == 'cas_analyst'
+        assert user_to_update.archived_at is None
+        assert user_to_update.archived_by is None

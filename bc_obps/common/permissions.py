@@ -122,6 +122,11 @@ def get_permission_configs(
                 AppRole.objects.filter(role_name="cas_analyst").values_list("role_name", flat=True)
             ),
         },
+        "cas_admin": {
+            "authorized_app_roles": list(
+                AppRole.objects.filter(role_name="cas_admin").values_list("role_name", flat=True)
+            ),
+        },
     }
     cache.set(PERMISSION_CONFIGS_CACHE_KEY, permission_configs, timeout=3600)  # 1 hour
     return permission_configs.get(permission)
@@ -152,6 +157,7 @@ def authorize(
         "cas_director_analyst_and_industry_admin_user",
         "authorized_irc_user_and_industry_admin_user",
         "cas_analyst",
+        "cas_admin",
     ],
 ) -> Callable[[HttpRequest], bool]:
     """
