@@ -28,15 +28,16 @@ class TestFacilityBcghgidValidator:
         )
 
         result = facility_bcghgid_presence.validate(report_version)
-        assert result[f"facility_bcghgid_{facility_report1.facility_id}"] == ReportValidationError(
-            Severity.ERROR,
-            "Report is missing a BCGHGID for the facility a, please make sure one has been assigned.",
-        )
-        assert result[f"facility_bcghgid_{facility_report2.facility_id}"] == ReportValidationError(
-            Severity.ERROR,
-            "Report is missing a BCGHGID for the facility b, please make sure one has been assigned.",
-        )
-        assert len(result) == 2
+        assert result == {
+            f"facility_bcghgid_{facility_report1.facility_id}": ReportValidationError(
+                Severity.ERROR,
+                "Report is missing a BCGHGID for the facility a, please make sure one has been assigned.",
+            ),
+            f"facility_bcghgid_{facility_report2.facility_id}": ReportValidationError(
+                Severity.ERROR,
+                "Report is missing a BCGHGID for the facility b, please make sure one has been assigned.",
+            ),
+        }
 
     def test_succeeds_if_all_facility_reports_have_bcghgid(self):
         report_version = make_recipe("reporting.tests.utils.report_version")
