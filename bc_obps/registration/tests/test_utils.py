@@ -14,9 +14,6 @@ from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
 from registration.tests.utils.bakers import document_baker, user_operator_baker
 import requests
-from django.db.models import signals
-from registration.models import Document
-from registration.signals import check_document_file_status
 
 pytestmark = pytest.mark.django_db
 
@@ -206,8 +203,6 @@ class TestFileTODataURL:
     @staticmethod
     def test_file_to_data_url_returns_data_url(mocker, monkeypatch):
         monkeypatch.setenv("CI", "false")
-        # Disconnect the signal handler which checks malware scan status
-        signals.post_save.disconnect(check_document_file_status, sender=Document)
 
         # Mock the document object
         document = document_baker()
@@ -230,8 +225,6 @@ class TestFileTODataURL:
     @staticmethod
     def test_file_to_data_url_handles_timeout(mocker, caplog, monkeypatch):
         monkeypatch.setenv("CI", "false")
-        # Disconnect the signal handler which checks malware scan status
-        signals.post_save.disconnect(check_document_file_status, sender=Document)
 
         # Mock the document object
         document = document_baker()
@@ -251,8 +244,6 @@ class TestFileTODataURL:
     @staticmethod
     def test_file_to_data_url_handles_request_exception(mocker, caplog, monkeypatch):
         monkeypatch.setenv("CI", "false")
-        # Disconnect the signal handler which checks malware scan status
-        signals.post_save.disconnect(check_document_file_status, sender=Document)
 
         # Mock the document object
         document = document_baker()
