@@ -23,7 +23,7 @@ describe("RJSF ReadOnlyFileWidget", () => {
 
     expect(readOnlyFileWidget).toBeVisible();
     expect(readOnlyFileWidget).toHaveTextContent(
-      "File is uploaded upon saving",
+      "Uploading. You may continue to the next page while the file is being scanned for viruses.",
     );
   });
 
