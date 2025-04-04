@@ -3,7 +3,7 @@ from uuid import UUID
 from common.lib import pgtrigger
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
-from django.core.files.storage import storages
+from django.core.files.storage import default_storage
 
 
 class DocumentDataAccessService:
@@ -34,9 +34,8 @@ class DocumentDataAccessService:
     @classmethod
     def check_document_file_status(cls, document: Document) -> Document.FileStatus:
         file_name = document.file.name
-        storage = storages["default"]
 
-        file_bucket = storage.get_file_bucket(file_name)  # type: ignore
+        file_bucket = default_storage.get_file_bucket(file_name)  # type: ignore
         if file_bucket:
             if file_bucket == "Quarantined":
                 document.status = Document.FileStatus.QUARANTINED
