@@ -10,6 +10,8 @@ from registration.models import (
 from model_bakery import baker
 from django.core.exceptions import ValidationError
 from django.db import ProgrammingError, transaction
+from registration.models.business_role import BusinessRole
+from registration.models.contact import Contact
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
@@ -198,6 +200,19 @@ class OperationModelTest(BaseTestCase):
             operation_for_approved_user_operator.user_has_access(approved_user_operator.user.user_guid),
             "There is an approved user-operator association.",
         )
+    def test_get_operation_representatives(self):
+        
+        # a senior officer for this operation
+        baker.make_recipe('registration.tests.utils.contact', operations_contacts=self.test_object, business_role=BusinessRole.objects.get(role_name='Senior Officer'))
+        # operation rep for this operation
+        operation_rep = baker.make_recipe(Contact, operations_contacts=self.test_object, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+        # someone else's operation rep
+        baker.make_recipe(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+
+        result = self.test_get_operation_representatives()
+        assert result.length == 1
+        assert result.email == operation_rep.email
+
 
 
 class OperationTriggerTests(BaseTestCase):
@@ -264,3 +279,4 @@ class OperationTriggerTests(BaseTestCase):
             "Cannot assign bcghg_id to Operation unless status is Registered",
             str(cm.exception),
         )
+    
