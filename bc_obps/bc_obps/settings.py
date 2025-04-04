@@ -251,3 +251,17 @@ QUERYCOUNT = {
     # print the 2 most duplicated queries
     'DISPLAY_DUPLICATES': 2,
 }
+
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "default_local_memcache",
+    },
+    "form_builder": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "form_builder_memcache",
+        # Cache keys don't expire, since we don't update program configuration without a release.
+        "TIMEOUT": None,
+    },
+}
