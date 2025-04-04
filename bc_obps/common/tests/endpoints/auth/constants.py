@@ -473,4 +473,8 @@ ENDPOINTS = {
         {"method": "patch", "endpoint_name": "update_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "delete", "endpoint_name": "delete_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
     ],
+    "cas_admin": [
+        {"method": "get", "endpoint_name": "get_internal_users"},
+        {"method": "patch", "endpoint_name": "update_user_role", "kwargs": {"user_id": MOCK_UUID}},
+    ],
 }

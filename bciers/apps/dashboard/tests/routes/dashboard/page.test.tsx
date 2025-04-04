@@ -102,7 +102,8 @@ const tiles = [
 const noteContent =
   "Important: Please always ensure that the information in Registration is complete and accurate before submitting or amending reports in Reporting.";
 
-const msgContent = "Welcome to B.C. Industrial Emissions Reporting System";
+const msgContent =
+  "By logging in, you have automatically requested access.Once approved, you will receive a confirmation email. You can then log back in using your IDIR.";
 
 vi.mock("@bciers/actions", () => ({
   fetchDashboardData: vi.fn(() => tiles),

@@ -1,9 +1,11 @@
 from typing import Optional
+from uuid import UUID
 
 from ninja import ModelSchema
-from pydantic import Field
+from pydantic import Field, field_validator
 
 from registration.models import User, AppRole
+from ninja import Schema
 
 
 class UserExternalDashboardUsersTileData(ModelSchema):
@@ -32,6 +34,16 @@ class UserIn(ModelSchema):
         ]
 
 
+class UserUpdateRoleIn(Schema):
+    archive: bool
+    app_role: str
+
+    @field_validator("app_role")
+    @classmethod
+    def validate_app_role(cls, value: str) -> AppRole:
+        return AppRole.objects.get(role_name=value)
+
+
 class UserUpdateIn(ModelSchema):
     class Meta:
         model = User
@@ -42,6 +54,12 @@ class UserAppRoleOut(ModelSchema):
     class Meta:
         model = AppRole
         fields = ['role_name']
+
+
+class ChangeUserRoleOut(ModelSchema):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "archived_at", "app_role"]
 
 
 class UserOut(ModelSchema):
@@ -57,3 +75,17 @@ class UserOut(ModelSchema):
     class Meta:
         model = User
         fields = ["first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name"]
+
+
+class InternalUserListOut(ModelSchema):
+    role: str = Field(..., alias="app_role.role_name")
+    id: UUID = Field(..., alias="user_guid")
+    name: str
+
+    @staticmethod
+    def resolve_name(obj: User) -> str:
+        return obj.first_name + ' ' + obj.last_name
+
+    class Meta:
+        model = User
+        fields = ["email", "archived_at"]

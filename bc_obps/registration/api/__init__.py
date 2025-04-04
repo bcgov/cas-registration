@@ -39,7 +39,7 @@ from ._user_operators._current import (
     operator_users,
 )
 from ._user_operators._user_operator_id import status
-from .user import user_profile, user_app_role
+from .user import user_profile, user_app_role, user_id, user_is_archived
 from . import transfer_events
 from ._transfer_events import transfer_id
 from .router import router  # django_ninja router object  # noqa: F401

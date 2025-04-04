@@ -5,7 +5,7 @@ import {
   NextResponse,
 } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
-import { getToken } from "@bciers/actions";
+import { actionHandler, getToken } from "@bciers/actions";
 
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT token.
@@ -18,7 +18,17 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
+
     if (token) {
+      const response = await actionHandler(
+        `registration/user/user-is-archived`,
+        "GET",
+      );
+      if (response === true) {
+        return NextResponse.redirect(
+          new URL(`/dashboard/declined`, request.url),
+        );
+      }
       // 🛸 Route to next middleware
       return next(request, _next);
     } else {
