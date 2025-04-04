@@ -14,6 +14,7 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
 from registration.models.contact import Contact
 from registration.models.multiple_operator import MultipleOperator
+from registration.models.document import Document
 from service.data_access_service.address_service import AddressDataAccessService
 from service.data_access_service.multiple_operator_service import MultipleOperatorService
 from registration.models.user_operator import UserOperator
@@ -547,20 +548,18 @@ class OperationService:
             )
             # Check if operation documents have been scanned for malware
             yield (
-                lambda: not (
-                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-                    and operation.documents.filter(status="Unscanned").exists()
-                ),
-                "Please wait. Your attachments are being scanned for viruses, this may take a few minutes.",
+                lambda: not operation.documents.filter(
+                    status=Document.FileStatus.UNSCANNED,
+                ).exists(),
+                "Please wait. Your attachments are being scanned for malware, this may take a few minutes.",
             )
             # Check if operation documents are malware free
             yield (
-                lambda: not (
-                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-                    and operation.documents.filter(status="Quarantined").exists()
-                ),
-                f"Virus detected in "
-                f"{', '.join(operation.documents.filter(status='Quarantined').values_list('file', flat=True))}. "
+                lambda: not operation.documents.filter(
+                    status=Document.FileStatus.QUARANTINED,
+                ).exists(),
+                f"Potential threat detected in "
+                f"{', '.join(operation.documents.filter(status=Document.FileStatus.QUARANTINED).values_list('file', flat=True))}. "
                 f"Please go back and replace these attachments before submitting.",
             )
             yield (
