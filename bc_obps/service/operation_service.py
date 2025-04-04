@@ -545,6 +545,24 @@ class OperationService:
                 ),
                 "Operation must have a process flow diagram and a boundary map.",
             )
+            # Check if operation documents have been scanned for malware
+            yield (
+                lambda: not (
+                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                    and operation.documents.filter(status="Unscanned").exists()
+                ),
+                "Please wait. Your attachments are being scanned for viruses, this may take a few minutes.",
+            )
+            # Check if operation documents are malware free
+            yield (
+                lambda: not (
+                    operation.registration_purpose != Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+                    and operation.documents.filter(status="Quarantined").exists()
+                ),
+                f"Virus detected in "
+                f"{', '.join(operation.documents.filter(status='Quarantined').values_list('file', flat=True))}. "
+                f"Please go back and replace these attachments before submitting.",
+            )
             yield (
                 lambda: not (
                     operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
