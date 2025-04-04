@@ -30,7 +30,7 @@ class ApplicationAccessService:
 
         if operators_business_bceid != users_business_bceid:
             raise Exception(
-                "Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact <a href='mailto:GHGRegulator@gov.bc.ca'>ghgregulator@gov.bc.ca</a>"
+                "Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact"
             )
         return True
 

@@ -5,6 +5,7 @@ import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@mui/material";
+import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 
 interface RequestAccessButtonProps {
   operatorId: number;
@@ -18,8 +19,8 @@ export default function RequestAccessButton({
   isAdminRequest = false,
 }: Readonly<RequestAccessButtonProps>) {
   const router = useRouter();
-  const [error, setError] = useState(undefined);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const label = isAdminRequest
     ? "Request administrator access"
@@ -28,6 +29,19 @@ export default function RequestAccessButton({
   const endpointUrl = `registration/operators/${operatorId}/${
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
+
+  const errorMessageJSX: JSX.Element = (
+    <>
+      {error}
+      {error?.includes(
+        "Your business BCeID does not have access to this operator.",
+      ) && (
+        <a className="ps-1" href={ghgRegulatorEmail}>
+          ghgregulator@gov.bc.ca
+        </a>
+      )}
+    </>
+  );
 
   const handleRequestAccess = async () => {
     setIsSubmitting(true);
@@ -48,7 +62,7 @@ export default function RequestAccessButton({
       <div className="min-h-6 flex justify-center">
         {error && (
           <Alert severity="error" className="w-2/3">
-            <div dangerouslySetInnerHTML={{ __html: error }}></div>
+            {errorMessageJSX}
           </Alert>
         )}
       </div>
