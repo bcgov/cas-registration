@@ -11,9 +11,15 @@ export const buildProductionDataSchema = (
   compliance_period_start: string,
   compliance_period_end: string,
   product_selection: string[],
-  production_methodology_options: string[],
-) =>
-  ({
+  facility_type: string,
+) => {
+  const productionMethodology = ["Small Aggregate", "Medium Facility"].includes(
+    facility_type,
+  )
+    ? ["Not Applicable", "OBPS Calculator", "other"]
+    : ["OBPS Calculator", "other"];
+
+  return {
     type: "object",
     title: "Production Data",
     properties: {
@@ -73,7 +79,7 @@ export const buildProductionDataSchema = (
           production_methodology: {
             title: "Production Quantification Methodology",
             type: "string",
-            enum: production_methodology_options,
+            enum: productionMethodology,
             default: "OBPS Calculator",
           },
           storage_quantity_start_of_period: {
@@ -113,7 +119,8 @@ export const buildProductionDataSchema = (
         ],
       },
     },
-  }) as RJSFSchema;
+  } as RJSFSchema;
+};
 
 export const productionDataUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
