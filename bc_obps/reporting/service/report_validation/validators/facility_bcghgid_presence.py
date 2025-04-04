@@ -1,4 +1,4 @@
-from typing import List
+from django.db.models import QuerySet
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_error import (
@@ -8,7 +8,7 @@ from reporting.service.report_validation.report_validation_error import (
 
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
-    facility_reports: List[FacilityReport] = report_version.facility_reports.all()
+    facility_reports: QuerySet[FacilityReport] = report_version.facility_reports.all()
 
     errors = {}
 
