@@ -29,7 +29,9 @@ class ApplicationAccessService:
         users_business_bceid = UserDataAccessService.get_by_guid(user_guid).business_guid
 
         if operators_business_bceid != users_business_bceid:
-            raise Exception("Your business bceid does not match that of the approved admin.")
+            raise Exception(
+                "Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact"
+            )
         return True
 
     # check_users_admin_request_eligibility
