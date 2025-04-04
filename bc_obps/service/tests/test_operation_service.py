@@ -3,7 +3,6 @@ from unittest.mock import patch, MagicMock
 import pytest
 from uuid import uuid4
 from zoneinfo import ZoneInfo
-from django.db.models import signals
 from registration.models.facility import Facility
 from registration.models.contact import Contact
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
@@ -25,7 +24,6 @@ from registration.schema import (
     MultipleOperatorIn,
     OperationInformationIn,
 )
-from registration.signals import check_document_file_status
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.operation_service import OperationService
 from registration.models.multiple_operator import MultipleOperator
@@ -1071,8 +1069,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_quarantined():
-        # Disconnect the signal handler which checks malware scan status
-        signals.post_save.disconnect(check_document_file_status, sender=Document)
 
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
@@ -1083,12 +1079,9 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
             match="Virus detected in test.pdf, test.pdf. Please go back and replace these attachments before submitting.",
         ):
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
-        signals.post_save.connect(check_document_file_status, sender=Document)
 
     @staticmethod
     def test_raises_exception_if_documents_are_still_unscanned():
-        # Disconnect the signal handler which checks malware scan status
-        signals.post_save.disconnect(check_document_file_status, sender=Document)
 
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
 
@@ -1097,7 +1090,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
             match="Please wait. Your attachments are being scanned for viruses, this may take a few minutes.",
         ):
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
-        signals.post_save.connect(check_document_file_status, sender=Document)
 
     @staticmethod
     def test_raises_exception_if_one_of_the_documents_is_missing():
