@@ -15,9 +15,9 @@ class ReportVersionService:
         report: Report,
         report_type: str = "Annual Report",
     ) -> ReportVersion:
-        # Creating first version
+        # Creating draft version
         report_version = ReportVersion.objects.create(report=report, report_type=report_type)
-        # Pre-populating data to the first version
+        # Pre-populating data to the draft version
         operation = report.operation
         operator = report.operator
 

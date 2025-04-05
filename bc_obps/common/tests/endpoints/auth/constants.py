@@ -173,6 +173,11 @@ ENDPOINTS = {
         },
         {
             "method": "post",
+            "endpoint_name": "create_report_version",
+            "kwargs": {"report_id": MOCK_INT},
+        },
+        {
+            "method": "post",
             "endpoint_name": "save_facility_report",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },

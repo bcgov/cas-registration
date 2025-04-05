@@ -10,7 +10,7 @@ from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker
 from registration.utils import custom_reverse_lazy
 from reporting.models import Report, ReportVersion
-from reporting.tests.utils.bakers import reporting_year_baker
+from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
@@ -19,17 +19,21 @@ class TestReportsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/create-report"
 
     def send_authorized_post_request(
-        self, request_data: dict[str, Any], operation: Operation | None = None
+        self, request_data: dict[str, Any], operation: Operation | None = None, url: str | None = None
     ) -> HttpResponse:
         operator = operation.operator if operation else operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        # Use self.endpoint_under_test if no URL is provided
+        if url is None:
+            url = self.endpoint_under_test
 
         return TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
             json.dumps(request_data),
-            self.endpoint_under_test,
+            url,
         )
 
     def test_error_if_no_operation_exists(self):
@@ -51,6 +55,21 @@ class TestReportsEndpoint(CommonTestSetup):
 
         assert response.status_code == 404
         assert response.json()["message"] == "Not Found"
+
+    def test_error_if_report_exists(self):
+        report = report_baker()
+
+        request_data = {
+            "operation_id": str(report.operation.id),
+            "reporting_year": report.reporting_year.reporting_year,
+        }
+        response = self.send_authorized_post_request(request_data, report.operation)
+
+        assert response.status_code == 400
+        assert (
+            response.json()["message"]
+            == "A report already exists for this operation and year, unable to create a new one."
+        )
 
     def test_creates_report_and_returns_http_created(self):
         operation = operation_baker()
@@ -156,3 +175,43 @@ class TestReportsEndpoint(CommonTestSetup):
 
         # Verify that the service method was called with the correct report_version_id
         mock_delete_report_version.assert_called_once_with(version_id)
+
+    def test_create_report_version_validates_operation_ownership(self):
+        with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
+            "reporting.api.permissions._validate_operation_ownership"
+        ) as mock_validate_operation_ownership:
+            mock_check_permissions.return_value = True
+
+            endpoint = custom_reverse_lazy("create_report_version", kwargs={'report_id': 1})
+            call_endpoint(TestUtils.client, "post", endpoint, "industry_user")
+
+            mock_validate_operation_ownership.assert_called_once()
+
+    @patch("service.report_version_service.ReportVersionService.create_report_version")
+    @patch("service.report_service.ReportService.get_report_by_id")
+    def test_returns_data_as_provided_by_create_report_version(
+        self, mock_get_report_by_id: MagicMock, mock_create_report_version: MagicMock
+    ):
+        # Arrange: create report and report version
+        report = baker.make_recipe("reporting.tests.utils.report")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
+
+        # Set up the expected responses from the service methods
+        mock_get_report_by_id.return_value = report
+        mock_create_report_version.return_value = report_version
+        expected_response = report_version.id
+
+        # Act: make a POST request to the endpoint
+        request_data = {
+            "operation_id": str(report.operation.id),
+        }
+        url = custom_reverse_lazy("create_report_version", kwargs={'report_id': report.id})
+        response = self.send_authorized_post_request(request_data, report.operation, url)
+
+        # Assert: Check the response status and data
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service methods were called with the correct arguments
+        mock_get_report_by_id.assert_called_once_with(report.id)
+        mock_create_report_version.assert_called_once_with(report)
