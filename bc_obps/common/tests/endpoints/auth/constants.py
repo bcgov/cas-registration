@@ -428,6 +428,16 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT},
         },
         {
+            "method": "delete",
+            "endpoint_name": "delete_report_version",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "post",
+            "endpoint_name": "create_report_version",
+            "kwargs": {"report_id": MOCK_INT},
+        },
+        {
             "method": "get",
             "endpoint_name": "get_emission_summary_totals",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
