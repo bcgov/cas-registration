@@ -37,47 +37,18 @@ class TestReportService(TestCase):
             "ReportingYear matching query does not exist.",
         )
 
-    def test_returns_existing_draft_report_version_if_report_exists(self):
-        """
-        If a report already exists for this operation and reporting year and it has a Draft version,
-        the service should return the existing draft ReportVersion ID.
-        """
+    def test_throws_if_report_already_exists(self):
         operation = operation_baker(type=Operation.Types.LFO)
         reporting_year = reporting_year_baker(reporting_year=2002)
-        existing_report = report_baker(operation=operation, reporting_year=reporting_year)
+        _ = report_baker(operation=operation, reporting_year=reporting_year)
 
-        # Create an existing draft ReportVersion for the report.
-        draft_version = ReportVersion.objects.create(
-            report=existing_report,
-            is_latest_submitted=False,
-            status=ReportVersion.ReportVersionStatus.Draft,
+        with self.assertRaises(Exception) as exception_context:
+            ReportService.create_report(operation.id, 2002)
+
+        self.assertEqual(
+            str(exception_context.exception),
+            "A report already exists for this operation and year, unable to create a new one.",
         )
-
-        report_version_id = ReportService.create_report(operation.id, 2002)
-        self.assertEqual(report_version_id, draft_version.id)
-
-    def test_creates_new_report_version_if_no_draft_exists(self):
-        """
-        If a report already exists for this operation and reporting year but does not have a Draft version,
-        the service should create a new ReportVersion with Draft status.
-        """
-        operation = operation_baker(type=Operation.Types.LFO)
-        reporting_year = reporting_year_baker(reporting_year=2002)
-        existing_report = report_baker(operation=operation, reporting_year=reporting_year)
-
-        # Create a submitted version so that no draft exists.
-        submitted_version = ReportVersion.objects.create(
-            report=existing_report,
-            is_latest_submitted=True,
-            status=ReportVersion.ReportVersionStatus.Submitted,
-        )
-
-        new_report_version_id = ReportService.create_report(operation.id, 2002)
-        self.assertNotEqual(new_report_version_id, submitted_version.id)
-
-        # Verify that the new version is in Draft status.
-        new_version = ReportVersion.objects.get(id=new_report_version_id)
-        self.assertEqual(new_version.status, "Draft")
 
     def test_creates_report_with_right_data(self):
         with (

@@ -8,7 +8,7 @@ from registration.models import RegulatedProduct
 from reporting.api.permissions import check_operation_ownership
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from reporting.schema.report import StartReportIn
+from reporting.schema.report import StartReportIn, CreateReportVersionIn
 from service.report_service import ReportService
 from service.report_version_service import ReportVersionService
 from service.reporting_year_service import ReportingYearService
@@ -151,3 +151,18 @@ def get_update_report(request: HttpRequest, version_id: int) -> tuple[Literal[20
 def delete_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportVersionService.delete_report_version(version_id)
     return 200, {"success": response_data}
+
+
+@router.post(
+    "/report/{report_id}/create-report-version",
+    response={200: int, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Creates a report version for an existing report.""",
+    auth=compose_auth(authorize("approved_industry_user"), check_operation_ownership()),
+)
+def create_report_version(
+    request: HttpRequest, report_id: int, payload: CreateReportVersionIn
+) -> Tuple[Literal[200], int]:
+    report = ReportService.get_report_by_id(report_id)
+    report_version = ReportVersionService.create_report_version(report)
+    return 200, report_version.id
