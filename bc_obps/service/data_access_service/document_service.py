@@ -3,7 +3,7 @@ from uuid import UUID
 from common.lib import pgtrigger
 from registration.models import Document, DocumentType
 from django.core.files.base import ContentFile
-from django.core.files.storage import storages
+from django.core.files.storage import default_storage
 
 
 class DocumentDataAccessService:
@@ -35,16 +35,16 @@ class DocumentDataAccessService:
     def check_document_file_status(cls, document: Document) -> Document.FileStatus:
         file_name = document.file.name
 
-        clean_storage = storages["clean"]
-        quarnatined_storage = storages["quarantined"]
-
-        if clean_storage.exists(file_name):
-            document.status = Document.FileStatus.CLEAN
-        elif quarnatined_storage.exists(file_name):
-            document.status = Document.FileStatus.QUARANTINED
+        file_bucket = default_storage.get_file_bucket(file_name)  # type: ignore
+        if file_bucket:
+            if file_bucket == "Quarantined":
+                document.status = Document.FileStatus.QUARANTINED
+            elif file_bucket == "Clean":
+                document.status = Document.FileStatus.CLEAN
+            else:
+                return Document.FileStatus.UNSCANNED
         else:
-            # The file is not in any of the quarantined or clean buckets
-            return Document.FileStatus.UNSCANNED
+            raise FileNotFoundError(f"File {file_name} not found in storage.")
 
         # Ignore the audit columns triggers, we're not changing anything about the document itself
         with pgtrigger.ignore("registration.Document:set_updated_audit_columns"):
