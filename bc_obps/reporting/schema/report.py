@@ -9,3 +9,11 @@ class StartReportIn(Schema):
 
     operation_id: UUID
     reporting_year: int
+
+
+class CreateReportVersionIn(Schema):
+    """
+    Schema for the create_report_version endpoint request
+    """
+
+    operation_id: UUID
