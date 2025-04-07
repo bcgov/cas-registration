@@ -146,6 +146,9 @@ export const additionalReportingDataUiSchema = {
     "ui:order": ["electricity_generated"],
     electricity_generated: {
       "ui:placeholder": "Enter amount of electricity generated",
+      "ui:options": {
+        displayUnit: "GWh",
+      },
     },
   },
 };
