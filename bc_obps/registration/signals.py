@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Dict, List, Union
 from django.core.exceptions import ValidationError
 from django.db.models.signals import m2m_changed, pre_save
@@ -9,6 +10,8 @@ from registration.models.event.transfer_event import TransferEvent
 
 # List of models to apply the same signal handling logic
 event_models: List[Any] = [ClosureEvent, RestartEvent, TemporaryShutdownEvent, TransferEvent]
+
+logger = logging.getLogger(__name__)
 
 
 def validate_event_constraints(

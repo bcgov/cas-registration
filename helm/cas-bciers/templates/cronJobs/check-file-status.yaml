@@ -7,23 +7,23 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   suspend: false
-  schedule: "*/5 * * * *"
+  schedule: "*/30 * * * *"
   jobTemplate:
     spec:
       backoffLimit: 0
-      activeDeadlineSeconds: 600
+      activeDeadlineSeconds: 1800
       template:
         metadata:
           labels: {{ include "cas-bciers.labels" . | nindent 12 }}
             component: backend
         spec:
-          activeDeadlineSeconds: 600
+          activeDeadlineSeconds: 1800
           restartPolicy: Never
           serviceAccountName: deployer
           containers:
           - name: check-document-file-status
             image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
-            imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+            imagePullPolicy: IfNotPresent
             env:
               {{- include "cas-bciers.backendEnvVars" . | nindent 14 }}
               - name: GOOGLE_APPLICATION_CREDENTIALS
@@ -34,14 +34,17 @@ spec:
               - -c
               - |
                 set -euo pipefail;
-                flock -w 45 --verbose /data/locks/.check.lock \
-                .venv/bin/python manage.py check_document_file_status
+                touch /data/log/cron.log
+                (crontab -l ; echo "* * * * * flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status >> /data/log/cron.log 2>&1") | crontab
+                cron && timeout --preserve-status 1790s tail -F /var/log/cron.log
             volumeMounts:
               - name: check-document-file-status-lock
                 mountPath: /data/locks
               - mountPath: "/attachment-credentials"
                 name: gcs-attachment-credentials
                 readOnly: true
+              - name: logs
+                mountPath: /data/log
           volumes:
             - name: check-document-file-status-lock
               persistentVolumeClaim:
@@ -52,3 +55,5 @@ spec:
                 items:
                 - key: credentials.json
                   path: attachment-credentials.json
+            - name: logs
+              emptyDir: {}
