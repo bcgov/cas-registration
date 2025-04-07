@@ -2,8 +2,9 @@ import { GridColDef } from "@mui/x-data-grid";
 import InternalUserRoleColumnCell from "@/administration/app/components/users/cells/InternalUserRoleColumnCell";
 import InternalUserStatusColumnCell from "@/administration/app/components/users/cells/InternalUserStatusColumnCell";
 import ActionColumnCell from "@/administration/app/components/users/cells/ActionColumnCell";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
-const accessRequestColumns = () => {
+const accessRequestColumns = (currentUserRole: FrontEndRoles) => {
   const columns: GridColDef[] = [
     {
       field: "name",
@@ -36,7 +37,11 @@ const accessRequestColumns = () => {
       headerAlign: "center",
       width: 140,
     },
-    {
+  ];
+
+  if (currentUserRole === FrontEndRoles.CAS_ADMIN) {
+    // Add action column (contains buttons to edit user roles)           only if user is cas_admin
+    columns.push({
       field: "actions",
       headerName: "Approve Access?",
       sortable: false,
@@ -44,8 +49,8 @@ const accessRequestColumns = () => {
       align: "center",
       headerAlign: "center",
       width: 260,
-    },
-  ];
+    });
+  }
 
   return columns;
 };

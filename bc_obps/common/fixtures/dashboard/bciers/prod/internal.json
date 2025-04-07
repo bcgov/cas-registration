@@ -77,8 +77,7 @@
             "links": [
               {
                 "title": "Access Requests",
-                "href": "/administration/users/",
-                "allowedRoles": ["cas_admin"]
+                "href": "/administration/users/"
               },
               {
                 "title": "Invite User (by Email)",

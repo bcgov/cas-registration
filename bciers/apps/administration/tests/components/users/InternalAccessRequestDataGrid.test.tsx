@@ -65,7 +65,7 @@ describe("Access Requests DataGrid", () => {
     });
   });
 
-  it("renders Access Requests component with NO DATA", async () => {
+  it("renders Internal Access Requests component with NO DATA", async () => {
     render(<InternalAccessRequestDataGrid initialData={{ rows: [] }} />);
     expect(screen.getByRole("grid")).toBeVisible();
     expect(screen.getByText(/No records found/i)).toBeVisible();
@@ -79,7 +79,33 @@ describe("Access Requests DataGrid", () => {
       screen.getByRole("columnheader", { name: "Approve Access?" }),
     ).toBeVisible();
   });
-  it("renders Access Requests component with DATA", async () => {
+
+  it("renders Access Requests component with DATA for readonly roles (cas_analyst, cas_view_only, cas_director)", async () => {
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_analyst",
+          email: "myemail@email.com",
+        },
+      },
+    });
+    render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
+    expect(
+      screen.queryByRole("columnheader", { name: "Approve Access?" }),
+    ).not.toBeInTheDocument();
+
+    // spot checking a row
+    const thirdRow = screen.getAllByRole("row")[3];
+    expect(within(thirdRow).getByText(/Pending Polly/i)).toBeVisible();
+    expect(within(thirdRow).getByText(/cas_pending@email.com/i)).toBeVisible();
+    // this tests the role column doesn't have a dropdown (two Pendings because one is the role and the other the status)
+    expect(within(thirdRow).getAllByText("Pending")).toHaveLength(2);
+    expect(
+      within(thirdRow).queryByTestId("ArrowDropDownIcon"),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders Access Requests component with DATA for edit roles (cas_admin)", async () => {
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
 
     // completely checking the first row

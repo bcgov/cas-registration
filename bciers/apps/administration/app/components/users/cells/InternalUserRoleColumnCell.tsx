@@ -1,9 +1,11 @@
+"use client";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import { formatRole, inferStatus } from "./ActionColumnCell";
 import { InternalAccessRequestGridRenderCellParams } from "../types";
-import { Status } from "@bciers/utils/src/enums";
+import { FrontEndRoles, Status } from "@bciers/utils/src/enums";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 const InternalUserRoleColumnCell = (
   params: InternalAccessRequestGridRenderCellParams,
@@ -11,6 +13,7 @@ const InternalUserRoleColumnCell = (
   const {
     row: { role, id, archived_at: archivedAt },
   } = params;
+  const currentUserRole = useSessionRole();
 
   const status = params?.row.status || inferStatus(role, archivedAt);
 
@@ -24,7 +27,8 @@ const InternalUserRoleColumnCell = (
     ]);
   };
 
-  if (status !== Status.PENDING) return <span>{formatRole(role)}</span>;
+  if (currentUserRole !== FrontEndRoles.CAS_ADMIN || status !== Status.PENDING)
+    return <span>{formatRole(role)}</span>;
 
   return (
     <FormControl

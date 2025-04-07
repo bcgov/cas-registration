@@ -22,7 +22,7 @@ from typing import List
     response={200: List[InternalUserListOut], custom_codes_4xx: Message},
     tags=USER_TAGS,
     description="""Retrieves the list of internal users""",
-    auth=authorize("cas_admin"),
+    auth=authorize("authorized_irc_user"),
 )
 def get_internal_users(request: HttpRequest) -> Tuple[Literal[200], QuerySet[User]]:
     return 200, UserDataAccessService.get_internal_users_including_archived()
