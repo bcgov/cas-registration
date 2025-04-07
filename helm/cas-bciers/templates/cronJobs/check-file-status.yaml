@@ -36,7 +36,7 @@ spec:
                 set -euo pipefail;
                 touch /data/log/cron.log
                 (crontab -l ; echo "* * * * * flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status >> /data/log/cron.log 2>&1") | crontab
-                cron && tail -f /var/log/cron.log
+                cron && timeout --preserve-status 1790s tail -F /var/log/cron.log
             volumeMounts:
               - name: check-document-file-status-lock
                 mountPath: /data/locks
