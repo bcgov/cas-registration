@@ -36,7 +36,7 @@ const UserOperatorReviewForm = ({
           title: "Operation Information",
           component: (
             <OperatorForm
-              showCancelButton={false}
+              showCancelOrBackButton={false}
               showTasklist={false}
               schema={operatorSchema}
               formData={formData}
