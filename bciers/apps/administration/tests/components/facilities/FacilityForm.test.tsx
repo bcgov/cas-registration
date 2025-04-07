@@ -315,9 +315,9 @@ const assertFormPost = async (
   actionHandler.mockReturnValueOnce(response);
 
   // Find and click the submit button
-  const submitButton = screen.getByRole("button", { name: /submit/i });
+  const saveButton = screen.getByRole("button", { name: /save/i });
   act(() => {
-    userEvent.click(submitButton);
+    userEvent.click(saveButton);
   });
 
   // Add some delay to allow async processes to complete
@@ -343,9 +343,9 @@ const assertFormPost = async (
 // ⛏️ Helper function to simulate form PUT submission and assert the result
 const assertFormPut = async (): Promise<void> => {
   // Submit valid form data
-  const submitButton = screen.getByRole("button", { name: /submit/i });
+  const saveButton = screen.getByRole("button", { name: /save/i });
   act(() => {
-    userEvent.click(submitButton);
+    userEvent.click(saveButton);
   });
   actionHandler.mockReturnValue({ error: null });
   await waitFor(() => {
@@ -399,8 +399,8 @@ describe("FacilityForm component", () => {
       screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
     ).toHaveValue(null);
     // submit button
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    expect(submitButton).toBeEnabled();
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    expect(saveButton).toBeEnabled();
   });
   it("renders the empty LFO facility form when creating a new facility", async () => {
     const { container } = render(
@@ -424,8 +424,8 @@ describe("FacilityForm component", () => {
     );
 
     // submit button
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    expect(submitButton).toBeEnabled();
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    expect(saveButton).toBeEnabled();
   });
   it("loads existing readonly SFO form data", async () => {
     const { container } = render(
@@ -556,9 +556,9 @@ describe("FacilityForm component", () => {
         isCreating
       />,
     );
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const saveButton = screen.getByRole("button", { name: /save/i });
     act(() => {
-      submitButton.click();
+      saveButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
 
@@ -568,7 +568,7 @@ describe("FacilityForm component", () => {
     );
     act(() => {
       year.click();
-      submitButton.click();
+      saveButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
   });
@@ -588,8 +588,8 @@ describe("FacilityForm component", () => {
 
     const editButton = screen.getByRole("button", { name: "Edit" });
     fireEvent.click(editButton);
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
     expect(screen.getAllByText(/Required field/i)).toHaveLength(1); // name
     expect(screen.getAllByText(/Format should be A1A 1A1/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
@@ -637,8 +637,8 @@ describe("FacilityForm component", () => {
       { target: { value: 6 } },
     );
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
 
     // expect to see validation error for starting date
     expect(screen.getAllByText(/Starting Date must be between/i)).toHaveLength(
@@ -653,7 +653,7 @@ describe("FacilityForm component", () => {
       screen.getByLabelText(/Date of facility starting operations+/i),
       "202",
     );
-    fireEvent.click(submitButton);
+    fireEvent.click(saveButton);
 
     // expect to see format error for starting date
     expect(
@@ -765,7 +765,7 @@ describe("FacilityForm component", () => {
 
       // Buttons
       expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /back/i })).toBeEnabled();
 
       const editButton = screen.getByRole("button", { name: /edit/i });
       act(() => {
@@ -773,7 +773,7 @@ describe("FacilityForm component", () => {
       });
 
       // Buttons
-      expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /save/i })).toBeEnabled();
       expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
 
       // Edit form fields
@@ -799,7 +799,7 @@ describe("FacilityForm component", () => {
 
       // Buttons
       expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
-      expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /back/i })).toBeEnabled();
 
       const editButton = screen.getByRole("button", { name: /edit/i });
       act(() => {
@@ -807,7 +807,7 @@ describe("FacilityForm component", () => {
       });
 
       // Buttons
-      expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
+      expect(screen.getByRole("button", { name: /save/i })).toBeEnabled();
       expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
       // Edit form fields
       await editFormFields(facilitiesLfoSchema);
@@ -816,7 +816,7 @@ describe("FacilityForm component", () => {
       await assertFormPut();
     },
   );
-  it("redirects to the operation's facilities grid on cancel", async () => {
+  it("redirects to the operation's facilities grid on back", async () => {
     render(
       <FacilityForm
         schema={facilitiesSfoSchema}
@@ -826,10 +826,10 @@ describe("FacilityForm component", () => {
       />,
     );
 
-    const cancelButton = screen.getByRole("button", { name: /cancel/i });
+    const backButton = screen.getByRole("button", { name: /back/i });
 
     // Simulate the user clicking the cancel button
-    fireEvent.click(cancelButton);
+    fireEvent.click(backButton);
 
     // Assert that router.push was called with the correct URL
     expect(mockReplace).toHaveBeenCalledWith(urlOperationFacilities);
