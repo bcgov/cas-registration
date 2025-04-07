@@ -13,6 +13,8 @@ import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verific
 import { handleVerificationData } from "@reporting/src/app/utils/verification/handleVerificationData";
 import { OperationTypes } from "@bciers/utils/src/enums";
 import { NavigationInformation } from "../taskList/types";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import { infoNote } from "@reporting/src/data/jsonSchema/verification/supplementaryReportNote";
 // TEMPORARY: remmed to support #607
 // import { mergeVerificationData } from "@reporting/src/app/utils/verification/mergeVerificationData";
 
@@ -22,6 +24,7 @@ interface Props {
   verificationSchema: RJSFSchema;
   initialData: any;
   navigationInformation: NavigationInformation;
+  isSupplementaryReport: boolean;
 }
 
 export default function VerificationForm({
@@ -30,6 +33,7 @@ export default function VerificationForm({
   verificationSchema,
   initialData,
   navigationInformation,
+  isSupplementaryReport,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<string[]>();
@@ -91,8 +95,28 @@ export default function VerificationForm({
       steps={navigationInformation.headerSteps}
       initialStep={navigationInformation.headerStepIndex}
       taskListElements={navigationInformation.taskList}
-      schema={verificationSchema}
-      uiSchema={verificationUiSchema}
+      schema={
+        isSupplementaryReport
+          ? {
+              ...verificationSchema,
+              properties: {
+                ...verificationSchema.properties,
+                info_note: { type: "object" },
+              },
+            }
+          : verificationSchema
+      }
+      uiSchema={
+        isSupplementaryReport
+          ? {
+              ...verificationUiSchema,
+              info_note: {
+                "ui:FieldTemplate": TitleOnlyFieldTemplate,
+                "ui:title": infoNote(),
+              },
+            }
+          : verificationUiSchema
+      }
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}

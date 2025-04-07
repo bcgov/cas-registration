@@ -8,6 +8,7 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { extendVerificationData } from "@reporting/src/app/utils/verification/extendVerificationData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
 // import { verificationSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 export default async function VerificationPage({
@@ -24,6 +25,7 @@ export default async function VerificationPage({
 
   // 🚀 Fetch the list of facilities associated with the specified version ID
   const facilityList = await getReportFacilityList(version_id);
+  const isSupplementaryReport = await getIsSupplementaryReport(version_id);
 
   // Create schema with dynamic facility list for operation type
   const verificationSchema = createVerificationSchema(
@@ -51,6 +53,9 @@ export default async function VerificationPage({
         verificationSchema={verificationSchema}
         initialData={transformedData}
         navigationInformation={navInfo}
+        isSupplementaryReport={
+          isSupplementaryReport.is_supplementary_report_version
+        }
       />
     </>
   );

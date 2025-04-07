@@ -118,6 +118,7 @@ const sharedUiSchema: UiSchema = {
  * Shared ui:order for SFO and LFO schemas
  */
 const sharedUIOrder = [
+  "info_note",
   "verification_body_name",
   "accredited_by",
   // "scope_of_verification",
