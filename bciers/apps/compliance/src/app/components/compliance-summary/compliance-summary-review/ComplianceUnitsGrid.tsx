@@ -31,7 +31,6 @@ export const ComplianceUnitsGrid = ({
   );
 
   const handleApplyComplianceUnits = () => {
-    console.log(complianceSummaryId);
     if (complianceSummaryId) {
       router.push(
         `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
