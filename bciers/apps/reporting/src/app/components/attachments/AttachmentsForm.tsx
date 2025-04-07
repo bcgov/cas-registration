@@ -56,7 +56,7 @@ const AttachmentsForm: React.FC<Props> = ({
       )
     ) {
       setValidationErrors({
-        verification_statement: "Must be present",
+        verification_statement: "Verification statement is required",
       });
       return false;
     } else {
