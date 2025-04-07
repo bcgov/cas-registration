@@ -15,6 +15,7 @@ class TestOperationBoroBcghgidValidator:
         report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
             bc_obps_regulated_operation_id=None,
+            registration_purpose="New Entrant Operation",
         )
 
         result = operation_boroid_presence.validate(report_operation.report_version)
@@ -29,6 +30,7 @@ class TestOperationBoroBcghgidValidator:
         report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
             bc_obps_regulated_operation_id="",
+            registration_purpose="New Entrant Operation",
         )
 
         result = operation_boroid_presence.validate(report_operation.report_version)
@@ -39,11 +41,23 @@ class TestOperationBoroBcghgidValidator:
             )
         }
 
-    def test_succeeds_if_boro_and_bcghgid(self):
+    @pytest.mark.parametrize(
+        "reg_purpose, boro_required",
+        [
+            ("Reporting Operation", False),
+            ("OBPS Regulated Operation", True),
+            ("Opted-in Operation", True),
+            ("New Entrant Operation", True),
+            ("Electricity Import Operation", False),
+            ("Potential Reporting Operation", False),
+        ],
+    )
+    def test_succeeds_if_boro_id_required(self, reg_purpose, boro_required):
         report_operation = make_recipe(
             "reporting.tests.utils.report_operation",
             bc_obps_regulated_operation_id="british columbia",
+            registration_purpose=reg_purpose,
         )
 
         result = operation_boroid_presence.validate(report_operation.report_version)
-        assert not result
+        assert bool(result) == boro_required
