@@ -466,6 +466,7 @@ class ReportSupplementaryVersionService:
             emission_allocation_to_copy.pk = None
             emission_allocation_to_copy._state.adding = True
             emission_allocation_to_copy.report_version = new_report_version
+            emission_allocation_to_copy.facility_report = new_facility_report
             emission_allocation_to_copy.save()
 
         # Retrieve ReportProduct entries for the old facility report.
