@@ -324,8 +324,8 @@ describe("OperatorForm component", () => {
         /Does this operator have one or more parent company/i,
       ),
     ).not.toBeChecked();
-    expectButton("Submit");
-    expectButton("Cancel");
+    expectButton("Save");
+    expectButton("Back");
   });
   it("does not allow new operator form submission if there are validation errors", async () => {
     render(
@@ -336,11 +336,11 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const saveButton = screen.getByRole("button", { name: /save/i });
 
     // Wrap the click event in act()
     act(() => {
-      submitButton.click();
+      saveButton.click();
     });
 
     // Assert on the validation errors
@@ -366,9 +366,9 @@ describe("OperatorForm component", () => {
     actionHandler.mockReturnValueOnce(res);
 
     // Submit the form
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const saveButton = screen.getByRole("button", { name: /save/i });
     act(() => {
-      submitButton.click();
+      saveButton.click();
     });
 
     // Ensure actionHandler is called with the correct arguments
@@ -409,11 +409,11 @@ describe("OperatorForm component", () => {
 
     // Submit
     actionHandler.mockReturnValueOnce(response);
-    const submitButton = screen.getByRole("button", {
-      name: /submit/i,
+    const saveButton = screen.getByRole("button", {
+      name: /save/i,
     });
     act(() => {
-      submitButton.click();
+      saveButton.click();
     });
 
     expect(actionHandler).toHaveBeenNthCalledWith(
@@ -535,8 +535,8 @@ describe("OperatorForm component", () => {
     await userEvent.type(screen.getByLabelText(/tax id number+/i), "edit");
 
     // SUBMIT
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-    userEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: /save/i });
+    userEvent.click(saveButton);
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
@@ -727,7 +727,7 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
   it("calls the router.back function if user is internal", async () => {
@@ -738,7 +738,7 @@ describe("OperatorForm component", () => {
         isInternalUser={true}
       />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterBack).toHaveBeenCalledTimes(1);
   });
   it("calls the router.push function if user is not internal and is not creating", async () => {
@@ -750,7 +750,7 @@ describe("OperatorForm component", () => {
         isInternalUser={false}
       />,
     );
-    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: /back/i }));
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
   });
 });

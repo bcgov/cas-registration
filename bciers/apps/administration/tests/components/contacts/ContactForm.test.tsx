@@ -140,8 +140,8 @@ describe("ContactForm component", () => {
     checkInlineMessage();
 
     // Buttons
-    expect(screen.getByRole("button", { name: /submit/i })).toBeEnabled();
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /save/i })).toBeEnabled();
+    expect(screen.getByRole("button", { name: /back/i })).toBeEnabled();
   });
   it("loads existing readonly contact form data for an internal user", async () => {
     useSession.mockReturnValue({
@@ -215,9 +215,9 @@ describe("ContactForm component", () => {
         isCreating
       />,
     );
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const saveButton = screen.getByRole("button", { name: /save/i });
     act(() => {
-      submitButton.click();
+      saveButton.click();
     });
     expect(screen.getAllByText(/Required field/i)).toHaveLength(9);
   });
@@ -245,7 +245,7 @@ describe("ContactForm component", () => {
 
       await fillContactForm();
       // Submit
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
       await waitFor(() => {
         expect(actionHandler).toHaveBeenNthCalledWith(
@@ -332,7 +332,7 @@ describe("ContactForm component", () => {
       await userEvent.type(screen.getByLabelText(/Postal Code+/i), "H0H 0H0");
 
       // Submit
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
       // assert first invocation: POST
       expect(actionHandler).toHaveBeenNthCalledWith(
@@ -375,7 +375,7 @@ describe("ContactForm component", () => {
       actionHandler.mockReturnValueOnce(response);
 
       // Submit
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
       // assert second invocation: PUT
       expect(actionHandler).toHaveBeenNthCalledWith(
@@ -428,7 +428,7 @@ describe("ContactForm component", () => {
     actionHandler.mockReturnValueOnce(response);
 
     // Submit
-    await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
 
     expect(actionHandler).toHaveBeenNthCalledWith(
       1,
