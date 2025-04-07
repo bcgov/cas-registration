@@ -19,17 +19,21 @@ class TestReportsEndpoint(CommonTestSetup):
     endpoint_under_test = "/api/reporting/create-report"
 
     def send_authorized_post_request(
-        self, request_data: dict[str, Any], operation: Operation | None = None
+        self, request_data: dict[str, Any], operation: Operation | None = None, url: str | None = None
     ) -> HttpResponse:
         operator = operation.operator if operation else operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+
+        # Use self.endpoint_under_test if no URL is provided
+        if url is None:
+            url = self.endpoint_under_test
 
         return TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
             self.content_type,
             json.dumps(request_data),
-            self.endpoint_under_test,
+            url,
         )
 
     def test_error_if_no_operation_exists(self):
@@ -145,3 +149,69 @@ class TestReportsEndpoint(CommonTestSetup):
             ),
         )
         mock_update.assert_called_once_with(report_operation.report_version_id)
+
+    @patch("service.report_version_service.ReportVersionService.delete_report_version")
+    def test_returns_data_as_provided_by_delete_report_version(self, mock_delete_report_version: MagicMock):
+        # Arrange: Set up the expected value from the service
+        expected_success = True
+        mock_delete_report_version.return_value = expected_success
+        expected_response = {"success": expected_success}
+
+        # Use report version ID from test setup
+        report_version = baker.make_recipe("reporting.tests.utils.report_version")
+        version_id = report_version.id
+
+        # Act: Make DELETE request to the endpoint
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+        response = TestUtils.mock_delete_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("delete_report_version", kwargs={"version_id": version_id}),
+        )
+
+        # Assert: Check the response status and data
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service method was called with the correct report_version_id
+        mock_delete_report_version.assert_called_once_with(version_id)
+
+    def test_create_report_version_validates_operation_ownership(self):
+        with patch("common.permissions.check_permission_for_role") as mock_check_permissions, patch(
+            "reporting.api.permissions._validate_operation_ownership"
+        ) as mock_validate_operation_ownership:
+            mock_check_permissions.return_value = True
+
+            endpoint = custom_reverse_lazy("create_report_version", kwargs={'report_id': 1})
+            call_endpoint(TestUtils.client, "post", endpoint, "industry_user")
+
+            mock_validate_operation_ownership.assert_called_once()
+
+    @patch("service.report_version_service.ReportVersionService.create_report_version")
+    @patch("service.report_service.ReportService.get_report_by_id")
+    def test_returns_data_as_provided_by_create_report_version(
+        self, mock_get_report_by_id: MagicMock, mock_create_report_version: MagicMock
+    ):
+        # Arrange: create report and report version
+        report = baker.make_recipe("reporting.tests.utils.report")
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
+
+        # Set up the expected responses from the service methods
+        mock_get_report_by_id.return_value = report
+        mock_create_report_version.return_value = report_version
+        expected_response = report_version.id
+
+        # Act: make a POST request to the endpoint
+        request_data = {
+            "operation_id": str(report.operation.id),
+        }
+        url = custom_reverse_lazy("create_report_version", kwargs={'report_id': report.id})
+        response = self.send_authorized_post_request(request_data, report.operation, url)
+
+        # Assert: Check the response status and data
+        assert response.status_code == 200
+        assert response.json() == expected_response
+
+        # Verify that the service methods were called with the correct arguments
+        mock_get_report_by_id.assert_called_once_with(report.id)
+        mock_create_report_version.assert_called_once_with(report)

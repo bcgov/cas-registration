@@ -2,23 +2,23 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { createReport } from "@reporting/src/app/utils/createReport";
+import { createReportVersion } from "@reporting/src/app/utils/createReportVersion";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import Button from "@mui/material/Button";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
 const ActionCell = (params: GridRenderCellParams) => {
-  const reportVersionId = params?.row?.report_version_id;
+  const reportId = params?.row?.report_id;
+  let reportVersionId = params?.row?.report_version_id;
   const reportStatus = params?.row?.report_status;
   const router = useRouter();
-  const OperationId = params.row.id;
+  const operationId = params.row.id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
 
-  const handleStartReport = async (
-    operationId: string,
-    reportingYear: number,
-  ): Promise<string> => {
+  // Create a new report
+  const handleStartReport = async (reportingYear: number): Promise<string> => {
     try {
       const response = await createReport(operationId, reportingYear);
       if (response?.error)
@@ -35,14 +35,34 @@ const ActionCell = (params: GridRenderCellParams) => {
     throw new Error(responseError);
   }
 
+  // Create a new report version
+  const handleNewDraftVersion = async (): Promise<string> => {
+    try {
+      const response = await createReportVersion(operationId, reportId);
+      if (response?.error) {
+        setResponseError(
+          `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
+        );
+      }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const handleStartClick = async () => {
-    const reportingYearObj = await getReportingYear();
-    const newReportId = await handleStartReport(
-      OperationId,
-      reportingYearObj.reporting_year,
-    );
-    if (typeof newReportId === "number")
-      router.push(`reports/${newReportId}/review-operation-information`);
+    if (reportId) {
+      // create a new report version
+      reportVersionId = await handleNewDraftVersion();
+    } else {
+      // create a new report
+      const reportingYearObj = await getReportingYear();
+      reportVersionId = await handleStartReport(
+        reportingYearObj.reporting_year,
+      );
+    }
+    if (typeof reportVersionId === "number")
+      router.push(`reports/${reportVersionId}/review-operation-information`);
   };
 
   let buttonText = "Start";
@@ -54,12 +74,10 @@ const ActionCell = (params: GridRenderCellParams) => {
       buttonText = "Continue";
       buttonAction = async () =>
         router.push(`reports/${reportVersionId}/review-operation-information`);
-      buttonDisabled = false;
     } else if (reportStatus === ReportOperationStatus.SUBMITTED) {
       buttonText = "View Details";
       buttonAction = async () =>
         router.push(`reports/${reportVersionId}/review-operation-information`);
-      buttonDisabled = false;
     }
   }
 
@@ -77,6 +95,7 @@ const ActionCell = (params: GridRenderCellParams) => {
       onClick={async () => {
         setHasClicked(true);
         await buttonAction();
+        setHasClicked(false);
       }}
     >
       {buttonText}

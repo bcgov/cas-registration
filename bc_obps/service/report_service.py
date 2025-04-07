@@ -72,6 +72,10 @@ class ReportService:
         report_version = ReportVersionService.create_report_version(report)
         return report_version.id
 
+    @staticmethod
+    def get_report_by_id(report_id: int) -> Report:
+        return Report.objects.get(id=report_id)
+
     @classmethod
     def get_report_operation_by_version_id(cls, report_version_id: int) -> dict:
         report_operation = ReportOperation.objects.get(report_version__id=report_version_id)
