@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { RJSFSchema } from "@rjsf/utils";
 import { getContacts } from "@bciers/actions/api";
 import { getContact } from "@bciers/actions/api";
@@ -17,6 +17,7 @@ import { actionHandler } from "@bciers/actions";
 import { createPersonResponsibleSchema } from "@reporting/src/app/components/operations/personResponsible/createPersonResponsibleSchema";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { AddressErrorWidget } from "@reporting/src/data/jsonSchema/personResponsibleWidgets";
+import SnackBar from "@bciers/components/form/components/SnackBar";
 
 interface Props {
   versionId: number;
@@ -39,6 +40,7 @@ const PersonResponsibleForm = ({
   const [selectedContactAddressError, setSelectedContactAddressError] =
     useState<string>();
   const [contactFormData, setContactFormData] = useState<any>();
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [formData, setFormData] = useState({
     person_responsible: personResponsible
       ? `${personResponsible.first_name} ${personResponsible.last_name}`
@@ -127,6 +129,7 @@ const PersonResponsibleForm = ({
   const handleSync = async () => {
     const updatedContacts = await getContacts();
     setContacts(updatedContacts);
+    setIsSnackbarOpen(true);
 
     // If contact is selected, update form fields
     if (selectedContactId) {
@@ -185,6 +188,11 @@ const PersonResponsibleForm = ({
         formData={formData}
         onChange={handleContactSelect}
         onSubmit={handleSave}
+      />
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message="Changes synced successfully"
+        setIsSnackbarOpen={setIsSnackbarOpen}
       />
     </>
   );
