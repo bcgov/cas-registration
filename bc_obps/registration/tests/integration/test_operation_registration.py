@@ -1,8 +1,10 @@
 import pytest
 from django.db.models import Q
 from model_bakery import baker
+from common.lib import pgtrigger
 
 from registration.models import FacilityDesignatedOperationTimeline, Operation
+from registration.models.document import Document
 from registration.tests.constants import MOCK_DATA_URL
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -162,6 +164,14 @@ class TestOperationRegistration(CommonTestSetup):
         self.operation_representative_id = response.json()['id']
         self.operation.refresh_from_db()
 
+    def _set_clean_documents(self):
+        for document in self.operation.documents.all():
+            document.status = Document.FileStatus.CLEAN
+            with pgtrigger.ignore("registration.Document:set_updated_audit_columns"):
+                document.save()  # type: ignore
+
+        self.operation.refresh_from_db()
+
     def _set_registration_submission(self):
         response = TestUtils.mock_patch_with_auth_role(
             self,
@@ -225,6 +235,9 @@ class TestOperationRegistration(CommonTestSetup):
         elif purpose == Operation.Purposes.OPTED_IN_OPERATION:
             #### Opted-In Operation Detail Form ####
             self._set_opted_in_operation_detail()
+
+        # Set all submitted documents to clean
+        self._set_clean_documents()
 
         #### Operation Representative Form ####
         self._set_operation_representative()
