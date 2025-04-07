@@ -11,16 +11,10 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     errors = {}
 
-    if report_operation.bc_obps_regulated_operation_id is None:
+    if not report_operation.bc_obps_regulated_operation_id:
         errors["operation_boro_id"] = ReportValidationError(
             Severity.ERROR,
             "Report is missing BORO ID, please make sure one has been assigned to your operation.",
-        )
-
-    if report_operation.operation_bcghgid is None:
-        errors["operation_bcghgid"] = ReportValidationError(
-            Severity.ERROR,
-            "Report is missing a BCGHGID for the operation, please make sure one has been assigned.",
         )
 
     return errors

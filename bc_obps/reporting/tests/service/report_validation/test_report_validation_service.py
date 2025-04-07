@@ -12,8 +12,7 @@ class TestReportValidationService:
         plugin_names = [p.__name__ for p in ReportValidationService.validation_plugins]
         assert plugin_names == [
             "reporting.service.report_validation.validators.mandatory_verification_statement",
-            "reporting.service.report_validation.validators.operation_boroid_bcghgid_presence",
-            "reporting.service.report_validation.validators.facility_bcghgid_presence",
+            "reporting.service.report_validation.validators.operation_boroid_presence",
         ]
 
     def test_validates_the_report_with_the_registered_plugins(self):
