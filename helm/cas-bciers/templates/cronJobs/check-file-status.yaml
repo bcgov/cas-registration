@@ -34,17 +34,13 @@ spec:
               - -c
               - |
                 set -euo pipefail;
-                touch /data/log/cron.log
-                (crontab -l ; echo "* * * * * flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status >> /data/log/cron.log 2>&1") | crontab
-                cron && timeout --preserve-status 1790s tail -F /var/log/cron.log
+                flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status
             volumeMounts:
               - name: check-document-file-status-lock
                 mountPath: /data/locks
               - mountPath: "/attachment-credentials"
                 name: gcs-attachment-credentials
                 readOnly: true
-              - name: logs
-                mountPath: /data/log
           volumes:
             - name: check-document-file-status-lock
               persistentVolumeClaim:
@@ -55,5 +51,3 @@ spec:
                 items:
                 - key: credentials.json
                   path: attachment-credentials.json
-            - name: logs
-              emptyDir: {}
