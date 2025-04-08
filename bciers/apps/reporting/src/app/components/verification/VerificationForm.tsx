@@ -8,13 +8,9 @@ import {
   cancelUrlReports,
 } from "@reporting/src/app/utils/constants";
 import { actionHandler } from "@bciers/actions";
-import { lfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
-import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import { handleVerificationData } from "@reporting/src/app/utils/verification/handleVerificationData";
-import { OperationTypes } from "@bciers/utils/src/enums";
 import { NavigationInformation } from "../taskList/types";
-import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { infoNote } from "@reporting/src/data/jsonSchema/verification/supplementaryReportNote";
+import { createVerificationUISchema } from "@reporting/src/app/components/verification/createVerificationUISchema";
 // TEMPORARY: remmed to support #607
 // import { mergeVerificationData } from "@reporting/src/app/utils/verification/mergeVerificationData";
 
@@ -37,10 +33,6 @@ export default function VerificationForm({
 }: Props) {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<string[]>();
-
-  const verificationUiSchema =
-    operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
-
   // 🛠️ Function to handle form changes affecting ui schema
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -51,6 +43,10 @@ export default function VerificationForm({
     // 🔄 Update the form data state with the modified data
     setFormData(updatedData);
   };
+  const uiSchema = createVerificationUISchema(
+    operationType,
+    isSupplementaryReport,
+  );
 
   // 🛠️ Function to handle form submit
   const handleSubmit = async () => {
@@ -95,28 +91,8 @@ export default function VerificationForm({
       steps={navigationInformation.headerSteps}
       initialStep={navigationInformation.headerStepIndex}
       taskListElements={navigationInformation.taskList}
-      schema={
-        isSupplementaryReport
-          ? {
-              ...verificationSchema,
-              properties: {
-                ...verificationSchema.properties,
-                info_note: { type: "object" },
-              },
-            }
-          : verificationSchema
-      }
-      uiSchema={
-        isSupplementaryReport
-          ? {
-              ...verificationUiSchema,
-              info_note: {
-                "ui:FieldTemplate": TitleOnlyFieldTemplate,
-                "ui:title": infoNote(),
-              },
-            }
-          : verificationUiSchema
-      }
+      schema={verificationSchema}
+      uiSchema={uiSchema}
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}
