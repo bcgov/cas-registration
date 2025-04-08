@@ -8,13 +8,13 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
-import { baseUrlSetup } from "@/e2e/utils/constants";
+import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import {
   DataTestID,
   E2EValue,
   FormField,
   MessageTextResponse,
-} from "@/e2e/utils/enums";
+} from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 
 // 🛠️ Function: analyze the accessibility of the page
