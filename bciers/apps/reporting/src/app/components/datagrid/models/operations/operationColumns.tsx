@@ -14,6 +14,7 @@ const UpdatedAtCell = ({ row, value }: GridRenderCellParams) => {
   return value ? formatTimestamp(value) : "";
 };
 const SubmittedByCell = ({ row }: GridRenderCellParams) => {
+  console.log("row", row);
   return !row.report_status || row.report_status === ReportOperationStatus.DRAFT
     ? ""
     : row.submitted_by;
@@ -28,7 +29,7 @@ const operationColumns = (): GridColDef[] => {
       width: 300,
     },
     {
-      field: "updated_at",
+      field: "report_updated_at",
       headerName: "Date of submission",
       sortable: false,
       renderCell: UpdatedAtCell,
