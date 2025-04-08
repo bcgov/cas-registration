@@ -21,7 +21,7 @@ def reverse_unit(apps, schema_monitor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0080_V2_2_0"),
+        ("reporting", "0082_reportemissionallocation_and_more"),
     ]
 
     operations = [migrations.RunPython(update_unit, reverse_unit)]
