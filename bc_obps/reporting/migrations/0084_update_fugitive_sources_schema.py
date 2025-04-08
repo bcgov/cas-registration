@@ -33,7 +33,7 @@ def reload_other_fugitive_sources_schema(apps, schema_monitor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0082_reportemissionallocation_and_more"),
+        ("reporting", "0083_gsc_fuel_annual_weighted_carbon_content_unit"),
     ]
 
     operations = [migrations.RunPython(reload_other_fugitive_sources_schema)]
