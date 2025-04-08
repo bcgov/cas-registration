@@ -21,7 +21,7 @@ def reload_other_fugitive_sources_schema(apps, schema_monitor):
     SourceType = apps.get_model("reporting", "SourceType")
     Configuration = apps.get_model("reporting", "Configuration")
 
-    ActivitySourceTypeSchema(
+    ActivitySourceTypeSchema.objects.filter(
         activity_id=Activity.objects.get(
             name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
         ).id,
