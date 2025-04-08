@@ -85,7 +85,7 @@ report_version = Recipe(ReportVersion, report=foreign_key(report))
 facility_report = Recipe(
     FacilityReport,
     report_version=foreign_key(report_version),
-    facility=foreign_key(facility),
+    facility=foreign_key(facility, one_to_one=True),
 )
 report_operation = Recipe(ReportOperation, report_version=foreign_key(report_version))
 

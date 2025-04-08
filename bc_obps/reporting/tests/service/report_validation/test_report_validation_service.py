@@ -10,7 +10,10 @@ from reporting.service.report_validation.report_validation_service import (
 class TestReportValidationService:
     def test_initializes_with_the_proper_plugins(self):
         plugin_names = [p.__name__ for p in ReportValidationService.validation_plugins]
-        assert plugin_names == ["reporting.service.report_validation.validators.mandatory_verification_statement"]
+        assert plugin_names == [
+            "reporting.service.report_validation.validators.mandatory_verification_statement",
+            "reporting.service.report_validation.validators.operation_boroid_presence",
+        ]
 
     def test_validates_the_report_with_the_registered_plugins(self):
         original_plugins = ReportValidationService.validation_plugins
