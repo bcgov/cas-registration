@@ -8,11 +8,9 @@ import {
   cancelUrlReports,
 } from "@reporting/src/app/utils/constants";
 import { actionHandler } from "@bciers/actions";
-import { lfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
-import { sfoUiSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 import { handleVerificationData } from "@reporting/src/app/utils/verification/handleVerificationData";
-import { OperationTypes } from "@bciers/utils/src/enums";
 import { NavigationInformation } from "../taskList/types";
+import { createVerificationUISchema } from "@reporting/src/app/components/verification/createVerificationUISchema";
 // TEMPORARY: remmed to support #607
 // import { mergeVerificationData } from "@reporting/src/app/utils/verification/mergeVerificationData";
 
@@ -22,6 +20,7 @@ interface Props {
   verificationSchema: RJSFSchema;
   initialData: any;
   navigationInformation: NavigationInformation;
+  isSupplementaryReport: boolean;
 }
 
 export default function VerificationForm({
@@ -30,13 +29,10 @@ export default function VerificationForm({
   verificationSchema,
   initialData,
   navigationInformation,
+  isSupplementaryReport,
 }: Props) {
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<string[]>();
-
-  const verificationUiSchema =
-    operationType === OperationTypes.SFO ? sfoUiSchema : lfoUiSchema;
-
   // 🛠️ Function to handle form changes affecting ui schema
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -47,6 +43,10 @@ export default function VerificationForm({
     // 🔄 Update the form data state with the modified data
     setFormData(updatedData);
   };
+  const uiSchema = createVerificationUISchema(
+    operationType,
+    isSupplementaryReport,
+  );
 
   // 🛠️ Function to handle form submit
   const handleSubmit = async () => {
@@ -92,7 +92,7 @@ export default function VerificationForm({
       initialStep={navigationInformation.headerStepIndex}
       taskListElements={navigationInformation.taskList}
       schema={verificationSchema}
-      uiSchema={verificationUiSchema}
+      uiSchema={uiSchema}
       formData={formData}
       baseUrl={baseUrlReports}
       cancelUrl={cancelUrlReports}

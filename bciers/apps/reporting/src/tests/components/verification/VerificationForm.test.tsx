@@ -78,6 +78,7 @@ const renderVerificationForm = (operationType: string) => {
           continueUrl: "continue",
         } as any
       }
+      isSupplementaryReport={false}
     />,
   );
 };
