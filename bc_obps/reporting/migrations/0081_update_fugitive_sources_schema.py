@@ -21,15 +21,13 @@ def reload_other_fugitive_sources_schema(apps, schema_monitor):
     SourceType = apps.get_model("reporting", "SourceType")
     Configuration = apps.get_model("reporting", "Configuration")
 
-    ActivitySourceTypeSchema.objects.filter(
+    ActivitySourceTypeSchema(
         activity_id=Activity.objects.get(
-            name="Non-compression and non-processing activities that are oil and gas extraction and gas processing activities"
+            name="Oil and gas extraction and gas processing activities, other than non- compression and non-processing activities"
         ).id,
         source_type_id=SourceType.objects.get(name="Other fugitive sources").id,
         valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
         valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
-        has_unit=True,
-        has_fuel=False,
     ).update(json_schema=og_other_fugitive_sources_schema)
 
 
