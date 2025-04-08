@@ -1,0 +1,5 @@
+SWRS IF_a, IF_b, L_c facilities reported in 2023: 455
+OBPS small/medium/large facilities after import: 453
+
+The 2 facility difference here is because the parent LFO 64899 does not exist in the OBPS operations, so the 2 child facilities
+of this LFO were not imported to OBPS.
