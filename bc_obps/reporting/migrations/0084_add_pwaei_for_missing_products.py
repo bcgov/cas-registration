@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0103_product_units_non_nullable_add_missing_products'),
-        ('reporting', '0082_reportemissionallocation_and_more'),
+        ('reporting', '0083_gsc_fuel_annual_weighted_carbon_content_unit'),
     ]
 
     operations = [
