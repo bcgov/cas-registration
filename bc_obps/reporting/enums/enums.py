@@ -19,6 +19,7 @@ class ReportingTableNames(Enum):
     REPORT_ADDITIONAL_DATA = 'report_additional_data'
     REPORT_ATTACHMENT = 'report_attachment'
     REPORT_EMISSION = 'report_emission'
+    REPORT_EMISSION_ALLOCATION = 'report_emission_allocation'
     REPORT_FUEL = 'report_fuel'
     REPORT_METHODOLOGY = 'report_methodology'
     REPORT_NEW_ENTRANT_EMISSION = 'report_new_entrant_emission'

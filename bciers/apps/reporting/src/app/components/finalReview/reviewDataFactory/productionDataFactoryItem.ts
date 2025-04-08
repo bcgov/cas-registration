@@ -1,5 +1,6 @@
 import { ReviewDataFactoryItem } from "./factory";
 import { getProductionData } from "@bciers/actions/api";
+import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 import { buildProductionDataSchema } from "@reporting/src/data/jsonSchema/productionData";
 
 const productionDataFactoryItem: ReviewDataFactoryItem = async (
@@ -7,11 +8,13 @@ const productionDataFactoryItem: ReviewDataFactoryItem = async (
   facilityId,
 ) => {
   const productionData = await getProductionData(versionId, facilityId);
-
+  const facilityType = (await getFacilityReportDetails(versionId, facilityId))
+    .facility_type;
   const schema: any = buildProductionDataSchema(
     "Jan 1",
     "Dec 31",
     productionData.allowed_products.map((p) => p.name),
+    facilityType,
   );
 
   return [

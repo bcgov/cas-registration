@@ -7,6 +7,7 @@ from reporting.models import (
     ReportAdditionalData,
     ReportAttachment,
     ReportEmission,
+    ReportEmissionAllocation,
     ReportFuel,
     ReportMethodology,
     ReportNewEntrant,
@@ -456,6 +457,18 @@ class ReportSupplementaryVersionService:
         old_facility_report_to_clone: FacilityReport,
         new_facility_report: FacilityReport,
     ) -> None:
+        # Clone the parent ReportEmissionAllocation
+        emission_allocation_to_copy = ReportEmissionAllocation.objects.filter(
+            report_version_id=old_report_version,
+            facility_report=old_facility_report_to_clone,
+        ).first()
+        if emission_allocation_to_copy:
+            emission_allocation_to_copy.pk = None
+            emission_allocation_to_copy._state.adding = True
+            emission_allocation_to_copy.report_version = new_report_version
+            emission_allocation_to_copy.facility_report = new_facility_report
+            emission_allocation_to_copy.save()
+
         # Retrieve ReportProduct entries for the old facility report.
         old_report_products_to_clone = ReportProduct.objects.filter(
             report_version=old_report_version, facility_report=old_facility_report_to_clone
@@ -469,7 +482,6 @@ class ReportSupplementaryVersionService:
             ReportSupplementaryVersionService.clone_report_version_facility_product_emission_allocations(
                 old_report_version=old_report_version,
                 new_report_version=new_report_version,
-                old_facility_report=old_facility_report_to_clone,
                 new_facility_report=new_facility_report,
                 old_report_product_to_clone=old_report_product_to_clone,
                 new_report_product=cloned_report_product,
@@ -479,21 +491,25 @@ class ReportSupplementaryVersionService:
     def clone_report_version_facility_product_emission_allocations(
         old_report_version: ReportVersion,
         new_report_version: ReportVersion,
-        old_facility_report: FacilityReport,
         new_facility_report: FacilityReport,
         old_report_product_to_clone: ReportProduct,
         new_report_product: ReportProduct,
     ) -> None:
         # Retrieve ReportProductEmissionAllocation entries for the old report product.
         old_allocations_to_clone = ReportProductEmissionAllocation.objects.filter(
-            report_version=old_report_version,
-            facility_report=old_facility_report,
+            report_version_id=old_report_version,
             report_product=old_report_product_to_clone,
         )
+        # Retrieve ReportEmissionAllocation
+        new_report_emission_allocation = ReportEmissionAllocation.objects.filter(
+            report_version_id=new_report_version,
+            facility_report=new_facility_report,
+        ).first()
         for old_allocation_to_clone in old_allocations_to_clone:
-            cloned_allocation = copy.deepcopy(old_allocation_to_clone)
-            cloned_allocation.pk = None
-            cloned_allocation.report_version = new_report_version
-            cloned_allocation.facility_report = new_facility_report
-            cloned_allocation.report_product = new_report_product
-            cloned_allocation.save()
+            cloned_product_allocation = copy.deepcopy(old_allocation_to_clone)
+            cloned_product_allocation.pk = None
+            cloned_product_allocation.report_version = new_report_version
+            if new_report_emission_allocation:
+                cloned_product_allocation.report_emission_allocation = new_report_emission_allocation
+            cloned_product_allocation.report_product = new_report_product
+            cloned_product_allocation.save()

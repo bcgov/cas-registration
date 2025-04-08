@@ -87,7 +87,7 @@ export default function ActivityForm({
       ? `&${sourceTypeIds.map((id) => `source_types[]=${id}`).join("&")}`
       : "";
     const schema = await actionHandler(
-      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}${sourceTypeQueryString}`,
+      `reporting/build-form-schema?activity=${currentActivity.id}&report_version_id=${reportVersionId}&facility_id=${facilityId}${sourceTypeQueryString}`,
       "GET",
       "",
     );

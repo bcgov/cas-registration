@@ -14,9 +14,7 @@ from registration.schema import Message
     response={200: str, custom_codes_4xx: Message},
     auth=authorize("approved_authorized_roles"),
 )
-def build_form_schema(
-    request: HttpRequest,
-    activity: int,
-    report_version_id: int,
-) -> Tuple[int, str]:
-    return 200, FormBuilderService.build_form_schema(activity, report_version_id, request.GET.getlist('source_types[]'))
+def build_form_schema(request: HttpRequest, activity: int, report_version_id: int, facility_id: str) -> Tuple[int, str]:
+    return 200, FormBuilderService.build_form_schema(
+        activity, report_version_id, request.GET.getlist('source_types[]'), facility_id
+    )
