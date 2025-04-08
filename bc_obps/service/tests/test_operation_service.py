@@ -24,8 +24,11 @@ from registration.schema import (
     MultipleOperatorIn,
     OperationInformationIn,
 )
+from registration.enums.enums import EmailTemplateNames
+from registration import emails
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.operation_service import OperationService
+from service.email.email_service import EmailService
 from registration.models.multiple_operator import MultipleOperator
 from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL
@@ -33,6 +36,7 @@ from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 
 pytestmark = pytest.mark.django_db
+email_service = EmailService()
 
 
 def set_up_valid_mock_operation(purpose: Operation.Purposes, document_scan_status: Document.FileStatus = "Clean"):
@@ -1069,7 +1073,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_quarantined():
-
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
         )
@@ -1082,7 +1085,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_still_unscanned():
-
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
 
         with pytest.raises(
