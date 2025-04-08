@@ -33,7 +33,8 @@ class ReportProductService:
                 "Data was submitted for a product that is not in the products allowed for this facility. "
                 + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {product_ids}"
             )
-
+        # Do not remove auto-generated report_product record for Fat, Oil & Grease unregulated product
+        product_ids.append(39)
         ReportProduct.objects.filter(
             report_version_id=report_version_id, facility_report__facility_id=facility_id
         ).exclude(product_id__in=product_ids).delete()
@@ -43,7 +44,7 @@ class ReportProductService:
 
             product_id = report_product["product_id"]
 
-            report_product_record, _ = ReportProduct.objects.update_or_create(
+            ReportProduct.objects.update_or_create(
                 report_version_id=report_version_id,
                 facility_report=facility_report,
                 product_id=product_id,
@@ -52,6 +53,25 @@ class ReportProductService:
                     "report_version_id": report_version_id,
                     "facility_report": facility_report,
                     "product_id": product_id,
+                },
+            )
+
+        # Add reportProduct for Fat, Oil & Grease unregulated product for emission allocation only
+        if 39 in ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.values_list(
+            "id", flat=True
+        ):
+            ReportProduct.objects.update_or_create(
+                report_version_id=report_version_id,
+                facility_report=facility_report,
+                product_id=39,
+                defaults={
+                    "report_version_id": report_version_id,
+                    "facility_report": facility_report,
+                    "product_id": 39,
+                    "annual_production": 0,
+                    "production_data_apr_dec": 0,
+                    "production_methodology": "other",
+                    "production_methodology_description": "auto-generated report_product record for unregulated product",
                 },
             )
 
