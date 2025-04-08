@@ -202,23 +202,23 @@ class OperationModelTest(BaseTestCase):
         )
 
     def test_get_operation_representatives(self):
-        operation = baker.make_recipe('registration.tests.utils.operation')
         # a senior officer for this operation
-        baker.make_recipe(
-            'registration.tests.utils.contact',
-            operations_contacts=self.test_object,
+        officer = baker.make(
+            Contact,
             business_role=BusinessRole.objects.get(role_name='Senior Officer'),
         )
         # operation rep for this operation
-        operation_rep = baker.make_recipe(
+        operation_rep = baker.make(
             Contact,
-            operations_contacts=self.test_object,
             business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
-        # someone else's operation rep
-        baker.make_recipe(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+        # set contacts for the operation
+        self.test_object.contacts.set([officer, operation_rep])
 
-        result = operation.get_operation_representatives()
+        # someone else's operation rep
+        baker.make(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+
+        result = self.test_object.get_operation_representatives()
         assert result.length == 1
         assert result.email == operation_rep.email
 
