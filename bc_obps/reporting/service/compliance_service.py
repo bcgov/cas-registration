@@ -193,7 +193,7 @@ class ComplianceService:
 
         report_products = (
             ReportProduct.objects.order_by("product_id")
-            .filter(report_version_id=report_version_id)
+            .filter(report_version_id=report_version_id, product__is_regulated=True)
             .distinct('product_id')
         )
         # Iterate on all products reported (by product ID)
