@@ -26,11 +26,11 @@ export default async function VerificationPage({
   // 🚀 Fetch the list of facilities associated with the specified version ID
   const facilityList = await getReportFacilityList(version_id);
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
-
   // Create schema with dynamic facility list for operation type
   const verificationSchema = createVerificationSchema(
     facilityList.facilities,
     operationType,
+    isSupplementaryReport.is_supplementary_report_version,
   );
 
   //🔍 Check if reports need verification
