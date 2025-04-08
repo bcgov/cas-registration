@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 // ☰ Enums
-import { UserRole } from "@/e2e/utils/enums";
+import { UserRole } from "@bciers/e2e/utils/enums";
 // 🛠️ Helpers
 import { setupTestEnvironment } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
