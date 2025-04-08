@@ -15,14 +15,8 @@
           {
             "title": "Annual Reports",
             "icon": "File",
-            "content": "TBD here.",
+            "content": "Submit, view and edit your annual reports.",
             "href": "/reporting/reports"
-          },
-          {
-            "title": "Previous Years Reports",
-            "icon": "File",
-            "content": "TBD here.",
-            "href": "/reporting/reports/previous-years"
           }
         ]
       }
