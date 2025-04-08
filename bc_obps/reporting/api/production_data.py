@@ -47,10 +47,14 @@ def save_production_data(
 def load_production_data(request: HttpRequest, version_id: int, facility_id: UUID) -> Tuple[Literal[200], dict]:
 
     report_products = (
-        ReportProduct.objects.filter(facility_report__facility_id=facility_id, report_version_id=version_id)
+        ReportProduct.objects.filter(
+            facility_report__facility_id=facility_id, report_version_id=version_id, product__is_regulated=True
+        )
         .order_by("product_id")
         .all()
     )
-    allowed_products = ReportOperation.objects.get(report_version_id=version_id).regulated_products.all()
+    allowed_products = ReportOperation.objects.get(report_version_id=version_id).regulated_products.exclude(
+        is_regulated=False
+    )
 
     return 200, {"report_products": report_products, "allowed_products": allowed_products}
