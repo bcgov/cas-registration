@@ -10,15 +10,28 @@ from reporting.service.report_validation.validators import (
 )
 
 
+boro_required_purposes = [
+    Operation.Purposes.OBPS_REGULATED_OPERATION,
+    Operation.Purposes.OPTED_IN_OPERATION,
+    Operation.Purposes.NEW_ENTRANT_OPERATION,
+]
+
+boro_not_required_purposes = [
+    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+    Operation.Purposes.REPORTING_OPERATION,
+    Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+]
+
+
 @pytest.mark.django_db
 class TestOperationBoroIdValidator:
+    def test_all_purposes_are_evaluated(self):
+        # Ensure we cover all the registration purposes
+        assert set(boro_required_purposes).union(boro_not_required_purposes) == set(Operation.Purposes)
+
     @pytest.mark.parametrize(
         "reg_purpose",
-        [
-            Operation.Purposes.OBPS_REGULATED_OPERATION,
-            Operation.Purposes.OPTED_IN_OPERATION,
-            Operation.Purposes.NEW_ENTRANT_OPERATION,
-        ],
+        boro_required_purposes,
     )
     def test_error_if_no_boro_id(self, reg_purpose):
         report_operation = make_recipe(
@@ -37,11 +50,7 @@ class TestOperationBoroIdValidator:
 
     @pytest.mark.parametrize(
         "reg_purpose",
-        [
-            Operation.Purposes.OBPS_REGULATED_OPERATION,
-            Operation.Purposes.OPTED_IN_OPERATION,
-            Operation.Purposes.NEW_ENTRANT_OPERATION,
-        ],
+        boro_required_purposes,
     )
     def test_error_if_boro_id_is_empty(self, reg_purpose):
         report_operation = make_recipe(
@@ -71,11 +80,7 @@ class TestOperationBoroIdValidator:
 
     @pytest.mark.parametrize(
         "reg_purpose",
-        [
-            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
-            Operation.Purposes.REPORTING_OPERATION,
-            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-        ],
+        boro_not_required_purposes,
     )
     def test_succeeds_if_boro_id_not_required(self, reg_purpose):
         report_operation = make_recipe(
