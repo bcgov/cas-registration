@@ -112,7 +112,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
             pending_user_operator.user.email,
         )
 
-    def test_cas_director_approves_admin_access_request_with_new_operator(self, mocker):
+    def test_cas_director_approves_admin_access_request(self, mocker):
         # In this test we are testing the user operator status change and not the operator change,
         # so we have to mark the operator as status=APPROVED so we can bypass the below part and can get to the email sending part
         operator = operator_baker({'status': Operator.Statuses.APPROVED})
@@ -144,7 +144,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         # Assert that the email notification was called (user associated with the user_operator IS the creator of the operator)
         mock_send_operator_access_request_email.assert_called_once_with(
             AccessRequestStates.APPROVED,
-            AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
+            AccessRequestTypes.ADMIN,
             operator.legal_name,
             user_operator.user.get_full_name(),
             user_operator.user.email,

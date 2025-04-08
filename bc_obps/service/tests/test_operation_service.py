@@ -27,8 +27,6 @@ from registration.schema import (
     MultipleOperatorIn,
     OperationInformationIn,
 )
-from registration.enums.enums import EmailTemplateNames
-from registration import emails
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.operation_service import OperationService
 from service.email.email_service import EmailService
