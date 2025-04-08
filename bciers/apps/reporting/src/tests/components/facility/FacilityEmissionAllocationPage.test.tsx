@@ -7,6 +7,7 @@ import { getNavigationInformation } from "@reporting/src/app/components/taskList
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { getOverlappingIndustrialProcessEmissions } from "@reporting/src/app/utils/getOverlappingIndProcessEmissions";
+import { getFacilityReportDetails } from "@reporting/src/app/utils/getFacilityReportDetails";
 
 // ✨ Mocks
 vi.mock("@reporting/src/app/utils/getReportInformationTaskListData", () => ({
@@ -24,6 +25,9 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 }));
 vi.mock("@reporting/src/app/utils/getOverlappingIndProcessEmissions", () => ({
   getOverlappingIndustrialProcessEmissions: vi.fn(),
+}));
+vi.mock("@reporting/src/app/utils/getFacilityReportDetails", () => ({
+  getFacilityReportDetails: vi.fn(),
 }));
 
 // 🏷 Constants
@@ -178,6 +182,9 @@ const emissionAllocations = {
     },
   ],
 };
+const justFacilityReportTypeLarge = {
+  facility_type: "Large Facility",
+};
 describe("The FacilityEmissionAllocationPage component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -197,6 +204,9 @@ describe("The FacilityEmissionAllocationPage component", () => {
     );
     (getNavigationInformation as ReturnType<typeof vi.fn>).mockReturnValueOnce(
       dummyNavigationInformation,
+    );
+    (getFacilityReportDetails as ReturnType<typeof vi.fn>).mockReturnValueOnce(
+      justFacilityReportTypeLarge,
     );
     (
       getOverlappingIndustrialProcessEmissions as ReturnType<typeof vi.fn>

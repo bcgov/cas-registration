@@ -189,7 +189,7 @@ class TestHandleSourceTypeMethod:
 
         # Nothing in cache, so the 'set' method is called
         mock_cache.get.return_value = None
-        build_source_type_schema(config_id, activity_id, source_type_id)
+        build_source_type_schema(config_id, activity_id, source_type_id, False)
 
         assert len(mock_cache.get.mock_calls) == 1
         mock_cache.get.assert_called_once_with(f"{config_id}-{activity_id}-{source_type_id}")
@@ -200,7 +200,7 @@ class TestHandleSourceTypeMethod:
         # Something in cache, so the 'set' method is not called
         # And we return the cached value
         mock_cache.get.return_value = "cached"
-        return_value = build_source_type_schema(config_id, activity_id, source_type_id)
+        return_value = build_source_type_schema(config_id, activity_id, source_type_id, False)
         assert return_value == "cached"
         assert len(mock_cache.get.mock_calls) == 1
         assert len(mock_cache.set.mock_calls) == 0

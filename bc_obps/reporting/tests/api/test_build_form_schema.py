@@ -36,52 +36,56 @@ class TestBuildFormSchema(CommonTestSetup):
     # SCHEMAS
     def test_error_if_no_valid_activity_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=0&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 404
         assert response.json().get('message') == "Not Found"
 
     def test_error_if_no_valid_source_type_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&source_types[]=0&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=1&source_types[]=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 404
         assert response.json().get('message') == "Not Found"
 
     def test_error_if_no_valid_configuration_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&report_version_id=0',
+            f'{self.endpoint}?activity=1&report_version_id=0&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 404
         assert response.json().get('message') == "Not Found"
 
     def test_returns_activity_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=1&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
@@ -94,13 +98,14 @@ class TestBuildFormSchema(CommonTestSetup):
 
     def test_returns_source_type_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&source_types[]=1&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=1&source_types[]=1&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())
@@ -150,13 +155,14 @@ class TestBuildFormSchema(CommonTestSetup):
 
     def test_returns_multiple_source_type_schemas(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=1&source_types[]=1&source_types[]=2&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 200
         # 2 schemas in the sourceTypes object
@@ -164,13 +170,14 @@ class TestBuildFormSchema(CommonTestSetup):
 
     def test_single_mandatory_source_type(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=3&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=3&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 200
         # 1 schema is automatically added to the sourceTypes object when there is only 1 valid sourceType for the activity
@@ -178,13 +185,14 @@ class TestBuildFormSchema(CommonTestSetup):
 
     def test_source_type_schema_no_units(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
+        facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            f'{self.endpoint}?activity=3&report_version_id={report_version.id}',
+            f'{self.endpoint}?activity=3&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
         assert response.status_code == 200
         response_object = json.loads(response.json())

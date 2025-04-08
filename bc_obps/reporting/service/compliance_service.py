@@ -1,4 +1,5 @@
 from reporting.models.report_emission import ReportEmission
+from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.models.report_product import ReportProduct
 from reporting.models import NaicsRegulatoryValue, ReportVersion
@@ -144,7 +145,9 @@ class ComplianceService:
         reporting_only_allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
             report_version_id, product_id, reporting_only_category_ids
         )
+        fog_record = ReportEmissionAllocation.objects.filter(report_version_id=report_version_id).first()
         fog_records = ReportProductEmissionAllocation.objects.filter(
+            report_emission_allocation=fog_record,
             report_version_id=report_version_id,
             report_product__product_id=39,  # Special Fat, Oil & Grease product
         )
