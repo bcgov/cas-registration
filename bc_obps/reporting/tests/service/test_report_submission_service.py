@@ -7,6 +7,8 @@ from reporting.models.report_version import ReportVersion
 from reporting.schema.report_sign_off import ReportSignOffAcknowledgements, ReportSignOffIn
 import uuid
 
+from reporting.service.report_validation.report_validation_error import ReportValidationError, Severity
+
 
 @pytest.mark.django_db
 class TestReportSubmissionService:
@@ -28,6 +30,7 @@ class TestReportSubmissionService:
         # Arrange
         version_id = 1
         user_guid = uuid.uuid4()
+        mock_validate_report_version.return_value = {}
 
         # Create a fake Report instance object
         fake_report = MagicMock()
@@ -94,9 +97,9 @@ class TestReportSubmissionService:
         "reporting.service.report_validation.report_validation_service.ReportValidationService.validate_report_version"
     )
     def test_submit_report_throws_with_errors(self, mock_validate_report_version: MagicMock):
-        mock_validate_report_version.return_value = {"test_key": "unimportant value"}
+        mock_validate_report_version.return_value = {"test_key": ReportValidationError(Severity.ERROR, "test message")}
 
         report_version = make_recipe("reporting.tests.utils.report_version")
 
-        with pytest.raises(ValidationError, match="test_key"):
+        with pytest.raises(ValidationError, match="['test message']"):
             ReportSubmissionService.submit_report(report_version.id, uuid.UUID(int=0), {})
