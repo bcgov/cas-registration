@@ -9,6 +9,7 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { OperationTypes } from "@bciers/utils/src/enums";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
 vi.mock("@reporting/src/app/components/verification/VerificationForm", () => ({
   default: vi.fn(),
@@ -40,11 +41,15 @@ vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
 }));
+vi.mock("@reporting/src/app/utils/getIsSupplementaryReport", () => ({
+  getIsSupplementaryReport: vi.fn(),
+}));
 
 const mockVerificationForm = VerificationForm as ReturnType<typeof vi.fn>;
 const mockGetReportVerification = getReportVerification as ReturnType<
   typeof vi.fn
 >;
+
 const mockGetReportFacilityList = getReportFacilityList as ReturnType<
   typeof vi.fn
 >;
@@ -58,6 +63,9 @@ const mockGetReportingOperation = getReportingOperation as ReturnType<
   typeof vi.fn
 >;
 const mockGetNavigationInformation = getNavigationInformation as ReturnType<
+  typeof vi.fn
+>;
+const mockGetIsSupplementaryReport = getIsSupplementaryReport as ReturnType<
   typeof vi.fn
 >;
 
@@ -81,6 +89,9 @@ describe("VerificationPage component", () => {
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
     mockGetReportNeedsVerification.mockResolvedValue(true);
     mockGetReportingOperation.mockResolvedValue(mockReportOperation);
+    mockGetIsSupplementaryReport.mockResolvedValue({
+      is_supplementary_report_version: false,
+    });
     mockGetNavigationInformation.mockResolvedValue(dummyNavigationInformation);
 
     render(await VerificationPage({ version_id: mockVersionId }));
@@ -91,6 +102,7 @@ describe("VerificationPage component", () => {
     expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
       mockFacilityList.facilities,
       OperationTypes.SFO,
+      false,
     );
 
     expect(mockVerificationForm).toHaveBeenCalledWith(
@@ -100,6 +112,8 @@ describe("VerificationPage component", () => {
         verificationSchema: mockVerificationSchema,
         initialData: mockInitialData,
         navigationInformation: dummyNavigationInformation,
+        isSupplementaryReport: (await mockGetIsSupplementaryReport())
+          .is_supplementary_report_version,
       },
       {},
     );
