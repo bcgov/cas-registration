@@ -26,9 +26,7 @@ class ReportSubmissionService:
         # The validation service now returns errors, but to not change the system behaviour,
         # we raise an error for now.
         if validation_result:
-            raise ValidationError(
-                [ValidationError(error.message, code=error_key) for error_key, error in validation_result.items()]
-            )
+            raise ValidationError({key: val.message for key, val in validation_result.items()})
 
         ReportSignOffService.save_report_sign_off(version_id, sign_off_data)
         # Mark the previous latest submitted version as not latest
