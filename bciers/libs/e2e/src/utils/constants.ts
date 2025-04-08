@@ -1,4 +1,4 @@
-import { AppRoute, UserRole } from "@/e2e/utils/enums";
+import { AppRoute, UserRole } from "@bciers/e2e/utils/enums";
 
 export const baseUrlSetup = "http://localhost:8000/api/registration/test-setup";
 
