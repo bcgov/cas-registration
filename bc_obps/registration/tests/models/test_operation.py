@@ -200,19 +200,27 @@ class OperationModelTest(BaseTestCase):
             operation_for_approved_user_operator.user_has_access(approved_user_operator.user.user_guid),
             "There is an approved user-operator association.",
         )
+
     def test_get_operation_representatives(self):
-        
+        operation = baker.make_recipe('registration.tests.utils.operation')
         # a senior officer for this operation
-        baker.make_recipe('registration.tests.utils.contact', operations_contacts=self.test_object, business_role=BusinessRole.objects.get(role_name='Senior Officer'))
+        baker.make_recipe(
+            'registration.tests.utils.contact',
+            operations_contacts=self.test_object,
+            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
+        )
         # operation rep for this operation
-        operation_rep = baker.make_recipe(Contact, operations_contacts=self.test_object, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+        operation_rep = baker.make_recipe(
+            Contact,
+            operations_contacts=self.test_object,
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+        )
         # someone else's operation rep
         baker.make_recipe(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
 
-        result = self.test_get_operation_representatives()
+        result = operation.get_operation_representatives()
         assert result.length == 1
         assert result.email == operation_rep.email
-
 
 
 class OperationTriggerTests(BaseTestCase):
@@ -279,4 +287,3 @@ class OperationTriggerTests(BaseTestCase):
             "Cannot assign bcghg_id to Operation unless status is Registered",
             str(cm.exception),
         )
-    
