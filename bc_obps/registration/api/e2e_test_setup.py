@@ -17,7 +17,7 @@ from django.core.cache import cache
 def setup(
     request: HttpRequest, workflow: Optional[str] = None, truncate_only: bool = False, load_only: bool = False
 ) -> HttpResponse:
-    if settings.ENVIRONMENT == "dev":
+    if settings.ENVIRONMENT == "local":
         cache.clear()  # clear cache to avoid stale data (specifically for the current_user_middleware.py middleware)
         try:
             if truncate_only:  # only truncate the tables
@@ -32,4 +32,4 @@ def setup(
         except Exception as e:
             return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
     else:
-        return HttpResponse("This endpoint only exists in the development environment.", status=404)
+        return HttpResponse("This endpoint only exists in the local environment.", status=404)
