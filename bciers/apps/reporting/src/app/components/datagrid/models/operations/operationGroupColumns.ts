@@ -18,7 +18,7 @@ const operationGroupColumns = (
       "Date of submission",
       EmptyGroupCell,
     ),
-    createColumnGroup("report_submitted_by", "Submitted by", SearchCell),
+    createColumnGroup("report_submitted_by", "Submitted by", EmptyGroupCell),
     createColumnGroup("report_status", "Status", SearchCell),
     createColumnGroup("action", "Action", EmptyGroupCell),
   ] as GridColumnGroupingModel;
