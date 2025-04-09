@@ -14,7 +14,7 @@ product_information:
   product_description: >-
     The B.C. Industrial Emissions Reporting System (BCIERS) is a web application
     for industrial operators to participate in the B.C. Output-Based Pricing
-    System (B.C. OBPS).  
+    System (B.C. OBPS).
   product_name: Industrial Emissions Reporting System - B.C Output-Based Pricing System
   product_status: active
   product_urls: []
@@ -22,16 +22,16 @@ product_information:
 product_technology_information:
   backend_frameworks:
     - name: Django
-      version: '3'
+      version: "3"
   backend_languages_version:
     - name: Python
-      version: '3.11'
+      version: "3.11"
   frontend_frameworks:
     - name: React
-      version: '18'
+      version: "18"
   frontend_languages:
     - name: TypeScript
-      version: '5'
+      version: "5"
   hosting_platforms:
     - Private-Cloud-Openshift
     - Google-Cloud-Platform
