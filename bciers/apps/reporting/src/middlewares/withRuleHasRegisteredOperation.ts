@@ -31,7 +31,7 @@ const checkUserStatus = async (request: NextRequest, token: any) => {
 
     // 🛸 Make a single API call to validate the user and, if necessary, report version
     let response = await fetchResponse(
-      `reporting/validate_user_report_version?report_version_id=${reportVersionId}`,
+      `reporting/validate-user-reporting-access?report_version_id=${reportVersionId}`,
       token.user_guid,
     );
 
@@ -58,7 +58,10 @@ const checkUserStatus = async (request: NextRequest, token: any) => {
         return null;
 
       default:
-        return null;
+        // 🛸 Redirect to onboarding page if the user is not registered
+        return NextResponse.redirect(
+          new URL(AppRoutes.ONBOARDING, request.url),
+        );
     }
   } catch (error) {
     // 🛸 Handle error (e.g., redirect to onboarding in case of failure)

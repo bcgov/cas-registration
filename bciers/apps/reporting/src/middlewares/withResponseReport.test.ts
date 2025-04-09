@@ -33,7 +33,7 @@ describe("withResponseReport middleware", () => {
     // Mock the fetch response for operator has registered operation
     fetch.mockResponseOnce(
       JSON.stringify({
-        has_registered_operation: true,
+        status: "Registered",
       }),
     );
 

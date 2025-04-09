@@ -39,6 +39,18 @@ class OperationDataAccessService:
         return Operation.objects.filter(operator_id=operator_id, status=Operation.Statuses.REGISTERED).exists()
 
     @classmethod
+    def check_current_users_reporting_registered_operation(cls, operator_id: UUID) -> bool:
+        """
+        Returns True if the userOperator's operator has at least one operation with status 'Registered'
+        and registration_purpose not equal to POTENTIAL_REPORTING_OPERATION, False otherwise.
+        """
+        return (
+            Operation.objects.filter(operator_id=operator_id, status=Operation.Statuses.REGISTERED)
+            .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
+            .exists()
+        )
+
+    @classmethod
     def create_operation(
         cls,
         user_guid: UUID,

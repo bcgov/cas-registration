@@ -29,6 +29,11 @@ const mockFetchResponse = (status: string) => {
   );
 };
 
+// make fetch return an object *without* a status property
+const mockFetchNoStatus = () => {
+  fetch.mockResponseOnce(JSON.stringify({ detail: "Unauthorized" }));
+};
+
 describe("withRuleHasRegisteredOperation middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -36,6 +41,52 @@ describe("withRuleHasRegisteredOperation middleware", () => {
 
   afterEach(() => {
     reset(mockedRequest);
+  });
+
+  it("redirects industry user to onboarding if response has no status property", async () => {
+    // arrange
+    getToken.mockResolvedValue(mockIndustryUserToken);
+    setupRequestMock(`${domain}/reporting/reports`);
+
+    // respond with JSON *missing* the `status` field
+    mockFetchNoStatus();
+
+    const middleware = withRuleHasRegisteredOperation(() =>
+      NextResponse.next(),
+    );
+
+    // act
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+
+    // assert
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    // NextResponse.redirect defaults to 307
+    expect(result?.status).toBe(307);
+    // and it should point to onboarding
+    expect(NextResponse.redirect).toHaveBeenCalledWith(
+      new URL(constants.AppRoutes.ONBOARDING, domain),
+    );
+  });
+
+  it("redirects industry user to onboarding if response does not have status property", async () => {
+    getToken.mockResolvedValue(mockIndustryUserToken);
+
+    setupRequestMock(`${domain}/reporting/reports`);
+    mockFetchResponse("Not Registered");
+
+    const middleware = withRuleHasRegisteredOperation(() =>
+      NextResponse.next(),
+    );
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+
+    expect(NextResponse.redirect).toHaveBeenCalledOnce();
+    expect(result?.status).toBe(307);
   });
 
   it("redirects industry user to onboarding if not registered", async () => {
