@@ -47,6 +47,7 @@ export default async function OperationReviewPage({
       allRegulatedProducts={params.allRegulatedProducts}
       showRegulatedProducts={params.showRegulatedProducts}
       showBoroId={params.showBoroId}
+      facilityId={facilityReport.facility_id}
     />
   );
 }

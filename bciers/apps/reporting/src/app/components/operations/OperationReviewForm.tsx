@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
@@ -10,10 +10,20 @@ import {
 } from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
-import { NavigationInformation } from "../taskList/types";
+import {
+  HeaderStep,
+  NavigationInformation,
+  ReportingPage,
+} from "../taskList/types";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  ELECTRICITY_IMPORT_OPERATION,
+  POTENTIAL_REPORTING_OPERATION,
+  REPORTING_OPERATION,
+} from "@reporting/src/app/utils/constants";
 
 interface Props {
   formData: any;
@@ -26,6 +36,7 @@ interface Props {
   allRegulatedProducts: any[];
   showRegulatedProducts: boolean;
   showBoroId: boolean;
+  facilityId: string;
 }
 export default function OperationReviewForm({
   formData,
@@ -38,14 +49,18 @@ export default function OperationReviewForm({
   allRegulatedProducts,
   showRegulatedProducts,
   showBoroId,
+  facilityId,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
+  const [formKey, setFormKey] = useState(0);
+
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [navigationInfo, setNavigationInfo] = useState(navigationInformation);
 
   const router = useRouter();
 
@@ -85,6 +100,12 @@ export default function OperationReviewForm({
       setErrors(["Unable to sync data"]);
       return;
     }
+    setFormKey((prev) => prev + 1);
+    const showRegulatedProducts = ![
+      ELECTRICITY_IMPORT_OPERATION,
+      REPORTING_OPERATION,
+      POTENTIAL_REPORTING_OPERATION,
+    ].includes(newData.registration_purpose);
 
     setPageSchema(
       buildOperationReviewSchema(
@@ -98,8 +119,15 @@ export default function OperationReviewForm({
         showBoroId,
       ),
     );
+    setNavigationInfo(
+      await getNavigationInformation(
+        HeaderStep.OperationInformation,
+        ReportingPage.ReviewOperationInfo,
+        version_id,
+        facilityId,
+      ),
+    );
 
-    setFormDataState(newData);
     setErrors(undefined);
     setIsSnackbarOpen(true);
   };
@@ -148,9 +176,10 @@ export default function OperationReviewForm({
         )}
       </SimpleModal>
       <MultiStepFormWithTaskList
-        initialStep={navigationInformation.headerStepIndex}
-        steps={navigationInformation.headerSteps}
-        taskListElements={navigationInformation.taskList}
+        key={formKey}
+        initialStep={navigationInfo.headerStepIndex}
+        steps={navigationInfo.headerSteps}
+        taskListElements={navigationInfo.taskList}
         schema={pageSchema}
         uiSchema={{
           ...uiSchema,
@@ -165,8 +194,8 @@ export default function OperationReviewForm({
         formData={formDataState}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
-        backUrl={navigationInformation.backUrl}
-        continueUrl={navigationInformation.continueUrl}
+        backUrl={navigationInfo.backUrl}
+        continueUrl={navigationInfo.continueUrl}
         errors={errors}
       />
       <SnackBar
