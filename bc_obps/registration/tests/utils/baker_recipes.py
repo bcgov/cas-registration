@@ -93,6 +93,7 @@ industry_operator_user = Recipe(User, app_role=AppRole.objects.get(role_name="in
 cas_admin = Recipe(User, app_role=AppRole.objects.get(role_name="cas_admin"))
 cas_analyst = Recipe(User, app_role=AppRole.objects.get(role_name="cas_analyst"))
 cas_director = Recipe(User, app_role=AppRole.objects.get(role_name="cas_director"))
+cas_pending = Recipe(User, app_role=AppRole.objects.get(role_name="cas_pending"))
 
 operation = Recipe(
     Operation,
