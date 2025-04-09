@@ -16,8 +16,8 @@
     "target": "es2015",
     "types": ["vitest/globals"],
     "paths": {
-      "@/administration/*": ["apps/administration/*"],
       "@/administration-e2e/*": ["apps/administration-e2e/*"],
+      "@/administration/*": ["apps/administration/*"],
       "@/compliance/*": ["apps/compliance/*"],
       "@/dashboard/*": ["apps/dashboard/*"],
       "@/registration/*": ["apps/registration/*"],
