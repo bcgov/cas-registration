@@ -1,0 +1,38 @@
+---
+data_management_roles:
+  data_custodian: Maral Sotoudehnia
+  product_owner: Patricia Russell
+product_external_dependencies:
+  notification_standard: []
+product_information:
+  api_specifications: []
+  business_capabilities_standard:
+    - Climate Action
+  ministry:
+    - Environment and Climate Change Strategy
+  product_acronym: BCIERS
+  product_description: >-
+    The B.C. Industrial Emissions Reporting System (BCIERS) is a web application
+    for industrial operators to participate in the B.C. Output-Based Pricing
+    System (B.C. OBPS).  
+  product_name: Industrial Emissions Reporting System - B.C Output-Based Pricing System
+  product_status: active
+  product_urls: []
+  program_area: Climate Action Secretariat
+product_technology_information:
+  backend_frameworks:
+    - name: Django
+      version: '3'
+  backend_languages_version:
+    - name: Python
+      version: '3.11'
+  frontend_frameworks:
+    - name: React
+      version: '18'
+  frontend_languages:
+    - name: TypeScript
+      version: '5'
+  hosting_platforms:
+    - Private-Cloud-Openshift
+    - Google-Cloud-Platform
+version: 1
