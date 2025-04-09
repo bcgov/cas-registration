@@ -24,6 +24,7 @@ import {
   fetchFacilitiesPageData,
   getFacility,
   getCurrentUsersOperations,
+  handleInternalAccessRequest,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -107,6 +108,10 @@ vi.mock("apps/administration/app/components/facilities/getFacility", () => ({
 }));
 vi.mock("libs/actions/src/api/getCurrentUsersOperations", () => ({
   default: getCurrentUsersOperations,
+}));
+
+vi.mock("libs/actions/src/api/handleInternalAccessRequest", () => ({
+  default: handleInternalAccessRequest,
 }));
 
 // mock fetch

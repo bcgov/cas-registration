@@ -45,6 +45,7 @@ const fetchOperationsPageData = vi.fn();
 const fetchFacilitiesPageData = vi.fn();
 const getFacility = vi.fn();
 const getCurrentUsersOperations = vi.fn();
+const handleInternalAccessRequest = vi.fn();
 
 export {
   actionHandler,
@@ -70,4 +71,5 @@ export {
   fetchFacilitiesPageData,
   getFacility,
   getCurrentUsersOperations,
+  handleInternalAccessRequest,
 };
