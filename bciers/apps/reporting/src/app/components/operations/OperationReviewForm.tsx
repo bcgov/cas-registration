@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { RJSFSchema } from "@rjsf/utils";
@@ -20,10 +20,9 @@ import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacil
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
-  ELECTRICITY_IMPORT_OPERATION,
-  POTENTIAL_REPORTING_OPERATION,
-  REPORTING_OPERATION,
-} from "@reporting/src/app/utils/constants";
+  showBoroId,
+  showRegulatedProducts,
+} from "@reporting/src/app/components/operations/getOperationSchemaParameters";
 
 interface Props {
   formData: any;
@@ -34,8 +33,6 @@ interface Props {
   reportingWindowEnd: string;
   allActivities: any[];
   allRegulatedProducts: any[];
-  showRegulatedProducts: boolean;
-  showBoroId: boolean;
   facilityId: string;
 }
 export default function OperationReviewForm({
@@ -47,16 +44,12 @@ export default function OperationReviewForm({
   reportingWindowEnd,
   allActivities,
   allRegulatedProducts,
-  showRegulatedProducts,
-  showBoroId,
   facilityId,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
   const [formDataState, setFormDataState] = useState<any>(formData);
   const [pageSchema, setPageSchema] = useState(schema);
-  const [formKey, setFormKey] = useState(0);
-
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -100,12 +93,6 @@ export default function OperationReviewForm({
       setErrors(["Unable to sync data"]);
       return;
     }
-    setFormKey((prev) => prev + 1);
-    const showRegulatedProducts = ![
-      ELECTRICITY_IMPORT_OPERATION,
-      REPORTING_OPERATION,
-      POTENTIAL_REPORTING_OPERATION,
-    ].includes(newData.registration_purpose);
 
     setPageSchema(
       buildOperationReviewSchema(
@@ -115,8 +102,8 @@ export default function OperationReviewForm({
         allRegulatedProducts,
         newData.report_operation_representatives,
         reportType,
-        showRegulatedProducts,
-        showBoroId,
+        showRegulatedProducts(newData.registration_purpose),
+        showBoroId(newData.registration_purpose),
       ),
     );
     setNavigationInfo(
@@ -127,7 +114,7 @@ export default function OperationReviewForm({
         facilityId,
       ),
     );
-
+    setFormDataState(newData);
     setErrors(undefined);
     setIsSnackbarOpen(true);
   };
@@ -176,7 +163,6 @@ export default function OperationReviewForm({
         )}
       </SimpleModal>
       <MultiStepFormWithTaskList
-        key={formKey}
         initialStep={navigationInfo.headerStepIndex}
         steps={navigationInfo.headerSteps}
         taskListElements={navigationInfo.taskList}

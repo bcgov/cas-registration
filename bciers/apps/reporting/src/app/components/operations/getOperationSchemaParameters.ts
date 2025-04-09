@@ -10,22 +10,24 @@ import {
 } from "@reporting/src/app/utils/constants";
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 
+export const showRegulatedProducts = (registrationPurpose: string): boolean => {
+  return ![
+    ELECTRICITY_IMPORT_OPERATION,
+    REPORTING_OPERATION,
+    POTENTIAL_REPORTING_OPERATION,
+  ].includes(registrationPurpose);
+};
+
+export const showBoroId = (registrationPurpose: string): boolean => {
+  return ![REPORTING_OPERATION].includes(registrationPurpose);
+};
+
 export async function getOperationSchemaParameters(version_id: number) {
   const reportOperation = await getReportingOperation(version_id);
   const facilityReport = await getFacilityReport(version_id);
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
   const reportingYear = await getReportingYear();
-
-  const showRegulatedProducts = ![
-    ELECTRICITY_IMPORT_OPERATION,
-    REPORTING_OPERATION,
-    POTENTIAL_REPORTING_OPERATION,
-  ].includes(reportOperation.registration_purpose);
-
-  const showBoroId = ![REPORTING_OPERATION].includes(
-    reportOperation.registration_purpose,
-  );
 
   return {
     reportOperation: reportOperation,
@@ -34,8 +36,10 @@ export async function getOperationSchemaParameters(version_id: number) {
     allRegulatedProducts,
     allRepresentatives: reportOperation.report_operation_representatives,
     reportType: reportOperation.operation_report_type,
-    showRegulatedProducts,
-    showBoroId,
+    showRegulatedProducts: showRegulatedProducts(
+      reportOperation.registration_purpose,
+    ),
+    showBoroId: showBoroId(reportOperation.registration_purpose),
     reportingWindowEnd: formatDate(
       reportingYear.reporting_window_end,
       "MMM DD YYYY",
