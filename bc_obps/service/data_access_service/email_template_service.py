@@ -14,7 +14,7 @@ class EmailNotificationTemplateService:
         Returns:
             EmailNotificationTemplate or None
         """
-        template_name_str = template_name if type(template_name) == str else template_name.value
+        template_name_str = template_name if isinstance(template_name, str) else template_name.value
         try:
             return EmailNotificationTemplate.objects.get(name=template_name_str)
         except EmailNotificationTemplate.DoesNotExist:

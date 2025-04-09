@@ -219,8 +219,8 @@ class OperationModelTest(BaseTestCase):
         baker.make(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
 
         result = self.test_object.get_operation_representatives()
-        assert result.length == 1
-        assert result.email == operation_rep.email
+        assert result.count() == 1
+        assert result[0].email == operation_rep.email
 
 
 class OperationTriggerTests(BaseTestCase):
