@@ -84,7 +84,7 @@ FROM base AS runner
 # Refresh package lists from repositories
 RUN apt-get update && \
     # Install essential runner packages
-    apt-get install -y --no-install-recommends curl cron && \
+    apt-get install -y --no-install-recommends curl && \
     # Clean apt cache
     apt-get clean && \
     # Remove package lists to reduce size
