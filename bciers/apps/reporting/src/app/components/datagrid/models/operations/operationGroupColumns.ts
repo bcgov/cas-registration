@@ -13,7 +13,11 @@ const operationGroupColumns = (
   const columnGroupModel = [
     createColumnGroup("bcghg_id", "BC GHG ID", SearchCell),
     createColumnGroup("name", "Operation", SearchCell),
-    createColumnGroup("report_updated_at", "Date of submission", SearchCell),
+    createColumnGroup(
+      "report_updated_at",
+      "Date of submission",
+      EmptyGroupCell,
+    ),
     createColumnGroup("report_submitted_by", "Submitted by", SearchCell),
     createColumnGroup("report_status", "Status", SearchCell),
     createColumnGroup("action", "Action", EmptyGroupCell),

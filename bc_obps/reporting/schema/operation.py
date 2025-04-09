@@ -24,5 +24,5 @@ class ReportingDashboardOperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
     name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
     report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})
-    report_submitted_by: Optional[str] = Field(None, json_schema_extra={'q': 'report_submitted_by__icontains'})
+    report_submitted_by: Optional[datetime] = Field(None, json_schema_extra={'q': 'report_submitted_by__icontains'})
     report_updated_at: Optional[datetime] = Field(None, json_schema_extra={'q': 'report_updated_at__icontains'})
