@@ -1,5 +1,7 @@
 from uuid import UUID
-from django.db.models import OuterRef, QuerySet
+from django.db.models import OuterRef, QuerySet, Value, F
+from django.db.models.functions import Concat
+from ninja import Query
 from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -21,18 +23,22 @@ class ReportingDashboardService:
         reporting_year: int,
         sort_field: Optional[str] = None,
         sort_order: Optional[str] = None,
-        filters: Optional[ReportingDashboardOperationFilterSchema] = None,
+        filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
         Fetches all operations for the user, and annotates it with the associated report data required for the API call
         """
         user = UserDataAccessService.get_by_guid(user_guid)
 
-        sort_field = sort_field or "id"  # Default to "id" if None
-        sort_order = sort_order or "asc"  # Default to "asc" if None
+        sort_field = sort_field or "id"
+        sort_order = sort_order or "asc"
         sort_direction = "-" if sort_order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}"
-        report_version_subquery = ReportVersion.objects.filter(report_id=OuterRef("id")).order_by("-id")[:1]
+        report_version_subquery = (
+            ReportVersion.objects.filter(report_id=OuterRef("id"))
+            .order_by("-id")
+            .annotate(full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")))[:1]
+        )
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_subquery = (
@@ -43,7 +49,7 @@ class ReportingDashboardService:
             .annotate(latest_version_id=report_version_subquery.values("id"))
             .annotate(latest_version_status=report_version_subquery.values("status"))
             .annotate(latest_version_updated_at=report_version_subquery.values("updated_at"))
-            .annotate(latest_version_updated_by=report_version_subquery.values("updated_by"))
+            .annotate(latest_version_updated_by=report_version_subquery.values("full_name"))
         )
 
         queryset = (
@@ -58,6 +64,4 @@ class ReportingDashboardService:
             )
         )
 
-        if filters:
-            queryset = filters.filter(queryset)
-        return queryset.order_by(sort_by)
+        return filters.filter(queryset).order_by(sort_by)
