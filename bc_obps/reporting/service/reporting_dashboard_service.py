@@ -60,6 +60,7 @@ class ReportingDashboardService:
         queryset = (
             OperationDataAccessService.get_all_operations_for_user(user)
             .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
+            .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
                 report_id=report_subquery.values("id"),
                 report_version_id=report_subquery.values("latest_version_id"),
