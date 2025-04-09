@@ -7,18 +7,17 @@ import { ReportOperationStatus } from "@bciers/utils/src/enums";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
 export const OPERATOR_COLUMN_INDEX = 1;
-const UpdatedAtCell = ({ row, value }: GridRenderCellParams) => {
-  if (!row.report_status || row.report_status === ReportOperationStatus.DRAFT) {
-    return "";
-  }
-  return value ? formatTimestamp(value) : "";
-};
-const SubmittedByCell = ({ row }: GridRenderCellParams) => {
-  console.log("row", row);
-  return !row.report_status || row.report_status === ReportOperationStatus.DRAFT
-    ? ""
-    : row.submitted_by;
-};
+const UpdatedAtCell = ({ row, value }: GridRenderCellParams) =>
+  row.report_status && row.report_status !== ReportOperationStatus.DRAFT
+    ? value
+      ? formatTimestamp(value)
+      : ""
+    : "";
+
+const SubmittedByCell = ({ row }: GridRenderCellParams) =>
+  row.report_status && row.report_status !== ReportOperationStatus.DRAFT
+    ? row.submitted_by
+    : "";
 
 const operationColumns = (): GridColDef[] => {
   const columns: GridColDef[] = [
@@ -31,15 +30,13 @@ const operationColumns = (): GridColDef[] => {
     {
       field: "report_updated_at",
       headerName: "Date of submission",
-      sortable: false,
       renderCell: UpdatedAtCell,
       width: 200,
     },
     {
-      field: "submitted_by",
+      field: "report_submitted_by",
       headerName: "Submitted by",
       renderCell: SubmittedByCell,
-      sortable: false,
       width: 200,
     },
     {

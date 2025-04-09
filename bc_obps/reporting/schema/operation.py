@@ -1,6 +1,8 @@
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional
+
 from ninja import FilterSchema, ModelSchema
+
 from registration.models.operation import Operation
 from ninja import Field
 
@@ -17,12 +19,10 @@ class ReportingDashboardOperationOut(ModelSchema):
         model = Operation
         fields = ["id", "name"]
 
-    @staticmethod
-    def resolve_report_submitted_by(obj: Any) -> Optional[str]:
-        return obj.report_submitted_by.get_full_name() if obj.report_submitted_by else None
-
 
 class ReportingDashboardOperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
     name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
     report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})
+    report_submitted_by: Optional[str] = Field(None, json_schema_extra={'q': 'report_submitted_by__icontains'})
+    report_updated_at: Optional[datetime] = Field(None, json_schema_extra={'q': 'report_updated_at__icontains'})
