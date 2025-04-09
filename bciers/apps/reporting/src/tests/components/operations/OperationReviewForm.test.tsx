@@ -83,6 +83,7 @@ describe("OperationReviewForm Component", () => {
         allRegulatedProducts={[]}
         reportType={reportType}
         reportingWindowEnd={``}
+        facilityId={`1234`}
       />,
     );
   };
