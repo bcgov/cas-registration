@@ -3,29 +3,46 @@ from registration.models import Document
 from service.data_access_service.document_service import DocumentDataAccessService
 import time
 
-# Repeat the check every 30 seconds for 59 times, equalling a total of 29:30 minutes with 30 seconds for pod leeway
-REPETITIONS = 59  # Number of times to repeat
-REPEAT_DELAY = 30  # Delay between scans in seconds
-
 
 class Command(BaseCommand):
-    help = f"Check the status of the malware scans unscanned documents every {REPEAT_DELAY} seconds, {REPETITIONS} times. Accounts for processing time"
+    help = "Check the status of the malware scans unscanned documents every -d seconds, -r times. Accounts for processing time."
 
-    def handle(self, *args, **kwargs):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "-r",
+            "--repetitions",
+            type=int,
+            help="Number of times to repeat the check",
+            default=5,
+        )
+        parser.add_argument(
+            "-d",
+            "--repeat-delay",
+            type=int,
+            help="Delay between scans in seconds",
+            default=1,
+        )
+
+    def handle(self, *args, **options):
+        if options["repetitions"] < 1:
+            raise ValueError("repetitions must be greater than 0")
+        if options["repeat_delay"] < 1:
+            raise ValueError("repeat-delay must be greater than 0")
+
+        REPETITIONS = options["repetitions"]
+        REPEAT_DELAY = options["repeat_delay"]
         self.stdout.write(
-            f"Starting check_document_file_status, checking every {REPEAT_DELAY} seconds for {REPETITIONS} times"
+            f"Starting check_document_file_status, checking every {REPEAT_DELAY} second(s) for {REPETITIONS} times"
         )
         start_time = int(time.time())
         iteration = 0
-        print(f"start_time: {start_time}")
-        while iteration <= REPETITIONS:
-            print(f"Iteration {iteration}")
+
+        while iteration < REPETITIONS:
+            self.stdout.write(f"Iteration {iteration + 1} of {REPETITIONS}")
             # compute sleep duration (first iteration happens at start_time)
             next_attempt_time = start_time + iteration * REPEAT_DELAY
             sleep_duration = next_attempt_time - int(time.time())
-            print(
-                f"Current is {int(time.time())}, next attempt is {next_attempt_time}, sleep_duration is {sleep_duration}"
-            )
+            self.stdout.write(f"Next check is in {sleep_duration} second(s).")
 
             # move to next iteration
             iteration = iteration + 1
