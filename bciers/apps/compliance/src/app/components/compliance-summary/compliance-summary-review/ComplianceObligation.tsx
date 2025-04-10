@@ -8,11 +8,17 @@ export const ComplianceObligation = ({ data }: any) => {
       <InfoRow label="Obligation ID:" value={`${data.obligation_id}`} />
       <InfoRow
         label={`${data.reporting_year} Compliance Charge Rate:`}
-        value={`${data.compliance_charge_rate} tCO2e`}
+        value={`$${data.compliance_charge_rate.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })} / tCO2e`}
       />
       <InfoRow
         label="Equivalent Value:"
-        value={`${data.equivalent_value} tCO2e`}
+        value={`$${data.equivalent_value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`}
         style={{ marginBottom: "50px" }}
       />
     </div>
