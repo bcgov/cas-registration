@@ -3,7 +3,6 @@ kind: PersistentVolumeClaim
 metadata:
   name: check-document-file-status-lock-pvc
   labels: {{- include "cas-bciers.labels" . | nindent 4 }}
-    component: backend
   namespace: {{ .Release.Namespace }}
 spec:
   accessModes:
