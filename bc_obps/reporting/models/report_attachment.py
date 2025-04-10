@@ -1,3 +1,5 @@
+import typing
+from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.db import models
 from django.db.models import CharField, FileField, ForeignKey
 from registration.models.time_stamped_model import TimeStampedModel
@@ -8,7 +10,7 @@ from reporting.models.rls_configs.report_attachment import Rls as ReportAttachme
 FOLDER_NAME = "report_attachments/%Y/"
 
 
-class ReportAttachment(TimeStampedModel):
+class ReportAttachment(TimeStampedModel, ScannedFileStorageMixin):
     class ReportAttachmentType(models.TextChoices):
         VERIFICATION_STATEMENT = "verification_statement"
         WCI_352_362 = "wci_352_362"
@@ -31,6 +33,10 @@ class ReportAttachment(TimeStampedModel):
         max_length=1000,
         db_comment="The name of the original file that was uploaded, since django adds a hash to avoid file name collisions",
     )
+
+    @typing.no_type_check
+    def get_file_field(self) -> models.FileField:
+        return self.attachment
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing the file information for the report attachments"

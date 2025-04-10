@@ -1,3 +1,5 @@
+import typing
+from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.db import models
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
@@ -7,7 +9,7 @@ from registration.models.rls_configs.document import Rls as DocumentRls
 from django.core.files.storage import default_storage
 
 
-class Document(TimeStampedModel):
+class Document(TimeStampedModel, ScannedFileStorageMixin):
     file = models.FileField(
         storage=default_storage,
         upload_to="documents",
@@ -35,7 +37,9 @@ class Document(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    # File malware scan status
+    @typing.no_type_check
+    def get_file_field(self) -> models.FileField:
+        return self.file
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table that contains information about documents such as file metadata, type, and description."
