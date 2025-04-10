@@ -7,7 +7,7 @@ import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
 import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
-import { downloadInvoice } from "../../../actions/downloadInvoice";
+// Removed server action import as we'll directly use the API endpoint
 import { useState } from "react";
 
 interface Props {
@@ -29,28 +29,12 @@ export function ComplianceSummaryReviewContent(props: Props) {
     try {
       setIsGeneratingInvoice(true);
 
-      const result = await downloadInvoice(complianceSummaryId);
+      const invoiceUrl = `/compliance/api/invoice/${complianceSummaryId}`;
 
-      if (!result.success || !result.data) {
-        throw new Error(result.error || "Error generating invoice");
-      }
-
-      const { base64Data, contentType } = result.data;
-
-      const byteArray = Uint8Array.from(atob(base64Data), (c) =>
-        c.charCodeAt(0),
-      );
-      const blob = new Blob([byteArray], { type: contentType });
-
-      const url = window.URL.createObjectURL(blob);
-
-      window.open(url, "_blank");
-
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-      }, 5000);
+      window.open(invoiceUrl, "_blank");
     } catch (error) {
-      throw new Error(error as string);
+      console.error("Error generating invoice:", error);
+      throw new Error(error instanceof Error ? error.message : String(error));
     } finally {
       setIsGeneratingInvoice(false);
     }
