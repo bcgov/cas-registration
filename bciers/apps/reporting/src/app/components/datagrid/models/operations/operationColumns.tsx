@@ -23,7 +23,7 @@ const operationColumns = (): GridColDef[] => {
   const columns: GridColDef[] = [
     { field: "bcghg_id", headerName: "BC GHG ID", width: 160 },
     {
-      field: "name",
+      field: "operation_name",
       headerName: "Operation",
       width: 300,
     },
