@@ -24,6 +24,7 @@ from registration.schema import (
     MultipleOperatorIn,
     OperationInformationIn,
 )
+from registration.enums.enums import EmailTemplateNames
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.operation_service import OperationService
 from service.email.email_service import EmailService
@@ -137,7 +138,8 @@ class TestOperationService:
         assert result[0] == users_unregistered_operation
 
     @staticmethod
-    def test_submit_registration_success():
+    @patch('service.operation_service.send_registration_and_boro_id_email')
+    def test_submit_registration_success(mock_email_service):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION)
         users_operation.operator = approved_user_operator.operator
@@ -155,8 +157,16 @@ class TestOperationService:
         ) < timedelta(seconds=2)
         assert updated_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
 
+        mock_email_service.assert_called_once_with(
+            EmailTemplateNames.CONFIRMATION,
+            users_operation.operator.legal_name,
+            users_operation,
+            approved_user_operator.user,
+        )
+
     @staticmethod
-    def test_submit_registration_fail():
+    @patch('service.operation_service.send_registration_and_boro_id_email')
+    def test_submit_registration_fail(mock_email_service):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         users_operation = baker.make_recipe(
             'registration.tests.utils.operation',
@@ -170,8 +180,12 @@ class TestOperationService:
                 approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
             )
 
+        # assert the email does not get sent if the registration failed to submit
+        mock_email_service.assert_not_called()
+
     @staticmethod
-    def test_raises_error_if_operation_does_not_belong_to_user_when_submitting_registration():
+    @patch('service.operation_service.send_registration_and_boro_id_email')
+    def test_raises_error_if_operation_does_not_belong_to_user_when_submitting_registration(mock_email_service):
         user = baker.make_recipe(
             'registration.tests.utils.industry_operator_user',
         )
@@ -187,6 +201,9 @@ class TestOperationService:
             OperationService.submit_registration(
                 approved_user_operator.user.user_guid, operation.id, Operation.Statuses.REGISTERED
             )
+
+        # assert the email does not get sent if the registration failed to submit
+        mock_email_service.assert_not_called()
 
     @staticmethod
     def test_assign_new_contacts_to_operation_and_operator():
@@ -1287,7 +1304,8 @@ class TestHandleChangeOfRegistrationPurpose:
 
 class TestGenerateBoroId:
     @staticmethod
-    def test_generates_boro_id():
+    @patch('service.operation_service.send_registration_and_boro_id_email')
+    def test_generates_boro_id(mock_send_email):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
@@ -1295,10 +1313,16 @@ class TestGenerateBoroId:
             status=Operation.Statuses.REGISTERED,
         )
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+
         OperationService.generate_boro_id(cas_director.user_guid, operation.id)
         operation.refresh_from_db()
+
         assert operation.bc_obps_regulated_operation is not None
         assert operation.bc_obps_regulated_operation.issued_by == cas_director
+
+        mock_send_email.assert_called_once_with(
+            EmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation, cas_director
+        )
 
     @staticmethod
     def test_raises_exception_if_operation_is_non_regulated():
