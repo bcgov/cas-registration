@@ -3,7 +3,7 @@ from django.db import transaction
 from typing import Any, List, Optional, Tuple, cast
 from ninja import Query
 from registration.models import Activity, Facility
-from reporting.models import ReportActivity, ReportEmissionAllocation, ReportProductEmissionAllocation, ReportProduct
+from reporting.models import ReportActivity, ReportProductEmissionAllocation, ReportProduct
 from reporting.models.facility_report import FacilityReport
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
@@ -53,18 +53,15 @@ class FacilityReportService:
         facility_report.activities.set(Activity.objects.filter(id__in=activities))
         report_activities_to_prune = ReportActivity.objects.filter(facility_report_id=facility_report.id).exclude(
             activity_id__in=activities
-        ).delete()
-        # If activities are removed from a facility report, then the allocation of emissions to products must be deleted & re-allocated by the user
-        report_emission_allocation = ReportEmissionAllocation.objects.filter(
-            facility_report_id=facility_report.id
-        ).first()
-        ReportProductEmissionAllocation.objects.filter(report_emission_allocation=report_emission_allocation).delete()
         )
+
         if report_activities_to_prune:
             # If activities are removed from a facility_report, then the corresponding report_activity data must be delete-cascaded
             report_activities_to_prune.delete()
             # If activities are removed from a facility report, then the allocation of emissions to all products must be deleted & re-allocated by the user
-            ReportProductEmissionAllocation.objects.filter(facility_report_id=facility_report.id).delete()
+            ReportProductEmissionAllocation.objects.filter(
+                report_emission_allocation__facility_report_id=facility_report.id
+            ).delete()
 
     @classmethod
     def prune_report_product_data_for_facility_report(
@@ -73,13 +70,17 @@ class FacilityReportService:
         report_products_to_prune = ReportProduct.objects.filter(facility_report_id=facility_report.id).exclude(
             product_id__in=regulated_products
         )
+
         if report_products_to_prune:
             report_product_ids = report_products_to_prune.values_list("id", flat=True)
             # If regulated_products are removed from a report_operation, then the corresponding report_product data must be deleted
-            report_products_to_prune.delete()
+            ReportProduct.objects.filter(facility_report_id=facility_report.id).exclude(
+                product_id__in=regulated_products
+            ).delete()
             # If regulated_products are removed from a report_operation, then the allocation of emissions to those products must be deleted & re-allocated by the user
             ReportProductEmissionAllocation.objects.filter(
-                facility_report_id=facility_report.id, report_product_id__in=report_product_ids
+                report_emission_allocation__facility_report_id=facility_report.id,
+                report_product_id__in=report_product_ids,
             ).delete()
 
     @classmethod
@@ -101,7 +102,6 @@ class FacilityReportService:
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
         facility_report.facility_name = data.facility_name.strip()
         facility_report.facility_type = data.facility_type.strip()
-
         # Update ManyToMany fields (activities, report_products)
         if data.activities:
             cls.set_activities_for_facility_report(facility_report=facility_report, activities=data.activities)
