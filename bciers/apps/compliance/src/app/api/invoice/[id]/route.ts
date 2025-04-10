@@ -26,7 +26,7 @@ export async function GET(
     const requestHeaders = new Headers({
       Accept: "application/pdf",
       Authorization: JSON.stringify({
-        user_guid: token?.user_guid || "",
+        user_guid: token?.user_guid ?? "",
       }),
     });
 
@@ -49,14 +49,13 @@ export async function GET(
     const contentDisposition = response.headers.get("Content-Disposition");
     let filename = "invoice.pdf";
     if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename="(.+)"/i);
-      if (filenameMatch && filenameMatch[1]) {
-        filename = filenameMatch[1];
-      }
+      const filenameRegex = /filename="(.+)"/i;
+      const filenameMatch = filenameRegex.exec(contentDisposition);
+      filename = filenameMatch?.[1] ?? filename;
     }
 
     const responseHeaders = new Headers({
-      "Content-Type": response.headers.get("Content-Type") || "application/pdf",
+      "Content-Type": response.headers.get("Content-Type") ?? "application/pdf",
       "Content-Disposition": `inline; filename="${filename}"`,
     });
 

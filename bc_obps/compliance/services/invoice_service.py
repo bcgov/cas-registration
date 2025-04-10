@@ -69,6 +69,8 @@ class InvoiceService:
             Dictionary of context data for the template
         """
 
+        PENALTY_AMOUNT = "$122.76"
+
         invoice_number = "OBI000004"
         invoice_date = "Dec 6, 2025"
         invoice_due_date = "Jan 5, 2026"
@@ -82,10 +84,10 @@ class InvoiceService:
         operation_address_line1 = "111 PINK RD"
         operation_address_line2 = "VANCOUVER, BC, V1V 1V1"
         obligation_id = "24-0001-1-1"
-        penalty_amount = "$122.76"
-        amount_due = "$122.76"
-        fee_amount = "$122.76"
-        total_amount = "$122.76"
+        penalty_amount = PENALTY_AMOUNT
+        amount_due = PENALTY_AMOUNT
+        fee_amount = PENALTY_AMOUNT
+        total_amount = PENALTY_AMOUNT
 
         context = {
             'invoice_number': invoice_number,
