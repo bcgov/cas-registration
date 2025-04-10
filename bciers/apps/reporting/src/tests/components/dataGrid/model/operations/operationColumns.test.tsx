@@ -30,7 +30,7 @@ describe("operationColumns function", () => {
     expect(columns[0].headerName).toBe("BC GHG ID");
     expect(columns[0].width).toBe(160);
 
-    expect(columns[1].field).toBe("name");
+    expect(columns[1].field).toBe("operation_name");
     expect(columns[1].headerName).toBe("Operation");
     expect(columns[1].width).toBe(300);
 
@@ -104,7 +104,7 @@ describe("operationColumns function", () => {
     const row = {
       id: "2",
       bcghg_id: "12111130002",
-      name: "Operation without report",
+      operation_name: "Operation without report",
       report_id: null,
       report_version_id: null,
       report_status: null,
@@ -131,7 +131,7 @@ describe("operationColumns function", () => {
     const row = {
       id: "1",
       bcghg_id: "12111130002",
-      name: "Operation without report",
+      operation_name: "Operation without report",
       report_id: 1,
       report_version_id: 1,
       report_status: "Draft",
@@ -160,7 +160,7 @@ describe("operationColumns function", () => {
     const row = {
       id: "1",
       bcghg_id: "12111130002",
-      name: "Operation with report",
+      operation_name: "Operation with report",
       report_id: 15,
       report_version_id: 15,
       report_status: "Draft",
