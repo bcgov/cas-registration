@@ -48,7 +48,7 @@ def revert_add_missing_product_emission_intensity_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0103_product_units_non_nullable_add_missing_products'),
+        ('registration', '0104_product_units_non_nullable_add_missing_products'),
         ('reporting', '0083_gsc_fuel_annual_weighted_carbon_content_unit'),
     ]
 

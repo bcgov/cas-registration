@@ -37,7 +37,7 @@ def reverse_add_missing_products(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0102_facility_restrict_bcghg_id_unless_operation_registered_and_more'),
+        ('registration', '0103_historicaluser_archived_at_and_more'),
     ]
 
     operations = [
