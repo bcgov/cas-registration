@@ -64,7 +64,6 @@ class TestSendOperatorAccessRequestEmail:
             recipients_email=[external_user_email_address],
         ).exists()
 
-        # Call the function
         send_operator_access_request_email(
             access_state, access_type, operator_legal_name, external_user_full_name, external_user_email_address
         )
