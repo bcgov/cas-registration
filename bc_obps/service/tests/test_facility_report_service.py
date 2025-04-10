@@ -74,7 +74,7 @@ class TestFacilityReportService(TestCase):
             facility_type=facility_report.facility_type,
             facility_bcghgid=facility_report.facility_bcghgid,
             activities=[],
-            products=[],
+            regulated_products=[],
         )
         returned_data = FacilityReportService.save_facility_report(
             report_version_id=facility_report.report_version_id,
@@ -138,7 +138,7 @@ class TestFacilityReportService(TestCase):
             facility_type=facility_report.facility_type,
             facility_bcghgid=facility_report.facility_bcghgid,
             activities=['1'],
-            products=[],
+            regulated_products=[],
         )
         FacilityReportService.save_facility_report(
             report_version_id=facility_report.report_version_id,
