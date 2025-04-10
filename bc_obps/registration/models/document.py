@@ -1,4 +1,3 @@
-import typing
 from django.db import models
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
@@ -20,9 +19,11 @@ class Document(TimeStampedModel):
         related_name="documents",
         db_comment="Type of document, e.g., boundary map",
     )
-    description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
+    description = models.CharField(
+        max_length=1000, blank=True, null=True, db_comment="Description of the document"
+    )
     operation = models.ForeignKey(
-        'registration.Operation',
+        "registration.Operation",
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
@@ -35,17 +36,9 @@ class Document(TimeStampedModel):
     )
 
     # File malware scan status
-    class FileStatus(models.TextChoices):
-        UNSCANNED = "Unscanned"
-        CLEAN = "Clean"
-        QUARANTINED = "Quarantined"
-
-    status = models.CharField(max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED)
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = (
-            "Table that contains information about documents such as file metadata, type, and description."
-        )
+        db_table_comment = "Table that contains information about documents such as file metadata, type, and description."
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.DOCUMENT.value}'
 
     Rls = DocumentRls
