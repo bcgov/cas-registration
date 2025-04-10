@@ -12,7 +12,7 @@ const operationGroupColumns = (
 ) => {
   const columnGroupModel = [
     createColumnGroup("bcghg_id", "BC GHG ID", SearchCell),
-    createColumnGroup("name", "Operation", SearchCell),
+    createColumnGroup("operation_name", "Operation", SearchCell),
     createColumnGroup(
       "report_updated_at",
       "Date of submission",

@@ -1,8 +1,9 @@
 from uuid import UUID
-from django.db.models import OuterRef, QuerySet, Value, F
-from django.db.models.functions import Concat
+from django.db.models import OuterRef, QuerySet, Value, F, Subquery
+from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
+from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
@@ -51,6 +52,10 @@ class ReportingDashboardService:
             .annotate(latest_version_updated_at=report_version_subquery.values("updated_at"))
             .annotate(latest_version_updated_by=report_version_subquery.values("full_name"))
         )
+        report_operation_name_subquery = ReportOperation.objects.filter(
+            report_version__report__operation_id=OuterRef("id"),
+            report_version__report__reporting_year=reporting_year,
+        ).values("operation_name")[:1]
 
         queryset = (
             OperationDataAccessService.get_all_operations_for_user(user)
@@ -61,6 +66,7 @@ class ReportingDashboardService:
                 report_status=report_subquery.values("latest_version_status"),
                 report_updated_at=report_subquery.values("latest_version_updated_at"),
                 report_submitted_by=report_subquery.values("latest_version_updated_by"),
+                operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
             )
         )
 
