@@ -11,11 +11,18 @@ export const OutstandingComplianceObligation = ({ data }: Prop) => {
       <TitleRow label={`Outstanding Compliance Obligation`} />
       <InfoRow
         label="Outstanding Balance:"
-        value={`${data.outstanding_balance} tCO2e`}
+        value={`${
+          data.outstanding_balance
+            ? data.outstanding_balance.toFixed(4)
+            : "0.0000"
+        } tCO2e`}
       />
       <InfoRow
         label="Equivalent Value:"
-        value={`${data.excess_emissions * data.compliance_change_rate} tCO2e`}
+        value={`$${data.equivalent_value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`}
         style={{ marginBottom: "50px" }}
       />
     </div>

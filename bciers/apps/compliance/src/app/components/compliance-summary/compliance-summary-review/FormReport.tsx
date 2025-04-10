@@ -7,15 +7,15 @@ export const FormReport = ({ data }: any) => {
       <TitleRow label={`From ${data.reporting_year} Report`} />
       <InfoRow
         label="Emissions Attributable for Compliance:"
-        value={`${data.emissions_attributable_for_compliance} tCO2e`}
+        value={`${data.emissions_attributable_for_compliance.toFixed(4)} tCO2e`}
       />
       <InfoRow
         label="Emissions Limit:"
-        value={`${data.emission_limit} tCO2e`}
+        value={`${data.emission_limit.toFixed(4)} tCO2e`}
       />
       <InfoRow
         label="Excess Emissions:"
-        value={`${data.excess_emissions} tCO2e`}
+        value={`${data.excess_emissions.toFixed(4)} tCO2e`}
         style={{ marginBottom: "50px" }}
       />
     </div>

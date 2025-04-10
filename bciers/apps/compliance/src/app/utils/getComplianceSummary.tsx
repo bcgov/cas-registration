@@ -53,6 +53,7 @@ export const getComplianceSummary = async (
   }
   const chargeRate = COMPLIANCE_CHARGE_RATES[data.reporting_year] || 80.0;
   const pageData = {
+    ...data,
     operation_name: data.operation_name,
     reporting_year: data.reporting_year,
     emissions_attributable_for_compliance: parseDecimal(
@@ -63,6 +64,7 @@ export const getComplianceSummary = async (
     obligation_id: data.obligation_id,
     compliance_charge_rate: chargeRate,
     equivalent_value: parseDecimal(data.excess_emissions) * chargeRate,
+    outstanding_balance: parseDecimal(data.excess_emissions),
     penalty_status: "Accruing",
     penalty_type: "Automatic Overdue",
     penalty_rate_daily: 0.38,
