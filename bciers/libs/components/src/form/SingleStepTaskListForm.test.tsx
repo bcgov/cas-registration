@@ -143,7 +143,7 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByLabelText("Address*")).toBeVisible();
     expect(screen.getByLabelText("City*")).toBeVisible();
 
-    // It should render the submit and back buttons
+    // It should render the save and back buttons
     expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
