@@ -5,7 +5,7 @@ kind: Job
 metadata:
   labels:
 {{- include "cas-bciers.labels" . | nindent 4 }}
-    component: backend
+    component: job-with-database-access
   name: {{ template "cas-bciers.fullname" . }}-reset-database
   namespace: {{ .Release.Namespace }}
   annotations:
@@ -18,7 +18,7 @@ spec:
       name: {{ template "cas-bciers.fullname" . }}-reset-database
       labels:
 {{- include "cas-bciers.labels" . | nindent 8 }}
-        component: backend
+        component: job-with-database-access
     spec:
       activeDeadlineSeconds: 180
       containers:
