@@ -197,3 +197,21 @@ class TestReportProductService:
         assert return_value[0] == ReportProduct.objects.get(product_id=products[0].id)
         assert return_value[1] == ReportProduct.objects.get(product_id=products[1].id)
         assert return_value[2] == ReportProduct.objects.get(product_id=products[2].id)
+
+    # If the operation has the FOG regulated_product, it should be auto-generated despite not being in the data
+    def test_saves_fog_record_data(self):
+
+        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
+
+        self.report_operation.regulated_products.set([1, 29, 39])
+
+        ReportProductService.save_production_data(
+            self.report_version_id,
+            self.facility_id,
+            self.test_data,
+            self.test_user_guid,
+        )
+
+        assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
+
+        assert ReportProduct.objects.filter(facility_report=self.facility_report, product_id=39).exists()
