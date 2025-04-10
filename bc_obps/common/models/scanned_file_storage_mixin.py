@@ -4,14 +4,17 @@ from django.db import models
 from django.core.files.storage import storages
 
 
-class ScannedFileStorage(
-    models.Model,
-):
-    """
-    Base class to
+class ScannedFileStorageMixin(models.Model):
+    class Meta:
+        abstract = True
 
-    Implements:
-    - A custom save method saving
+    """
+    Base class to add the bucket scanning feature to any django model
+    with a FileField.
+    Current implementation doesn't support multiple FileFields on a model.
+
+    Requires:
+    - The class extending this mixin will need to override `get_file_field` to return the field
     """
 
     class FileStatus(models.TextChoices):
@@ -19,9 +22,7 @@ class ScannedFileStorage(
         CLEAN = "Clean"
         QUARANTINED = "Quarantined"
 
-    status = models.CharField(
-        max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED
-    )
+    status = models.CharField(max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED)
 
     def get_file_field(self) -> models.FileField:
         """
@@ -31,11 +32,11 @@ class ScannedFileStorage(
 
     @typing.no_type_check
     def get_storage_handler(self):
-        if self.status == ScannedFileStorage.FileStatus.CLEAN:
+        if self.status == ScannedFileStorageMixin.FileStatus.CLEAN:
             return storages["clean"]
-        elif self.status == ScannedFileStorage.FileStatus.QUARANTINED:
+        elif self.status == ScannedFileStorageMixin.FileStatus.QUARANTINED:
             return storages["quarantined"]
-        elif self.status == ScannedFileStorage.FileStatus.UNSCANNED:
+        elif self.status == ScannedFileStorageMixin.FileStatus.UNSCANNED:
             return storages["default"]
         else:
             return storages["default"]
@@ -63,6 +64,3 @@ class ScannedFileStorage(
             self.get_storage_handler().delete(self.get_file_field().name)
 
         super().delete(*args, **kwargs)
-
-    class Meta:
-        abstract = True
