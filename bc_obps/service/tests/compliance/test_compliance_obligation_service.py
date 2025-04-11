@@ -2,11 +2,9 @@ import uuid
 from unittest.mock import patch, MagicMock
 from decimal import Decimal
 from datetime import date
-
 import pytest
 import requests
-
-from service.compliance_obligation_service import ComplianceObligationService
+from service.compliance.compliance_obligation_service import ComplianceObligationService
 from compliance.models import ComplianceObligation, ComplianceSummary
 from reporting.models import Report, ReportVersion
 
@@ -88,9 +86,9 @@ class TestComplianceObligationService:
         assert "Operation Name: Unregulated Test Operation" in error_msg
 
     @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_success(
         self,
         mock_ensure_client,
@@ -122,9 +120,9 @@ class TestComplianceObligationService:
         mock_ensure_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
 
     @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_client_not_created(
         self,
         mock_ensure_client,
@@ -154,9 +152,9 @@ class TestComplianceObligationService:
         mock_ensure_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
 
     @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_attribute_error(
         self,
         mock_ensure_client,
@@ -187,9 +185,9 @@ class TestComplianceObligationService:
         mock_ensure_client.assert_not_called()
 
     @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_request_exception(
         self,
         mock_ensure_client,
@@ -219,9 +217,9 @@ class TestComplianceObligationService:
         mock_ensure_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
 
     @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
     def test_create_compliance_obligation_generic_exception(
         self,
         mock_ensure_client,
@@ -251,8 +249,8 @@ class TestComplianceObligationService:
         mock_ensure_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
 
     @pytest.mark.django_db
-    @patch('service.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
     def test_create_compliance_obligation_unregulated_operation(
         self,
         mock_create,

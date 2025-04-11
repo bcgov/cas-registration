@@ -3,7 +3,7 @@ from decimal import Decimal
 from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models import ComplianceObligation, ComplianceSummary
-from service.operator_elicensing_service import OperatorELicensingService
+from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
 import logging
 import requests
 
