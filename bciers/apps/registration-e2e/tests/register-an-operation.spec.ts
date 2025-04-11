@@ -44,8 +44,10 @@ test.describe("Test register operations", () => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
     await registrationPage.route();
+    let componentName;
 
     // STEP 1
+    componentName = "Registration Operation Information";
     await registrationPage.assertHeading(
       OperationRegistrationSteps.OPERATION_INFORMATION,
     );
@@ -53,68 +55,73 @@ test.describe("Test register operations", () => {
       RegistrationPurposes.NEW_ENTRANT_OPERATION,
     );
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration Operation Information",
+      component: componentName,
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
     await registrationPage.clickSaveAndContinue();
 
     await registrationPage.waitForRegistrationUrl(2);
 
     // // STEP 2
+    componentName = "Registration SFO Facility Information";
     await registrationPage.assertHeading(
       OperationRegistrationSteps.FACILITY_INFORMATION,
     );
     await registrationPage.fillSfoFacilityInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration SFO Facility Information",
+      component: componentName,
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
     await registrationPage.clickSaveAndContinue();
     await registrationPage.waitForRegistrationUrl(3);
 
     // // STEP 2
+    componentName = "Registration New Entrant Information";
     await registrationPage.assertHeading(/new entrant operation/i);
     await registrationPage.fillNewEntrantInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration New Entrant Information",
+      component: componentName,
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
     await registrationPage.clickSaveAndContinue();
     await registrationPage.waitForRegistrationUrl(3);
 
     // STEP 4
+    componentName = "Registration Operation Representative";
     await registrationPage.assertHeading(
       OperationRegistrationSteps.OPERATION_REPRESENTATIVE,
     );
     await registrationPage.fillNewOperationRepresentative();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration Operation Representative",
+      component: componentName,
       variant: "filled",
     });
 
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
     await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
     await registrationPage.waitForRegistrationUrl(5);
 
     // STEP 5
+    componentName = "Registration Submission";
     await registrationPage.assertHeading(OperationRegistrationSteps.SUBMISSION);
     await registrationPage.fillSubmission();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration Submission",
+      component: componentName,
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
     await clickButton(registrationPage.page, /submit/i); // button on this form is `Submit`
 
     // CONFIRMATION
+    componentName = "Registration Confirmation";
     await expect(
       registrationPage.page.getByText(/registration complete/i),
     ).toBeVisible();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration Confirmation",
+      component: componentName,
       variant: "default",
     });
     await analyzeAccessibility(page);
@@ -123,6 +130,7 @@ test.describe("Test register operations", () => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
     await registrationPage.route();
+    let componentName;
 
     // STEP 1
     await registrationPage.assertHeading(
@@ -137,29 +145,31 @@ test.describe("Test register operations", () => {
     await registrationPage.waitForRegistrationUrl(2);
 
     // // STEP 2
+    componentName = "Registration LFO Facility Information";
     await registrationPage.assertHeading(
       OperationRegistrationSteps.FACILITY_INFORMATION,
     );
     await registrationPage.fillLfoFacilityInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration LFO Facility Information",
+      component: componentName,
       variant: "filled",
     });
     // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
-    // await analyzeAccessibility(page);
+    // await analyzeAccessibility(page, componentName);
     await registrationPage.clickSaveAndContinue();
     await registrationPage.waitForRegistrationUrl(3);
 
     // // STEP 2
+    componentName = "Registration Opt-In Application";
     await registrationPage.assertHeading(
       OperationRegistrationSteps.OPT_IN_APPLICATION,
     );
     await registrationPage.fillOptInInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Registration Opt-In Application",
+      component: componentName,
       variant: "filled",
     });
-    await analyzeAccessibility(page);
+    await analyzeAccessibility(page, componentName);
     await registrationPage.clickSaveAndContinue();
     await registrationPage.waitForRegistrationUrl(3);
 
