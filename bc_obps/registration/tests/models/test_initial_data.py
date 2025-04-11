@@ -149,8 +149,6 @@ class TestInitialData(TestCase):
                 'Forged steel balls: greater than 4 inches diameter',
                 'Oil and gas non-processing, non-compression',
                 'Fat, oil and grease collection, refining and storage',
-                'Mining: critical mineral, other than copper',
-                'Smelting: critical mineral, other than aluminun and lead-zinc',
                 'Refineries line tracing',
             ]
         )
