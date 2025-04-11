@@ -17,11 +17,21 @@ import {
 } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 
-// 🛠️ Function: analyze the accessibility of the page
-export async function analyzeAccessibility(page: Page) {
+// 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
+export async function analyzeAccessibility(
+  page: Page,
+  description: string = "",
+) {
   const accessibilityScanResults = await new AxeBuilder({
     page,
   }).analyze();
+
+  if (accessibilityScanResults.violations.length > 0) {
+    console.log(
+      `[Accessibility Violation: ${description}]`,
+      accessibilityScanResults.violations,
+    );
+  }
 
   expect(accessibilityScanResults.violations).toEqual([]);
 }
