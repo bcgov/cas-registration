@@ -1,3 +1,4 @@
+"use-client";
 import { FormReport } from "./FormReport";
 import { ComplianceHeading } from "../ComplianceHeading";
 import { ComplianceObligation } from "./ComplianceObligation";
@@ -6,6 +7,8 @@ import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
 import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
+// Removed server action import as we'll directly use the API endpoint
+import { useState } from "react";
 
 interface Props {
   continueUrl: string;
@@ -16,8 +19,26 @@ interface Props {
 
 export function ComplianceSummaryReviewContent(props: Props) {
   const { backUrl, continueUrl, data, complianceSummaryId } = props;
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
-  const handleGenerateInvoice = () => {};
+  const handleGenerateInvoice = async () => {
+    if (!complianceSummaryId) {
+      return;
+    }
+
+    try {
+      setIsGeneratingInvoice(true);
+
+      const invoiceUrl = `/compliance/api/invoice/${complianceSummaryId}`;
+
+      window.open(invoiceUrl, "_blank");
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      throw new Error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -37,9 +58,13 @@ export function ComplianceSummaryReviewContent(props: Props) {
         backUrl={backUrl}
         continueUrl={continueUrl}
         backButtonDisabled={false}
-        middleButtonDisabled={false}
+        middleButtonDisabled={isGeneratingInvoice}
         submitButtonDisabled={false}
-        middleButtonText="Generate Compliance Invoice"
+        middleButtonText={
+          isGeneratingInvoice
+            ? "Generating Invoice..."
+            : "Generate Compliance Invoice"
+        }
         onMiddleButtonClick={handleGenerateInvoice}
       />
     </div>

@@ -83,8 +83,16 @@ FROM base AS runner
 
 # Refresh package lists from repositories
 RUN apt-get update && \
-    # Install essential runner packages
-    apt-get install -y --no-install-recommends curl && \
+    # Install essential runner packages and WeasyPrint dependencies
+    apt-get install -y --no-install-recommends \
+    curl \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libffi-dev \
+    shared-mime-info \
+    fonts-liberation && \
     # Clean apt cache
     apt-get clean && \
     # Remove package lists to reduce size
