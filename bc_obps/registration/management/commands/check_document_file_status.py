@@ -1,7 +1,9 @@
+from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.core.management.base import BaseCommand
+from django.db.models import QuerySet
 from registration.models import Document
-from service.data_access_service.document_service import DocumentDataAccessService
 import time
+from reporting.models.report_attachment import ReportAttachment
 
 
 class Command(BaseCommand):
@@ -55,13 +57,27 @@ class Command(BaseCommand):
             time.sleep(sleep_duration)
 
             try:
-                unscanned_documents = Document.objects.filter(status=Document.FileStatus.UNSCANNED)
-                for document in unscanned_documents:
-                    DocumentDataAccessService.check_document_file_status(document)
-                    self.stdout.write(f"Checking status of document id: {document.id}")
-                self.stdout.write(self.style.SUCCESS(f"Checked {unscanned_documents.count()} documents"))
+                unscanned_models: QuerySet[ScannedFileStorageMixin] = (
+                    Document.objects.filter(
+                        status=ScannedFileStorageMixin.FileStatus.UNSCANNED
+                    )
+                    | ReportAttachment.objects.filter(
+                        status=ScannedFileStorageMixin.FileStatus.UNSCANNED
+                    )
+                )
+
+                for model in unscanned_models:
+                    model.sync_file_status()
+                    self.stdout.write(
+                        f"Checking status of model {model._meta.object_name} with id: {model.id}"
+                    )
+                self.stdout.write(
+                    self.style.SUCCESS(f"Checked {unscanned_models.count()} documents")
+                )
             except Exception as e:
-                self.stdout.write(self.style.NOTICE(f"Error checking status of documents: {e}"))
+                self.stdout.write(
+                    self.style.NOTICE(f"Error checking status of documents: {e}")
+                )
                 raise e
 
         self.stdout.write("Completed check loop")
