@@ -5,7 +5,7 @@ import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import { auth } from "@/dashboard/auth";
-import SessionProvider from "@/dashboard/auth/SessionProvider";
+import SessionProvider from "@bciers/components/auth/SessionProvider";
 import {
   theme,
   NextAppDirEmotionCacheProvider,
