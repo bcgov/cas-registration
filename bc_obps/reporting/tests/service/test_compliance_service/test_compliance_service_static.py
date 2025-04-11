@@ -3,7 +3,7 @@ from decimal import Decimal
 from reporting.models.report_product import ReportProduct
 from reporting.models.emission_category import EmissionCategory
 from reporting.models.report import Report
-from registration.models.operation import Operation
+from registration.models.operation import Operation, RegulatedProduct
 from reporting.service.compliance_service import ComplianceService
 from model_bakery.baker import make_recipe
 
@@ -247,6 +247,10 @@ class TestComplianceSummaryService(TestCase):
         )
         assert reporting_only_for_test == allocation_2.allocated_quantity + allocation_4.allocated_quantity
 
+        fog_product_id = RegulatedProduct.objects.get(
+            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+        ).id
+
         # Add a fog product
         fog_product_allocation = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
@@ -255,7 +259,7 @@ class TestComplianceSummaryService(TestCase):
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal('12.0'),
         )
-        ReportProduct.objects.filter(pk=fog_product_allocation.report_product_id).update(product_id=39)
+        ReportProduct.objects.filter(pk=fog_product_allocation.report_product_id).update(product_id=fog_product_id)
 
         # Correctly aggregates reporting-only emissions when there is a fog product
         reporting_only_with_fog_for_test = ComplianceService.get_reporting_only_allocated(
