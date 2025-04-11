@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/extensions
 import "@bciers/styles/globals.css";
+import dynamic from "next/dynamic";
 import type { Metadata, Viewport } from "next";
 import { PublicEnvScript } from "next-runtime-env";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
@@ -14,6 +15,12 @@ import {
   Bread,
 } from "@bciers/components";
 import { Main } from "@bciers/components/server";
+
+// Dynamically import SessionTimeoutHandler with SSR disabled
+const SessionTimeoutHandler = dynamic(
+  () => import("@bciers/components/auth/SessionTimeoutHandler"),
+  { ssr: false },
+);
 
 const rootMetadata: Metadata = {
   title: "CAS OBPS",
@@ -80,7 +87,10 @@ export default async function RootLayout({
                 defaultLinks={defaultLinks}
                 zone={zone}
               />
-              <Main>{children}</Main>
+              <Main>
+                <SessionTimeoutHandler />
+                {children}
+              </Main>
               <Footer />
             </ThemeProvider>
           </NextAppDirEmotionCacheProvider>
