@@ -26,12 +26,48 @@ export async function analyzeAccessibility(page: Page) {
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
+// Helpers for filling forms
 export async function addPdf(page: Page, index: number = 0) {
   // Pass an index if there are multiple file inputs on the page
   const inputs = await page.locator('input[type="file"]').all();
   const input = inputs[index];
   await input.setInputFiles("./e2e/assets/test.pdf");
   expect(page.getByText("test.pdf")).toBeVisible();
+}
+
+export async function clickButton(page: Page, buttonName: string | RegExp) {
+  page
+    .getByRole("button", {
+      name: buttonName,
+    })
+    .click();
+}
+
+export async function fillComboxboxWidget(
+  page: Page,
+  labelText: string | RegExp,
+  value: string,
+) {
+  const input = await page.getByRole("combobox", {
+    name: labelText,
+  });
+  await expect(input).toBeVisible();
+  await expect(input).toBeEnabled();
+  await input.fill(value);
+  const option = page.getByRole("option", { name: value });
+  await expect(option).toBeVisible();
+  await option.click();
+}
+
+export async function fillDropdownByLabel(
+  page: Page,
+  labelText: string | RegExp,
+  value: string,
+) {
+  const input = await page.getByLabel(labelText);
+  await expect(input).toBeVisible();
+  await expect(input).toBeEnabled();
+  await input.fill(value);
 }
 
 // 🛠️ Function: checks expected alert mesage
@@ -80,7 +116,7 @@ export async function checkFormFieldsReadOnly(
       ]);
       // Assert visibility to be true
       await expect(visible).toBeTruthy();
-      if (readonly == true) {
+      if (readonly === true) {
         await expect(disabled).toBeTruthy();
         await expect(editable).toBeFalsy();
       } else {
