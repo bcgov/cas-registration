@@ -61,17 +61,19 @@ class UnifiedGcsStorage(GoogleCloudStorage):
 
     def exists(self, name: str) -> bool:
         return (
-            self._exists_in_quarantined_bucket(name)
-            or self._exists_in_clean_bucket(name)
+            self._exists_in_clean_bucket(name)
             or self._exists_in_unscanned_bucket(name)
+            or self._exists_in_quarantined_bucket(name)
         )
 
     def get_file_bucket(self, name: str) -> str | None:
+        if self._exists_in_clean_bucket(name):
+            return "Clean"
+
+        if self._exists_in_unscanned_bucket(name):
+            return "Unscanned"
+
         if self._exists_in_quarantined_bucket(name):
             return "Quarantined"
-        elif self._exists_in_unscanned_bucket(name):
-            return "Unscanned"
-        elif self._exists_in_clean_bucket(name):
-            return "Clean"
-        else:
-            return None
+
+        return None
