@@ -4,6 +4,7 @@ import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTem
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { FormMode } from "@bciers/utils/src/enums";
 import { FrontendMessages } from "@bciers/utils/src/enums";
+
 const section1: RJSFSchema = {
   type: "object",
   title: "Section 1",
@@ -142,9 +143,9 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByLabelText("Address*")).toBeVisible();
     expect(screen.getByLabelText("City*")).toBeVisible();
 
-    // It should render the submit and cancel buttons
-    expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+    // It should render the save and back buttons
+    expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
   it("should show the confirmation snackbar when new form is submitted (when creating)", async () => {
     const schemaNonRequired: RJSFSchema = {
@@ -170,8 +171,8 @@ describe("the SingleStepTaskListForm component", () => {
         }}
       />,
     );
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
     await waitFor(() => {
       expect(
         screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
@@ -208,7 +209,7 @@ describe("the SingleStepTaskListForm component", () => {
     expect(screen.getByLabelText("City*")).toHaveValue("Victoria");
 
     // It should render the correct buttons
-    expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Save" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
     expect(screen.getByText("Testing inline message")).toBeVisible();
   });
@@ -232,8 +233,8 @@ describe("the SingleStepTaskListForm component", () => {
     );
     const editButton = screen.getByRole("button", { name: "Edit" });
     fireEvent.click(editButton);
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
     await waitFor(() => {
       expect(
         screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
@@ -265,6 +266,7 @@ describe("the SingleStepTaskListForm component", () => {
           // eslint-disable-next-line no-console
           console.log("submit", e);
         }}
+        mode={FormMode.EDIT}
       />,
     );
 
@@ -291,8 +293,8 @@ describe("the SingleStepTaskListForm component", () => {
       />,
     );
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
 
     const errorMessages = screen.getAllByText("Required field");
 
@@ -325,8 +327,8 @@ describe("the SingleStepTaskListForm component", () => {
 
     expect(inputBorderElement).toHaveStyle(defaultStyle);
 
-    const submitButton = screen.getByRole("button", { name: "Submit" });
-    fireEvent.click(submitButton);
+    const saveButton = screen.getByRole("button", { name: "Save" });
+    fireEvent.click(saveButton);
 
     expect(inputBorderElement).toHaveStyle(errorStyle);
 
@@ -376,17 +378,17 @@ describe("the SingleStepTaskListForm component", () => {
       />,
     );
     expect(screen.queryByRole("button", { name: "Edit" })).toBeNull();
-    expect(screen.queryByRole("button", { name: "Submit" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Save" })).toBeNull();
   });
 
-  it("should not render the Tasklist sidebar or Cancel button when showTasklist  and showCancelButton is false", () => {
+  it("should not render the Tasklist sidebar or Cancel button when showTasklist and showCancelOrBackButton is false", () => {
     render(
       <SingleStepTaskListForm
         schema={schema}
         uiSchema={uiSchema}
         formData={{}}
         showTasklist={false}
-        showCancelButton={false}
+        showCancelOrBackButton={false}
         onCancel={() => {
           // eslint-disable-next-line no-console
           console.log("cancel");
@@ -410,6 +412,76 @@ describe("the SingleStepTaskListForm component", () => {
     expect(
       screen.queryByRole("button", { name: "Cancel" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("should render the Back button when readonly", () => {
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
+        mode={FormMode.READ_ONLY}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Cancel" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
+  });
+
+  it("should render the Cancel button when editing", () => {
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
+        mode={FormMode.EDIT}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Back" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+  });
+  it("should render the Back button when creating", () => {
+    render(
+      <SingleStepTaskListForm
+        schema={schema}
+        uiSchema={uiSchema}
+        formData={{}}
+        onCancel={() => {
+          // eslint-disable-next-line no-console
+          console.log("cancel");
+        }}
+        onSubmit={async (e) => {
+          // eslint-disable-next-line no-console
+          console.log("submit", e);
+        }}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Cancel" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
 });
 

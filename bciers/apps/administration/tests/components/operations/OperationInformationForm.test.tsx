@@ -190,8 +190,8 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Operation Name/i)).toBeVisible();
     expect(screen.getByText(/Operation Type/i)).toBeVisible();
 
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Edit" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
 
   it("should render the form with the correct values for a non-EIO when formData is provided", async () => {
@@ -316,7 +316,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.queryByRole("button", { name: "Edit" })).toBeNull();
   });
 
-  it("should edit and submit the form", async () => {
+  it("should edit and save the form", async () => {
     render(
       <OperationInformationForm
         formData={formData}
@@ -341,9 +341,9 @@ describe("the OperationInformationForm component", () => {
       fireEvent.change(nameInput, { target: { value: "Operation 4" } });
     });
 
-    // Click the Submit button
+    // Click the Save button
     await act(async () => {
-      screen.getByRole("button", { name: "Submit" }).click();
+      screen.getByRole("button", { name: /save/i }).click();
     });
 
     expect(actionHandler).toHaveBeenCalledTimes(1);
@@ -363,7 +363,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Operation 4/i)).toBeVisible();
   });
 
-  it("should edit and submit opt-in operation details in the form", async () => {
+  it("should edit and save opt-in operation details in the form", async () => {
     render(
       <OperationInformationForm
         formData={optInFormData}
@@ -395,8 +395,8 @@ describe("the OperationInformationForm component", () => {
         expect(radioBtn).toBeChecked();
       });
 
-      // Click the Submit button
-      screen.getByRole("button", { name: "Submit" }).click();
+      // Click the Save button
+      screen.getByRole("button", { name: /save/i }).click();
     });
 
     expect(actionHandler).toHaveBeenCalledTimes(2);
@@ -428,7 +428,7 @@ describe("the OperationInformationForm component", () => {
     });
   });
 
-  it("should render the form in read-only mode and not show Edit/Submit button if the user is not an industry_user_admin", async () => {
+  it("should render the form in read-only mode and not show Edit/Save button if the user is not an industry_user_admin", async () => {
     useSession.mockReturnValue({
       data: {
         user: {
@@ -454,10 +454,10 @@ describe("the OperationInformationForm component", () => {
       screen.queryByRole("button", { name: "Edit" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "Submit" }),
+      screen.queryByRole("button", { name: /save/i }),
     ).not.toBeInTheDocument();
-    // still show the cancel button
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+    // still show the back button
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
 
   it("should render the opt-in information if purpose is opt-in", async () => {
@@ -761,7 +761,7 @@ describe("the OperationInformationForm component", () => {
     ).toHaveAttribute("href", mockDataUri);
   });
 
-  it("should edit and submit the new entrant application form", async () => {
+  it("should edit and save the new entrant application form", async () => {
     useSession.mockReturnValue({
       data: {
         user: {
@@ -854,10 +854,10 @@ describe("the OperationInformationForm component", () => {
       "data-name",
       "mock_file.pdf",
     );
-    const submitButton = screen.getByRole("button", {
-      name: "Submit",
+    const saveButton = screen.getByRole("button", {
+      name: /save/i,
     });
-    await userEvent.click(submitButton);
+    await userEvent.click(saveButton);
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(actionHandler).toHaveBeenCalledWith(
       `registration/operations/${operationId}`,
@@ -906,10 +906,10 @@ describe("the OperationInformationForm component", () => {
     await userEvent.click(cancelChipIcon[2]); // 0-1 are activities
     expect(screen.queryByText(/ivy/i)).not.toBeInTheDocument();
 
-    const submitButton = screen.getByRole("button", {
-      name: "Submit",
+    const saveButton = screen.getByRole("button", {
+      name: /save/i,
     });
-    await userEvent.click(submitButton);
+    await userEvent.click(saveButton);
     expect(actionHandler).toHaveBeenCalledTimes(0);
     expect(screen.getByText(/Must not have fewer than 1 items/i)).toBeVisible();
   });
@@ -972,10 +972,10 @@ describe("the OperationInformationForm component", () => {
         "Jack King{enter}",
       );
 
-      const submitButton = screen.getByRole("button", {
-        name: "Submit",
+      const saveButton = screen.getByRole("button", {
+        name: /save/i,
       });
-      await userEvent.click(submitButton);
+      await userEvent.click(saveButton);
       expect(actionHandler).toHaveBeenCalledTimes(1);
       expect(actionHandler).toHaveBeenCalledWith(
         `registration/operations/${operationId}`,

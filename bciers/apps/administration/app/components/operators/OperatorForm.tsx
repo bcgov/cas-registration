@@ -19,7 +19,7 @@ interface Props {
   isCreating?: boolean;
   isInternalUser: boolean;
   showTasklist?: boolean;
-  showCancelButton?: boolean;
+  showCancelOrBackButton?: boolean;
 }
 export default function OperatorForm({
   formData,
@@ -27,7 +27,7 @@ export default function OperatorForm({
   isCreating,
   isInternalUser,
   showTasklist = true,
-  showCancelButton = true,
+  showCancelOrBackButton = true,
 }: Readonly<Props>) {
   // @ ts-ignore
 
@@ -38,7 +38,7 @@ export default function OperatorForm({
   const { update } = useSession();
   return (
     <SingleStepTaskListForm
-      showCancelButton={showCancelButton}
+      showCancelOrBackButton={showCancelOrBackButton}
       showTasklist={showTasklist}
       error={error}
       schema={schema}
