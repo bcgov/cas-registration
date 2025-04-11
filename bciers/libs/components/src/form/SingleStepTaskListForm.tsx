@@ -28,7 +28,7 @@ interface SingleStepTaskListFormProps {
   allowEdit?: boolean;
   formContext?: { [key: string]: any };
   showTasklist?: boolean;
-  showCancelButton?: boolean;
+  showCancelOrBackButton?: boolean;
   customButtonSection?: React.ReactNode;
 }
 
@@ -46,12 +46,13 @@ const SingleStepTaskListForm = ({
   allowEdit = true,
   formContext,
   showTasklist = true,
-  showCancelButton = true,
+  showCancelOrBackButton = true,
   customButtonSection,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
   const [formState, setFormState] = useState(formData);
+  const [modeState, setModeState] = useState(mode);
   const [isDisabled, setIsDisabled] = useState(
     disabled || mode === FormMode.READ_ONLY,
   );
@@ -117,7 +118,10 @@ const SingleStepTaskListForm = ({
           formData={formState}
           onChange={handleFormChange}
           // onError={handleError}
-          onSubmit={submitHandler}
+          onSubmit={(e) => {
+            submitHandler(e);
+            setModeState(FormMode.READ_ONLY);
+          }}
           omitExtraData={true}
         >
           {inlineMessage && <div className="mt-10 mb-5">{inlineMessage}</div>}
@@ -125,15 +129,26 @@ const SingleStepTaskListForm = ({
             {error && <Alert severity="error">{error}</Alert>}
           </div>
           {customButtonSection || (
-            <div className="w-full flex justify-end mt-8">
+            <div className="w-full flex justify-start mt-8">
+              {showCancelOrBackButton && (
+                <Button
+                  className="mr-4"
+                  variant="outlined"
+                  type="button"
+                  onClick={onCancel}
+                >
+                  {modeState === FormMode.EDIT ? "Cancel" : "Back"}
+                </Button>
+              )}
               {allowEdit && (
-                <div>
+                <>
                   {isDisabled ? (
                     <Button
                       variant="contained"
                       onClick={() => {
                         setIsDisabled(false);
                         setIsSnackbarOpen(false);
+                        setModeState(FormMode.EDIT);
                       }}
                     >
                       Edit
@@ -143,20 +158,10 @@ const SingleStepTaskListForm = ({
                       disabled={isSubmitting}
                       isSubmitting={isSubmitting}
                     >
-                      Submit
+                      Save
                     </SubmitButton>
                   )}
-                </div>
-              )}
-              {showCancelButton && (
-                <Button
-                  className="ml-4"
-                  variant="outlined"
-                  type="button"
-                  onClick={onCancel}
-                >
-                  Cancel
-                </Button>
+                </>
               )}
             </div>
           )}
