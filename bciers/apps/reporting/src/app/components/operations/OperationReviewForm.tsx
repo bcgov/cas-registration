@@ -10,10 +10,19 @@ import {
 } from "@reporting/src/data/jsonSchema/operations";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
-import { NavigationInformation } from "../taskList/types";
+import {
+  HeaderStep,
+  NavigationInformation,
+  ReportingPage,
+} from "../taskList/types";
 import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 import SnackBar from "@bciers/components/form/components/SnackBar";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import {
+  showBoroId,
+  showRegulatedProducts,
+} from "@reporting/src/app/components/operations/getOperationSchemaParameters";
 
 interface Props {
   formData: any;
@@ -24,8 +33,7 @@ interface Props {
   reportingWindowEnd: string;
   allActivities: any[];
   allRegulatedProducts: any[];
-  showRegulatedProducts: boolean;
-  showBoroId: boolean;
+  facilityId: string;
 }
 export default function OperationReviewForm({
   formData,
@@ -36,8 +44,7 @@ export default function OperationReviewForm({
   reportingWindowEnd,
   allActivities,
   allRegulatedProducts,
-  showRegulatedProducts,
-  showBoroId,
+  facilityId,
 }: Props) {
   const [pendingChangeReportType, setPendingChangeReportType] =
     useState<string>();
@@ -46,6 +53,7 @@ export default function OperationReviewForm({
   const [errors, setErrors] = useState<string[]>();
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  const [navigationInfo, setNavigationInfo] = useState(navigationInformation);
 
   const router = useRouter();
 
@@ -94,11 +102,18 @@ export default function OperationReviewForm({
         allRegulatedProducts,
         newData.report_operation_representatives,
         reportType,
-        showRegulatedProducts,
-        showBoroId,
+        showRegulatedProducts(newData.registration_purpose),
+        showBoroId(newData.registration_purpose),
       ),
     );
-
+    setNavigationInfo(
+      await getNavigationInformation(
+        HeaderStep.OperationInformation,
+        ReportingPage.ReviewOperationInfo,
+        version_id,
+        facilityId,
+      ),
+    );
     setFormDataState(newData);
     setErrors(undefined);
     setIsSnackbarOpen(true);
@@ -148,9 +163,9 @@ export default function OperationReviewForm({
         )}
       </SimpleModal>
       <MultiStepFormWithTaskList
-        initialStep={navigationInformation.headerStepIndex}
-        steps={navigationInformation.headerSteps}
-        taskListElements={navigationInformation.taskList}
+        initialStep={navigationInfo.headerStepIndex}
+        steps={navigationInfo.headerSteps}
+        taskListElements={navigationInfo.taskList}
         schema={pageSchema}
         uiSchema={{
           ...uiSchema,
@@ -165,8 +180,8 @@ export default function OperationReviewForm({
         formData={formDataState}
         onSubmit={saveHandler}
         onChange={onChangeHandler}
-        backUrl={navigationInformation.backUrl}
-        continueUrl={navigationInformation.continueUrl}
+        backUrl={navigationInfo.backUrl}
+        continueUrl={navigationInfo.continueUrl}
         errors={errors}
       />
       <SnackBar

@@ -45,8 +45,7 @@ export default async function OperationReviewPage({
       reportingWindowEnd={params.reportingWindowEnd}
       allActivities={params.allActivities}
       allRegulatedProducts={params.allRegulatedProducts}
-      showRegulatedProducts={params.showRegulatedProducts}
-      showBoroId={params.showBoroId}
+      facilityId={facilityReport.facility_id}
     />
   );
 }
