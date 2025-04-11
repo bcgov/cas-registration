@@ -57,13 +57,16 @@ class ReportProductService:
             )
 
         # Add reportProduct for Fat, Oil & Grease unregulated product for emission allocation only
-        if 39 in ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.values_list(
-            "id", flat=True
-        ):
+        fog_product_id = RegulatedProduct.objects.get(
+            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+        ).id
+        if fog_product_id in ReportOperation.objects.get(
+            report_version_id=report_version_id
+        ).regulated_products.values_list("id", flat=True):
             ReportProduct.objects.update_or_create(
                 report_version_id=report_version_id,
                 facility_report=facility_report,
-                product_id=39,
+                product_id=fog_product_id,
                 defaults={
                     "report_version_id": report_version_id,
                     "facility_report": facility_report,
