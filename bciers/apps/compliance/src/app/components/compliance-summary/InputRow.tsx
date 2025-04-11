@@ -15,6 +15,7 @@ interface InputRowProps {
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   endAdornment?: React.ReactNode;
   placeholder?: string;
+  children?: React.ReactNode;
 }
 
 export const InputRow: React.FC<InputRowProps> = ({
@@ -29,6 +30,7 @@ export const InputRow: React.FC<InputRowProps> = ({
   inputProps,
   endAdornment,
   placeholder,
+  children,
 }) => {
   return (
     <Box className={`w-full flex mb-2.5 ${classNames || ""}`} style={style}>
@@ -37,7 +39,7 @@ export const InputRow: React.FC<InputRowProps> = ({
           {label}
         </Box>
       )}
-      <Box className="flex-1 flex justify-end w-full ml-2.5">
+      <Box className="flex-1 flex w-full ml-2.5 relative">
         <TextField
           fullWidth
           name={name}
@@ -58,6 +60,9 @@ export const InputRow: React.FC<InputRowProps> = ({
               : undefined
           }
         />
+        <div className={`absolute ${error ? "top-[65px]" : "top-[50px]"}`}>
+          {children}
+        </div>
       </Box>
     </Box>
   );

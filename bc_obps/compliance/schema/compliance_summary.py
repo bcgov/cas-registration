@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List, cast, Optional
+from typing import List, cast, Optional, Union
 from ninja import ModelSchema, Field
 from compliance.models.compliance_product import ComplianceProduct
 from compliance.models.compliance_obligation import ComplianceObligation
@@ -79,3 +79,23 @@ class ComplianceSummaryOut(ModelSchema):
     @staticmethod
     def resolve_excess_emissions(obj: ComplianceSummary) -> Decimal:
         return cast(Decimal, round(obj.excess_emissions))
+
+
+class ComplianceSummaryIssuanceOut(ModelSchema):
+    """Schema for compliance summary issuance data"""
+
+    operation_name: str = Field(..., alias="report.operation.name")
+    reporting_year: int = Field(..., alias="compliance_period.end_date.year")
+    excess_emissions_percentage: Optional[Union[Decimal, int]] = None
+    earned_credits: Optional[int] = None
+    earned_credits_issued: bool = False
+    issuance_status: str = "Issuance not requested"
+
+    class Meta:
+        model = ComplianceSummary
+        fields = [
+            'id',
+            'emissions_attributable_for_compliance',
+            'emission_limit',
+            'excess_emissions',
+        ]
