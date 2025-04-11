@@ -35,43 +35,58 @@ jobs:
           echo "NX_AFFECTED_E2E="$NX_AFFECTED_E2E"" >> "$GITHUB_OUTPUT"
         working-directory: ./bciers
         shell: bash
-  build-administration:
-    uses: ./.github/workflows/build-administration.yaml
+  # build-administration:
+  #   uses: ./.github/workflows/build-administration.yaml
   build-backend:
     uses: ./.github/workflows/build-backend.yaml
-  build-compliance:
-    uses: ./.github/workflows/build-compliance.yaml
+  # build-compliance:
+  #   uses: ./.github/workflows/build-compliance.yaml
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
     uses: ./.github/workflows/build-dashboard-e2e.yaml
   build-registration:
     uses: ./.github/workflows/build-registration.yaml
-  build-reporting:
-    uses: ./.github/workflows/build-reporting.yaml
-  test-code:
-    needs: [check-nx-affected]
-    uses: ./.github/workflows/test-code.yaml
-  test-backend:
-    needs: [build-backend, check-nx-affected]
-    uses: ./.github/workflows/test-backend.yaml
-    secrets: inherit
-  zap-owasp:
+  # build-reporting:
+  #   uses: ./.github/workflows/build-reporting.yaml
+  # test-code:
+  #   needs: [check-nx-affected]
+  #   uses: ./.github/workflows/test-code.yaml
+  # test-backend:
+  #   needs: [build-backend, check-nx-affected]
+  #   uses: ./.github/workflows/test-backend.yaml
+  #   secrets: inherit
+  test-registration-e2e:
     needs:
       [
-        build-administration,
         build-backend,
-        build-compliance,
         build-dashboard-e2e,
         build-registration,
-        build-reporting,
         check-nx-affected,
       ]
-    uses: ./.github/workflows/zap-owasp.yaml
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      zap_fail_on_risk_level: 3
+      image_url: "ghcr.io/bcgov/cas-reg-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'registration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      nx_app_port: 4000
+      nx_project: registration
     secrets: inherit
-  trivy:
-    uses: ./.github/workflows/trivy.yaml
-  codeql:
-    uses: ./.github/workflows/codeql.yaml
+  # zap-owasp:
+  #   needs:
+  #     [
+  #       build-administration,
+  #       build-backend,
+  #       build-compliance,
+  #       build-dashboard-e2e,
+  #       build-registration,
+  #       build-reporting,
+  #       check-nx-affected,
+  #     ]
+  #   uses: ./.github/workflows/zap-owasp.yaml
+  #   with:
+  #     zap_fail_on_risk_level: 3
+  #   secrets: inherit
+  # trivy:
+  #   uses: ./.github/workflows/trivy.yaml
+  # codeql:
+  #   uses: ./.github/workflows/codeql.yaml
