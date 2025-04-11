@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from uuid import UUID
 from compliance.models import ComplianceSummary
-from service.compliance_summary_service import ComplianceSummaryService
+from service.compliance.compliance_summary_service import ComplianceSummaryService
 
 pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
 
@@ -39,12 +39,12 @@ class TestComplianceSummaryService:
 
         return compliance_data
 
-    @patch('service.compliance_summary_service.ReportVersion.objects.select_related')
-    @patch('service.compliance_summary_service.ReportComplianceService.get_calculated_compliance_data')
-    @patch('service.compliance_summary_service.ComplianceSummary.objects.create')
-    @patch('service.compliance_summary_service.ComplianceProduct.objects.create')
-    @patch('service.compliance_summary_service.ComplianceObligationService.create_compliance_obligation')
-    @patch('service.compliance_summary_service.ReportProduct.objects.select_related')
+    @patch('service.compliance.compliance_summary_service.ReportVersion.objects.select_related')
+    @patch('service.compliance.compliance_summary_service.ReportComplianceService.get_calculated_compliance_data')
+    @patch('service.compliance.compliance_summary_service.ComplianceSummary.objects.create')
+    @patch('service.compliance.compliance_summary_service.ComplianceProduct.objects.create')
+    @patch('service.compliance.compliance_summary_service.ComplianceObligationService.create_compliance_obligation')
+    @patch('service.compliance.compliance_summary_service.ReportProduct.objects.select_related')
     def test_create_compliance_summary_with_excess_emissions(
         self,
         mock_report_products,
