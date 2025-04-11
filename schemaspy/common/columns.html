@@ -111,18 +111,32 @@
                 <script>
                     var tableData = [
     {
-        "tableName": "dashboard_data",
-        "tableFileName": "dashboard_data",
+        "tableName": "email_notification",
+        "tableFileName": "email_notification",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "data",
-        "type": "jsonb",
+        "name": "message_id",
+        "type": "uuid",
         "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>JSON representation of dashboard navigation tiles.<\/p>"
+        "comments": "<p>Message identifier for the email message in CHES API<\/p>"
+    },
+    {
+        "tableName": "email_notification_template",
+        "tableFileName": "email_notification_template",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "",
+        "autoUpdated": "√",
+        "defaultValue": "null",
+        "comments": ""
     },
     {
         "tableName": "email_notification",
@@ -137,6 +151,34 @@
         "autoUpdated": "",
         "defaultValue": "null",
         "comments": "<p>List of email addresses to send the email to<\/p>"
+    },
+    {
+        "tableName": "email_notification",
+        "tableFileName": "email_notification",
+        "tableType": "Table",
+        "keyClass": "foreignKey",
+        "keyTitle": "Foreign Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>template_id",
+        "type": "int8",
+        "length": 19,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Email template to use for the email notification<\/p>"
+    },
+    {
+        "tableName": "email_notification_template",
+        "tableFileName": "email_notification_template",
+        "tableType": "Table",
+        "keyClass": "",
+        "keyTitle": "",
+        "name": "body",
+        "type": "text",
+        "length": 2147483647,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Body of the email template<\/p>"
     },
     {
         "tableName": "email_notification_template",
@@ -158,55 +200,13 @@
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "body",
-        "type": "text",
-        "length": 2147483647,
+        "name": "subject",
+        "type": "varchar",
+        "length": 255,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Body of the email template<\/p>"
-    },
-    {
-        "tableName": "email_notification",
-        "tableFileName": "email_notification",
-        "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>transaction_id",
-        "type": "uuid",
-        "length": 2147483647,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Transaction identifier for the email message in CHES API<\/p>"
-    },
-    {
-        "tableName": "email_notification",
-        "tableFileName": "email_notification",
-        "tableType": "Table",
-        "keyClass": "",
-        "keyTitle": "",
-        "name": "message_id",
-        "type": "uuid",
-        "length": 2147483647,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Message identifier for the email message in CHES API<\/p>"
-    },
-    {
-        "tableName": "dashboard_data",
-        "tableFileName": "dashboard_data",
-        "tableType": "Table",
-        "keyClass": "primaryKey",
-        "keyTitle": "Primary Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>id",
-        "type": "int8",
-        "length": 19,
-        "nullable": "",
-        "autoUpdated": "√",
-        "defaultValue": "null",
-        "comments": ""
+        "comments": "<p>Subject of the email template<\/p>"
     },
     {
         "tableName": "dashboard_data",
@@ -223,22 +223,36 @@
         "comments": "<p>Name of the dashboard by app and ID type used as a friendly unique identifier.<\/p>"
     },
     {
-        "tableName": "email_notification_template",
-        "tableFileName": "email_notification_template",
+        "tableName": "dashboard_data",
+        "tableFileName": "dashboard_data",
         "tableType": "Table",
         "keyClass": "",
         "keyTitle": "",
-        "name": "subject",
-        "type": "varchar",
-        "length": 255,
+        "name": "data",
+        "type": "jsonb",
+        "length": 2147483647,
         "nullable": "",
         "autoUpdated": "",
         "defaultValue": "null",
-        "comments": "<p>Subject of the email template<\/p>"
+        "comments": "<p>JSON representation of dashboard navigation tiles.<\/p>"
     },
     {
-        "tableName": "email_notification_template",
-        "tableFileName": "email_notification_template",
+        "tableName": "email_notification",
+        "tableFileName": "email_notification",
+        "tableType": "Table",
+        "keyClass": "primaryKey",
+        "keyTitle": "Primary Key",
+        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>transaction_id",
+        "type": "uuid",
+        "length": 2147483647,
+        "nullable": "",
+        "autoUpdated": "",
+        "defaultValue": "null",
+        "comments": "<p>Transaction identifier for the email message in CHES API<\/p>"
+    },
+    {
+        "tableName": "dashboard_data",
+        "tableFileName": "dashboard_data",
         "tableType": "Table",
         "keyClass": "primaryKey",
         "keyTitle": "Primary Key",
@@ -249,20 +263,6 @@
         "autoUpdated": "√",
         "defaultValue": "null",
         "comments": ""
-    },
-    {
-        "tableName": "email_notification",
-        "tableFileName": "email_notification",
-        "tableType": "Table",
-        "keyClass": "foreignKey",
-        "keyTitle": "Foreign Key",
-        "name": "<i class='icon ion-key iconkey' style='padding-left: 5px;'><\/i>template_id",
-        "type": "int8",
-        "length": 19,
-        "nullable": "",
-        "autoUpdated": "",
-        "defaultValue": "null",
-        "comments": "<p>Email template to use for the email notification<\/p>"
     }
 ];
                     var config = {

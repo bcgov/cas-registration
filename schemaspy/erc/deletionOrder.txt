@@ -40,6 +40,7 @@ transfer_event
 contact
 configuration_element
 report_non_attributable_emissions
+report_emission_allocation
 temporary_shutdown_event
 restart_event
 closure_event
@@ -62,13 +63,14 @@ facility
 report_version
 report
 operation
-operator
-elicensing_link
-activity_source_type_json_schema
 opted_in_operation_detail
-activity_json_schema
 bc_obps_regulated_operation
 bc_greenhouse_gas_id
+operator
+elicensing_link
+user
+activity_source_type_json_schema
+activity_json_schema
 fuel_type
 methodology
 gas_type
@@ -76,7 +78,6 @@ source_type
 regulated_product
 emission_category
 activity
-user
 business_role
 app_role
 reporting_year

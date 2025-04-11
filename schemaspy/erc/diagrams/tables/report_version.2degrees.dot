@@ -115,6 +115,11 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_emission":"report_unit_id":w -> "report_unit":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"report_version_id":w -> "report_version":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission_allocation":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission_allocation":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission_allocation":"facility_report_id":w -> "facility_report":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission_allocation":"report_version_id":w -> "report_version":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission_allocation":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_emission_categories":"elipses":w -> "emission_category":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_emission_categories":"elipses":w -> "report_emission":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -177,7 +182,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_product_emission_allocation":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"emission_category_id":w -> "emission_category":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_product_emission_allocation":"facility_report_id":w -> "facility_report":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_product_emission_allocation":"report_emission_allocation_id":w -> "report_emission_allocation":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"report_product_id":w -> "report_product":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"report_version_id":w -> "report_version":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -563,7 +568,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="110" HEIGHT="16"><B>regulated_product</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">39 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">41 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
     </TABLE>>
     URL="regulated_product.html"
     target="_top"
@@ -623,6 +628,17 @@ digraph "twoDegreesRelationshipsDiagram" {
     URL="report_emission.html"
     target="_top"
     tooltip="report_emission"
+  ];
+  "report_emission_allocation" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="161" HEIGHT="16"><B>report_emission_allocation</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="report_emission_allocation.html"
+    target="_top"
+    tooltip="report_emission_allocation"
   ];
   "report_emission_emission_categories" [
    label=<
@@ -870,7 +886,7 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="report_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="115" HEIGHT="16">report_id</TD></TR></TABLE></TD><TD PORT="report_id.type" ALIGN="LEFT">int8[19]</TD></TR>
       <TR><TD PORT="updated_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="115" HEIGHT="16">updated_by_id</TD></TR></TABLE></TD><TD PORT="updated_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
       <TR><TD PORT="report_type" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="115" HEIGHT="16">report_type</TD></TR></TABLE></TD><TD PORT="report_type.type" ALIGN="LEFT">varchar[1000]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">19 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">20 &gt;</TD></TR>
     </TABLE>>
     URL="report_version.html"
     target="_top"
@@ -936,7 +952,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="26" HEIGHT="16"><B>user</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">142 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">148 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     target="_top"

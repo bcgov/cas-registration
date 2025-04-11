@@ -5,7 +5,6 @@ naics_code
 reporting_year
 app_role
 business_role
-user
 activity
 emission_category
 regulated_product
@@ -13,13 +12,14 @@ source_type
 gas_type
 methodology
 fuel_type
-bc_greenhouse_gas_id
-bc_obps_regulated_operation
 activity_json_schema
-opted_in_operation_detail
 activity_source_type_json_schema
+user
 elicensing_link
 operator
+bc_greenhouse_gas_id
+bc_obps_regulated_operation
+opted_in_operation_detail
 operation
 report
 report_version
@@ -42,6 +42,7 @@ well_authorization_number
 closure_event
 restart_event
 temporary_shutdown_event
+report_emission_allocation
 report_non_attributable_emissions
 configuration_element
 contact
