@@ -20,6 +20,12 @@ class RegulatedProduct(BaseModel):
     class Meta:
         db_table_comment = 'Table containing regulated and unregulated products. Regulated product means a product listed in column 2 of Table 2 of Schedule A.1 of the Greenhouse Gas Industrial Reporting and Control Act: https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015. Unregulated products have been added to the dataset to assist in grouping some unregulated emissions for further analysis.'
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.REGULATED_PRODUCT.value}'
+        constraints = [
+            models.UniqueConstraint(
+                fields=["name", "unit"],
+                name="unique_product_on_name_unit",
+            )
+        ]
 
     Rls = RegulatedProductRls
 

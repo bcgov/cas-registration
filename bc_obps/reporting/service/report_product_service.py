@@ -17,6 +17,9 @@ class ReportProductService:
     ) -> None:
 
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
+        fog_product_id = RegulatedProduct.objects.get(
+            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+        ).id
 
         # Delete the report products that are not in the data
 
@@ -34,7 +37,7 @@ class ReportProductService:
                 + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {product_ids}"
             )
         # Do not remove auto-generated report_product record for Fat, Oil & Grease unregulated product
-        product_ids.append(39)
+        product_ids.append(fog_product_id)
         ReportProduct.objects.filter(
             report_version_id=report_version_id, facility_report__facility_id=facility_id
         ).exclude(product_id__in=product_ids).delete()
@@ -57,17 +60,17 @@ class ReportProductService:
             )
 
         # Add reportProduct for Fat, Oil & Grease unregulated product for emission allocation only
-        if 39 in ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.values_list(
-            "id", flat=True
-        ):
+        if fog_product_id in ReportOperation.objects.get(
+            report_version_id=report_version_id
+        ).regulated_products.values_list("id", flat=True):
             ReportProduct.objects.update_or_create(
                 report_version_id=report_version_id,
                 facility_report=facility_report,
-                product_id=39,
+                product_id=fog_product_id,
                 defaults={
                     "report_version_id": report_version_id,
                     "facility_report": facility_report,
-                    "product_id": 39,
+                    "product_id": fog_product_id,
                     "annual_production": 0,
                     "production_data_apr_dec": 0,
                     "production_methodology": "other",

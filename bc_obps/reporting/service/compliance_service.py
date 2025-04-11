@@ -6,6 +6,7 @@ from reporting.models import NaicsRegulatoryValue, ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
 from reporting.service.emission_category_service import EmissionCategoryService
+from registration.models import RegulatedProduct
 from decimal import Decimal
 from django.db.models import Sum
 from typing import Dict, List
@@ -146,10 +147,13 @@ class ComplianceService:
             report_version_id, product_id, reporting_only_category_ids
         )
         fog_record = ReportEmissionAllocation.objects.filter(report_version_id=report_version_id).first()
+        fog_product_id = RegulatedProduct.objects.get(
+            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+        ).id
         fog_records = ReportProductEmissionAllocation.objects.filter(
             report_emission_allocation=fog_record,
             report_version_id=report_version_id,
-            report_product__product_id=39,  # Special Fat, Oil & Grease product
+            report_product__product_id=fog_product_id,  # Special Fat, Oil & Grease product
         )
         fog_allocated_amount = fog_records.aggregate(allocated_sum=Sum('allocated_quantity'))
         return reporting_only_allocated + (fog_allocated_amount['allocated_sum'] or Decimal('0'))

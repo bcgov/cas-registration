@@ -24,14 +24,9 @@ class RegulatedProductModelTest(BaseTestCase):
 
 
 class TestAssociatedData(TestCase):
-    def test_unit_data(self):
-        has_units_count = RegulatedProduct.objects.exclude(unit=None).count()
-
-        self.assertEqual(has_units_count, 42)
-
     def test_is_regulated_data(self):
         regulated_products_count = RegulatedProduct.objects.filter(is_regulated=True).count()
         not_regulated_products_count = RegulatedProduct.objects.filter(is_regulated=False).count()
 
-        self.assertEqual(regulated_products_count, 39)
+        self.assertEqual(regulated_products_count, 37)
         self.assertEqual(not_regulated_products_count, 3)

@@ -202,8 +202,11 @@ class TestReportProductService:
     def test_saves_fog_record_data(self):
 
         assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 0
+        fog_product_id = RegulatedProduct.objects.get(
+            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+        ).id
 
-        self.report_operation.regulated_products.set([1, 29, 39])
+        self.report_operation.regulated_products.set([1, 29, fog_product_id])
 
         ReportProductService.save_production_data(
             self.report_version_id,
@@ -214,4 +217,4 @@ class TestReportProductService:
 
         assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
 
-        assert ReportProduct.objects.filter(facility_report=self.facility_report, product_id=39).exists()
+        assert ReportProduct.objects.filter(facility_report=self.facility_report, product_id=fog_product_id).exists()
