@@ -1,3 +1,25 @@
+# [2.3.0](https://github.com/bcgov/cas-registration/compare/v2.1.1...v2.3.0) (2025-04-11)
+
+### Bug Fixes
+
+- delete report data for removed activities ([4676d22](https://github.com/bcgov/cas-registration/commit/4676d22379b5c32b4960ee1e4f179955d6eea692))
+- Fuel annual weighted average carbon content field for methodology Measured CC now has a unit of kg carbon/fuel units ([9ecf616](https://github.com/bcgov/cas-registration/commit/9ecf616b53afd19963c96b59359fd7b1dd52dd22))
+- production_data api filters out unregulated products ([ce1f016](https://github.com/bcgov/cas-registration/commit/ce1f01674768c64a1ea0b7695fc38aab6f3e3652))
+- save button now disabled on allocOfEmissions page w/ error & production data page methodology fixed ([c693f63](https://github.com/bcgov/cas-registration/commit/c693f63d04587bd7c9fc55d95c3ed62a8df8bf38))
+
+### Features
+
+- Add 'Not Applicable' dynamically to methodology if facility is small or medium by passing type to backend and form builder ([87bf3d3](https://github.com/bcgov/cas-registration/commit/87bf3d37f97959128d71a8b95f2b938c96d3db73))
+- add unit GWh to electricity generation on additional reporting page ([5479080](https://github.com/bcgov/cas-registration/commit/5479080d0c5452e70f844d07dc974a5d36f0e677))
+- add Weasy Print dependancies ([eee86d3](https://github.com/bcgov/cas-registration/commit/eee86d390155f4886ebf0840fda405d0ab0cebef))
+- adding validators for operation and facility BORO ID and BCGHGID ([550c02d](https://github.com/bcgov/cas-registration/commit/550c02d914dc04de4c28cb2fe62d76b0f60cd446))
+- authorize method accepts extra validation functions ([79d3bc6](https://github.com/bcgov/cas-registration/commit/79d3bc6fba051c620495b8c6e52b492750863157))
+- cas_admins can manage internal users ([1102591](https://github.com/bcgov/cas-registration/commit/11025916daec451f11492fb4fed2ba25058a11ea))
+
+### Reverts
+
+- remove signal for checking document status ([3cf39dd](https://github.com/bcgov/cas-registration/commit/3cf39dd2e58e66d231251b53bda7b84ab01a51f3))
+
 # [2.2.0](https://github.com/bcgov/cas-registration/compare/v2.1.1...v2.2.0) (2025-04-02)
 
 ### Bug Fixes
