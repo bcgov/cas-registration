@@ -159,6 +159,7 @@ class TestUserOperatorService:
 
         mock_update_operator.return_value = None  # We don't care about the return value of this function
 
+        print(payload)
         UserOperatorService.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
 
         mock_save_operator.assert_called_once()
@@ -322,3 +323,54 @@ class TestUpdateStatusAndCreateContact:
         )
         assert Contact.objects.count() == 1
         assert pending_user_operator.operator.contacts.count() == 1
+
+    @staticmethod
+    def test_unapprove_user_operator_then_reapprove_them():
+        approved_admin_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
+        )
+        other_user_operator = baker.make_recipe(
+            'registration.tests.utils.user_operator', operator=approved_admin_user_operator.operator
+        )
+
+        other_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+        other_user_operator.user.save()
+
+        # first approve other_user_operator and assign them a role so that a Contact is automatically created for them
+        UserOperatorService.update_status_and_create_contact(
+            other_user_operator.id,
+            UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
+            approved_admin_user_operator.user.user_guid,
+        )
+
+        assert Contact.objects.count() == 1
+        assert other_user_operator.operator.contacts.count() == 1
+
+        # now revert other_user_operator's status and role back to pending
+        UserOperatorService.update_status_and_create_contact(
+            other_user_operator.id,
+            UserOperatorStatusUpdate(status='Pending', role=UserOperator.Roles.PENDING),
+            approved_admin_user_operator.user.user_guid,
+        )
+
+        # even though other_user_operator's access has been revoked, they should still be listed as a contact for the operator
+        assert Contact.objects.count() == 1
+        assert approved_admin_user_operator.operator.contacts.count() == 1
+
+        # now arbitrarily change some user data for other_user_operator
+        other_user_operator.user.first_name = 'Garfield'
+        other_user_operator.user.save()
+
+        # now re-approve other_user_operator's access request, set role to REPORTER
+        UserOperatorService.update_status_and_create_contact(
+            other_user_operator.id,
+            UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.REPORTER),
+            approved_admin_user_operator.user.user_guid,
+        )
+
+        # the contact should not be duplicated
+        assert Contact.objects.count() == 1
+        assert other_user_operator.operator.contacts.count() == 1
+        # but the Contact object should be updated with the new first_name
+        other_user_contact = Contact.objects.first()
+        assert other_user_contact.first_name == 'Garfield'

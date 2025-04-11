@@ -4,6 +4,7 @@ from registration.models import (
     User,
     UserOperator,
 )
+import pytest
 from registration.tests.utils.bakers import (
     operator_baker,
     user_operator_baker,
@@ -70,7 +71,8 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         )
         assert response.status_code == 403
 
-    def test_cas_analyst_approves_access_request_with_existing_operator(self, mocker):
+    @pytest.mark.parametrize("cas_role", ["cas_director", "cas_analyst"])
+    def test_cas_user_approves_access_request_with_existing_operator(self, mocker, cas_role):
         approved_admin_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN, user=self.user
         )
@@ -85,7 +87,7 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
         )
         response = TestUtils.mock_patch_with_auth_role(
             self,
-            "cas_analyst",
+            cas_role,
             self.content_type,
             {
                 "role": UserOperator.Roles.ADMIN,
@@ -110,44 +112,6 @@ class TestUpdateUserOperatorStatusEndpoint(CommonTestSetup):
             approved_admin_user_operator.operator.legal_name,
             pending_user_operator.user.get_full_name(),
             pending_user_operator.user.email,
-        )
-
-    def test_cas_director_approves_admin_access_request_with_new_operator(self, mocker):
-        # In this test we are testing the user operator status change and not the operator change,
-        # so we have to mark the operator as status=APPROVED so we can bypass the below part and can get to the email sending part
-        operator = operator_baker({'status': Operator.Statuses.APPROVED})
-        operator.refresh_from_db()
-        user_operator = user_operator_baker({'operator': operator, 'user': operator.created_by})
-        mock_send_operator_access_request_email = mocker.patch(
-            "service.user_operator_service.send_operator_access_request_email"
-        )
-        response_2 = TestUtils.mock_patch_with_auth_role(
-            self,
-            'cas_director',
-            self.content_type,
-            {
-                "role": UserOperator.Roles.ADMIN,
-                "status": UserOperator.Statuses.APPROVED,
-            },
-            custom_reverse_lazy(
-                'update_user_operator_status',
-                kwargs={
-                    "user_operator_id": user_operator.id,
-                },
-            ),
-        )
-        assert response_2.status_code == 200
-        user_operator.refresh_from_db()  # refresh the user_operator object to get the updated status
-        assert user_operator.status == UserOperator.Statuses.APPROVED
-        assert user_operator.role == UserOperator.Roles.ADMIN
-        assert user_operator.verified_by == self.user
-        # Assert that the email notification was called (user associated with the user_operator IS the creator of the operator)
-        mock_send_operator_access_request_email.assert_called_once_with(
-            AccessRequestStates.APPROVED,
-            AccessRequestTypes.NEW_OPERATOR_AND_ADMIN,
-            operator.legal_name,
-            user_operator.user.get_full_name(),
-            user_operator.user.email,
         )
 
     def test_cas_analyst_declines_access_request(self, mocker):
