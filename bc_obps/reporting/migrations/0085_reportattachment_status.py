@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0084_add_pwaei_for_missing_products"),
+        ("reporting", "0084_V2_3_0"),
     ]
 
     operations = [

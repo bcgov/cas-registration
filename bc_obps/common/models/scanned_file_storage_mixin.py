@@ -2,7 +2,7 @@ import typing
 
 from common.lib import pgtrigger
 from django.db import models
-from django.core.files.storage import default_storage, storages
+from django.core.files.storage import default_storage
 
 
 class ScannedFileStorageMixin(models.Model):
@@ -23,9 +23,7 @@ class ScannedFileStorageMixin(models.Model):
         CLEAN = "Clean"
         QUARANTINED = "Quarantined"
 
-    status = models.CharField(
-        max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED
-    )
+    status = models.CharField(max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED)
 
     # Additional remote file methods
 
@@ -36,25 +34,14 @@ class ScannedFileStorageMixin(models.Model):
         raise NotImplementedError
 
     @typing.no_type_check
-    def get_storage_handler(self):
-        if self.status == ScannedFileStorageMixin.FileStatus.CLEAN:
-            return storages["clean"]
-        elif self.status == ScannedFileStorageMixin.FileStatus.QUARANTINED:
-            return storages["quarantined"]
-        elif self.status == ScannedFileStorageMixin.FileStatus.UNSCANNED:
-            return storages["default"]
-        else:
-            return storages["default"]
-
-    @typing.no_type_check
     def get_file_url(self) -> str:
         """Get the file url for the document from the proper storage backend."""
-        return self.get_storage_handler().url(self.get_file_field().name)
+        return default_storage.url(self.get_file_field().name)
 
     @typing.no_type_check
     def get_file_content(self) -> str:
         """Get the file content of the document from the proper storage backend."""
-        return self.get_storage_handler().open(self.get_file_field().name)
+        return default_storage.open(self.get_file_field().name)
 
     def sync_file_status(self) -> FileStatus:
         """
@@ -74,24 +61,16 @@ class ScannedFileStorageMixin(models.Model):
             raise FileNotFoundError(f"File {file_name} not found in storage.")
 
         # Ignore the audit columns triggers, we're not changing anything about the document itself
-        with pgtrigger.ignore(
-            f"{self._meta.app_label}.{self._meta.object_name}:set_updated_audit_columns"
-        ):
+        with pgtrigger.ignore(f"{self._meta.app_label}.{self._meta.object_name}:set_updated_audit_columns"):
             self.save()
         return self.status
 
     # Django method overrides
 
     @typing.no_type_check
-    def save(self, *args, **kwards):
-        """Make sure the correct storage backend is set for save based on the malware scanning status."""
-        self.get_file_field().storage = self.get_storage_handler()
-        super().save(*args, **kwards)
-
-    @typing.no_type_check
     def delete(self, *args, **kwargs):
         # Delete the file from Google Cloud Storage before deleting the model instance
         if self.get_file_field():
-            self.get_storage_handler().delete(self.get_file_field().name)
+            default_storage.delete(self.get_file_field().name)
 
         super().delete(*args, **kwargs)
