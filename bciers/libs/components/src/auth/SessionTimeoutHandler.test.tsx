@@ -62,7 +62,7 @@ describe("SessionTimeoutHandler", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetEnvValue.mockResolvedValue("http://logout.url");
+    mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
     mockCreateThrottledEventHandler.mockReturnValue(vi.fn());
   });
 
@@ -164,7 +164,7 @@ describe("SessionTimeoutHandler", () => {
     screen.getByText("Logout").click();
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
-        callbackUrl: "http://logout.url",
+        callbackUrl: "http://logout.url", // NOSONAR
       });
     });
   });
