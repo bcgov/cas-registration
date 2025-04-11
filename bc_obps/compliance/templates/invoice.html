@@ -1,0 +1,318 @@
+{% load static %}
+<!doctype html>
+<html lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Compliance Invoice</title>
+    <style>
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        color: #313132;
+      }
+
+      .invoice-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 50px;
+      }
+
+      .invoice-header p {
+        margin: 0;
+      }
+
+      .header-section {
+        position: relative;
+        margin-bottom: 40px;
+      }
+
+      .company-logo {
+        height: 25px;
+        position: absolute;
+        left: 0;
+      }
+
+      .ministry-title {
+        font-size: 16px;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+      }
+
+      .invoice-title {
+        text-align: center;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+
+      .invoice-summary {
+        display: flex;
+        border-top: 1px solid #000;
+        border-bottom: 1px solid #000;
+        padding: 20px 0;
+      }
+
+      .address-container {
+        width: 100%;
+      }
+
+      .address-box:first-child {
+        margin-bottom: 30px;
+      }
+
+      .address-box h4 {
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      .address-box p {
+        margin: 2px 0;
+      }
+
+      .invoice-details {
+        width: 100%;
+      }
+
+      .invoice-details:first-child {
+        margin-bottom: 30px;
+      }
+
+      .detail-row {
+        display: flex;
+        margin-bottom: 2px;
+      }
+
+      .detail-row h4 {
+        width: 150px;
+        margin: 0;
+        font-weight: bold;
+      }
+
+      .detail-row p {
+        margin: 0;
+      }
+
+      .fees-section {
+        margin-top: 30px;
+      }
+
+      .fees-title {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .fees-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .fees-table th {
+        text-align: left;
+        font-weight: bold;
+        padding: 8px 0;
+      }
+
+      .fees-table td {
+        padding: 8px 0;
+      }
+
+      .fees-table .amount-column {
+        text-align: right;
+      }
+
+      .total-row {
+        border-top: 1px solid #ddd;
+        font-weight: bold;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .footer p {
+        margin: 0;
+      }
+
+      .fees-container {
+        margin-top: 30px;
+        margin-bottom: 40px;
+      }
+
+      .fees-container > h4 {
+        color: #38598a;
+        margin-bottom: 20px;
+        font-weight: 400;
+      }
+
+      .fees-grid {
+        display: flex;
+        width: 100%;
+      }
+
+      .fees-column {
+        flex: 1;
+      }
+
+      .fees-column:last-child {
+        text-align: right;
+      }
+
+      .fees-column h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+
+      .fees-column > h4 {
+        display: flex;
+        justify-content: flex-start;
+      }
+
+      .fees-column p {
+        margin: 5px 0;
+      }
+
+      .fees-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #000;
+        font-weight: bold;
+        text-align: right;
+      }
+
+      .fees-total h4 {
+        display: inline-block;
+        margin: 0;
+        font-weight: bold;
+      }
+
+      .fees-total p {
+        display: inline-block;
+        margin: 0 0 0 10px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="invoice-header">
+        <p>Invoice #: {{ invoice_number }}</p>
+        <p>Clean Growth Branch</p>
+        <p>Page 1 of 1</p>
+      </header>
+
+      <div class="header-section">
+        <img
+          src="data:image/png;base64,{{ logo_base64 }}"
+          alt="CleanBC Logo"
+          class="company-logo"
+        />
+        <h3 class="ministry-title">Ministry of Energy and Climate Solutions</h3>
+      </div>
+
+      <h3 class="invoice-title">Invoice</h3>
+
+      <div class="invoice-summary">
+        <div class="address-container">
+          <div class="address-box">
+            <h4>Operator Business Address</h4>
+            <p>{{ operator_name }}</p>
+            <p>{{ operator_address_line1 }}</p>
+            <p>{{ operator_address_line2 }}</p>
+          </div>
+          <div class="address-box">
+            <h4>Operation Site Address</h4>
+            <p>{{ operation_name }}</p>
+            <p>{{ operation_address_line1 }}</p>
+            <p>{{ operation_address_line2 }}</p>
+          </div>
+        </div>
+
+        <div class="invoice-details">
+          <div class="invoice-details">
+            <div class="detail-row">
+              <h4>Invoice #:</h4>
+              <p>{{ invoice_number }}</p>
+            </div>
+            <div class="detail-row">
+              <h4>Invoice Date:</h4>
+              <p>{{ invoice_date }}</p>
+            </div>
+            <div class="detail-row">
+              <h4>Invoice Due Date:</h4>
+              <p>{{ invoice_due_date }}</p>
+            </div>
+            <div class="detail-row">
+              <h4>Invoice Printed Date:</h4>
+              <p>{{ invoice_printed_date }}</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="detail-row">
+              <h4>Obligation ID:</h4>
+              <p>{{ obligation_id }}</p>
+            </div>
+            <div class="detail-row">
+              <h4>Penalty Amount:</h4>
+              <p>{{ penalty_amount }}</p>
+            </div>
+            <div class="detail-row">
+              <h4>Payments Applied:</h4>
+              <p>${{ payments_applied }}</p>
+            </div>
+            <div class="detail-row">
+              <h4>Amount Due:</h4>
+              <p>${{ amount_due }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fees-container">
+        <h4 class="fees_and_adjastment">Fees and Adjustments</h4>
+        <div class="fees-grid">
+          <div class="fees-column">
+            <h4>Date</h4>
+            <p>{{ fee_date }}</p>
+            <p>{{ invoice_date }}</p>
+          </div>
+          <div class="fees-column">
+            <h4>Description</h4>
+            <p>Automatic Overdue Penalty</p>
+            <p>Payments Applied</p>
+          </div>
+          <div class="fees-column">
+            <h4>Amount</h4>
+            <p>${{ fee_amount }}</p>
+            <p>$0.00</p>
+            <div class="fees-total">
+              <h4>Amount Due:</h4>
+              <p>${{ total_amount }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <p>Invoice #: {{ invoice_number }}</p>
+        <p>Clean Growth Branch</p>
+        <p>Page 1 of 1</p>
+      </footer>
+    </div>
+  </body>
+</html>
