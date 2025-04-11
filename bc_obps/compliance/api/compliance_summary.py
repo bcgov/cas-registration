@@ -4,7 +4,11 @@ from django.db.models import QuerySet
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from compliance.models import ComplianceSummary
-from compliance.schema.compliance_summary import ComplianceSummaryOut, ComplianceSummaryListOut
+from compliance.schema.compliance_summary import (
+    ComplianceSummaryOut,
+    ComplianceSummaryListOut,
+    ComplianceSummaryIssuanceOut,
+)
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
 from service.compliance.compliance_dashboard_service import ComplianceDashboardService
@@ -37,4 +41,20 @@ def get_compliance_summary(request: HttpRequest, summary_id: int) -> Tuple[Liter
     """Get a compliance summary by ID"""
     user_guid = get_current_user_guid(request)
     summary = ComplianceDashboardService.get_compliance_summary_by_id(user_guid, summary_id)
+    return 200, summary
+
+
+@router.get(
+    "/summaries/{summary_id}/issuance",
+    response={200: ComplianceSummaryIssuanceOut, custom_codes_4xx: Message},
+    tags=["Compliance"],
+    description="Get issuance data for a compliance summary",
+    auth=authorize("approved_industry_user"),
+)
+def get_compliance_summary_issuance(
+    request: HttpRequest, summary_id: int
+) -> Tuple[Literal[200], Optional[ComplianceSummary]]:
+    """Get issuance data for a compliance summary"""
+    user_guid = get_current_user_guid(request)
+    summary = ComplianceDashboardService.get_compliance_summary_issuance_data(user_guid, summary_id)
     return 200, summary

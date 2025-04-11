@@ -80,3 +80,43 @@ class ComplianceDashboardService:
             summary.outstanding_balance = ComplianceSummaryService.calculate_outstanding_balance(summary)  # type: ignore[attr-defined]
 
         return summary
+
+    @classmethod
+    def get_compliance_summary_issuance_data(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceSummary]:
+        """
+        Fetches issuance data for a specific compliance summary
+
+        Args:
+            user_guid: The GUID of the user requesting the issuance data
+            summary_id: The ID of the compliance summary to retrieve issuance data for
+
+        Returns:
+            The ComplianceSummary object augmented with issuance data or None if not found
+        """
+        summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
+
+        if not summary:
+            return None
+
+        earned_credits: int = 100
+        earned_credits_issued = False
+        issuance_status = "Issuance not requested"
+
+        if summary.excess_emissions < 0:
+            # Convert Decimal to int
+            earned_credits = int(abs(summary.excess_emissions))
+
+            earned_credits_issued = False
+
+        excess_emissions_percentage = None
+        if summary.emission_limit and summary.emission_limit > 0:
+            excess_emissions_percentage = round(
+                (summary.emissions_attributable_for_compliance / summary.emission_limit) * 100, 2
+            )
+
+        setattr(summary, "earned_credits", earned_credits)
+        setattr(summary, "earned_credits_issued", earned_credits_issued)
+        setattr(summary, "issuance_status", issuance_status)
+        setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
+
+        return summary
