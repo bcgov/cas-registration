@@ -1,6 +1,8 @@
 import { expect } from "vitest";
-import {render, screen, fireEvent} from "@testing-library/react";
-import LogoutWarningModal, { LogoutWarningModalProps } from "@bciers/components/auth/LogoutWarningModal";
+import { render, screen, fireEvent } from "@testing-library/react";
+import LogoutWarningModal, {
+  LogoutWarningModalProps,
+} from "@bciers/components/auth/LogoutWarningModal";
 
 describe("LogoutWarningModal", () => {
   const onLogout = vi.fn();
@@ -9,16 +11,22 @@ describe("LogoutWarningModal", () => {
     initialTimeLeft: 80,
     onExtendSession,
     onLogout,
-    showModal: true
+    showModal: true,
   };
 
   it("renders modal with countdown and content", () => {
     render(<LogoutWarningModal {...props} />);
     expect(screen.getByText("You will be logged out soon")).toBeVisible();
-    expect(screen.getByText("For your security, you will be automatically logged out if you are inactive for more than thirty minutes. Any unsaved changes will be lost.")).toBeVisible();
+    expect(
+      screen.getByText(
+        "For your security, you will be automatically logged out if you are inactive for more than thirty minutes. Any unsaved changes will be lost.",
+      ),
+    ).toBeVisible();
     expect(screen.getByText(/You will be logged out in/)).toBeVisible();
     expect(screen.getByRole("button", { name: /Log Out/i })).toBeVisible();
-    expect(screen.getByRole("button", { name: /Stay Logged In/i })).toBeVisible();
+    expect(
+      screen.getByRole("button", { name: /Stay Logged In/i }),
+    ).toBeVisible();
   });
 
   it("formats countdown time correctly", () => {
@@ -40,6 +48,8 @@ describe("LogoutWarningModal", () => {
 
   it("does not render modal when showModal is false", () => {
     render(<LogoutWarningModal {...props} showModal={false} />);
-    expect(screen.queryByText("You will be logged out soon")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("You will be logged out soon"),
+    ).not.toBeInTheDocument();
   });
 });
