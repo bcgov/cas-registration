@@ -82,7 +82,7 @@ class BaseProgramConfigurationTest:
 
         config = self.config
 
-        self.assertQuerysetEqual(
+        self.assertQuerySetEqual(
             config_elements.values_list("source_type__name", flat=True).distinct(),
             config.keys(),
             ordered=False,
@@ -90,7 +90,7 @@ class BaseProgramConfigurationTest:
         )
 
         for source_type_name, gas_config in config.items():
-            self.assertQuerysetEqual(
+            self.assertQuerySetEqual(
                 config_elements.filter(source_type__name=source_type_name)
                 .values_list("gas_type__chemical_formula", flat=True)
                 .distinct(),
@@ -99,7 +99,7 @@ class BaseProgramConfigurationTest:
                 msg=f"{source_type_name} contains config for the proper gas types",
             )
             for gas_name, methods in gas_config.items():
-                self.assertQuerysetEqual(
+                self.assertQuerySetEqual(
                     config_elements.filter(
                         source_type__name=source_type_name,
                         gas_type__chemical_formula=gas_name,
