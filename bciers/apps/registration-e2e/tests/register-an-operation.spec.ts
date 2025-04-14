@@ -100,7 +100,7 @@ test.describe("Test register operations", () => {
       variant: "filled",
     });
     // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
-    // await analyzeAccessibility(page, componentName);
+    await analyzeAccessibility(page, componentName);
     await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
     await registrationPage.waitForRegistrationUrl(5);
 
@@ -155,7 +155,7 @@ test.describe("Test register operations", () => {
       variant: "filled",
     });
     // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
-    // await analyzeAccessibility(page, componentName);
+    await analyzeAccessibility(page, componentName);
     await registrationPage.clickSaveAndContinue();
     await registrationPage.waitForRegistrationUrl(3);
 
