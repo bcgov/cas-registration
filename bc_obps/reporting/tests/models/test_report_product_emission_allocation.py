@@ -100,7 +100,7 @@ class ReportProductEmissionAllocationModelTest(BaseTestCase):
 
         with pytest.raises(
             ValidationError,
-            match="Report emission allocation with this Report version and Facility report already exists.",
+            match="A FacilityReport can only have one ReportEmissionAllocation per Report",
         ):
             report_emission_allocation = make_recipe(
                 "reporting.tests.utils.report_emission_allocation",

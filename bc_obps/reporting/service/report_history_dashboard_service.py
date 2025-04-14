@@ -12,8 +12,9 @@ class ReportingHistoryDashboardService:
     @classmethod
     def get_report_versions_for_report_history_dashboard(cls, report_id: int) -> QuerySet[ReportVersion]:
         filtered_versions = ReportVersion.objects.filter(report_id=report_id)
+        total_count = filtered_versions.count()
         report_versions = (
-            filtered_versions.annotate(total_count=Cast(filtered_versions.count(), IntegerField()))
+            filtered_versions.annotate(total_count=Value(total_count, output_field=IntegerField()))
             .annotate(version_number=Window(expression=RowNumber(), order_by=F("id").desc()))
             .annotate(
                 version=Case(
