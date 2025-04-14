@@ -181,21 +181,6 @@ export enum MessageTextOperations {
 }
 
 // 💬 Operator messages
-export enum MessageTextOperatorSelect {
-  INPUT_CRA = "Enter CRA Business Number",
-  NO_ACCESS = "Looks like you do not have access to",
-  NO_ADMIN = "does not have Administrator access set up",
-  OPERATOR_CONFIRM = "Kindly confirm if this is the operator that you represent.",
-  REQUEST_ACCESS = "Your access request has been sent",
-  REQUEST_ADD = "Your request to add",
-  REQUEST_ADMIN = "has been received and will be reviewed",
-  SELECT_OPERATOR = "Which operator would you like to log in to?",
-  SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
-  SEARCH_BY_LEGAL_NAME = "Search by Canada Revenue Agency (CRA) Business Number",
-  SEARCH_BY_CRA_NUMBER = "Enter CRA Business Number",
-}
-
-// 💬 Operator messages
 export enum MessageTextOperator {
   EDIT_INFO = 'Please click on the "Edit Information" button',
 }
