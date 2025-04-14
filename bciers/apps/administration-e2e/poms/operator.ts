@@ -40,7 +40,7 @@ export class OperatorPOM {
 
   readonly buttonSearchOperator: Locator; // CRA number search
 
-  readonly buttonSubmit: Locator;
+  readonly buttonSave: Locator;
 
   readonly buttonYesThisIsMyOperator: Locator;
 
@@ -124,8 +124,8 @@ export class OperatorPOM {
     this.buttonSearchOperator = page.getByRole("button", {
       name: OperatorButtonText.SEARCH_OPERATOR,
     });
-    this.buttonSubmit = page.getByRole("button", {
-      name: ButtonText.SUBMIT,
+    this.buttonSave = page.getByRole("button", {
+      name: /save/i,
     });
     this.buttonYesThisIsMyOperator = page.getByRole("button", {
       name: OperatorButtonText.YES_OPERATOR,
