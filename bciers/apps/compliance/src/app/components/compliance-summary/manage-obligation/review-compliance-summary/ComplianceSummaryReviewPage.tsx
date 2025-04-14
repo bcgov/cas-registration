@@ -13,7 +13,7 @@ export default async function C1omplianceSummaryReviewPage(props: Props) {
   // Convert the string ID from URL params to a number
   const complianceSummaryId = parseInt(props.compliance_summary_id, 10);
 
-  const complianceSummary = await getComplianceSummary();
+  const complianceSummary = await getComplianceSummary(complianceSummaryId);
   const taskListElements = getComplianceSummaryTaskList(
     complianceSummaryId,
 
