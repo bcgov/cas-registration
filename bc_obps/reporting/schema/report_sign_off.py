@@ -7,6 +7,7 @@ class ReportSignOffAcknowledgements(Schema):
     acknowledgement_of_information: bool | None
     acknowledgement_of_possible_costs: bool
     acknowledgement_of_new_version: bool | None
+    acknowledgement_of_corrections: bool | None
 
 
 class ReportSignOffIn(Schema):

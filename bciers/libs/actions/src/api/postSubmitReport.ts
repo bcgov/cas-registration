@@ -10,10 +10,18 @@ async function postSubmitReport(report_version_id: number, data: any) {
       acknowledgement_of_information:
         data.acknowledgement_of_information ?? null,
       acknowledgement_of_new_version:
-        data.acknowledgement_of_new_version ?? null,
+        (data.supplementary &&
+          data.supplementary.acknowledgement_of_new_version) ??
+        null,
+      acknowledgement_of_corrections:
+        (data.supplementary &&
+          data.supplementary.acknowledgement_of_corrections) ??
+        null,
     },
+
     signature: data.signature,
   };
+
   return actionHandler(endpoint, "POST", endpoint, {
     body: JSON.stringify(payload),
   });

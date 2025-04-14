@@ -39,6 +39,15 @@ class ReportSignOff(TimeStampedModel):
         blank=True,
         db_comment="Whether the user has understood that the sign-off is creating a new report version that will be the report for the reporting or compliance period that it pertains to.",
     )
+    acknowledgement_of_corrections = models.BooleanField(
+        null=True,
+        blank=True,
+        db_comment=(
+            "Whether the user has understood that correction of any errors, omissions, or misstatements in the new submission "
+            "of this report may lead to an additional compliance obligation, and, if submitted after the compliance obligation deadline, "
+            "applicable interest."
+        ),
+    )
     signature = models.TextField(
         db_comment="The signature of the user who signed off the report",
     )
