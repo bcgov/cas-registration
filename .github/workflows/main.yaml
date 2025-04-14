@@ -56,6 +56,21 @@ jobs:
     needs: [build-backend, check-nx-affected]
     uses: ./.github/workflows/test-backend.yaml
     secrets: inherit
+  test-administration-e2e:
+    needs:
+      [
+        build-backend,
+        build-dashboard-e2e,
+        build-administration,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      image_url: "ghcr.io/bcgov/cas-admin-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'administration') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      nx_app_port: 4001
+      nx_project: administration
+    secrets: inherit
   test-registration-e2e:
     needs:
       [
