@@ -55,6 +55,16 @@ export const signOffSchema: RJSFSchema = {
 export const signOffUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  "ui:order": [
+    "submission_note",
+    "acknowledgement_of_review",
+    "acknowledgement_of_records",
+    "acknowledgement_of_information",
+    "acknowledgement_of_possible_costs",
+    "supplementary",
+    "signature",
+    "date",
+  ],
   submission_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
     "ui:classNames": "mt-2 mb-5",
@@ -87,6 +97,7 @@ export const signOffUiSchema = {
       alignment: "top",
     },
   },
+
   signature: {
     "ui:widget": "TextWidget",
     "ui:placeholder": "Enter your full name here",

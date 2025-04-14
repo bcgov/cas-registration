@@ -1,10 +1,6 @@
 "use client";
 import { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import {
-  signOffSchema,
-  signOffUiSchema,
-} from "@reporting/src/data/jsonSchema/signOff/signOff";
 import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
@@ -14,13 +10,19 @@ import { NavigationInformation } from "@reporting/src/app/components/taskList/ty
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { useRouter } from "next/navigation";
+import { createSignOffUiSchema } from "@reporting/src/app/components/signOff/createSignOffUiSchema";
+import { createSignOffSchema } from "@reporting/src/app/components/signOff/createSignOffSchema";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
+  isRegulatedOperation: boolean;
+  isSupplementaryReport: boolean;
 }
 export default function SignOffForm({
   version_id,
   navigationInformation,
+  isRegulatedOperation,
+  isSupplementaryReport,
 }: Props) {
   const router = useRouter();
   const [formState, setFormState] = useState({});
@@ -28,10 +30,19 @@ export default function SignOffForm({
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
   const allChecked = (formData: SignOffFormItems) => {
+    const { supplementary, signature, ...rest } = formData;
     return (
-      Object.values(formData).every((value) => value) && formData.signature
+      !!signature && Object.values({ ...rest, ...supplementary }).every(Boolean)
     );
   };
+  const uiSchema = createSignOffUiSchema(
+    isSupplementaryReport,
+    isRegulatedOperation,
+  );
+  const schema = createSignOffSchema(
+    isSupplementaryReport,
+    isRegulatedOperation,
+  );
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -66,8 +77,8 @@ export default function SignOffForm({
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={signOffSchema}
-      uiSchema={signOffUiSchema}
+      schema={schema}
+      uiSchema={uiSchema}
       formData={formState}
       onSubmit={handleSubmit}
       buttonText={"Submit Report"}
