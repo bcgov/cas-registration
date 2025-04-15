@@ -7,7 +7,7 @@ from compliance.models import ComplianceSummary
 from compliance.schema.compliance_summary import ComplianceSummaryOut, ComplianceSummaryListOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
-from service.compliance_dashboard_service import ComplianceDashboardService
+from service.compliance.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from .router import router
 

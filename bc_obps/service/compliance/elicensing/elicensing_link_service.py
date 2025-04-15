@@ -1,7 +1,6 @@
 import logging
 import uuid
 from typing import Optional, TypeVar, Type, cast
-
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from compliance.models.elicensing_link import ELicensingLink

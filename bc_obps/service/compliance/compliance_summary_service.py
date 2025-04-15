@@ -5,8 +5,8 @@ from compliance.models.compliance_period import CompliancePeriod
 from reporting.models import ReportVersion, ReportProduct
 from reporting.service.compliance_service import ComplianceService as ReportComplianceService
 from compliance.models import ComplianceSummary, ComplianceProduct
-from service.compliance_period_service import CompliancePeriodService
-from service.compliance_obligation_service import ComplianceObligationService
+from service.compliance.compliance_period_service import CompliancePeriodService
+from service.compliance.compliance_obligation_service import ComplianceObligationService
 from django.core.exceptions import ValidationError
 
 

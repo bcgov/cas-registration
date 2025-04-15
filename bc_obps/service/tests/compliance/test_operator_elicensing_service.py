@@ -5,7 +5,7 @@ import requests
 import pytest
 from django.utils import timezone
 
-from service.operator_elicensing_service import OperatorELicensingService
+from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
 from registration.models.operator import Operator
 from compliance.models.elicensing_link import ELicensingLink
 
@@ -98,7 +98,7 @@ def mock_pending_elicensing_link():
 class TestOperatorELicensingService:
     """Tests for the OperatorELicensingService class"""
 
-    @patch('service.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
     def test_map_operator_to_client_data_with_link(
         self, mock_elicensing_link_model, mock_operator, mock_elicensing_link
     ):
@@ -127,7 +127,7 @@ class TestOperatorELicensingService:
         with pytest.raises(ValueError, match="Cannot map operator to client data without an existing link"):
             OperatorELicensingService._map_operator_to_client_data(mock_operator, None)
 
-    @patch('service.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
     def test_map_operator_to_client_data_with_mailing_address(
         self, mock_elicensing_link_model, mock_operator_mailing_only, mock_elicensing_link
     ):
@@ -142,7 +142,7 @@ class TestOperatorELicensingService:
         assert result["stateProvince"] == mock_operator_mailing_only.mailing_address.province
         assert result["postalCode"] == mock_operator_mailing_only.mailing_address.postal_code
 
-    @patch('service.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
     def test_map_operator_to_client_data_no_addresses(
         self, mock_elicensing_link_model, mock_operator_no_addresses, mock_elicensing_link
     ):
@@ -159,8 +159,8 @@ class TestOperatorELicensingService:
         assert result["country"] == "Canada"
 
     @pytest.mark.django_db
-    @patch('service.operator_elicensing_service.ELicensingLink')
-    @patch('service.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService')
     def test_ensure_client_exists_existing_client(
         self, mock_link_service, mock_elicensing_link_class, mock_operator, mock_elicensing_link
     ):
@@ -181,9 +181,9 @@ class TestOperatorELicensingService:
         )
 
     @pytest.mark.django_db
-    @patch('service.operator_elicensing_service.ELicensingLink')
-    @patch('service.operator_elicensing_service.ELicensingLinkService')
-    @patch('service.operator_elicensing_service.Operator.objects.get')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.compliance.elicensing.operator_elicensing_service.Operator.objects.get')
     def test_ensure_client_exists_operator_not_found(
         self, mock_get, mock_link_service, mock_elicensing_link_class, mock_operator
     ):
@@ -203,12 +203,14 @@ class TestOperatorELicensingService:
         mock_get.assert_called_once_with(id=mock_operator.id)
 
     @pytest.mark.django_db
-    @patch('service.operator_elicensing_service.ELicensingLink')
-    @patch('service.operator_elicensing_service.ContentType')
-    @patch('service.operator_elicensing_service.ELicensingLinkService')
-    @patch('service.operator_elicensing_service.Operator.objects.get')
-    @patch('service.operator_elicensing_service.elicensing_api_client')
-    @patch('service.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ContentType')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.compliance.elicensing.operator_elicensing_service.Operator.objects.get')
+    @patch('service.compliance.elicensing.operator_elicensing_service.elicensing_api_client')
+    @patch(
+        'service.compliance.elicensing.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data'
+    )
     def test_ensure_client_exists_create_client_success(
         self,
         mock_map_data,
@@ -258,12 +260,14 @@ class TestOperatorELicensingService:
         mock_link.save.assert_called_once()
 
     @pytest.mark.django_db
-    @patch('service.operator_elicensing_service.ELicensingLink')
-    @patch('service.operator_elicensing_service.ContentType')
-    @patch('service.operator_elicensing_service.ELicensingLinkService')
-    @patch('service.operator_elicensing_service.Operator.objects.get')
-    @patch('service.operator_elicensing_service.elicensing_api_client')
-    @patch('service.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ContentType')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.compliance.elicensing.operator_elicensing_service.Operator.objects.get')
+    @patch('service.compliance.elicensing.operator_elicensing_service.elicensing_api_client')
+    @patch(
+        'service.compliance.elicensing.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data'
+    )
     def test_ensure_client_exists_create_client_invalid_response(
         self,
         mock_map_data,
@@ -308,12 +312,14 @@ class TestOperatorELicensingService:
         assert not mock_link.save.called  # Ensure the link wasn't saved
 
     @pytest.mark.django_db
-    @patch('service.operator_elicensing_service.ELicensingLink')
-    @patch('service.operator_elicensing_service.ContentType')
-    @patch('service.operator_elicensing_service.ELicensingLinkService')
-    @patch('service.operator_elicensing_service.Operator.objects.get')
-    @patch('service.operator_elicensing_service.elicensing_api_client')
-    @patch('service.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ContentType')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.compliance.elicensing.operator_elicensing_service.Operator.objects.get')
+    @patch('service.compliance.elicensing.operator_elicensing_service.elicensing_api_client')
+    @patch(
+        'service.compliance.elicensing.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data'
+    )
     def test_ensure_client_exists_request_exception(
         self,
         mock_map_data,
@@ -351,12 +357,14 @@ class TestOperatorELicensingService:
         assert not mock_link.save.called  # Ensure the link wasn't saved
 
     @pytest.mark.django_db
-    @patch('service.operator_elicensing_service.ELicensingLink')
-    @patch('service.operator_elicensing_service.ContentType')
-    @patch('service.operator_elicensing_service.ELicensingLinkService')
-    @patch('service.operator_elicensing_service.Operator.objects.get')
-    @patch('service.operator_elicensing_service.elicensing_api_client')
-    @patch('service.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLink')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ContentType')
+    @patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService')
+    @patch('service.compliance.elicensing.operator_elicensing_service.Operator.objects.get')
+    @patch('service.compliance.elicensing.operator_elicensing_service.elicensing_api_client')
+    @patch(
+        'service.compliance.elicensing.operator_elicensing_service.OperatorELicensingService._map_operator_to_client_data'
+    )
     def test_ensure_client_exists_http_error(
         self,
         mock_map_data,
