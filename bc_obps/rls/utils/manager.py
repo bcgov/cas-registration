@@ -14,7 +14,6 @@ class RlsManager:
     @contextmanager
     def bypass_rls() -> Any:
         with connection.cursor() as cursor:
-            # cursor.execute(f"set role {DB_USER};")
             cursor.execute(SQL("set role {}").format(Identifier(settings.DB_USER)))
         try:
             yield
