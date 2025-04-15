@@ -1,6 +1,5 @@
 from service.application_access_service import ApplicationAccessService
 import pytest
-from unittest.mock import patch
 from model_bakery import baker
 from registration.models import User, UserOperator
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
