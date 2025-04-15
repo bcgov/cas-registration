@@ -1049,10 +1049,7 @@ files = [
 [package.dependencies]
 google-auth = ">=2.14.1,<3.0.0"
 googleapis-common-protos = ">=1.56.2,<2.0.0"
-proto-plus = [
-    {version = ">=1.25.0,<2.0.0", markers = "python_version >= \"3.13\""},
-    {version = ">=1.22.3,<2.0.0", markers = "python_version < \"3.13\""},
-]
+proto-plus = ">=1.22.3,<2.0.0"
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<7.0.0"
 requests = ">=2.18.0,<3.0.0"
 
@@ -2809,5 +2806,5 @@ test = ["pytest"]
 
 [metadata]
 lock-version = "2.1"
-python-versions = "^3.12"
-content-hash = "e6041abcf36d27e1061a5b3844c94c1041200b10b739b86638eca6aca4c50260"
+python-versions = "~3.12.3"
+content-hash = "d53378c202aa66a7cef0b4bd3e25603fd8f833dcb6dd8f6e75b7d872859b91db"
