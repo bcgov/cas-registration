@@ -30,6 +30,7 @@ export const getComplianceUnitsApplyData = async () => {
     bccrTradingName: "Colour Co.",
     obpsComplianceAccountId: "273563474850372",
     validBccrHoldingAccountId: "123456789012345",
+    operation_name: "Operation 2",
 
     reporting_year: 2024,
   };

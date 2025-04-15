@@ -3,13 +3,24 @@ import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFacto
 import { ComplianceSummary } from "../../compliance-summaries/types";
 
 const ActionCell = (params: GridRenderCellParams) => {
-  const cellText = params.row.obligation_id
-    ? "Manage Obligation"
-    : "View Details";
+  let cellText = "View Details";
+
+  if (params.row.obligation_id) {
+    cellText = "Manage Obligation";
+  } else if (params.row.compliance_status === "Earned credits") {
+    cellText = "Request Issuance of Credits";
+  }
 
   const cell = ActionCellFactory({
-    generateHref: (p: { row: ComplianceSummary }) =>
-      `/compliance-summaries/${p.row.id}/review-compliance-summary`,
+    generateHref: (p: { row: ComplianceSummary }) => {
+      if (p.row.obligation_id) {
+        return `/compliance-summaries/${p.row.id}/manage-obligation/review-compliance-summary`;
+      } else if (p.row.compliance_status === "Earned credits") {
+        return `/compliance-summaries/${p.row.id}/request-issuance/review-compliance-summary`;
+      } else {
+        return `/compliance-summaries/${p.row.id}`;
+      }
+    },
     cellText: cellText,
   });
 
