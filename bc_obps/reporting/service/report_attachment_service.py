@@ -37,6 +37,35 @@ class ReportAttachmentService:
         )
         attachment.save()
 
+
+    @classmethod
+    def save_checkbox_confirmations(
+        cls,
+        report_version_id: int,
+        confirm_required_uploaded: bool | None,
+        confirm_existing_relevant: bool | None,
+    ) -> None:
+        """
+        Saves the confirmation values for the specified report version.
+
+        Args:
+            report_version_id (int): The ID of the report version.
+            confirm_required_uploaded (bool | None): Confirmation if required attachments are uploaded.
+            confirm_existing_relevant (bool | None): Confirmation if existing attachments are relevant.
+        """
+        confirmation_data = {}
+
+        if confirm_required_uploaded is not None:
+            confirmation_data['confirm_supplementary_required_attachments_uploaded'] = confirm_required_uploaded
+        if confirm_existing_relevant is not None:
+            confirmation_data['confirm_supplementary_existing_attachments_relevant'] = confirm_existing_relevant
+
+        if confirmation_data:
+            cls.objects.update_or_create(
+                report_version_id=report_version_id,
+                defaults=confirmation_data,
+            )
+            
     @classmethod
     def get_attachments(cls, report_version_id: int) -> QuerySet[ReportAttachment]:
         return ReportAttachment.objects.filter(report_version_id=report_version_id).all()

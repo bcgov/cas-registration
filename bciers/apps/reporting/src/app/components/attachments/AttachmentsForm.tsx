@@ -133,7 +133,18 @@ const AttachmentsForm: React.FC<Props> = ({
       formData.append("files", file);
       formData.append("file_types", fileType);
     }
+    if (isSupplementaryReport) {
+      formData.append(
+        "confirm_supplementary_existing_attachments_relevant",
+        String(confirmExistingAttachmentsRelevant),
+      );
 
+      formData.append(
+        "confirm_supplementary_required_attachments_uploaded",
+        String(confirmRequiredAttachmentsUploaded),
+      );
+    }
+    console.log(formData);
     const response = await postAttachments(version_id, formData);
 
     if (response.error) {

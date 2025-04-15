@@ -4,6 +4,7 @@
 from . import (
     mandatory_verification_statement,
     operation_boroid_presence,
+    validate_supplementary_attachments
 )
 
 
@@ -12,4 +13,5 @@ __all__ = [
     # "example_validator",
     "mandatory_verification_statement",
     "operation_boroid_presence",
+    "validate_supplementary_attachments"
 ]

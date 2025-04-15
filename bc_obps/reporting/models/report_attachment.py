@@ -32,18 +32,6 @@ class ReportAttachment(TimeStampedModel):
         db_comment="The name of the original file that was uploaded, since django adds a hash to avoid file name collisions",
     )
 
-    confirm_supplementary_required_attachments_uploaded = models.BooleanField(
-        null=True,
-        blank=True,
-        db_comment="Whether the user confirmed that any attachments required for the supplementary report were uploaded.",
-    )
-
-    confirm_supplementary_existing_attachments_relevant = models.BooleanField(
-        null=True,
-        blank=True,
-        db_comment="Whether the user confirmed that previously uploaded attachments that have not been updated are still relevant to the supplementary report.",
-    )
-
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "Table containing the file information for the report attachments"
         db_table = 'erc"."report_attachment'

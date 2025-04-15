@@ -17,8 +17,6 @@ class ReportAttachmentTest(BaseTestCase):
             ("attachment", "attachment", None, None),
             ("attachment_type", "attachment type", None, None),
             ("attachment_name", "attachment name", None, None),
-            ("confirm_supplementary_required_attachments_uploaded", "confirm supplementary required attachments uploaded", None, None),
-            ("confirm_supplementary_existing_attachments_relevant", "confirm supplementary existing attachments relevant", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):
