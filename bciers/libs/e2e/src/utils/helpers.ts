@@ -80,6 +80,18 @@ export async function fillDropdownByLabel(
   await input.fill(value);
 }
 
+export async function checkAllRadioButtons(page: Page) {
+  const radioButtons = page.getByRole("radio", { name: "Yes" });
+  const count = await radioButtons.count();
+
+  for (let i = 0; i < count; i++) {
+    const radio = radioButtons.nth(i);
+    if (await radio.isEnabled()) {
+      await radio.check();
+    }
+  }
+}
+
 // 🛠️ Function: checks expected alert mesage
 export async function checkAlertMessage(
   page: Page,
