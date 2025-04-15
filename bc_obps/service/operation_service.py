@@ -1,5 +1,7 @@
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
+from registration.emails import send_registration_and_boro_id_email
+from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
 from service.contact_service import ContactService
 from service.data_access_service.document_service import DocumentDataAccessService
@@ -90,7 +92,7 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
+    def submit_registration(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         fields_to_update = ['status']
         if status == Operation.Statuses.REGISTERED:
@@ -99,6 +101,12 @@ class OperationService:
             fields_to_update.append('submission_date')
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=fields_to_update)
+        send_registration_and_boro_id_email(
+            EmailTemplateNames.CONFIRMATION,
+            operation.operator.legal_name,
+            operation,
+            UserDataAccessService.get_by_guid(user_guid),
+        )
         return operation
 
     @classmethod
@@ -308,7 +316,7 @@ class OperationService:
                 payload,
             )
         if operation.status == Operation.Statuses.NOT_STARTED:
-            cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
+            cls.submit_registration(user_guid, operation.id, Operation.Statuses.DRAFT)
         return operation
 
     @classmethod
@@ -601,7 +609,7 @@ class OperationService:
         operation.save(update_fields=['bc_obps_regulated_operation'])
         if operation.bc_obps_regulated_operation is None:
             raise Exception('Failed to create a BORO ID for the operation.')
-
+        send_registration_and_boro_id_email(EmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation, user)
         return operation.bc_obps_regulated_operation
 
     @classmethod

@@ -10,6 +10,8 @@ from registration.models import (
 from model_bakery import baker
 from django.core.exceptions import ValidationError
 from django.db import ProgrammingError, transaction
+from registration.models.business_role import BusinessRole
+from registration.models.contact import Contact
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
@@ -198,6 +200,27 @@ class OperationModelTest(BaseTestCase):
             operation_for_approved_user_operator.user_has_access(approved_user_operator.user.user_guid),
             "There is an approved user-operator association.",
         )
+
+    def test_get_operation_representatives(self):
+        # a senior officer for this operation
+        officer = baker.make(
+            Contact,
+            business_role=BusinessRole.objects.get(role_name='Senior Officer'),
+        )
+        # operation rep for this operation
+        operation_rep = baker.make(
+            Contact,
+            business_role=BusinessRole.objects.get(role_name='Operation Representative'),
+        )
+        # set contacts for the operation
+        self.test_object.contacts.set([officer, operation_rep])
+
+        # someone else's operation rep
+        baker.make(Contact, business_role=BusinessRole.objects.get(role_name='Operation Representative'))
+
+        result = self.test_object.get_operation_representatives()
+        assert result.count() == 1
+        assert result[0].email == operation_rep.email
 
 
 class OperationTriggerTests(BaseTestCase):
