@@ -26,5 +26,7 @@ class TestReportAttachmentsIntegration(CommonTestSetup):
                 'id': ReportAttachment.objects.last().id,
                 'attachment_type': 'verification_statement',
                 'attachment_name': 'testfile.pdf',
+                'confirm_supplementary_existing_attachments_relevant': None, 
+                'confirm_supplementary_required_attachments_uploaded': None,
             }
         ]

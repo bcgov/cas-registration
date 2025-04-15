@@ -44,7 +44,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
 
         mock_get_method.assert_called_once()
         assert response.status_code == 200
-        assert response.json() == [{'attachment_name': 'success', 'attachment_type': 'success', 'id': 123}]
+        assert response.json() == [{'attachment_name': 'success', 'attachment_type': 'success', 'confirm_supplementary_existing_attachments_relevant': None, 'confirm_supplementary_required_attachments_uploaded': None, 'id': 123}]
 
     @patch("reporting.api.report_attachments.get_report_attachments", autospec=True)
     @patch("reporting.service.report_attachment_service.ReportAttachmentService.set_attachment", autospec=True)
@@ -78,11 +78,15 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
             {
                 'attachment_name': 'test1',
                 'attachment_type': 'something',
+                'confirm_supplementary_existing_attachments_relevant': None, 
+                'confirm_supplementary_required_attachments_uploaded': None,
                 'id': 12,
             },
             {
                 'attachment_name': 'abcde',
-                'attachment_type': 'a_type',
+                'attachment_type': 'a_type', 
+                'confirm_supplementary_existing_attachments_relevant': None, 
+                'confirm_supplementary_required_attachments_uploaded': None,
                 'id': 1211,
             },
         ]
