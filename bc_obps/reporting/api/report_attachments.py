@@ -1,4 +1,4 @@
-from typing import List, Literal, Tuple
+from typing import List, Literal, Optional, Tuple
 from common.api.utils.current_user_utils import get_current_user_guid
 from django.db import transaction
 from django.http import HttpRequest
@@ -25,6 +25,8 @@ def save_report_attachments(
     version_id: int,
     file_types: Form[List[str]],
     files: List[UploadedFile] = File(...),
+    confirm_supplementary_existing_attachments_relevant: Optional[bool] = Form(None),
+    confirm_supplementary_required_attachments_uploaded: Optional[bool] = Form(None),
 ) -> Tuple[Literal[200], List[ReportAttachmentOut]]:
 
     if len(file_types) != len(files):
@@ -36,6 +38,14 @@ def save_report_attachments(
         file = files[index]
         ReportAttachmentService.set_attachment(version_id, user_guid, file_type, file)
 
+    # Save confirmation values only if they are provided
+    if confirm_supplementary_existing_attachments_relevant is not None or confirm_supplementary_required_attachments_uploaded is not None:
+        ReportAttachmentService.save_attachment_confirmations(
+            version_id,
+            confirm_required_uploaded=confirm_supplementary_required_attachments_uploaded,
+            confirm_existing_relevant=confirm_supplementary_existing_attachments_relevant,
+        )
+        
     return get_report_attachments(request, version_id)
 
 

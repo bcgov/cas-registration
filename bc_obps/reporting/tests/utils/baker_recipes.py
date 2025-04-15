@@ -39,6 +39,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_verification_visit import ReportVerificationVisit
+from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 
 from registration.tests.utils.baker_recipes import (
     operation,
@@ -303,4 +304,11 @@ report_sign_off = Recipe(
     acknowledgement_of_possible_costs=True,
     signature="Test Signature",
     signing_date=datetime.now(),
+)
+
+report_attachment_confirmation = Recipe(
+    ReportAttachmentConfirmation,
+    report_version=foreign_key(report_version),
+    confirm_supplementary_required_attachments_uploaded=True,
+    confirm_supplementary_existing_attachments_relevant=True,
 )

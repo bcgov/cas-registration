@@ -178,6 +178,9 @@ class UserModelTest(BaseTestCase):
             ("reportsignoff_created", "report sign off", None, None),
             ("reportsignoff_updated", "report sign off", None, None),
             ("reportsignoff_archived", "report sign off", None, None),
+            ("reportattachmentconfirmation_created", "report attachment confirmation", None, None),
+            ("reportattachmentconfirmation_updated", "report attachment confirmation", None, None),
+            ("reportattachmentconfirmation_archived", "report attachment confirmation", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
