@@ -70,7 +70,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
             "facility_type": "Single Facility Operation",
             "facility_bcghgid": "abc12345",
             "activities": ["1", "2", "3"],
-            "products": [],
+            "regulated_products": [],
         }
 
         TestUtils.mock_post_with_auth_role(
@@ -80,6 +80,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
             request_data,
             endpoint_under_test,
         )
+
         assert FacilityReport.objects.get(pk=facility_report.id).facility_name == "CHANGED"
         assert FacilityReport.objects.get(pk=facility_report.id).activities.count() == 3
 
