@@ -10,7 +10,7 @@ from registration.tests.utils.bakers import (
     operation_baker,
     operator_baker,
 )
-from reporting.models import ReportingYear, ReportVersion, ReportOperation, FacilityReport
+from reporting.models import ReportingYear, ReportVersion, ReportOperation, FacilityReport, ReportProduct
 from reporting.schema.report_operation import ReportOperationIn
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from service.report_service import ReportService
@@ -242,3 +242,52 @@ class TestReportService(TestCase):
         assert report_operation.operation_name == "New Operation Name"
         assert report_operation.operation_type == Operation.Types.SFO
         assert report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+
+    def test_deletes_child_report_product_records_on_product_set_change(self):
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_operation.regulated_products.set([1, 2, 3])
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        report_product_1 = baker.make_recipe(
+            'reporting.tests.utils.report_product',
+            report_version=report_version,
+            facility_report=facility_report,
+            product_id=1,
+        )
+        report_product_2 = baker.make_recipe(
+            'reporting.tests.utils.report_product',
+            report_version=report_version,
+            facility_report=facility_report,
+            product_id=2,
+        )
+        report_product_3 = baker.make_recipe(
+            'reporting.tests.utils.report_product',
+            report_version=report_version,
+            facility_report=facility_report,
+            product_id=3,
+        )
+
+        data = ReportOperationIn(
+            operator_legal_name="Updated Legal Name",
+            operator_trade_name="Updated Trade Name",
+            operation_name="Updated Operation Name",
+            operation_type="Updated Operation Type",
+            operation_bcghgid="Updated BC GHID",
+            bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            activities=[18, 14],
+            regulated_products=[1],
+            operation_representative_name=[1, 2],
+            operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
+        )
+
+        ReportService.save_report_operation(report_version.id, data)
+
+        report_operation.refresh_from_db()
+
+        assert ReportProduct.objects.filter(id=report_product_1.id).exists()
+        assert not ReportProduct.objects.filter(id=report_product_2.id).exists()
+        assert not ReportProduct.objects.filter(id=report_product_3.id).exists()
