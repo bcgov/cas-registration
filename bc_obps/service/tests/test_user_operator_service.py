@@ -1,5 +1,5 @@
 from itertools import cycle
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 import pytest
 from model_bakery import baker
@@ -135,7 +135,7 @@ class TestUserOperatorService:
         "service.data_access_service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator"
     )
     @patch("service.operator_service.OperatorService.update_operator")
-    def test_create_operator_and_user_operator(
+    def test_create_operator_and_user_operator_with_new_contact(
         mock_update_operator, mock_get_or_create_user_operator, mock_save_operator
     ):
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
@@ -152,12 +152,76 @@ class TestUserOperatorService:
         operator_instance = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.APPROVED)
         mock_save_operator.return_value = operator_instance
 
-        user_operator_instance = MagicMock(
-            UserOperator, role=UserOperator.Roles.ADMIN, status=UserOperator.Statuses.APPROVED, user=user
+        user_operator_instance = baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user=user,
+            operator=operator_instance,
         )
         mock_get_or_create_user_operator.return_value = user_operator_instance, True
 
         mock_update_operator.return_value = None  # We don't care about the return value of this function
+        UserOperatorService.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
+
+        mock_save_operator.assert_called_once()
+        mock_get_or_create_user_operator.assert_called_once_with(user.user_guid, operator_instance.id)
+        mock_update_operator.assert_called_once_with(user.user_guid, payload)
+
+        assert Operator.objects.count() == 1
+        assert Operator.objects.first().status == "Approved"
+        assert Contact.objects.count() == 1
+        assert Contact.objects.filter(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            email=user.email,
+            phone_number=user.phone_number,
+            position_title=user.position_title,
+            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+            operator_id=operator_instance.id,
+        ).exists()
+
+    @staticmethod
+    @patch("service.user_operator_service.UserOperatorService.save_operator")
+    @patch(
+        "service.data_access_service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator"
+    )
+    @patch("service.operator_service.OperatorService.update_operator")
+    def test_create_operator_and_user_operator_with_existing_contact(
+        mock_update_operator, mock_get_or_create_user_operator, mock_save_operator
+    ):
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+        payload = OperatorIn(
+            legal_name="Test",
+            business_structure="BC Corporation",
+            bc_corporate_registry_number='aaa1111111',
+            cra_business_number=999999999,
+            street_address="Test",
+            municipality="Test",
+            province="AB",
+            postal_code="H0H0H0",
+        )
+        operator_instance = baker.make_recipe('registration.tests.utils.operator', status=Operator.Statuses.APPROVED)
+        mock_save_operator.return_value = operator_instance
+
+        user_operator_instance = baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            role=UserOperator.Roles.ADMIN,
+            status=UserOperator.Statuses.APPROVED,
+            user=user,
+            operator=operator_instance,
+        )
+        mock_get_or_create_user_operator.return_value = user_operator_instance, True
+
+        mock_update_operator.return_value = None  # We don't care about the return value of this function
+
+        baker.make_recipe(
+            'registration.tests.utils.contact',
+            email=user.email,
+            first_name='changed name',
+            last_name='changed also',
+            operator=operator_instance,
+        )
 
         UserOperatorService.create_operator_and_user_operator(user_guid=user.user_guid, payload=payload)
 
@@ -256,7 +320,7 @@ class TestUpdateStatusAndCreateContact:
         assert previously_approved_user_operator.verified_by is None
 
     @staticmethod
-    def test_update_status_and_create_contact_success():
+    def test_update_status_and_create_new_contact_success():
         industry_operator_user = baker.make_recipe(
             'registration.tests.utils.industry_operator_user',
             first_name="Wednesday",
@@ -292,6 +356,51 @@ class TestUpdateStatusAndCreateContact:
         assert Contact.objects.count() == 4
         assert pending_user_operator.operator.contacts.count() == 4
         assert Contact.objects.filter(first_name="Wednesday").exists()
+
+    @staticmethod
+    def test_update_status_and_update_existing_contact_success():
+        industry_operator_user = baker.make_recipe(
+            'registration.tests.utils.industry_operator_user',
+            first_name="Wednesday",
+            last_name="Addams",
+            email="wednesday.addams@email.com",
+            phone_number='+16044011234',
+            position_title="child",
+        )
+        approved_admin_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
+        )
+        pending_user_operator = baker.make_recipe(
+            'registration.tests.utils.user_operator',
+            operator=approved_admin_user_operator.operator,
+            user=industry_operator_user,
+        )
+
+        # Create an existing contact with the same email as the pending one (e.g., a user was approved, unapproved, and re-approved, and they changed their info somwhere in this process)
+        baker.make_recipe(
+            'registration.tests.utils.contact',
+            first_name="Thursday",
+            last_name="Addams",
+            email="wednesday.addams@email.com",
+            phone_number='+16044011234',
+            position_title="child",
+        )
+
+        pending_user_operator.user.business_guid = approved_admin_user_operator.user.business_guid
+
+        UserOperatorService.update_status_and_create_contact(
+            pending_user_operator.id,
+            UserOperatorStatusUpdate(status='Approved', role=UserOperator.Roles.ADMIN),
+            approved_admin_user_operator.user.user_guid,
+        )
+        pending_user_operator.refresh_from_db()  # refresh the pending_user_operator object to get the updated status
+        assert pending_user_operator.status == UserOperator.Statuses.APPROVED
+        assert pending_user_operator.role == UserOperator.Roles.ADMIN
+        assert pending_user_operator.verified_by == approved_admin_user_operator.user
+
+        assert pending_user_operator.operator.contacts.count() == 1
+        assert not Contact.objects.filter(first_name="Wednesday").exists()
+        assert Contact.objects.filter(first_name="Thursday").exists()
 
     @staticmethod
     def test_update_status_and_create_contact_does_not_create_duplicate_contacts():
