@@ -9,6 +9,7 @@ export const createSignOffSchema = (
 
   if (isSupplementaryReport && isRegulatedOperation) {
     schema.properties = schema.properties || {};
+    delete schema.properties.acknowledgement_of_possible_costs;
     schema.properties.supplementary = {
       type: "object",
       properties: {
