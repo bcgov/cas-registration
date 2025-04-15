@@ -5,7 +5,7 @@ from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
 from typing import Optional
-from service.compliance_summary_service import ComplianceSummaryService
+from service.compliance.compliance_summary_service import ComplianceSummaryService
 
 
 class ComplianceDashboardService:
