@@ -7,6 +7,7 @@ import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import {
+  checkAllRadioButtons,
   clickButton,
   fillComboxboxWidget,
   fillDropdownByLabel,
@@ -139,31 +140,8 @@ export class RegistrationPOM {
     await fillComboxboxWidget(this.page, /facility type+/i, "Small Aggregate");
   }
 
-  async fillOptInInformation() {
-    await this.page
-      .locator("#root_meets_section_3_emissions_requirements-0")
-      .check();
-    await this.page
-      .locator("#root_meets_electricity_import_operation_criteria-0")
-      .check();
-    await this.page
-      .locator("#root_meets_entire_operation_requirements-0")
-      .check();
-    await this.page
-      .locator("#root_meets_section_6_emissions_requirements-0")
-      .check();
-    await this.page
-      .locator("#root_meets_naics_code_11_22_562_classification_requirements-0")
-      .check();
-    await this.page
-      .locator("#root_meets_producing_gger_schedule_a1_regulated_product-0")
-      .check();
-    await this.page
-      .locator("#root_meets_reporting_and_regulated_obligations-0")
-      .check();
-    await this.page
-      .locator("#root_meets_notification_to_director_on_criteria_change-0")
-      .check();
+  async fillOptInInformation(page) {
+    await checkAllRadioButtons(page);
   }
 
   async fillNewEntrantInformation() {
