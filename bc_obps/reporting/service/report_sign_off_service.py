@@ -36,7 +36,10 @@ class ReportSignOffService:
                 acknowledgements.acknowledgement_of_information
                 or acknowledgements.acknowledgement_of_information is None
             )
-            and acknowledgements.acknowledgement_of_possible_costs
+            and (
+                acknowledgements.acknowledgement_of_possible_costs
+                or acknowledgements.acknowledgement_of_possible_costs is None
+            )
             and (
                 acknowledgements.acknowledgement_of_new_version
                 or acknowledgements.acknowledgement_of_new_version is None
