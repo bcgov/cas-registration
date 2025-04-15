@@ -34,7 +34,7 @@ def reverse_create_boro_id_issuance_email_notification_template(apps, schema_edi
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0044_update_dashboard_data'),
+        ('common', '0045_V2_3_0'),
     ]
 
     operations = [

@@ -36,7 +36,7 @@ def reverse_create_registration_submitted_email_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0047_access_request_emails'),
+        ('common', '0048_access_request_emails'),
     ]
 
     operations = [
