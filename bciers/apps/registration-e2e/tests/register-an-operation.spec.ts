@@ -164,7 +164,7 @@ test.describe("Test register operations", () => {
     await registrationPage.assertHeading(
       OperationRegistrationSteps.OPT_IN_APPLICATION,
     );
-    await registrationPage.fillOptInInformation();
+    await registrationPage.fillOptInInformation(registrationPage.page);
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: componentName,
       variant: "filled",
