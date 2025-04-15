@@ -38,7 +38,9 @@ describe("The ProductionDataForm component", () => {
         report_version_id={1000}
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
-        facilityType={""}
+        facilityType={"Small Aggregate"}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -57,6 +59,8 @@ describe("The ProductionDataForm component", () => {
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
         facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -96,6 +100,8 @@ describe("The ProductionDataForm component", () => {
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
         facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
@@ -152,6 +158,8 @@ describe("The ProductionDataForm component", () => {
         schema={{ testSchema: true }}
         navigationInformation={dummyNavigationInformation}
         facilityType={""}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
       />,
     );
 
