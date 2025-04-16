@@ -5,7 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0084_V2_3_0"),
+        (
+            "reporting",
+            "0085_remove_reportemissionallocation_unique_report_emission_allocation_and_more",
+        ),
     ]
 
     operations = [
