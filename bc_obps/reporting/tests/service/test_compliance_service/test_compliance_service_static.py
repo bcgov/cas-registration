@@ -272,6 +272,33 @@ class TestComplianceSummaryService(TestCase):
             + fog_product_allocation.allocated_quantity
         )
 
+        refineries_line_tracing_id = RegulatedProduct.objects.get(name='Refineries line tracing', is_regulated=False).id
+
+        # Add another unregulated product
+        unregulated_product_allocation = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=emission_allocation,
+            report_version=allocation_1.report_version,
+            emission_category=EmissionCategory.objects.get(pk=1),
+            allocated_quantity=Decimal('12.0'),
+        )
+        ReportProduct.objects.filter(pk=unregulated_product_allocation.report_product_id).update(
+            product_id=refineries_line_tracing_id
+        )
+
+        # Correctly aggregates reporting-only emissions when there are multiple unregulated products
+        reporting_only_with_unregulated_for_test = ComplianceService.get_reporting_only_allocated(
+            allocation_1.report_version, allocation_1.report_product.product_id
+        )
+
+        assert (
+            reporting_only_with_unregulated_for_test
+            == allocation_2.allocated_quantity
+            + allocation_4.allocated_quantity
+            + fog_product_allocation.allocated_quantity
+            + unregulated_product_allocation.allocated_quantity
+        )
+
     def test_get_emission_limit(self):
         emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
             pwaei=Decimal('0.5'),
