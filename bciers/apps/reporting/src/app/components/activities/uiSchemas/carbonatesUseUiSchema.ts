@@ -93,7 +93,7 @@ const uiSchema = {
           carbonateType: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          equivalentEmissions: {
+          equivalentEmission: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
         },
