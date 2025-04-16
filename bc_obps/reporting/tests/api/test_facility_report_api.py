@@ -70,7 +70,6 @@ class TestFacilityReportEndpoints(CommonTestSetup):
             "facility_type": "Single Facility Operation",
             "facility_bcghgid": "abc12345",
             "activities": ["1", "2", "3"],
-            "regulated_products": [],
         }
 
         TestUtils.mock_post_with_auth_role(
@@ -136,7 +135,6 @@ class TestFacilityReportEndpoints(CommonTestSetup):
             "facility_type": "Single Facility Operation",
             "facility_bcghgid": "xyz98765",
             "activities": ["1", "2", "3"],
-            "products": [],
         }
 
         response = TestUtils.mock_put_with_auth_role(
