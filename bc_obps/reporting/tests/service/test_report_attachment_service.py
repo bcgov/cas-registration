@@ -83,3 +83,21 @@ class TestReportAttachmentService:
 
         response = ReportAttachmentService.get_attachments(self.report_version.id)
         assert list(response.all()) == [r, r2]
+
+    def test_get_attachment_returns_the_right_record(self):
+        file = ContentFile(b"somedefinitelyrandombytes", "test_file.txt")
+        uploadedFile = InMemoryUploadedFile(
+            file, size=file.size, field_name='attachment', name="test_file.txt", content_type="a", charset='utf-8'
+        )
+
+        r = ReportAttachment(
+            report_version=self.report_version,
+            attachment=uploadedFile,
+            attachment_type="verification_statement",
+            attachment_name="some_test_file.pdf",
+        )
+        r.save()
+
+        response = ReportAttachmentService.get_attachment(self.report_version.id, r.id)
+
+        assert response == r
