@@ -2,11 +2,14 @@ from uuid import UUID
 from django.db import transaction
 from decimal import Decimal
 from compliance.models.compliance_period import CompliancePeriod
-from reporting.models import ReportVersion, ReportProduct
+from reporting.models.report_version import ReportVersion
+from reporting.models import ReportProduct
 from reporting.service.compliance_service import ComplianceService as ReportComplianceService
-from compliance.models import ComplianceSummary, ComplianceProduct
+from compliance.models.compliance_summary import ComplianceSummary
+from compliance.models.compliance_product import ComplianceProduct
 from service.compliance.compliance_period_service import CompliancePeriodService
 from service.compliance.compliance_obligation_service import ComplianceObligationService
+from service.compliance.elicensing.obligation_elicensing_service import ObligationELicensingService
 from django.core.exceptions import ValidationError
 import logging
 
