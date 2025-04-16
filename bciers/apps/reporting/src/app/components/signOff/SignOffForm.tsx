@@ -10,7 +10,7 @@ import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValida
 import { useRouter } from "next/navigation";
 import { createSignOffUiSchema } from "@reporting/src/app/components/signOff/createSignOffUiSchema";
 import { createSignOffSchema } from "@reporting/src/app/components/signOff/createSignOffSchema";
-import { actionHandler } from "@bciers/actions";
+import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
@@ -73,12 +73,7 @@ export default function SignOffForm({
         signature,
         date,
       };
-      const endpoint = `reporting/report-version/${version_id}/submit`;
-      const method = "POST";
-
-      const response = await actionHandler(endpoint, method, "", {
-        body: JSON.stringify(payload),
-      });
+      const response: any = await postSubmitReport(version_id, payload);
       if (response?.error) {
         setErrors([getValidationErrorMessage(response.error)]);
         return false;
