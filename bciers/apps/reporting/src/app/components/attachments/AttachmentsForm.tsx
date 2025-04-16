@@ -117,6 +117,7 @@ const AttachmentsForm: React.FC<Props> = ({
     extraProps?: AttachmentElementOptions,
   ) => (
     <AttachmentElement
+      versionId={version_id}
       title={title}
       onFileChange={(file) => handleChange(fileType, file)}
       fileId={getFileId(fileType)}

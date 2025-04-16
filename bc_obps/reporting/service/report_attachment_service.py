@@ -15,7 +15,6 @@ class ReportAttachmentService:
         attachment_type: str,
         attachment_file: UploadedFile,
     ) -> None:
-
         if attachment_file.size and attachment_file.size > MAX_UPLOAD_SIZE:
             raise ValidationError(f"File attachment cannot exceed {MAX_UPLOAD_SIZE} bytes.")
 
@@ -40,3 +39,7 @@ class ReportAttachmentService:
     @classmethod
     def get_attachments(cls, report_version_id: int) -> QuerySet[ReportAttachment]:
         return ReportAttachment.objects.filter(report_version_id=report_version_id).all()
+
+    @classmethod
+    def get_attachment(cls, report_version_id: int, attachment_id: int) -> ReportAttachment:
+        return ReportAttachment.objects.get(report_version_id=report_version_id, id=attachment_id)

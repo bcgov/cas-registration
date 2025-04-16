@@ -1,7 +1,9 @@
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 import { ChangeEvent, MutableRefObject, useRef } from "react";
+import getAttachmentFileUrl from "../../utils/getAttachmentFileUrl";
 
 interface Props {
+  versionId: number;
   fileName?: string;
   fileId?: number;
   accept?: string;
@@ -16,6 +18,7 @@ export type AttachmentElementOptions = {
 };
 
 const AttachmentElement: React.FC<Props> = ({
+  versionId,
   fileName,
   fileId,
   accept = "application/pdf",
@@ -28,6 +31,13 @@ const AttachmentElement: React.FC<Props> = ({
 
   const handleClick = () => {
     hiddenFileInput.current.click();
+  };
+
+  const handleDownload = async () => {
+    if (!fileId) return;
+
+    const response = await getAttachmentFileUrl(versionId, fileId);
+    console.log(response);
   };
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +81,12 @@ const AttachmentElement: React.FC<Props> = ({
       {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
-            <a download={fileName} href={"#"} className="file-download">
+            <a
+              download={fileName}
+              href={"#"}
+              className="file-download"
+              onClick={handleDownload}
+            >
               {fileName}
             </a>
             {!fileId && <span className="ml-3">- will upload on save</span>}
