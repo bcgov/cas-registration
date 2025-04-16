@@ -35,6 +35,7 @@ describe("The attachments form", () => {
         version_id={1}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -45,6 +46,7 @@ describe("The attachments form", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Note:")).toBeInTheDocument();
   });
+
   it("renders an attachment element for each attachment type, and populates with initial data if it exists", () => {
     const attachmentData = {
       verification_statement: {
@@ -65,6 +67,7 @@ describe("The attachments form", () => {
         version_id={1}
         initialUploadedAttachments={attachmentData}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -113,42 +116,7 @@ describe("The attachments form", () => {
     );
   });
 
-  it("shows an error if the verification statement must be submitted", async () => {
-    mockPostAttachments.mockReturnValue({});
-
-    render(
-      <AttachmentsForm
-        navigationInformation={dummyNavigationInformation}
-        version_id={1346}
-        initialUploadedAttachments={{}}
-        isVerificationStatementMandatory={true}
-      />,
-    );
-
-    mockAttachmentElement.mockClear();
-
-    await act(() => {
-      fireEvent.click(screen.getByText("Save & Continue"));
-    });
-
-    expect(mockPostAttachments).not.toHaveBeenCalled();
-
-    // After re-render, we see the error
-    expect(mockAttachmentElement).toHaveBeenNthCalledWith(
-      1,
-      {
-        error: "Verification statement is required",
-        fileId: undefined,
-        fileName: undefined,
-        onFileChange: expect.any(Function),
-        required: true,
-        title: "Verification Statement",
-      },
-      {},
-    );
-  });
-
-  it("Submits the page if the verification statement doesn't have to be submitted", async () => {
+  it("submits the page if the verification statement doesn't have to be submitted", async () => {
     mockPostAttachments.mockReturnValue({});
 
     render(
@@ -157,6 +125,7 @@ describe("The attachments form", () => {
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={false}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -165,9 +134,6 @@ describe("The attachments form", () => {
     });
 
     expect(mockPostAttachments).not.toHaveBeenCalled();
-    expect(
-      screen.queryByText("Verification statement is required"),
-    ).not.toBeInTheDocument();
   });
 
   it("submits the changed files along with their type", async () => {
@@ -179,6 +145,7 @@ describe("The attachments form", () => {
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -212,5 +179,193 @@ describe("The attachments form", () => {
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
 
     expect(useRouter().push).toHaveBeenCalledWith("continue");
+  });
+
+  it("disables the submit button when verification statement is mandatory and no file is uploaded", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+    expect(submitButton).toBeDisabled();
+  });
+
+  it("enables the submit button when verification statement is not mandatory and no file is uploaded", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={false}
+        isSupplementaryReport={false}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+    expect(submitButton).not.toBeDisabled();
+  });
+
+  it("enables the submit button when verification statement is not mandatory and file is uploaded", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{
+          verification_statement: {
+            id: 1,
+            attachment_name: "test.pdf",
+            attachment_type: "verification_statement",
+          },
+        }}
+        isVerificationStatementMandatory={false}
+        isSupplementaryReport={false}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+    expect(submitButton).not.toBeDisabled();
+  });
+
+  it("disables the submit button when supplementary report is true and confirmations are not checked", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={false}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+    expect(submitButton).toBeDisabled();
+  });
+
+  it("enables the submit button when supplementary report is true and confirmations are checked", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={false}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+
+    const confirmUploadedCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that I have uploaded any attachments that are required/i,
+    });
+
+    // Initially, the checkbox should be unchecked
+    expect(confirmUploadedCheckbox).not.toBeChecked();
+
+    // Click the checkbox
+    fireEvent.click(confirmUploadedCheckbox);
+
+    expect(submitButton).toBeDisabled();
+    //  expect(submitButton).not.toBeDisabled();
+
+    const confirmRelevantCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that any previously uploaded attachments/i,
+    });
+
+    // Initially, the checkbox should be unchecked
+    expect(confirmRelevantCheckbox).not.toBeChecked();
+
+    // Click the checkbox
+    fireEvent.click(confirmRelevantCheckbox);
+
+    expect(submitButton).not.toBeDisabled();
+  });
+  it("disables the submit button when verification statement is mandatory and file is uploaded but supplementary report confirmations are not checked", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{
+          verification_statement: {
+            id: 1,
+            attachment_name: "test.pdf",
+            attachment_type: "verification_statement",
+          },
+        }}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+
+    const confirmUploadedCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that I have uploaded any attachments that are required/i,
+    });
+    fireEvent.click(confirmUploadedCheckbox);
+
+    expect(submitButton).toBeDisabled();
+  });
+  it("enables the submit button when all conditions for supplementary report are met", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{
+          verification_statement: {
+            id: 1,
+            attachment_name: "test.pdf",
+            attachment_type: "verification_statement",
+          },
+        }}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+
+    const confirmUploadedCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that I have uploaded any attachments that are required/i,
+    });
+    fireEvent.click(confirmUploadedCheckbox);
+
+    const confirmRelevantCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that any previously uploaded attachments/i,
+    });
+    fireEvent.click(confirmRelevantCheckbox);
+
+    expect(submitButton).not.toBeDisabled();
+  });
+  it("disables the submit button when verification statement is mandatory and file is uploaded but supplementary report confirmations are not checked", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{
+          verification_statement: {
+            id: 1,
+            attachment_name: "test.pdf",
+            attachment_type: "verification_statement",
+          },
+        }}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+
+    const confirmUploadedCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that I have uploaded any attachments that are required/i,
+    });
+    fireEvent.click(confirmUploadedCheckbox);
+
+    expect(submitButton).toBeDisabled();
   });
 });

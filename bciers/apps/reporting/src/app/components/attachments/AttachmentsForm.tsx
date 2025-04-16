@@ -141,6 +141,17 @@ const AttachmentsForm: React.FC<Props> = ({
       formData.append("files", file);
       formData.append("file_types", fileType);
     }
+    // Append checkbox values if it's a supplementary report
+    if (isSupplementaryReport) {
+      formData.append(
+        "confirm_existing_attachments_relevant",
+        confirmExistingAttachmentsRelevant ? "true" : "false",
+      );
+      formData.append(
+        "confirm_required_attachments_uploaded",
+        confirmRequiredAttachmentsUploaded ? "true" : "false",
+      );
+    }
 
     const response = await postAttachments(version_id, formData);
 
@@ -254,15 +265,21 @@ const AttachmentsForm: React.FC<Props> = ({
               Before clicking 'Continue’, please confirm that you understand and
               agree with the following statements:
             </p>
-
             <div className="flex items-start mt-3">
               <Checkbox
                 checked={confirmExistingAttachmentsRelevant}
                 onChange={(e) =>
                   setConfirmExistingAttachmentsRelevant(e.target.checked)
                 }
+                inputProps={{
+                  "aria-labelledby":
+                    "confirm-existing-attachments-relevant-label",
+                }}
               />
-              <label className="ml-2">
+              <label
+                id="confirm-existing-attachments-relevant-label"
+                className="ml-2"
+              >
                 I confirm that I have uploaded any attachments that are required
                 to be updated for the new submission of this report.
               </label>
@@ -274,8 +291,15 @@ const AttachmentsForm: React.FC<Props> = ({
                 onChange={(e) =>
                   setConfirmRequiredAttachmentsUploaded(e.target.checked)
                 }
+                inputProps={{
+                  "aria-labelledby":
+                    "confirm-required-attachments-uploaded-label",
+                }}
               />
-              <label className="ml-2">
+              <label
+                id="confirm-required-attachments-uploaded-label"
+                className="ml-2"
+              >
                 I confirm that any previously uploaded attachments that have not
                 been updated are still relevant to the new submission of this
                 report.
