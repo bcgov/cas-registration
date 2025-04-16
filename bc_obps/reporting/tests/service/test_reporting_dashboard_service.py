@@ -25,7 +25,7 @@ class TestReportingDashboardService:
 
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
-        operations = operation_baker(operator_id=operator.id, _quantity=4)
+        operations = operation_baker(operator_id=operator.id, _quantity=5)
 
         sort_field: Optional[str] = "name"
         sort_order: Optional[str] = "asc"
@@ -47,6 +47,7 @@ class TestReportingDashboardService:
         operations[1].status = Operation.Statuses.REGISTERED
         operations[2].status = Operation.Statuses.REGISTERED
         operations[3].status = Operation.Statuses.NOT_STARTED
+        operations[4].registration_purpose = Operation.Purposes.POTENTIAL_REPORTING_OPERATION
         for op in operations:
             op.save()
 

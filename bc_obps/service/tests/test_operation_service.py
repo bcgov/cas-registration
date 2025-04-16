@@ -1023,6 +1023,100 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
             is False
         )
 
+    def test_returns_true_when_operation_is_registered_and_not_potential_reporting(self):
+        # Create a user operator and a valid registered operation
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        # Create an operation with status "Registered" and a reporting registration purpose
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,  # valid reporting purpose
+        )
+
+        # Ensure one operation exists
+        assert Operation.objects.count() == 1
+
+        # Should return True because there is at least one valid registered operation.
+        result = OperationDataAccessService.check_current_users_reporting_registered_operation(
+            approved_user_operator.operator.id
+        )
+        assert result is True
+
+    def test_returns_false_when_no_registered_operation_exists(self):
+        # Create a user operator with only a non-registered operation (e.g., Draft)
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.DRAFT,
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+        )
+
+        # Only one operation exists, but with a non-registered status.
+        assert Operation.objects.count() == 1
+
+        # Should return False because there are no operations with status "Registered"
+        result = OperationDataAccessService.check_current_users_reporting_registered_operation(
+            approved_user_operator.operator.id
+        )
+        assert result is False
+
+    def test_returns_false_when_registered_operation_is_potential_reporting(self):
+        # Create a user operator with an operation that is registered but has a potential reporting purpose.
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION,  # should be excluded
+        )
+
+        # Should be one operation, but it must be excluded because it's potential reporting.
+        assert Operation.objects.count() == 1
+
+        result = OperationDataAccessService.check_current_users_reporting_registered_operation(
+            approved_user_operator.operator.id
+        )
+        assert result is False
+
+    def test_returns_true_when_mixed_operations_exist(self):
+        # Create a user operator that has two registered operations: one valid and one potential reporting.
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        # This operation should be excluded.
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+        )
+
+        # This operation should count.
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+        )
+
+        # Two operations exist in total.
+        assert Operation.objects.count() == 2
+
+        # Should return True because one valid operation is present.
+        result = OperationDataAccessService.check_current_users_reporting_registered_operation(
+            approved_user_operator.operator.id
+        )
+        assert result is True
+
 
 class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
     @staticmethod

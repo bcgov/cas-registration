@@ -51,7 +51,7 @@ ENDPOINTS = {
             "endpoint_name": "get_report_operation",
             "kwargs": {"report_id": MOCK_INT},
         },
-        {"method": "get", "endpoint_name": "validate_user_report_version"},
+        {"method": "get", "endpoint_name": "validate_user_reporting_access"},
         {
             "method": "get",
             "endpoint_name": "get_report_person_responsible_by_version_id",

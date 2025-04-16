@@ -166,10 +166,10 @@
             "content": "Submit, view and edit your annual reports or previous years’ reports.",
             "conditions": [
               {
-                "api": "registration/user-operators/current/has_registered_operation",
-                "field": "has_registered_operation",
+                "api": "reporting/validate-user-reporting-access",
+                "field": "status",
                 "operator": "equals",
-                "value": true
+                "value": "Registered"
               }
             ],
             "links": [
