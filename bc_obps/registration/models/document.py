@@ -7,6 +7,7 @@ from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.document import Rls as DocumentRls
 from django.core.files.storage import default_storage
+from django.db.models.fields.files import FieldFile
 
 
 class Document(TimeStampedModel, ScannedFileStorageMixin):
@@ -21,9 +22,7 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
         related_name="documents",
         db_comment="Type of document, e.g., boundary map",
     )
-    description = models.CharField(
-        max_length=1000, blank=True, null=True, db_comment="Description of the document"
-    )
+    description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
     operation = models.ForeignKey(
         "registration.Operation",
         blank=True,
@@ -38,11 +37,13 @@ class Document(TimeStampedModel, ScannedFileStorageMixin):
     )
 
     @typing.no_type_check
-    def get_file_field(self) -> models.FileField:
+    def get_file_field(self) -> FieldFile:
         return self.file
 
     class Meta(TimeStampedModel.Meta):
-        db_table_comment = "Table that contains information about documents such as file metadata, type, and description."
+        db_table_comment = (
+            "Table that contains information about documents such as file metadata, type, and description."
+        )
         db_table = f'{Schemas.ERC.value}"."{RegistrationTableNames.DOCUMENT.value}'
 
     Rls = DocumentRls
