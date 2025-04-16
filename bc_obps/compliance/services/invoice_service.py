@@ -69,14 +69,13 @@ class InvoiceService:
             Dictionary of context data for the template
         """
 
-        PENALTY_AMOUNT = "$122.76"
+        EQUIVALENT_AMOUNT = "$16,000.00"
 
         invoice_number = "OBI000004"
         invoice_date = "Dec 6, 2025"
         invoice_due_date = "Jan 5, 2026"
         invoice_printed_date = "Dec 4, 2025"
         fee_date = "Dec 6, 2025"
-        payments_applied = "$0.00"
         operator_name = "Colour Co."
         operator_address_line1 = "111 COLOUR ST"
         operator_address_line2 = "VANCOUVER, BC, V1V 1V1"
@@ -84,10 +83,11 @@ class InvoiceService:
         operation_address_line1 = "111 PINK RD"
         operation_address_line2 = "VANCOUVER, BC, V1V 1V1"
         obligation_id = "24-0001-1-1"
-        penalty_amount = PENALTY_AMOUNT
-        amount_due = PENALTY_AMOUNT
-        fee_amount = PENALTY_AMOUNT
-        total_amount = PENALTY_AMOUNT
+        amount_due = EQUIVALENT_AMOUNT
+        fee_amount = EQUIVALENT_AMOUNT
+        total_amount = EQUIVALENT_AMOUNT
+        compliance_obligation = "200.0000"
+        equivalent_amount = "$16,000.00"
 
         context = {
             'invoice_number': invoice_number,
@@ -101,12 +101,12 @@ class InvoiceService:
             'operation_address_line1': operation_address_line1,
             'operation_address_line2': operation_address_line2,
             'obligation_id': obligation_id,
-            'penalty_amount': penalty_amount,
-            'payments_applied': payments_applied,
             'fee_date': fee_date,
             'fee_amount': fee_amount,
             'amount_due': amount_due,
             'total_amount': total_amount,
+            'compliance_obligation': compliance_obligation,
+            'equivalent_amount': equivalent_amount,
         }
 
         return context
