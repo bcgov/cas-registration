@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "reporting",
-            "0085_remove_reportemissionallocation_unique_report_emission_allocation_and_more",
+            "0087_update_storage_of_petroleum_products_schema",
         ),
     ]
 
