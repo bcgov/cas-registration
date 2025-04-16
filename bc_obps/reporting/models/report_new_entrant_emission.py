@@ -36,7 +36,6 @@ class ReportNewEntrantEmission(TimeStampedModel):
             models.UniqueConstraint(
                 fields=["report_new_entrant", "emission_category"],
                 name="unique_new_entrant_emissions",
-                violation_error_code="A report new entrant emission already exists for this emission category",
             )
         ]
         triggers = [
