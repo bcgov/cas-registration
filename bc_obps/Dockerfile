@@ -95,8 +95,8 @@ RUN apt-get update && \
     fonts-liberation && \
     # Clean apt cache
     apt-get clean && \
-    # Remove package lists and temp files to reduce size
-    rm -rf /var/lib/apt/lists/* /tmp/inter.zip
+    # Remove package lists to reduce size
+    rm -rf /var/lib/apt/lists/*
 
 # Copy application from the builder stage
 COPY --from=builder --chown=bc_obps:0 ${HOME}/ ${HOME}/
