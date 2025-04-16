@@ -31,7 +31,7 @@ def update_storage_of_petroleum_products(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0085_remove_reportemissionallocation_unique_report_emission_allocation_and_more'),
+        ('reporting', '0086_update_fugitive_sources_schema'),
     ]
 
     operations = [migrations.RunPython(update_storage_of_petroleum_products)]
