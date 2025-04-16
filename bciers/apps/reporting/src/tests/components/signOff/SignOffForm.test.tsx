@@ -10,6 +10,8 @@ const renderSignOffForm = () => {
     <SignOffForm
       version_id={1}
       navigationInformation={dummyNavigationInformation}
+      isSupplementaryReport={false}
+      isRegulatedOperation={true}
     />,
   );
 };
