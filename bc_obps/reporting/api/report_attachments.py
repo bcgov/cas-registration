@@ -61,5 +61,5 @@ def get_report_attachments(
     description="""Returns the cloud download URL for a file attachment.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_file_url(request: HttpRequest, version_id: int, file_id: int) -> Tuple[Literal[200], str]:
+def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: int) -> Tuple[Literal[200], str]:
     return 200, ReportAttachmentService.get_attachment(version_id, file_id).get_file_url()
