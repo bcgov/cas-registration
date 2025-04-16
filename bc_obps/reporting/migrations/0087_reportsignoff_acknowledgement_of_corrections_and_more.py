@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0084_V2_3_0'),
+        ('reporting', '0086_update_fugitive_sources_schema'),
     ]
 
     operations = [
