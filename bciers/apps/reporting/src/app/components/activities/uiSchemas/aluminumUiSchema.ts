@@ -96,7 +96,7 @@ const uiSchema = {
           emissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          equivalentEmissions: {
+          equivalentEmission: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           methodology: {
@@ -129,7 +129,7 @@ const uiSchema = {
           emissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          equivalentEmissions: {
+          equivalentEmission: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           methodology: {
@@ -168,7 +168,7 @@ const uiSchema = {
           emissions: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
-          equivalentEmissions: {
+          equivalentEmission: {
             "ui:FieldTemplate": InlineFieldTemplate,
           },
           methodology: {
