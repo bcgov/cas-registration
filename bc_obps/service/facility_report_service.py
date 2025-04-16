@@ -16,7 +16,7 @@ class SaveFacilityReportData:
         facility_name: str,
         facility_type: str,
         activities: List[int],
-        regulated_products: List[int],
+        regulated_products: Optional[List[int]],
         facility_bcghgid: Optional[str] = None,
     ):
         self.facility_name = facility_name
@@ -103,9 +103,9 @@ class FacilityReportService:
         facility_report.facility_name = data.facility_name.strip()
         facility_report.facility_type = data.facility_type.strip()
         # Update ManyToMany fields (activities, report_products)
-        if data.activities:
+        if hasattr(data, 'activities'):
             cls.set_activities_for_facility_report(facility_report=facility_report, activities=data.activities)
-        if data.regulated_products:
+        if hasattr(data, 'regulated_products'):
             cls.prune_report_product_data_for_facility_report(
                 facility_report=facility_report, regulated_products=data.regulated_products
             )
