@@ -99,7 +99,9 @@ class Facility(TimeStampedModel):
                         select status
                         from erc.operation
                         where erc.operation.id = new.operation_id
-                    ) != 'Registered'
+                    ) != 'Registered' AND
+                    OLD.bcghg_id_id IS NULL AND
+                    NEW.bcghg_id_id IS NOT NULL
                     then
                         raise exception 'Cannot assign bcghg_id to Facility unless the related Operation status is Registered';
                     end if;
