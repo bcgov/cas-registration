@@ -2,6 +2,7 @@ import typing
 from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.db import models
 from django.db.models import CharField, FileField, ForeignKey
+from django.db.models.fields.files import FieldFile
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
@@ -35,7 +36,7 @@ class ReportAttachment(TimeStampedModel, ScannedFileStorageMixin):
     )
 
     @typing.no_type_check
-    def get_file_field(self) -> models.FileField:
+    def get_file_field(self) -> FieldFile:
         return self.attachment
 
     class Meta(TimeStampedModel.Meta):

@@ -1,8 +1,10 @@
 import typing
 
 from common.lib import pgtrigger
+from django.core.files import File
 from django.db import models
 from django.core.files.storage import default_storage
+from django.db.models.fields.files import FieldFile
 
 
 class ScannedFileStorageMixin(models.Model):
@@ -27,21 +29,20 @@ class ScannedFileStorageMixin(models.Model):
 
     # Additional remote file methods
 
-    def get_file_field(self) -> models.FileField:
+    def get_file_field(self) -> FieldFile:
         """
         Models implementing the base file upload will need to override this method to point at the right field
         """
         raise NotImplementedError
 
-    @typing.no_type_check
     def get_file_url(self) -> str:
         """Get the file url for the document from the proper storage backend."""
         return default_storage.url(self.get_file_field().name)
 
-    @typing.no_type_check
-    def get_file_content(self) -> str:
+    def get_file_content(self) -> File | None:
         """Get the file content of the document from the proper storage backend."""
-        return default_storage.open(self.get_file_field().name)
+        file_name = self.get_file_field().name
+        return default_storage.open(file_name) if file_name else None
 
     def sync_file_status(self) -> FileStatus:
         """
@@ -51,18 +52,13 @@ class ScannedFileStorageMixin(models.Model):
 
         file_bucket = default_storage.get_file_bucket(file_name)  # type: ignore
         if file_bucket:
-            if file_bucket == "Quarantined":
-                self.status = ScannedFileStorageMixin.FileStatus.QUARANTINED
-            elif file_bucket == "Clean":
-                self.status = ScannedFileStorageMixin.FileStatus.CLEAN
-            else:
-                return ScannedFileStorageMixin.FileStatus.UNSCANNED
+            self.status = ScannedFileStorageMixin.FileStatus(file_bucket)
         else:
             raise FileNotFoundError(f"File {file_name} not found in storage.")
 
         # Ignore the audit columns triggers, we're not changing anything about the document itself
         with pgtrigger.ignore(f"{self._meta.app_label}.{self._meta.object_name}:set_updated_audit_columns"):
-            self.save()
+            self.save(update_fields=['status'])
         return self.status
 
     # Django method overrides
