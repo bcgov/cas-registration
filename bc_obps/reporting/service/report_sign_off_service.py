@@ -18,6 +18,7 @@ class ReportSignOffService:
                 acknowledgement_of_information=acknowledgements.acknowledgement_of_information,
                 acknowledgement_of_possible_costs=acknowledgements.acknowledgement_of_possible_costs,
                 acknowledgement_of_new_version=acknowledgements.acknowledgement_of_new_version,
+                acknowledgement_of_corrections=acknowledgements.acknowledgement_of_corrections,
                 signature=data.signature,
                 signing_date=datetime.datetime.now(),
             )
@@ -35,9 +36,16 @@ class ReportSignOffService:
                 acknowledgements.acknowledgement_of_information
                 or acknowledgements.acknowledgement_of_information is None
             )
-            and acknowledgements.acknowledgement_of_possible_costs
+            and (
+                acknowledgements.acknowledgement_of_possible_costs
+                or acknowledgements.acknowledgement_of_possible_costs is None
+            )
             and (
                 acknowledgements.acknowledgement_of_new_version
                 or acknowledgements.acknowledgement_of_new_version is None
+            )
+            and (
+                acknowledgements.acknowledgement_of_corrections
+                or acknowledgements.acknowledgement_of_corrections is None
             )
         )
