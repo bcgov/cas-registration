@@ -18,5 +18,35 @@
       "created_at": "2025-02-18 20:09:05.41476+00",
       "reporting_year_id": 2024
     }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 3,
+      "operation_id": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2025-02-18 20:09:05.41476+00",
+      "reporting_year_id": 2024
+    }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 4,
+      "operation_id": "6d07d02a-1ad2-46ed-ad56-2f84313e98bf",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2025-02-18 20:09:05.41476+00",
+      "reporting_year_id": 2024
+    }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 5,
+      "operation_id": "17f13f4d-29b4-45f4-b025-b21f2e126771",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2025-02-18 20:09:05.41476+00",
+      "reporting_year_id": 2024
+    }
   }
 ]

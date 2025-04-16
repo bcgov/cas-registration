@@ -36,5 +36,62 @@
       "reduction_factor": "0.9500",
       "tightening_rate": "0.0100"
     }
+  },
+  {
+    "model": "compliance.compliancesummary",
+    "pk": 3,
+    "fields": {
+      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_at": "2025-04-15T21:37:35.117Z",
+      "report": 4,
+      "current_report_version": 4,
+      "compliance_period": 2,
+      "emissions_attributable_for_reporting": "100.0000",
+      "reporting_only_emissions": "0.0000",
+      "emissions_attributable_for_compliance": "100.0000",
+      "emission_limit": "3.6056",
+      "excess_emissions": "96.3944",
+      "credited_emissions": "0.0000",
+      "reduction_factor": "0.6500",
+      "tightening_rate": "0.0100"
+    }
+  },
+  {
+    "model": "compliance.compliancesummary",
+    "pk": 4,
+    "fields": {
+      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_at": "2025-04-15T21:44:30.790Z",
+      "report": 5,
+      "current_report_version": 5,
+      "compliance_period": 2,
+      "emissions_attributable_for_reporting": "28.0000",
+      "reporting_only_emissions": "0.0000",
+      "emissions_attributable_for_compliance": "28.0000",
+      "emission_limit": "31.8500",
+      "excess_emissions": "0.0000",
+      "credited_emissions": "3.8500",
+      "reduction_factor": "0.6500",
+      "tightening_rate": "0.0100"
+    }
+  },
+  {
+    "model": "compliance.compliancesummary",
+    "pk": 5,
+    "fields": {
+      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_at": "2025-04-15T21:47:37.955Z",
+      "report": 3,
+      "current_report_version": 3,
+      "compliance_period": 2,
+      "emissions_attributable_for_reporting": "2650.0000",
+      "reporting_only_emissions": "0.0000",
+      "emissions_attributable_for_compliance": "0.0000",
+      "emission_limit": "0.0000",
+      "excess_emissions": "0.0000",
+      "credited_emissions": "0.0000",
+      "reduction_factor": "0.6500",
+      "tightening_rate": "0.0100"
+    }
   }
 ]

@@ -1,0 +1,28 @@
+[
+  {
+    "model": "reporting.reportemissionallocation",
+    "fields": {
+      "id": 1,
+      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_at": "2025-04-15T21:36:43.936Z",
+      "report_version": 4,
+      "facility_report": 23,
+      "allocation_methodology": "OBPS Allocation Calculator",
+      "allocation_other_methodology_description": ""
+    }
+  },
+  {
+    "model": "reporting.reportemissionallocation",
+    "fields": {
+      "id": 2,
+      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "created_at": "2025-04-15T21:40:55.706Z",
+      "updated_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "updated_at": "2025-04-15T21:44:04.765Z",
+      "report_version": 5,
+      "facility_report": 24,
+      "allocation_methodology": "OBPS Allocation Calculator",
+      "allocation_other_methodology_description": ""
+    }
+  }
+]
