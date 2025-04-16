@@ -88,7 +88,6 @@ class ReportProduct(TimeStampedModel):
             models.UniqueConstraint(
                 fields=["facility_report", "product"],
                 name="unique_report_product_per_product_and_facility_report",
-                violation_error_message="A FacilityReport can only have one ReportProduct per product",
             ),
             models.CheckConstraint(
                 name="other_methodology_must_have_description",
