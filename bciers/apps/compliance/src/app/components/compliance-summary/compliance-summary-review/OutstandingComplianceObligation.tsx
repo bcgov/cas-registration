@@ -19,10 +19,7 @@ export const OutstandingComplianceObligation = ({ data }: Prop) => {
       />
       <InfoRow
         label="Equivalent Value:"
-        value={`$${data.equivalent_value.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`}
+        value={`$${data.equivalent_value.toLocaleString(undefined)}`}
         style={{ marginBottom: "50px" }}
       />
     </div>

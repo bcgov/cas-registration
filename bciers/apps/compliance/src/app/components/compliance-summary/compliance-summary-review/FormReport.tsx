@@ -15,7 +15,7 @@ export const FormReport = ({ data }: any) => {
       />
       <InfoRow
         label="Excess Emissions:"
-        value={`${data.excess_emissions.toFixed(4)} tCO2e`}
+        value={`${data.excess_emissions} tCO2e`}
         style={{ marginBottom: "50px" }}
       />
     </div>
