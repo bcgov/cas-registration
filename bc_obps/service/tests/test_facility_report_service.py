@@ -2,8 +2,7 @@ from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.tests.utils.bakers import activity_baker
-from service.facility_report_service import FacilityReportService
-from reporting.schema.facility_report import FacilityReportIn
+from service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from model_bakery import baker
 from common.tests.utils.model_inspection import get_cascading_models
 from reporting.models import (
@@ -69,7 +68,7 @@ class TestFacilityReportService(TestCase):
     def test_saves_facility_report_form_data():
         facility_report = baker.make_recipe('reporting.tests.utils.facility_report', facility_bcghgid='abc')
 
-        data = FacilityReportIn(
+        data = SaveFacilityReportData(
             facility_name="CHANGED",
             facility_type=facility_report.facility_type,
             facility_bcghgid=facility_report.facility_bcghgid,
@@ -133,7 +132,7 @@ class TestFacilityReportService(TestCase):
             report_emission_allocation=report_emission_allocation,
         )
 
-        data = FacilityReportIn(
+        data = SaveFacilityReportData(
             facility_name="CHANGED",
             facility_type=facility_report.facility_type,
             facility_bcghgid=facility_report.facility_bcghgid,
