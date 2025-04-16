@@ -5,13 +5,12 @@ import { IChangeEvent } from "@rjsf/core";
 import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
 import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
-import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { useRouter } from "next/navigation";
 import { createSignOffUiSchema } from "@reporting/src/app/components/signOff/createSignOffUiSchema";
 import { createSignOffSchema } from "@reporting/src/app/components/signOff/createSignOffSchema";
+import { actionHandler } from "@bciers/actions";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
@@ -25,7 +24,12 @@ export default function SignOffForm({
   isSupplementaryReport,
 }: Props) {
   const router = useRouter();
-  const [formState, setFormState] = useState({});
+  const [formState, setFormState] = useState({
+    acknowledgements: {},
+    signature: "",
+    date: "",
+    supplementary: {},
+  });
   const [errors, setErrors] = useState<string[]>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
@@ -59,9 +63,22 @@ export default function SignOffForm({
       setErrors(undefined);
       setSubmitButtonDisabled(true);
 
-      const payload = safeJsonParse(JSON.stringify(formState));
-      const response: any = await postSubmitReport(version_id, payload);
+      const { supplementary = {}, signature, date, ...rest } = formState;
 
+      const payload = {
+        acknowledgements: {
+          ...rest,
+          ...supplementary,
+        },
+        signature,
+        date,
+      };
+      const endpoint = `reporting/report-version/${version_id}/submit`;
+      const method = "POST";
+
+      const response = await actionHandler(endpoint, method, "", {
+        body: JSON.stringify(payload),
+      });
       if (response?.error) {
         setErrors([getValidationErrorMessage(response.error)]);
         return false;
@@ -69,7 +86,7 @@ export default function SignOffForm({
       router.push(navigationInformation.continueUrl);
       return true;
     }
-    return true;
+    return false;
   };
 
   return (
