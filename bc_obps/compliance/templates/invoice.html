@@ -1,10 +1,18 @@
-{% load static %}
 <!doctype html>
 <html lang="en" xml:lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Compliance Invoice</title>
+    {# 0-400 = Regular, 0-700 = Bold, 1-400 = Italic #}
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      @page {
+        size: A4 landscape; /* Sets A4 page size with landscape orientation */
+      }
+
       h1,
       h2,
       h3,
