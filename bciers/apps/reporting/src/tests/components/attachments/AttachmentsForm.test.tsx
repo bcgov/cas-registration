@@ -73,10 +73,12 @@ describe("The attachments form", () => {
       {
         fileId: 1,
         fileName: "test_name",
+        isUploading: false,
         onFileChange: expect.any(Function),
         title: "Verification Statement",
         required: true,
         error: undefined,
+        versionId: 1,
       },
       {},
     );
@@ -85,8 +87,10 @@ describe("The attachments form", () => {
       {
         fileId: undefined,
         fileName: undefined,
+        isUploading: false,
         onFileChange: expect.any(Function),
         title: "WCI.352 and WCI.362",
+        versionId: 1,
       },
       {},
     );
@@ -95,8 +99,10 @@ describe("The attachments form", () => {
       {
         fileId: undefined,
         fileName: undefined,
+        isUploading: false,
         onFileChange: expect.any(Function),
         title: "Additional reportable information",
+        versionId: 1,
       },
       {},
     );
@@ -105,9 +111,11 @@ describe("The attachments form", () => {
       {
         fileId: undefined,
         fileName: undefined,
+        isUploading: false,
         onFileChange: expect.any(Function),
         title:
           "Confidentiality request, if you are requesting confidentiality of this report under the B.C. Reg. 249/2015 Reporting Regulation",
+        versionId: 1,
       },
       {},
     );
@@ -140,9 +148,11 @@ describe("The attachments form", () => {
         error: "Verification statement is required",
         fileId: undefined,
         fileName: undefined,
+        isUploading: false,
         onFileChange: expect.any(Function),
         required: true,
         title: "Verification Statement",
+        versionId: 1346,
       },
       {},
     );
@@ -171,7 +181,7 @@ describe("The attachments form", () => {
   });
 
   it("submits the changed files along with their type", async () => {
-    mockPostAttachments.mockReturnValue({});
+    mockPostAttachments.mockReturnValue([]);
 
     render(
       <AttachmentsForm
@@ -210,7 +220,6 @@ describe("The attachments form", () => {
     expect(sentVersionId).toEqual(1346);
     expect(sentFormDataKeys).toEqual(["files", "file_types"]);
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
-
     expect(useRouter().push).toHaveBeenCalledWith("continue");
   });
 });
