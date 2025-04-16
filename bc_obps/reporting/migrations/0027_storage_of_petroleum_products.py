@@ -171,7 +171,7 @@ def init_activity_source_type_schema_data(apps, schema_monitor):
 
     cwd = os.getcwd()
     with open(
-        f'{cwd}/reporting/json_schemas/2024/storage_of_petroleum_products/storage_of_petroleum_products.json'
+        f'{cwd}/reporting/json_schemas/2024/storage_of_petroleum_products/above_ground_storage_tanks.json'
     ) as storage_of_petroleum:
         schema = json.load(storage_of_petroleum)
 

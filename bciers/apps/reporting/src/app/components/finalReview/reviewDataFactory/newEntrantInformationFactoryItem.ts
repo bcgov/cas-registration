@@ -12,6 +12,7 @@ const newEntrantInformationFactoryItem: ReviewDataFactoryItem = async (
       schema: newEntrantSchema,
       data: newEntrantFormData,
       uiSchema: "newEntrantUiSchema",
+      context: newEntrantFormData,
     },
   ];
 };
