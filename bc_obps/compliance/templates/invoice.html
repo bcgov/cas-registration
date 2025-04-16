@@ -85,7 +85,7 @@
       }
 
       .invoice-details:first-child {
-        margin-bottom: 30px;
+        margin-bottom: 34px;
       }
 
       .detail-row {
@@ -94,7 +94,7 @@
       }
 
       .detail-row h4 {
-        width: 150px;
+        width: 190px;
         margin: 0;
         font-weight: bold;
       }
@@ -268,16 +268,12 @@
               <p>{{ obligation_id }}</p>
             </div>
             <div class="detail-row">
-              <h4>Penalty Amount:</h4>
-              <p>{{ penalty_amount }}</p>
+              <h4>2024 Compliance Obligation:</h4>
+              <p>{{ compliance_obligation }} tCO2e</p>
             </div>
             <div class="detail-row">
-              <h4>Payments Applied:</h4>
-              <p>${{ payments_applied }}</p>
-            </div>
-            <div class="detail-row">
-              <h4>Amount Due:</h4>
-              <p>${{ amount_due }}</p>
+              <h4>Equivalent Amount:</h4>
+              <p>{{ equivalent_amount }}</p>
             </div>
           </div>
         </div>
@@ -289,20 +285,17 @@
           <div class="fees-column">
             <h4>Date</h4>
             <p>{{ fee_date }}</p>
-            <p>{{ invoice_date }}</p>
           </div>
           <div class="fees-column">
             <h4>Description</h4>
-            <p>Automatic Overdue Penalty</p>
-            <p>Payments Applied</p>
+            <p>2024 GGIRCA Compliance Obligation</p>
           </div>
           <div class="fees-column">
             <h4>Amount</h4>
-            <p>${{ fee_amount }}</p>
-            <p>$0.00</p>
+            <p>{{ fee_amount }}</p>
             <div class="fees-total">
               <h4>Amount Due:</h4>
-              <p>${{ total_amount }}</p>
+              <p>{{ total_amount }}</p>
             </div>
           </div>
         </div>

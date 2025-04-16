@@ -92,11 +92,16 @@ RUN apt-get update && \
     libgdk-pixbuf2.0-0 \
     libffi-dev \
     shared-mime-info \
-    fonts-liberation && \
-    # Clean apt cache
+    fonts-liberation \
+    fontconfig \
+    unzip && \
+    mkdir -p /usr/local/share/fonts/truetype/inter && \
+    curl -L -o /tmp/inter.zip https://github.com/rsms/inter/releases/download/v3.19/Inter-3.19.zip && \
+    unzip -j /tmp/inter.zip "Inter Desktop/Inter-Regular.otf" "Inter Desktop/Inter-Bold.otf" "Inter Desktop/Inter-Italic.otf" -d /usr/local/share/fonts/truetype/inter/ && \
+    fc-cache -f -v && \
     apt-get clean && \
-    # Remove package lists to reduce size
-    rm -rf /var/lib/apt/lists/*
+    # Remove package lists and temp files to reduce size
+    rm -rf /var/lib/apt/lists/* /tmp/inter.zip
 
 # Copy application from the builder stage
 COPY --from=builder --chown=bc_obps:0 ${HOME}/ ${HOME}/
