@@ -182,7 +182,7 @@ class Operation(TimeStampedModel):
                 func="""
                     IF NEW.status != 'Registered' AND
                        (TG_OP = 'INSERT' OR NEW.bcghg_id_id IS DISTINCT FROM OLD.bcghg_id_id) THEN
-                        RAISE EXCEPTION 'Cannot assign bc_ghg_regulated_operation to Operation unless status is Registered';
+                        RAISE EXCEPTION 'Cannot assign bcghg_id to Operation unless status is Registered';
                     END IF;
                     RETURN NEW;
                 """,
