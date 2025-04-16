@@ -1,13 +1,16 @@
 import base64
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Tuple, Optional, Generator
-
-from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.template.loader import get_template
+from django.template.exceptions import TemplateDoesNotExist
 
 # Type ignore for weasyprint since it lacks stubs
 from weasyprint import HTML  # type: ignore
+
+logger = logging.getLogger(__name__)
 
 
 class InvoiceService:
@@ -15,8 +18,9 @@ class InvoiceService:
 
     CHUNK_SIZE = 64 * 1024
 
-    @staticmethod
+    @classmethod
     def generate_invoice_pdf(
+        cls,
         compliance_summary_id: Optional[int] = None,
     ) -> Tuple[Generator[bytes, None, None], str, int]:
         """
@@ -29,34 +33,28 @@ class InvoiceService:
             Tuple of (PDF data generator, filename, total_size_in_bytes)
         """
         context = InvoiceService._prepare_invoice_context()
+        context['logo_base64'] = InvoiceService._get_logo_base64('logo.png')
 
-        logo_path = Path(__file__).parent.parent / 'static' / 'logo.png'
+        try:
+            template = get_template('invoice.html')
+        except TemplateDoesNotExist:
+            logger.error("Invoice template 'invoice.html' not found")
+            raise ValueError("Failed to generate invoice: template not found")
 
-        if hasattr(settings, 'STATIC_ROOT') and settings.STATIC_ROOT:
-            static_root_logo = Path(settings.STATIC_ROOT) / 'logo.png'
-            if static_root_logo.exists():
-                logo_path = static_root_logo
-
-        if logo_path.exists():
-            with open(logo_path, 'rb') as f:
-                logo_base64 = base64.b64encode(f.read()).decode('utf-8')
-        else:
-            logo_base64 = ''
-
-        context['logo_base64'] = logo_base64
-
-        template = get_template('invoice.html')
         html_string = template.render(context)
 
-        pdf_file = HTML(string=html_string).write_pdf()
+        try:
+            pdf_file = HTML(string=html_string).write_pdf()
+        except Exception as e:
+            logger.error(f"Failed to generate PDF: {str(e)}")
+            raise ValueError("Failed to generate PDF invoice")
 
         filename = f"invoice_{context['invoice_number']}_{datetime.now().strftime('%Y%m%d')}.pdf"
-
         total_size = len(pdf_file)
 
         def pdf_generator() -> Generator[bytes, None, None]:
-            for i in range(0, total_size, InvoiceService.CHUNK_SIZE):
-                yield pdf_file[i : i + InvoiceService.CHUNK_SIZE]
+            for i in range(0, total_size, cls.CHUNK_SIZE):
+                yield pdf_file[i : i + cls.CHUNK_SIZE]
 
         return pdf_generator(), filename, total_size
 
@@ -68,7 +66,6 @@ class InvoiceService:
         Returns:
             Dictionary of context data for the template
         """
-
         EQUIVALENT_AMOUNT = "$16,000.00"
 
         invoice_number = "OBI000004"
@@ -110,3 +107,25 @@ class InvoiceService:
         }
 
         return context
+
+    @staticmethod
+    def _get_logo_base64(static_file_name: str) -> str:
+        """
+        Convert a static file (e.g., logo) to a base64-encoded string.
+
+        Args:
+            static_file_name: Name of the static file (e.g., 'logo.png')
+
+        Returns:
+            Base64-encoded string of the file content, or empty string if file not found
+        """
+        try:
+            logo_path = Path(staticfiles_storage.path(static_file_name))
+            if not logo_path.exists():
+                logger.warning(f"Static file '{static_file_name}' not found at {logo_path}")
+                return ""
+            with open(logo_path, 'rb') as f:
+                return base64.b64encode(f.read()).decode('utf-8')
+        except Exception as e:
+            logger.error(f"Failed to load static file '{static_file_name}': {str(e)}")
+            return ""
