@@ -93,12 +93,12 @@ const AttachmentsForm: React.FC<Props> = ({
     if (response.error) {
       setErrors([response.error]);
     } else {
+      setPendingUploadFiles({});
+      setUplodadedAttachments(getDictFromAttachmentArray(response));
+
       if (canContinue) {
         setIsRedirecting(true);
         router.push(navigationInformation.continueUrl);
-      } else {
-        setPendingUploadFiles({});
-        setUplodadedAttachments(getDictFromAttachmentArray(response));
       }
     }
 
@@ -131,6 +131,7 @@ const AttachmentsForm: React.FC<Props> = ({
       onFileChange={(file) => handleChange(fileType, file)}
       fileId={getFileId(fileType)}
       fileName={getFileName(fileType)}
+      isUploading={isSaving}
       {...(extraProps || {})}
     />
   );

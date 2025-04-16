@@ -1,6 +1,7 @@
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 import { ChangeEvent, MutableRefObject, useRef } from "react";
 import getAttachmentFileUrl from "../../utils/getAttachmentFileUrl";
+import { CircularProgress } from "@mui/material";
 
 interface Props {
   versionId: number;
@@ -11,6 +12,7 @@ interface Props {
   onFileChange: (file: File | undefined) => void;
   error?: string;
   required?: boolean;
+  isUploading?: boolean;
 }
 
 export type AttachmentElementOptions = {
@@ -26,6 +28,7 @@ const AttachmentElement: React.FC<Props> = ({
   onFileChange,
   error,
   required,
+  isUploading,
 }) => {
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
@@ -33,11 +36,23 @@ const AttachmentElement: React.FC<Props> = ({
     hiddenFileInput.current.click();
   };
 
-  const handleDownload = async () => {
-    if (!fileId) return;
+  const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // This should not happen in a regular scenario
+    if (!fileId) throw new Error("Unable to download a file without an id.");
 
     const response = await getAttachmentFileUrl(versionId, fileId);
-    console.log(response);
+
+    // 'download' attribute is not available for an external URL like our storage API
+    const anchorTag = document.createElement("a");
+    Object.assign(anchorTag, {
+      target: "_blank",
+      rel: "noopener noreferrer",
+      href: response,
+    });
+    anchorTag.click();
   };
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -81,15 +96,37 @@ const AttachmentElement: React.FC<Props> = ({
       {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
-            <a
-              download={fileName}
-              href={"#"}
-              className="file-download"
-              onClick={handleDownload}
-            >
-              {fileName}
-            </a>
-            {!fileId && <span className="ml-3">- will upload on save</span>}
+            {fileId && (
+              <a
+                download={fileName}
+                href={"#"}
+                className="file-download"
+                onClick={handleDownload}
+              >
+                {fileName}
+              </a>
+            )}
+            {!fileId && (
+              <>
+                {fileName}
+                <span className="ml-3">
+                  -{" "}
+                  {isUploading ? (
+                    <>
+                      uploading
+                      <CircularProgress
+                        data-testid="progressbar"
+                        role="progressContinuing"
+                        size={18}
+                        className="ml-3"
+                      />
+                    </>
+                  ) : (
+                    "will upload on save"
+                  )}
+                </span>
+              </>
+            )}
           </li>
         </ul>
       ) : (
