@@ -35,7 +35,6 @@ class ReportNewEntrantProduction(TimeStampedModel):
             models.UniqueConstraint(
                 fields=["product", "report_new_entrant"],
                 name="unique_new_entrant_production",
-                violation_error_code="A production record with this product and new entrant report already exists.",
             )
         ]
 

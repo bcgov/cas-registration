@@ -54,7 +54,6 @@ class ReportEmissionAllocation(TimeStampedModel):
                     "facility_report",
                 ],
                 name="unique_report_emission_allocation",
-                violation_error_message="A FacilityReport can only have one ReportEmissionAllocation per Report",
             ),
             models.CheckConstraint(
                 name="allocation_other_methodology_must_have_description",

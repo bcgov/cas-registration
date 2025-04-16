@@ -81,7 +81,7 @@ class ReportProductModelTest(BaseTestCase):
         )
         with pytest.raises(
             ValidationError,
-            match="A FacilityReport can only have one ReportProduct per product",
+            match="Report product with this Facility report and Product already exists.",
         ):
             make(
                 ReportProduct,

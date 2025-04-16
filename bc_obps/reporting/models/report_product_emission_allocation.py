@@ -56,7 +56,6 @@ class ReportProductEmissionAllocation(TimeStampedModel):
                     "emission_category",
                 ],
                 name="unique_report_product_emission_allocation",
-                violation_error_message="A FacilityReport can only have one ReportProductEmissionAllocation per Report Product and Emission Category",
             ),
         ]
         triggers = [
