@@ -107,13 +107,15 @@ class UserOperatorService:
         # Create a contact record for the user_operator and add it to the operator's contacts
         # Using get_or_create to avoid creating duplicate contacts(if any)
         Contact.objects.get_or_create(
-            first_name=user_operator.user.first_name,
-            last_name=user_operator.user.last_name,
             email=user_operator.user.email,
-            phone_number=str(user_operator.user.phone_number),
-            position_title=user_operator.user.position_title,
-            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
-            operator_id=operator.id,
+            operator_id=user_operator.operator_id,
+            defaults={
+                "first_name": user_operator.user.first_name,
+                "last_name": user_operator.user.last_name,
+                "phone_number": str(user_operator.user.phone_number),
+                "position_title": user_operator.user.position_title,
+                "business_role": BusinessRole.objects.get(role_name="Operation Representative"),
+            },
         )
 
         return {"user_operator_id": user_operator.id, 'operator_id': user_operator.operator.id}
@@ -185,13 +187,15 @@ class UserOperatorService:
                 # Create a contact record for the user_operator and add it to the operator's contacts
                 # Using get_or_create to avoid creating duplicate contacts
                 Contact.objects.get_or_create(
-                    first_name=user_operator.user.first_name,
-                    last_name=user_operator.user.last_name,
                     email=user_operator.user.email,
-                    phone_number=str(user_operator.user.phone_number),
-                    position_title=user_operator.user.position_title,
-                    business_role=BusinessRole.objects.get(role_name="Operation Representative"),
                     operator_id=user_operator.operator_id,
+                    defaults={
+                        "first_name": user_operator.user.first_name,
+                        "last_name": user_operator.user.last_name,
+                        "phone_number": str(user_operator.user.phone_number),
+                        "position_title": user_operator.user.position_title,
+                        "business_role": BusinessRole.objects.get(role_name="Operation Representative"),
+                    },
                 )
             access_request_type: AccessRequestTypes = AccessRequestTypes.OPERATOR_WITH_ADMIN
 
