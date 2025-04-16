@@ -1,4 +1,4 @@
-from compliance.models import CompliancePeriod
+from compliance.models.compliance_period import CompliancePeriod
 
 
 class CompliancePeriodService:
