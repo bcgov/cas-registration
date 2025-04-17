@@ -51,9 +51,13 @@ const Submission = ({
             to the dashboard.
           </p>
         </section>
-        <Link className="link-button-outlined" href="/">
-          Back to Dashboard
-        </Link>
+
+        <div>
+          {/* To make external links (e.g., to a different module) work, we have use <a> instead of <Link> */}
+          <a className="link-button-outlined" href={"/dashboard"}>
+            Back to Dashboard
+          </a>
+        </div>
       </section>
     </>
   );
