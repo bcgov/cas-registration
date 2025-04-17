@@ -20,7 +20,7 @@ export const createSignOffSchema = (
         },
         acknowledgement_of_new_version: {
           title:
-            "I understand that, by submitting these changes, I am creating a new version of this annual report that will, effective immediately, be the annual report for the reporting and or compliance period that it pertains to.",
+            "I understand that, by submitting these changes, I am creating a new version of this annual report that will, effective immediately, be the annual report for the reporting and/or compliance period that it pertains to.",
           type: "boolean",
           default: false,
         },
