@@ -35,19 +35,15 @@ const SessionTimeoutHandler: React.FC = () => {
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
     if (status !== "authenticated") return;
-    console.log("Refreshing session... line 38");
     try {
       const newSession: Session | null = await update();
       if (!newSession?.expires) {
-        console.log("Refreshing session... line 42");
         console.error("Session refresh failed or returned no expiration.");
         await handleLogout();
         return;
       }
-      console.log("Refreshing session... line 47");
       setSessionTimeout(getExpirationTimeInSeconds(newSession.expires));
     } catch (error) {
-      console.log("Refreshing session... line 50");
       console.error("Session refresh error:", error);
       await handleLogout();
     }
