@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import List
 from ninja import ModelSchema, Schema
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.service.report_emission_allocation_service import ReportProductEmissionAllocationData
 
 
 class ReportProductEmissionAllocationSchema(ModelSchema):
@@ -36,3 +37,7 @@ class ReportProductEmissionAllocationSchemaOut(Schema):
     report_product_id: int
     product_name: str
     allocated_quantity: str
+
+    @staticmethod
+    def resolve_allocated_quantity(obj: ReportProductEmissionAllocationData) -> str:
+        return str(obj.allocated_quantity)
