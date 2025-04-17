@@ -180,11 +180,11 @@ class Operation(TimeStampedModel):
                 operation=pgtrigger.Insert | pgtrigger.Update,
                 condition=pgtrigger.Q(new__bcghg_id__isnull=False),
                 func="""
-                    IF NEW.status != 'Registered' AND
-                       (TG_OP = 'INSERT' OR NEW.bcghg_id_id IS DISTINCT FROM OLD.bcghg_id_id) THEN
-                        RAISE EXCEPTION 'Cannot assign bcghg_id to Operation unless status is Registered';
-                    END IF;
-                    RETURN NEW;
+                    if new.status != 'Registered' and
+                       (tg_op = 'insert' or new.bcghg_id_id is distinct from old.bcghg_id_id) then
+                        raise exception 'Cannot assign bcghg_id to Operation unless status is Registered';
+                    end if;
+                    return new;
                 """,
             ),
             pgtrigger.Trigger(
@@ -193,12 +193,11 @@ class Operation(TimeStampedModel):
                 operation=pgtrigger.Insert | pgtrigger.Update,
                 condition=pgtrigger.Q(new__bc_obps_regulated_operation__isnull=False),
                 func="""
-                    IF NEW.status != 'Registered' AND
-                        OLD.bc_obps_regulated_operation_id IS NULL AND
-                        NEW.bc_obps_regulated_operation_id IS NOT NULL THEN
-                            RAISE EXCEPTION 'Cannot assign bc_obps_regulated_operation to Operation unless status is Registered';
-                    END IF;
-                    RETURN NEW;
+                    if new.status != 'Registered' and
+                        (tg_op = 'insert' or new.bc_obps_regulated_operation_id is distinct from old.bc_obps_regulateD_operation_id) then
+                            raise exception 'Cannot assign bc_obps_regulated_operation to Operation unless status is Registered';
+                    end if;
+                    return new;
                 """,
             ),
         ]
