@@ -10,7 +10,10 @@ from django.http import HttpRequest
 from reporting.schema.generic import Message
 from .router import router
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService
+from reporting.service.report_emission_allocation_service import (
+    ReportEmissionAllocationData,
+    ReportEmissionAllocationService,
+)
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 
@@ -24,7 +27,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 )
 def get_emission_allocations(
     request: HttpRequest, version_id: int, facility_id: UUID
-) -> tuple[Literal[200], ReportEmissionAllocationSchemaOut]:
+) -> tuple[Literal[200], ReportEmissionAllocationData]:
     # Delegate the responsibility to the service
     response_data = ReportEmissionAllocationService.get_emission_allocation_data(version_id, facility_id)
     return 200, response_data
