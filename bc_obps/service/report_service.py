@@ -176,7 +176,6 @@ class ReportService:
         operation = report_operation.report_version.report.operation
         operator = report_operation.report_version.report.operator
         report_operation.operation_name = operation.name
-        report_operation.operation_type = operation.type
         report_operation.operation_bcghgid = operation.bcghg_id.id if operation.bcghg_id else None
         report_operation.bc_obps_regulated_operation_id = (
             operation.bc_obps_regulated_operation.id if operation.bc_obps_regulated_operation else ""
