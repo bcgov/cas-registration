@@ -1,6 +1,7 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.models import OperationDesignatedOperatorTimeline
+from registration.models import Activity
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.facility_designated_operation_timeline import (
@@ -182,3 +183,5 @@ operation_designated_operator_timeline = Recipe(
 )
 
 regulated_product = Recipe(RegulatedProduct)
+
+activity = Recipe(Activity)

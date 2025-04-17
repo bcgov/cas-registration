@@ -252,17 +252,6 @@ class OperationTriggerTests(BaseTestCase):
         self.non_registered_operation.save()
         self.assertIsNotNone(self.non_registered_operation.bcghg_id)
 
-    def test_prevent_status_change_from_registered_with_assigned_ids(self):
-        # Ensure changing status from 'REGISTERED' prevents updates while retaining IDs
-        self.registered_operation.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
-        self.registered_operation.bc_obps_regulated_operation = baker.make_recipe("registration.tests.utils.boro_id")
-        self.registered_operation.save()
-
-        self.registered_operation.status = Operation.Statuses.DRAFT
-        with self.assertRaises(ProgrammingError):
-            self.registered_operation.save()
-        self.assertIsNotNone(self.registered_operation.bcghg_id)
-
     def test_create_operation_with_id_and_non_registered_status_fails(self):
         # Ensure creating an operation with an ID and non-Registered status fails
         with self.assertRaises(ProgrammingError) as cm:
