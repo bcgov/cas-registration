@@ -58,18 +58,18 @@ class ReportProductService:
             )
 
         # Add a report_product record for unregulated products reported by this operation (for emission allocation only)
-        for unregulated_product_id in unregulated_product_ids:
-            if unregulated_product_id in ReportOperation.objects.get(
-                report_version_id=report_version_id
-            ).regulated_products.values_list("id", flat=True):
+        for r_product_id in ReportOperation.objects.get(
+            report_version_id=report_version_id
+        ).regulated_products.values_list("id", flat=True):
+            if r_product_id in unregulated_product_ids:
                 ReportProduct.objects.update_or_create(
                     report_version_id=report_version_id,
                     facility_report=facility_report,
-                    product_id=unregulated_product_id,
+                    product_id=r_product_id,
                     defaults={
                         "report_version_id": report_version_id,
                         "facility_report": facility_report,
-                        "product_id": unregulated_product_id,
+                        "product_id": r_product_id,
                         "annual_production": 0,
                         "production_data_apr_dec": 0,
                         "production_methodology": "other",
