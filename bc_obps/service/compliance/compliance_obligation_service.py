@@ -4,7 +4,6 @@ from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
-from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
 import logging
 
 logger = logging.getLogger(__name__)

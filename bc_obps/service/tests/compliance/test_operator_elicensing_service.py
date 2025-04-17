@@ -169,14 +169,14 @@ class TestOperatorELicensingService:
         mock_operator.id = uuid.uuid4()
 
         # Setup mock for existing link
-        mock_link_service.get_link_for_model.return_value = mock_client_link
-        mock_client_link.elicensing_object_id = "12345"
+        mock_link_service.get_link_for_model.return_value = mock_elicensing_link
+        mock_elicensing_link.elicensing_object_id = "12345"
 
         # Call the method
         result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
 
         # Assert that the existing link was returned
-        assert result == mock_client_link
+        assert result == mock_elicensing_link
         mock_link_service.get_link_for_model.assert_called_once_with(
             Operator, mock_operator.id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
         )

@@ -2,8 +2,6 @@ import logging
 import uuid
 from typing import Dict, Any, Optional
 from django.db import transaction
-from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 from service.compliance.elicensing.elicensing_api_client import ELicensingAPIClient
 from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
 from registration.models.operator import Operator
