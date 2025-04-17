@@ -28,6 +28,18 @@ function InlineFieldTemplate({
   const inline = options?.inline;
   const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
 
+  // Find the selected gasType object to extract the CAS Number for display in the CAS Registry Number field below
+  const selectedGasTypeObject = formContext?.gasTypes?.find(
+    (obj: {
+      id: number;
+      name: string;
+      chemical_formula: string;
+      cas_number: string;
+    }) => {
+      return obj.chemical_formula === formData;
+    },
+  );
+
   return (
     <div className="mb-4 md:mb-2">
       <div
@@ -71,7 +83,7 @@ function InlineFieldTemplate({
             variant="outlined"
             fullWidth
             disabled
-            defaultValue={formContext.gasTypes[formData]}
+            defaultValue={selectedGasTypeObject.cas_number}
           />
         </div>
       </div>
