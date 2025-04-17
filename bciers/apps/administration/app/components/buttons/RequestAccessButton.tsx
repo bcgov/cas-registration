@@ -5,6 +5,7 @@ import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert } from "@mui/material";
+import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 
 interface RequestAccessButtonProps {
   operatorId: number;
@@ -18,8 +19,8 @@ export default function RequestAccessButton({
   isAdminRequest = false,
 }: Readonly<RequestAccessButtonProps>) {
   const router = useRouter();
-  const [errorList, setErrorList] = useState([] as any[]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const label = isAdminRequest
     ? "Request administrator access"
@@ -29,11 +30,24 @@ export default function RequestAccessButton({
     isAdminRequest ? "request-admin-access" : "request-access"
   }`;
 
+  const errorMessageJSX: JSX.Element = (
+    <>
+      {error}
+      {error?.includes(
+        "Your business BCeID does not have access to this operator.",
+      ) && (
+        <a className="ps-1" href={ghgRegulatorEmail}>
+          ghgregulator@gov.bc.ca
+        </a>
+      )}
+    </>
+  );
+
   const handleRequestAccess = async () => {
     setIsSubmitting(true);
     const response = await actionHandler(endpointUrl, "POST", "");
-    if (response.error) {
-      setErrorList([{ message: response.error }]);
+    if (response?.error) {
+      setError(response.error);
       setIsSubmitting(false);
       return;
     }
@@ -45,12 +59,13 @@ export default function RequestAccessButton({
 
   return (
     <>
-      {errorList.length > 0 &&
-        errorList.map((e: any) => (
-          <Alert key={e.message} severity="error">
-            {e.message}
+      <div className="min-h-6 flex justify-center">
+        {error && (
+          <Alert severity="error" className="w-2/3">
+            {errorMessageJSX}
           </Alert>
-        ))}
+        )}
+      </div>
       <Button
         className="my-10"
         sx={{ textTransform: "none" }} //to remove uppercase text
