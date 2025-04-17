@@ -14,11 +14,6 @@
             "type": "string",
             "enum": []
           },
-          "casNumber": {
-            "title": "CAS Registry Number",
-            "type": "string",
-            "readOnly": true
-          },
           "emission": {
             "title": "Emission",
             "type": "number",

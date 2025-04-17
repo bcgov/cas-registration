@@ -117,13 +117,9 @@ def handle_gas_types(
 ) -> None:
     # Convert QuerySet to a list for efficient iteration without extra database hits
     config_elements_list = list(config_element_for_gas_types)
-    # Use a dictionary to keep track of gas type's chemical_formula and cas_number
+    # Use a dictionary to keep track of gas type's chemical_formula
     gas_type_map: Dict[int, Dict[str, str]] = {
-        ce.gas_type_id: {
-            "chemical_formula": ce.gas_type.chemical_formula,
-            "cas_number": ce.gas_type.cas_number,
-        }
-        for ce in config_elements_list
+        ce.gas_type_id: {"chemical_formula": ce.gas_type.chemical_formula} for ce in config_elements_list
     }
     # Gather all necessary gas_type_ids for filtering fetched configurations
     gas_type_ids = list(gas_type_map.keys())
@@ -154,7 +150,6 @@ def handle_gas_types(
         gas_type_id = config_element_for_gas_type.gas_type_id
         gas_type_info = gas_type_map.get(gas_type_id, {})
         gas_type_chemical_formula = gas_type_info.get("chemical_formula", "")
-        gas_type_cas_number = gas_type_info.get("cas_number", "")
 
         # Add the gas type to the enum list
         gas_type_enum.append(gas_type_chemical_formula)
@@ -184,22 +179,6 @@ def handle_gas_types(
                 },
             }
         }
-
-        # Conditionally add CAS Number if it exists in the schema
-        if (
-            "properties" in source_type_schema.json_schema
-            and "emissions" in source_type_schema.json_schema["properties"]
-        ):
-            emissions_properties = source_type_schema.json_schema["properties"]["emissions"]["items"]["properties"]
-
-            if "casNumber" in emissions_properties:
-                # If 'casNumber' is present, add it to the schema
-                gas_type_schema["properties"]["casNumber"] = {
-                    "type": "string",
-                    "title": "CAS Registry Number",
-                    "default": gas_type_cas_number,
-                    "readOnly": True,
-                }
 
         # Append the gas type schema to the oneOf branch
         gas_type_one_of["gasType"]["oneOf"].append(gas_type_schema)

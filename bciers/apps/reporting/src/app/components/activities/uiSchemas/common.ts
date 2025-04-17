@@ -5,6 +5,7 @@ import {
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
+import GasTypeCasNumberFieldTemplate from "@bciers/components/form/fields/GasTypeCasNumberFieldTemplate";
 
 /**
  * Common Ui Schema fragments for building an activity's Ui Schema.
@@ -22,6 +23,9 @@ export const emissionsFieldsUiSchema = {
     padding: "p-2",
   },
   items: {
+    gasType: {
+      "ui:FieldTemplate": GasTypeCasNumberFieldTemplate,
+    },
     methodology: {
       "ui:FieldTemplate": FieldTemplate,
       "ui:options": {
