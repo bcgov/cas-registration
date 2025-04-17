@@ -117,14 +117,15 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         autospec=True,
     )
     def test_get_file_url(self, mock_get_attachment: MagicMock):
-
         mock_attachment = MagicMock()
         mock_attachment.get_file_url.return_value = "this is a very fake url"
 
         mock_get_attachment.return_value = mock_attachment
 
         response = TestUtils.mock_get_with_auth_role(
-            self, "industry_user", f"/api/reporting/report-version/{self.report_version.id}/attachments/1234"
+            self,
+            "industry_user",
+            f"/api/reporting/report-version/{self.report_version.id}/attachments/1234",
         )
 
         mock_get_attachment.assert_called_with(self.report_version.id, 1234)
@@ -132,5 +133,5 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_attachments")
-        assert_report_version_ownership_is_validated("get_file_url", file_id=1234)
+        assert_report_version_ownership_is_validated("get_report_attachment_url", file_id=1234)
         assert_report_version_ownership_is_validated("save_report_attachments", method="post")
