@@ -67,6 +67,7 @@ export default async function ProductionDataPage({
     <ProductionDataForm
       report_version_id={version_id}
       facility_id={facility_id}
+      facilityType={facilityType}
       allowedProducts={allowedProducts}
       initialData={response.report_products}
       schema={schema}

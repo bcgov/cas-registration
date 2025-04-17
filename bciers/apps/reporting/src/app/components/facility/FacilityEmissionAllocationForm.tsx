@@ -37,6 +37,9 @@ interface FormData {
 
 // 🛠️ Function to validate that emissions totals equal emissions allocations
 const validateEmissions = (formData: FormData): boolean => {
+  // Ignore emissions if methodology is not applicable
+  if (formData?.allocation_methodology === "Not Applicable") return true;
+
   const combinedEmissionAllocationData = [
     ...formData.basic_emission_allocation_data,
     ...formData.fuel_excluded_emission_allocation_data,
@@ -67,6 +70,16 @@ const validateMethodologyOther = (formData: FormData): boolean => {
     ? true
     : formData.allocation_other_methodology_description !== undefined &&
         formData.allocation_other_methodology_description !== "";
+};
+
+// Function to remove products if methodology is not applicable, preventing validation problems
+const removeProducts = (formData: FormData) => {
+  formData.basic_emission_allocation_data.forEach((el) => {
+    el.products = [];
+  });
+  formData.fuel_excluded_emission_allocation_data.forEach((el) => {
+    el.products = [];
+  });
 };
 
 const validateFormData = (
@@ -145,6 +158,7 @@ export default function FacilityEmissionAllocationForm({
       products: initialData.report_product_emission_allocation_totals,
     },
   }));
+  const [shouldReset, setShouldReset] = useState(false);
 
   // State for submit button disable
   const [errors, setErrors] = useState<string[] | undefined>();
@@ -152,6 +166,33 @@ export default function FacilityEmissionAllocationForm({
 
   // 🔄 Check for allocation mismatch on page load to prevent submit
   useEffect(() => {
+    // If methodology is not applicable the products are removed, reset them here
+    if (formData.allocation_methodology !== "Not Applicable" && shouldReset) {
+      setFormData({
+        ...formData,
+        basic_emission_allocation_data:
+          initialData.report_product_emission_allocations
+            .filter((category: any) => category.category_type === "basic")
+            .map(calculateEmissionData),
+        fuel_excluded_emission_allocation_data:
+          initialData.report_product_emission_allocations
+            .filter(
+              (category: any) => category.category_type === "fuel_excluded",
+            )
+            .map(calculateEmissionData),
+        total_emission_allocations: {
+          facility_total_emissions: initialData.facility_total_emissions,
+          products: initialData.report_product_emission_allocation_totals,
+        },
+      });
+      setShouldReset(false);
+    }
+
+    if (formData.allocation_methodology === "Not Applicable") {
+      removeProducts(formData);
+      setShouldReset(true);
+    }
+
     const newErrors = validateFormData(
       formData,
       isPulpAndPaper,
@@ -229,26 +270,31 @@ export default function FacilityEmissionAllocationForm({
       allocation_methodology: formData.allocation_methodology,
       allocation_other_methodology_description:
         formData.allocation_other_methodology_description,
-      report_product_emission_allocations: [
-        ...formData.basic_emission_allocation_data.map((item: any) => ({
-          emission_total: item.emission_total,
-          emission_category_id: item.emission_category_id,
-          products: item.products.map((product: any) => ({
-            report_product_id: product.report_product_id,
-            product_name: product.product_name,
-            allocated_quantity: parseFloat(product.allocated_quantity),
-          })),
-        })),
-        ...formData.fuel_excluded_emission_allocation_data.map((item: any) => ({
-          emission_total: item.emission_total,
-          emission_category_id: item.emission_category_id,
-          products: item.products.map((product: any) => ({
-            report_product_id: product.report_product_id,
-            product_name: product.product_name,
-            allocated_quantity: parseFloat(product.allocated_quantity),
-          })),
-        })),
-      ],
+      report_product_emission_allocations:
+        formData?.allocation_methodology === "Not Applicable"
+          ? []
+          : [
+              ...formData.basic_emission_allocation_data.map((item: any) => ({
+                emission_total: item.emission_total,
+                emission_category_id: item.emission_category_id,
+                products: item.products.map((product: any) => ({
+                  report_product_id: product.report_product_id,
+                  product_name: product.product_name,
+                  allocated_quantity: parseFloat(product.allocated_quantity),
+                })),
+              })),
+              ...formData.fuel_excluded_emission_allocation_data.map(
+                (item: any) => ({
+                  emission_total: item.emission_total,
+                  emission_category_id: item.emission_category_id,
+                  products: item.products.map((product: any) => ({
+                    report_product_id: product.report_product_id,
+                    product_name: product.product_name,
+                    allocated_quantity: parseFloat(product.allocated_quantity),
+                  })),
+                }),
+              ),
+            ],
     };
 
     const endpoint = `reporting/report-version/${version_id}/facilities/${facility_id}/allocate-emissions`;
