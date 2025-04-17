@@ -32,6 +32,12 @@ interface Props {
   facilityId: UUID;
   initialJsonSchema: RJSFSchema;
   initialSelectedSourceTypeIds: string[];
+  gasTypes: {
+    id: number;
+    name: string;
+    chemical_formula: string;
+    cas_number: string;
+  };
 }
 
 // 🧩 Main component
@@ -44,6 +50,7 @@ export default function ActivityForm({
   facilityId,
   initialJsonSchema,
   initialSelectedSourceTypeIds,
+  gasTypes,
 }: Readonly<Props>) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
@@ -193,10 +200,7 @@ export default function ActivityForm({
       validator={customizeValidator({})}
       customValidate={customValidate}
       formContext={{
-        gasTypes: {
-          "HFC-227ea (C3HF7)": "TEST ONE",
-          "HFC-43-10mee (C5H2F10)": "TEST TWO",
-        },
+        gasTypes,
       }}
     />
   );
