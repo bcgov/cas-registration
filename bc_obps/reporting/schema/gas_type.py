@@ -9,4 +9,4 @@ class GasTypeSchema(ModelSchema):
 
     class Meta:
         model = GasType
-        fields = ["id", "name", "chemical_formula"]
+        fields = ["id", "name", "chemical_formula", "cas_number"]
