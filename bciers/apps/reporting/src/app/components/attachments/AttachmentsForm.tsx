@@ -1,17 +1,16 @@
 "use client";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
-import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { useRouter } from "next/navigation";
-import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { Checkbox } from "@mui/material";
-
-import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import AttachmentElement, {
   AttachmentElementOptions,
 } from "./AttachmentElement";
-import { useEffect, useState } from "react";
-import { UploadedAttachment } from "./types";
+import { useState } from "react";
+import { SupplementaryConfirmation, UploadedAttachment } from "./types";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
+import { useRouter } from "next/navigation";
+import { NavigationInformation } from "../taskList/types";
+import { getDictFromAttachmentArray } from "./AttachmentsPage";
+import { Checkbox } from "@mui/material";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -20,6 +19,7 @@ interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
   isVerificationStatementMandatory: boolean;
   isSupplementaryReport: boolean;
+  initialSupplementaryConfirmation?: SupplementaryConfirmation;
 }
 
 const AttachmentsForm: React.FC<Props> = ({
@@ -28,6 +28,7 @@ const AttachmentsForm: React.FC<Props> = ({
   initialUploadedAttachments,
   isVerificationStatementMandatory,
   isSupplementaryReport,
+  initialSupplementaryConfirmation,
 }) => {
   const router = useRouter();
 
@@ -35,6 +36,27 @@ const AttachmentsForm: React.FC<Props> = ({
   const [uploadedAttachments, setUplodadedAttachments] = useState(
     initialUploadedAttachments,
   );
+  // — supplementary confirmation state —
+  const [
+    confirmExistingAttachmentsRelevant,
+    setConfirmExistingAttachmentsRelevant,
+  ] = useState(
+    Boolean(
+      initialSupplementaryConfirmation?.confirm_supplementary_existing_attachments_relevant,
+    ),
+  );
+  const [
+    confirmRequiredAttachmentsUploaded,
+    setConfirmRequiredAttachmentsUploaded,
+  ] = useState(
+    Boolean(
+      initialSupplementaryConfirmation?.confirm_supplementary_required_attachments_uploaded,
+    ),
+  );
+  const submitDisabled =
+    isSupplementaryReport &&
+    (!confirmExistingAttachmentsRelevant ||
+      !confirmRequiredAttachmentsUploaded);
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
@@ -46,55 +68,6 @@ const AttachmentsForm: React.FC<Props> = ({
   const [pendingUploadFiles, setPendingUploadFiles] = useState<{
     [fileType: string]: File;
   }>({});
-
-  // State variables for supplementary report confirmations
-  const [
-    confirmExistingAttachmentsRelevant,
-    setConfirmExistingAttachmentsRelevant,
-  ] = useState(false);
-  const [
-    confirmRequiredAttachmentsUploaded,
-    setConfirmRequiredAttachmentsUploaded,
-  ] = useState(false);
-
-  // Function to determine if the submit button should be disabled
-  const isInitialSubmitButtonDisabled = () => {
-    return (
-      (isVerificationStatementMandatory &&
-        !("verification_statement" in initialUploadedAttachments)) ||
-      (isSupplementaryReport &&
-        (!confirmExistingAttachmentsRelevant ||
-          !confirmRequiredAttachmentsUploaded))
-    );
-  };
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
-    isInitialSubmitButtonDisabled(),
-  );
-  // Function to check if the verification statement is valid
-  const isVerificationStatementValid = () => {
-    return (
-      !isVerificationStatementMandatory ||
-      "verification_statement" in pendingUploadFiles ||
-      "verification_statement" in initialUploadedAttachments
-    );
-  };
-  // Effect hook to update submit button state based on form conditions
-  useEffect(() => {
-    const shouldDisable =
-      (isVerificationStatementMandatory && !isVerificationStatementValid()) ||
-      (isSupplementaryReport &&
-        (!confirmExistingAttachmentsRelevant ||
-          !confirmRequiredAttachmentsUploaded));
-
-    setSubmitButtonDisabled(shouldDisable);
-  }, [
-    isVerificationStatementMandatory,
-    pendingUploadFiles,
-    initialUploadedAttachments,
-    isSupplementaryReport,
-    confirmExistingAttachmentsRelevant,
-    confirmRequiredAttachmentsUploaded,
-  ]);
 
   const handleChange = (fileType: string, file: File | undefined) => {
     if (file) {
@@ -125,9 +98,12 @@ const AttachmentsForm: React.FC<Props> = ({
   };
 
   const handleSubmit = async (canContinue: boolean) => {
-    if (!validateAttachments()) return;
+    if (!isSupplementaryReport && !validateAttachments()) return;
 
-    if (Object.keys(pendingUploadFiles).length === 0) {
+    if (
+      !isSupplementaryReport &&
+      Object.keys(pendingUploadFiles).length === 0
+    ) {
       // Nothing to submit
       if (canContinue) return router.push(navigationInformation.continueUrl);
       else return;
@@ -140,14 +116,23 @@ const AttachmentsForm: React.FC<Props> = ({
       formData.append("files", file);
       formData.append("file_types", fileType);
     }
-
+    if (isSupplementaryReport) {
+      formData.append(
+        "confirm_supplementary_required_attachments_uploaded",
+        confirmRequiredAttachmentsUploaded ? "true" : "false",
+      );
+      formData.append(
+        "confirm_supplementary_existing_attachments_relevant",
+        confirmExistingAttachmentsRelevant ? "true" : "false",
+      );
+    }
     const response = await postAttachments(version_id, formData);
 
     if (response.error) {
       setErrors([response.error]);
     } else {
       setPendingUploadFiles({});
-      setUplodadedAttachments(getDictFromAttachmentArray(response));
+      setUplodadedAttachments(getDictFromAttachmentArray(response.attachments));
 
       if (canContinue) {
         setIsRedirecting(true);
@@ -203,7 +188,7 @@ const AttachmentsForm: React.FC<Props> = ({
         isSaving={isSaving}
         isRedirecting={isRedirecting}
         noFormSave={() => handleSubmit(false)}
-        submitButtonDisabled={submitButtonDisabled}
+        submitButtonDisabled={submitDisabled}
       >
         <p>
           Please upload any of the documents below that is applicable to your
@@ -244,12 +229,12 @@ const AttachmentsForm: React.FC<Props> = ({
             The Director under GGIRCA will be in contact with you regarding your
             request
           </li>
-        </ul>
+        </ul>{" "}
         {isSupplementaryReport && (
           <div className="mt-4 border-t pt-4">
             <p>
-              Before clicking 'Continue’, please confirm that you understand and
-              agree with the following statements:
+              Before clicking &apos;Save & Continue&apos;, please confirm that
+              you understand and agree with the following statements:
             </p>
             <div className="flex items-start mt-3">
               <Checkbox
@@ -270,7 +255,6 @@ const AttachmentsForm: React.FC<Props> = ({
                 to be updated for the new submission of this report.
               </label>
             </div>
-
             <div className="flex items-start mt-3">
               <Checkbox
                 checked={confirmRequiredAttachmentsUploaded}
