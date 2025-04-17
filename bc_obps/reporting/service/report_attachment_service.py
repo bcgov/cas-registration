@@ -4,7 +4,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db.models import QuerySet
 from reporting.constants import MAX_UPLOAD_SIZE
 from reporting.models.report_attachment import ReportAttachment
-from  reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
+from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 
 
 class ReportAttachmentService:
@@ -62,9 +62,7 @@ class ReportAttachmentService:
         }
 
         # Filter out keys with None values
-        clean_confirmations = {
-            k: v for k, v in clean_confirmations.items() if v is not None
-        }
+        clean_confirmations = {k: v for k, v in clean_confirmations.items() if v is not None}
 
         if clean_confirmations:
             # Create or update the confirmation record

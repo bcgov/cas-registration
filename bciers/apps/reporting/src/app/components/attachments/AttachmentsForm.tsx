@@ -1,15 +1,17 @@
 "use client";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import postAttachments from "@reporting/src/app/utils/postAttachments";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
+import { useRouter } from "next/navigation";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import { Checkbox } from "@mui/material";
+
+import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import AttachmentElement, {
   AttachmentElementOptions,
 } from "./AttachmentElement";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UploadedAttachment } from "./types";
-import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import { useRouter } from "next/navigation";
-import { NavigationInformation } from "../taskList/types";
-import { getDictFromAttachmentArray } from "./AttachmentsPage";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -17,6 +19,7 @@ interface Props extends HasReportVersion {
   };
   navigationInformation: NavigationInformation;
   isVerificationStatementMandatory: boolean;
+  isSupplementaryReport: boolean;
 }
 
 const AttachmentsForm: React.FC<Props> = ({
@@ -24,6 +27,7 @@ const AttachmentsForm: React.FC<Props> = ({
   navigationInformation,
   initialUploadedAttachments,
   isVerificationStatementMandatory,
+  isSupplementaryReport,
 }) => {
   const router = useRouter();
 
@@ -42,6 +46,55 @@ const AttachmentsForm: React.FC<Props> = ({
   const [pendingUploadFiles, setPendingUploadFiles] = useState<{
     [fileType: string]: File;
   }>({});
+
+  // State variables for supplementary report confirmations
+  const [
+    confirmExistingAttachmentsRelevant,
+    setConfirmExistingAttachmentsRelevant,
+  ] = useState(false);
+  const [
+    confirmRequiredAttachmentsUploaded,
+    setConfirmRequiredAttachmentsUploaded,
+  ] = useState(false);
+
+  // Function to determine if the submit button should be disabled
+  const isInitialSubmitButtonDisabled = () => {
+    return (
+      (isVerificationStatementMandatory &&
+        !("verification_statement" in initialUploadedAttachments)) ||
+      (isSupplementaryReport &&
+        (!confirmExistingAttachmentsRelevant ||
+          !confirmRequiredAttachmentsUploaded))
+    );
+  };
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(
+    isInitialSubmitButtonDisabled(),
+  );
+  // Function to check if the verification statement is valid
+  const isVerificationStatementValid = () => {
+    return (
+      !isVerificationStatementMandatory ||
+      "verification_statement" in pendingUploadFiles ||
+      "verification_statement" in initialUploadedAttachments
+    );
+  };
+  // Effect hook to update submit button state based on form conditions
+  useEffect(() => {
+    const shouldDisable =
+      (isVerificationStatementMandatory && !isVerificationStatementValid()) ||
+      (isSupplementaryReport &&
+        (!confirmExistingAttachmentsRelevant ||
+          !confirmRequiredAttachmentsUploaded));
+
+    setSubmitButtonDisabled(shouldDisable);
+  }, [
+    isVerificationStatementMandatory,
+    pendingUploadFiles,
+    initialUploadedAttachments,
+    isSupplementaryReport,
+    confirmExistingAttachmentsRelevant,
+    confirmRequiredAttachmentsUploaded,
+  ]);
 
   const handleChange = (fileType: string, file: File | undefined) => {
     if (file) {
@@ -150,6 +203,7 @@ const AttachmentsForm: React.FC<Props> = ({
         isSaving={isSaving}
         isRedirecting={isRedirecting}
         noFormSave={() => handleSubmit(false)}
+        submitButtonDisabled={submitButtonDisabled}
       >
         <p>
           Please upload any of the documents below that is applicable to your
@@ -191,6 +245,54 @@ const AttachmentsForm: React.FC<Props> = ({
             request
           </li>
         </ul>
+        {isSupplementaryReport && (
+          <div className="mt-4 border-t pt-4">
+            <p>
+              Before clicking 'Continue’, please confirm that you understand and
+              agree with the following statements:
+            </p>
+            <div className="flex items-start mt-3">
+              <Checkbox
+                checked={confirmExistingAttachmentsRelevant}
+                onChange={(e) =>
+                  setConfirmExistingAttachmentsRelevant(e.target.checked)
+                }
+                inputProps={{
+                  "aria-labelledby":
+                    "confirm-existing-attachments-relevant-label",
+                }}
+              />
+              <label
+                id="confirm-existing-attachments-relevant-label"
+                className="ml-2"
+              >
+                I confirm that I have uploaded any attachments that are required
+                to be updated for the new submission of this report.
+              </label>
+            </div>
+
+            <div className="flex items-start mt-3">
+              <Checkbox
+                checked={confirmRequiredAttachmentsUploaded}
+                onChange={(e) =>
+                  setConfirmRequiredAttachmentsUploaded(e.target.checked)
+                }
+                inputProps={{
+                  "aria-labelledby":
+                    "confirm-required-attachments-uploaded-label",
+                }}
+              />
+              <label
+                id="confirm-required-attachments-uploaded-label"
+                className="ml-2"
+              >
+                I confirm that any previously uploaded attachments that have not
+                been updated are still relevant to the new submission of this
+                report.
+              </label>
+            </div>
+          </div>
+        )}
       </MultiStepWrapperWithTaskList>
     </>
   );

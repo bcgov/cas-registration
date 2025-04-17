@@ -86,5 +86,5 @@ __all__ = [
     "ProductEmissionIntensity",
     "ReportOperationRepresentative",
     "ReportSignOff",
-    "ReportAttachmentConfirmation"
+    "ReportAttachmentConfirmation",
 ]

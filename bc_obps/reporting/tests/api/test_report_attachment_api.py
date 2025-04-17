@@ -131,7 +131,6 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         mock_get_attachment.assert_called_with(self.report_version.id, 1234)
         assert response.json() == "this is a very fake url"
 
-    
     @patch("reporting.api.report_attachments.get_report_attachments", autospec=True)
     @patch(
         "reporting.service.report_attachment_service.ReportAttachmentService.save_attachment_confirmations",
@@ -148,9 +147,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         mock_get_method: MagicMock,
     ):
         # Arrange
-        mock_get_method.return_value = [
-            {"attachment_name": "success", "attachment_type": "success", "id": 123}
-        ]
+        mock_get_method.return_value = [{"attachment_name": "success", "attachment_type": "success", "id": 123}]
         form = {
             "files": [
                 ContentFile(b"test1", "a.pdf"),
@@ -172,10 +169,12 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         )
 
         # Assert set_attachment called for each file
-        mock_set_attachments.assert_has_calls([
-            call(self.report_version.id, self.user.user_guid, "type1", ANY),
-            call(self.report_version.id, self.user.user_guid, "type2", ANY),
-        ])
+        mock_set_attachments.assert_has_calls(
+            [
+                call(self.report_version.id, self.user.user_guid, "type1", ANY),
+                call(self.report_version.id, self.user.user_guid, "type2", ANY),
+            ]
+        )
         # Assert confirmations saved once with parsed booleans
         mock_save_confirmations.assert_called_once_with(
             self.report_version.id,
@@ -185,9 +184,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         # Assert GET method called and correct response
         mock_get_method.assert_called_once()
         assert response.status_code == 200
-        assert response.json() == [
-            {"attachment_name": "success", "attachment_type": "success", "id": 123}
-        ]
+        assert response.json() == [{"attachment_name": "success", "attachment_type": "success", "id": 123}]
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_attachments")

@@ -40,13 +40,16 @@ def save_report_attachments(
         ReportAttachmentService.set_attachment(version_id, user_guid, file_type, file)
 
     # Save confirmation values only if they are provided
-    if confirm_supplementary_existing_attachments_relevant is not None or confirm_supplementary_required_attachments_uploaded is not None:
+    if (
+        confirm_supplementary_existing_attachments_relevant is not None
+        or confirm_supplementary_required_attachments_uploaded is not None
+    ):
         ReportAttachmentService.save_attachment_confirmations(
             version_id,
             confirm_required_uploaded=confirm_supplementary_required_attachments_uploaded,
             confirm_existing_relevant=confirm_supplementary_existing_attachments_relevant,
         )
-        
+
     return get_report_attachments(request, version_id)
 
 
