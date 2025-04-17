@@ -76,6 +76,7 @@ export default function SignOffForm({
       const response: any = await postSubmitReport(version_id, payload);
       if (response?.error) {
         setErrors([getValidationErrorMessage(response.error)]);
+        setSubmitButtonDisabled(false);
         return false;
       }
       router.push(navigationInformation.continueUrl);
