@@ -44,6 +44,7 @@ from .report_operation_representative import ReportOperationRepresentative
 from .report_sign_off import ReportSignOff
 from .report_compliance_summary import ReportComplianceSummary
 from .report_compliance_summary_product import ReportComplianceSummaryProduct
+from .report_attachment_confirmation import ReportAttachmentConfirmation
 
 __all__ = [
     "ReportDataBaseModel",
@@ -87,6 +88,10 @@ __all__ = [
     "ProductEmissionIntensity",
     "ReportOperationRepresentative",
     "ReportSignOff",
+<<<<<<< HEAD
     "ReportComplianceSummary",
     "ReportComplianceSummaryProduct",
+=======
+    "ReportAttachmentConfirmation"
+>>>>>>> 198ebcdbd (chore: add model attachment_confirmation)
 ]
