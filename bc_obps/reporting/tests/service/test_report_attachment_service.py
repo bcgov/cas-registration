@@ -102,7 +102,6 @@ class TestReportAttachmentService:
         response = ReportAttachmentService.get_attachment(self.report_version.id, r.id)
 
         assert response == r
-    
 
     def test_save_attachment_confirmations_creates_record_both_flags(self):
         # Act
@@ -112,9 +111,7 @@ class TestReportAttachmentService:
             confirm_existing_relevant=False,
         )
         # Assert
-        obj = ReportAttachmentConfirmation.objects.get(
-            report_version_id=self.report_version.id
-        )
+        obj = ReportAttachmentConfirmation.objects.get(report_version_id=self.report_version.id)
         assert obj.confirm_supplementary_required_attachments_uploaded is True
         assert obj.confirm_supplementary_existing_attachments_relevant is False
 
@@ -124,10 +121,11 @@ class TestReportAttachmentService:
             confirm_required_uploaded=None,
             confirm_existing_relevant=True,
         )
-        obj = ReportAttachmentConfirmation.objects.get(
-            report_version_id=self.report_version.id
+        obj = ReportAttachmentConfirmation.objects.get(report_version_id=self.report_version.id)
+        assert (
+            obj.confirm_supplementary_required_attachments_uploaded is False
+            or obj.confirm_supplementary_required_attachments_uploaded is None
         )
-        assert obj.confirm_supplementary_required_attachments_uploaded is False or obj.confirm_supplementary_required_attachments_uploaded is None
         assert obj.confirm_supplementary_existing_attachments_relevant is True
 
     def test_save_attachment_confirmations_updates_existing(self):
@@ -143,9 +141,7 @@ class TestReportAttachmentService:
             confirm_required_uploaded=True,
             confirm_existing_relevant=None,
         )
-        obj = ReportAttachmentConfirmation.objects.get(
-            report_version_id=self.report_version.id
-        )
+        obj = ReportAttachmentConfirmation.objects.get(report_version_id=self.report_version.id)
         assert obj.id == orig.id
         assert obj.confirm_supplementary_required_attachments_uploaded is True
         assert obj.confirm_supplementary_existing_attachments_relevant is False
@@ -158,6 +154,4 @@ class TestReportAttachmentService:
             confirm_existing_relevant=None,
         )
         # Assert no record created
-        assert ReportAttachmentConfirmation.objects.filter(
-            report_version_id=self.report_version.id
-        ).count() == 0
+        assert ReportAttachmentConfirmation.objects.filter(report_version_id=self.report_version.id).count() == 0
