@@ -9,6 +9,7 @@ import { UploadedAttachment } from "./types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
+import { getDictFromAttachmentArray } from "./AttachmentsPage";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -25,6 +26,11 @@ const AttachmentsForm: React.FC<Props> = ({
   isVerificationStatementMandatory,
 }) => {
   const router = useRouter();
+
+  // That information needs to be part of state for when the user saves
+  const [uploadedAttachments, setUplodadedAttachments] = useState(
+    initialUploadedAttachments,
+  );
 
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
@@ -52,7 +58,7 @@ const AttachmentsForm: React.FC<Props> = ({
       isVerificationStatementMandatory &&
       !(
         "verification_statement" in pendingUploadFiles ||
-        "verification_statement" in initialUploadedAttachments
+        "verification_statement" in uploadedAttachments
       )
     ) {
       setValidationErrors({
@@ -87,6 +93,9 @@ const AttachmentsForm: React.FC<Props> = ({
     if (response.error) {
       setErrors([response.error]);
     } else {
+      setPendingUploadFiles({});
+      setUplodadedAttachments(getDictFromAttachmentArray(response));
+
       if (canContinue) {
         setIsRedirecting(true);
         router.push(navigationInformation.continueUrl);
@@ -101,14 +110,14 @@ const AttachmentsForm: React.FC<Props> = ({
   const getFileId = (fileType: string) => {
     return Object.keys(pendingUploadFiles).includes(fileType)
       ? undefined
-      : initialUploadedAttachments[fileType]?.id;
+      : uploadedAttachments && uploadedAttachments[fileType]?.id;
   };
 
   // Returns the name of the file
   const getFileName = (fileType: string) => {
     return Object.keys(pendingUploadFiles).includes(fileType)
       ? pendingUploadFiles[fileType].name
-      : initialUploadedAttachments[fileType]?.attachment_name;
+      : uploadedAttachments && uploadedAttachments[fileType]?.attachment_name;
   };
 
   const buildAttachmentElement = (
@@ -117,10 +126,12 @@ const AttachmentsForm: React.FC<Props> = ({
     extraProps?: AttachmentElementOptions,
   ) => (
     <AttachmentElement
+      versionId={version_id}
       title={title}
       onFileChange={(file) => handleChange(fileType, file)}
       fileId={getFileId(fileType)}
       fileName={getFileName(fileType)}
+      isUploading={isSaving}
       {...(extraProps || {})}
     />
   );

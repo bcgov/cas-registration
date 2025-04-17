@@ -146,6 +146,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_report_attachment_url",
+            "kwargs": {"version_id": MOCK_INT, "file_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_emission_allocations",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },

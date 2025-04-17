@@ -1,4 +1,5 @@
 import typing
+from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.db import models
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
@@ -6,9 +7,10 @@ from registration.models import DocumentType, TimeStampedModel
 from simple_history.models import HistoricalRecords
 from registration.models.rls_configs.document import Rls as DocumentRls
 from django.core.files.storage import default_storage
+from django.db.models.fields.files import FieldFile
 
 
-class Document(TimeStampedModel):
+class Document(TimeStampedModel, ScannedFileStorageMixin):
     file = models.FileField(
         storage=default_storage,
         upload_to="documents",
@@ -22,7 +24,7 @@ class Document(TimeStampedModel):
     )
     description = models.CharField(max_length=1000, blank=True, null=True, db_comment="Description of the document")
     operation = models.ForeignKey(
-        'registration.Operation',
+        "registration.Operation",
         blank=True,
         null=True,
         on_delete=models.DO_NOTHING,
@@ -34,13 +36,9 @@ class Document(TimeStampedModel):
         history_user_id_field=models.UUIDField(null=True, blank=True),
     )
 
-    # File malware scan status
-    class FileStatus(models.TextChoices):
-        UNSCANNED = "Unscanned"
-        CLEAN = "Clean"
-        QUARANTINED = "Quarantined"
-
-    status = models.CharField(max_length=100, choices=FileStatus.choices, default=FileStatus.UNSCANNED)
+    @typing.no_type_check
+    def get_file_field(self) -> FieldFile:
+        return self.file
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = (

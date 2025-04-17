@@ -17,6 +17,7 @@ class ReportAttachmentTest(BaseTestCase):
             ("attachment", "attachment", None, None),
             ("attachment_type", "attachment type", None, None),
             ("attachment_name", "attachment name", None, None),
+            ("status", "status", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):
