@@ -1,3 +1,4 @@
+from typing import Optional
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
@@ -46,27 +47,33 @@ class ReportAttachmentService:
         return ReportAttachment.objects.get(report_version_id=report_version_id, id=attachment_id)
 
     @classmethod
-    def save_attachment_confirmations(
+    def save_attachment_confirmation(
         cls,
         report_version_id: int,
-        confirm_required_uploaded: bool | None,
-        confirm_existing_relevant: bool | None,
+        confirm_required_uploaded: bool,
+        confirm_existing_relevant: bool,
     ) -> None:
         """
-        Saves the attachment confirmation information for a report version.
+        Saves the attachment confirmation information for a supplementary report version.
         """
-        # Only save non-None values
-        clean_confirmations = {
+        default_confirmations = {
             "confirm_supplementary_required_attachments_uploaded": confirm_required_uploaded,
             "confirm_supplementary_existing_attachments_relevant": confirm_existing_relevant,
         }
 
-        # Filter out keys with None values
-        clean_confirmations = {k: v for k, v in clean_confirmations.items() if v is not None}
+        # Create or update the confirmation record
+        ReportAttachmentConfirmation.objects.update_or_create(
+            report_version_id=report_version_id,
+            defaults=default_confirmations,
+        )
 
-        if clean_confirmations:
-            # Create or update the confirmation record
-            confirmation, created = ReportAttachmentConfirmation.objects.update_or_create(
-                report_version_id=report_version_id,
-                defaults=clean_confirmations,
-            )
+    @classmethod
+    def get_attachment_confirmation(cls, report_version_id: int) -> Optional[ReportAttachmentConfirmation]:
+        """
+        Retrieves the attachment confirmation record for a supplementary report version.
+        Returns None if no confirmation exists.
+        """
+        try:
+            return ReportAttachmentConfirmation.objects.get(report_version_id=report_version_id)
+        except ReportAttachmentConfirmation.DoesNotExist:
+            return None  # include the absence of confirmation as part of a successful 200 OK response

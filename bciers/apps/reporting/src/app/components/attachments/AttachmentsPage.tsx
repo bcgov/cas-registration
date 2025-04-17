@@ -14,19 +14,24 @@ export const getDictFromAttachmentArray = (array: UploadedAttachment[]) =>
   Object.fromEntries(array.map((a) => [a.attachment_type, a]));
 
 const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
+  // Get attachment form data
+  const getAttachmentsResponse = await getAttachments(version_id);
+  // Get attachments
   const uploadedAttachments: UploadedAttachment[] =
-    await getAttachments(version_id);
-
+    getAttachmentsResponse.attachments;
   const uploadedAttachmentsDict =
     getDictFromAttachmentArray(uploadedAttachments);
+  // Get confirmations
+  const initialSupplementaryConfirmation = getAttachmentsResponse.confirmation;
 
-  //🔍 Check if reports need verification
-  const needsVerification = await getReportNeedsVerification(version_id); //🔍 Check if is a supplementary report
+  //🔍 Check if is a supplementary report
   const isSupplementaryReportResponse =
     await getIsSupplementaryReport(version_id);
   const isSupplementaryReport =
     isSupplementaryReportResponse.is_supplementary_report_version;
 
+  //🔍 Check if reports need verification
+  const needsVerification = await getReportNeedsVerification(version_id);
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.Attachments,
@@ -42,6 +47,7 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
       navigationInformation={navInfo}
       isVerificationStatementMandatory={needsVerification}
       isSupplementaryReport={isSupplementaryReport}
+      initialSupplementaryConfirmation={initialSupplementaryConfirmation}
     />
   );
 };
