@@ -4,6 +4,7 @@ import { getNavigationInformation } from "@reporting/src/app/components/taskList
 import getAttachments from "@reporting/src/app/utils/getAttachments";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { render } from "@testing-library/react";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentsForm", () => ({
   default: vi.fn(),
@@ -17,6 +18,10 @@ vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
   getReportNeedsVerification: vi.fn(),
 }));
 
+vi.mock("@reporting/src/app/utils/getIsSupplementaryReport", () => ({
+  getIsSupplementaryReport: vi.fn(),
+}));
+
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
 }));
@@ -24,6 +29,9 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 const mockAttachmentsForm = AttachmentsForm as ReturnType<typeof vi.fn>;
 const mockGetAttachments = getAttachments as ReturnType<typeof vi.fn>;
 const mockGetReportNeedsVerification = getReportNeedsVerification as ReturnType<
+  typeof vi.fn
+>;
+const mockGetIsSupplementaryReport = getIsSupplementaryReport as ReturnType<
   typeof vi.fn
 >;
 const mockGetNavigationInformation = getNavigationInformation as ReturnType<
@@ -45,6 +53,7 @@ describe("The attachment page component", () => {
 
     mockGetAttachments.mockReturnValue([attachment1, attachment2]);
     mockGetReportNeedsVerification.mockResolvedValue(true);
+    mockGetIsSupplementaryReport.mockResolvedValue(false);
     mockGetNavigationInformation.mockReturnValue("navinfo");
 
     render(
