@@ -55,6 +55,7 @@ from reporting.models.report_non_attributable_emissions import (
 )
 from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from reporting.models.report_sign_off import ReportSignOff
+from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 
 
 def json_seq(
@@ -313,4 +314,9 @@ report_compliance_summary_product = Recipe(
     report_version=foreign_key(report_version),
     report_compliance_summary=foreign_key(report_compliance_summary),
     product=foreign_key(regulated_product),
+report_attachment_confirmation = Recipe(
+    ReportAttachmentConfirmation,
+    report_version=foreign_key(report_version),
+    confirm_supplementary_required_attachments_uploaded=True,
+    confirm_supplementary_existing_attachments_relevant=True,
 )
