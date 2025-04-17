@@ -88,10 +88,7 @@ __all__ = [
     "ProductEmissionIntensity",
     "ReportOperationRepresentative",
     "ReportSignOff",
-<<<<<<< HEAD
     "ReportComplianceSummary",
     "ReportComplianceSummaryProduct",
-=======
     "ReportAttachmentConfirmation"
->>>>>>> 198ebcdbd (chore: add model attachment_confirmation)
 ]
