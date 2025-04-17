@@ -322,14 +322,18 @@ def build_source_type_schema(
 # report_date is mandatory & determines the valid schemas & WCI configuration for the point in time that the report was created
 
 
-def build_schema(config_id: int, activity: int, source_types: List[str] | List[int], facility_id: str) -> str:
+def build_schema(
+    config_id: int, activity: int, source_types: List[str] | List[int], facility_id: str, report_version_id: int
+) -> str:
     # Get activity schema
     activity_schema = ActivityJsonSchema.objects.only("json_schema").get(
         activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
     )
 
     # Get facility type with id to determine adding "not applicable" methodology
-    facility_type = FacilityReport.objects.get(facility_id=facility_id).facility_type
+    facility_type = FacilityReport.objects.get(
+        facility_id=facility_id, report_version_id=report_version_id
+    ).facility_type
     add_not_applicable_methodology = (
         True if facility_type == 'Small Aggregate' or facility_type == 'Medium Facility' else False
     )
@@ -425,5 +429,5 @@ class FormBuilderService:
         report_date = get_report_valid_date_from_version_id(report_version_id)
         # Get config objects
         config = Configuration.objects.only("id").get(valid_from__lte=report_date, valid_to__gte=report_date)
-        schema = build_schema(config.id, activity, source_types, facility_id)
+        schema = build_schema(config.id, activity, source_types, facility_id, report_version_id)
         return schema
