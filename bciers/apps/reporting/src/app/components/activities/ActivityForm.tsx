@@ -192,6 +192,12 @@ export default function ActivityForm({
       continueUrl={navigationInformation.continueUrl}
       validator={customizeValidator({})}
       customValidate={customValidate}
+      formContext={{
+        gasTypes: {
+          "HFC-227ea (C3HF7)": "TEST ONE",
+          "HFC-43-10mee (C5H2F10)": "TEST TWO",
+        },
+      }}
     />
   );
 }
