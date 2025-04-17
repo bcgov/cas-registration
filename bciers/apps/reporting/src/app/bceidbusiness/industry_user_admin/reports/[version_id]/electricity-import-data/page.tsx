@@ -1,3 +1,4 @@
-export default async function Page() {
-  return <>🚀 TO DO</>;
-}
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@reporting/src/app/components/eio/ElectricityInformationPage";
+
+export default defaultPageFactory(Page);
