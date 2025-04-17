@@ -14,12 +14,19 @@ class Command(BaseCommand):
             f'{self.fixture_base_dir}/reporting_year.json',
         ]
 
-        for fixture in fixtures:
-            self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
-            call_command('loaddata', fixture)
+        self.load_fixtures(fixtures)
 
         self.stdout.write(self.style.SUCCESS(f"Creating Reports from {self.fixture_base_dir}/report.json"))
         self.load_reports()
+
+        additional_fixtures = [
+            f'{self.fixture_base_dir}/report_product.json',
+            # f'{self.fixture_base_dir}/report_emission.json',
+            f'{self.fixture_base_dir}/report_emission_allocation.json',
+            f'{self.fixture_base_dir}/report_product_emission_allocation.json',
+        ]
+
+        self.load_fixtures(additional_fixtures)
 
     def load_reports(self):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
@@ -30,3 +37,8 @@ class Command(BaseCommand):
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
+
+    def load_fixtures(self, fixtures):
+        for fixture in fixtures:
+            self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
+            call_command('loaddata', fixture)
