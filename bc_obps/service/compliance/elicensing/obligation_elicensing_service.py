@@ -2,10 +2,11 @@ import logging
 import uuid
 from typing import Optional, Dict, Any
 
-from compliance.models import ComplianceObligation, ELicensingLink
-from service.operator_elicensing_service import OperatorELicensingService
-from service.elicensing_link_service import ELicensingLinkService
-from service.elicensing_api_client import ELicensingAPIClient
+from compliance.models.compliance_obligation import ComplianceObligation
+from compliance.models.elicensing_link import ELicensingLink
+from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
+from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
+from service.compliance.elicensing.elicensing_api_client import ELicensingAPIClient
 from django.db import transaction
 
 logger = logging.getLogger(__name__)

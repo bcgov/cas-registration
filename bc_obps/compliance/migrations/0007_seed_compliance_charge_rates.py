@@ -8,7 +8,7 @@ def seed_compliance_charge_rates(apps, schema_editor):
     """
     ComplianceChargeRate = apps.get_model('compliance', 'ComplianceChargeRate')
     ReportingYear = apps.get_model('reporting', 'ReportingYear')
-    
+
     initial_rates = {
         2024: Decimal('80.00'),
         2025: Decimal('95.00'),
@@ -18,17 +18,14 @@ def seed_compliance_charge_rates(apps, schema_editor):
         2029: Decimal('155.00'),
         2030: Decimal('170.00'),
     }
-    
+
     for year, rate in initial_rates.items():
         # Get existing reporting year
         try:
             reporting_year = ReportingYear.objects.get(reporting_year=year)
-            
+
             # Create compliance charge rate
-            ComplianceChargeRate.objects.create(
-                reporting_year=reporting_year,
-                rate=rate
-            )
+            ComplianceChargeRate.objects.create(reporting_year=reporting_year, rate=rate)
         except ReportingYear.DoesNotExist:
             # Skip if reporting year doesn't exist
             print(f"Warning: Reporting year {year} does not exist, skipping compliance charge rate creation")
@@ -49,8 +46,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(
-            seed_compliance_charge_rates,
-            reverse_seed_compliance_charge_rates
-        ),
-    ] 
+        migrations.RunPython(seed_compliance_charge_rates, reverse_seed_compliance_charge_rates),
+    ]
