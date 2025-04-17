@@ -1340,7 +1340,9 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
-    def test_raises_exception_if_documents_are_quarantined():
+    def test_raises_exception_if_documents_are_quarantined(monkeypatch):
+        # Change the env var just for this test
+        monkeypatch.setenv("ENVIRONMENT", "develop")
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
         )
@@ -1352,7 +1354,8 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
-    def test_raises_exception_if_documents_are_still_unscanned():
+    def test_raises_exception_if_documents_are_still_unscanned(monkeypatch):
+        monkeypatch.setenv("ENVIRONMENT", "develop")
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
 
         with pytest.raises(
