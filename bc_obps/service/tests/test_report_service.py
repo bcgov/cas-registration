@@ -231,7 +231,6 @@ class TestReportService(TestCase):
         report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
 
         operation.name = "New Operation Name"
-        operation.type = Operation.Types.SFO
         operation.registration_purpose = Operation.Purposes.REPORTING_OPERATION
         operation.save()
 
@@ -240,7 +239,6 @@ class TestReportService(TestCase):
         report_operation.refresh_from_db()
 
         assert report_operation.operation_name == "New Operation Name"
-        assert report_operation.operation_type == Operation.Types.SFO
         assert report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
 
     def test_deletes_child_report_product_records_on_product_set_change(self):
