@@ -11,11 +11,13 @@ import { lfoReportingOnlyFlow } from "./reportingFlows/lfoReportingOnlyFlow";
 import { sfoFlow } from "./reportingFlows/sfoFlow";
 import { sfoNewEntrantFlow } from "./reportingFlows/sfoNewEntrantFlow";
 import { sfoReportingOnlyFlow } from "./reportingFlows/sfoReportingOnlyFlow";
+import { eioFlow } from "./reportingFlows/eioFlow";
 import { ReportingFlow, ReportingFlowDescription } from "./types";
 
 export const reportingFlows: {
   [Flow in ReportingFlow]?: ReportingFlowDescription;
 } = {
+  [ReportingFlow.EIO]: eioFlow,
   [ReportingFlow.SFO]: sfoFlow,
   [ReportingFlow.LFO]: lfoFlow,
   [ReportingFlow.NewEntrantLFO]: lfoNewEntrantFlow,
