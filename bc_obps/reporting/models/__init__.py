@@ -90,5 +90,5 @@ __all__ = [
     "ReportSignOff",
     "ReportComplianceSummary",
     "ReportComplianceSummaryProduct",
-    "ReportAttachmentConfirmation"
+    "ReportAttachmentConfirmation",
 ]

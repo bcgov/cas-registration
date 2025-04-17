@@ -78,6 +78,7 @@ export default function SignOffForm({
 
       if (response?.error) {
         setErrors([getValidationErrorMessage(response.error)]);
+        setSubmitButtonDisabled(false);
         return false;
       }
       router.push(navigationInformation.continueUrl);

@@ -314,6 +314,8 @@ report_compliance_summary_product = Recipe(
     report_version=foreign_key(report_version),
     report_compliance_summary=foreign_key(report_compliance_summary),
     product=foreign_key(regulated_product),
+)
+
 report_attachment_confirmation = Recipe(
     ReportAttachmentConfirmation,
     report_version=foreign_key(report_version),
