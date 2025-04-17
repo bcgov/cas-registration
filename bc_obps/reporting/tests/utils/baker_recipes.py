@@ -54,6 +54,7 @@ from reporting.models.report_non_attributable_emissions import (
     ReportNonAttributableEmissions,
 )
 from reporting.models.report_sign_off import ReportSignOff
+from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 
 
 def json_seq(
@@ -303,4 +304,11 @@ report_sign_off = Recipe(
     acknowledgement_of_possible_costs=True,
     signature="Test Signature",
     signing_date=datetime.now(),
+)
+
+report_attachment_confirmation = Recipe(
+    ReportAttachmentConfirmation,
+    report_version=foreign_key(report_version),
+    confirm_supplementary_required_attachments_uploaded=True,
+    confirm_supplementary_existing_attachments_relevant=True,
 )
