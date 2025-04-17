@@ -1,27 +1,63 @@
+from dataclasses import dataclass
+from decimal import Decimal
 from typing import List
 from uuid import UUID
 from django.db import transaction
 from django.db.models import Sum
 from reporting.models.emission_category import EmissionCategory
 from registration.models.regulated_product import RegulatedProduct
-from reporting.schema.report_emission_allocation import (
-    ReportEmissionAllocationSchemaOut,
-    ReportFacilityEmissionsSchemaOut,
-    ReportEmissionAllocationsSchemaIn,
-)
-from reporting.schema.report_product_emission_allocation import ReportProductEmissionAllocationSchemaOut
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
 from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.models import FacilityReport
+from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
 from reporting.service.emission_category_service import EmissionCategoryService
+
+
+@dataclass
+class ReportProductEmissionAllocationData:
+    """
+    Dataclass representing the ReportProductEmissionAllocation model
+    and allowing this service to do math on it
+    """
+
+    report_product_id: int
+    product_name: str
+    allocated_quantity: Decimal | int
+
+
+@dataclass
+class ReportFacilityEmissionsData:
+    """
+    Dataclass representing allocation for all products for one emission type
+    """
+
+    emission_category_name: str
+    emission_category_id: int
+    category_type: str
+    emission_total: Decimal | int
+    products: List[ReportProductEmissionAllocationData]
+
+
+@dataclass
+class ReportEmissionAllocationData:
+    """
+    Dataclass representing the ReportEmissionAllocation model
+    and allowing this service to do math on it
+    """
+
+    report_product_emission_allocations: List[ReportFacilityEmissionsData]
+    facility_total_emissions: Decimal | int
+    report_product_emission_allocation_totals: List[ReportProductEmissionAllocationData]
+    allocation_methodology: str
+    allocation_other_methodology_description: str
 
 
 class ReportEmissionAllocationService:
     @staticmethod
     @transaction.atomic()
-    def get_emission_allocation_data(report_version_id: int, facility_id: UUID) -> ReportEmissionAllocationSchemaOut:
+    def get_emission_allocation_data(report_version_id: int, facility_id: UUID) -> ReportEmissionAllocationData:
         # Step 1: Get the facility report ID
         facility_report_id = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id).pk
 
@@ -73,7 +109,7 @@ class ReportEmissionAllocationService:
                 product_emission = report_product_emission_allocations.filter(
                     report_product_id=rp.id, emission_category__category_name=data["category_name"]
                 ).first()
-                product = ReportProductEmissionAllocationSchemaOut(
+                product = ReportProductEmissionAllocationData(
                     report_product_id=rp.pk,
                     product_name=rp.product.name,
                     allocated_quantity=product_emission.allocated_quantity if product_emission else 0,
@@ -81,7 +117,7 @@ class ReportEmissionAllocationService:
                 products.append(product)
 
             # Add to the final response
-            emissions_total = ReportFacilityEmissionsSchemaOut(
+            emissions_total = ReportFacilityEmissionsData(
                 emission_category_name=data["category_name"],
                 emission_category_id=category,
                 products=products,
@@ -90,7 +126,7 @@ class ReportEmissionAllocationService:
             )
             report_product_emission_allocations_data.append(emissions_total)
 
-        return ReportEmissionAllocationSchemaOut(
+        return ReportEmissionAllocationData(
             report_product_emission_allocations=report_product_emission_allocations_data,
             facility_total_emissions=total_reportable_emissions,
             report_product_emission_allocation_totals=ReportEmissionAllocationService.get_emission_totals_by_report_product(
@@ -200,7 +236,7 @@ class ReportEmissionAllocationService:
     @staticmethod
     def get_emission_totals_by_report_product(
         facility_report_id: int,
-    ) -> list[ReportProductEmissionAllocationSchemaOut]:
+    ) -> list[ReportProductEmissionAllocationData]:
         """
         Gets the total reportable emissions that have been allocated to each report product for a given facility.
         Excluded emissions are omitted from this total
@@ -218,7 +254,7 @@ class ReportEmissionAllocationService:
                 report_product_id=rp.pk, emission_category__category_type="basic"
             ).aggregate(allocated_quantity=Sum("allocated_quantity"))["allocated_quantity"]
             report_product_emission_allocation_totals.append(
-                ReportProductEmissionAllocationSchemaOut(
+                ReportProductEmissionAllocationData(
                     report_product_id=rp.pk,
                     product_name=rp.product.name,
                     allocated_quantity=allocated_quantity if allocated_quantity else 0,

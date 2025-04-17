@@ -1,3 +1,4 @@
+import dataclasses
 from decimal import Decimal
 from django.test import TestCase
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
@@ -279,7 +280,7 @@ class TestReportEmissionAllocationService(TestCase):
         # Assert: Verify the retrieved instance is not None
         self.assertIsNotNone(retrieved_emission_allocations_data)
 
-        retrieved_emission_allocations_dict = retrieved_emission_allocations_data.dict()
+        retrieved_emission_allocations_dict = dataclasses.asdict(retrieved_emission_allocations_data)
 
         # Assert: Verify the retrieved structure and values match the expected data
         self.assertIn(
