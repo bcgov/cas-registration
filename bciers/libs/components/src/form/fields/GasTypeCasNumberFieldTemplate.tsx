@@ -83,7 +83,7 @@ function InlineFieldTemplate({
             variant="outlined"
             fullWidth
             disabled
-            defaultValue={selectedGasTypeObject.cas_number}
+            defaultValue={selectedGasTypeObject?.cas_number}
           />
         </div>
       </div>
