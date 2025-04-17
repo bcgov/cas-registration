@@ -8,6 +8,7 @@ import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormDat
 import { getReportInformationTasklist } from "@reporting/src/app/utils/getReportInformationTaskListData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 
 interface Props {
   versionId: number;
@@ -23,6 +24,7 @@ export default async function ActivityInit({
   activityId,
   step,
 }: Readonly<Props>) {
+  const gasTypes = await getAllGasTypes();
   const orderedActivities = await getOrderedActivities(versionId, facilityId);
   if (step === -1) step = orderedActivities.length - 1; // handle last step from non-attributable emissions page
   let currentActivity = orderedActivities[step];
@@ -93,6 +95,7 @@ export default async function ActivityInit({
       facilityId={facilityId}
       initialJsonSchema={safeJsonParse(jsonSchema).schema}
       initialSelectedSourceTypeIds={sourceTypeIds}
+      gasTypes={gasTypes}
     />
   );
 }
