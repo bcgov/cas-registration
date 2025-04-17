@@ -47,6 +47,7 @@
   "module": "commonjs",
   "dependencies": {
     "@babel/traverse": "^7.23.2",
+    "@base-ui-components/react": "^1.0.0-alpha.7",
     "@bcgov/bc-sans": "^2.1.0",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
