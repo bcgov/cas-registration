@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 import pytest
+from common.lib import pgtrigger
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 from registration.models.facility import Facility
@@ -14,6 +15,7 @@ from registration.models.business_role import BusinessRole
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.address import Address
+from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from registration.schema import (
     FacilityIn,
     OperationInformationInUpdate,
@@ -185,6 +187,182 @@ class TestOperationService:
             OperationService.update_status(
                 approved_user_operator.user.user_guid, operation.id, Operation.Statuses.REGISTERED
             )
+
+    @staticmethod
+    def test_register_operation_with_preexisting_boro_id():
+        # If an operation already has a BORO ID (i.e., it was issued in 2024),
+        # we should not expect a pgtrigger error raised when we register the operation
+        # and the BORO ID should remain the same.
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        boro_id = baker.make(BcObpsRegulatedOperation, id='24-0999')
+        op_rep = baker.make_recipe(
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+        )
+
+        # need to temporarily disable the pgtrigger in order to be able to insert an operation with boro_id and status=Draft into the test DB
+        with pgtrigger.ignore("registration.Operation:restrict_boro_id_unless_registered"):
+            users_operation = Operation.objects.create(
+                name="Old Operation that already has a BORO ID",
+                status="Draft",
+                bc_obps_regulated_operation_id=boro_id.id,
+                registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,
+                operator=approved_user_operator.operator,
+                type='Single Facility Operation',
+            )
+        users_operation.contacts.set([op_rep])
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=users_operation)
+        baker.make_recipe(
+            'registration.tests.utils.facility_designated_operation_timeline',
+            facility=facility,
+            operation=users_operation,
+            end_date=None,
+        )
+        activity = baker.make_recipe('registration.tests.utils.activity')
+        users_operation.activities.set([activity])
+        product = baker.make_recipe('registration.tests.utils.regulated_product')
+        users_operation.regulated_products.set([product])
+        pfd = baker.make_recipe(
+            'registration.tests.utils.document',
+            status=Document.FileStatus.CLEAN,
+            type=DocumentType.objects.get(name='process_flow_diagram'),
+        )
+        b_map = baker.make_recipe(
+            'registration.tests.utils.document',
+            status=Document.FileStatus.CLEAN,
+            type=DocumentType.objects.get(name='boundary_map'),
+        )
+        users_operation.documents.set([pfd, b_map])
+
+        users_operation.save()
+        users_operation.refresh_from_db()
+
+        updated_operation = OperationService.update_status(
+            approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
+        )
+        updated_operation.refresh_from_db()
+
+        assert updated_operation.status == Operation.Statuses.REGISTERED
+        assert updated_operation.registration_purpose == Operation.Purposes.OBPS_REGULATED_OPERATION
+        assert updated_operation.bc_obps_regulated_operation == users_operation.bc_obps_regulated_operation
+        assert updated_operation.bc_obps_regulated_operation.id == '24-0999'
+
+    @staticmethod
+    def test_register_operation_with_preexisting_bcghg_id():
+        # If an operation already has a BCGHG ID,
+        # we should not expect a pgtrigger error raised when we register the operation
+        # and the BCGHG ID should remain the same.
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
+        op_rep = baker.make_recipe(
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+        )
+
+        # need to temporarily disable the pgtrigger in order to be able to insert an operation with bcghg_id and status=Draft into the test DB
+        with pgtrigger.ignore("registration.Operation:restrict_bcghg_id_unless_registered"):
+            users_operation = Operation.objects.create(
+                name="Old Operation that already has a BCGHG ID",
+                status="Draft",
+                bcghg_id=bcghg_id,
+                registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+                operator=approved_user_operator.operator,
+                type='Single Facility Operation',
+            )
+        users_operation.contacts.set([op_rep])
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=users_operation)
+        baker.make_recipe(
+            'registration.tests.utils.facility_designated_operation_timeline',
+            facility=facility,
+            operation=users_operation,
+            end_date=None,
+        )
+        activity = baker.make_recipe('registration.tests.utils.activity')
+        users_operation.activities.set([activity])
+        pfd = baker.make_recipe(
+            'registration.tests.utils.document',
+            status=Document.FileStatus.CLEAN,
+            type=DocumentType.objects.get(name='process_flow_diagram'),
+        )
+        b_map = baker.make_recipe(
+            'registration.tests.utils.document',
+            status=Document.FileStatus.CLEAN,
+            type=DocumentType.objects.get(name='boundary_map'),
+        )
+        users_operation.documents.set([pfd, b_map])
+
+        users_operation.save()
+        users_operation.refresh_from_db()
+
+        updated_operation = OperationService.update_status(
+            approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
+        )
+        updated_operation.refresh_from_db()
+
+        assert updated_operation.status == Operation.Statuses.REGISTERED
+        assert updated_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert updated_operation.bcghg_id == users_operation.bcghg_id
+        assert updated_operation.bcghg_id == bcghg_id
+
+    @staticmethod
+    def test_register_operation_with_facility_with_preexisting_bcghg_id():
+        # If an operation has a facility that already has a BCGHG ID,
+        # we should not expect a pgtrigger error raised when we register the operation
+        # and the BCGHG ID should remain the same.
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
+        op_rep = baker.make_recipe(
+            'registration.tests.utils.contact',
+            business_role=BusinessRole.objects.get(role_name="Operation Representative"),
+        )
+
+        users_operation = Operation.objects.create(
+            name="Old Operation",
+            status="Draft",
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+            operator=approved_user_operator.operator,
+            type='Single Facility Operation',
+        )
+        users_operation.contacts.set([op_rep])
+
+        # need to temporarily disable the pgtrigger in order to be able to insert a facility with bcghg_id
+        with pgtrigger.ignore("registration.Facility:restrict_bcghg_id_unless_operation_registered"):
+            facility = baker.make_recipe(
+                'registration.tests.utils.facility', operation=users_operation, bcghg_id=bcghg_id
+            )
+        baker.make_recipe(
+            'registration.tests.utils.facility_designated_operation_timeline',
+            facility=facility,
+            operation=users_operation,
+            end_date=None,
+        )
+        activity = baker.make_recipe('registration.tests.utils.activity')
+        users_operation.activities.set([activity])
+        pfd = baker.make_recipe(
+            'registration.tests.utils.document',
+            status=Document.FileStatus.CLEAN,
+            type=DocumentType.objects.get(name='process_flow_diagram'),
+        )
+        b_map = baker.make_recipe(
+            'registration.tests.utils.document',
+            status=Document.FileStatus.CLEAN,
+            type=DocumentType.objects.get(name='boundary_map'),
+        )
+        users_operation.documents.set([pfd, b_map])
+
+        users_operation.save()
+        users_operation.refresh_from_db()
+
+        updated_operation = OperationService.update_status(
+            approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
+        )
+        updated_operation.refresh_from_db()
+
+        assert updated_operation.status == Operation.Statuses.REGISTERED
+        assert updated_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert updated_operation.facilities.count() == 1
+        operations_facility = updated_operation.facilities.first()
+        assert operations_facility.bcghg_id == bcghg_id
 
     @staticmethod
     def test_assign_new_contacts_to_operation_and_operator():
@@ -1163,7 +1341,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_quarantined():
-
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
         )
@@ -1176,7 +1353,6 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_still_unscanned():
-
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
 
         with pytest.raises(

@@ -1,6 +1,7 @@
 from itertools import cycle
 from django.db.utils import ProgrammingError
 from common.tests.utils.helpers import BaseTestCase
+from common.lib import pgtrigger
 from registration.models import Facility, Operation
 from model_bakery import baker
 from registration.tests.constants import (
@@ -113,3 +114,33 @@ class FacilityTriggerTests(BaseTestCase):
         self.facility_with_non_registered_op.bcghg_id = baker.make_recipe("registration.tests.utils.bcghg_id")
         self.facility_with_non_registered_op.save()
         self.assertIsNotNone(self.facility_with_non_registered_op.bcghg_id)
+
+    def test_facility_with_preexisting_bcghg_id_allows_operation_registration(self):
+        # If the facility already has a BCGHG ID because it was imported from SWRS, the user should be allowed to submit their operation registration
+
+        # temporarily disable the trigger so that we can insert a mock facility into the test DB
+        facility_bcghgid = baker.make_recipe("registration.tests.utils.bcghg_id")
+        with pgtrigger.ignore("registration.Facility:restrict_bcghg_id_unless_operation_registered"):
+            self.facility_with_non_registered_op.bcghg_id = facility_bcghgid
+            self.facility_with_non_registered_op.save()
+
+        self.facility_with_non_registered_op.operation.status = Operation.Statuses.REGISTERED
+        self.facility_with_non_registered_op.save()
+
+        assert self.facility_with_non_registered_op.operation.status == Operation.Statuses.REGISTERED
+        assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
+
+    def test_facility_with_preexisting_bcghg_id_allows_facility_update(self):
+        # If the facility already has a BCGHG ID because it was imported from SWRS, the user should be allowed to update the facility's information
+
+        # temporarily disable the trigger so that we can insert a mock facility into the test DB
+        facility_bcghgid = baker.make_recipe("registration.tests.utils.bcghg_id")
+        with pgtrigger.ignore("registration.Facility:restrict_bcghg_id_unless_operation_registered"):
+            self.facility_with_non_registered_op.bcghg_id = facility_bcghgid
+            self.facility_with_non_registered_op.save()
+
+        self.facility_with_non_registered_op.name = "Updated Facility Name"
+        self.facility_with_non_registered_op.save()
+
+        assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
+        assert self.facility_with_non_registered_op.name == "Updated Facility Name"

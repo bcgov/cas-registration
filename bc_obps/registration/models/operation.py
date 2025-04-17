@@ -180,8 +180,8 @@ class Operation(TimeStampedModel):
                 operation=pgtrigger.Insert | pgtrigger.Update,
                 condition=pgtrigger.Q(new__bcghg_id__isnull=False),
                 func="""
-                    if new.status != 'Registered'
-                    then
+                    if new.status != 'Registered' and
+                       (tg_op = 'insert' or new.bcghg_id_id is distinct from old.bcghg_id_id) then
                         raise exception 'Cannot assign bcghg_id to Operation unless status is Registered';
                     end if;
                     return new;
@@ -193,8 +193,9 @@ class Operation(TimeStampedModel):
                 operation=pgtrigger.Insert | pgtrigger.Update,
                 condition=pgtrigger.Q(new__bc_obps_regulated_operation__isnull=False),
                 func="""
-                    if new.status != 'Registered' then
-                        raise exception 'Cannot assign bc_obps_regulated_operation to Operation unless status is Registered';
+                    if new.status != 'Registered' and
+                        (tg_op = 'insert' or new.bc_obps_regulated_operation_id is distinct from old.bc_obps_regulateD_operation_id) then
+                            raise exception 'Cannot assign bc_obps_regulated_operation to Operation unless status is Registered';
                     end if;
                     return new;
                 """,
