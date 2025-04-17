@@ -5,7 +5,8 @@ type ReportValidationMessageKey =
   | "fuelType"
   | "gasType"
   | "missing_required_attachment_confirmation"
-  | "missing_existing_attachment_confirmation";
+  | "missing_existing_attachment_confirmation"
+  | "missing_supplementary_report_attachment_confirmation";
 
 const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
   {
@@ -20,6 +21,8 @@ const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
       "You must confirm that all required supplementary attachments have been uploaded on the Attachments page.",
     missing_existing_attachment_confirmation:
       "You must confirm that all existing attachments are still relevant to the supplementary submission on the Attachments page.",
+    missing_supplementary_report_attachment_confirmation:
+      "No attachment confirmation found for this report version. Please confirm the attachments on the Attachments page.", // Added the message here
   };
 
 function extractErrorKey(

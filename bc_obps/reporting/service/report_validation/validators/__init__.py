@@ -6,7 +6,7 @@ from . import (
     operation_boroid_presence,
     report_attachments_are_scanned,
 )
-from . import mandatory_verification_statement, operation_boroid_presence, supplementary_report_attachments_confirmation
+from . import supplementary_report_attachments_confirmation
 
 
 __all__ = [
