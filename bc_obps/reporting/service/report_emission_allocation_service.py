@@ -76,7 +76,7 @@ class ReportEmissionAllocationService:
                 product = ReportProductEmissionAllocationSchemaOut(
                     report_product_id=rp.pk,
                     product_name=rp.product.name,
-                    allocated_quantity=product_emission.allocated_quantity if product_emission else 0,
+                    allocated_quantity=str(product_emission.allocated_quantity) if product_emission else "0",
                 )
                 products.append(product)
 
@@ -221,7 +221,7 @@ class ReportEmissionAllocationService:
                 ReportProductEmissionAllocationSchemaOut(
                     report_product_id=rp.pk,
                     product_name=rp.product.name,
-                    allocated_quantity=allocated_quantity if allocated_quantity else 0,
+                    allocated_quantity=str(allocated_quantity) if allocated_quantity else "0",
                 )
             )
         return report_product_emission_allocation_totals

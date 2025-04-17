@@ -35,4 +35,4 @@ class ReportProductEmissionAllocationsSchemaIn(Schema):
 class ReportProductEmissionAllocationSchemaOut(Schema):
     report_product_id: int
     product_name: str
-    allocated_quantity: Decimal | int
+    allocated_quantity: str
