@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import os
 from unittest.mock import patch, MagicMock
 import pytest
 from common.lib import pgtrigger
@@ -1341,8 +1342,9 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_quarantined(monkeypatch):
-        # Change the env var just for this test
-        monkeypatch.setenv("ENVIRONMENT", "develop")
+        # This test doesn't actually hit GCS, so we want to change the env variables to hit the check for document scans
+        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "develop", "CI": "false"})
+
         operation = set_up_valid_mock_operation(
             Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
         )
@@ -1355,7 +1357,8 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
 
     @staticmethod
     def test_raises_exception_if_documents_are_still_unscanned(monkeypatch):
-        monkeypatch.setenv("ENVIRONMENT", "develop")
+        # This test doesn't actually hit GCS, so we want to change the env variables to hit the check for document scans
+        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "develop", "CI": "false"})
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
 
         with pytest.raises(
