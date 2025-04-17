@@ -131,6 +131,64 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         mock_get_attachment.assert_called_with(self.report_version.id, 1234)
         assert response.json() == "this is a very fake url"
 
+    
+    @patch("reporting.api.report_attachments.get_report_attachments", autospec=True)
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.save_attachment_confirmations",
+        autospec=True,
+    )
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.set_attachment",
+        autospec=True,
+    )
+    def test_save_attachments_calls_service_and_saves_confirmations(
+        self,
+        mock_set_attachments: MagicMock,
+        mock_save_confirmations: MagicMock,
+        mock_get_method: MagicMock,
+    ):
+        # Arrange
+        mock_get_method.return_value = [
+            {"attachment_name": "success", "attachment_type": "success", "id": 123}
+        ]
+        form = {
+            "files": [
+                ContentFile(b"test1", "a.pdf"),
+                ContentFile(b"test2", "b.txt"),
+            ],
+            "file_types": ["type1", "type2"],
+            # include dummy confirmation flags
+            "confirm_supplementary_existing_attachments_relevant": "true",
+            "confirm_supplementary_required_attachments_uploaded": "true",
+        }
+
+        TestUtils.save_app_role(self, "industry_user")
+
+        # Act
+        response = TestUtils.client.post(
+            self.endpoint_under_test,
+            data=form,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        # Assert set_attachment called for each file
+        mock_set_attachments.assert_has_calls([
+            call(self.report_version.id, self.user.user_guid, "type1", ANY),
+            call(self.report_version.id, self.user.user_guid, "type2", ANY),
+        ])
+        # Assert confirmations saved once with parsed booleans
+        mock_save_confirmations.assert_called_once_with(
+            self.report_version.id,
+            confirm_required_uploaded=True,
+            confirm_existing_relevant=True,
+        )
+        # Assert GET method called and correct response
+        mock_get_method.assert_called_once()
+        assert response.status_code == 200
+        assert response.json() == [
+            {"attachment_name": "success", "attachment_type": "success", "id": 123}
+        ]
+
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_attachments")
         assert_report_version_ownership_is_validated("get_report_attachment_url", file_id=1234)
