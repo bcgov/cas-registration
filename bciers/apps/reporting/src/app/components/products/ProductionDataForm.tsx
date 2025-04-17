@@ -10,6 +10,7 @@ import { NavigationInformation } from "../taskList/types";
 interface Props {
   report_version_id: number;
   facility_id: string;
+  facilityType: string;
   allowedProducts: { product_id: number; product_name: string }[];
   initialData: ProductData[];
   schema: RJSFSchema;
@@ -21,6 +22,7 @@ interface Props {
 const ProductionDataForm: React.FC<Props> = ({
   report_version_id,
   facility_id,
+  facilityType,
   schema,
   allowedProducts,
   initialData,
@@ -66,6 +68,13 @@ const ProductionDataForm: React.FC<Props> = ({
         ]);
         return false;
       }
+    }
+    if (
+      !["Small Aggregate", "Medium Facility"].includes(facilityType) &&
+      formData.product_selection.length < 1
+    ) {
+      setErrors(["A product must be selected"]);
+      return false;
     }
     const response = await postProductionData(
       report_version_id,
