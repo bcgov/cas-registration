@@ -32,7 +32,7 @@ class TestOperationsEndpoint(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("list_operations"),
+            custom_reverse_lazy("list_operations_timelines"),
         )
 
         # Assert: Verify the response status

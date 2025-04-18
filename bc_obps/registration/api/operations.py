@@ -6,6 +6,8 @@ from registration.schema import (
     OperationCreateOut,
     OperationInformationIn,
     Message,
+    OperationOut,
+    OperationFilterSchema,
     OperationTimelineFilterSchema,
     OperationTimelineListOut,
 )
@@ -26,13 +28,13 @@ from registration.models.operation_designated_operator_timeline import Operation
 
 
 @router.get(
-    "/operations",
+    "/operations-timelines",
     response={200: List[OperationTimelineListOut], custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(CustomPagination)
-def list_operations(
+def list_operations_timelines(
     request: HttpRequest,
     filters: OperationTimelineFilterSchema = Query(...),
     sort_field: Optional[str] = "operation__created_at",
@@ -41,6 +43,23 @@ def list_operations(
 ) -> QuerySet[OperationDesignatedOperatorTimeline]:
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return OperationService.list_operations_timeline(get_current_user_guid(request), sort_field, sort_order, filters)
+
+
+@router.get(
+    "/operations",
+    response={200: List[OperationOut], custom_codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    auth=authorize("approved_authorized_roles"),
+)
+@paginate(CustomPagination)
+def list_operations(
+    request: HttpRequest,
+    filters: OperationFilterSchema = Query(...),
+    sort_field: Optional[str] = "created_at",
+    sort_order: Optional[Literal["desc", "asc"]] = "desc",
+    paginate_result: bool = Query(True, description="Whether to paginate the results"),
+) -> QuerySet[Operation]:
+    return OperationService.list_operations(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
 REGISTRATION_PURPOSES_LITERALS = Literal[
