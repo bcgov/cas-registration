@@ -28,6 +28,7 @@ interface Props {
   isRedirecting?: boolean;
   noFormSave?: () => void;
   noSaveButton?: boolean;
+  submitButtonDisabled?: boolean;
 }
 
 const MultiStepWrapperWithTaskList: React.FC<Props> = ({
@@ -44,6 +45,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
   isRedirecting,
   noFormSave,
   noSaveButton,
+  submitButtonDisabled,
 }) => {
   return (
     <Box sx={{ p: 3 }}>
@@ -66,6 +68,7 @@ const MultiStepWrapperWithTaskList: React.FC<Props> = ({
             isRedirecting={isRedirecting}
             isSaving={isSaving}
             noSaveButton={noSaveButton}
+            submitButtonDisabled={submitButtonDisabled}
           />
 
           {/* Render form alerts */}

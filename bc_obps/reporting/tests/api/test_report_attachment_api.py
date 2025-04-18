@@ -131,6 +131,46 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
         mock_get_attachment.assert_called_with(self.report_version.id, 1234)
         assert response.json() == "this is a very fake url"
 
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.get_attachment_confirmation", autospec=True
+    )
+    @patch(
+        "reporting.service.report_attachment_service.ReportAttachmentService.save_attachment_confirmation",
+        autospec=True,
+    )
+    def test_post_attachment_confirmation_saves_and_returns_values(self, mock_save, mock_get):
+        # Arrange: have the service return a simple dict
+        expected = {
+            "confirm_supplementary_existing_attachments_relevant": True,
+            "confirm_supplementary_required_attachments_uploaded": True,
+        }
+        mock_get.return_value = expected
+
+        form = {
+            "confirm_supplementary_existing_attachments_relevant": "true",
+            "confirm_supplementary_required_attachments_uploaded": "true",
+        }
+        TestUtils.save_app_role(self, "industry_user")
+
+        # Act
+        url = f"/api/reporting/report-version/{self.report_version.id}/attachment-confirmation"
+        response = TestUtils.client.post(
+            url,
+            data=form,
+            HTTP_AUTHORIZATION=self.auth_header_dumps,
+        )
+
+        # Assert: saved with parsed booleans
+        mock_save.assert_called_once_with(
+            self.report_version.id,
+            confirm_required_uploaded=True,
+            confirm_existing_relevant=True,
+        )
+
+        # And the JSON is exactly the dict we mocked
+        assert response.status_code == 200
+        assert response.json() == expected
+
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_attachments")
         assert_report_version_ownership_is_validated("get_report_attachment_url", file_id=1234)

@@ -1,17 +1,18 @@
-from typing import List, Literal, Tuple
+from typing import List, Literal, Optional, Tuple
 from common.api.utils.current_user_utils import get_current_user_guid
 from django.db import transaction
 from django.http import HttpRequest
 from ninja import File, Form, UploadedFile
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from reporting.schema.report_attachment import ReportAttachmentOut
+from reporting.schema.report_attachment import ReportAttachmentOut, ReportAttachmentConfirmationOut
 from reporting.service.report_attachment_service import ReportAttachmentService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
 )
+from reporting.models.report_attachment_confirmation import ReportAttachmentConfirmation
 
 
 @router.post(
@@ -63,3 +64,41 @@ def get_report_attachments(
 )
 def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: int) -> Tuple[Literal[200], str]:
     return 200, ReportAttachmentService.get_attachment(version_id, file_id).get_file_url()
+
+
+@router.post(
+    "report-version/{version_id}/attachment-confirmation",
+    response={200: Optional[ReportAttachmentConfirmationOut], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Saves the attachment confirmations for a supplementary report.""",
+    auth=approved_industry_user_report_version_composite_auth,
+)
+@transaction.atomic()
+def save_report_attachment_confirmation(
+    request: HttpRequest,
+    version_id: int,
+    confirm_supplementary_existing_attachments_relevant: bool = Form(...),
+    confirm_supplementary_required_attachments_uploaded: bool = Form(...),
+) -> Tuple[Literal[200], Optional[ReportAttachmentConfirmation]]:
+    ReportAttachmentService.save_attachment_confirmation(
+        version_id,
+        confirm_required_uploaded=confirm_supplementary_required_attachments_uploaded,
+        confirm_existing_relevant=confirm_supplementary_existing_attachments_relevant,
+    )
+
+    return get_report_attachment_confirmation(request, version_id)
+
+
+@router.get(
+    "report-version/{version_id}/attachment-confirmation",
+    response={200: Optional[ReportAttachmentConfirmationOut], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Returns the attachment confirmations for a supplementary report.""",
+    auth=approved_industry_user_report_version_composite_auth,
+)
+def get_report_attachment_confirmation(
+    request: HttpRequest,
+    version_id: int,
+) -> Tuple[Literal[200], Optional[ReportAttachmentConfirmation]]:
+    attachmentConfirmation = ReportAttachmentService.get_attachment_confirmation(version_id)
+    return 200, attachmentConfirmation

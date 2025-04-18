@@ -14,6 +14,7 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.mandatory_verification_statement",
             "reporting.service.report_validation.validators.operation_boroid_presence",
             "reporting.service.report_validation.validators.report_attachments_are_scanned",
+            "reporting.service.report_validation.validators.supplementary_report_attachments_confirmation",
         ]
 
     def test_validates_the_report_with_the_registered_plugins(self):

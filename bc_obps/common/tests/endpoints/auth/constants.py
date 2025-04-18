@@ -141,6 +141,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_report_attachment_confirmation",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_report_attachments",
             "kwargs": {"version_id": MOCK_INT},
         },
@@ -233,6 +238,11 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_report_attachments",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "post",
+            "endpoint_name": "save_report_attachment_confirmation",
             "kwargs": {"version_id": MOCK_INT},
         },
         {
