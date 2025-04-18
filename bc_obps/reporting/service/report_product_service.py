@@ -17,9 +17,7 @@ class ReportProductService:
     ) -> None:
 
         facility_report = FacilityReport.objects.get(report_version_id=report_version_id, facility_id=facility_id)
-        fog_product_id = RegulatedProduct.objects.get(
-            name='Fat, oil and grease collection, refining and storage', is_regulated=False
-        ).id
+        unregulated_product_ids = RegulatedProduct.objects.filter(is_regulated=False).values_list("id", flat=True)
 
         # Delete the report products that are not in the data
 
@@ -36,8 +34,8 @@ class ReportProductService:
                 "Data was submitted for a product that is not in the products allowed for this facility. "
                 + f"Allowed products ids: {list(allowed_product_ids)}, Submitted product ids: {product_ids}"
             )
-        # Do not remove auto-generated report_product record for Fat, Oil & Grease unregulated product
-        product_ids.append(fog_product_id)
+        # Do not remove auto-generated report_product records for unregulated products
+        product_ids.extend(unregulated_product_ids)
         ReportProduct.objects.filter(
             report_version_id=report_version_id, facility_report__facility_id=facility_id
         ).exclude(product_id__in=product_ids).delete()
@@ -59,24 +57,25 @@ class ReportProductService:
                 },
             )
 
-        # Add reportProduct for Fat, Oil & Grease unregulated product for emission allocation only
-        if fog_product_id in ReportOperation.objects.get(
+        # Add a report_product record for unregulated products reported by this operation (for emission allocation only)
+        for r_product_id in ReportOperation.objects.get(
             report_version_id=report_version_id
         ).regulated_products.values_list("id", flat=True):
-            ReportProduct.objects.update_or_create(
-                report_version_id=report_version_id,
-                facility_report=facility_report,
-                product_id=fog_product_id,
-                defaults={
-                    "report_version_id": report_version_id,
-                    "facility_report": facility_report,
-                    "product_id": fog_product_id,
-                    "annual_production": 0,
-                    "production_data_apr_dec": 0,
-                    "production_methodology": "other",
-                    "production_methodology_description": "auto-generated report_product record for unregulated product",
-                },
-            )
+            if r_product_id in unregulated_product_ids:
+                ReportProduct.objects.update_or_create(
+                    report_version_id=report_version_id,
+                    facility_report=facility_report,
+                    product_id=r_product_id,
+                    defaults={
+                        "report_version_id": report_version_id,
+                        "facility_report": facility_report,
+                        "product_id": r_product_id,
+                        "annual_production": 0,
+                        "production_data_apr_dec": 0,
+                        "production_methodology": "other",
+                        "production_methodology_description": "auto-generated report_product record for unregulated product",
+                    },
+                )
 
     @classmethod
     def get_production_data(cls, report_version_id: int, facility_id: UUID) -> QuerySet[ReportProduct]:
