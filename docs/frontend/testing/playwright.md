@@ -216,3 +216,19 @@ await analyzeAccessibility(page);
 ```
 
 If this step fails the library will provide details about why it failed and how to fix it.
+
+## Testing Strategy
+
+### Registration
+
+We have good vitest and pytest coverage (integration tests), so we've taken a minimalistic approach to e2e tests in Registration. We've also prioritized readability over abstraction, so there is some repetition in the tests, but this makes it easier to find failures (vs. trying to find the relevant value of a variable in a loop).
+
+We load the db with our mock data before running tests.
+
+We test:
+
+- creating and registering a new SFO with a New Entrant purpose and a new operation rep
+- registering an existing LFO with Opt-In purpose and a new facility
+- accessibility on every form. Where the SFO/LFO form is the same, we analyze only in the SFO test
+
+This covers 2/3 registration types (SFO/LFO), 2/6 purposes, and all of the form steps. We only fill in required fields, we only test as industry_user role, and we only test editable mode (not view).

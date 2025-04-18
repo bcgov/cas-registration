@@ -1,12 +1,12 @@
 // 🥞 Connection pool to postgres DB
-import { pool } from "@/e2e/utils/pool";
+import { pool } from "@bciers/e2e/utils/pool";
 // ☰ Enums
 import {
   UserRole,
   OperatorStatus,
   OperatorUUID,
   UserOperatorUUID,
-} from "@/e2e/utils/enums";
+} from "@bciers/e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 

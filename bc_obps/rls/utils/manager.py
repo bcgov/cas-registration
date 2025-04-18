@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+from typing import Any
 from django.conf import settings
 from django.db import connection
 from django.db.backends.utils import CursorWrapper
@@ -8,6 +10,17 @@ from rls.utils.m2m import M2mRls
 
 
 class RlsManager:
+    @staticmethod
+    @contextmanager
+    def bypass_rls() -> Any:
+        with connection.cursor() as cursor:
+            cursor.execute(SQL("set role {}").format(Identifier(settings.DB_USER)))
+        try:
+            yield
+        finally:
+            with connection.cursor() as cursor:
+                cursor.execute("reset role;")
+
     @staticmethod
     def reset_privileges_for_roles() -> None:
         # Convert enum values into an SQL-safe list
