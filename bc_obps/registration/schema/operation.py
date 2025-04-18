@@ -4,7 +4,7 @@ from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOpera
 from typing import List, Optional, Literal
 from registration.models.contact import Contact
 from registration.schema import OperatorForOperationOut, MultipleOperatorIn, MultipleOperatorOut
-from ninja import Field, ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema, FilterSchema
 from registration.models import MultipleOperator, Operation
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from pydantic import field_validator
@@ -300,3 +300,17 @@ class OperationUpdateStatusOut(ModelSchema):
     class Meta:
         model = Operation
         fields = ["id", "status"]
+
+
+class OperationFilterSchema(FilterSchema):
+    # NOTE: we could simply use the `q` parameter to filter by related fields but,
+    # due to this issue: https://github.com/vitalik/django-ninja/issues/1037 mypy is unhappy, so I'm using the `json_schema_extra` parameter
+    # If we want to achieve more by using the `q` parameter, we should use it and ignore the mypy error
+    name: Optional[str] = Field(None, json_schema_extra={'q': 'name__icontains'})
+    type: Optional[str] = Field(None, json_schema_extra={'q': 'type__icontains'})
+    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
+    bc_obps_regulated_operation: Optional[str] = Field(
+        None, json_schema_extra={'q': 'bc_obps_regulated_operation__id__icontains'}
+    )
+    operator__legal_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator__legal_name__icontains'})
+    operator_id: Optional[UUID] = Field(None, json_schema_extra={'q': 'operator__id__exact'})
