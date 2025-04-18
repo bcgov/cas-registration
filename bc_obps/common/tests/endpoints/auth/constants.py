@@ -369,6 +369,7 @@ ENDPOINTS = {
             "kwargs": {"operator_id": MOCK_UUID},
         },
         {"method": "get", "endpoint_name": "list_operations"},
+        {"method": "get", "endpoint_name": "list_operations_timelines"},
         {"method": "get", "endpoint_name": "list_contacts"},
         {
             "method": "get",
