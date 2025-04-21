@@ -134,6 +134,6 @@ describe("RJSF RadioWidget", () => {
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 });

@@ -67,7 +67,7 @@ describe("RJSF TextAreaWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should render a placeholder if provided in the uiSchema", () => {

@@ -94,7 +94,7 @@ describe("RJSF EmailWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should not trigger validation error for valid email", async () => {

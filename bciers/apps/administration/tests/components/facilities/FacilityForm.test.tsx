@@ -560,7 +560,7 @@ describe("FacilityForm component", () => {
     act(() => {
       saveButton.click();
     });
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(4);
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(4);
 
     //check starting date required when year is clicked
     const year = screen.getByLabelText(
@@ -570,7 +570,7 @@ describe("FacilityForm component", () => {
       year.click();
       saveButton.click();
     });
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(5);
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(5);
   });
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
@@ -590,8 +590,10 @@ describe("FacilityForm component", () => {
     fireEvent.click(editButton);
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(1); // name
-    expect(screen.getAllByText(/Format should be A1A 1A1/i)).toHaveLength(1);
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(1); // name
+    expect(screen.getAllByText(/Postal code format is A1A 1A1/i)).toHaveLength(
+      1,
+    );
     expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
     expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
   });

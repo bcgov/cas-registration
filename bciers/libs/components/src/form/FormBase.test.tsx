@@ -85,11 +85,11 @@ describe("The FormBase component", () => {
     const submitButton = screen.getByRole("button", { name: /Submit/i });
     const field2 = screen.getByRole("textbox", { name: "field2*" });
     fireEvent.click(submitButton);
-    expect(screen.getByText(/required field/i)).toBeVisible(); // field2 is required and was left blank
+    expect(screen.getByText(/^.* is required/i)).toBeVisible(); // field2 is required and was left blank
     expect(screen.getByLabelText(/field1/i)).toHaveValue("test");
     fireEvent.change(field2, { target: { value: "anything" } });
     fireEvent.click(submitButton);
-    expect(screen.queryByText(/required field/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^.* is required/i)).not.toBeInTheDocument();
   });
 
   it("resets errors on submit", () => {
@@ -100,9 +100,9 @@ describe("The FormBase component", () => {
     const submitButton = screen.getByRole("button", { name: /Submit/i });
     const input = screen.getByRole("textbox", { name: "field*" });
     fireEvent.click(submitButton);
-    expect(screen.getByText(/required field/i)).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
     fireEvent.change(input, { target: { value: "anything" } });
     fireEvent.click(submitButton);
-    expect(screen.queryByText(/required field/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^.* is required/i)).not.toBeInTheDocument();
   });
 });

@@ -122,7 +122,7 @@ describe("RJSF CheckboxWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should have the correct styles when the validation error is shown", async () => {

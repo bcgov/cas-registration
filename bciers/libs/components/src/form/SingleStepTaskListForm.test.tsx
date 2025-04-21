@@ -156,6 +156,7 @@ describe("the SingleStepTaskListForm component", () => {
         section3,
       },
     };
+    const mockOnSubmit = vi.fn();
     render(
       <SingleStepTaskListForm
         schema={schemaNonRequired}
@@ -167,12 +168,13 @@ describe("the SingleStepTaskListForm component", () => {
         }}
         onSubmit={async (e) => {
           // eslint-disable-next-line no-console
-          console.log("submit", e);
+          mockOnSubmit(e.formData);
         }}
       />,
     );
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
+    // expect(screen.getByRole("alert")).toBeVisible();
     await waitFor(() => {
       expect(
         screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),
@@ -180,7 +182,7 @@ describe("the SingleStepTaskListForm component", () => {
     });
 
     // check that the component correctly unnested the formData
-    expect(consoleSpy.mock.calls[0][1].formData).toEqual({});
+    expect(mockOnSubmit).toHaveBeenCalledWith({});
   });
   it("should transform and render the formData (when editing)", () => {
     render(
@@ -215,6 +217,7 @@ describe("the SingleStepTaskListForm component", () => {
   });
 
   it("should call the onSubmit function, transform the form data, and shows the confirmation snackbar when the form is submitted", async () => {
+    const mockOnSubmit = vi.fn();
     render(
       <SingleStepTaskListForm
         schema={schema}
@@ -226,8 +229,7 @@ describe("the SingleStepTaskListForm component", () => {
           console.log("cancel");
         }}
         onSubmit={async (e) => {
-          // eslint-disable-next-line no-console
-          console.log("submit", e);
+          mockOnSubmit(e.formData);
         }}
       />,
     );
@@ -242,7 +244,7 @@ describe("the SingleStepTaskListForm component", () => {
     });
 
     // check that the component correctly unnested the formData
-    expect(consoleSpy.mock.calls[0][1].formData).toEqual({
+    expect(mockOnSubmit).toHaveBeenCalledWith({
       address: "123 Test St",
       city: "Victoria",
       email: "test@testing.ca",
@@ -296,7 +298,7 @@ describe("the SingleStepTaskListForm component", () => {
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
 
-    const errorMessages = screen.getAllByText("Required field");
+    const errorMessages = screen.getAllByText(/^.* is required/i);
 
     expect(errorMessages).toHaveLength(6);
   });

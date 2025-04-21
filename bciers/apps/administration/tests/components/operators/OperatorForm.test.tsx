@@ -344,7 +344,7 @@ describe("OperatorForm component", () => {
     });
 
     // Assert on the validation errors
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(8);
+    expect(screen.getAllByRole("alert")).toHaveLength(8);
   });
   it("fills the mandatory form fields, creates a new operator, updates the session, and shows a success message", async () => {
     // Mock the session and get access to the update function
