@@ -135,7 +135,7 @@ describe("RJSF ComboBoxWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should not show an error message when data is valid", async () => {
@@ -166,7 +166,7 @@ describe("RJSF ComboBoxWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.queryByText("Required field")).toBeVisible();
+    expect(screen.queryByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should have the correct styles when the validation error is shown", async () => {

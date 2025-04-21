@@ -911,7 +911,7 @@ describe("the OperationInformationForm component", () => {
     });
     await userEvent.click(saveButton);
     expect(actionHandler).toHaveBeenCalledTimes(0);
-    expect(screen.getByText(/Must not have fewer than 1 items/i)).toBeVisible();
+    expect(screen.getByText(/Select at least one option/i)).toBeVisible();
   });
 
   it(

@@ -135,7 +135,7 @@ describe("RJSF PhoneWidget", () => {
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should display the error message when the phone field is not a valid phone number", async () => {

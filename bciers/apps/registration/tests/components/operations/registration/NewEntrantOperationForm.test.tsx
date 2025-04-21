@@ -152,7 +152,6 @@ describe("the NewEntrantOperationForm component", () => {
     });
 
     await userEvent.click(submitButton);
-
     expect(screen.getByText("Attachment is mandatory.")).toBeVisible();
   });
 

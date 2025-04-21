@@ -561,9 +561,11 @@ describe("the OperationInformationForm component", () => {
     await userEvent.click(
       screen.getByRole("button", { name: /save and continue/i }),
     );
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(6);
+    expect(screen.getAllByRole("alert")).toHaveLength(7);
     expect(
-      screen.getByText(/You must select or add an operation/i),
+      screen.getByText(
+        /Select an operation or add a new operation in the form below/i,
+      ),
     ).toBeVisible();
   });
   it("should not raise an error when we pass an empty array to anyOf (operation has empty array in response)", async () => {
