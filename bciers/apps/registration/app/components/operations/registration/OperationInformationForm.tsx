@@ -118,7 +118,9 @@ const OperationInformationForm = ({
     );
 
     if (!formData.section1.operation && !isOperationInformationComplete) {
-      errors.section1.operation.addError("You must select or add an operation");
+      errors.section1.operation.addError(
+        "Select an operation or add a new operation in the form below",
+      );
     }
     return errors;
   }
