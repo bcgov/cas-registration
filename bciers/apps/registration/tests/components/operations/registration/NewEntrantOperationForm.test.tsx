@@ -152,7 +152,7 @@ describe("the NewEntrantOperationForm component", () => {
     });
 
     await userEvent.click(submitButton);
-    expect(screen.getByText("Attachment is mandatory.")).toBeVisible();
+    expect(screen.getByText("Attachment is required")).toBeVisible();
   });
 
   it("should fill the form and redirect to the next page", async () => {

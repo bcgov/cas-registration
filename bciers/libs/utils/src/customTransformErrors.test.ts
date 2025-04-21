@@ -352,7 +352,7 @@ describe("customTransformErrors", () => {
     );
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
-    expect(transformedErrors[0].message).toBe("Attachment is mandatory.");
+    expect(transformedErrors[0].message).toBe("Attachment is required");
   });
 
   it("returns the transformed error message for CRA Business Number", () => {
