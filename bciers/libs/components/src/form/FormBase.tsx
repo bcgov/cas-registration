@@ -81,11 +81,9 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     // ⚠️ Warning ⚠️ - be mindful of the performance implications of both controlled state as well as
     // running expensive computations in the OnChange callback, especially with complex forms
     if (onChange) {
-      console.log("e.formdata", e.formData);
       onChange(e); // Pass the event back to the parent component
     }
   };
-  // console.log("formData", formData);
   return (
     <Form
       {...props}

@@ -20,7 +20,6 @@ const placeHolderLegalName = "Enter Business Legal Name";
 const placeHolderCRANumber = "Enter CRA Business Number";
 const buttonLegalName = "Select Operator";
 const buttonCRANumber = "Search Operator";
-// brianna the custom validation is grabbing on select too
 const requiredLegalName = "Legal name is required";
 const requiredCRANumber = "CRA Business Number should be 9 digits.";
 const responseLegalName = {
