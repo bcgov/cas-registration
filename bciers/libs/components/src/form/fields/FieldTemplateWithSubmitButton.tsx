@@ -52,7 +52,6 @@ function FieldTemplateWithSubmitButton(props: Readonly<FieldTemplateProps>) {
               {required ? "*" : null}
             </label>
           )}
-
           {children}
         </div>
         <SubmitButton label={buttonLabel ?? "Submit"} />

@@ -1,6 +1,14 @@
 import { RJSFValidationError } from "@rjsf/utils";
 
 const formatProperty = (property: string) => {
+  if (
+    ["bc_corporate_registry_number"].some((field) => {
+      // @ts-ignore - we already checked for error.property's existance above
+      return property.includes(field);
+    })
+  ) {
+    return "BC Corporate Registry number";
+  }
   const removedPrefixes = property.split(".").pop() || property;
   const removedUnderstores = removedPrefixes.replace(/_/g, " ");
   return (
@@ -28,7 +36,8 @@ const customTransformErrors = (
       return error;
     }
     if (error?.name === "enum") {
-      error.message = `Select a ${error.property}`;
+      // @ts-ignore
+      error.message = `Select a ${formatProperty(error.property)}`;
       return error;
     }
     if (error?.message === "must be number") {
