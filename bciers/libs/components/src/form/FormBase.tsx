@@ -22,9 +22,7 @@ const customFormats = {
 export const customFormatsErrorMessages = {
   bc_corporate_registry_number:
     "BC Corporate Registry number should be 1-3 letters followed by 7 digits",
-  cra_business_number: "CRA Business Number should be 9 digits.",
-  mandatory_attachment: "Attachment is mandatory.",
-  "postal-code": "Format should be A1A 1A1",
+  "postal-code": "Postal code format is A1A 1A1",
   phone: "Format should be ### ### ####",
   email: "Please enter a valid email address, e.g. mail@example.com",
   uri: "Please enter a valid website link, e.g. http://www.website.com, https://www.website.com",
@@ -73,7 +71,6 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     setIsSubmitting(true);
     setFormState(e.formData);
     if (setErrorReset) setErrorReset(undefined); // Reset error state on form submission
-
     if (onSubmit) onSubmit(e, formState);
   };
 
@@ -84,10 +81,11 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
     // ⚠️ Warning ⚠️ - be mindful of the performance implications of both controlled state as well as
     // running expensive computations in the OnChange callback, especially with complex forms
     if (onChange) {
+      console.log("e.formdata", e.formData);
       onChange(e); // Pass the event back to the parent component
     }
   };
-
+  // console.log("formData", formData);
   return (
     <Form
       {...props}
