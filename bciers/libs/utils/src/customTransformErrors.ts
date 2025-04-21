@@ -19,7 +19,7 @@ const formatProperty = (property: string) => {
 
 export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
   "CRA Business Number should be 9 digits.";
-const MANDATORY_ATTACHMENT_VALIDATION_ERROR = "Attachment is mandatory.";
+const MANDATORY_ATTACHMENT_VALIDATION_ERROR = "Attachment is required";
 const LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
   "Latitude of largest point of emissions must be between -90 to 90";
 const LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
