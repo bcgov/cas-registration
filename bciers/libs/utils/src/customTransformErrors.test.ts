@@ -236,7 +236,7 @@ describe("customTransformErrors", () => {
     );
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
-    expect(transformedErrors[0].message).toBe("Select a color");
+    expect(transformedErrors[0].message).toBe("Select a Color");
   });
 
   it("returns the transformed error message for must be string error", () => {
