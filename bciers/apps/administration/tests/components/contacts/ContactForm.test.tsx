@@ -219,7 +219,7 @@ describe("ContactForm component", () => {
     act(() => {
       saveButton.click();
     });
-    expect(screen.getAllByText(/Required field/i)).toHaveLength(9);
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(9);
   });
   it(
     "fills the mandatory form fields, creates new contact, and redirects on success",

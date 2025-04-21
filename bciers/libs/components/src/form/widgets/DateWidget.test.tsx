@@ -111,7 +111,7 @@ describe("RJSF DateWidget", () => {
     await act(async () => {
       fireEvent.click(submitButton);
     });
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should allow the user to select a date", async () => {
@@ -219,7 +219,7 @@ describe("RJSF DateWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should have the correct styles when the validation error is shown", async () => {
@@ -251,6 +251,6 @@ describe("RJSF DateWidget", () => {
     );
     const submitButton = screen.getByRole("button", { name: "Submit" });
     await userEvent.click(submitButton);
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 });

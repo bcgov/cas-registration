@@ -113,7 +113,7 @@ describe("RJSF PostalCodeWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Required field")).toBeVisible();
+    expect(screen.getByText(/^.* is required/i)).toBeVisible();
   });
 
   it("should trigger validation error for invalid postal code", async () => {
@@ -130,7 +130,7 @@ describe("RJSF PostalCodeWidget", () => {
 
     await userEvent.click(submitButton);
 
-    expect(screen.getByText("Format should be A1A 1A1")).toBeVisible();
+    expect(screen.getByText("Postal code format is A1A 1A1")).toBeVisible();
   });
 
   it("should not trigger validation error for valid postal code", async () => {

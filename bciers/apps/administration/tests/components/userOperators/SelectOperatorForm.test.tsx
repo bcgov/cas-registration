@@ -20,7 +20,9 @@ const placeHolderLegalName = "Enter Business Legal Name";
 const placeHolderCRANumber = "Enter CRA Business Number";
 const buttonLegalName = "Select Operator";
 const buttonCRANumber = "Search Operator";
-const requiredField = "Required field";
+// brianna the custom validation is grabbing on select too
+const requiredLegalName = "Legal name is required";
+const requiredCRANumber = "CRA Business Number should be 9 digits.";
 const responseLegalName = {
   id: id,
   legal_name: operatorLegalName,
@@ -55,11 +57,13 @@ async function selectSearchByCRANumber() {
 // ⛏️ Helper function to verify required field not found
 async function verifyNoRequiredField() {
   // Initially, the form should render without any error messages
-  const requiredFieldError = screen.queryByText(requiredField);
-  expect(requiredFieldError).not.toBeInTheDocument();
+  const requiredCRAError = screen.queryByText(requiredCRANumber);
+  expect(requiredCRAError).not.toBeInTheDocument();
+  const requiredLegalNameError = screen.queryByText(requiredLegalName);
+  expect(requiredLegalNameError).not.toBeInTheDocument();
 }
 // ⛏️ Helper function to verify operator is required
-async function verifyRequiredOperator() {
+async function verifyRequiredOperator(requiredField: string) {
   // Verify the "Required field" error message to appear
   const errorMessages = await screen.findAllByText(requiredField);
   expect(errorMessages[0]).toBeVisible();
@@ -145,7 +149,7 @@ describe("Select Operator Form", () => {
     // Submit the form
     clickSubmitButton(buttonCRANumber);
     // Verify the required field alert is not trigered
-    const requiredFieldError = screen.queryByText(requiredField);
+    const requiredFieldError = screen.queryByText(requiredCRANumber);
     expect(requiredFieldError).not.toBeInTheDocument();
     // Verify navigation to confirm operator page
     await waitFor(() => {
@@ -158,7 +162,7 @@ describe("Select Operator Form", () => {
     // Attempt to submit the form without entering a legal_name
     await clickSubmitButton(buttonLegalName);
     // Verify the "Required field" error message to appear and form is not submited
-    await verifyRequiredOperator();
+    await verifyRequiredOperator(requiredLegalName);
   });
   it("shows required field error when cra number is not provided", async () => {
     // Initially, the form should render without any error messages
@@ -168,7 +172,7 @@ describe("Select Operator Form", () => {
     // Attempt to submit the form without entering a cra number
     await clickSubmitButton(buttonCRANumber);
     // Verify the "Required field" error message to appear and form is not submited
-    await verifyRequiredOperator();
+    await verifyRequiredOperator(requiredCRANumber);
   });
   it("shows error when operator by cra number is not found", async () => {
     // Select Search Operator by CRA number...

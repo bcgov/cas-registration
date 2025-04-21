@@ -223,7 +223,7 @@ describe("the NewOperationRepresentativeForm component", () => {
       "604 401 1234",
     );
     // check for empty address fields - validation errors
-    const errorMessages = screen.getAllByText("Required field");
+    const errorMessages = screen.getAllByText(/^.* is required/i);
     expect(errorMessages).toHaveLength(4);
 
     // Clearing the selected contact - must clear the form

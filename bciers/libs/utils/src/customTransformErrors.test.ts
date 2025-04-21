@@ -2,6 +2,59 @@ import { describe, expect } from "vitest";
 import customTransformErrors from "@bciers/utils/src/customTransformErrors";
 import { customFormatsErrorMessages } from "@bciers/components/form/FormBase";
 
+const minItemsError = [
+  {
+    name: "minItems",
+    property: ".section1.activities",
+    message: "must NOT have fewer than 2 items",
+    params: {
+      limit: 2,
+    },
+    stack: "'Reporting Activities' must NOT have fewer than 1 items",
+    schemaPath:
+      "#/properties/section1/dependencies/registration_purpose/oneOf/0/properties/activities/minItems",
+  },
+];
+
+const enumError = [
+  {
+    name: "enum",
+    property: "color",
+    message: "must be equal to one of the allowed values",
+    params: {
+      allowedValues: ["red", "green", "blue"],
+    },
+    stack: "'color' must be equal to one of the allowed values",
+    schemaPath: "#/properties/color/enum",
+  },
+];
+
+const stringError = [
+  {
+    name: "type",
+    property: ".name",
+    message: "must be string",
+    params: {
+      type: "string",
+    },
+    stack: "'name' must be string",
+    schemaPath: "#/properties/name/type",
+  },
+];
+
+const numberError = [
+  {
+    name: "type",
+    property: ".age",
+    message: "must be number",
+    params: {
+      type: "number",
+    },
+    stack: "'age' must be number",
+    schemaPath: "#/properties/age/type",
+  },
+];
+
 const requiredFieldError = [
   {
     name: "required",
@@ -39,6 +92,35 @@ const craBusinessNumberError = [
     },
     stack: "'CRA Business Number' must be >= 100000000",
     schemaPath: "#/properties/cra_business_number/minimum",
+  },
+];
+
+const latitudeError = [
+  {
+    name: "maximum",
+    property: ".section2.latitude_of_largest_emissions",
+    message: "must be <= 90",
+    params: {
+      comparison: "<=",
+      limit: 90,
+    },
+    stack: "'Latitude of Largest Point of Emissions' must be <= 90",
+    schemaPath:
+      "#/properties/section2/properties/latitude_of_largest_emissions/maximum",
+  },
+];
+const longitudeError = [
+  {
+    name: "minimum",
+    property: ".section2.longitude_of_largest_emissions",
+    message: "must be >= -180",
+    params: {
+      comparison: ">=",
+      limit: -180,
+    },
+    stack: "'Longitude of Largest Point of Emissions' must be >= -180",
+    schemaPath:
+      "#/properties/section2/properties/longitude_of_largest_emissions/minimum",
   },
 ];
 
@@ -121,7 +203,63 @@ const arrayMinItemsError = [
   },
 ];
 
+const attachmentError = [
+  {
+    name: "required",
+    property: ".section2.boundary_map",
+    message: "must have required property '.section2.boundary_map'",
+    params: {
+      missingProperty: "boundary_map",
+    },
+    stack: "must have required property 'Boundary Map'",
+    schemaPath: "#/properties/section2/required",
+  },
+];
+
 describe("customTransformErrors", () => {
+  it("returns the transformed error message for minItems error", () => {
+    const originalErrorMessage = minItemsError[0].message;
+    const transformedErrors = customTransformErrors(
+      minItemsError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Select at least one option");
+  });
+
+  it("returns the transformed error message for enum error", () => {
+    const originalErrorMessage = enumError[0].message;
+    const transformedErrors = customTransformErrors(
+      enumError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Select a color");
+  });
+
+  it("returns the transformed error message for must be string error", () => {
+    const originalErrorMessage = stringError[0].message;
+    const transformedErrors = customTransformErrors(
+      stringError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Enter letters only");
+  });
+  it("returns the transformed error message for must be number error", () => {
+    const originalErrorMessage = numberError[0].message;
+    const transformedErrors = customTransformErrors(
+      numberError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Enter numbers only");
+  });
+
   it("returns the transformed error message for required field", () => {
     const originalErrorMessage = requiredFieldError[0].message;
     const transformedErrors = customTransformErrors(
@@ -130,7 +268,35 @@ describe("customTransformErrors", () => {
     );
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
-    expect(transformedErrors[0].message).toBe("Required field");
+    expect(transformedErrors[0].message).toBe("Legal name is required");
+  });
+
+  it("returns the transformed error message for a nested required field", () => {
+    const sectionedLatitude = [
+      {
+        name: "required",
+        property:
+          ".facility_information_array.0.section1.latitude_of_largest_emissions",
+        message: "must have required property 'email'",
+        params: {
+          missingProperty: "latitude_of_largest_emissions",
+        },
+        stack:
+          "must have required property 'Latitude of Largest Point of Emissions'",
+        schemaPath:
+          "#/properties/facility_information_array/items/properties/section1/dependencies/type/oneOf/1/required",
+      },
+    ];
+    const originalErrorMessage = sectionedLatitude[0].message;
+    const transformedErrors = customTransformErrors(
+      sectionedLatitude,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe(
+      "Latitude of largest point of emissions must be between -90 to 90",
+    );
   });
 
   it("returns the same error message for minimum length", () => {
@@ -142,6 +308,53 @@ describe("customTransformErrors", () => {
     expect(transformedErrors[0].message).toBe(mininumLengthError[0].message);
   });
 
+  it("returns the transformed error message for array minItems", () => {
+    const originalErrorMessage = arrayMinItemsError[0].message;
+    const transformedErrors = customTransformErrors(
+      arrayMinItemsError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Select at least one option");
+  });
+
+  // specific field errors
+  it("returns the transformed error message for  latitude", () => {
+    const originalErrorMessage = latitudeError[0].message;
+    const transformedErrors = customTransformErrors(
+      latitudeError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe(
+      "Latitude of largest point of emissions must be between -90 to 90",
+    );
+  });
+  it("returns the transformed error message for  longitude", () => {
+    const originalErrorMessage = longitudeError[0].message;
+    const transformedErrors = customTransformErrors(
+      longitudeError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe(
+      "Longitude of largest point of emissions must be between -180 to 180",
+    );
+  });
+  it("returns the transformed error message for attachments", () => {
+    const originalErrorMessage = attachmentError[0].message;
+    const transformedErrors = customTransformErrors(
+      attachmentError,
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Attachment is mandatory.");
+  });
+
   it("returns the transformed error message for CRA Business Number", () => {
     const originalErrorMessage = craBusinessNumberError[0].message;
     const transformedErrors = customTransformErrors(
@@ -151,10 +364,10 @@ describe("customTransformErrors", () => {
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(
-      customFormatsErrorMessages.cra_business_number,
+      "CRA Business Number should be 9 digits.",
     );
   });
-
+  // format errors (format errors appear to only work for string fields)
   it("returns the transformed error message for BC Corporate Registry Number", () => {
     const originalErrorMessage = bcCorporateRegistryNumberError[0].message;
     const transformedErrors = customTransformErrors(
@@ -212,18 +425,5 @@ describe("customTransformErrors", () => {
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(customFormatsErrorMessages.phone);
-  });
-
-  it("returns the transformed error message for array minItems", () => {
-    const originalErrorMessage = arrayMinItemsError[0].message;
-    const transformedErrors = customTransformErrors(
-      arrayMinItemsError,
-      customFormatsErrorMessages,
-    );
-
-    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
-    expect(transformedErrors[0].message).toBe(
-      "Must not have fewer than 1 items",
-    );
   });
 });
