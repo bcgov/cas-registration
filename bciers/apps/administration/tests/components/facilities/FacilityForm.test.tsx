@@ -560,7 +560,7 @@ describe("FacilityForm component", () => {
     act(() => {
       saveButton.click();
     });
-    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(4);
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(2);
 
     //check starting date required when year is clicked
     const year = screen.getByLabelText(
@@ -570,7 +570,7 @@ describe("FacilityForm component", () => {
       year.click();
       saveButton.click();
     });
-    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(5);
+    expect(screen.getAllByText(/^.* is required/i)).toHaveLength(3);
   });
   it("does not allow LFO submission if there are validation errors (bad form data)", async () => {
     render(
@@ -594,8 +594,16 @@ describe("FacilityForm component", () => {
     expect(screen.getAllByText(/Postal code format is A1A 1A1/i)).toHaveLength(
       1,
     );
-    expect(screen.getAllByText(/must be >= -90/i)).toHaveLength(1);
-    expect(screen.getAllByText(/must be <= 180/i)).toHaveLength(1);
+    expect(
+      screen.getAllByText(
+        "Latitude of largest point of emissions must be between -90 to 90",
+      ),
+    ).toHaveLength(1);
+    expect(
+      screen.getAllByText(
+        "Longitude of largest point of emissions must be between -180 to 180",
+      ),
+    ).toHaveLength(1);
   });
   // created this starting datetest to get around form without edit fields in the last test
   it("does not allow LFO submission if there is a starting date validation error", async () => {
