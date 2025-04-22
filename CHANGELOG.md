@@ -1,5 +1,9 @@
 # [3.0.0](https://github.com/bcgov/cas-registration/compare/v2.3.0...v3.0.0) (2025-04-22)
 
+### Major change
+
+- first version of reporting module is available
+
 ### Bug Fixes
 
 - allow resubmitting a report after validation errors, for re-validation ([3962380](https://github.com/bcgov/cas-registration/commit/39623803d94495952b47ef052f08d65fc5f288d8))
