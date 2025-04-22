@@ -1,3 +1,20 @@
+# [3.0.0](https://github.com/bcgov/cas-registration/compare/v2.3.0...v3.0.0) (2025-04-22)
+
+### Bug Fixes
+
+- allow resubmitting a report after validation errors, for re-validation ([3962380](https://github.com/bcgov/cas-registration/commit/39623803d94495952b47ef052f08d65fc5f288d8))
+- creating a user_operator contact only checks for duplication on email and operator id ([4e871eb](https://github.com/bcgov/cas-registration/commit/4e871eb9db0e75bb1c45fcc9210ff7722c8ae068))
+- Emission allocation page allows saving without validation if methodology is not applicable ([f7c0a86](https://github.com/bcgov/cas-registration/commit/f7c0a86c4f0fcfe4c1d276f589f8575ba80ed487))
+- error loading existing data into emission allocation form ([74520b3](https://github.com/bcgov/cas-registration/commit/74520b36387f935e2fa67af2ec79a2e7d29e0f39))
+- fetch gasType objects on activity init & add to formContext ([462dab6](https://github.com/bcgov/cas-registration/commit/462dab6323dcda92ced17471e1b25c5eea075edf))
+- remove related report_product data when a regulated_product is removed from a report_operation ([0f3beea](https://github.com/bcgov/cas-registration/commit/0f3beea46ca2e98434fd8525f3fe257281770471))
+- source subtypes in other fugitive sources schema for o&g other than non compression ([1431735](https://github.com/bcgov/cas-registration/commit/1431735dafa4cb650813ed64384c517c7c33aece))
+
+### Features
+
+- add session timeout handling with logout warning modal ([35975c7](https://github.com/bcgov/cas-registration/commit/35975c756a29e9be7ae84440d043371b1e8ef857))
+- uploaded attachments can be downloaded ([8c3a5a3](https://github.com/bcgov/cas-registration/commit/8c3a5a31f0bf067ac2b89934e74ae8a293dfe018))
+
 # [2.3.0](https://github.com/bcgov/cas-registration/compare/v2.1.1...v2.3.0) (2025-04-11)
 
 ### Bug Fixes
