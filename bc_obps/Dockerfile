@@ -97,7 +97,9 @@ RUN apt-get update && \
     unzip && \
     mkdir -p /usr/local/share/fonts/truetype/inter && \
     curl -L -o /tmp/inter.zip https://github.com/rsms/inter/releases/download/v3.19/Inter-3.19.zip && \
-    unzip -j /tmp/inter.zip "Inter Desktop/Inter-Regular.otf" "Inter Desktop/Inter-Bold.otf" "Inter Desktop/Inter-Italic.otf" -d /usr/local/share/fonts/truetype/inter/ && \
+    unzip -j /tmp/inter.zip "Inter Desktop/Inter-Regular.otf" -d /usr/local/share/fonts/truetype/inter/ && \
+    unzip -j /tmp/inter.zip "Inter Desktop/Inter-Bold.otf" -d /usr/local/share/fonts/truetype/inter/ && \
+    unzip -j /tmp/inter.zip "Inter Desktop/Inter-Italic.otf" -d /usr/local/share/fonts/truetype/inter/ && \
     fc-cache -f -v && \
     apt-get clean && \
     # Remove package lists and temp files to reduce size
