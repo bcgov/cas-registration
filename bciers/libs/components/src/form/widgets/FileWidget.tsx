@@ -98,7 +98,7 @@ const showScanStatus = (status: FileScanStatus | undefined | null) => {
         <div className="flex flex-col">
           <span>
             Uploading. You may continue to the next page while the file is being
-            scanned for malware.
+            scanned for security.
           </span>
         </div>
       </div>
