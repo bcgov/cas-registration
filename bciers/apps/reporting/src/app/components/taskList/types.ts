@@ -46,7 +46,7 @@ export enum HeaderStep {
   OperationInformation = "Operation Information",
   ReportInformation = "Report Information",
   EmissionsData = "Emissions Data",
-  ElectricityImportData = "Electricity Import Data",
+  ElectricityImportData = "Report Information",
   AdditionalInformation = "Additional Information",
   ComplianceSummary = "Compliance Summary",
   SignOffSubmit = "Sign-off & Submit",
