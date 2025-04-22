@@ -6,7 +6,7 @@ export const eioInformationPageFactories: {
   [ReportingPage.ElectricityImportData]: (activePage, reportVersionId) => ({
     element: {
       type: "Page",
-      title: "Electricity import data",
+      title: "Electricity Import Data",
       isActive: activePage === ReportingPage.ElectricityImportData,
       link: `/reports/${reportVersionId}/electricity-import-data`,
     },

@@ -8,6 +8,8 @@ import ReportingStepButtons from "@bciers/components/form/components/ReportingSt
 
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { eioSchema, eioUiSchema } from "@reporting/src/data/jsonSchema/eio/eio";
+import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
+import { additionalReportingDataUiSchema } from "@reporting/src/data/jsonSchema/additionalReportingData/additionalReportingData";
 
 interface Props {
   formData: any;
@@ -19,29 +21,20 @@ const ElectricityInformationForm: React.FC<Props> = ({
   navigationInformation,
 }) => {
   return (
-    <Box sx={{ p: 3 }}>
-      <div className="container mx-auto p-4" data-testid="compliance-summary">
-        <MultiStepHeader
-          stepIndex={navigationInformation.headerStepIndex}
-          steps={navigationInformation.headerSteps}
-        />
-      </div>
-      <div className="w-full flex">
-        <ReportingTaskList elements={navigationInformation.taskList} />
-        <div className="w-full md:max-w-[60%]">
-          <FormBase
-            schema={eioSchema}
-            uiSchema={eioUiSchema}
-            formData={formData}
-          >
-            <ReportingStepButtons
-              backUrl={navigationInformation.backUrl}
-              continueUrl={navigationInformation.continueUrl}
-            />
-          </FormBase>
-        </div>
-      </div>
-    </Box>
+    <MultiStepFormWithTaskList
+      initialStep={navigationInformation.headerStepIndex}
+      steps={navigationInformation.headerSteps}
+      taskListElements={navigationInformation.taskList}
+      schema={eioSchema}
+      uiSchema={eioUiSchema}
+      formData={formData}
+      backUrl={navigationInformation.backUrl}
+      onChange={() => {
+        console.log();
+      }}
+      onSubmit={() => console.log()}
+      continueUrl={navigationInformation.continueUrl}
+    />
   );
 };
 
