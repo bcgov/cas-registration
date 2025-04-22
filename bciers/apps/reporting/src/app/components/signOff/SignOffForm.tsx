@@ -74,6 +74,8 @@ export default function SignOffForm({
         date,
       };
       const response: any = await postSubmitReport(version_id, payload);
+      setSubmitButtonDisabled(false);
+
       if (response?.error) {
         setErrors([getValidationErrorMessage(response.error)]);
         return false;
