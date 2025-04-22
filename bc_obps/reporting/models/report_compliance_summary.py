@@ -1,10 +1,11 @@
-from common.models import BaseModel
 from django.db import models
 from reporting.models import ReportVersion
 from reporting.models.rls_configs.report_compliance_summary import Rls as ReportComplianceSummaryRls
+from registration.models.time_stamped_model import TimeStampedModel
+from reporting.models.triggers import immutable_report_version_trigger
 
 
-class ReportComplianceSummary(BaseModel):
+class ReportComplianceSummary(TimeStampedModel):
     """Reporting Compliance Summary model"""
 
     report_version = models.ForeignKey(
@@ -47,5 +48,9 @@ class ReportComplianceSummary(BaseModel):
     class Meta:
         db_table_comment = "This table contains the compliance summary data calculated for a regulated operation."
         db_table = 'erc"."report_compliance_summary'
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            immutable_report_version_trigger(),
+        ]
 
     Rls = ReportComplianceSummaryRls
