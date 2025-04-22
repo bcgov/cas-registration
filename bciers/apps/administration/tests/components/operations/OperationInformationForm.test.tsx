@@ -847,7 +847,7 @@ describe("the OperationInformationForm component", () => {
     await userEvent.upload(newEntrantApplicationDocument, mockFile);
     expect(
       screen.getByText(
-        "Uploading. You may continue to the next page while the file is being scanned for malware.",
+        "Uploading. You may continue to the next page while the file is being scanned for security.",
       ),
     ).toBeVisible();
     expect(screen.getByRole("listitem")).toHaveAttribute(
