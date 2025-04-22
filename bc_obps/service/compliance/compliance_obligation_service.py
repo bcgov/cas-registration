@@ -4,6 +4,7 @@ from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
+from service.compliance.compliance_charge_rate_service import ComplianceChargeRateService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -34,20 +35,17 @@ class ComplianceObligationService:
 
         Raises:
             ComplianceSummary.DoesNotExist: If the compliance summary doesn't exist
+            ComplianceChargeRate.DoesNotExist: If no compliance charge rate exists for the reporting year
             ValueError: If the operation is not regulated by BC OBPS (no obligation_id can be generated)
         """
         # Get the compliance summary
         compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
 
-        # Set obligation deadline to November 30 of the following year
-        # per section 19(1)(b) of BC Greenhouse Gas Emission Reporting Regulation
-        obligation_deadline = cls.get_obligation_deadline(report_version.report.reporting_year_id)
+        # Calculate obligation deadline (November 30 of the following year)
+        obligation_deadline = date(report_version.report.reporting_year.reporting_year + 1, 11, 30)
 
         # Get the compliance charge rate for the reporting year
-        try:
-            fee_rate_dollars = ComplianceObligation.COMPLIANCE_CHARGE_RATES[report_version.report.reporting_year_id]
-        except KeyError:
-            raise ValueError(f"No compliance charge rate defined for year {report_version.report.reporting_year_id}")
+        fee_rate_dollars = ComplianceChargeRateService.get_rate_for_year(report_version.report.reporting_year)
 
         # Calculate fee amount: emissions_amount_tco2e * fee rate
         fee_amount_dollars = (emissions_amount * fee_rate_dollars).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
