@@ -210,6 +210,7 @@ class TestComplianceSummaryService(TestCase):
             "reporting.tests.utils.report_product_emission_allocation",
             emission_category=EmissionCategory.objects.get(pk=1),
             allocated_quantity=Decimal('1000.0001'),
+            report_product__product__is_regulated=True,
         )
         emission_allocation = make_recipe(
             "reporting.tests.utils.report_emission_allocation",
