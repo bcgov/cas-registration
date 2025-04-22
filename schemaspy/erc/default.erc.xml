@@ -1916,6 +1916,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_attachment_updated_by_id_f2464d4a_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="status" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="report_attachment_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -2734,7 +2735,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="acknowledgement_of_review" nullable="false" remarks="Whether the user has certified that they have reviewed the report, and that they have ensured that the information included in this report is true and complete." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="acknowledgement_of_records" nullable="false" remarks="Whether the user has understood that the information provided in the report may require records from the Operator evidencing the truth of this report." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="acknowledgement_of_information" nullable="true" remarks="Whether the user has understood that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act." size="1" type="bool" typeCode="-7"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="acknowledgement_of_possible_costs" nullable="false" remarks="Whether the user has understood that the information provided in this report can impact any compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="acknowledgement_of_possible_costs" nullable="true" remarks="Whether the user has understood that the information provided in this report can impact any compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="acknowledgement_of_new_version" nullable="true" remarks="Whether the user has understood that the sign-off is creating a new report version that will be the report for the reporting or compliance period that it pertains to." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="signature" nullable="false" remarks="The signature of the user who signed off the report" size="2147483647" type="text" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="10" name="signing_date" nullable="false" remarks="The date and time the report was signed off" size="35" type="timestamptz" typeCode="93"/>
@@ -2750,6 +2751,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_sign_off_updated_by_id_6cf05dc5_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="acknowledgement_of_corrections" nullable="true" remarks="Whether the user has understood that correction of any errors, omissions, or misstatements in the new submission of this report may lead to an additional compliance obligation, and, if submitted after the compliance obligation deadline, applicable interest." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="report_sign_off_pkey" unique="true">
             <column ascending="true" name="id"/>
