@@ -53,6 +53,7 @@ from reporting.models.emission_category_mapping import EmissionCategoryMapping
 from reporting.models.report_non_attributable_emissions import (
     ReportNonAttributableEmissions,
 )
+from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
 from reporting.models.report_sign_off import ReportSignOff
 
 
@@ -303,4 +304,13 @@ report_sign_off = Recipe(
     acknowledgement_of_possible_costs=True,
     signature="Test Signature",
     signing_date=datetime.now(),
+)
+
+report_compliance_summary = Recipe(ReportComplianceSummary, report_version=foreign_key(report_version))
+
+report_compliance_summary_product = Recipe(
+    ReportComplianceSummaryProduct,
+    report_version=foreign_key(report_version),
+    report_compliance_summary=foreign_key(report_compliance_summary),
+    product=foreign_key(regulated_product),
 )

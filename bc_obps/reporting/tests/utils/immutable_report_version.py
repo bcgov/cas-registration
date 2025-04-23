@@ -1,6 +1,7 @@
 from django.db import ProgrammingError, transaction
 from model_bakery import baker
 import pytest
+from decimal import Decimal
 
 
 # Wrapping this in an atomic transaction
@@ -8,6 +9,7 @@ def assert_immutable_report_version(
     recipe_path: str,
     str_field_to_update: str = "json_data",
     path_to_report_version: str = "report_version",
+    decimal_value_to_update: Decimal = Decimal('0'),
 ):
     """
     A default test that asserts a model is immutable after its report_version is submitted.
@@ -28,7 +30,10 @@ def assert_immutable_report_version(
         **{path_to_report_version: report_version},
     )
 
-    setattr(model_under_test, str_field_to_update, "{'test': 'allow change'}")
+    if decimal_value_to_update != Decimal('0'):
+        setattr(model_under_test, str_field_to_update, Decimal('1.0'))
+    else:
+        setattr(model_under_test, str_field_to_update, "{'test': 'allow change'}")
     model_under_test.save()
 
     report_version.status = "Submitted"
@@ -39,5 +44,8 @@ def assert_immutable_report_version(
             ProgrammingError,
             match=r".* record is immutable after a report version has been submitted",
         ):
-            setattr(model_under_test, str_field_to_update, "{'test': 'forbid change'}")
+            if decimal_value_to_update != Decimal('0'):
+                setattr(model_under_test, str_field_to_update, decimal_value_to_update)
+            else:
+                setattr(model_under_test, str_field_to_update, "{'test': 'forbid change'}")
             model_under_test.save()
