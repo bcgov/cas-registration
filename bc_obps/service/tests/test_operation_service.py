@@ -148,7 +148,7 @@ class TestOperationService:
         users_operation.operator = approved_user_operator.operator
         users_operation.save()
 
-        updated_operation = OperationService.submit_registration(
+        updated_operation = OperationService.update_status(
             approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
         )
         updated_operation.refresh_from_db()
@@ -179,7 +179,7 @@ class TestOperationService:
         users_operation.contacts.set([])
 
         with pytest.raises(Exception, match="Operation must have an operation representative with an address."):
-            OperationService.submit_registration(
+            OperationService.update_status(
                 approved_user_operator.user.user_guid, users_operation.id, Operation.Statuses.REGISTERED
             )
 
@@ -201,7 +201,7 @@ class TestOperationService:
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
-            OperationService.submit_registration(
+            OperationService.update_status(
                 approved_user_operator.user.user_guid, operation.id, Operation.Statuses.REGISTERED
             )
 

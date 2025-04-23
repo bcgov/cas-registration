@@ -28,6 +28,6 @@ def operation_registration_submission(
     ):
         raise Exception("All checkboxes must be checked to submit the registration.")
 
-    return 200, OperationService.submit_registration(
+    return 200, OperationService.update_status(
         get_current_user_guid(request), operation_id, Operation.Statuses.REGISTERED
     )

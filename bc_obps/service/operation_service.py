@@ -93,7 +93,7 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def submit_registration(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
+    def update_status(cls, user_guid: UUID, operation_id: UUID, status: Operation.Statuses) -> Operation:
         operation = OperationService.get_if_authorized(user_guid, operation_id)
         fields_to_update = ['status']
         if status == Operation.Statuses.REGISTERED:
@@ -102,12 +102,13 @@ class OperationService:
             fields_to_update.append('submission_date')
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=fields_to_update)
-        send_registration_and_boro_id_email(
-            EmailTemplateNames.CONFIRMATION,
-            operation.operator.legal_name,
-            operation,
-            UserDataAccessService.get_by_guid(user_guid),
-        )
+        if operation.status == Operation.Statuses.REGISTERED:
+            send_registration_and_boro_id_email(
+                EmailTemplateNames.CONFIRMATION,
+                operation.operator.legal_name,
+                operation,
+                UserDataAccessService.get_by_guid(user_guid),
+            )
         return operation
 
     @classmethod
@@ -317,7 +318,7 @@ class OperationService:
                 payload,
             )
         if operation.status == Operation.Statuses.NOT_STARTED:
-            cls.submit_registration(user_guid, operation.id, Operation.Statuses.DRAFT)
+            cls.update_status(user_guid, operation.id, Operation.Statuses.DRAFT)
         return operation
 
     @classmethod
