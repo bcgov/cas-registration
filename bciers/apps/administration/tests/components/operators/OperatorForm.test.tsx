@@ -318,7 +318,7 @@ describe("OperatorForm component", () => {
     // form fields and headings
     expectHeader(formHeaders);
     expectField(formFields);
-    expectField(["CRA Business Number"], null);
+    expectField(["CRA Business Number"], "");
     expect(
       screen.getByLabelText(
         /Does this operator have one or more parent company/i,

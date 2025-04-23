@@ -33,8 +33,7 @@ const TextWidget: React.FC<WidgetProps> = ({
   };
 
   const handleNumberChange = (val: number | null) => {
-    if (!isNaN(Number(val)) && Number(val) > maxNum) return;
-
+    if (!val) return;
     onChange(val);
   };
 
@@ -48,27 +47,39 @@ const TextWidget: React.FC<WidgetProps> = ({
         borderColor,
       },
     },
+    font: "inherit",
+  };
+
+  const numberStyles = {
+    border: "1px solid #fafafc",
+    font: "inherit",
+  };
+
+  const widthStyle = {
+    width: "100%",
   };
 
   if (type === "number") {
     return (
       <NumberField.Root
         id={id}
+        name={id}
         disabled={disabled || readonly}
         value={value}
         onValueChange={handleNumberChange}
-        style={styles}
+        max={maxNum}
+        style={widthStyle}
       >
-        <NumberField.Group style={styles}>
+        <NumberField.Group>
           <NumberField.Input
-            className={`w-full px-[14px] py-4 rounded-sm border border-transparent hover:border-[${BC_GOV_LINKS_COLOR}]`}
-            style={styles}
+            className={`w-full px-[14px] py-4 rounded-sm border`}
+            style={numberStyles}
             // sx doesn't like numberInput and tailwind doesn't like dynamic colors
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "transparent";
+              e.currentTarget.style.borderColor = borderColor;
             }}
           />
         </NumberField.Group>
