@@ -254,7 +254,6 @@ class ComplianceService:
             total_allocated_for_compliance_2024 += allocated_for_compliance_2024
             emissions_limit_total += product_emission_limit
 
-            print("PRODUCT ID: ", rp.product.id)
             # Add product to list of products
             compliance_product_list.append(
                 ReportProductComplianceData(
