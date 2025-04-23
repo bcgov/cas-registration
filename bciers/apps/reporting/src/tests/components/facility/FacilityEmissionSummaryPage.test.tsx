@@ -65,25 +65,25 @@ describe("FacilityEmissionSummaryForm", () => {
     );
 
     expect(screen.getByLabelText("Flaring emissions").value).toBe("500");
-    expect(screen.getByLabelText("Fugitive emissions").value).toBe("1000");
+    expect(screen.getByLabelText("Fugitive emissions").value).toBe("1,000");
     expect(screen.getByLabelText("Industrial process emissions").value).toBe(
-      "1500",
+      "1,500",
     );
     expect(
       screen.getByLabelText("On-site transportation emissions").value,
-    ).toBe("2000");
+    ).toBe("2,000");
     expect(
       screen.getByLabelText("Stationary fuel combustion emissions").value,
-    ).toBe("2500");
+    ).toBe("2,500");
     expect(screen.getByLabelText("Venting emissions - useful").value).toBe(
-      "3000",
+      "3,000",
     );
     expect(screen.getByLabelText("Venting emissions - non-useful").value).toBe(
-      "3500",
+      "3,500",
     );
-    expect(screen.getByLabelText("Emissions from waste").value).toBe("4000");
+    expect(screen.getByLabelText("Emissions from waste").value).toBe("4,000");
     expect(screen.getByLabelText("Emissions from wastewater").value).toBe(
-      "4500",
+      "4,500",
     );
   });
 
