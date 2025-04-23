@@ -1,6 +1,5 @@
 import logging
 import uuid
-from typing import Dict, Any
 from django.db import transaction
 from service.compliance.elicensing.elicensing_api_client import ELicensingAPIClient, ClientCreationRequest
 from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
@@ -20,7 +19,7 @@ class OperatorELicensingService:
     """
 
     @classmethod
-    def _map_operator_to_client_data(cls, operator: Operator) -> Dict[str, Any]:
+    def _map_operator_to_client_data(cls, operator: Operator) -> ClientCreationRequest:
         """
         Map operator data to eLicensing client data format.
 
@@ -28,15 +27,15 @@ class OperatorELicensingService:
             operator: The operator object
 
         Returns:
-            A dictionary with client data in the format expected by the eLicensing API
+            A ClientCreationRequest object with data mapped from the operator
         """
-        client_guid = str(uuid.uuid4())
 
         client_data = {
-            "clientGUID": client_guid,
+            "clientGUID": str(uuid.uuid4()),
             "companyName": operator.legal_name,
             "doingBusinessAs": operator.trade_name if operator.trade_name else "",
             "bcCompanyRegistrationNumber": operator.bc_corporate_registry_number or "",
+            "businessAreaCode": "OBPS",
         }
 
         # Add address information if available
@@ -78,7 +77,12 @@ class OperatorELicensingService:
                 }
             )
 
-        return client_data
+        # Add at least one phone number (required by API)
+        # Since we don't have direct phone number fields in the Operator model,
+        # we'll use a placeholder value
+        client_data["businessPhone"] = "0000000000"  # Placeholder
+
+        return ClientCreationRequest(**client_data)
 
     @classmethod
     @transaction.atomic
@@ -113,7 +117,7 @@ class OperatorELicensingService:
 
         client_data = cls._map_operator_to_client_data(operator)
 
-        response = elicensing_api_client.create_client(ClientCreationRequest(**client_data))
+        response = elicensing_api_client.create_client(client_data)
 
         # Create link with the client ID and GUID from the client data
         client_link = ELicensingLinkService.create_link(

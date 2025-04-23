@@ -53,13 +53,14 @@ class ClientCreationRequest:
     city: str
     stateProvince: str
     postalCode: str
-    clientGUID: Optional[str] = None
+    clientGUID: str
+    businessAreaCode: str
+    businessPhone: str
     lastName: Optional[str] = None
     doingBusinessAs: Optional[str] = None
     firstName: Optional[str] = None
     middleName: Optional[str] = None
     title: Optional[str] = None
-    businessPhone: Optional[str] = None
     homeNumber: Optional[str] = None
     cellularNumber: Optional[str] = None
     faxNumber: Optional[str] = None
