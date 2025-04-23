@@ -21,12 +21,7 @@ class ReportComplianceSummaryProduct(TimeStampedModel):
         related_name="report_compliance_summary_products",
         db_comment="The report_compliance_summary parent object this product data relates to",
     )
-    emissions_attributable_for_reporting = models.DecimalField(
-        db_comment="Total emissions in tCO2e that are considered attributable for reporting. This is the sum of all emissions reported from 'basic' emission categories",
-        decimal_places=4,
-        max_digits=20,
-    )
-    product_id = models.ForeignKey(
+    product = models.ForeignKey(
         RegulatedProduct,
         on_delete=models.CASCADE,
         related_name="+",
