@@ -1,4 +1,5 @@
 from django.test import TestCase
+from reporting.models.report_compliance_summary_product import ReportComplianceSummary, ReportComplianceSummaryProduct
 from reporting.service.compliance_service import ComplianceService
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
@@ -63,3 +64,21 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.emissions_limit == 0
         assert result.excess_emissions == 0
         assert result.credited_emissions == 0
+
+    def test_saves_compliance_data(self):
+        build_data = ComplianceTestInfrastructure.build()
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+        ComplianceService.save_compliance_data(build_data.report_version_1.id)
+        report_compliance_summary_record = ReportComplianceSummary.objects.get(
+            report_version_id=build_data.report_version_1.id
+        )
+        report_compliance_product_records = ReportComplianceSummaryProduct.objects.filter(
+            report_compliance_summary_id=report_compliance_summary_record.id
+        )
+
+        assert (
+            report_compliance_summary_record.emissions_attributable_for_compliance
+            == result.emissions_attributable_for_compliance
+        )
+        for idx, p in enumerate(report_compliance_product_records):
+            assert p.annual_production == result.products[idx].annual_production
