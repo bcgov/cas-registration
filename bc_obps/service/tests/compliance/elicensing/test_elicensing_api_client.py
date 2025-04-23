@@ -27,6 +27,9 @@ def client_creation_request():
         stateProvince='BC',
         postalCode='V1A 1A1',
         email='test@example.com',
+        clientGUID='test-guid',
+        businessAreaCode='OBPS',
+        businessPhone='123-456-7890',
     )
 
 

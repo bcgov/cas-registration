@@ -20,5 +20,4 @@ class ReportingYearTest(BaseTestCase):
             ("description", "description", None, None),
             ("report", "report", None, None),
             ("compliance_period", "compliance period", None, None),
-            ("compliancechargerate", "compliance charge rate", None, None),
         ]

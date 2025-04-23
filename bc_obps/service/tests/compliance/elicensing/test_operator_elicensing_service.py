@@ -111,38 +111,38 @@ class TestOperatorELicensingService:
         result = OperatorELicensingService._map_operator_to_client_data(mock_operator)
 
         # Verify the mapping is correct
-        assert "clientGUID" in result
-        assert result["companyName"] == mock_operator.legal_name
-        assert result["doingBusinessAs"] == mock_operator.trade_name
-        assert result["bcCompanyRegistrationNumber"] == mock_operator.bc_corporate_registry_number
+        assert result.clientGUID is not None
+        assert result.companyName == mock_operator.legal_name
+        assert result.doingBusinessAs == mock_operator.trade_name
+        assert result.bcCompanyRegistrationNumber == mock_operator.bc_corporate_registry_number
 
         # Check address mapping
-        assert result["addressLine1"] == mock_operator.physical_address.street_address
-        assert result["city"] == mock_operator.physical_address.municipality
-        assert result["stateProvince"] == mock_operator.physical_address.province
-        assert result["postalCode"] == mock_operator.physical_address.postal_code
-        assert result["country"] == "Canada"
+        assert result.addressLine1 == mock_operator.physical_address.street_address
+        assert result.city == mock_operator.physical_address.municipality
+        assert result.stateProvince == mock_operator.physical_address.province
+        assert result.postalCode == mock_operator.physical_address.postal_code
+        assert result.country == "Canada"
 
     def test_map_operator_to_client_data_with_mailing_address(self, mock_operator_mailing_only):
         """Test mapping operator with only mailing address"""
         result = OperatorELicensingService._map_operator_to_client_data(mock_operator_mailing_only)
 
         # Check mailing address is used
-        assert result["addressLine1"] == mock_operator_mailing_only.mailing_address.street_address
-        assert result["city"] == mock_operator_mailing_only.mailing_address.municipality
-        assert result["stateProvince"] == mock_operator_mailing_only.mailing_address.province
-        assert result["postalCode"] == mock_operator_mailing_only.mailing_address.postal_code
+        assert result.addressLine1 == mock_operator_mailing_only.mailing_address.street_address
+        assert result.city == mock_operator_mailing_only.mailing_address.municipality
+        assert result.stateProvince == mock_operator_mailing_only.mailing_address.province
+        assert result.postalCode == mock_operator_mailing_only.mailing_address.postal_code
 
     def test_map_operator_to_client_data_no_addresses(self, mock_operator_no_addresses):
         """Test mapping operator with no addresses uses placeholder values"""
         result = OperatorELicensingService._map_operator_to_client_data(mock_operator_no_addresses)
 
         # Check placeholder values are used
-        assert result["addressLine1"] == "Unknown"
-        assert result["city"] == "Unknown"
-        assert result["stateProvince"] == "BC"
-        assert result["postalCode"] == "V0V0V0"
-        assert result["country"] == "Canada"
+        assert result.addressLine1 == "Unknown"
+        assert result.city == "Unknown"
+        assert result.stateProvince == "BC"
+        assert result.postalCode == "V0V0V0"
+        assert result.country == "Canada"
 
     @pytest.mark.django_db
     def test_sync_client_with_elicensing_existing_client(
