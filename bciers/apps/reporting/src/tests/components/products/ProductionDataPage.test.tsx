@@ -94,7 +94,7 @@ describe("The Production Data component", () => {
     expect(screen.getByText("tonnes of tests")).toBeInTheDocument();
     expect(
       screen.getByLabelText("Production data for Apr 1 - Dec 31, 2024*"),
-    ).toHaveRole("spinbutton");
+    ).toHaveRole("textbox");
     expect(
       screen.getByLabelText("Production Quantification Methodology*"),
     ).toHaveRole("textbox");
@@ -102,21 +102,21 @@ describe("The Production Data component", () => {
       screen.getByLabelText(
         "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
       ),
-    ).toHaveRole("spinbutton");
+    ).toHaveRole("textbox");
     expect(
       screen.getByLabelText(
         "Quantity in storage at the end of the compliance period [Dec 31], if applicable",
       ),
-    ).toHaveRole("spinbutton");
+    ).toHaveRole("textbox");
     expect(
       screen.getByLabelText(
         "Quantity sold during compliance period [Jan 1 - Dec 31], if applicable",
       ),
-    ).toHaveRole("spinbutton");
+    ).toHaveRole("textbox");
     expect(
       screen.getByLabelText(
         "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
       ),
-    ).toHaveRole("spinbutton");
+    ).toHaveRole("textbox");
   });
 });
