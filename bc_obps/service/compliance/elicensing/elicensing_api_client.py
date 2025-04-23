@@ -44,6 +44,33 @@ class ClientCreationResponse:
     clientGUID: str
 
 
+@dataclass
+class ClientCreationRequest:
+    """Type definition for the client creation request to eLicensing API"""
+
+    companyName: str
+    addressLine1: str
+    city: str
+    stateProvince: str
+    postalCode: str
+    lastName: Optional[str] = None
+    doingBusinessAs: Optional[str] = None
+    firstName: Optional[str] = None
+    middleName: Optional[str] = None
+    title: Optional[str] = None
+    businessPhone: Optional[str] = None
+    homeNumber: Optional[str] = None
+    cellularNumber: Optional[str] = None
+    faxNumber: Optional[str] = None
+    businessPhoneExt: Optional[str] = None
+    bcCompanyRegistrationNumber: Optional[str] = None
+    bcCompanySocietyNumber: Optional[str] = None
+    email: Optional[str] = None
+    dateOfBirth: Optional[str] = None
+    addressLine2: Optional[str] = None
+    country: Optional[str] = None
+
+
 # Valid fee profile group names in eLicensing
 FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
 
@@ -102,20 +129,6 @@ class InvoiceCreationRequest:
     paymentDueDate: str
     businessAreaCode: str
     fees: List[str]
-
-
-@dataclass
-class FeeRequest:
-    """Type for fee creation request"""
-
-    clientId: str
-    amount: str
-    description: str
-    profileGroupName: str
-    businessAreaCode: str
-    effectiveDate: str
-    expiryDate: str
-    status: str
 
 
 class ELicensingAPIError(Exception):
@@ -244,7 +257,7 @@ class ELicensingAPIClient:
         logger.error(error_message)
         response.raise_for_status()
 
-    def create_client(self, client_data: Dict[str, Any]) -> ClientCreationResponse:
+    def create_client(self, client_data: ClientCreationRequest) -> ClientCreationResponse:
         """
         Creates a new client in the eLicensing system.
 
@@ -256,39 +269,42 @@ class ELicensingAPIClient:
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
         endpoint = "/client"
 
-        response = self._make_request(endpoint, method='POST', data=client_data)
+        # Convert dataclass to dict for API request
+        client_dict = {
+            "companyName": client_data.companyName,
+            "addressLine1": client_data.addressLine1,
+            "city": client_data.city,
+            "stateProvince": client_data.stateProvince,
+            "postalCode": client_data.postalCode,
+            "lastName": client_data.lastName,
+            "doingBusinessAs": client_data.doingBusinessAs,
+            "firstName": client_data.firstName,
+            "middleName": client_data.middleName,
+            "title": client_data.title,
+            "businessPhone": client_data.businessPhone,
+            "homeNumber": client_data.homeNumber,
+            "cellularNumber": client_data.cellularNumber,
+            "faxNumber": client_data.faxNumber,
+            "businessPhoneExt": client_data.businessPhoneExt,
+            "bcCompanyRegistrationNumber": client_data.bcCompanyRegistrationNumber,
+            "bcCompanySocietyNumber": client_data.bcCompanySocietyNumber,
+            "email": client_data.email,
+            "dateOfBirth": client_data.dateOfBirth,
+            "addressLine2": client_data.addressLine2,
+            "country": client_data.country,
+        }
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                # Ensure the response has the expected fields
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
+        response = self._make_request(endpoint, method='POST', data=client_dict)
+        response.raise_for_status()
 
-                if 'clientObjectId' not in json_response or not json_response['clientObjectId']:
-                    raise ValueError(f"Missing or empty clientObjectId in response: {json_response}")
-
-                if 'clientGUID' not in json_response or not json_response['clientGUID']:
-                    raise ValueError(f"Missing or empty clientGUID in response: {json_response}")
-
-                return ClientCreationResponse(
-                    clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID']
-                )
-            except ValueError as e:
-                logger.error(f"Error with client creation response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing client creation response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "create client")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+        json_response = response.json()
+        return ClientCreationResponse(
+            clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID']
+        )
 
     def query_client(self, client_object_id: str) -> ClientResponse:
         """
@@ -603,34 +619,6 @@ class ELicensingAPIClient:
         response.raise_for_status()
         json_response = response.json()
         return InvoiceResponse(**json_response)
-
-    def create_fee(self, fee_data: FeeRequest) -> str:
-        """
-        Creates a fee in eLicensing
-
-        Args:
-            fee_data (FeeRequest): The fee data
-
-        Returns:
-            str: The eLicensing fee ID
-
-        Raises:
-            ELicensingAPIError: If the request fails
-        """
-        # Convert dataclass to dict for API request
-        fee_dict = {
-            "clientId": fee_data.clientId,
-            "amount": fee_data.amount,
-            "description": fee_data.description,
-            "profileGroupName": fee_data.profileGroupName,
-            "businessAreaCode": fee_data.businessAreaCode,
-            "effectiveDate": fee_data.effectiveDate,
-            "expiryDate": fee_data.expiryDate,
-            "status": fee_data.status,
-        }
-
-        response = self._make_request("POST", "/fees", data=fee_dict)
-        return response["id"]
 
 
 # Create a singleton instance

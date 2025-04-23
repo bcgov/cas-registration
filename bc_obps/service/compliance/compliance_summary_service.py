@@ -55,7 +55,6 @@ class ComplianceSummaryService:
                 report=report_version.report,
                 current_report_version=report_version,
                 compliance_period=compliance_period,
-                complaince_summary_data=compliance_data,
                 emissions_attributable_for_reporting=compliance_data.emissions_attributable_for_reporting,
                 reporting_only_emissions=compliance_data.reporting_only_emissions,
                 emissions_attributable_for_compliance=compliance_data.emissions_attributable_for_compliance,

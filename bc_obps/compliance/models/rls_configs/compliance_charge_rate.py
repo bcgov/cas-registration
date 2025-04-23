@@ -1,10 +1,9 @@
 from compliance.enums import ComplianceTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import generate_rls_grants
-from rls.models import Rls
 
 
-class Rls(Rls):
+class Rls:
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],

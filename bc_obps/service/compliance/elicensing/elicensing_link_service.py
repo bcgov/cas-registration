@@ -53,9 +53,9 @@ class ELicensingLinkService:
 
         Args:
             model_instance: The model instance to link
-            elicensing_object_id: The ID of the object in eLicensing
+            elicensing_object_id: The eLicensing object ID
             elicensing_object_kind: The kind of eLicensing object
-            elicensing_guid: The GUID of the object in eLicensing
+            elicensing_guid: The eLicensing GUID
 
         Returns:
             The created ELicensingLink object
@@ -63,7 +63,7 @@ class ELicensingLinkService:
         content_type = ContentType.objects.get_for_model(model_instance)
         return ELicensingLink.objects.create(
             content_type=content_type,
-            object_id=model_instance.id,
+            object_id=getattr(model_instance, 'id'),
             elicensing_object_id=elicensing_object_id,
             elicensing_object_kind=elicensing_object_kind,
             elicensing_guid=elicensing_guid,
