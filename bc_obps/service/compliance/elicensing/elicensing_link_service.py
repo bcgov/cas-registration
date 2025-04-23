@@ -39,3 +39,32 @@ class ELicensingLinkService:
             )
         except ELicensingLink.DoesNotExist:
             return None
+
+    @classmethod
+    def create_link(
+        cls,
+        model_instance: models.Model,
+        elicensing_object_id: str,
+        elicensing_object_kind: str,
+        elicensing_guid: uuid.UUID,
+    ) -> ELicensingLink:
+        """
+        Creates a link between a model instance and an eLicensing object.
+
+        Args:
+            model_instance: The model instance to link
+            elicensing_object_id: The eLicensing object ID
+            elicensing_object_kind: The kind of eLicensing object
+            elicensing_guid: The eLicensing GUID
+
+        Returns:
+            The created ELicensingLink object
+        """
+        content_type = ContentType.objects.get_for_model(model_instance)
+        return ELicensingLink.objects.create(
+            content_type=content_type,
+            object_id=getattr(model_instance, 'id'),
+            elicensing_object_id=elicensing_object_id,
+            elicensing_object_kind=elicensing_object_kind,
+            elicensing_guid=elicensing_guid,
+        )

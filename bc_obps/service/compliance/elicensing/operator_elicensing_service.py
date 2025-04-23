@@ -1,18 +1,13 @@
 import logging
 import uuid
-from typing import Dict, Any, Optional
 from django.db import transaction
-from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
-from service.compliance.elicensing.elicensing_api_client import ELicensingAPIClient
+from service.compliance.elicensing.elicensing_api_client import ELicensingAPIClient, ClientCreationRequest
 from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
 from registration.models.operator import Operator
 from compliance.models.elicensing_link import ELicensingLink
-import requests
 
 logger = logging.getLogger(__name__)
 
-# Create a singleton instance for use throughout this service
 elicensing_api_client = ELicensingAPIClient()
 
 
@@ -24,31 +19,23 @@ class OperatorELicensingService:
     """
 
     @classmethod
-    def _map_operator_to_client_data(
-        cls, operator: Operator, existing_link: Optional[ELicensingLink] = None
-    ) -> Dict[str, Any]:
+    def _map_operator_to_client_data(cls, operator: Operator) -> ClientCreationRequest:
         """
         Map operator data to eLicensing client data format.
 
         Args:
             operator: The operator object
-            existing_link: Optional existing link to use for the GUID
 
         Returns:
-            A dictionary with client data in the format expected by the eLicensing API
+            A ClientCreationRequest object with data mapped from the operator
         """
-        if existing_link is None:
-            raise ValueError("Cannot map operator to client data without an existing link")
-
-        client_guid = str(existing_link.elicensing_guid)
 
         client_data = {
-            "clientGUID": client_guid,
+            "clientGUID": str(uuid.uuid4()),
             "companyName": operator.legal_name,
             "doingBusinessAs": operator.trade_name if operator.trade_name else "",
             "bcCompanyRegistrationNumber": operator.bc_corporate_registry_number or "",
-            # Add default dateOfBirth as operators are companies, not individuals
-            "dateOfBirth": "1970-01-01",
+            "businessAreaCode": "OBPS",
         }
 
         # Add address information if available
@@ -95,56 +82,50 @@ class OperatorELicensingService:
         # we'll use a placeholder value
         client_data["businessPhone"] = "0000000000"  # Placeholder
 
-        return client_data
+        return ClientCreationRequest(**client_data)
 
     @classmethod
     @transaction.atomic
-    def ensure_client_exists(cls, operator_id: uuid.UUID) -> Optional[ELicensingLink]:
+    def sync_client_with_elicensing(cls, operator_id: uuid.UUID) -> ELicensingLink:
         """
-        Ensure that an eLicensing client exists for the given operator.
-        If a client already exists, return it. Otherwise, create a new client.
+        Syncs an operator with eLicensing by creating a client.
+        If a client already exists, returns the existing link.
 
         Args:
-            operator_id: The UUID of the operator
+            operator_id: The ID of the operator to sync
 
         Returns:
-            The ELicensingLink object if successful, None if there was an error
+            The ELicensingLink object for the client
+
+        Raises:
+            Operator.DoesNotExist: If the operator doesn't exist
+            requests.RequestException: If the API request fails
+            Exception: For any other unexpected errors
         """
+        operator = Operator.objects.get(id=operator_id)
+
         # Check if a client already exists for this operator
-        client_link = ELicensingLinkService.get_link_for_model(
+        existing_link = ELicensingLinkService.get_link_for_model(
             Operator, operator_id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
         )
 
-        if client_link and client_link.elicensing_object_id is not None:
-            return client_link
+        if existing_link and existing_link.elicensing_object_id is not None:
+            logger.info(
+                f"Operator {operator_id} already has eLicensing client with ID {existing_link.elicensing_object_id}"
+            )
+            return existing_link
 
-        try:
-            operator = Operator.objects.get(id=operator_id)
-        except Operator.DoesNotExist:
-            logger.error(f"Operator with ID {operator_id} does not exist")
-            return None
+        client_data = cls._map_operator_to_client_data(operator)
 
-        temp_link = ELicensingLink(
-            content_type=ContentType.objects.get_for_model(Operator),
-            object_id=operator.id,
-            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
-            last_sync_at=timezone.now(),
-            sync_status="PENDING",
+        response = elicensing_api_client.create_client(client_data)
+
+        # Create link with the client ID and GUID from the client data
+        client_link = ELicensingLinkService.create_link(
+            operator,
+            response.clientObjectId,
+            ELicensingLink.ObjectKind.CLIENT,
+            elicensing_guid=uuid.UUID(client_data.clientGUID),
         )
 
-        client_data = cls._map_operator_to_client_data(operator, temp_link)
-
-        try:
-            response = elicensing_api_client.create_client(client_data)
-
-            temp_link.elicensing_object_id = response['clientObjectId']
-            temp_link.sync_status = "SUCCESS"
-            temp_link.save()
-
-            return temp_link
-        except requests.RequestException as e:
-            logger.error(f"eLicensing API request failed for operator {operator_id}: {str(e)}")
-            return None
-        except Exception as e:
-            logger.error(f"Unexpected error creating client for operator {operator_id}: {str(e)}")
-            return None
+        logger.info(f"Successfully synced operator {operator_id} with eLicensing as client {response.clientObjectId}")
+        return client_link
