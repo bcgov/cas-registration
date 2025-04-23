@@ -66,6 +66,18 @@ class ReportVersionTest(BaseTestCase):
                 None,
             ),
             ("report_sign_off", "report sign off", None, None),
+            (
+                "report_compliance_summary",
+                "report compliance summary",
+                None,
+                0,
+            ),
+            (
+                "report_compliance_summary_products",
+                "report compliance summary product",
+                None,
+                0,
+            ),
         ]
 
     def test_unique_draft_version_per_report(self):
