@@ -44,6 +44,23 @@ class ReportComplianceSummary(TimeStampedModel):
         decimal_places=4,
         max_digits=20,
     )
+    reduction_factor = models.DecimalField(
+        db_comment="The Province developed distinct reduction factors for products in the B.C. OBPS with disproportionately higher industrial process emissions than those produced in other sectors. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf",
+        decimal_places=4,
+        max_digits=10,
+    )
+    tightening_rate = models.DecimalField(
+        db_comment="Tightening rates are planned, yearly, gradual increases to BC OBPS stringency. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf",
+        decimal_places=4,
+        max_digits=10,
+    )
+    initial_compliance_period = models.IntegerField(
+        db_comment="The first compliance period (year) that the OBPS (Output Based Pricing System) program began",
+        default=2024,
+    )
+    compliance_period = models.IntegerField(
+        db_comment="The compliance period (year) that this compliance summary data was reported for"
+    )
 
     class Meta:
         db_table_comment = "This table contains the compliance summary data calculated for a regulated operation."
