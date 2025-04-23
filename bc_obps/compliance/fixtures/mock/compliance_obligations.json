@@ -1,37 +1,11 @@
 [
   {
     "model": "compliance.complianceobligation",
-    "pk": 1,
-    "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
-      "compliance_summary": 1,
-      "emissions_amount_tco2e": "500.0000",
-      "status": "PARTIALLY_FULFILLED",
-      "penalty_status": "NONE",
-      "obligation_deadline": "2024-11-30"
-    }
-  },
-  {
-    "model": "compliance.complianceobligation",
-    "pk": 2,
-    "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
-      "compliance_summary": 2,
-      "emissions_amount_tco2e": "0.0000",
-      "status": "FULFILLED",
-      "penalty_status": "NONE",
-      "obligation_deadline": "2024-11-30"
-    }
-  },
-  {
-    "model": "compliance.complianceobligation",
     "pk": 3,
     "fields": {
       "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
       "created_at": "2025-04-15T21:37:35.117Z",
-      "compliance_summary": 3,
+      "compliance_summary": 1,
       "emissions_amount_tco2e": "96.3944",
       "status": "OBLIGATION_NOT_MET",
       "penalty_status": "NONE",
