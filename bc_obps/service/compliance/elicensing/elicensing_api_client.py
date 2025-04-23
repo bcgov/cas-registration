@@ -53,6 +53,7 @@ class ClientCreationRequest:
     city: str
     stateProvince: str
     postalCode: str
+    clientGUID: Optional[str] = None
     lastName: Optional[str] = None
     doingBusinessAs: Optional[str] = None
     firstName: Optional[str] = None

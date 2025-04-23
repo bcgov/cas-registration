@@ -3,10 +3,9 @@ from unittest.mock import patch, MagicMock
 from decimal import Decimal
 from datetime import date
 import pytest
-import requests
 from service.compliance.compliance_obligation_service import ComplianceObligationService
 from compliance.models import ComplianceObligation, ComplianceSummary
-from reporting.models import Report, ReportVersion
+from reporting.models import Report, ReportVersion, ReportingYear
 
 
 @pytest.fixture
@@ -28,7 +27,8 @@ def mock_report_version():
     report_version.id = 1
     report_version.report = MagicMock(spec=Report)
     report_version.report.id = 1
-    report_version.report.reporting_year_id = 2023
+    report_version.report.reporting_year = MagicMock(spec=ReportingYear)
+    report_version.report.reporting_year.reporting_year = 2023
     report_version.report.operation = MagicMock()
     report_version.report.operation.id = uuid.uuid4()
     report_version.report.operation.name = "Test Operation"
@@ -44,7 +44,8 @@ def mock_report_version_unregulated():
     report_version.id = 1
     report_version.report = MagicMock(spec=Report)
     report_version.report.id = 1
-    report_version.report.reporting_year_id = 2023
+    report_version.report.reporting_year = MagicMock(spec=ReportingYear)
+    report_version.report.reporting_year.reporting_year = 2023
     report_version.report.operation = MagicMock()
     report_version.report.operation.id = uuid.uuid4()
     report_version.report.operation.name = "Unregulated Test Operation"
@@ -96,11 +97,10 @@ class TestComplianceObligationService:
     @pytest.mark.django_db
     @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_success(
         self,
-        mock_sync_client,
-        mock_create_fee,
+        mock_get_rate,
         mock_create,
         mock_get_summary,
         mock_compliance_summary,
@@ -111,7 +111,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-        mock_create_fee.return_value = mock_compliance_fee
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
@@ -122,16 +122,15 @@ class TestComplianceObligationService:
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_create_fee.assert_called_once_with(mock_compliance_obligation.id)
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
+        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
     @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_client_not_created(
         self,
-        mock_create_fee,
+        mock_get_rate,
         mock_create,
         mock_get_summary,
         mock_compliance_summary,
@@ -142,9 +141,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Mock fee creation failure
-        mock_create_fee.return_value = None
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
@@ -155,16 +152,15 @@ class TestComplianceObligationService:
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_create_fee.assert_called_once_with(mock_compliance_obligation.id)
+        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
     @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_attribute_error(
         self,
-        mock_sync_client,
-        mock_create_fee,
+        mock_get_rate,
         mock_create,
         mock_get_summary,
         mock_compliance_summary,
@@ -175,9 +171,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Mock exception during fee creation
-        mock_create_fee.side_effect = Exception("Error creating fee")
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
@@ -188,15 +182,15 @@ class TestComplianceObligationService:
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_sync_client.assert_not_called()
+        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
     @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_request_exception(
         self,
-        mock_sync_client,
+        mock_get_rate,
         mock_create,
         mock_get_summary,
         mock_compliance_summary,
@@ -207,9 +201,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Mock RequestException during client creation
-        mock_sync_client.side_effect = requests.RequestException("API connection error")
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
@@ -220,15 +212,15 @@ class TestComplianceObligationService:
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
+        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
     @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.OperatorELicensingService.ensure_client_exists')
+    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_generic_exception(
         self,
-        mock_sync_client,
+        mock_get_rate,
         mock_create,
         mock_get_summary,
         mock_compliance_summary,
@@ -239,9 +231,7 @@ class TestComplianceObligationService:
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
         mock_create.return_value = mock_compliance_obligation
-
-        # Mock generic Exception during client creation
-        mock_sync_client.side_effect = Exception("Unexpected error")
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
@@ -252,13 +242,15 @@ class TestComplianceObligationService:
         assert result == mock_compliance_obligation
         mock_get_summary.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_sync_client.assert_called_once_with(mock_compliance_summary.report.operator.id)
+        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
     @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
     @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_unregulated_operation(
         self,
+        mock_get_rate,
         mock_create,
         mock_get_summary,
         mock_compliance_summary,
@@ -267,6 +259,7 @@ class TestComplianceObligationService:
         """Test compliance obligation creation fails when operation is not regulated by BC OBPS"""
         # Set up mocks
         mock_get_summary.return_value = mock_compliance_summary
+        mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method and expect ValueError
         with pytest.raises(ValueError) as excinfo:
@@ -282,6 +275,7 @@ class TestComplianceObligationService:
 
         # Verify ComplianceObligation.objects.create was not called
         mock_create.assert_not_called()
+        mock_get_rate.assert_called_once_with(mock_report_version_unregulated.report.reporting_year)
 
     def test_get_obligation_deadline(self):
         """Test get_obligation_deadline returns the correct date"""

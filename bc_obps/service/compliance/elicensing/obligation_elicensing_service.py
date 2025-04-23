@@ -39,22 +39,26 @@ class ObligationELicensingService:
             ComplianceObligation.DoesNotExist: If the obligation doesn't exist
             requests.RequestException: If there's an API error
         """
-        with transaction.atomic():
-            # Validate the obligation exists
-            obligation = ComplianceObligation.objects.get(id=obligation_id)
+        try:
+            with transaction.atomic():
+                # Validate the obligation exists
+                obligation = ComplianceObligation.objects.get(id=obligation_id)
 
-            # Ensure client exists in eLicensing
-            client_link = OperatorELicensingService.sync_client_with_elicensing(
-                obligation.compliance_summary.report.operation.operator.id
-            )
+                # Ensure client exists in eLicensing
+                client_link = OperatorELicensingService.sync_client_with_elicensing(
+                    obligation.compliance_summary.report.operation.operator.id
+                )
 
-            # Create fee in eLicensing
-            fee_link = cls.sync_fee_with_elicensing(obligation_id, client_link)
+                # Create fee in eLicensing
+                fee_link = cls.sync_fee_with_elicensing(obligation_id, client_link)
 
-            # Create invoice in eLicensing
-            cls.sync_invoice_with_elicensing(obligation_id, client_link, fee_link)
+                # Create invoice in eLicensing
+                cls.sync_invoice_with_elicensing(obligation_id, client_link, fee_link)
 
-            logger.info(f"Successfully processed obligation {obligation_id} integration with eLicensing")
+                logger.info(f"Successfully processed obligation {obligation_id} integration with eLicensing")
+        except Exception as e:
+            logger.error(f"Failed to process obligation {obligation_id} integration with eLicensing: {str(e)}")
+            raise
 
     @classmethod
     def _map_obligation_to_fee_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:

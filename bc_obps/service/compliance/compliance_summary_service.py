@@ -33,6 +33,10 @@ class ComplianceSummaryService:
 
         Returns:
             ComplianceSummary: The created compliance summary
+
+        Raises:
+            ValidationError: If no compliance period exists for the reporting year
+            ReportVersion.DoesNotExist: If report version doesn't exist
         """
         with transaction.atomic():
             report_version = ReportVersion.objects.select_related('report').get(id=report_version_id)
@@ -75,14 +79,8 @@ class ComplianceSummaryService:
                 )
 
                 # Integration operation - handle eLicensing integration
-                try:
-                    # This is done outside of the main transaction to prevent rollback if integration fails
-                    transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
-                except Exception as e:
-                    logger.error(
-                        f"Error scheduling eLicensing integration for obligation {obligation.id}: {str(e)}",
-                        exc_info=True,
-                    )
+                # This is done outside of the main transaction to prevent rollback if integration fails
+                transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
 
             return summary
 
