@@ -14,7 +14,7 @@ from service.compliance.elicensing.elicensing_api_client import (
 def mock_settings():
     with patch('service.compliance.elicensing.elicensing_api_client.settings') as mock_settings:
         mock_settings.ELICENSING_API_URL = 'https://test-api.example.com'
-        mock_settings.ELICENSING_AUTH_TOKEN = 'test-token'
+        mock_settings.ELICENSING_AUTH_TOKEN = 'test-token2'
         yield mock_settings
 
 
