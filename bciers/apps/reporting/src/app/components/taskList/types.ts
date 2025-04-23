@@ -46,7 +46,6 @@ export enum HeaderStep {
   OperationInformation = "Operation Information",
   ReportInformation = "Report Information",
   EmissionsData = "Emissions Data",
-  ElectricityImportData = "Report Information",
   AdditionalInformation = "Additional Information",
   ComplianceSummary = "Compliance Summary",
   SignOffSubmit = "Sign-off & Submit",
@@ -90,6 +89,7 @@ export interface TaskListPageFactoryContext {
   currentActivity?: ActivityData;
   skipVerification?: boolean;
   returnToFacilitiesTable?: boolean;
+  isElectricityImport?: boolean;
 }
 
 type SyncTaskListPageFactory = (

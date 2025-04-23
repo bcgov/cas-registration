@@ -12,14 +12,18 @@ export default async function ElectricityInformationPage({
   const formData: never[] = []; //TO await(...)
 
   const navInfo = await getNavigationInformation(
-    HeaderStep.ElectricityImportData,
+    HeaderStep.ReportInformation,
     ReportingPage.ElectricityImportData,
     version_id,
     "",
+    {
+      isElectricityImport: true,
+    },
   );
   return (
     <ElectricityInformationForm
-      formData={formData}
+      versionId={version_id}
+      initialFormData={formData}
       navigationInformation={navInfo}
     />
   );
