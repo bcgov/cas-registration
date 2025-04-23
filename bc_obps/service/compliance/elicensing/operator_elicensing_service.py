@@ -124,7 +124,7 @@ class OperatorELicensingService:
             operator,
             response.clientObjectId,
             ELicensingLink.ObjectKind.CLIENT,
-            elicensing_guid=client_data['clientGUID'],
+            elicensing_guid=client_data.clientGUID,
         )
 
         logger.info(f"Successfully synced operator {operator_id} with eLicensing as client {response.clientObjectId}")

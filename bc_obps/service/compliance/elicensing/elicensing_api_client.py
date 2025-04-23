@@ -275,28 +275,18 @@ class ELicensingAPIClient:
         """
         endpoint = "/client"
 
-        # Convert dataclass to dict for API request
         client_dict = {
+            "clientGUID": client_data.clientGUID,
+            "businessAreaCode": client_data.businessAreaCode,
             "companyName": client_data.companyName,
             "addressLine1": client_data.addressLine1,
             "city": client_data.city,
             "stateProvince": client_data.stateProvince,
             "postalCode": client_data.postalCode,
-            "lastName": client_data.lastName,
             "doingBusinessAs": client_data.doingBusinessAs,
-            "firstName": client_data.firstName,
-            "middleName": client_data.middleName,
-            "title": client_data.title,
             "businessPhone": client_data.businessPhone,
-            "homeNumber": client_data.homeNumber,
-            "cellularNumber": client_data.cellularNumber,
-            "faxNumber": client_data.faxNumber,
-            "businessPhoneExt": client_data.businessPhoneExt,
             "bcCompanyRegistrationNumber": client_data.bcCompanyRegistrationNumber,
             "bcCompanySocietyNumber": client_data.bcCompanySocietyNumber,
-            "email": client_data.email,
-            "dateOfBirth": client_data.dateOfBirth,
-            "addressLine2": client_data.addressLine2,
             "country": client_data.country,
         }
 
