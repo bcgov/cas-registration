@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock
 import uuid
 import requests
 from datetime import date
+from decimal import Decimal
 
 import pytest
 from django.utils import timezone
@@ -21,7 +22,7 @@ def mock_obligation() -> MagicMock:
     """Mock a ComplianceObligation object"""
     obligation = MagicMock(spec=ComplianceObligation)
     obligation.id = 1
-    obligation.fee_amount_dollars = 1000.00
+    obligation.fee_amount_dollars = Decimal('1000.00')
     obligation.fee_date = date(2024, 1, 1)
     obligation.obligation_deadline = date(2024, 12, 31)
 
@@ -123,7 +124,7 @@ class TestObligationELicensingService:
         assert "feeGUID" in result
         assert result["feeProfileGroupName"] == "OBPS Compliance Obligation"
         assert result["feeDescription"] == "2024 GGIRCA Compliance Obligation"
-        assert result["feeAmount"] == 1000.00
+        assert result["feeAmount"] == Decimal('1000.00')
         assert result["feeDate"] == "2024-01-01"
 
     def test_map_obligation_to_invoice_data(self, mock_obligation: MagicMock) -> None:
