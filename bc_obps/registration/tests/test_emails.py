@@ -2,7 +2,7 @@ import uuid
 from common.models import EmailNotification
 from service.email.email_service import EmailService
 from registration.emails import send_registration_and_boro_id_email, send_operator_access_request_email
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes, EmailTemplateNames
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes, BoroEmailTemplateNames
 import pytest
 from registration.models import Operation, User
 from registration.tests.utils.bakers import operation_baker, user_baker
@@ -111,7 +111,7 @@ class TestSendBoroIdApplicationEmail:
         )
         return mocked_send_email_by_template, expected_email_notifications_after_sending
 
-    @pytest.mark.parametrize("template_name", list(EmailTemplateNames))
+    @pytest.mark.parametrize("template_name", list(BoroEmailTemplateNames))
     def test_send_registration_and_boro_id_email_with_the_same_recipients(self, template_name, mocker):
         assert EmailNotification.objects.count() == 0
         template_instance = EmailNotificationTemplateService.get_template_by_name(template_name.value)

@@ -125,7 +125,7 @@ class TestCheckUserAdminRequestEligibility:
 class TestRequestAccess(CommonTestSetup):
     def test_request_admin_access(self, mocker):
         operator = operator_baker()
-        user_requesting_admin = baker.make(User)
+        user_requesting_admin = baker.make_recipe('registration.tests.utils.industry_operator_user')
 
         mock_email_service = mocker.patch('service.application_access_service.send_operator_access_request_email')
 
@@ -149,7 +149,10 @@ class TestRequestAccess(CommonTestSetup):
             user=self.user,
             status=UserOperator.Statuses.APPROVED,
         )
-        user = baker.make(User, business_guid=approved_admin_user_operator.user.business_guid)
+        user = baker.make_recipe(
+            'registration.tests.utils.industry_operator_user',
+            business_guid=approved_admin_user_operator.user.business_guid,
+        )
 
         mock_email_service = mocker.patch('service.application_access_service.send_operator_access_request_email')
 

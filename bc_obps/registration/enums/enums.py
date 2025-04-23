@@ -6,7 +6,7 @@ class IdPs(Enum):
     BCEIDBUSINESS = "bceidbusiness"
 
 
-class EmailTemplateNames(Enum):
+class BoroEmailTemplateNames(Enum):
     CONFIRMATION = 'BORO ID Application Confirmation'
     ISSUANCE = 'BORO ID Issuance'
 

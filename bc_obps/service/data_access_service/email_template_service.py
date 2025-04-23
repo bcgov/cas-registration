@@ -1,10 +1,10 @@
 from common.models import EmailNotificationTemplate
-from registration.enums.enums import EmailTemplateNames
+from registration.enums.enums import BoroEmailTemplateNames
 
 
 class EmailNotificationTemplateService:
     @classmethod
-    def get_template_by_name(cls, template_name: EmailTemplateNames | str) -> EmailNotificationTemplate:
+    def get_template_by_name(cls, template_name: BoroEmailTemplateNames | str) -> EmailNotificationTemplate:
         """
         Get an email notification template by its name.
 

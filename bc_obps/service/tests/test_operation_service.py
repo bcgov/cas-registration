@@ -27,7 +27,7 @@ from registration.schema import (
     MultipleOperatorIn,
     OperationInformationIn,
 )
-from registration.enums.enums import EmailTemplateNames
+from registration.enums.enums import BoroEmailTemplateNames
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.operation_service import OperationService
 from service.email.email_service import EmailService
@@ -161,7 +161,7 @@ class TestOperationService:
         assert updated_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION
 
         mock_email_service.assert_called_once_with(
-            EmailTemplateNames.CONFIRMATION,
+            BoroEmailTemplateNames.CONFIRMATION,
             users_operation.operator.legal_name,
             users_operation,
             approved_user_operator.user,
@@ -1599,7 +1599,7 @@ class TestGenerateBoroId:
         assert operation.bc_obps_regulated_operation.issued_by == cas_director
 
         mock_send_email.assert_called_once_with(
-            EmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation, cas_director
+            BoroEmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation, cas_director
         )
 
     @staticmethod
