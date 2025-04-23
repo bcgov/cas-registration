@@ -8,30 +8,88 @@ import {
   webkit,
   Browser,
 } from "@playwright/test";
-import { baseUrlSetup } from "@/e2e/utils/constants";
+import { baseUrlSetup } from "@bciers/e2e/utils/constants";
 import {
   DataTestID,
   E2EValue,
   FormField,
   MessageTextResponse,
-} from "@/e2e/utils/enums";
+} from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
 
-// 🛠️ Function: analyze the accessibility of the page
-export async function analyzeAccessibility(page: Page) {
+// 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
+export async function analyzeAccessibility(
+  page: Page,
+  description: string = "",
+) {
   const accessibilityScanResults = await new AxeBuilder({
     page,
   }).analyze();
 
+  if (accessibilityScanResults.violations.length > 0) {
+    console.log(
+      `[Accessibility Violation: ${description}]`,
+      accessibilityScanResults.violations,
+    );
+  }
+
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
+// Helpers for filling forms
 export async function addPdf(page: Page, index: number = 0) {
   // Pass an index if there are multiple file inputs on the page
   const inputs = await page.locator('input[type="file"]').all();
   const input = inputs[index];
   await input.setInputFiles("./e2e/assets/test.pdf");
   expect(page.getByText("test.pdf")).toBeVisible();
+}
+
+export async function clickButton(page: Page, buttonName: string | RegExp) {
+  page
+    .getByRole("button", {
+      name: buttonName,
+    })
+    .click();
+}
+
+export async function fillComboxboxWidget(
+  page: Page,
+  labelText: string | RegExp,
+  value: string,
+) {
+  const input = await page.getByRole("combobox", {
+    name: labelText,
+  });
+  await expect(input).toBeVisible();
+  await expect(input).toBeEnabled();
+  await input.fill(value);
+  const option = page.getByRole("option", { name: value });
+  await expect(option).toBeVisible();
+  await option.click();
+}
+
+export async function fillDropdownByLabel(
+  page: Page,
+  labelText: string | RegExp,
+  value: string,
+) {
+  const input = await page.getByLabel(labelText);
+  await expect(input).toBeVisible();
+  await expect(input).toBeEnabled();
+  await input.fill(value);
+}
+
+export async function checkAllRadioButtons(page: Page) {
+  const radioButtons = page.getByRole("radio", { name: "Yes" });
+  const count = await radioButtons.count();
+
+  for (let i = 0; i < count; i++) {
+    const radio = radioButtons.nth(i);
+    if (await radio.isEnabled()) {
+      await radio.check();
+    }
+  }
 }
 
 // 🛠️ Function: checks expected alert mesage
@@ -80,7 +138,7 @@ export async function checkFormFieldsReadOnly(
       ]);
       // Assert visibility to be true
       await expect(visible).toBeTruthy();
-      if (readonly == true) {
+      if (readonly === true) {
         await expect(disabled).toBeTruthy();
         await expect(editable).toBeFalsy();
       } else {
