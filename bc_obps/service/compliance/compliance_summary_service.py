@@ -2,12 +2,18 @@ from uuid import UUID
 from django.db import transaction
 from decimal import Decimal
 from compliance.models.compliance_period import CompliancePeriod
-from reporting.models import ReportVersion, ReportProduct
+from reporting.models.report_version import ReportVersion
+from reporting.models import ReportProduct
 from reporting.service.compliance_service import ComplianceService as ReportComplianceService
-from compliance.models import ComplianceSummary, ComplianceProduct
+from compliance.models.compliance_summary import ComplianceSummary
+from compliance.models.compliance_product import ComplianceProduct
 from service.compliance.compliance_period_service import CompliancePeriodService
 from service.compliance.compliance_obligation_service import ComplianceObligationService
+from service.compliance.elicensing.obligation_elicensing_service import ObligationELicensingService
 from django.core.exceptions import ValidationError
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ComplianceSummaryService:
@@ -16,6 +22,7 @@ class ComplianceSummaryService:
     """
 
     @classmethod
+    @transaction.atomic
     def create_compliance_summary(cls, report_version_id: int, user_guid: UUID) -> ComplianceSummary:
         """
         Creates a compliance summary for a submitted report version
@@ -26,6 +33,10 @@ class ComplianceSummaryService:
 
         Returns:
             ComplianceSummary: The created compliance summary
+
+        Raises:
+            ValidationError: If no compliance period exists for the reporting year
+            ReportVersion.DoesNotExist: If report version doesn't exist
         """
         with transaction.atomic():
             report_version = ReportVersion.objects.select_related('report').get(id=report_version_id)
@@ -40,7 +51,7 @@ class ComplianceSummaryService:
                     f"No compliance period exists for reporting year {report_version.report.reporting_year_id}"
                 )
 
-            # Get compliance data from reporting service
+            # Calculate compliance data
             compliance_data = ReportComplianceService.get_calculated_compliance_data(report_version_id)
 
             # Create compliance summary
@@ -63,11 +74,34 @@ class ComplianceSummaryService:
 
             # Create compliance obligation if there are excess emissions
             if compliance_data.excess_emissions > Decimal('0'):
-                ComplianceObligationService.create_compliance_obligation(
+                obligation = ComplianceObligationService.create_compliance_obligation(
                     summary.id, compliance_data.excess_emissions, report_version
                 )
 
+                # Integration operation - handle eLicensing integration
+                # This is done outside of the main transaction to prevent rollback if integration fails
+                transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
+
             return summary
+
+    @classmethod
+    def _process_obligation_integration(cls, obligation_id: int) -> None:
+        """
+        Process eLicensing integration for a compliance obligation.
+
+        Args:
+            obligation_id: The ID of the compliance obligation to process
+
+        Raises:
+            Exception: If integration fails
+        """
+        try:
+            ObligationELicensingService.process_obligation_integration(obligation_id)
+        except Exception as e:
+            logger.error(
+                f"Failed to process eLicensing integration for obligation {obligation_id}: {str(e)}", exc_info=True
+            )
+            raise
 
     @classmethod
     def _create_compliance_products(
