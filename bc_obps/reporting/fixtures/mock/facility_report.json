@@ -1,30 +1,39 @@
 [
   {
     "model": "reporting.facilityreport",
-    "pk": 1,
     "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
-      "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
-      "report_version": 1,
-      "facility_name": "Facility 1",
-      "facility_type": "Large Facility",
-      "facility_bcghgid": null,
-      "is_completed": false
+      "id": 22,
+      "facility": "fdd723fe-88f5-46fb-af50-c19f1407e46d",
+      "report_version": 3,
+      "facility_name": "Facility 41",
+      "facility_type": "Medium Facility",
+      "is_completed": false,
+      "activities": [1]
     }
   },
   {
     "model": "reporting.facilityreport",
-    "pk": 2,
     "fields": {
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-01T00:00:00Z",
-      "facility": "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
-      "report_version": 2,
-      "facility_name": "Facility 3",
+      "id": 23,
+      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility": "d477f3d9-2917-4f36-b5ae-166d47dc8172",
+      "report_version": 4,
+      "facility_name": "Facility 38",
       "facility_type": "Medium Facility",
-      "facility_bcghgid": "13219990007",
-      "is_completed": false
+      "is_completed": true,
+      "activities": [1]
+    }
+  },
+  {
+    "model": "reporting.facilityreport",
+    "fields": {
+      "id": 24,
+      "facility": "b66d0364-ad1d-42f4-93d9-82bf185c4304",
+      "report_version": 5,
+      "facility_name": "Facility 40",
+      "facility_type": "Medium Facility",
+      "is_completed": false,
+      "activities": [1]
     }
   }
 ]

@@ -1,0 +1,45 @@
+[
+  {
+    "model": "reporting.reportrawactivitydata",
+    "fields": {
+      "id": 1,
+      "facility_report": 23,
+      "activity": 1,
+      "json_data": {
+        "id": 2,
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Liquified Petroleum Gases (LPG)",
+                      "fuelUnit": "kilolitres",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 10,
+                        "methodology": {
+                          "methodology": "CEMS"
+                        },
+                        "equivalentEmission": "1.0000"
+                      }
+                    ],
+                    "fuelDescription": "Fixture",
+                    "annualFuelAmount": 100
+                  }
+                ],
+                "gscUnitName": "Fixture",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      }
+    }
+  }
+]

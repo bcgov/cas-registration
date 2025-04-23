@@ -1,0 +1,15 @@
+[
+  {
+    "model": "reporting.reportunit",
+    "fields": {
+      "id": 1,
+      "json_data": {
+        "gscUnitName": "Fixture",
+        "gscUnitType": "Kiln"
+      },
+      "report_version": 4,
+      "report_source_type": 1,
+      "type": "Unit"
+    }
+  }
+]

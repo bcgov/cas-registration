@@ -20,8 +20,15 @@ class Command(BaseCommand):
         self.load_reports()
 
         additional_fixtures = [
+            f'{self.fixture_base_dir}/report_version.json',
+            f'{self.fixture_base_dir}/facility_report.json',
+            f'{self.fixture_base_dir}/report_activity.json',
+            f'{self.fixture_base_dir}/raw_report_activity_data.json',
+            f'{self.fixture_base_dir}/report_source_type.json',
+            f'{self.fixture_base_dir}/report_unit.json',
+            f'{self.fixture_base_dir}/report_fuel.json',
+            f'{self.fixture_base_dir}/report_emission.json',
             f'{self.fixture_base_dir}/report_product.json',
-            # f'{self.fixture_base_dir}/report_emission.json',
             f'{self.fixture_base_dir}/report_emission_allocation.json',
             f'{self.fixture_base_dir}/report_product_emission_allocation.json',
         ]

@@ -1,0 +1,52 @@
+[
+  {
+    "model": "reporting.reportversion",
+    "fields": {
+      "id": 1,
+      "report": 1,
+      "is_latest_submitted": false,
+      "report_type": "Annual Report",
+      "status": "Draft"
+    }
+  },
+  {
+    "model": "reporting.reportversion",
+    "fields": {
+      "id": 2,
+      "report": 2,
+      "is_latest_submitted": false,
+      "report_type": "Annual Report",
+      "status": "Draft"
+    }
+  },
+  {
+    "model": "reporting.reportversion",
+    "fields": {
+      "id": 3,
+      "report": 3,
+      "is_latest_submitted": true,
+      "report_type": "Annual Report",
+      "status": "Submitted"
+    }
+  },
+  {
+    "model": "reporting.reportversion",
+    "fields": {
+      "id": 4,
+      "report": 4,
+      "is_latest_submitted": true,
+      "report_type": "Annual Report",
+      "status": "Submitted"
+    }
+  },
+  {
+    "model": "reporting.reportversion",
+    "fields": {
+      "id": 5,
+      "report": 5,
+      "is_latest_submitted": true,
+      "report_type": "Annual Report",
+      "status": "Submitted"
+    }
+  }
+]

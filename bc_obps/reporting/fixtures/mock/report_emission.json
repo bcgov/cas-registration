@@ -1,0 +1,16 @@
+[
+  {
+    "model": "reporting.reportemission",
+    "fields": {
+      "id": 1,
+      "json_data": {
+        "emission": 100,
+        "equivalentEmission": "100.0000"
+      },
+      "report_version": 4,
+      "gas_type": 1,
+      "report_source_type": 1,
+      "emission_categories": [5]
+    }
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "model": "reporting.reportfuel",
+    "fields": {
+      "id": 1,
+      "json_data": {
+        "fuelDescription": "Fixture",
+        "annualFuelAmount": 100
+      },
+      "report_version": 4,
+      "report_source_type": 1,
+      "report_unit": 1,
+      "fuel_type": 30
+    }
+  }
+]

@@ -1,0 +1,13 @@
+[
+  {
+    "model": "reporting.reportsourcetype",
+    "fields": {
+      "id": 1,
+      "json_data": {},
+      "report_version": 4,
+      "activity_source_type_base_schema": 1,
+      "source_type": 1,
+      "report_activity": 1
+    }
+  }
+]
