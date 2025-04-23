@@ -8,20 +8,18 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
 import { useRouter } from "next/navigation";
-import { createSignOffUiSchema } from "@reporting/src/app/components/signOff/createSignOffUiSchema";
-import { createSignOffSchema } from "@reporting/src/app/components/signOff/createSignOffSchema";
 import postSubmitReport from "@bciers/actions/api/postSubmitReport";
+import { RJSFSchema } from "@rjsf/utils";
+import { signOffUiSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
 
 interface Props extends HasReportVersion {
   navigationInformation: NavigationInformation;
-  isRegulatedOperation: boolean;
-  isSupplementaryReport: boolean;
+  schema: RJSFSchema;
 }
 export default function SignOffForm({
   version_id,
   navigationInformation,
-  isRegulatedOperation,
-  isSupplementaryReport,
+  schema,
 }: Props) {
   const router = useRouter();
   const [formState, setFormState] = useState({
@@ -39,14 +37,6 @@ export default function SignOffForm({
       !!signature && Object.values({ ...rest, ...supplementary }).every(Boolean)
     );
   };
-  const uiSchema = createSignOffUiSchema(
-    isSupplementaryReport,
-    isRegulatedOperation,
-  );
-  const schema = createSignOffSchema(
-    isSupplementaryReport,
-    isRegulatedOperation,
-  );
 
   const handleChange = (e: IChangeEvent) => {
     const updatedData = { ...e.formData };
@@ -93,7 +83,7 @@ export default function SignOffForm({
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
       schema={schema}
-      uiSchema={uiSchema}
+      uiSchema={signOffUiSchema}
       formData={formState}
       onSubmit={handleSubmit}
       buttonText={"Submit Report"}

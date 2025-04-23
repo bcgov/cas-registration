@@ -45,6 +45,7 @@ class ReportingTableNames(Enum):
     REPORTING_FIELD = 'reporting_field'
     REPORTING_YEAR = 'reporting_year'
     SOURCE_TYPE = 'source_type'
+    ELECTRICITY_IMPORT_DATA = 'electricity_import_data'
 
     # M2M tables
     CONFIGURATION_ELEMENT_REPORTING_FIELDS = 'configuration_element_reporting_fields'
