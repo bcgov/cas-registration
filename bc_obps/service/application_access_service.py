@@ -70,7 +70,6 @@ class ApplicationAccessService:
         if ApplicationAccessService.is_user_eligible_to_request_access(operator_id, user_guid):
             # Making a draft UserOperator instance if one doesn't exist
             user_operator, created = UserOperatorDataAccessService.get_or_create_user_operator(user_guid, operator_id)
-            print(f'created: {created}')
             if created:
                 send_operator_access_request_email(
                     AccessRequestStates.CONFIRMATION,

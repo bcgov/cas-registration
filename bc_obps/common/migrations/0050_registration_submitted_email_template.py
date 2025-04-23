@@ -17,7 +17,7 @@ def create_registration_submitted_email_template(apps, schema_editor):
             <p>Dear {{ external_user_full_name }},</p><br>
             <p>This email confirms that you have successfully submitted a registration for {{ operation_name }} of {{ operator_legal_name }} in BCIERS. You now have access to the Reporting Module in BCIERS where you can submit an annual report on behalf of {{ operation_name }}. A staff member from the Climate Action Secretariat will contact you if there are any questions about the registration information provided.
             </p><br>
-            <p>If this operation is eligible to receive a B.C. OBPS Regulated Operation ID (BORO ID) and has not received one yet, Climate Action Secretariat staff will review the information provided and issue a BORO ID as applicable. You will receive an email notification if a BORO ID is issued to this operation. </p><br>
+            <p>If this operation is eligible to receive a B.C. OBPS Regulated Operation ID (BORO ID) and has not received one yet, Climate Action Secretariat staff will review the information provided and issue a BORO ID as applicable. You will receive an email notification if a BORO ID is issued to this operation.</p><br>
             <p>To return to BCIERS, click here: <a href="https://registration.industrialemissions.gov.bc.ca">registration.industrialemissions.gov.bc.ca/home</a></p><br>
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
@@ -31,12 +31,12 @@ def reverse_create_registration_submitted_email_template(apps, schema_editor):
     Reverses the creation of the EmailNotificationTemplate for Registration Submission Acknowledgement.
     """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name__in=['Registration Submission Acknowledgement']).delete()
+    EmailNotificationTemplate.objects.filter(name='Registration Submission Acknowledgement').delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0048_access_request_emails'),
+        ('common', '0049_access_request_emails'),
     ]
 
     operations = [

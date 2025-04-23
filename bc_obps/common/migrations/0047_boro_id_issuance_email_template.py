@@ -29,12 +29,12 @@ def reverse_create_boro_id_issuance_email_notification_template(apps, schema_edi
     Reverse the creation of the EmailNotificationTemplate for the Notification of Issuance of BORO ID
     """
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name__in=['BORO ID Issuance']).delete()
+    EmailNotificationTemplate.objects.filter(name='BORO ID Issuance').delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0045_V2_3_0'),
+        ('common', '0046_V3_0_0'),
     ]
 
     operations = [
