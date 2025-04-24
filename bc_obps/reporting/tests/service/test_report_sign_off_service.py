@@ -1,8 +1,13 @@
 from django.test import TestCase
 from reporting.models.report_sign_off import ReportSignOff
-from reporting.service.report_sign_off_service import ReportSignOffData, ReportSignOffService
 import pytest
 from model_bakery.baker import make_recipe
+
+from reporting.service.report_sign_off_service import (
+    ReportSignOffData,
+    ReportSignOffAcknowledgements,
+    ReportSignOffService,
+)
 
 
 @pytest.mark.django_db
@@ -10,12 +15,13 @@ class TestReportSignOffService(TestCase):
     def test_save_report_sign_off(self):
         # Arrange
         data = ReportSignOffData(
-            acknowledgement_of_review=True,
-            acknowledgement_of_records=True,
-            acknowledgement_of_information=True,
-            acknowledgement_of_possible_costs=True,
-            acknowledgement_of_new_version=None,
-            acknowledgement_of_corrections=None,
+            acknowledgements=ReportSignOffAcknowledgements(
+                acknowledgement_of_review=True,
+                acknowledgement_of_records=True,
+                acknowledgement_of_information=True,
+                acknowledgement_of_possible_costs=True,
+                acknowledgement_of_new_version=None,
+            ),
             signature="signature",
         )
         report_version = make_recipe(
@@ -28,11 +34,18 @@ class TestReportSignOffService(TestCase):
         sign_off = ReportSignOff.objects.get(report_version_id=report_version.id)
 
         # Assert
-        self.assertEqual(sign_off.acknowledgement_of_review, data.acknowledgements.acknowledgement_of_review)
-        self.assertEqual(sign_off.acknowledgement_of_records, data.acknowledgements.acknowledgement_of_records)
-        self.assertEqual(sign_off.acknowledgement_of_information, data.acknowledgements.acknowledgement_of_information)
-        self.assertEqual(
-            sign_off.acknowledgement_of_possible_costs, data.acknowledgements.acknowledgement_of_possible_costs
-        )
+        fields_to_check = {
+            "acknowledgement_of_review": "acknowledgement_of_review",
+            "acknowledgement_of_records": "acknowledgement_of_records",
+            "acknowledgement_of_information": "acknowledgement_of_information",
+            "acknowledgement_of_possible_costs": "acknowledgement_of_possible_costs",
+        }
+
+        for sign_off_field, data_field in fields_to_check.items():
+            self.assertEqual(
+                getattr(sign_off, sign_off_field),
+                getattr(data.acknowledgements, data_field),
+            )
+
         self.assertEqual(sign_off.signature, data.signature)
         self.assertIsNotNone(sign_off.signing_date)
