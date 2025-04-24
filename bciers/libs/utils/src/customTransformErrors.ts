@@ -21,9 +21,9 @@ export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
   "CRA Business Number should be 9 digits.";
 const MANDATORY_ATTACHMENT_VALIDATION_ERROR = "Attachment is required";
 const LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
-  "Latitude of largest point of emissions must be between -90 to 90";
+  "Latitude of largest point of emissions must be between -90 and 90";
 const LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
-  "Longitude of largest point of emissions must be between -180 to 180";
+  "Longitude of largest point of emissions must be between -180 and 180";
 
 const customTransformErrors = (
   errors: RJSFValidationError[],
