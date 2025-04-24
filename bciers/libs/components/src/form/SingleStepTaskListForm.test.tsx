@@ -174,7 +174,6 @@ describe("the SingleStepTaskListForm component", () => {
     );
     const saveButton = screen.getByRole("button", { name: "Save" });
     fireEvent.click(saveButton);
-    // expect(screen.getByRole("alert")).toBeVisible();
     await waitFor(() => {
       expect(
         screen.getByText(FrontendMessages.SUBMIT_CONFIRMATION),

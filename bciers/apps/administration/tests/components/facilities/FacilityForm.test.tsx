@@ -596,12 +596,12 @@ describe("FacilityForm component", () => {
     );
     expect(
       screen.getAllByText(
-        "Latitude of largest point of emissions must be between -90 to 90",
+        "Latitude of largest point of emissions must be between -90 and 90",
       ),
     ).toHaveLength(1);
     expect(
       screen.getAllByText(
-        "Longitude of largest point of emissions must be between -180 to 180",
+        "Longitude of largest point of emissions must be between -180 and 180",
       ),
     ).toHaveLength(1);
   });
