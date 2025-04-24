@@ -19,7 +19,16 @@ export const showRegulatedProducts = (registrationPurpose: string): boolean => {
 };
 
 export const showBoroId = (registrationPurpose: string): boolean => {
-  return ![REPORTING_OPERATION].includes(registrationPurpose);
+  return ![REPORTING_OPERATION, ELECTRICITY_IMPORT_OPERATION].includes(
+    registrationPurpose,
+  );
+};
+
+export const showActivities = (registrationPurpose: string): boolean => {
+  return ![
+    ELECTRICITY_IMPORT_OPERATION,
+    POTENTIAL_REPORTING_OPERATION,
+  ].includes(registrationPurpose);
 };
 
 export async function getOperationSchemaParameters(version_id: number) {
@@ -28,7 +37,6 @@ export async function getOperationSchemaParameters(version_id: number) {
   const allActivities = await getAllActivities();
   const allRegulatedProducts = await getRegulatedProducts();
   const reportingYear = await getReportingYear();
-
   return {
     reportOperation: reportOperation,
     facilityReport,
@@ -40,6 +48,7 @@ export async function getOperationSchemaParameters(version_id: number) {
       reportOperation.registration_purpose,
     ),
     showBoroId: showBoroId(reportOperation.registration_purpose),
+    showActivities: showActivities(reportOperation.registration_purpose),
     reportingWindowEnd: formatDate(
       reportingYear.reporting_window_end,
       "MMM DD YYYY",

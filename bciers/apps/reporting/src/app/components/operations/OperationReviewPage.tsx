@@ -33,6 +33,7 @@ export default async function OperationReviewPage({
     params.reportType,
     params.showRegulatedProducts,
     params.showBoroId,
+    params.showActivities,
   );
 
   return (
