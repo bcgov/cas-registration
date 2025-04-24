@@ -1,7 +1,5 @@
 from uuid import UUID
 from django.core.exceptions import ValidationError
-from reporting.service.report_sign_off_service import ReportSignOffService
-from reporting.schema.report_sign_off import ReportSignOffIn
 from django.core.exceptions import ObjectDoesNotExist
 from reporting.service.report_sign_off_service import ReportSignOffData, ReportSignOffService
 from reporting.models.report_verification import ReportVerification
@@ -13,6 +11,8 @@ from reporting.service.report_validation.report_validation_service import (
 from events.signals import report_submitted
 from common.lib import pgtrigger
 from django.db import transaction
+
+from reporting.service.report_verification_service import ReportVerificationService
 
 
 class ReportSubmissionService:
@@ -50,9 +50,8 @@ class ReportSubmissionService:
             raise Exception("verification_statement")
 
     @staticmethod
-    def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffData) -> ReportVersion:
     @transaction.atomic()
-    def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffIn) -> ReportVersion:
+    def submit_report(version_id: int, user_guid: UUID, sign_off_data: ReportSignOffData) -> ReportVersion:
         report_version = ReportVersion.objects.get(id=version_id)
 
         validation_result = ReportValidationService.validate_report_version(version_id)

@@ -66,10 +66,8 @@ export default function SignOffForm({
       const { supplementary = {}, signature, date, ...rest } = formState;
 
       const payload = {
-        acknowledgements: {
-          ...rest,
-          ...supplementary,
-        },
+        ...rest,
+        ...supplementary,
         signature,
         date,
       };
