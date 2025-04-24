@@ -9,6 +9,7 @@ from reporting.service.report_validation.report_validation_service import (
 from events.signals import report_submitted
 from common.lib import pgtrigger
 from django.db import transaction
+from reporting.service.compliance_service import ComplianceService
 
 
 class ReportSubmissionService:
@@ -22,6 +23,8 @@ class ReportSubmissionService:
         report_version = ReportVersion.objects.get(id=version_id)
 
         validation_result = ReportValidationService.validate_report_version(version_id)
+
+        is_regulated_operation = report_version.report.operation.is_regulated_operation
 
         # The validation service now returns errors, but to not change the system behaviour,
         # we raise an error for now.
@@ -37,12 +40,17 @@ class ReportSubmissionService:
                 is_latest_submitted=True,
             ).update(is_latest_submitted=False)
 
+        # Save the compliance data for regulated operations (unregulated operations do not have compliance data)
+        if is_regulated_operation:
+            ComplianceService.save_compliance_data(version_id)
+
         # Set the new version as lastest submitted
         report_version.is_latest_submitted = True
         report_version.status = ReportVersion.ReportVersionStatus.Submitted
         report_version.save()
 
-        # Send a signal that the report has been submitted
-        report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
+        if is_regulated_operation:
+            # Send a signal that the report has been submitted
+            report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
 
         return report_version
