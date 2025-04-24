@@ -1,8 +1,47 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
+
+const mockSchema = {
+  type: "object",
+  properties: {
+    acknowledgement_of_review: {
+      type: "boolean",
+      title:
+        "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
+      default: false,
+    },
+    acknowledgement_of_records: {
+      type: "boolean",
+      title:
+        "I understand that the Ministry responsible for the administration and enforcement of the Greenhouse Gas Industrial Reporting and Control Act may require records from the Operator evidencing the truth of this report.",
+      default: false,
+    },
+    acknowledgement_of_information: {
+      type: "boolean",
+      title:
+        "I understand that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
+      default: false,
+    },
+    acknowledgement_of_errors: {
+      type: "boolean",
+      title:
+        "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
+      default: false,
+    },
+    signature: {
+      type: "string",
+      format: "signature",
+      title: "Enter your full name here",
+    },
+    date: {
+      type: "string",
+      title: "Date signed",
+    },
+  },
+};
 
 // ⛏️ Helper function to render the form
 const renderSignOffForm = () => {
@@ -12,6 +51,7 @@ const renderSignOffForm = () => {
       navigationInformation={dummyNavigationInformation}
       isSupplementaryReport={false}
       isRegulatedOperation={true}
+      schema={mockSchema}
     />,
   );
 };
@@ -24,28 +64,20 @@ describe("SignOffForm Component", () => {
     });
   });
 
-  it("renders the form with correct fields and values", async () => {
+  it("renders the form with the correct text and fields", async () => {
     renderSignOffForm();
-    expect(
-      screen.getByText(
-        "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "I understand that the Ministry responsible for the administration and enforcement of the Greenhouse Gas Industrial Reporting and Control Act may require records from the Operator evidencing the truth of this report.",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "I understand that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
-      ),
-    ).toBeInTheDocument();
+
+    // Check for the presence of the important texts
+    const texts = [
+      "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
+      "I understand that the Ministry responsible for the administration and enforcement of the Greenhouse Gas Industrial Reporting and Control Act may require records from the Operator evidencing the truth of this report.",
+      "I understand that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
+      "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
+    ];
+
+    texts.forEach((text) => {
+      expect(screen.getByText(text)).toBeInTheDocument();
+    });
 
     expect(
       screen.getByPlaceholderText("Enter your full name here"),
@@ -53,36 +85,33 @@ describe("SignOffForm Component", () => {
     expect(screen.getByText("Submit Report")).toBeInTheDocument();
   });
 
-  it("enables the submit button when all checkboxes are checked", () => {
+  it("enables the submit button when all checkboxes are checked and the signature is filled", async () => {
     renderSignOffForm();
 
-    // Identify all the checkbox fields based on their titles
-    const reviewCheckbox = screen.getByRole("checkbox", {
-      name: /i certify that i have reviewed the annual report/i,
-    });
-    const recordsCheckbox = screen.getByRole("checkbox", {
-      name: /i understand that the ministry responsible for the administration and enforcement/i,
-    });
-    const informationCheckbox = screen.getByRole("checkbox", {
-      name: /i understand that this information is being collected/i,
-    });
-    const information2Checkbox = screen.getByRole("checkbox", {
-      name: /i understand that the information provided in this report will impact the compliance obligation/i,
-    });
+    // Identify checkboxes and simulate user interactions
+    const checkboxes = [
+      "I certify that I have reviewed the annual report",
+      "I understand that the Ministry responsible for the administration and enforcement",
+      "I understand that this information is being collected",
+      "I understand that the information provided in this report will impact the compliance obligation",
+    ];
 
-    // Simulate checking all the checkboxes
-    fireEvent.click(reviewCheckbox);
-    fireEvent.click(recordsCheckbox);
-    fireEvent.click(informationCheckbox);
-    fireEvent.click(information2Checkbox);
+    for (const checkboxLabel of checkboxes) {
+      const checkbox = screen.getByRole("checkbox", {
+        name: new RegExp(checkboxLabel, "i"),
+      });
+      fireEvent.click(checkbox);
+    }
+
     const signatureField = screen.getByPlaceholderText(
       "Enter your full name here",
     );
     fireEvent.change(signatureField, { target: { value: "John Doe" } });
 
-    // Check that the submit button is enabled
     const submitButton = screen.getByText(/submit report/i);
-    expect(submitButton).not.toBeDisabled();
+
+    // Wait for the submit button to become enabled
+    await waitFor(() => expect(submitButton).not.toBeDisabled());
   });
 
   it("disables the submit button initially", () => {
@@ -101,13 +130,11 @@ describe("SignOffForm Component", () => {
     // Initially, the checkbox should be unchecked
     expect(reviewCheckbox).not.toBeChecked();
 
-    // Click the checkbox
+    // Click the checkbox to check it
     fireEvent.click(reviewCheckbox);
-
-    // Now the checkbox should be checked
     expect(reviewCheckbox).toBeChecked();
 
-    // Click again to uncheck
+    // Click again to uncheck it
     fireEvent.click(reviewCheckbox);
     expect(reviewCheckbox).not.toBeChecked();
   });
