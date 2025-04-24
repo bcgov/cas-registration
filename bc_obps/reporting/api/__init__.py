@@ -40,4 +40,4 @@ from .report_additional_data import save_report_additional_data
 from .report_supplementary_version import create_report_supplementary_version, is_supplementary_report_version
 from .validate_user_reporting_access import validate_user_reporting_access
 from .reports import get_update_report
-from .electricity_import_data import save_electricity_import_data
+from .electricity_import_data import save_electricity_import_data, get_electricity_import_form_data
