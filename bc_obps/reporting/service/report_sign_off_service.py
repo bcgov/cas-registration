@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 import datetime
+from typing import Optional
+
 from django.db import transaction
 from reporting.models.report_sign_off import ReportSignOff
 from django.core.exceptions import ValidationError
@@ -9,9 +11,10 @@ from django.core.exceptions import ValidationError
 class ReportSignOffAcknowledgements:
     acknowledgement_of_review: bool
     acknowledgement_of_records: bool
-    acknowledgement_of_information: bool | None
-    acknowledgement_of_possible_costs: bool
-    acknowledgement_of_new_version: bool | None
+    acknowledgement_of_information: Optional[bool]
+    acknowledgement_of_possible_costs: Optional[bool]
+    acknowledgement_of_new_version: Optional[bool]
+    acknowledgement_of_corrections: Optional[bool]
 
 
 @dataclass
