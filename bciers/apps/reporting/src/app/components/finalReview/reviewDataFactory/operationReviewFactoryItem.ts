@@ -19,6 +19,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
     schemaData.reportType,
     schemaData.showRegulatedProducts,
     schemaData.showBoroId,
+    schemaData.showActivities,
   );
 
   // Purpose note doesn't show up on the final review page
