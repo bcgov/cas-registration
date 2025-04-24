@@ -133,7 +133,7 @@ class TestUserOperatorService:
     @staticmethod
     @patch("service.user_operator_service.UserOperatorService.save_operator")
     @patch(
-        "service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator",
+        "service.data_access_service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator",
     )
     @patch("service.operator_service.OperatorService.update_operator")
     @patch("service.user_operator_service.send_operator_access_request_email")

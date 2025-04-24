@@ -16,7 +16,7 @@ def update_admin_access_request_email_notification_templates(apps, schema_editor
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ external_user_full_name }},</p><br>
-            <p>Your request to receive access to {{ operator_legal_name }} in BCIERS has been received by the Climate Action Secretariat (CAS).  </p>
+            <p>Your request to receive access to {{ operator_legal_name }} in BCIERS has been received by the Climate Action Secretariat (CAS).</p>
             <p>CAS is reviewing your request and will contact you within 3 business days to provide a status update.</p><br>
             <p>If you have any questions, please contact our support team at <a href="mailto:GHGRegulator@gov.bc.ca">GHGRegulator@gov.bc.ca.</a></p><br>
             <p>Sent to: {{ external_user_email_address }}</p>
