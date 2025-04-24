@@ -277,7 +277,7 @@ describe("customTransformErrors", () => {
         name: "required",
         property:
           ".facility_information_array.0.section1.latitude_of_largest_emissions",
-        message: "must have required property 'email'",
+        message: "must have required property 'latitude_of_largest_emissions'",
         params: {
           missingProperty: "latitude_of_largest_emissions",
         },
@@ -295,7 +295,7 @@ describe("customTransformErrors", () => {
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(
-      "Latitude of largest point of emissions must be between -90 to 90",
+      "Latitude of largest point of emissions must be between -90 and 90",
     );
   });
 
@@ -329,7 +329,7 @@ describe("customTransformErrors", () => {
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(
-      "Latitude of largest point of emissions must be between -90 to 90",
+      "Latitude of largest point of emissions must be between -90 and 90",
     );
   });
   it("returns the transformed error message for  longitude", () => {
@@ -341,7 +341,7 @@ describe("customTransformErrors", () => {
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(
-      "Longitude of largest point of emissions must be between -180 to 180",
+      "Longitude of largest point of emissions must be between -180 and 180",
     );
   });
   it("returns the transformed error message for attachments", () => {
