@@ -22,6 +22,7 @@ export const buildOperationReviewSchema = (
   reportType: string,
   showRegulatedProducts: boolean,
   showBoroId: boolean,
+  showActivities: boolean,
 ) =>
   ({
     type: "object",
@@ -105,16 +106,18 @@ export const buildOperationReviewSchema = (
               operation_report_type: {
                 enum: [ANNUAL_REPORT],
               },
-              activities: {
-                type: "array",
-                title: "Reporting activities",
-                minItems: 1,
-                items: {
-                  type: "number",
-                  enum: allActivities.map((activity) => activity.id),
-                  enumNames: allActivities.map((activity) => activity.name),
+              ...(showActivities && {
+                activities: {
+                  type: "array",
+                  title: "Reporting activities",
+                  minItems: 1,
+                  items: {
+                    type: "number",
+                    enum: allActivities.map((activity) => activity.id),
+                    enumNames: allActivities.map((activity) => activity.name),
+                  },
                 },
-              },
+              }),
               ...(showRegulatedProducts && {
                 regulated_products: {
                   type: "array",
