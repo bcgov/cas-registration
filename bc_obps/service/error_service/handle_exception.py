@@ -21,7 +21,6 @@ def capture_sentry_exception(exc: Any, tag: str = "unexpected_error") -> Optiona
     return event_id
 
 
-# def handle_exception(request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
 def handle_exception(request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
     """
     Global exception handler for Django Ninja API.
