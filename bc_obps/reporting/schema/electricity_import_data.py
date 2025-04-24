@@ -13,6 +13,7 @@ class ElectricityImportDataOut(ModelSchema):
         alias_generator = to_snake
         model = ElectricityImportData
         fields = [
+            'import_specified_electricity',
             'import_specified_emissions',
             'import_unspecified_electricity',
             'import_unspecified_emissions',
@@ -30,6 +31,7 @@ class ElectricityImportDataIn(ModelSchema):
     Schema for the save report additional data endpoint request input.
     """
 
+    import_specified_electricity: Decimal | int
     import_specified_emissions: Decimal | int
     import_unspecified_electricity: Decimal | int
     import_unspecified_emissions: Decimal | int
