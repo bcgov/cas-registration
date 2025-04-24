@@ -30,6 +30,11 @@ class ReportSignOff(TimeStampedModel):
         blank=True,
         db_comment="Whether the user has understood that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
     )
+    acknowledgement_of_errors = models.BooleanField(
+        null=True,
+        blank=True,
+        db_comment="Whether the user has acknowledged that any errors, omissions, or misstatements in this report may result in administrative penalties or additional compliance obligations.",
+    )
     acknowledgement_of_possible_costs = models.BooleanField(
         null=True,
         blank=True,

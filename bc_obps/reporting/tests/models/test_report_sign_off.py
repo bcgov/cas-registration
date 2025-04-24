@@ -23,6 +23,7 @@ class ReportSignOffTest(BaseTestCase):
             ("acknowledgement_of_review", "acknowledgement of review", None, None),
             ("acknowledgement_of_records", "acknowledgement of records", None, None),
             ("acknowledgement_of_information", "acknowledgement of information", None, None),
+            ("acknowledgement_of_errors", "acknowledgement of errors", None, None),
             ("acknowledgement_of_possible_costs", "acknowledgement of possible costs", None, None),
             ("acknowledgement_of_new_version", "acknowledgement of new version", None, None),
             ("acknowledgement_of_corrections", "acknowledgement of corrections", None, None),

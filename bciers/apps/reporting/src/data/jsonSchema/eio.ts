@@ -1,8 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
-import {
-  FieldTemplate,
-  TitleOnlyFieldTemplate,
-} from "@bciers/components/form/fields";
+import { FieldTemplate } from "@bciers/components/form/fields";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 
 export const eioSchema: RJSFSchema = {
@@ -11,43 +8,43 @@ export const eioSchema: RJSFSchema = {
   properties: {
     import_specified_electricity: {
       title: "Amount of imported electricity - specified sources",
-      type: "number",
+      type: "string",
     },
     import_specified_emissions: {
       title: "Emissions from specified imports",
-      type: "number",
+      type: "string",
     },
     import_unspecified_electricity: {
       title: "Amount of imported electricity - unspecified sources",
-      type: "number",
+      type: "string",
     },
     import_unspecified_emissions: {
       title: "Emissions from unspecified imports",
-      type: "number",
+      type: "string",
     },
     export_specified_electricity: {
       title: "Amount of exported electricity - specified sources",
-      type: "number",
+      type: "string",
     },
     export_specified_emissions: {
       title: "Emissions from specified exports",
-      type: "number",
+      type: "string",
     },
     export_unspecified_electricity: {
       title: "Amount of exported electricity - unspecified sources",
-      type: "number",
+      type: "string",
     },
     export_unspecified_emissions: {
       title: "Emissions from unspecified exports",
-      type: "number",
+      type: "string",
     },
     canadian_entitlement_electricity: {
       title: "Amount of electricity categorized as Canadian Entitlement Power",
-      type: "number",
+      type: "string",
     },
     canadian_entitlement_emissions: {
       title: "Emissions from Canadian Entitlement Power",
-      type: "number",
+      type: "string",
     },
   },
 };

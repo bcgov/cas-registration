@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { eioSchema, eioUiSchema } from "@reporting/src/data/jsonSchema/eio/eio";
+import { eioSchema, eioUiSchema } from "@reporting/src/data/jsonSchema/eio";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { actionHandler } from "@bciers/actions";
 

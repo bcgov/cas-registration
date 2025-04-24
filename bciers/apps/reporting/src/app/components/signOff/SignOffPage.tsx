@@ -36,10 +36,6 @@ export default async function SignOffPage({ version_id }: HasReportVersion) {
       version_id={version_id}
       navigationInformation={navInfo}
       schema={schema}
-      isSupplementaryReport={
-        isSupplementaryReport.is_supplementary_report_version
-      }
-      isRegulatedOperation={isRegulatedOperation}
     />
   );
 }
