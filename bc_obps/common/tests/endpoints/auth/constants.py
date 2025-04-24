@@ -57,6 +57,11 @@ ENDPOINTS = {
             "endpoint_name": "get_report_person_responsible_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_electricity_import_form_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
         {"method": "get", "endpoint_name": "get_compliance_summaries_list"},
         {
             "method": "get",
@@ -204,6 +209,11 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_report_additional_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "post",
+            "endpoint_name": "save_electricity_import_data",
             "kwargs": {"version_id": MOCK_INT},
         },
         {

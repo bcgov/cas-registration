@@ -1,4 +1,5 @@
 from django.dispatch import receiver
+from reporting.models import ReportVersion
 from service.compliance.compliance_summary_service import ComplianceSummaryService
 from events.signals import report_submitted
 from typing import Any, Type
@@ -20,4 +21,8 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
     user_guid = kwargs.get('user_guid')
 
     if version_id and user_guid:
+
+        operation = ReportVersion.objects.select_related('report__operation').get(id=version_id).report.operation
+        if not operation.is_regulated_operation:
+            return
         ComplianceSummaryService.create_compliance_summary(version_id, user_guid)
