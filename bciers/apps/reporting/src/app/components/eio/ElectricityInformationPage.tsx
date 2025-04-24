@@ -5,12 +5,12 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import ElectricityInformationForm from "@reporting/src/app/components/eio/ElectricityInformationForm";
+import { getElectricityImportData } from "@reporting/src/app/utils/getElectricityImportData";
 
 export default async function ElectricityInformationPage({
   version_id,
 }: HasReportVersion) {
-  const formData: never[] = []; //TO await(...)
-
+  const initialFormData = await getElectricityImportData(version_id);
   const navInfo = await getNavigationInformation(
     HeaderStep.ReportInformation,
     ReportingPage.ElectricityImportData,
@@ -23,7 +23,7 @@ export default async function ElectricityInformationPage({
   return (
     <ElectricityInformationForm
       versionId={version_id}
-      initialFormData={formData}
+      initialFormData={initialFormData}
       navigationInformation={navInfo}
     />
   );

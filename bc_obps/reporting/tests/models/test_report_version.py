@@ -66,6 +66,7 @@ class ReportVersionTest(BaseTestCase):
                 None,
             ),
             ("report_sign_off", "report sign off", None, None),
+            ("electricity_import_data", "electricity import data", None, None),
             (
                 "report_compliance_summary",
                 "report compliance summary",
