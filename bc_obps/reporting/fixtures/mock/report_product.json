@@ -54,19 +54,5 @@
       "production_data_apr_dec": 10000.0,
       "production_methodology": "OBPS Calculator"
     }
-  },
-  {
-    "model": "reporting.reportproduct",
-    "fields": {
-      "id": 5,
-      "created_by": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
-      "created_at": "2025-04-15T22:22:57.643Z",
-      "report_version": 3,
-      "facility_report": 5,
-      "product": 5,
-      "annual_production": 10.0,
-      "production_data_apr_dec": 10.0,
-      "production_methodology": "OBPS Calculator"
-    }
   }
 ]
