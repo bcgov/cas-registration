@@ -2,6 +2,7 @@ import json
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from service.report_service import ReportService
+from reporting.models.report_version import ReportVersion
 
 
 class Command(BaseCommand):
@@ -34,6 +35,11 @@ class Command(BaseCommand):
         ]
 
         self.load_fixtures(additional_fixtures)
+
+        # Update the status of report version for compliance
+        ReportVersion.objects.filter(id__range=(3, 5), status='Draft').update(
+            is_latest_submitted=True, status='Submitted'
+        )
 
     def load_reports(self):
         reports_fixture = f'{self.fixture_base_dir}/report.json'

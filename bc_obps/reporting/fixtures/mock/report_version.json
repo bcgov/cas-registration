@@ -24,9 +24,9 @@
     "fields": {
       "id": 3,
       "report": 3,
-      "is_latest_submitted": true,
+      "is_latest_submitted": false,
       "report_type": "Annual Report",
-      "status": "Submitted"
+      "status": "Draft"
     }
   },
   {
@@ -34,9 +34,9 @@
     "fields": {
       "id": 4,
       "report": 4,
-      "is_latest_submitted": true,
+      "is_latest_submitted": false,
       "report_type": "Annual Report",
-      "status": "Submitted"
+      "status": "Draft"
     }
   },
   {
@@ -44,9 +44,9 @@
     "fields": {
       "id": 5,
       "report": 5,
-      "is_latest_submitted": true,
+      "is_latest_submitted": false,
       "report_type": "Annual Report",
-      "status": "Submitted"
+      "status": "Draft"
     }
   }
 ]
