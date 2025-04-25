@@ -7,34 +7,30 @@ from reporting.models.report_version import ReportVersion
 
 class Command(BaseCommand):
     help = 'Load fixtures for the reporting application'
-    fixture_base_dir = 'reporting/fixtures/mock'
+    FIXTURE_BASE_DIR = 'reporting/fixtures/mock'
+
+    FIXTURES = [
+        'reporting_year',
+        'report_version',
+        'facility_report',
+        'report_activity',
+        'raw_report_activity_data',
+        'report_source_type',
+        'report_unit',
+        'report_fuel',
+        'report_emission',
+        'report_product',
+        'report_emission_allocation',
+        'report_product_emission_allocation',
+    ]
 
     def handle(self, *args, **options):
-
-        fixtures = [
-            f'{self.fixture_base_dir}/reporting_year.json',
-        ]
-
-        self.load_fixtures(fixtures)
-
-        self.stdout.write(self.style.SUCCESS(f"Creating Reports from {self.fixture_base_dir}/report.json"))
-        self.load_reports()
-
-        additional_fixtures = [
-            f'{self.fixture_base_dir}/report_version.json',
-            f'{self.fixture_base_dir}/facility_report.json',
-            f'{self.fixture_base_dir}/report_activity.json',
-            f'{self.fixture_base_dir}/raw_report_activity_data.json',
-            f'{self.fixture_base_dir}/report_source_type.json',
-            f'{self.fixture_base_dir}/report_unit.json',
-            f'{self.fixture_base_dir}/report_fuel.json',
-            f'{self.fixture_base_dir}/report_emission.json',
-            f'{self.fixture_base_dir}/report_product.json',
-            f'{self.fixture_base_dir}/report_emission_allocation.json',
-            f'{self.fixture_base_dir}/report_product_emission_allocation.json',
-        ]
-
-        self.load_fixtures(additional_fixtures)
+        for fixture in self.FIXTURES:
+            fixture_path = f'{self.FIXTURE_BASE_DIR}/{fixture}.json'
+            self.stdout.write(self.style.SUCCESS(f"Loading: {fixture_path}"))
+            call_command('loaddata', fixture_path)
+            if fixture == 'reporting_year':
+                self.load_reports()
 
         # Update the status of report version for compliance
         ReportVersion.objects.filter(id__range=(3, 5), status='Draft').update(
@@ -42,7 +38,7 @@ class Command(BaseCommand):
         )
 
     def load_reports(self):
-        reports_fixture = f'{self.fixture_base_dir}/report.json'
+        reports_fixture = f'{self.FIXTURE_BASE_DIR}/report.json'
         with open(reports_fixture) as f:
             reports = json.load(f)
             for report in reports:
@@ -50,8 +46,3 @@ class Command(BaseCommand):
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
-
-    def load_fixtures(self, fixtures):
-        for fixture in fixtures:
-            self.stdout.write(self.style.SUCCESS(f"Loading: {fixture}"))
-            call_command('loaddata', fixture)
