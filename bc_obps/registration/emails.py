@@ -83,7 +83,7 @@ def send_registration_and_boro_id_email(
                 template.id,
             )
         except Exception as exc:
-            logger.error(f'Logger: Exception sending  {template} email - {str(exc)}')
+            logger.error(f'Logger: Exception sending {str(template)} email - {str(exc)}')
 
 
 def send_operator_access_request_email(
