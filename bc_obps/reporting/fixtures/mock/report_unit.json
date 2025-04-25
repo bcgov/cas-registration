@@ -11,5 +11,18 @@
       "report_source_type": 1,
       "type": "Unit"
     }
+  },
+  {
+    "model": "reporting.reportunit",
+    "fields": {
+      "id": 2,
+      "json_data": {
+        "gscUnitName": "Fixture",
+        "gscUnitType": "Kiln"
+      },
+      "report_version": 5,
+      "report_source_type": 2,
+      "type": "Unit"
+    }
   }
 ]

@@ -12,5 +12,19 @@
       "report_unit": 1,
       "fuel_type": 30
     }
+  },
+  {
+    "model": "reporting.reportfuel",
+    "fields": {
+      "id": 2,
+      "json_data": {
+        "fuelDescription": "Fixture",
+        "annualFuelAmount": 28
+      },
+      "report_version": 5,
+      "report_source_type": 2,
+      "report_unit": 2,
+      "fuel_type": 30
+    }
   }
 ]

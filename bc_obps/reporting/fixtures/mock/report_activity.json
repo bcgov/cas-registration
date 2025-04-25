@@ -11,5 +11,18 @@
       "activity_base_schema": 1,
       "activity": 1
     }
+  },
+  {
+    "model": "reporting.reportactivity",
+    "fields": {
+      "id": 2,
+      "json_data": {
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "report_version": 5,
+      "facility_report": 24,
+      "activity_base_schema": 2,
+      "activity": 1
+    }
   }
 ]

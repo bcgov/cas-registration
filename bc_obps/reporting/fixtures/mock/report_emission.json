@@ -12,5 +12,19 @@
       "report_source_type": 1,
       "emission_categories": [5]
     }
+  },
+  {
+    "model": "reporting.reportemission",
+    "fields": {
+      "id": 2,
+      "json_data": {
+        "emission": 28,
+        "equivalentEmission": "28.0000"
+      },
+      "report_version": 5,
+      "gas_type": 1,
+      "report_source_type": 2,
+      "emission_categories": [5]
+    }
   }
 ]
