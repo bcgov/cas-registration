@@ -23,7 +23,7 @@ const baseConfig = {
 // Shared Sentry options for all apps
 const defaultSentryWebpackOptions = {
   org: "government-of-british-columbia",
-  project: "OBPS-next-js", // Shared project name
+  project: "obps-next-js", // Shared project name
   // Set to false to create a sentry release on build with the sentry CLI
   // This will upload sourcemaps to sentry.
   dryRun: true,
