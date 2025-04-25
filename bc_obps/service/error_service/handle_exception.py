@@ -1,7 +1,7 @@
 import logging
 import traceback
 import sentry_sdk
-from typing import Union
+from typing import Union, Optional, Any
 from django.conf import settings
 from django.http import HttpRequest, Http404
 from django.db.utils import InternalError, ProgrammingError, DatabaseError
@@ -15,7 +15,13 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 logger = logging.getLogger(__name__)
 
 
-def handle_exception(request: HttpRequest, exc: Union[Exception, type[Exception]]) -> Response:
+def capture_sentry_exception(exc: Any, tag: str = "unexpected_error") -> Optional[str]:
+    event_id = sentry_sdk.capture_exception(exc)
+    sentry_sdk.set_tag(tag, True)
+    return event_id
+
+
+def handle_exception(request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
     """
     Global exception handler for Django Ninja API.
     """
@@ -40,11 +46,15 @@ def handle_exception(request: HttpRequest, exc: Union[Exception, type[Exception]
 
     if isinstance(exc, (InternalError, ProgrammingError, DatabaseError)):
         msg = "Internal Server Error."
-        if settings.SENTRY_ENVIRONMENT == 'prod':
-            event_id = sentry_sdk.capture_exception(exc)
-            sentry_sdk.set_tag("database_error", True)
-            msg = f"{msg} Reference ID: {event_id}"
-        logger.error(msg, exc_info=exc)
+        if settings.SENTRY_ENVIRONMENT == "prod":
+            event_id = capture_sentry_exception(exc, tag="database_error")
+            msg += f" Reference ID: {event_id}"
+        logger.critical(msg, exc_info=True)
         return Response({"message": msg}, status=500)
+
+    # Default: catch-all error
+    if settings.SENTRY_ENVIRONMENT == "prod":
+        event_id = capture_sentry_exception(exc)
+        logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
 
     return Response({"message": str(exc)}, status=400)
