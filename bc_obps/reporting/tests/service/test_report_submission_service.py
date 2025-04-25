@@ -19,6 +19,7 @@ class TestReportSubmissionService:
     @patch(
         "reporting.service.report_validation.report_validation_service.ReportValidationService.validate_report_version"
     )
+    @patch("reporting.service.compliance_service.ComplianceService.save_compliance_data")
     def test_submit_report(
         self,
         mock_validate_report_version,
@@ -26,6 +27,7 @@ class TestReportSubmissionService:
         mock_filter,
         mock_signal_send,
         mock_save_report_sign_off,
+        mock_save_compliance_data,
     ):
         # Arrange
         version_id = 1
@@ -33,8 +35,11 @@ class TestReportSubmissionService:
         mock_validate_report_version.return_value = {}
 
         # Create a fake Report instance object
+        fake_operation = MagicMock()
+        fake_operation.is_regulated_operation = True
         fake_report = MagicMock()
         fake_report.id = 1
+        fake_report.operation = fake_operation
         fake_report_version = MagicMock()
         fake_report_version.report = fake_report
         fake_report_version.is_latest_submitted = False
@@ -78,6 +83,8 @@ class TestReportSubmissionService:
             is_latest_submitted=True,
         )
         mock_filter_instance.update.assert_called_once_with(is_latest_submitted=False)
+
+        mock_save_compliance_data.assert_called_once_with(version_id)
 
         # Assert that the fake report version’s properties were updated.
         assert fake_report_version.is_latest_submitted is True
