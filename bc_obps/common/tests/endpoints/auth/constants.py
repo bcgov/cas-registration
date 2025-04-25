@@ -136,7 +136,7 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_report_type_by_version",
+            "endpoint_name": "get_report_version",
             "kwargs": {"version_id": MOCK_VERSION},
         },
         {
