@@ -14,7 +14,7 @@ const { nextConfigBase, withSentry } = require("../../next.config.base");
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  ...nextConfigBase, // Spread shared base config
+  ...nextConfigBase,
   async rewrites() {
     const adminRoutes = HOST_ADMINISTRATION
       ? [

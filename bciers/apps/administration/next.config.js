@@ -7,7 +7,7 @@ const { nextConfigBase, withSentry } = require("../../next.config.base");
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  ...nextConfigBase, // Spread shared base config
+  ...nextConfigBase,
   // To deploy a Next.js application under a sub-path of a domain you can use the basePath config option
   basePath: "/administration",
   assetPrefix: "/administration/",
