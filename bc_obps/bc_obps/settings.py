@@ -75,6 +75,11 @@ CHES_API_URL = os.environ.get("CHES_API_URL")
 ELICENSING_API_URL = os.environ.get("ELICENSING_API_URL")
 ELICENSING_AUTH_TOKEN = os.environ.get("ELICENSING_AUTH_TOKEN")
 
+# BC Carbon Registry API settings (BCCR)
+BCCR_API_URL = os.getenv("BCCR_API_URL")
+BCCR_CLIENT_ID = os.getenv("BCCR_CLIENT_ID")
+BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
+
 LOCAL_APPS = [
     "registration",
     "reporting",
