@@ -499,7 +499,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="391" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="300" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -550,7 +550,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="535" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="481" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
