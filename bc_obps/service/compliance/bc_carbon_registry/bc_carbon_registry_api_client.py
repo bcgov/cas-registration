@@ -69,7 +69,6 @@ class BCCarbonRegistryAPIClient:
             data = TokenResponse(**response.json())
             self.token = data.access_token
             self.token_expiry = datetime.now(ZoneInfo("UTC")) + timedelta(seconds=data.expires_in)
-            logger.info("Successfully authenticated. Token expires at %s", self.token_expiry)
         except Timeout as e:
             logger.error("Authentication timed out: %s", str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Request timed out: {str(e)}", endpoint=url) from e
@@ -89,7 +88,9 @@ class BCCarbonRegistryAPIClient:
         """
         Ensure a valid token is available before requests.
         """
-        if not self.token or (self.token_expiry and datetime.now(ZoneInfo("UTC")) >= self.token_expiry):
+        token = getattr(self, "token", None)
+        token_expiry = getattr(self, "token_expiry", None)
+        if token is None or token_expiry is None or datetime.now(ZoneInfo("UTC")) >= token_expiry:
             logger.warning("Token missing or expired. Re-authenticating.")
             self._authenticate()
 
@@ -224,12 +225,10 @@ class BCCarbonRegistryAPIClient:
         """
         List compliance units for a given account.
         """
+        url = "/raas-report-api/es/unit/pagePrivateSearchByFilter"
         if not account_id.isdigit():
             logger.error("Invalid account_id: %s", account_id)
             raise ValueError("account_id must be a numeric string")
-        if limit < 1 or start < 0:
-            logger.error("Invalid pagination parameters: limit=%s, start=%s", limit, start)
-            raise ValueError("limit must be positive and start non-negative")
         payload = SearchFilter(
             pagination=Pagination(start=start, limit=limit),
             filterModel=FilterModel(
@@ -238,19 +237,18 @@ class BCCarbonRegistryAPIClient:
         )
         return self._make_request(
             "POST",
-            "raas-report-api/es/unit/pagePrivateSearchByFilter",
+            url,
             data=payload,
             response_model=UnitDetailsResponse,
         )
 
     def get_project_details(self, project_id: str) -> Dict:
         """Get project details by project ID."""
+        url = f"/raas-project-api/project-manager/getById/{project_id}"
         if not project_id.isdigit():
             logger.error("Invalid project_id: %s", project_id)
             raise ValueError("project_id must be a numeric string")
-        return self._make_request(
-            "POST", f"raas-project-api/project-manager/getById/{project_id}", response_model=ProjectDetailsResponse
-        )
+        return self._make_request("POST", url, response_model=ProjectDetailsResponse)
 
     def create_project(self, project_data: Dict) -> Dict:
         """Create a new project"""
