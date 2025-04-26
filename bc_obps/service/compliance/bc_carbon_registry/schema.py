@@ -1,30 +1,29 @@
 from datetime import datetime, date
-from pydantic import BaseModel, Field, PositiveInt, AnyUrl, PositiveFloat, model_validator
-from typing import List, Dict, Any, Optional, Annotated, Union
+from pydantic import BaseModel, Field, PositiveInt, PositiveFloat, model_validator, NonNegativeInt
+from typing import List, Dict, Any, Optional, Annotated, Union, Literal
 
 ########## REUSABLE TYPES ##########
 DigitString = Annotated[str, Field(pattern=r'^\d+$')]
-FifteenDigitPositiveInt = Annotated[PositiveInt, Field(pattern=r'^\d{15}$')]
 FifteenDigitString = Annotated[str, Field(pattern=r'^\d{15}$')]
 
 
 class Pagination(BaseModel):
-    start: Optional[PositiveInt] = 0
-    limit: Optional[PositiveInt] = 20
+    start: Optional[NonNegativeInt] = 0
+    limit: Optional[NonNegativeInt] = 20
     sortOptions: Optional[List[Dict[str, str]]] = [{"sort": "accountName.keyword", "dir": "ASC"}]
 
 
 class ColumnFilter(BaseModel):
-    filterType: str
-    type: str
-    filter: str
+    filterType: Literal["Number", "Text"]
+    type: Literal["equals", "in"]
+    filter: Union[FifteenDigitString, DigitString]
 
 
 class FilterModel(BaseModel):
-    entityId: Optional[Dict[FifteenDigitPositiveInt, List[ColumnFilter]]] = None
-    accountTypeId: Optional[Dict[PositiveInt, List[ColumnFilter]]] = None
-    masterAccountId: Optional[Dict[PositiveInt, List[ColumnFilter]]] = None
-    accountId: Optional[Dict[FifteenDigitPositiveInt, List[ColumnFilter]]] = None
+    entityId: Optional[Dict[Literal["columnFilters"], List[ColumnFilter]]] = None
+    accountTypeId: Optional[Dict[Literal["columnFilters"], List[ColumnFilter]]] = None
+    masterAccountId: Optional[Dict[Literal["columnFilters"], List[ColumnFilter]]] = None
+    accountId: Optional[Dict[Literal["columnFilters"], List[ColumnFilter]]] = None
 
 
 class SearchFilter(BaseModel):
@@ -35,16 +34,16 @@ class SearchFilter(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
-    expires_in: PositiveInt
+    expires_in: NonNegativeInt
     token_type: str
 
 
 class PaginatedResponse(BaseModel):
-    totalEntities: PositiveInt
-    totalPages: PositiveInt
-    start: Optional[PositiveInt] = None
-    limit: Optional[PositiveInt] = None
-    numberOfElements: PositiveInt
+    totalEntities: NonNegativeInt
+    totalPages: NonNegativeInt
+    start: Optional[NonNegativeInt] = None
+    limit: Optional[NonNegativeInt] = None
+    numberOfElements: NonNegativeInt
     first: bool
     last: bool
 
@@ -60,54 +59,37 @@ class GenericResponse(BaseModel):
         extra = "allow"  # Allow extra fields for API flexibility
 
 
-########## Transfers ##########
-class TransferMixedUnit(BaseModel):
-    account_id: PositiveInt  # 202 // Holding account ID
-    serial_no: str  # "BC-BCE-IN-104000000037027-01032025-30032025-16414-16752-SPG"
-    new_quantity: PositiveInt  # 1
-    id: FifteenDigitString  # "103200000396923"
-    do_action: Optional[bool] = True  # Always true
-
-
-class TransferPayload(BaseModel):
-    destination_account_id: FifteenDigitString  # "103000000036531"
-    mixedUnitList: List[TransferMixedUnit]
-
-    class Config:
-        extra = "forbid"
-        str_strip_whitespace = True  # Strip whitespace from strings
-
-
 ########## Accounts ##########
 class AccountDetailEntity(BaseModel):
     id: str  # "103100000028577_140000000000001" (accountId + "_" + standardId)
-    entityId: PositiveInt  # 103100000028577
-    esUpdatedOn: datetime  # "2025-04-16T20:21:48.530988557"
-    standardId: PositiveInt  # 140000000000001
+    entityId: FifteenDigitString  # 103100000028577
+    standardId: FifteenDigitString  # 140000000000001
     standardName: str  # "BC Carbon Registry"
-    accountId: PositiveInt  # 103100000028577
+    accountId: FifteenDigitString  # 103100000028577
     accountName: str  # "General Participant Admin Test"
-    modifiedDate: datetime  # "2025-04-16T20:21:48.26"
     mainContactName: str  # "Kelly Konrad"
     accountTypeName: str  # "General Participant"
     accountTypeId: PositiveInt  # 10
-    organizationClassificationId: FifteenDigitString  # "100000000000097"
-    organizationClassification: str  # "Broker/Trader/Retailer"
-    countryName: str  # "Canada"
-    countryId: FifteenDigitString  # "100000000000003"
-    stateName: str  # "Active"
-    stateCode: str  # "ACTIVE"
-    website: AnyUrl  # "www.generaladminparticipant.com"
-    publicVisibility: bool  # true
-    hasChildren: bool  # false
-    activatedDate: datetime  # "2025-04-16T20:21:46"
-    submittedDate: datetime  # "2025-04-16T17:53:14"
-    accountManagerEmail: str  # "manager.email@gov.bc.ca"
     type_of_account_holder: str  # "Corporation"
-    masterAccountId: Optional[PositiveInt]  # 102000000001000
-    masterAccountName: Optional[str]  # "British Columbia Government Account"
-    billingContactEmail: Optional[str]  # "someone.email@gov.bc.ca"
-    auxiliaries: Optional[Any]  # None
+    # Below fields are also part of the response, but we are not interested in them for now
+    # masterAccountId: Optional[PositiveInt] = None  # 102000000001000
+    # masterAccountName: Optional[str] = None  # "British Columbia Government Account"
+    # billingContactEmail: Optional[str] = None  # "someone.email@gov.bc.ca"
+    # auxiliaries: Optional[Any] = None  # None
+    # organizationClassificationId: Optional[FifteenDigitString] = None  # "100000000000097"
+    # organizationClassification: Optional[str] = None  # "Broker/Trader/Retailer"
+    # modifiedDate: Optional[datetime] = None  # "2025-04-16T20:21:48.26"
+    # esUpdatedOn: Optional[datetime] = None  # "2025-04-16T20:21:48.530988557"
+    # countryName: Optional[str] = None  # "Canada"
+    # countryId: Optional[FifteenDigitString] = None  # "100000000000003"
+    # stateName: Optional[str] = None  # "Active"
+    # stateCode: Optional[str] = None  # "ACTIVE"
+    # website: Optional[AnyUrl] = None  # "www.generaladminparticipant.com"
+    # publicVisibility: Optional[bool] = None  # true
+    # hasChildren: Optional[bool] = None  # false
+    # activatedDate: Optional[datetime] = None  # "2025-04-16T20:21:46"
+    # submittedDate: Optional[datetime] = None  # "2025-04-16T17:53:14"
+    # accountManagerEmail: Optional[str] = None  # "manager.email@gov.bc.ca"
 
     class Config:
         extra = "allow"
@@ -124,35 +106,36 @@ class AccountDetailsResponse(PaginatedResponse):
 class UnitEntity(BaseModel):
     id: FifteenDigitString  # "103200000391892"
     entityId: PositiveInt  # 103200000391892
-    esUpdatedOn: datetime  # "2025-04-12T00: #55: #40.446122835"
     standardId: PositiveInt  # 140000000000001
     standardName: str  # "BC Carbon Registry"
     accountId: PositiveInt  # 103100000028565
     accountName: str  # "BC Beta Checkout 2 11042025"
-    modifiedDate: datetime  # "2025-04-11T18: #11: #13.66"
-    auxiliaries: Optional[Any]  # None
     projectId: PositiveInt  # 104100000030211
-    countryName: str  # "Cambodia"
-    countryId: FifteenDigitString  # "100000000000123"
-    projectTypeName: str  # "Emissions Reduction"
-    stateName: str  # "Retired"
-    stateCode: str  # "RETIRED"
-    projectName: str  # "BC Project Beta Chekcout 1 11042025"
-    vintage: DigitString  # "2025"
     holdingQuantity: PositiveFloat  # 2.0
-    publicVisibility: bool  # true
-    doAssign: bool  # false
-    doRetire: bool  # false
-    doExchangeListing: bool  # false
-    doGenericCancel: bool  # false
-    unitMeasurementName: str  # "tCO2e"
     serialNo: str  # "BC-BCO-KH-104100000030211-11042025-12042025-1-2-SPG"
-    className: str  # "BCO"
-    isBuffer: bool  # false
-    doRfi: bool  # false
-    doNotDeliver: bool  # false
+    unitMeasurementName: str  # "tCO2e"
     unitType: str  # "BCO"
-    accountTypeCode: str  # "PROJECT_PROPONENT"
+    className: str  # "BCO"
+    # Below fields are also part of the response, but we are not interested in them for now
+    # esUpdatedOn: datetime  # "2025-04-12T00: #55: #40.446122835"
+    # modifiedDate: datetime  # "2025-04-11T18: #11: #13.66"
+    # countryName: str  # "Cambodia"
+    # countryId: FifteenDigitString  # "100000000000123"
+    # projectTypeName: str  # "Emissions Reduction"
+    # stateName: str  # "Retired"
+    # stateCode: str  # "RETIRED"
+    # projectName: str  # "BC Project Beta Chekcout 1 11042025"
+    # vintage: DigitString  # "2025"
+    # publicVisibility: bool  # true
+    # doAssign: bool  # false
+    # doRetire: bool  # false
+    # doExchangeListing: bool  # false
+    # doGenericCancel: bool  # false
+    # isBuffer: bool  # false
+    # doRfi: bool  # false
+    # doNotDeliver: bool  # false
+    # accountTypeCode: str  # "PROJECT_PROPONENT"
+    # auxiliaries: Optional[Any]  # None
 
     class Config:
         extra = "allow"
@@ -174,18 +157,17 @@ class ProjectPayloadMixedUnit(BaseModel):
     period_start_date: date  # "2025-01-01"
     period_end_date: date  # "2025-01-31"
     # Optional fields (Default based on the S&P API documentation)
-    country_id: Optional[FifteenDigitPositiveInt] = 100000000000003  # Canada
+    country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
     environmental_category_id: Optional[FifteenDigitString] = "100000000000001"  # Carbon
     project_type_id: Optional[FifteenDigitString] = "140000000000002"  # OBPS
     standard_id: Optional[FifteenDigitString] = "140000000000001"  # BC
     newRecord: Optional[bool] = True
 
-    @model_validator(mode='before')
-    @classmethod
-    def end_date_after_start_date(cls, data: 'ProjectPayloadMixedUnit') -> 'ProjectPayloadMixedUnit':
-        if data.period_end_date < data.period_start_date:
+    @model_validator(mode='after')
+    def end_date_after_start_date(self) -> 'ProjectPayloadMixedUnit':
+        if self.period_end_date < self.period_start_date:
             raise ValueError('period_end_date must be on or after period_start_date')
-        return data
+        return self
 
 
 class ProjectPayload(BaseModel):
@@ -204,7 +186,7 @@ class ProjectPayload(BaseModel):
 
 
 class ProjectDetailsResponse(BaseModel):
-    id: FifteenDigitPositiveInt  # 103000000392508
+    id: FifteenDigitString  # 103000000392508
     account_id: FifteenDigitString  # "103100000028575"
     project_name: str  # "Test BC Project 3 - Billie Blue"
     project_description: str  # "Test BC Project Description"
@@ -212,6 +194,24 @@ class ProjectDetailsResponse(BaseModel):
 
     class Config:
         extra = "allow"
+
+
+########## Transfers ##########
+class TransferMixedUnit(BaseModel):
+    account_id: FifteenDigitString  # "103100000028575" // Holding account ID
+    serial_no: str  # "BC-BCE-IN-104000000037027-01032025-30032025-16414-16752-SPG"
+    new_quantity: PositiveInt  # 1
+    id: FifteenDigitString  # "103200000396923"
+    do_action: Optional[bool] = True  # Always true
+
+
+class TransferPayload(BaseModel):
+    destination_account_id: FifteenDigitString  # "103000000036531"
+    mixedUnitList: List[TransferMixedUnit]
+
+    class Config:
+        extra = "forbid"
+        str_strip_whitespace = True  # Strip whitespace from strings
 
 
 ######## Issuance ##########
@@ -224,12 +224,12 @@ class IssuancePayloadMixedUnit(BaseModel):
     address_line_1: str  # "Line 1"
     zipcode: str  # "H0H0H0"
     province: str  # "BC"
-    defined_unit_id: FifteenDigitPositiveInt  # 103000000392535 //project->mixedUnitList[0].id
+    defined_unit_id: FifteenDigitString  # 103000000392535 //project->mixedUnitList[0].id
     # Optional fields (Default based on the S&P API documentation)
     public_visibility: Optional[bool] = False
     standard_id: Optional[FifteenDigitString] = "140000000000001"  # BC
-    country_id: Optional[FifteenDigitPositiveInt] = 100000000000003  # Canada
-    project_type_id: Optional[FifteenDigitPositiveInt] = 100000000000117  # OBPS
+    country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
+    project_type_id: Optional[FifteenDigitString] = "100000000000117"  # OBPS
 
 
 class IssuancePayloadVerification(BaseModel):
@@ -243,8 +243,8 @@ class IssuancePayloadVerification(BaseModel):
 class IssuancePayload(BaseModel):
     account_id: FifteenDigitString  # "103100000028575"
     issuance_requested_date: datetime  # "2025-01-24T13:13:28.547Z"
-    project_id: FifteenDigitPositiveInt  # 104000000036500
-    unit_type_id: FifteenDigitPositiveInt  # 140000000000001 # BCE
+    project_id: FifteenDigitString  # "104000000036500"
+    unit_type_id: FifteenDigitString  # "140000000000001" # BCE
     verifications: List[IssuancePayloadVerification]
 
     class Config:
@@ -254,10 +254,10 @@ class IssuancePayload(BaseModel):
 
 ####### SubAccount ########
 class SubAccountPayload(BaseModel):
-    organization_classification_id: FifteenDigitPositiveInt  # 100000000000097 // organizationClassificationId from master account
+    organization_classification_id: FifteenDigitString  # 100000000000097 // organizationClassificationId from master account
     compliance_year: PositiveInt  # 2025
     registered_name: str  # "Test BC Subaccount 31 Mar 2"
-    master_account_id: FifteenDigitPositiveInt  # 103000000037199
+    master_account_id: FifteenDigitString  # 103000000037199
     type_of_organization: FifteenDigitString  # "140000000000001" // Account Holder
     trading_name: str  # "Test BC Subaccount 31 Mar 1"
     registration_number_assigend_by_registrar: str  # "dwd" // Registration Number Assigned by the BC Registrar of Companies
