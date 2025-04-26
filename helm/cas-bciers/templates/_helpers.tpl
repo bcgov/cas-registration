@@ -122,6 +122,21 @@ Define environment variables for the application.
     secretKeyRef:
       key: authToken
       name: elicensing-integration
+- name: BCCR_API_URL
+  valueFrom:
+    secretKeyRef:
+      key: apiUrl
+      name: bccr-integration
+- name: BCCR_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        key: clientId
+        name: bccr-integration
+- name: BCCR_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        key: clientSecret
+        name: bccr-integration
 - name: DB_USER
   valueFrom:
     secretKeyRef:
