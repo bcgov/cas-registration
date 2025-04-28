@@ -5,7 +5,9 @@ from compliance.models.compliance_summary import ComplianceSummary
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional
+from typing import Optional, List, Dict, Any
+from compliance.service.compliance_summary_service import ComplianceSummaryService
+from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 
 
 class ComplianceDashboardService:
@@ -124,3 +126,21 @@ class ComplianceDashboardService:
         setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
 
         return summary
+    
+    @classmethod
+    def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> List[Dict[str, Any]]:
+        """
+        Get payments for a compliance summary's obligation invoice.
+
+        Args:
+            user_guid: The GUID of the user requesting the payments
+            summary_id: The ID of the compliance summary
+
+        Returns:
+            List of payment records formatted for the frontend
+        """
+        summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
+        if not summary or not summary.obligation:
+            return []
+
+        return ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)

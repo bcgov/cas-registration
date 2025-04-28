@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
@@ -25,6 +25,70 @@ class ObligationELicensingService:
     This service handles eLicensing integration for compliance obligations,
     including fee creation and synchronization with the eLicensing system.
     """
+
+    @classmethod
+    def get_obligation_invoice_payments(cls, obligation_id: int) -> List[Dict[str, Any]]:
+        """
+        Get payments for a compliance obligation's invoice.
+        Currently returns mock data for frontend testing.
+
+        Args:
+            obligation_id: The ID of the compliance obligation
+
+        Returns:
+            List of payment records formatted for the frontend
+        """
+        # Mock data for frontend testing
+        return [
+            {
+                "id": "12345",
+                "paymentReceivedDate": "2024-04-28",
+                "paymentAmountApplied": 474376.00,
+                "paymentMethod": "Credit Card",
+                "transactionType": "Payment",
+                "referenceNumber": "R46459",
+            },
+            {
+                "id": "12346",
+                "paymentReceivedDate": "2024-04-27",
+                "paymentAmountApplied": 250000.00,
+                "paymentMethod": "Bank Transfer",
+                "transactionType": "Payment",
+                "referenceNumber": "R46460",
+            },
+        ]
+
+        # TODO: Uncomment when eLicensing API is ready
+        # try:
+        #     # Get the invoice link for the obligation
+        #     invoice_link = ELicensingLink.objects.filter(
+        #         content_type__model='complianceobligation',
+        #         object_id=obligation_id,
+        #         elicensing_object_kind=ELicensingLink.ObjectKind.INVOICE
+        #     ).first()
+
+        #     if not invoice_link or not invoice_link.elicensing_object_id:
+        #         return []
+
+        #     # Get payments from eLicensing
+        #     invoice = elicensing_api_client.query_invoice(invoice_link.elicensing_object_id)
+
+        #     payments = []
+        #     for fee in invoice.fees:
+        #         for payment in fee.payments:
+        #             payments.append({
+        #                 "id": payment.paymentObjectId,
+        #                 "paymentReceivedDate": payment.receivedDate,
+        #                 "paymentAmountApplied": payment.amount,
+        #                 "paymentMethod": payment.method,
+        #                 "transactionType": "Payment",
+        #                 "referenceNumber": payment.receiptNumber,
+        #             })
+
+        #     return payments
+        # except Exception:
+        #     # Log the error but return empty list to maintain consistent behavior
+        #     return []
 
     @classmethod
     def process_obligation_integration(cls, obligation_id: int) -> None:
