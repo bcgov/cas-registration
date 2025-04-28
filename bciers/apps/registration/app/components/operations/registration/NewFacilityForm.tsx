@@ -72,7 +72,10 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
 
   const handleSubmit = async (e: IChangeEvent) => {
     console.log("did i fire");
+
     setFacilityFormIsSubmitting(true);
+    // Clear any old errors
+    setError(undefined);
     const method = "POST";
 
     const endpoint = "registration/facilities";

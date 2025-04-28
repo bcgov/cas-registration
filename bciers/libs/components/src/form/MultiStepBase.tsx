@@ -76,6 +76,7 @@ const MultiStepBase = ({
       setIsSubmitting(false);
       return;
     }
+    console.log("response", response);
     console.log("isNotFinalStep", isNotFinalStep);
     console.log("baseUrl", baseUrl);
     if (isNotFinalStep && baseUrl) {
