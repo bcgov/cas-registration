@@ -2,7 +2,7 @@ import logging
 from typing import Dict, Any, Optional, cast, List, Literal
 import requests
 from django.conf import settings
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
@@ -131,6 +131,76 @@ class InvoiceCreationRequest:
     paymentDueDate: str
     businessAreaCode: str
     fees: List[str]
+
+
+@dataclass
+class PaymentDistribution:
+    distributionObjectId: str
+    description: str
+    transactionDate: str
+    method: str
+    reason: str
+    amount: float
+    taxAmount: float
+
+
+@dataclass
+class Payment:
+    paymentObjectId: str
+    receiptNumber: str
+    receivedDate: str
+    depositDate: str
+    amount: float
+    method: str
+    cashHandlingArea: str
+    referenceNumber: str
+    onlineOrderNumber: Optional[str] = None
+    onlineTransactionId: Optional[str] = None
+    onlineApprovalCode: Optional[str] = None
+    distributions: List[PaymentDistribution] = field(default_factory=list)
+
+
+@dataclass
+class FeeAdjustment:
+    adjustmentGUID: str
+    adjustmentObjectId: str
+    adjustmentTotal: float
+    amount: float
+    taxAmounts: float
+    date: str
+    reason: str
+    type: str
+    comment: str
+
+
+@dataclass
+class InvoiceFee:
+    feeObjectId: str
+    feeGUID: str
+    businessAreaCode: str
+    feeDate: str
+    description: str
+    baseAmount: float
+    taxTotal: float
+    adjustmentTotal: float
+    taxAdjustmentTotal: float
+    paymentBaseAmount: float
+    paymentTotal: float
+    invoiceNumber: str
+    payments: List[Payment] = field(default_factory=list)
+    adjustments: List[FeeAdjustment] = field(default_factory=list)
+
+
+@dataclass
+class InvoiceQueryResponse:
+    clientObjectId: str
+    clientGUID: str
+    invoiceNumber: str
+    invoiceDueDate: str
+    invoiceOutstandingBalance: float
+    invoiceFeeBalance: float
+    invoiceInterestBalance: float
+    fees: List[InvoiceFee]
 
 
 class ELicensingAPIError(Exception):
@@ -545,7 +615,7 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def query_invoice(self, invoice_number: str) -> Dict[str, Any]:
+    def query_invoice(self, invoice_number: str) -> InvoiceQueryResponse:
         """
         Queries an invoice by invoice number.
 
@@ -553,34 +623,20 @@ class ELicensingAPIClient:
             invoice_number: The invoice number
 
         Returns:
-            Invoice information
+            InvoiceQueryResponse: Detailed invoice information including fees, payments, and adjustments
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
         endpoint = "/invoice"
-        params = {"invoiceNumber": invoice_number}
+        params = {"InvoiceNumber": invoice_number}
 
         response = self._make_request(endpoint, method='GET', params=params)
+        response.raise_for_status()
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
-            except ValueError as e:
-                logger.error(f"Error with invoice query response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing invoice query response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "query invoice")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+        json_response = response.json()
+        return InvoiceQueryResponse(**json_response)
 
     def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """
