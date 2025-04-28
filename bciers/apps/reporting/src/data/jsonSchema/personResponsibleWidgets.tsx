@@ -1,5 +1,6 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Paper, Typography, Link, Button } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, Paper, Typography, Link, Button, Tooltip } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
@@ -13,14 +14,23 @@ export const infoNote = (
       <Typography variant="body2">
         See that information is incorrect or need to add a new contact? Update
         it here in{" "}
-        <Link
-          href="/administration/contacts"
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          Contacts.
-        </Link>
+        <Tooltip title={"Link opens in a new tab"} placement="top" arrow>
+          <Link
+            href="/administration/contacts?isNewTab=true"
+            target="_blank"
+            rel="noopener noreferrer"
+            sx={{
+              color: "inherit",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+            }}
+          >
+            Contacts
+            <OpenInNewIcon fontSize="inherit" style={{ marginLeft: ".1rem" }} />
+            .
+          </Link>
+        </Tooltip>
       </Typography>
     </Box>
   </Paper>

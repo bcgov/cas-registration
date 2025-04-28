@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Button } from "@mui/material";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonGrid";
+import NewTabBanner from "@bciers/components/layout/NewTabBanner";
 
 const ExternalContactsLayout = () => {
   return (
@@ -58,6 +59,7 @@ export default async function ContactsPage({
   // Render the DataGrid component
   return (
     <>
+      <NewTabBanner />
       {isExternalUser ? <ExternalContactsLayout /> : <InternalContactsLayout />}
       <Suspense fallback={<Loading />}>
         <div className="mt-5">

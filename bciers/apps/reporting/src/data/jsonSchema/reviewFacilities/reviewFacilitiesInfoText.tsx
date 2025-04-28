@@ -1,5 +1,6 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Paper, Typography, Button, Link } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, Paper, Typography, Button, Link, Tooltip } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import { FieldTemplateProps } from "@rjsf/utils";
 import React from "react";
@@ -13,14 +14,27 @@ export const getInfoNote = (operationId: string) => (
         Linear Facilities Operations must register and report for all large and
         medium facilities, as well as a small aggregate, if applicable.{" "}
         <b>Don’t see a facility?</b>{" "}
-        <Link
-          href={`/administration/operations/${operationId}/facilities/add-facility`}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          <u>Add it here</u>
-        </Link>{" "}
+        <Tooltip title={"Link opens in a new tab"} placement="top" arrow>
+          <span>
+            <Link
+              href={`/administration/operations/${operationId}/facilities/add-facility?isNewTab=true`}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: "inherit",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              <u>Add it here</u>
+              <OpenInNewIcon
+                fontSize="inherit"
+                style={{ marginLeft: ".1rem" }}
+              />
+            </Link>{" "}
+          </span>
+        </Tooltip>
         and then click on the ‘Sync latest data from Administration’ button to
         update this list of facilities.
       </Typography>
