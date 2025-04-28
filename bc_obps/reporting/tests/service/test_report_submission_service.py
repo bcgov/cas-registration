@@ -12,6 +12,7 @@ from reporting.service.report_validation.report_validation_error import ReportVa
 
 @pytest.mark.django_db
 class TestReportSubmissionService:
+    @patch("reporting.service.compliance_service.ComplianceService.save_compliance_data")
     @patch("reporting.service.report_sign_off_service.ReportSignOffService.save_report_sign_off")
     @patch("reporting.service.report_submission_service.report_submitted.send")
     @patch("reporting.models.report_version.ReportVersion.objects.filter")
@@ -19,7 +20,6 @@ class TestReportSubmissionService:
     @patch(
         "reporting.service.report_validation.report_validation_service.ReportValidationService.validate_report_version"
     )
-    @patch("reporting.service.compliance_service.ComplianceService.save_compliance_data")
     def test_submit_report(
         self,
         mock_validate_report_version,
