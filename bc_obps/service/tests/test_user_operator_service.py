@@ -138,7 +138,10 @@ class TestUserOperatorService:
     @patch("service.operator_service.OperatorService.update_operator")
     @patch("service.user_operator_service.send_operator_access_request_email")
     def test_create_operator_and_user_operator_with_new_contact(
-        mock_update_operator, mock_get_or_create_user_operator, mock_save_operator, mock_email_service
+        mock_email_service,
+        mock_update_operator,
+        mock_get_or_create_user_operator,
+        mock_save_operator,
     ):
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         payload = OperatorIn(
