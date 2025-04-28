@@ -58,7 +58,7 @@ const FacilityInformationForm = ({
 
   const operationHasFacilities =
     initialGridData?.row_count && initialGridData.row_count > 0;
-  const handleSubmit = async (e: IChangeEvent) => {
+  const handleSubmit = () => {
     // if there are no existing facilities and the user hasn't added a new one, return error
     if (!operationHasFacilities) {
       return { error: "Operation must have at least one facility." };
@@ -71,7 +71,7 @@ const FacilityInformationForm = ({
       baseUrl={`/register-an-operation/${operationId}`}
       baseUrlParams={`title=${operationId}`}
       cancelUrl="/"
-      onSubmit={() => {}} //We just want to redirect to the next step
+      onSubmit={handleSubmit}
       schema={{}}
       step={step}
       steps={steps}
