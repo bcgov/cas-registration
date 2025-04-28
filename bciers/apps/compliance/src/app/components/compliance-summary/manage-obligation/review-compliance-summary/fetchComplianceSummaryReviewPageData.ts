@@ -1,19 +1,10 @@
 import { getComplianceSummary } from "../../../utils/getComplianceSummary";
 import { getComplianceSummaryPayments } from "../../../utils/getComplianceSummaryPayments";
+import { PaymentsData } from "../../../types/payments";
 
 interface ComplianceSummaryReviewPageData {
   complianceSummary: any;
-  paymentsData: {
-    rows: Array<{
-      id: string | number;
-      paymentReceivedDate: string;
-      paymentAmountApplied: number;
-      paymentMethod: string;
-      transactionType: string;
-      referenceNumber: string;
-    }>;
-    row_count: number;
-  };
+  paymentsData: PaymentsData;
 }
 
 export async function fetchComplianceSummaryReviewPageData(

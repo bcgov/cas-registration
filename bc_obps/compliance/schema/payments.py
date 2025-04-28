@@ -5,7 +5,7 @@ from ninja import Schema
 class PaymentOut(Schema):
     """Schema for a single payment record"""
 
-    id: str  # paymentObjectId is always a string from eLicensing
+    id: str
     paymentReceivedDate: str
     paymentAmountApplied: float
     paymentMethod: str
