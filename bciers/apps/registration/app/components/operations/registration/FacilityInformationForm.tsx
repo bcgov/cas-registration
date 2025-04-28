@@ -55,7 +55,6 @@ const FacilityInformationForm = ({
   const [facilityFormIsSubmitting, setFacilityFormIsSubmitting] =
     useState(false);
   const router = useRouter();
-  const [key, setKey] = useState(Math.random());
 
   const operationHasFacilities =
     initialGridData?.row_count && initialGridData.row_count > 0;
@@ -64,8 +63,7 @@ const FacilityInformationForm = ({
     if (!operationHasFacilities) {
       return { error: "Operation must have at least one facility." };
     }
-    // router.refresh();
-    setKey(Math.random());
+    // router.refresh(); // this does nothing
   };
   return (
     <MultiStepBase
@@ -73,7 +71,7 @@ const FacilityInformationForm = ({
       baseUrl={`/register-an-operation/${operationId}`}
       baseUrlParams={`title=${operationId}`}
       cancelUrl="/"
-      onSubmit={handleSubmit}
+      onSubmit={() => {}} //We just want to redirect to the next step
       schema={{}}
       step={step}
       steps={steps}
@@ -94,7 +92,6 @@ const FacilityInformationForm = ({
       {!isOperationSfo && (
         <section className="mt-4">
           <FacilitiesDataGrid
-            key={key}
             disabled={facilityFormIsSubmitting}
             initialData={initialGridData ?? { rows: [], row_count: 0 }}
             operationId={operationId}

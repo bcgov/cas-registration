@@ -29,6 +29,7 @@ const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
+  console.log("errors", errors);
   return errors.map((error) => {
     // custom messages for general errors
     if (error?.name === "minItems") {

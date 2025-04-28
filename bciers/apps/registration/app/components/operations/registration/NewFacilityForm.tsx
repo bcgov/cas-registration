@@ -83,7 +83,6 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
         operation_id: operationId,
       },
     ];
-    console.log("operationId", operationId);
     const response = await actionHandler(endpoint, method, "", {
       body: JSON.stringify(body),
     });
@@ -94,7 +93,8 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
     setIsSnackbarOpen(true);
     setShowForm(false);
     setFacilityFormIsSubmitting(false);
-    // router.refresh();
+    setFormState({}); // reset form state
+    // router.refresh(); // does nothing
     return response;
   };
   console.log("formState", formState);

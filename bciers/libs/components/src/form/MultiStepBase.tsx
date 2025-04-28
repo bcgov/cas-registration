@@ -76,12 +76,16 @@ const MultiStepBase = ({
       setIsSubmitting(false);
       return;
     }
-
+    console.log("isNotFinalStep", isNotFinalStep);
+    console.log("baseUrl", baseUrl);
     if (isNotFinalStep && baseUrl) {
       const nextStepUrl = `${baseUrl}/${step + 1}${
         baseUrlParams ? `?${baseUrlParams}` : ""
       }`;
+      console.log("this shoudl push");
+      console.log("nextStepUrl", nextStepUrl);
       router.push(nextStepUrl);
+      console.log("this should be pushed");
     }
   };
 
