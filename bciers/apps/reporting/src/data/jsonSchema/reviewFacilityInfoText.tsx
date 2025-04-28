@@ -1,5 +1,6 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Link, Paper, Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, Link, Paper, Tooltip, Typography } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import React from "react";
 export const infoNote = (operation_id: string, facility_id: string) => (
@@ -7,14 +8,27 @@ export const infoNote = (operation_id: string, facility_id: string) => (
     <Box sx={{ display: "flex", alignItems: "center" }}>
       <InfoIcon sx={{ mr: 1 }} />
       <Typography variant="body2">
-        <Link
-          href={`/administration/operations/${operation_id}/facilities/${facility_id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          Edit facility information
-        </Link>{" "}
+        <Tooltip title={"Link opens in a new tab"} placement="top" arrow>
+          <span>
+            <Link
+              href={`/administration/operations/${operation_id}/facilities/${facility_id}?isNewTab=true`}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: "inherit",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              Edit facility information
+              <OpenInNewIcon
+                fontSize="inherit"
+                style={{ marginLeft: ".1rem" }}
+              />
+            </Link>{" "}
+          </span>
+        </Tooltip>
         and click the sync button to update and apply facility changes to all
         reports.
       </Typography>

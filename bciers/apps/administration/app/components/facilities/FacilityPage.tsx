@@ -11,7 +11,7 @@ import FacilityForm from "./FacilityForm";
 import getFacility from "./getFacility";
 import { FacilityTypes, OperationTypes } from "@bciers/utils/src/enums";
 import { getOperation } from "@bciers/actions/api";
-import FacilityPageBanner from "./FacilityPageBanner";
+import NewTabBanner from "@bciers/components/layout/NewTabBanner";
 
 // 🧩 Main component
 export default async function Facility({
@@ -52,7 +52,7 @@ export default async function Facility({
 
   return (
     <>
-      <FacilityPageBanner />
+      <NewTabBanner />
       <FacilityForm
         schema={isSfo ? facilitiesSfoSchema : facilitiesLfoSchema}
         uiSchema={isSfo ? facilitiesSfoUiSchema : facilitiesLfoUiSchema}
