@@ -615,11 +615,12 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def query_invoice(self, invoice_number: str) -> InvoiceQueryResponse:
+    def query_invoice(self, client_id: str, invoice_number: str) -> InvoiceQueryResponse:
         """
         Queries an invoice by invoice number.
 
         Args:
+            client_id: The ID of the client
             invoice_number: The invoice number
 
         Returns:
@@ -629,13 +630,34 @@ class ELicensingAPIClient:
             requests.RequestException: If the API request fails
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/invoice"
+        endpoint = f"/client/{client_id}/invoice"
         params = {"InvoiceNumber": invoice_number}
 
         response = self._make_request(endpoint, method='GET', params=params)
         response.raise_for_status()
 
         json_response = response.json()
+
+        # Parse fees and their payments
+        fees = []
+        for fee_data in json_response.get('fees', []):
+            payments = []
+            for payment_data in fee_data.get('payments', []):
+                distributions = []
+                for dist_data in payment_data.get('distributions', []):
+                    distributions.append(PaymentDistribution(**dist_data))
+                payment_data['distributions'] = distributions
+                payments.append(Payment(**payment_data))
+
+            adjustments = []
+            for adj_data in fee_data.get('adjustments', []):
+                adjustments.append(FeeAdjustment(**adj_data))
+
+            fee_data['payments'] = payments
+            fee_data['adjustments'] = adjustments
+            fees.append(InvoiceFee(**fee_data))
+
+        json_response['fees'] = fees
         return InvoiceQueryResponse(**json_response)
 
     def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:

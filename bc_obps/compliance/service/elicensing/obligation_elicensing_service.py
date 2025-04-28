@@ -30,7 +30,6 @@ class ObligationELicensingService:
     def get_obligation_invoice_payments(cls, obligation_id: int) -> List[Dict[str, Any]]:
         """
         Get payments for a compliance obligation's invoice.
-        Currently returns mock data for frontend testing.
 
         Args:
             obligation_id: The ID of the compliance obligation
@@ -38,57 +37,52 @@ class ObligationELicensingService:
         Returns:
             List of payment records formatted for the frontend
         """
-        # Mock data for frontend testing
-        return [
-            {
-                "id": "12345",
-                "paymentReceivedDate": "2024-04-28",
-                "paymentAmountApplied": 474376.00,
-                "paymentMethod": "Credit Card",
-                "transactionType": "Payment",
-                "referenceNumber": "R46459",
-            },
-            {
-                "id": "12346",
-                "paymentReceivedDate": "2024-04-27",
-                "paymentAmountApplied": 250000.00,
-                "paymentMethod": "Bank Transfer",
-                "transactionType": "Payment",
-                "referenceNumber": "R46460",
-            },
-        ]
+        try:
+            # Get the invoice link for the obligation
+            invoice_link = ELicensingLink.objects.filter(
+                content_type__model='complianceobligation',
+                object_id=obligation_id,
+                elicensing_object_kind=ELicensingLink.ObjectKind.INVOICE,
+            ).first()
 
-        # TODO: Uncomment when eLicensing API is ready
-        # try:
-        #     # Get the invoice link for the obligation
-        #     invoice_link = ELicensingLink.objects.filter(
-        #         content_type__model='complianceobligation',
-        #         object_id=obligation_id,
-        #         elicensing_object_kind=ELicensingLink.ObjectKind.INVOICE
-        #     ).first()
+            if not invoice_link or not invoice_link.elicensing_object_id:
+                return []
 
-        #     if not invoice_link or not invoice_link.elicensing_object_id:
-        #         return []
+            # Get the client link for the obligation
+            obligation = ComplianceObligation.objects.get(id=obligation_id)
+            client_link = ELicensingLink.objects.filter(
+                content_type__model='operator',
+                object_id=obligation.compliance_summary.report.operation.operator.id,
+                elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
+            ).first()
 
-        #     # Get payments from eLicensing
-        #     invoice = elicensing_api_client.query_invoice(invoice_link.elicensing_object_id)
+            if not client_link or not client_link.elicensing_object_id:
+                logger.error(f"No client link found for obligation {obligation_id}")
+                return []
 
-        #     payments = []
-        #     for fee in invoice.fees:
-        #         for payment in fee.payments:
-        #             payments.append({
-        #                 "id": payment.paymentObjectId,
-        #                 "paymentReceivedDate": payment.receivedDate,
-        #                 "paymentAmountApplied": payment.amount,
-        #                 "paymentMethod": payment.method,
-        #                 "transactionType": "Payment",
-        #                 "referenceNumber": payment.receiptNumber,
-        #             })
+            # Get payments from eLicensing
+            invoice = elicensing_api_client.query_invoice(
+                client_link.elicensing_object_id, invoice_link.elicensing_object_id
+            )
 
-        #     return payments
-        # except Exception:
-        #     # Log the error but return empty list to maintain consistent behavior
-        #     return []
+            payments = []
+            for fee in invoice.fees:
+                for payment in fee.payments:
+                    payments.append(
+                        {
+                            "id": str(payment.paymentObjectId),
+                            "paymentReceivedDate": payment.receivedDate,
+                            "paymentAmountApplied": payment.amount,
+                            "paymentMethod": payment.method,
+                            "transactionType": "Payment",
+                            "referenceNumber": payment.referenceNumber,
+                        }
+                    )
+
+            return payments
+        except Exception as e:
+            logger.error(f"Failed to get payments for obligation {obligation_id}: {str(e)}")
+            return []
 
     @classmethod
     def process_obligation_integration(cls, obligation_id: int) -> None:
