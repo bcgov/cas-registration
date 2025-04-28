@@ -17,6 +17,8 @@ import {
 import { FacilityInformationFormData } from "apps/registration/app/components/operations/registration/types";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 import { facilitiesSfoSchema } from "@/administration/app/data/jsonSchema/facilitiesSfo";
+import NewFacilityForm from "./NewFacilityForm";
+import { useRouter } from "next/navigation";
 
 interface FacilityInformationFormProps {
   facilityId?: UUID;
@@ -39,28 +41,6 @@ const FacilityGridSx = {
   },
 };
 
-// Unnest the formData objects inside facility_information_array which is split into sections
-const createUnnestedArrayFormData = (
-  formDataArray: any,
-  formSectionList: string[],
-  operationId: string,
-) => {
-  const unnestedFormData: { [key: string]: any }[] = [];
-  formDataArray.forEach((formData: { [key: string]: any }) => {
-    // if facility form is blank (a user clicked "Add Facility" but didn't fill anything), do nothing
-    if (Object.keys(formData).length === 0) {
-      return;
-    }
-    // Unnest each formData object and add operation_id
-    unnestedFormData.push({
-      ...createUnnestedFormData(formData, formSectionList),
-      operation_id: operationId,
-    });
-  });
-
-  return unnestedFormData;
-};
-
 const FacilityInformationForm = ({
   facilityId,
   formData,
@@ -72,126 +52,57 @@ const FacilityInformationForm = ({
   step,
   steps,
 }: FacilityInformationFormProps) => {
-  const [formState, setFormState] = useState(formData ?? {});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  // Get the list of sections in the LFO schema - used to unnest the formData
-  const formSectionListSfo = Object.keys(
-    facilitiesSfoSchema.properties as RJSFSchema,
-  );
+  const [facilityFormIsSubmitting, setFacilityFormIsSubmitting] =
+    useState(false);
+  const router = useRouter();
+  const [key, setKey] = useState(Math.random());
 
-  const schema = isOperationSfo
-    ? facilityInformationSfoSchema
-    : facilityInformationLfoSchema;
-  const uiSchema = isOperationSfo
-    ? facilityInformationSfoUiSchema
-    : facilityInformationLfoUiSchema;
-
-  const FacilityDataGridMemo = useMemo(
-    () => (
-      <FacilitiesDataGrid
-        disabled={isSubmitting}
-        initialData={initialGridData ?? { rows: [], row_count: 0 }}
-        operationId={operationId}
-        operationName={operationName}
-        sx={FacilityGridSx}
-        fromRegistration={true}
-      />
-    ),
-    [initialGridData, isSubmitting, operationId, operationName],
-  );
-
-  const handleFormChange = useCallback(
-    (e: IChangeEvent) => {
-      setFormState(e.formData);
-    },
-    [setFormState],
-  );
-
-  const redirect = () => {
-    // Using window.location.href instead of MutliStepBase router.push as there were rerender issues due to
-    // Facility Grid listerning to params change on this page which sometimes hijacked the route change
-    window.location.href = `${
-      window.location.origin
-    }/registration/register-an-operation/${operationId}/${step + 1}`;
+  const operationHasFacilities =
+    initialGridData?.row_count && initialGridData.row_count > 0;
+  const handleSubmit = async (e: IChangeEvent) => {
+    // if there are no existing facilities and the user hasn't added a new one, return error
+    if (!operationHasFacilities) {
+      return { error: "Operation must have at least one facility." };
+    }
+    // router.refresh();
+    setKey(Math.random());
   };
-
-  const handleSubmit = useCallback(
-    async (e: IChangeEvent) => {
-      const facilityFormIsBlank =
-        e.formData?.facility_information_array &&
-        (e.formData.facility_information_array.length === 0 ||
-          JSON.stringify(e.formData.facility_information_array) ===
-            JSON.stringify([{}]));
-      // if there are no existing facilities and the user hasn't added a new one, return error
-      if (initialGridData?.row_count === 0 && facilityFormIsBlank) {
-        return { error: "Operation must have at least one facility." };
-      }
-      // if there's an existing facility and the new facility form was opened but not filled, redirect to the next step without hitting the API
-      if (
-        initialGridData?.row_count &&
-        initialGridData?.row_count > 0 &&
-        facilityFormIsBlank
-      ) {
-        redirect();
-        return;
-      }
-      setIsSubmitting(true);
-      const method = isCreating ? "POST" : "PUT";
-
-      const endpoint = isCreating
-        ? "registration/facilities"
-        : `registration/facilities/${facilityId}`;
-      const sfoFormData = isOperationSfo && {
-        ...createUnnestedFormData(e.formData, formSectionListSfo),
-        operation_id: operationId,
-        facility_id: facilityId,
-      };
-
-      // We may want to update the PUT route to accept an array of facilities
-      // just as we do in the POST route
-      const sfoBody = isCreating ? [sfoFormData] : sfoFormData;
-
-      const body = isOperationSfo
-        ? sfoBody
-        : // Facilities POST route expects an array of facilities
-          createUnnestedArrayFormData(
-            e.formData.facility_information_array,
-            formSectionListSfo,
-            operationId,
-          );
-
-      const response = await actionHandler(endpoint, method, "", {
-        body: JSON.stringify(body),
-      }).then((resolve) => {
-        if (resolve?.error) {
-          // errors are handled in MultiStepBase
-          return { error: resolve.error };
-        } else {
-          redirect();
-        }
-      });
-
-      return response;
-    },
-    [operationId, isOperationSfo, formSectionListSfo, isCreating, facilityId],
-  );
-
   return (
     <MultiStepBase
       allowBackNavigation
       baseUrl={`/register-an-operation/${operationId}`}
+      baseUrlParams={`title=${operationId}`}
       cancelUrl="/"
-      formData={formState}
-      onChange={handleFormChange}
       onSubmit={handleSubmit}
-      schema={schema}
+      schema={{}}
       step={step}
       steps={steps}
-      uiSchema={uiSchema}
+      uiSchema={{}}
+      submitButtonText="Continue"
+      submitButtonDisabled={!operationHasFacilities}
+      beforeForm={
+        <NewFacilityForm
+          onSubmit={handleSubmit}
+          step={step}
+          operationId={operationId as UUID}
+          formData={formData}
+          setFacilityFormIsSubmitting={setFacilityFormIsSubmitting}
+        />
+      }
     >
       {/* Only display DataGrid for LFO Operations */}
       {!isOperationSfo && (
-        <section className="mt-4">{FacilityDataGridMemo}</section>
+        <section className="mt-4">
+          <FacilitiesDataGrid
+            key={key}
+            disabled={facilityFormIsSubmitting}
+            initialData={initialGridData ?? { rows: [], row_count: 0 }}
+            operationId={operationId}
+            operationName={operationName}
+            sx={FacilityGridSx}
+            fromRegistration={true}
+          />
+        </section>
       )}
     </MultiStepBase>
   );
