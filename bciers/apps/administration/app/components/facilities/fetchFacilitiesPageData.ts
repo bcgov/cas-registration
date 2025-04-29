@@ -12,7 +12,7 @@ const fetchFacilitiesPageData = async (
     const pageData = await actionHandler(
       `registration/operations/${operationId}/facilities${queryParams}`,
       "GET",
-      "",
+      "/",
     );
     return {
       rows: pageData.items,
