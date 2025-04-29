@@ -10,7 +10,7 @@ describe("ActionCell", () => {
   ): GridRenderCellParams =>
     ({
       row: { id, obligation_id, compliance_status },
-    } as GridRenderCellParams);
+    }) as GridRenderCellParams;
 
   const expectLink = (name: string, href: string) => {
     const link = screen.getByRole("link", { name });
