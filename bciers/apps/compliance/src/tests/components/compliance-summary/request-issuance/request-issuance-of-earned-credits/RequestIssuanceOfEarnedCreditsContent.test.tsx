@@ -1,10 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import { RequestIssuanceOfEarnedCreditsContent } from "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent";
-import { RequestIssuanceData } from "../../../../../app/utils/getRequestIssuanceData";
+import { RequestIssuanceOfEarnedCreditsContent } from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent";
+import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/ComplianceHeading",
+  "@/compliance/src/app/components/compliance-summary/ComplianceHeading",
   () => ({
     ComplianceHeading: ({ title }: { title: string }) => (
       <div data-testid="compliance-heading">{title}</div>
@@ -13,7 +12,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CarbonRegistryAccountInfo",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CarbonRegistryAccountInfo",
   () => ({
     default: ({ data }: { data: RequestIssuanceData }) => (
       <div data-testid="carbon-registry-account-info">

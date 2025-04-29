@@ -1,10 +1,8 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import ComplianceSummaryReviewPage from "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
+import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
 
 vi.mock(
-  "../../../../../app/utils/getRequestIssuanceComplianceSummaryData",
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
   () => ({
     getRequestIssuanceComplianceSummaryData: vi.fn().mockResolvedValue({
       operation_name: "Test Operation",
@@ -57,7 +55,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewComponent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewComponent",
   () => ({
     default: (props: any) => (
       <div data-testid="review-component">
@@ -95,10 +93,10 @@ describe("ComplianceSummaryReviewPage", () => {
     render(component);
 
     const { getRequestIssuanceComplianceSummaryData } = await import(
-      "../../../../../app/utils/getRequestIssuanceComplianceSummaryData"
+      "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData"
     );
     const { getRequestIssuanceTaskList } = await import(
-      "../../../../../app/components/taskLists/2_requestIssuanceSchema"
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
     );
 
     expect(getRequestIssuanceComplianceSummaryData).toHaveBeenCalledWith(
@@ -133,7 +131,7 @@ describe("ComplianceSummaryReviewPage", () => {
     render(component);
 
     const { getRequestIssuanceTaskList } = await import(
-      "../../../../../app/components/taskLists/2_requestIssuanceSchema"
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
     );
 
     expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(

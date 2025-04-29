@@ -1,7 +1,5 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import { EarnedCreditsAlertNote } from "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCreditsAlertNote";
+import { EarnedCreditsAlertNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCreditsAlertNote";
 
 vi.mock("@bciers/components/icons", () => ({
   AlertIcon: (props: any) => (

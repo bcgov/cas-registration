@@ -1,13 +1,11 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import { CarbonRegistryAccountInfo } from "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CarbonRegistryAccountInfo";
-import * as schemaModule from "../../../../../app/utils/carbonRegistryAccountSchema";
-import { RequestIssuanceData } from "../../../../../app/utils/getRequestIssuanceData";
+import CarbonRegistryAccountInfo from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CarbonRegistryAccountInfo";
+import * as schemaModule from "@/compliance/src/app/utils/carbonRegistryAccountSchema";
+import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 
-vi.mock("../../../../../app/utils/carbonRegistryAccountSchema", async () => {
+vi.mock("@/compliance/src/app/utils/carbonRegistryAccountSchema", async () => {
   const actual = await vi.importActual(
-    "../../../../../app/utils/carbonRegistryAccountSchema",
+    "@/compliance/src/app/utils/carbonRegistryAccountSchema",
   );
   return {
     ...actual,
@@ -56,7 +54,6 @@ vi.mock("@mui/material", async () => {
 });
 
 vi.mock("@bciers/components/form/FormBase", () => ({
-  __esModule: true,
   default: vi
     .fn()
     .mockImplementation(({ schema, uiSchema, formData, onChange }) => {

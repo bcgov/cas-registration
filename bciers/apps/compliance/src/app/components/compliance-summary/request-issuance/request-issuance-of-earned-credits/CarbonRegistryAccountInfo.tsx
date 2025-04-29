@@ -7,7 +7,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   buildCarbonRegistryAccountSchema,
   buildCarbonRegistryAccountUiSchema,
-} from "../../../../utils/carbonRegistryAccountSchema";
+} from "@/compliance/src/app/utils/carbonRegistryAccountSchema";
 import { IChangeEvent } from "@rjsf/core";
 import { TitleRow } from "../../TitleRow";
 

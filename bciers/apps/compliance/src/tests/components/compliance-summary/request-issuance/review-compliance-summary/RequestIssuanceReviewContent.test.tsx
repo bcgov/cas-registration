@@ -1,10 +1,8 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import { RequestIssuanceReviewContent } from "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewContent";
+import { RequestIssuanceReviewContent } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewContent";
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/ComplianceHeading",
+  "@/compliance/src/app/components/compliance-summary/ComplianceHeading",
   () => ({
     ComplianceHeading: ({ title }: any) => (
       <div data-testid="compliance-heading">{title}</div>
@@ -13,7 +11,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/FormReport",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/FormReport",
   () => ({
     FormReport: ({ data }: any) => (
       <div data-testid="form-report" data-data={JSON.stringify(data)}>
@@ -24,7 +22,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCredits",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCredits",
   () => ({
     EarnedCredits: ({ data }: any) => (
       <div data-testid="earned-credits" data-data={JSON.stringify(data)}>
@@ -35,7 +33,6 @@ vi.mock(
 );
 
 vi.mock("@bciers/components/form/components/ComplianceStepButtons", () => ({
-  __esModule: true,
   default: ({
     backUrl,
     continueUrl,
