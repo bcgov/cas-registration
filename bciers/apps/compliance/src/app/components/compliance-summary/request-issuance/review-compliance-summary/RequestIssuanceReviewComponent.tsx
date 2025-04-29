@@ -1,4 +1,3 @@
-"use client";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
 import { RequestIssuanceReviewContent } from "./RequestIssuanceReviewContent";
@@ -18,18 +17,16 @@ export default function RequestIssuanceReviewComponent({
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`;
 
   return (
-    <>
-      <CompliancePageLayout
-        taskListElements={taskListElements}
-        title={formData.operation_name}
-      >
-        <RequestIssuanceReviewContent
-          data={formData}
-          backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
-          complianceSummaryId={complianceSummaryId}
-        />
-      </CompliancePageLayout>
-    </>
+    <CompliancePageLayout
+      taskListElements={taskListElements}
+      title={formData.operation_name}
+    >
+      <RequestIssuanceReviewContent
+        data={formData}
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+        complianceSummaryId={complianceSummaryId}
+      />
+    </CompliancePageLayout>
   );
 }

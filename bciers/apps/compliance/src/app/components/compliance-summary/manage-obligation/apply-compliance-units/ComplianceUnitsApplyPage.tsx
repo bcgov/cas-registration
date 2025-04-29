@@ -2,7 +2,7 @@ import {
   ActivePage,
   getComplianceSummaryTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationSchema";
-import { getComplianceUnitsApplyData } from "../../../../utils/getComplianceUnitsApplyData";
+import { getComplianceUnitsApplyData } from "@/compliance/src/app/utils/getComplianceUnitsApplyData";
 import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
 
 interface Props {

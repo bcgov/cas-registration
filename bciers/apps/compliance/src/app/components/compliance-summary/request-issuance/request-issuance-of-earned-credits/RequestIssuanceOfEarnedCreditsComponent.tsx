@@ -18,18 +18,16 @@ export default function RequestIssuanceOfEarnedCreditsComponent({
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/track-status-of-issuance`;
 
   return (
-    <>
-      <CompliancePageLayout
-        taskListElements={taskListElements}
-        title={data.operation_name}
-      >
-        <RequestIssuanceOfEarnedCreditsContent
-          data={data}
-          backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
-          complianceSummaryId={complianceSummaryId}
-        />
-      </CompliancePageLayout>
-    </>
+    <CompliancePageLayout
+      taskListElements={taskListElements}
+      title={data.operation_name}
+    >
+      <RequestIssuanceOfEarnedCreditsContent
+        data={data}
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+        complianceSummaryId={complianceSummaryId}
+      />
+    </CompliancePageLayout>
   );
 }

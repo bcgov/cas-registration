@@ -4,6 +4,8 @@ import {
 } from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
 import { getRequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
 import RequestIssuanceOfEarnedCreditsComponent from "./RequestIssuanceOfEarnedCreditsComponent";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 interface Props {
   compliance_summary_id: string;
@@ -23,10 +25,12 @@ export default async function RequestIssuanceOfEarnedCreditsPage({
   );
 
   return (
-    <RequestIssuanceOfEarnedCreditsComponent
-      data={data}
-      complianceSummaryId={complianceSummaryId}
-      taskListElements={taskListElements}
-    />
+    <Suspense fallback={<Loading />}>
+      <RequestIssuanceOfEarnedCreditsComponent
+        data={data}
+        complianceSummaryId={complianceSummaryId}
+        taskListElements={taskListElements}
+      />
+    </Suspense>
   );
 }

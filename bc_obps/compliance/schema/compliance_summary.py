@@ -87,9 +87,9 @@ class ComplianceSummaryIssuanceOut(ModelSchema):
     operation_name: str = Field(..., alias="report.operation.name")
     reporting_year: int = Field(..., alias="compliance_period.end_date.year")
     excess_emissions_percentage: Optional[Union[Decimal, int]] = None
-    earned_credits: Optional[int] = None
-    earned_credits_issued: bool = False
-    issuance_status: str = "Issuance not requested"
+    earned_credits: Optional[int]
+    earned_credits_issued: bool
+    issuance_status: str
 
     class Meta:
         model = ComplianceSummary

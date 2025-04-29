@@ -4,12 +4,14 @@ import {
 } from "@/compliance/src/app/components/taskLists/1_manageObligationSchema";
 import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
 import ComplianceSummaryReviewComponent from "../../manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
+import { Suspense } from "react";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 interface Props {
   compliance_summary_id: string;
 }
 
-export default async function C1omplianceSummaryReviewPage(props: Props) {
+export default async function ComplianceSummaryReviewPage(props: Props) {
   // Convert the string ID from URL params to a number
   const complianceSummaryId = parseInt(props.compliance_summary_id, 10);
 
@@ -22,10 +24,12 @@ export default async function C1omplianceSummaryReviewPage(props: Props) {
   );
 
   return (
-    <ComplianceSummaryReviewComponent
-      formData={complianceSummary}
-      complianceSummaryId={complianceSummaryId}
-      taskListElements={taskListElements}
-    />
+    <Suspense fallback={<Loading />}>
+      <ComplianceSummaryReviewComponent
+        formData={complianceSummary}
+        complianceSummaryId={complianceSummaryId}
+        taskListElements={taskListElements}
+      />
+    </Suspense>
   );
 }
