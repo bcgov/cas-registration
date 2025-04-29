@@ -85,62 +85,65 @@ export const createRegistrationPurposeSchema = async () => {
       },
     },
 
-    dependencies: {
-      registration_purpose: {
-        oneOf: registrationPurposes.map((purpose: RegistrationPurposes) => {
-          const isRegulatedProducts =
-            regulatedOperationPurposes.includes(purpose);
-          const isReportingActivities =
-            reportingOperationPurposes.includes(purpose);
+    allOf: registrationPurposes.map((purpose) => {
+      const isRegulatedProducts = regulatedOperationPurposes.includes(purpose);
+      const isReportingActivities =
+        reportingOperationPurposes.includes(purpose);
 
-          // have to determine required fields dynamically based on purpose
-          const requiredFields = [];
-          if (isRegulatedProducts) requiredFields.push("regulated_products");
-          if (isReportingActivities) requiredFields.push("activities");
-          return {
-            properties: {
-              registration_purpose: {
-                type: "string",
-                const: purpose,
-              },
-              ...(isRegulatedProducts && {
-                regulated_products: {
-                  title: "Regulated Product Name(s)",
-                  type: "array",
-                  minItems: 1,
-                  items: {
-                    enum: regulatedProducts.map((product) => product.id),
-                    enumNames: regulatedProducts.map((product) => product.name),
-                  },
-                },
-              }),
-              ...(isReportingActivities && {
-                activities: {
-                  title: "Reporting Activities",
-                  type: "array",
-                  minItems: 1,
-                  items: {
-                    type: "number",
-                    enum: reportingActivities.map(
-                      (activity: {
-                        id: number;
-                        applicable_to: string;
-                        name: string;
-                      }) => activity.id,
-                    ),
-                    enumNames: reportingActivities.map(
-                      (activity: { applicable_to: string; name: string }) =>
-                        activity.name,
-                    ),
-                  },
-                },
-              }),
+      // have to determine required fields dynamically based on purpose
+      const requiredFields = [];
+      if (isRegulatedProducts) requiredFields.push("regulated_products");
+      if (isReportingActivities) requiredFields.push("activities");
+
+      return {
+        if: {
+          properties: {
+            registration_purpose: {
+              const: purpose,
             },
-            ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
-          };
-        }),
-      },
-    },
+          },
+        },
+        then: {
+          properties: {
+            ...(isRegulatedProducts && {
+              regulated_products: {
+                title: "Regulated Product Name(s)",
+                type: "array",
+                minItems: 1,
+                default: [],
+                items: {
+                  enum: regulatedProducts.map((product) => product.id),
+                  enumNames: regulatedProducts.map((product) => product.name),
+                },
+              },
+            }),
+            ...(isReportingActivities && {
+              activities: {
+                title: "Reporting Activities",
+                type: "array",
+                minItems: 1,
+                default: [],
+                items: {
+                  type: "number",
+                  enum: reportingActivities.map(
+                    (activity: {
+                      id: number;
+                      applicable_to: string;
+                      name: string;
+                    }) => activity.id,
+                  ),
+                  enumNames: reportingActivities.map(
+                    (activity: { applicable_to: string; name: string }) =>
+                      activity.name,
+                  ),
+                },
+              },
+            }),
+          },
+          ...(requiredFields.length > 0 ? { required: requiredFields } : {}),
+        },
+      };
+    }),
   };
   return operationInformationSchema;
 };
