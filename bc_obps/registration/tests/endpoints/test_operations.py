@@ -14,7 +14,7 @@ fake_timestamp_from_past = '2024-01-09 14:13:08.888903-0800'
 fake_timestamp_from_past_str_format = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
-class TestOperationsEndpoint(CommonTestSetup):
+class TestOperationsTimelinesEndpoint(CommonTestSetup):
     @patch("service.operation_service.OperationService.list_operations_timeline", autospec=True)
     def test_returns_data_as_provided_by_the_service(self, mock_list_operations_timeline: MagicMock):
         """
@@ -55,6 +55,61 @@ class TestOperationsEndpoint(CommonTestSetup):
                 'operator__legal_name',
                 'operation__id',
                 'operation__status',
+            ]
+        )
+
+
+class TestOperationsEndpoint(CommonTestSetup):
+    @patch("service.operation_service.OperationService.list_operations", autospec=True)
+    def test_returns_data_as_provided_by_the_service(self, mock_list_operations: MagicMock):
+        """
+        Testing that the API endpoint fetches the operation data.
+        """
+
+        # Arrange: Mock facilities returned by the service
+        operations = make_recipe('registration.tests.utils.operation', _quantity=2)
+        mock_list_operations.return_value = operations
+
+        # Act: Mock the authorization and perform the request
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=make_recipe('registration.tests.utils.operator')
+        )
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("list_operations"),
+        )
+
+        # Assert: Verify the response status
+        assert response.status_code == 200
+
+        # Assert: Validate the response structure and data
+        response_json = response.json()
+        assert len(response_json) == 2
+        assert response_json.keys() == {'count', 'items'}
+        assert sorted(response_json['items'][0].keys()) == sorted(
+            [
+                'activities',
+                'bc_obps_regulated_operation',
+                'bcghg_id',
+                'boundary_map',
+                'date_of_first_shipment',
+                'id',
+                'multiple_operators_array',
+                'naics_code_id',
+                'name',
+                'new_entrant_application',
+                'operation_has_multiple_operators',
+                'operation_representatives',
+                'operator',
+                'opted_in_operation',
+                'process_flow_diagram',
+                'registration_purpose',
+                'regulated_products',
+                'secondary_naics_code_id',
+                'status',
+                'tertiary_naics_code_id',
+                'type',
             ]
         )
 
