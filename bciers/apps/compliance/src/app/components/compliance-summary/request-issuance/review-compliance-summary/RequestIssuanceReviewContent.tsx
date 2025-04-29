@@ -1,4 +1,3 @@
-"use client";
 import { ComplianceHeading } from "../../ComplianceHeading";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
 import { FormReport } from "./FormReport";

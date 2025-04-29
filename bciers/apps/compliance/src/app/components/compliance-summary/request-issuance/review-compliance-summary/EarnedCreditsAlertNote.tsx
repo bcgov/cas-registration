@@ -1,23 +1,14 @@
 import { AlertIcon } from "@bciers/components/icons";
 import { Box, Link, Paper, Typography } from "@mui/material";
-import {
-  BC_GOV_LINKS_COLOR,
-  BC_GOV_TEXT,
-  LIGHT_BLUE_BG_COLOR,
-} from "@bciers/styles";
 import React from "react";
 
 export const EarnedCreditsAlertNote = () => {
   return (
     <Paper
-      sx={{
-        p: 2,
-        mb: "10px",
-        bgcolor: LIGHT_BLUE_BG_COLOR,
-        color: BC_GOV_TEXT,
-      }}
+      className="p-[16px] mb-[10px] bg-[#DCE9F6] text-bc-text"
+      data-testid="earned-credits-alert-note"
     >
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box className="flex items-center">
         <AlertIcon width="40" height="40" />
         <Typography className="ml-[10px] text-[16px]" variant="body2">
           The earned credits have not been issued yet. You may request issuance
@@ -26,12 +17,7 @@ export const EarnedCreditsAlertNote = () => {
             href="https://www.bc-ctr.ca/"
             target="_blank"
             rel="noopener noreferrer"
-            sx={{
-              color: BC_GOV_LINKS_COLOR,
-              textDecoration: "underline",
-              textDecorationThickness: "1.2px",
-              fontWeight: "bold",
-            }}
+            className="text-bc-link-blue underline decoration-[1.2px] font-bold"
           >
             B.C. Carbon Registrys
           </Link>{" "}

@@ -9,7 +9,7 @@ interface Props {
   compliance_summary_id: string;
 }
 
-export default async function C1omplianceSummaryReviewPage(props: Props) {
+export default async function ComplianceSummaryReviewPage(props: Props) {
   const complianceSummaryId = parseInt(props.compliance_summary_id, 10);
 
   const complianceSummary = await getRequestIssuanceComplianceSummaryData(
