@@ -4,9 +4,9 @@ import { RequestIssuanceOfEarnedCreditsContent } from "./RequestIssuanceOfEarned
 import { RequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
 
 interface Props {
-  data: RequestIssuanceData;
-  complianceSummaryId: any;
-  taskListElements: TaskListElement[];
+  readonly data: RequestIssuanceData;
+  readonly complianceSummaryId: any;
+  readonly taskListElements: TaskListElement[];
 }
 
 export default function RequestIssuanceOfEarnedCreditsComponent({

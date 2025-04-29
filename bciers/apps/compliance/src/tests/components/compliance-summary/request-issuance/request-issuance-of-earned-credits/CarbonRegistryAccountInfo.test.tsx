@@ -214,7 +214,13 @@ describe("CarbonRegistryAccountInfo", () => {
   it("applies the correct styling with data-component attribute", () => {
     render(<CarbonRegistryAccountInfo data={mockData} />);
 
-    const container = screen.getByTestId("mui-box");
+    const boxes = screen.getAllByTestId("mui-box");
+    const container = boxes.find(
+      (box) =>
+        box.getAttribute("data-component") === "carbon-registry-account-info",
+    );
+
+    expect(container).toBeDefined();
     expect(container).toHaveAttribute(
       "data-component",
       "carbon-registry-account-info",

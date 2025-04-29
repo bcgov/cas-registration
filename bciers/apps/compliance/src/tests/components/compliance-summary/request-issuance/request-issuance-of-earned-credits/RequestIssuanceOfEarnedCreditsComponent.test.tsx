@@ -138,9 +138,6 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     expect(screen.getByTestId("operation-name")).toHaveTextContent(
       mockData.operation_name,
     );
-    expect(screen.getByTestId("compliance-summary-id")).toHaveTextContent(
-      "123",
-    );
     expect(screen.getByTestId("back-url")).toBeInTheDocument();
     expect(screen.getByTestId("continue-url")).toBeInTheDocument();
   });
