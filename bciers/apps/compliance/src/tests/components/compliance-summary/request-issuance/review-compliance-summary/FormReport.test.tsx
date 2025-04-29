@@ -4,7 +4,14 @@ import { describe, expect, vi } from "vitest";
 import { FormReport } from "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/FormReport";
 
 const generateTestId = (prefix: string, label: string) => {
-  return `${prefix}-${label.replace(/[^a-zA-Z0-9]/g, "-").replace(/-+$/, "")}`;
+  const withHyphens = label.replace(/[^a-zA-Z0-9]/g, "-");
+
+  let result = withHyphens;
+  while (result.endsWith("-")) {
+    result = result.slice(0, -1);
+  }
+
+  return `${prefix}-${result}`;
 };
 
 vi.mock("../../../../../app/components/compliance-summary/InfoRow", () => ({
