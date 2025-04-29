@@ -1,7 +1,7 @@
 import { ComplianceHeading } from "../../ComplianceHeading";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
 import CarbonRegistryAccountInfo from "./CarbonRegistryAccountInfo";
-import { RequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
+import { RequestIssuanceData } from "@/compliance/src/app/src/app/utils/getRequestIssuanceData";
 
 interface Props {
   readonly continueUrl: string;

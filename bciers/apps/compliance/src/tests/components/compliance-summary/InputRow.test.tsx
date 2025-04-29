@@ -1,7 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
-import { InputRow } from "../../../app/components/compliance-summary/InputRow";
-import React from "react";
+import { InputRow } from "@/compliance/src/app/components/compliance-summary/InputRow";
 
 type TextFieldProps = {
   name: string;

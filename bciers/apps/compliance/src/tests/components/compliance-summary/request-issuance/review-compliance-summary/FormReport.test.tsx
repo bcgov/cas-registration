@@ -1,7 +1,5 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import { FormReport } from "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/FormReport";
+import { FormReport } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/FormReport";
 
 const generateTestId = (prefix: string, label: string) => {
   const withHyphens = label.replace(/[^a-zA-Z0-9]/g, "-");
@@ -14,7 +12,7 @@ const generateTestId = (prefix: string, label: string) => {
   return `${prefix}-${result}`;
 };
 
-vi.mock("../../../../../app/components/compliance-summary/InfoRow", () => ({
+vi.mock("@/compliance/src/app/components/compliance-summary/InfoRow", () => ({
   InfoRow: ({ label, value, style }: any) => {
     const baseTestId = generateTestId("info-row", label);
     return (
@@ -30,7 +28,7 @@ vi.mock("../../../../../app/components/compliance-summary/InfoRow", () => ({
   },
 }));
 
-vi.mock("../../../../../app/components/compliance-summary/TitleRow", () => ({
+vi.mock("@/compliance/src/app/components/compliance-summary/TitleRow", () => ({
   TitleRow: ({ label }: any) => (
     <div data-testid={generateTestId("title-row", label)}>{label}</div>
   ),

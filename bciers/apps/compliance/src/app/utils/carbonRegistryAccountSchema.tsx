@@ -1,10 +1,9 @@
 import { RJSFSchema } from "@rjsf/utils";
-import { RequestIssuanceData } from "./getRequestIssuanceData";
+import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { BC_GOV_TEXT, BC_GOV_LINKS_COLOR } from "@bciers/styles";
-import React from "react";
 import { Typography, Link, Box } from "@mui/material";
-import CustomTextField from "../components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CustomTextField";
+import CustomTextField from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CustomTextField";
 
 export const buildCarbonRegistryAccountSchema = (): RJSFSchema => ({
   type: "object",

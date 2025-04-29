@@ -1,8 +1,7 @@
-import { describe, expect, it } from "vitest";
 import {
   ActivePage,
   getRequestIssuanceTaskList,
-} from "../../../app/components/taskLists/2_requestIssuanceSchema";
+} from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
 
 describe("getRequestIssuanceTaskList", () => {
   const complianceSummaryId = 123;

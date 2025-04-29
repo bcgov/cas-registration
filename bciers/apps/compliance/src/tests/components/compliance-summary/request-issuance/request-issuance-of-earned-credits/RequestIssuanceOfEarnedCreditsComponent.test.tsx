@@ -1,8 +1,6 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import RequestIssuanceOfEarnedCreditsComponent from "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
-import { RequestIssuanceData } from "../../../../../app/utils/getRequestIssuanceData";
+import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
+import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
 vi.mock("@bciers/components/layout/CompliancePageLayout", () => ({
@@ -18,7 +16,7 @@ vi.mock("@bciers/components/layout/CompliancePageLayout", () => ({
 }));
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent",
   () => ({
     RequestIssuanceOfEarnedCreditsContent: ({
       data,

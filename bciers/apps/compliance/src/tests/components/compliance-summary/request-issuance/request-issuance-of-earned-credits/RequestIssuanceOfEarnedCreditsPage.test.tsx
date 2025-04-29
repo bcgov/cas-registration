@@ -1,8 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import RequestIssuanceOfEarnedCreditsPage from "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsPage";
+import RequestIssuanceOfEarnedCreditsPage from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsPage";
 
-vi.mock("../../../../../app/utils/getRequestIssuanceData", () => ({
+vi.mock("@/compliance/src/app/utils/getRequestIssuanceData", () => ({
   getRequestIssuanceData: vi.fn().mockResolvedValue({
     bccrTradingName: "Test Trading Name",
     validBccrHoldingAccountId: "123456789012345",
@@ -50,7 +49,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent",
   () => ({
     default: (props: any) => (
       <div data-testid="request-issuance-component">
@@ -86,10 +85,10 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     render(component);
 
     const { getRequestIssuanceData } = await import(
-      "../../../../../app/utils/getRequestIssuanceData"
+      "@/compliance/src/app/utils/getRequestIssuanceData"
     );
     const { getRequestIssuanceTaskList } = await import(
-      "../../../../../app/components/taskLists/2_requestIssuanceSchema"
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
     );
 
     expect(getRequestIssuanceData).toHaveBeenCalled();
@@ -123,7 +122,7 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     render(component);
 
     const { getRequestIssuanceTaskList } = await import(
-      "../../../../../app/components/taskLists/2_requestIssuanceSchema"
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
     );
 
     expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(

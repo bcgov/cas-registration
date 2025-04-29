@@ -1,9 +1,7 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import { EarnedCredits } from "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCredits";
+import { EarnedCredits } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCredits";
 
-vi.mock("../../../../../app/components/compliance-summary/InfoRow", () => ({
+vi.mock("@/compliance/src/app/components/compliance-summary/InfoRow", () => ({
   InfoRow: ({ label, value }: { label: string; value: string }) => (
     <div data-testid="info-row">
       <span
@@ -20,14 +18,14 @@ vi.mock("../../../../../app/components/compliance-summary/InfoRow", () => ({
   ),
 }));
 
-vi.mock("../../../../../app/components/compliance-summary/TitleRow", () => ({
+vi.mock("@/compliance/src/app/components/compliance-summary/TitleRow", () => ({
   TitleRow: ({ label }: { label: string }) => (
     <div data-testid="title-row">{label}</div>
   ),
 }));
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCreditsAlertNote",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCreditsAlertNote",
   () => ({
     EarnedCreditsAlertNote: () => (
       <div data-testid="earned-credits-alert-note">Alert Note Content</div>

@@ -1,6 +1,4 @@
 "use client";
-import React from "react";
-
 interface ComplianceHeadingProps {
   title: string;
   className?: string;

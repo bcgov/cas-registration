@@ -2,7 +2,7 @@ import {
   ActivePage,
   getRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
-import { getRequestIssuanceComplianceSummaryData } from "../../../../utils/getRequestIssuanceComplianceSummaryData";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import RequestIssuanceReviewComponent from "./RequestIssuanceReviewComponent";
 
 interface Props {

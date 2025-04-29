@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { WidgetProps } from "@rjsf/utils";
 import {
   TextField,
