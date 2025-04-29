@@ -62,7 +62,7 @@ vi.mock("@mui/material", async () => {
       const { className, style, children, label } = props;
       return (
         <div className={className} style={style} data-testid="mui-box">
-          {label && label}
+          {label}
           {children}
         </div>
       );

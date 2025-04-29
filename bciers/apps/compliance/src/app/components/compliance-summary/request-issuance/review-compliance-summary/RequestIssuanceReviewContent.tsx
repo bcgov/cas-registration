@@ -4,10 +4,9 @@ import { FormReport } from "./FormReport";
 import { EarnedCredits } from "./EarnedCredits";
 
 interface Props {
-  continueUrl: string;
-  backUrl?: string;
-  data: any;
-  complianceSummaryId?: number;
+  readonly continueUrl: string;
+  readonly backUrl?: string;
+  readonly data: any;
 }
 
 export function RequestIssuanceReviewContent(props: Props) {

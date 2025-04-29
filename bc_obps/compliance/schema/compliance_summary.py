@@ -5,6 +5,10 @@ from compliance.models.compliance_product import ComplianceProduct
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
 
+# Constants for field aliases
+OPERATION_NAME_ALIAS = "report.operation.name"
+REPORTING_YEAR_ALIAS = "compliance_period.end_date.year"
+
 
 class ComplianceProductOut(ModelSchema):
     """Schema for compliance product output"""
@@ -36,8 +40,8 @@ class ComplianceObligationOut(ModelSchema):
 class ComplianceSummaryListOut(ModelSchema):
     """Schema for compliance summary list output"""
 
-    operation_name: str = Field(..., alias="report.operation.name")
-    reporting_year: int = Field(..., alias="compliance_period.end_date.year")
+    operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
+    reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     compliance_status: str
     obligation_id: Optional[str] = Field(None, alias="obligation.obligation_id")
     outstanding_balance: Optional[Decimal] = None
@@ -53,9 +57,9 @@ class ComplianceSummaryListOut(ModelSchema):
 class ComplianceSummaryOut(ModelSchema):
     """Schema for compliance summary output"""
 
-    operation_name: str = Field(..., alias="report.operation.name")
+    operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     operation_bcghg_id: str = Field(..., alias="report.operation.bcghg_id.id")
-    reporting_year: int = Field(..., alias="compliance_period.end_date.year")
+    reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     compliance_status: str = Field(..., alias="compliance_status")
     products: List[ComplianceProductOut]
     obligation: ComplianceObligationOut
@@ -84,8 +88,8 @@ class ComplianceSummaryOut(ModelSchema):
 class ComplianceSummaryIssuanceOut(ModelSchema):
     """Schema for compliance summary issuance data"""
 
-    operation_name: str = Field(..., alias="report.operation.name")
-    reporting_year: int = Field(..., alias="compliance_period.end_date.year")
+    operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
+    reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     excess_emissions_percentage: Optional[Union[Decimal, int]] = None
     earned_credits: Optional[int]
     earned_credits_issued: bool

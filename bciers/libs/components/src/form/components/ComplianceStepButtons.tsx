@@ -81,7 +81,7 @@ const ComplianceStepButtons: React.FunctionComponent<
         {(backUrl || onBackClick) && (
           <Button
             variant="outlined"
-            onClick={onBackClick || (() => navigate(backUrl))}
+            onClick={onBackClick ?? (() => navigate(backUrl))}
             disabled={backButtonDisabled}
             data-testid="back-button"
             sx={{
@@ -132,7 +132,7 @@ const ComplianceStepButtons: React.FunctionComponent<
         {(continueUrl || onContinueClick) && (
           <Button
             variant="contained"
-            onClick={onContinueClick || (() => navigate(continueUrl))}
+            onClick={onContinueClick ?? (() => navigate(continueUrl))}
             disabled={submitButtonDisabled}
             data-testid="continue-button"
             sx={{

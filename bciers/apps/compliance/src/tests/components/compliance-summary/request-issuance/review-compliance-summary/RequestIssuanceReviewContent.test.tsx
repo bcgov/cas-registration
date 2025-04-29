@@ -90,7 +90,7 @@ describe("RequestIssuanceReviewContent", () => {
     const formReport = screen.getByTestId("form-report");
     expect(formReport).toBeInTheDocument();
 
-    const passedData = JSON.parse(formReport.getAttribute("data-data") || "{}");
+    const passedData = JSON.parse(formReport.getAttribute("data-data") ?? "{}");
     expect(passedData).toEqual(mockProps.data);
   });
 
@@ -101,7 +101,7 @@ describe("RequestIssuanceReviewContent", () => {
     expect(earnedCredits).toBeInTheDocument();
 
     const passedData = JSON.parse(
-      earnedCredits.getAttribute("data-data") || "{}",
+      earnedCredits.getAttribute("data-data") ?? "{}",
     );
     expect(passedData).toEqual(mockProps.data);
   });

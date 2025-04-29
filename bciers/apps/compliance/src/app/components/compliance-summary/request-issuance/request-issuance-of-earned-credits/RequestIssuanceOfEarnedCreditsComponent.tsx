@@ -26,7 +26,6 @@ export default function RequestIssuanceOfEarnedCreditsComponent({
         data={data}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
-        complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>
   );
