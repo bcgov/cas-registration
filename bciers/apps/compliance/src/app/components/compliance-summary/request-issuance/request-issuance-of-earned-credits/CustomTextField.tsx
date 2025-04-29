@@ -11,6 +11,53 @@ import {
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
 import Check from "@bciers/components/icons/Check";
 
+// Helper function to validate the input value against validation options
+const validateInput = (
+  value: any,
+  validationOptions: {
+    expectedValue?: string;
+    pattern?: string;
+    minLength?: number;
+    nonEmpty?: boolean;
+  },
+): boolean => {
+  const {
+    expectedValue,
+    pattern,
+    minLength,
+    nonEmpty = false,
+  } = validationOptions;
+
+  // If no value, it's valid only if not required
+  if (!value) {
+    return !nonEmpty;
+  }
+
+  // Check against expected value
+  if (expectedValue !== undefined && value !== expectedValue) {
+    return false;
+  }
+
+  // Check against regex pattern
+  if (pattern && typeof value === "string") {
+    const regex = new RegExp(pattern);
+    if (!regex.test(value)) {
+      return false;
+    }
+  }
+
+  // Check minimum length
+  if (
+    minLength !== undefined &&
+    typeof value === "string" &&
+    value.length < minLength
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
 const CustomTextField = (props: WidgetProps) => {
   const {
     id,
@@ -24,13 +71,13 @@ const CustomTextField = (props: WidgetProps) => {
   } = props;
 
   const type = schema.type === "number" ? "number" : "text";
-
   const maxNum = Number(uiSchema?.["ui:options"]?.max);
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
-    if (type === "number" && !isNaN(Number(val)) && Number(val) > maxNum)
+    if (type === "number" && !isNaN(Number(val)) && Number(val) > maxNum) {
       return;
+    }
 
     onChange(val === "" ? undefined : val);
   };
@@ -41,41 +88,9 @@ const CustomTextField = (props: WidgetProps) => {
       pattern?: string;
       minLength?: number;
       nonEmpty?: boolean;
-    }) || {};
+    }) ?? {};
 
-  const {
-    expectedValue,
-    pattern,
-    minLength,
-    nonEmpty = false,
-  } = validationOptions;
-
-  let isValid = false;
-
-  if (value) {
-    isValid = true;
-
-    if (expectedValue !== undefined && value !== expectedValue) {
-      isValid = false;
-    }
-
-    if (pattern && typeof value === "string") {
-      const regex = new RegExp(pattern);
-      if (!regex.test(value)) {
-        isValid = false;
-      }
-    }
-
-    if (
-      minLength !== undefined &&
-      typeof value === "string" &&
-      value.length < minLength
-    ) {
-      isValid = false;
-    }
-  } else {
-    isValid = !nonEmpty;
-  }
+  const isValid = validateInput(value, validationOptions);
 
   const styles = {
     height: "40px",
@@ -90,9 +105,9 @@ const CustomTextField = (props: WidgetProps) => {
     <Box sx={{ width: "100%", "& .MuiFormControl-root": { width: "100%" } }}>
       <TextField
         id={id}
-        disabled={disabled || readonly}
+        disabled={disabled ?? readonly}
         name={id}
-        value={value || ""}
+        value={value ?? ""}
         onChange={handleChange}
         sx={styles}
         type={type}

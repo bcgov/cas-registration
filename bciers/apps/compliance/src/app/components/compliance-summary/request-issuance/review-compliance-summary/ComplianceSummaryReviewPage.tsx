@@ -6,7 +6,7 @@ import { getRequestIssuanceComplianceSummaryData } from "../../../../utils/getRe
 import RequestIssuanceReviewComponent from "./RequestIssuanceReviewComponent";
 
 interface Props {
-  compliance_summary_id: string;
+  readonly compliance_summary_id: string;
 }
 
 export default async function ComplianceSummaryReviewPage(props: Props) {

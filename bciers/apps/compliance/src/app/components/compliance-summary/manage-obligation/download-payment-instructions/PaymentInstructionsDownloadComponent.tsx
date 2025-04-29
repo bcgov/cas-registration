@@ -2,7 +2,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import ComplianceSummaryTaskList from "@bciers/components/navigation/complianceSummaryTaskList/ComplianceSummaryTaskList";
 
 interface Props {
-  taskListElements: TaskListElement[];
+  readonly taskListElements: TaskListElement[];
 }
 
 export default function PaymentInstructionsDownloadComponent({

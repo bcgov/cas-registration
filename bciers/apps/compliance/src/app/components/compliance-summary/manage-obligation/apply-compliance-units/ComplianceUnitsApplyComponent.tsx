@@ -4,9 +4,9 @@ import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout
 import { ComplianceUnitsApplyContent } from "./ComplianceUnitsApplyContent";
 
 interface Props {
-  formData: any;
-  complianceSummaryId: any;
-  taskListElements: TaskListElement[];
+  readonly formData: any;
+  readonly complianceSummaryId: any;
+  readonly taskListElements: TaskListElement[];
 }
 
 export default function ComplianceUnitsApplyComponent({
@@ -18,18 +18,16 @@ export default function ComplianceUnitsApplyComponent({
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
 
   return (
-    <>
-      <CompliancePageLayout
-        taskListElements={taskListElements}
-        title={formData.operation_name}
-      >
-        <ComplianceUnitsApplyContent
-          data={formData}
-          backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
-          complianceSummaryId={complianceSummaryId}
-        />
-      </CompliancePageLayout>
-    </>
+    <CompliancePageLayout
+      taskListElements={taskListElements}
+      title={formData.operation_name}
+    >
+      <ComplianceUnitsApplyContent
+        data={formData}
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+        complianceSummaryId={complianceSummaryId}
+      />
+    </CompliancePageLayout>
   );
 }

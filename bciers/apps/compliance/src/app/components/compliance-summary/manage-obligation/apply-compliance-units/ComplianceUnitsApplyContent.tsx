@@ -8,10 +8,10 @@ import ComplianceHeading from "../../ComplianceHeading";
 import AccountInformation from "./AccountInformation";
 
 interface ComplianceUnitsApplyContentProps {
-  data: any;
-  backUrl?: string;
-  continueUrl: string;
-  complianceSummaryId?: number;
+  readonly data: any;
+  readonly backUrl?: string;
+  readonly continueUrl: string;
+  readonly complianceSummaryId?: number;
 }
 
 export function ComplianceUnitsApplyContent(

@@ -3,9 +3,9 @@ import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout
 import { RequestIssuanceReviewContent } from "./RequestIssuanceReviewContent";
 
 interface Props {
-  formData: any;
-  complianceSummaryId: any;
-  taskListElements: TaskListElement[];
+  readonly formData: any;
+  readonly complianceSummaryId: any;
+  readonly taskListElements: TaskListElement[];
 }
 
 export default function RequestIssuanceReviewComponent({
@@ -25,7 +25,6 @@ export default function RequestIssuanceReviewComponent({
         data={formData}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
-        complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>
   );

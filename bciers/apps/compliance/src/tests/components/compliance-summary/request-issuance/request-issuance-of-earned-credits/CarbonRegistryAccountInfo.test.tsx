@@ -68,7 +68,7 @@ vi.mock("@bciers/components/form/FormBase", () => ({
           <input
             data-testid="bccr-holding-account-id"
             type="text"
-            value={formData.bccrHoldingAccountId || ""}
+            value={formData.bccrHoldingAccountId ?? ""}
             onChange={(e) => {
               const newFormData = {
                 ...formData,
@@ -80,7 +80,7 @@ vi.mock("@bciers/components/form/FormBase", () => ({
           <input
             data-testid="bccr-trading-name"
             type="text"
-            value={formData.bccrTradingName || ""}
+            value={formData.bccrTradingName ?? ""}
             onChange={(e) => {
               const newFormData = {
                 ...formData,
@@ -135,7 +135,7 @@ describe("CarbonRegistryAccountInfo", () => {
     );
 
     const formDataElement = screen.getByTestId("form-data");
-    const formData = JSON.parse(formDataElement.textContent || "{}");
+    const formData = JSON.parse(formDataElement.textContent ?? "{}");
 
     expect(formData).toEqual({
       bccrHoldingAccountId: "",

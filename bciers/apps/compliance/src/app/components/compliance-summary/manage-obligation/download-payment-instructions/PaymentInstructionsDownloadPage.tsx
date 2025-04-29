@@ -6,7 +6,7 @@ import PaymentInstructionsDownloadComponent from "./PaymentInstructionsDownloadC
 import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
 
 interface Props {
-  compliance_summary_id: number;
+  readonly compliance_summary_id: number;
 }
 
 export default async function PaymentInstructionsDownloadPage(props: Props) {

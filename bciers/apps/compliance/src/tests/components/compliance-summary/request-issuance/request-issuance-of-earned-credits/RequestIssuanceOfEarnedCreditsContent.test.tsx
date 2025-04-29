@@ -71,9 +71,7 @@ describe("RequestIssuanceOfEarnedCreditsContent", () => {
   it("renders ComplianceStepButtons with correct props", () => {
     render(<RequestIssuanceOfEarnedCreditsContent {...mockProps} />);
 
-    expect(screen.getByTestId("back-url")).toHaveTextContent(
-      mockProps.backUrl as string,
-    );
+    expect(screen.getByTestId("back-url")).toHaveTextContent(mockProps.backUrl);
     expect(screen.getByTestId("continue-url")).toHaveTextContent(
       mockProps.continueUrl,
     );

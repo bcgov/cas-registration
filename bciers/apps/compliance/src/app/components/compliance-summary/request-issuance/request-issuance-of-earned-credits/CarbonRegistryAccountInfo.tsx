@@ -9,6 +9,7 @@ import {
   buildCarbonRegistryAccountUiSchema,
 } from "../../../../utils/carbonRegistryAccountSchema";
 import { IChangeEvent } from "@rjsf/core";
+import { TitleRow } from "../../TitleRow";
 
 interface CarbonRegistryAccountInfoProps {
   data: RequestIssuanceData;
@@ -24,8 +25,8 @@ export const CarbonRegistryAccountInfo = ({
     bccrTradingName: "",
   });
 
-  // State to track form validity
-  const setIsValid = useState(false)[1];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isValid, setIsValid] = useState(false);
 
   // Build the schema and UI schema
   const schema = buildCarbonRegistryAccountSchema();
@@ -89,6 +90,7 @@ export const CarbonRegistryAccountInfo = ({
             },
         }}
       />
+      <TitleRow label="B.C. Carbon Registry (BCCR) Account Information" />
       <FormBase
         schema={schema}
         uiSchema={uiSchema}

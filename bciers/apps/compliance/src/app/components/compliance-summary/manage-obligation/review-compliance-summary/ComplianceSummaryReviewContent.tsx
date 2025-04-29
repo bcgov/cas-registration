@@ -7,14 +7,13 @@ import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
 import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
-// Removed server action import as we'll directly use the API endpoint
 import { useState } from "react";
 
 interface Props {
-  continueUrl: string;
-  backUrl?: string;
-  data: any;
-  complianceSummaryId?: number;
+  readonly continueUrl: string;
+  readonly backUrl?: string;
+  readonly data: any;
+  readonly complianceSummaryId?: number;
 }
 
 export function ComplianceSummaryReviewContent(props: Props) {

@@ -4,10 +4,9 @@ import CarbonRegistryAccountInfo from "./CarbonRegistryAccountInfo";
 import { RequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
 
 interface Props {
-  continueUrl: string;
-  backUrl?: string;
-  data: RequestIssuanceData;
-  complianceSummaryId?: number;
+  readonly continueUrl: string;
+  readonly backUrl?: string;
+  readonly data: RequestIssuanceData;
 }
 
 export function RequestIssuanceOfEarnedCreditsContent(props: Props) {

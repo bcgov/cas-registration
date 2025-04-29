@@ -6,7 +6,7 @@ import ObligationTrackPaymentsPayComponent from "./ObligationTrackPaymentsPayCom
 import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
 
 interface Props {
-  compliance_summary_id: number;
+  readonly compliance_summary_id: number;
 }
 
 export default async function ObligationTrackPaymentsPayPage(props: Props) {

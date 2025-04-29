@@ -6,7 +6,7 @@ import { getComplianceUnitsApplyData } from "@/compliance/src/app/utils/getCompl
 import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
 
 interface Props {
-  compliance_summary_id: number;
+  readonly compliance_summary_id: number;
 }
 export default async function ComplianceUnitsApplyPage(props: Props) {
   const complianceSummaryId = props.compliance_summary_id;
