@@ -56,6 +56,16 @@ const customTransformErrors = (
       }
       if (
         // we use some because fields can be nested in sections
+        ["acitivities", "regulated_products"].some((field) => {
+          // @ts-ignore - we already checked for error.property's existance above
+          return error?.name === "required" && error.property.includes(field);
+        })
+      ) {
+        error.message = `Select at least one option`;
+        return error;
+      }
+      if (
+        // we use some because fields can be nested in sections
         [
           "cra_business_number",
           "po_cra_business_number",
