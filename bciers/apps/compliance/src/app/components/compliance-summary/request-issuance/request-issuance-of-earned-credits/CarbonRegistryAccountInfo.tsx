@@ -25,9 +25,6 @@ export const CarbonRegistryAccountInfo = ({
     bccrTradingName: "",
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isValid, setIsValid] = useState(false);
-
   // Build the schema and UI schema
   const schema = buildCarbonRegistryAccountSchema();
   const uiSchema = buildCarbonRegistryAccountUiSchema(data);
@@ -48,7 +45,6 @@ export const CarbonRegistryAccountInfo = ({
       updatedFormData.bccrTradingName === data.bccrTradingName;
 
     const formValid = holdingAccountValid && tradingNameValid;
-    setIsValid(formValid);
 
     if (onValidationChange) {
       onValidationChange(formValid);

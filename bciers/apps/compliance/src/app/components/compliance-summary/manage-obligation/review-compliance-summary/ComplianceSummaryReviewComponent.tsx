@@ -14,17 +14,6 @@ export default function ComplianceSummaryReviewComponent({
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  // Uncomment after Review Compliance Summary will be completed
-
-  // const saveHandler = async () => {
-  //   console.log("save");
-  //   return true;
-  // };
-
-  // const onChangeHandler = () => {
-  //   console.log("change");
-  // };
-
   const backUrl = `/compliance-summaries`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
 
