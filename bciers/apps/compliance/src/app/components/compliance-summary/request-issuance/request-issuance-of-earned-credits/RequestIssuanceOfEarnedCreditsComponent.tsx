@@ -1,7 +1,7 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
 import { RequestIssuanceOfEarnedCreditsContent } from "./RequestIssuanceOfEarnedCreditsContent";
-import { RequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
+import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 
 interface Props {
   readonly data: RequestIssuanceData;
