@@ -1,115 +1,48 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 import { GridRenderCellParams } from "@mui/x-data-grid";
-import ActionCell from "../../../../app/components/compliance-summaries/cells/ActionCell";
-import Link from "next/link";
-
-vi.mock("@bciers/components/datagrid/cells/ActionCellFactory", () => ({
-  default: vi.fn().mockImplementation(({ generateHref, cellText }) => {
-    const ActionCellComponent = (params: GridRenderCellParams) => {
-      const href = generateHref(params);
-      return (
-        <Link href={href} className="action-cell-text">
-          {cellText}
-        </Link>
-      );
-    };
-    ActionCellComponent.displayName = "ActionCellComponent";
-    return ActionCellComponent;
-  }),
-}));
-
-vi.mock("next/link", () => {
-  const MockLink = ({
-    href,
-    children,
-  }: {
-    href: string;
-    children: React.ReactNode;
-  }) => (
-    <a href={href} data-testid="action-link">
-      {children}
-    </a>
-  );
-
-  // Add display name to fix the linting error
-  MockLink.displayName = "MockLink";
-
-  return {
-    __esModule: true,
-    default: MockLink,
-  };
-});
+import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 
 describe("ActionCell", () => {
   const createMockParams = (
-    id: number = 123,
+    id = 123,
     obligation_id?: number,
     compliance_status?: string,
-  ): GridRenderCellParams => {
-    return {
-      row: {
-        id,
-        obligation_id,
-        compliance_status,
-      },
-    } as GridRenderCellParams;
+  ): GridRenderCellParams =>
+    ({
+      row: { id, obligation_id, compliance_status },
+    } as GridRenderCellParams);
+
+  const expectLink = (name: string, href: string) => {
+    const link = screen.getByRole("link", { name });
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute("href", href);
   };
 
-  it("should display 'Manage Obligation' when obligation_id is present", () => {
-    const mockParams = createMockParams(123, 456);
-
-    render(ActionCell(mockParams));
-
-    expect(screen.getByTestId("action-link")).toHaveTextContent(
+  it("displays 'Manage Obligation' when obligation_id is present", () => {
+    render(ActionCell(createMockParams(123, 456)));
+    expectLink(
       "Manage Obligation",
-    );
-
-    expect(screen.getByTestId("action-link")).toHaveAttribute(
-      "href",
       "/compliance-summaries/123/manage-obligation/review-compliance-summary",
     );
   });
 
-  it("should display 'Request Issuance of Credits' when compliance_status is 'Earned credits'", () => {
-    const mockParams = createMockParams(123, undefined, "Earned credits");
-
-    render(ActionCell(mockParams));
-
-    expect(screen.getByTestId("action-link")).toHaveTextContent(
+  it("displays 'Request Issuance of Credits' when compliance_status is 'Earned credits'", () => {
+    render(ActionCell(createMockParams(123, undefined, "Earned credits")));
+    expectLink(
       "Request Issuance of Credits",
-    );
-
-    expect(screen.getByTestId("action-link")).toHaveAttribute(
-      "href",
       "/compliance-summaries/123/request-issuance/review-compliance-summary",
     );
   });
 
-  it("should display 'View Details' when neither obligation_id nor earned credits status is present", () => {
-    const mockParams = createMockParams(123);
-
-    render(ActionCell(mockParams));
-
-    expect(screen.getByTestId("action-link")).toHaveTextContent("View Details");
-
-    expect(screen.getByTestId("action-link")).toHaveAttribute(
-      "href",
-      "/compliance-summaries/123",
-    );
+  it("displays 'View Details' when neither obligation_id nor earned credits status is present", () => {
+    render(ActionCell(createMockParams(123)));
+    expectLink("View Details", "/compliance-summaries/123");
   });
 
-  it("should prioritize obligation_id over compliance_status when both are present", () => {
-    const mockParams = createMockParams(123, 456, "Earned credits");
-
-    render(ActionCell(mockParams));
-
-    expect(screen.getByTestId("action-link")).toHaveTextContent(
+  it("prioritizes 'Manage Obligation' when both obligation_id and earned credits are present", () => {
+    render(ActionCell(createMockParams(123, 456, "Earned credits")));
+    expectLink(
       "Manage Obligation",
-    );
-
-    expect(screen.getByTestId("action-link")).toHaveAttribute(
-      "href",
       "/compliance-summaries/123/manage-obligation/review-compliance-summary",
     );
   });
