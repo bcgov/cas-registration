@@ -81,7 +81,9 @@ const MultiStepBase = ({
       const nextStepUrl = `${baseUrl}/${step + 1}${
         baseUrlParams ? `?${baseUrlParams}` : ""
       }`;
+      console.log("before push", nextStepUrl);
       router.push(nextStepUrl);
+      console.log("after push", nextStepUrl);
     }
   };
 
