@@ -115,66 +115,63 @@ const FacilityInformationForm = ({
     }/registration/register-an-operation/${operationId}/${step + 1}`;
   };
 
-  const handleSubmit = useCallback(
-    async (e: IChangeEvent) => {
-      const facilityFormIsBlank =
-        e.formData?.facility_information_array &&
-        (e.formData.facility_information_array.length === 0 ||
-          JSON.stringify(e.formData.facility_information_array) ===
-            JSON.stringify([{}]));
-      // if there are no existing facilities and the user hasn't added a new one, return error
-      if (initialGridData?.row_count === 0 && facilityFormIsBlank) {
-        return { error: "Operation must have at least one facility." };
-      }
-      // if there's an existing facility and the new facility form was opened but not filled, redirect to the next step without hitting the API
-      if (
-        initialGridData?.row_count &&
-        initialGridData?.row_count > 0 &&
-        facilityFormIsBlank
-      ) {
+  const handleSubmit = async (e: IChangeEvent) => {
+    const facilityFormIsBlank =
+      e.formData?.facility_information_array &&
+      (e.formData.facility_information_array.length === 0 ||
+        JSON.stringify(e.formData.facility_information_array) ===
+          JSON.stringify([{}]));
+    // if there are no existing facilities and the user hasn't added a new one, return error
+    if (initialGridData?.row_count === 0 && facilityFormIsBlank) {
+      return { error: "Operation must have at least one facility." };
+    }
+    // if there's an existing facility and the new facility form was opened but not filled, redirect to the next step without hitting the API
+    if (
+      initialGridData?.row_count &&
+      initialGridData?.row_count > 0 &&
+      facilityFormIsBlank
+    ) {
+      redirect();
+      return;
+    }
+    setIsSubmitting(true);
+    const method = isCreating ? "POST" : "PUT";
+
+    const endpoint = isCreating
+      ? "registration/facilities"
+      : `registration/facilities/${facilityId}`;
+    const sfoFormData = isOperationSfo && {
+      ...createUnnestedFormData(e.formData, formSectionListSfo),
+      operation_id: operationId,
+      facility_id: facilityId,
+    };
+
+    // We may want to update the PUT route to accept an array of facilities
+    // just as we do in the POST route
+    const sfoBody = isCreating ? [sfoFormData] : sfoFormData;
+
+    const body = isOperationSfo
+      ? sfoBody
+      : // Facilities POST route expects an array of facilities
+        createUnnestedArrayFormData(
+          e.formData.facility_information_array,
+          formSectionListSfo,
+          operationId,
+        );
+
+    const response = await actionHandler(endpoint, method, "", {
+      body: JSON.stringify(body),
+    }).then((resolve) => {
+      if (resolve?.error) {
+        // errors are handled in MultiStepBase
+        return { error: resolve.error };
+      } else {
         redirect();
-        return;
       }
-      setIsSubmitting(true);
-      const method = isCreating ? "POST" : "PUT";
+    });
 
-      const endpoint = isCreating
-        ? "registration/facilities"
-        : `registration/facilities/${facilityId}`;
-      const sfoFormData = isOperationSfo && {
-        ...createUnnestedFormData(e.formData, formSectionListSfo),
-        operation_id: operationId,
-        facility_id: facilityId,
-      };
-
-      // We may want to update the PUT route to accept an array of facilities
-      // just as we do in the POST route
-      const sfoBody = isCreating ? [sfoFormData] : sfoFormData;
-
-      const body = isOperationSfo
-        ? sfoBody
-        : // Facilities POST route expects an array of facilities
-          createUnnestedArrayFormData(
-            e.formData.facility_information_array,
-            formSectionListSfo,
-            operationId,
-          );
-
-      const response = await actionHandler(endpoint, method, "", {
-        body: JSON.stringify(body),
-      }).then((resolve) => {
-        if (resolve?.error) {
-          // errors are handled in MultiStepBase
-          return { error: resolve.error };
-        } else {
-          redirect();
-        }
-      });
-
-      return response;
-    },
-    [operationId, isOperationSfo, formSectionListSfo, isCreating, facilityId],
-  );
+    return response;
+  };
 
   return (
     <MultiStepBase
