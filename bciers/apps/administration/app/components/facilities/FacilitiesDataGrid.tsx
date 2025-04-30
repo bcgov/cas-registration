@@ -40,7 +40,7 @@ const FacilitiesDataGrid = ({
           params.row.facility__id
         }?operations_title=${operationsTitle}&facilities_title=${
           params.row.facility__name
-        }${fromRegistration ? "&from_registration=true" : ""}`;
+        }${fromRegistration ? "&from_registration=true&isNewTab=true" : ""}`;
       },
       cellText: "View Details",
       useWindowLocation: true,

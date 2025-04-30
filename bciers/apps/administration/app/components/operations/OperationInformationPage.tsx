@@ -1,4 +1,5 @@
 import OperationInformationForm from "./OperationInformationForm";
+import NewTabBanner from "@bciers/components/layout/NewTabBanner";
 import { getOperationWithDocuments } from "@bciers/actions/api";
 import { createAdministrationOperationInformationSchema } from "../../data/jsonSchema/operationInformation/administrationOperationInformation";
 import { UUID } from "crypto";
@@ -31,18 +32,21 @@ const OperationInformationPage = async ({
   );
 
   return (
-    <OperationInformationForm
-      formData={{
-        ...operation,
-        registration_purpose: operation?.registration_purpose,
-      }}
-      operationId={operationId}
-      // this is the schema needed for the operation's existing registration purpose
-      schema={formSchema}
-      // these schemas are used to support changing the registration purpose
-      eioSchema={eioSchema}
-      generalSchema={generalSchema}
-    />
+    <>
+      <NewTabBanner />
+      <OperationInformationForm
+        formData={{
+          ...operation,
+          registration_purpose: operation?.registration_purpose,
+        }}
+        operationId={operationId}
+        // this is the schema needed for the operation's existing registration purpose
+        schema={formSchema}
+        // these schemas are used to support changing the registration purpose
+        eioSchema={eioSchema}
+        generalSchema={generalSchema}
+      />
+    </>
   );
 };
 
