@@ -1,5 +1,6 @@
 import InfoIcon from "@mui/icons-material/Info";
-import { Box, Link, Paper, Typography } from "@mui/material";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Box, Link, Paper, Tooltip, Typography } from "@mui/material";
 import { BC_GOV_TEXT, LIGHT_BLUE_BG_COLOR } from "@bciers/styles";
 import React from "react";
 export const purposeNote = (
@@ -12,14 +13,27 @@ export const purposeNote = (
       <Typography variant="body2">
         Any edits to operation information made here will only apply to this
         report. You can{" "}
-        <Link
-          href={`/administration/operations/${operationId}?operations_title=${operationName}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          sx={{ color: "inherit", textDecoration: "none" }}
-        >
-          update operation information
-        </Link>{" "}
+        <Tooltip title={"Link opens in a new tab"} placement="top" arrow>
+          <span>
+            <Link
+              href={`/administration/operations/${operationId}?operations_title=${operationName}&isNewTab=true`}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                color: "inherit",
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              update operation information
+              <OpenInNewIcon
+                fontSize="inherit"
+                style={{ marginLeft: ".1rem" }}
+              />
+            </Link>{" "}
+          </span>
+        </Tooltip>
         in the operations page.
       </Typography>
     </Box>
