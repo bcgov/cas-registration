@@ -2750,6 +2750,21 @@ docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
 test = ["argcomplete (>=3.0.3)", "mypy (>=1.7.0)", "pre-commit", "pytest (>=7.0,<8.2)", "pytest-mock", "pytest-mypy-testing"]
 
 [[package]]
+name = "types-jsonschema"
+version = "4.23.0.20241208"
+description = "Typing stubs for jsonschema"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "types_jsonschema-4.23.0.20241208-py3-none-any.whl", hash = "sha256:87934bd9231c99d8eff94cacfc06ba668f7973577a9bd9e1f9de957c5737313e"},
+    {file = "types_jsonschema-4.23.0.20241208.tar.gz", hash = "sha256:e8b15ad01f290ecf6aea53f93fbdf7d4730e4600313e89e8a7f95622f7e87b7c"},
+]
+
+[package.dependencies]
+referencing = "*"
+
+[[package]]
 name = "types-pyyaml"
 version = "6.0.12.20250402"
 description = "Typing stubs for PyYAML"
@@ -3007,4 +3022,4 @@ test = ["pytest"]
 [metadata]
 lock-version = "2.1"
 python-versions = "~3.12.3"
-content-hash = "b2b6fb2a7ad06e111331afcc737240fa165ad7ca158bb005c7d84466df0c1119"
+content-hash = "2bfcce41bc7cc78a1d7d036865d0444cdf30e4e25e926ab315206dd210c232f3"
