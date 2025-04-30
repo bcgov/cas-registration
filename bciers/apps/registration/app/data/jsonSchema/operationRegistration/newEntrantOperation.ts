@@ -20,7 +20,7 @@ export const newEntrantOperationSchema: RJSFSchema = {
     },
     new_entrant_application: {
       type: "string",
-      title: "New Entrant Application and Statutory Declaration",
+      title: "New Entrant Application",
       format: "data-url",
     },
   },
