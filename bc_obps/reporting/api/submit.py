@@ -24,17 +24,16 @@ from .router import router
     description="""Submits a report version""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def submit_report_version(
-    request: HttpRequest, version_id: int, payload: ReportSignOffIn
-) -> int:
+def submit_report_version(request: HttpRequest, version_id: int, payload: ReportSignOffIn) -> int:
     user_guid: UUID = get_current_user_guid(request)
     ReportSubmissionService.submit_report(version_id, user_guid, payload)
     return version_id
 
 
+# Test endpoint to be removed before merging
 @router.get(
     "report-version/{version_id}/test",
-    response={200: int, custom_codes_4xx: Message},
+    response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""test""",
 )
@@ -42,4 +41,4 @@ def test_validation(request: HttpRequest, version_id: int) -> int:
     report_version = ReportVersion.objects.get(id=version_id)
     result = validate(report_version)
     pprint.pprint(result, indent=2)
-    return 200
+    return 200, result
