@@ -16,7 +16,9 @@ export default function HelpDrawer() {
       onClick={toggleDrawer(false)}
     >
       <div className="flex justify-between items-center">
-        <h1 className={`w-full text-lg`}>Help</h1>
+        <h1 role="heading" className={`w-full text-lg`}>
+          Help
+        </h1>
         <Link href="#" onClick={toggleDrawer(true)}>
           <CloseIcon />
         </Link>
