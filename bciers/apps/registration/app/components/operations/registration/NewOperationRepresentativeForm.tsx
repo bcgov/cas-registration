@@ -46,6 +46,40 @@ const NewOperationRepresentativeForm: FC<
   const isExistingContactSelected =
     Boolean(existingContactId) &&
     formState?.new_operation_representative?.[0]?.existing_contact_id;
+  const schema = createOperationRepresentativeSchema(
+    existingOperationRepresentatives,
+    contacts,
+  );
+  function customValidate(
+    formState: { [key: string]: any },
+    errors: { [key: string]: any },
+  ) {
+    console.log("errors", errors);
+    console.log("schema", schema);
+    console.log("formstate", formState);
+    // @ts-ignore
+    const requiredProperties =
+      schema?.properties?.new_operation_representative?.items?.required;
+    console.log("requiredProperties", requiredProperties);
+    const areRequiredPropertiesFilled = requiredProperties.every(
+      (el: any) => formState.new_operation_representative[el],
+    );
+    console.log("areRequiredPropertiesFilled", areRequiredPropertiesFilled);
+    if (!isExistingContactSelected && !areRequiredPropertiesFilled) {
+      // errors.new_operation_representative.__errors.push({
+      //   existing_contact_id: undefined,
+      // });
+      // errors.new_operation_representative[0].existing_contact_id.addError(
+      //   "Select an existing contact from the dropdown or add a new contact by filling out the form",
+      // );
+      errors.new_operation_representative.addError(
+        "Select an existing contact from the dropdown or add a new contact by filling out the form",
+      );
+    }
+
+    console.log("errors after", errors);
+    return errors;
+  }
 
   const handleSelectingContact = async (
     newSelectedContactId: string,
@@ -141,18 +175,19 @@ const NewOperationRepresentativeForm: FC<
     <>
       <FormBase
         key={key}
-        schema={createOperationRepresentativeSchema(
-          existingOperationRepresentatives,
-          contacts,
-        )}
+        schema={schema}
         uiSchema={createOperationRepresentativeUiSchema(
           Boolean(existingContactId),
         )}
+        customValidate={customValidate}
         formContext={{ operationId: operation }}
         onChange={handleChange}
         onSubmit={submitHandler}
         formData={formState}
         liveValidate={isExistingContactSelected}
+        onError={(e) => {
+          console.log("error", e);
+        }}
       >
         <div>
           {isSubmitButton && (

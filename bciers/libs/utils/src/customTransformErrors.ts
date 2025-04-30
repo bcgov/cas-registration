@@ -20,6 +20,7 @@ const customTransformErrors = (
   errors: RJSFValidationError[],
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
+  console.log("customTransformErrors", errors);
   return errors.map((error) => {
     // custom messages for specific properties
     if (error?.property) {
