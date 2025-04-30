@@ -31,7 +31,7 @@ def send_registration_and_boro_id_email(
     template_name: BoroEmailTemplateNames,
     operator_legal_name: str,
     operation: Operation,
-    registration_creator: Optional[User],
+    registration_creator: Optional[User] = None,
 ) -> None:
     """
     Sends an email to the person who submitted the registration and the operation representatives regarding the registration and BORO ID issuance.
@@ -83,7 +83,7 @@ def send_registration_and_boro_id_email(
                 template.id,
             )
         except Exception as exc:
-            logger.error(f'Logger: Exception sending {str(template)} email - {str(exc)}')
+            logger.error(f'Logger: Exception sending {template} email - {str(exc)}')
 
 
 def send_operator_access_request_email(

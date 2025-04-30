@@ -102,6 +102,11 @@ class OperationService:
             fields_to_update.append('submission_date')
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=fields_to_update)
+
+        # if the operation status is now "Registered", we send an email to the user to confirm that the operation is now registered.
+        # this works under the assumption that once an operation's status is set to Registered, update_status()
+        # will not be called again for the same operation. update_status() should only get called from the Registration workflow,
+        # (not from the Admin module), and once an operation is registered, it can no longer be accessed from the Registration workflow.
         if operation.status == Operation.Statuses.REGISTERED:
             send_registration_and_boro_id_email(
                 BoroEmailTemplateNames.CONFIRMATION,
@@ -615,9 +620,9 @@ class OperationService:
         operation.save(update_fields=['bc_obps_regulated_operation'])
         if operation.bc_obps_regulated_operation is None:
             raise Exception('Failed to create a BORO ID for the operation.')
-        send_registration_and_boro_id_email(
-            BoroEmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation, user
-        )
+
+        # send an email to every Operation Representative for the operation, notifying them that a BORO ID has been issued.
+        send_registration_and_boro_id_email(BoroEmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation)
         return operation.bc_obps_regulated_operation
 
     @classmethod
