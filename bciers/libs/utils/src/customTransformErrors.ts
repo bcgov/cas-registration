@@ -1,25 +1,16 @@
 import { RJSFValidationError } from "@rjsf/utils";
 
-const formatProperty = (property: string) => {
-  if (
-    ["bc_corporate_registry_number"].some((field) => {
-      // @ts-ignore - we already checked for error.property's existance above
-      return property.includes(field);
-    })
-  ) {
-    return "BC Corporate Registry number";
+const getFieldName = (message: string) => {
+  // we need to extract the field name from the rjsf error string
+  const match = message.match(/'(.*?)'/);
+  if (match && match[1]) {
+    return match[1];
   }
-  const removedPrefixes = property.split(".").pop() || property;
-  const removedUnderstores = removedPrefixes.replace(/_/g, " ");
-  return (
-    removedUnderstores.charAt(0).toUpperCase() +
-    removedUnderstores.slice(1).toLowerCase()
-  );
+  return;
 };
 
 export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
   "CRA Business Number should be 9 digits.";
-const MANDATORY_ATTACHMENT_VALIDATION_ERROR = "Attachment is required";
 const LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
   "Latitude of largest point of emissions must be between -90 and 90";
 const LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
@@ -30,33 +21,6 @@ const customTransformErrors = (
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
   return errors.map((error) => {
-    // custom messages for general errors
-    if (error?.name === "minItems") {
-      error.message = `Select at least one option`;
-      return error;
-    }
-    if (error?.name === "enum") {
-      // @ts-ignore
-      error.message = `Select a ${formatProperty(error.property)}`;
-      return error;
-    }
-
-    if (
-      error?.message === "must be number" ||
-      error?.message === "must be number,null"
-    ) {
-      error.message = `Enter numbers only`;
-      return error;
-    }
-    if (error?.message === "must be string") {
-      error.message = `Enter letters only`;
-      return error;
-    }
-    if (error?.message === "must be >= 0") {
-      error.message = "Enter a number >= 0";
-      return error;
-    }
-
     // custom messages for specific properties
     if (error?.property) {
       if (error.message === "must be equal to constant") {
@@ -73,7 +37,24 @@ const customTransformErrors = (
         return error;
       }
       if (
-        // we use some because fields can be nested in sections
+        ["registration_purpose"].some((field) => {
+          // @ts-ignore - we already checked for error.property's existance above
+          return error.property.includes(field);
+        })
+      ) {
+        error.message = "Registration Purpose is required";
+        return error;
+      }
+      if (
+        ["person_responsible"].some((field) => {
+          // @ts-ignore - we already checked for error.property's existance above
+          return error.property.includes(field);
+        })
+      ) {
+        error.message = "Select a Person Responsible";
+        return error;
+      }
+      if (
         [
           "cra_business_number",
           "po_cra_business_number",
@@ -84,19 +65,6 @@ const customTransformErrors = (
         })
       ) {
         error.message = CRA_BUSINESS_NUMBER_VALIDATION_ERROR;
-        return error;
-      }
-      if (
-        [
-          "new_entrant_application",
-          "boundary_map",
-          "process_flow_diagram",
-        ].some((field) => {
-          // @ts-ignore
-          return error.property.includes(field);
-        })
-      ) {
-        error.message = MANDATORY_ATTACHMENT_VALIDATION_ERROR;
         return error;
       }
       if (
@@ -118,6 +86,27 @@ const customTransformErrors = (
         return error;
       }
     }
+    // custom messages for general errors
+    if (error?.name === "enum") {
+      // for enum errors, the field name is in the error.stack, not the error.message
+      const fieldName = getFieldName(error?.stack);
+      error.message = fieldName
+        ? `${getFieldName(fieldName)} is required`
+        : `Required field`;
+      return error;
+    }
+    if (error?.name === "minItems") {
+      error.message = `Select at least one option`;
+      return error;
+    }
+    if (error?.message === "must be number") {
+      error.message = `Enter numbers only`;
+      return error;
+    }
+    if (error?.message === "must be string") {
+      error.message = `Enter letters only`;
+      return error;
+    }
     // custom messages for format validation
     if (
       // note that format validation appears to only work for string type fields, not number ones
@@ -128,11 +117,8 @@ const customTransformErrors = (
       return error;
     }
     if (error?.name === "required") {
-      // @ts-ignore
-      // we need to transform the property name (e.g. legal_name) into a string (e.g. Legal name)
-      const fieldName = formatProperty(error.property);
-
-      error.message = `${fieldName} is required`;
+      // @ts-ignore - if there is an error, it will always have a message
+      error.message = `${getFieldName(error.message)} is required`;
       return error;
     }
     return error;
