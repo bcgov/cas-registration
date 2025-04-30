@@ -1,7 +1,8 @@
 from typing import List, Optional
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
+from registration.models.operation import Operation
 from service.email.email_service import EmailService
-from registration.enums.enums import BoroIdApplicationStates
+from registration.enums.enums import BoroEmailTemplateNames
 import logging
 
 from registration.models import User
@@ -26,22 +27,20 @@ class Recipient:
         return f"Recipient(full_name={self.full_name}, email_address={self.email_address})"
 
 
-def send_boro_id_application_email(
-    application_state: BoroIdApplicationStates,
+def send_registration_and_boro_id_email(
+    template_name: BoroEmailTemplateNames,
     operator_legal_name: str,
-    operation_name: str,
-    opted_in: Optional[bool],
-    operation_creator: Optional[User],
+    operation: Operation,
+    registration_creator: Optional[User] = None,
 ) -> None:
     """
-    Sends an email to the operation creator and point of contact regarding the BORO ID application based on the application state.
+    Sends an email to the person who submitted the registration and the operation representatives regarding the registration and BORO ID issuance.
 
     Args:
-        application_state: The state of the BORO ID application, which is used to determine which email template should be used.
+        template_name: The name of the email template to send.
         operator_legal_name: The legal name of the operator to use in the email template.
-        operation_name: The name of the operation to use in the email template.
-        opted_in: A boolean indicating whether or not the operation is required to register or is simply opting in.
-        operation_creator: The user who created the operation.
+        operation: The operation that is being registered/issued a BORO ID.
+        registration_creator: The user who created the operation.
 
     Raises:
         ValueError: If the email template is not found.
@@ -49,21 +48,24 @@ def send_boro_id_application_email(
     Returns:
         None
     """
-
-    template_name = f"{'Opt-in And ' if opted_in else ''}BORO ID Application {application_state.value}"
     template = EmailNotificationTemplateService.get_template_by_name(template_name)
 
     # prepare recipients list
     recipients: List[Recipient] = []
-    if operation_creator:
-        recipients.append(Recipient(full_name=operation_creator.get_full_name(), email_address=operation_creator.email))
+    if registration_creator:
+        recipients.append(
+            Recipient(full_name=registration_creator.get_full_name(), email_address=registration_creator.email)
+        )
+
+    for rep in operation.get_operation_representatives():
+        recipients.append(Recipient(full_name=rep.get_full_name(), email_address=rep.email))
 
     # populating email context for each recipient
     email_contexts = []
     for recipient in recipients:
         email_context = {
             "operator_legal_name": operator_legal_name,
-            "operation_name": operation_name,
+            "operation_name": operation.name,
             "external_user_full_name": recipient.full_name,
             "external_user_email_address": recipient.email_address,
         }
@@ -81,7 +83,7 @@ def send_boro_id_application_email(
                 template.id,
             )
         except Exception as exc:
-            logger.error(f'Logger: Exception sending BORO ID Application {application_state} email - {str(exc)}')
+            logger.error(f'Logger: Exception sending {template} email - {str(exc)}')
 
 
 def send_operator_access_request_email(
@@ -92,7 +94,7 @@ def send_operator_access_request_email(
     external_user_email_address: str,
 ) -> None:
     """
-    Sends an email to a user regarding an operator and their access request based on the access state and type.
+    Sends an email to a user regarding their operator access request  based on the access state and type.
 
     Args:
         access_state: The state of the operator access request.
@@ -107,6 +109,7 @@ def send_operator_access_request_email(
     Returns:
         None
     """
+
     template_name = f"{access_type.value} Access Request {access_state.value}"
     template = EmailNotificationTemplateService.get_template_by_name(template_name)
 

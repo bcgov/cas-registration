@@ -6,11 +6,9 @@ class IdPs(Enum):
     BCEIDBUSINESS = "bceidbusiness"
 
 
-class BoroIdApplicationStates(Enum):
-    CONFIRMATION = "Confirmation"
-    APPROVED = "Approved"
-    DECLINED = "Declined"
-    CHANGES_REQUESTED = "Changes Requested"
+class BoroEmailTemplateNames(Enum):
+    CONFIRMATION = 'BORO ID Application Confirmation'
+    ISSUANCE = 'BORO ID Issuance'
 
 
 class AccessRequestStates(Enum):
@@ -22,7 +20,6 @@ class AccessRequestStates(Enum):
 class AccessRequestTypes(Enum):
     ADMIN = "Admin"
     OPERATOR_WITH_ADMIN = "Operator With Admin"
-    NEW_OPERATOR_AND_ADMIN = "New Operator And Admin"
 
 
 class RegistrationTableNames(Enum):

@@ -17,6 +17,9 @@ from registration.models import (
     UserOperator,
     OptedInOperationDetail,
 )
+
+from registration.models.business_role import BusinessRole
+from django.db.models import QuerySet
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -232,6 +235,12 @@ class Operation(TimeStampedModel):
             .only('file', 'status')
             .first()
         )
+
+    def get_operation_representatives(self) -> QuerySet[Contact]:
+        """
+        Returns the operation representatives associated with the operation.
+        """
+        return self.contacts.filter(business_role=BusinessRole.objects.get(role_name='Operation Representative'))
 
     def user_has_access(self, user_guid: UUID) -> bool:
         """

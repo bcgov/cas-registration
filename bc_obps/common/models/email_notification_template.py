@@ -9,3 +9,6 @@ class EmailNotificationTemplate(models.Model):
     class Meta:
         db_table_comment = "Stores email templates for notifications"
         db_table = 'common"."email_notification_template'
+
+    def __str__(self) -> str:
+        return f"{self.id} - {self.name}"
