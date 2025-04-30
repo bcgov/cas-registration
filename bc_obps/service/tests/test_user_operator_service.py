@@ -7,6 +7,7 @@ from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import Operator, UserOperator, Contact, BusinessRole
 from registration.schema import OperatorIn, UserOperatorFilterSchema, UserOperatorStatusUpdate
 from service.user_operator_service import UserOperatorService
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 
 pytestmark = pytest.mark.django_db
 
@@ -132,11 +133,15 @@ class TestUserOperatorService:
     @staticmethod
     @patch("service.user_operator_service.UserOperatorService.save_operator")
     @patch(
-        "service.data_access_service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator"
+        "service.data_access_service.user_operator_service.UserOperatorDataAccessService.get_or_create_user_operator",
     )
     @patch("service.operator_service.OperatorService.update_operator")
+    @patch("service.user_operator_service.send_operator_access_request_email")
     def test_create_operator_and_user_operator_with_new_contact(
-        mock_update_operator, mock_get_or_create_user_operator, mock_save_operator
+        mock_email_service,
+        mock_update_operator,
+        mock_get_or_create_user_operator,
+        mock_save_operator,
     ):
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
         payload = OperatorIn(
@@ -180,6 +185,10 @@ class TestUserOperatorService:
             business_role=BusinessRole.objects.get(role_name="Operation Representative"),
             operator_id=operator_instance.id,
         ).exists()
+
+        # although the user_operator instance is being approved, we don't want to send an email
+        # because the user just created the operator so it's obvious they would have access
+        mock_email_service.assert_not_called()
 
     @staticmethod
     @patch("service.user_operator_service.UserOperatorService.save_operator")
@@ -259,9 +268,8 @@ class TestUserOperatorService:
 
 
 class TestUpdateStatusAndCreateContact:
-    def test_industry_user_cannot_approve_access_request_from_a_different_operator(
-        self,
-    ):
+    @patch('service.user_operator_service.send_operator_access_request_email')
+    def test_industry_user_cannot_approve_access_request_from_a_different_operator(self, mock_email_service):
         approved_admin_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
         )
@@ -274,8 +282,11 @@ class TestUpdateStatusAndCreateContact:
                 approved_admin_user_operator.user.user_guid,
             )
 
+        mock_email_service.assert_not_called()
+
     @staticmethod
-    def test_cas_admin_declines_access_request():
+    @patch('service.user_operator_service.send_operator_access_request_email')
+    def test_operator_admin_declines_access_request(mock_email_service):
         approved_admin_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', role=UserOperator.Roles.ADMIN
         )
@@ -295,6 +306,14 @@ class TestUpdateStatusAndCreateContact:
         assert pending_user_operator.status == UserOperator.Statuses.DECLINED
         assert pending_user_operator.role == UserOperator.Roles.PENDING
         assert pending_user_operator.verified_by == approved_admin_user_operator.user
+
+        mock_email_service.assert_called_once_with(
+            AccessRequestStates.DECLINED,
+            AccessRequestTypes.OPERATOR_WITH_ADMIN,
+            approved_admin_user_operator.operator.legal_name,
+            pending_user_operator.user.get_full_name(),
+            pending_user_operator.user.email,
+        )
 
     @staticmethod
     def test_cas_admin_undoes_approved_access_request():
