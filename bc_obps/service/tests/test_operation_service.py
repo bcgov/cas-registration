@@ -1599,7 +1599,9 @@ class TestGenerateBoroId:
         assert operation.bc_obps_regulated_operation.issued_by == cas_director
 
         mock_send_email.assert_called_once_with(
-            BoroEmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation, cas_director
+            BoroEmailTemplateNames.ISSUANCE,
+            operation.operator.legal_name,
+            operation,
         )
 
     @staticmethod
