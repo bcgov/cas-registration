@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   suspend: false
-  schedule: "*/30 * * * *"
+  schedule: "* */2 * * *"
   jobTemplate:
     spec:
       backoffLimit: 0
@@ -33,7 +33,7 @@ spec:
               - -c
               - |
                 set -euo pipefail;
-                flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status -r 59 -d 30
+                flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status -r 119 -d 30
             volumeMounts:
               - name: check-document-file-status-lock
                 mountPath: /data/locks
