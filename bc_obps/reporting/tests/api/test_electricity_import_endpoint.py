@@ -2,7 +2,7 @@ from model_bakery import baker
 from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.schema.electricity_import_data import ElectricityImportDataIn
+from reporting.schema.electricity_import_data import ElectricityImportDataSchema
 from reporting.service.electricity_import_data_service import ElectricityImportFormData
 
 
@@ -64,27 +64,23 @@ class TestElectricityImportDataApi(CommonTestSetup):
         "reporting.service.electricity_import_data_service.ElectricityImportDataService.save_electricity_import_data"
     )
     def test_saves_electricity_import_data(self, mock_save_electricity_import_data: MagicMock):
-        # Create the payload as an ElectricityImportDataIn object
-        payload = ElectricityImportDataIn(
+        payload = ElectricityImportDataSchema(
             import_specified_electricity='0.05',
-            import_specified_emissions='0.05',
-            import_unspecified_electricity='0.05',
+            import_specified_emissions=None,
+            import_unspecified_electricity='123456789.123',
             import_unspecified_emissions='0.05',
             export_specified_electricity='0.05',
-            export_specified_emissions='0.05',
-            export_unspecified_electricity='0.05',
+            export_specified_emissions=55,
+            export_unspecified_electricity=None,
             export_unspecified_emissions='0.05',
             canadian_entitlement_electricity='0.05',
-            canadian_entitlement_emissions='0.05',
+            canadian_entitlement_emissions=1000000,
         )
 
-        # Convert the payload to an ElectricityImportFormData object before calling the method
         payload_data = ElectricityImportFormData(**payload.dict())
 
-        # Mock the return value of the method
         mock_save_electricity_import_data.return_value = MagicMock()
 
-        # Make the actual POST request
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -96,8 +92,6 @@ class TestElectricityImportDataApi(CommonTestSetup):
             ),
         )
 
-        # Assert the status code is 200
         assert response.status_code == 200
 
-        # Assert that the mock method was called once with the correct arguments
         mock_save_electricity_import_data.assert_called_once_with(self.report_version.id, payload_data)
