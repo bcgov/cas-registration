@@ -59,7 +59,7 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_electricity_import_form_data",
+            "endpoint_name": "get_electricity_import_data",
             "kwargs": {"version_id": MOCK_INT},
         },
         {"method": "get", "endpoint_name": "get_compliance_summaries_list"},

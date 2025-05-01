@@ -19,7 +19,7 @@ class TestElectricityImportDataApi(CommonTestSetup):
 
     def test_returns_electricity_import_data_for_report_version_id(self):
         url = custom_reverse_lazy(
-            "get_electricity_import_form_data",
+            "get_electricity_import_data",
             kwargs={"version_id": self.report_version.id},
         )
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", url)

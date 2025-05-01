@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -7,7 +7,7 @@ from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 from ..models import ElectricityImportData
 from ..schema.electricity_import_data import ElectricityImportDataIn, ElectricityImportDataOut
-from ..service.electricity_import_data_service import ElectricityImportDataService
+from ..service.electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
 
 
 @router.post(
@@ -22,7 +22,9 @@ def save_electricity_import_data(
     version_id: int,
     payload: ElectricityImportDataIn,
 ) -> Literal[200]:
-    ElectricityImportDataService.save_electricity_import_data(version_id, payload)
+    payload_data = ElectricityImportFormData(**payload.dict())
+
+    ElectricityImportDataService.save_electricity_import_data(version_id, payload_data)
     return 200
 
 
@@ -34,8 +36,8 @@ def save_electricity_import_data(
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_electricity_import_form_data(
+def get_electricity_import_data(
     request: HttpRequest, version_id: int
-) -> Tuple[Literal[200], ElectricityImportData]:
-    electricity_import_data = ElectricityImportData.objects.get(report_version_id=version_id)
+) -> tuple[Literal[200], ElectricityImportData | None]:
+    electricity_import_data = ElectricityImportDataService.get_electricity_import_data(version_id)
     return 200, electricity_import_data
