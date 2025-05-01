@@ -1,7 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import { BC_GOV_TEXT, BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import { Typography, Link, Box } from "@mui/material";
 import CustomTextField from "../widgets/CustomTextField";
 
@@ -23,7 +22,6 @@ export const buildCarbonRegistryAccountSchema = (): RJSFSchema => ({
 export const buildCarbonRegistryAccountUiSchema = (
   data: RequestIssuanceData,
 ) => ({
-  "ui:classNames": "w-full",
   "ui:FieldTemplate": FieldTemplate,
   "ui:submitButtonOptions": {
     norender: true,
@@ -36,10 +34,7 @@ export const buildCarbonRegistryAccountUiSchema = (
         BCCR Trading Name:
       </Typography>
     ),
-    "ui:classNames": "w-full",
     "ui:options": {
-      labelOverrideStyle: "font-normal",
-      classNames: "w-full",
       validation: {
         expectedValue: data.bccrTradingName,
         nonEmpty: true,
@@ -54,29 +49,20 @@ export const buildCarbonRegistryAccountUiSchema = (
         BCCR Holding Account ID:
       </Typography>
     ),
-    "ui:classNames": "w-full",
     "ui:options": {
-      labelOverrideStyle: "font-normal",
-      classNames: "w-full",
       validation: {
         expectedValue: data.validBccrHoldingAccountId,
-        pattern: "^\\d{15}$",
         nonEmpty: true,
-      },
-      inputProps: {
-        maxLength: 15,
-        inputMode: "numeric",
-        pattern: "[0-9]*",
       },
     },
     "ui:help": (
       <Box className="ml-[52px] mt-[5px]">
-        <Typography variant="body2" color={BC_GOV_TEXT}>
+        <Typography variant="body2" className="text-bc-text">
           No account?{" "}
           <Link
             href="#"
             underline="hover"
-            sx={{ fontWeight: 500, color: BC_GOV_LINKS_COLOR }}
+            className="text-bc-link-blue font-medium"
           >
             Create account
           </Link>{" "}
