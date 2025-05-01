@@ -52,6 +52,7 @@ describe("OperationReviewPage", () => {
       reportType: { report_type: "Simple Report" },
       showRegulatedProducts: true,
       showBoroId: false,
+      showActivities: true,
     };
     const fakeSchema = { schema: "my schema" };
 
@@ -100,6 +101,7 @@ describe("OperationReviewPage", () => {
       fakeParams.reportType,
       fakeParams.showRegulatedProducts,
       fakeParams.showBoroId,
+      fakeParams.showActivities,
     );
   });
 });

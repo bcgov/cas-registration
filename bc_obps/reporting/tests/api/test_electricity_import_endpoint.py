@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.schema.electricity_import_data import ElectricityImportDataIn
+from reporting.service.electricity_import_data_service import ElectricityImportFormData
 
 
 class TestElectricityImportDataApi(CommonTestSetup):
@@ -63,6 +64,7 @@ class TestElectricityImportDataApi(CommonTestSetup):
         "reporting.service.electricity_import_data_service.ElectricityImportDataService.save_electricity_import_data"
     )
     def test_saves_electricity_import_data(self, mock_save_electricity_import_data: MagicMock):
+        # Create the payload as an ElectricityImportDataIn object
         payload = ElectricityImportDataIn(
             import_specified_electricity='0.05',
             import_specified_emissions='0.05',
@@ -76,7 +78,13 @@ class TestElectricityImportDataApi(CommonTestSetup):
             canadian_entitlement_emissions='0.05',
         )
 
-        mock_save_electricity_import_data.return_value = MagicMock()  # optional, if you need to check return
+        # Convert the payload to an ElectricityImportFormData object before calling the method
+        payload_data = ElectricityImportFormData(**payload.dict())
+
+        # Mock the return value of the method
+        mock_save_electricity_import_data.return_value = MagicMock()
+
+        # Make the actual POST request
         response = TestUtils.mock_post_with_auth_role(
             self,
             "industry_user",
@@ -88,5 +96,8 @@ class TestElectricityImportDataApi(CommonTestSetup):
             ),
         )
 
+        # Assert the status code is 200
         assert response.status_code == 200
-        mock_save_electricity_import_data.assert_called_once_with(self.report_version.id, payload)
+
+        # Assert that the mock method was called once with the correct arguments
+        mock_save_electricity_import_data.assert_called_once_with(self.report_version.id, payload_data)
