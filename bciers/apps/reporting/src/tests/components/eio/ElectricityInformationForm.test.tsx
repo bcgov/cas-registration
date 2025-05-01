@@ -84,4 +84,16 @@ describe("ElectricityInformationForm Component", () => {
       expect(mockPush).toHaveBeenCalledWith("/next-page");
     });
   });
+  it("renders all expected form fields", async () => {
+    render(
+      <ElectricityInformationForm
+        versionId={mockVersionId}
+        initialFormData={{}}
+        navigationInformation={dummyNavigationInformation}
+      />,
+    );
+
+    const inputs = await screen.findAllByRole("textbox");
+    expect(inputs).toHaveLength(10);
+  });
 });
