@@ -77,7 +77,7 @@ export enum OperatorFormField {
 // Select Operator Form fields selectors
 export enum SelectOperatorFormField {
   PLACEHOLDER_LEGAL_NAME = "Enter Business Legal Name",
-  PLACEHOLDER_CRA = "Enter CRA Business Number",
+  NAME_CRA = "CRA Business Number",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
   SEARCH_BY_LEGAL_NAME = "Search by Business Legal Name",
 }
