@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Profile from "@bciers/components/navigation/Profile";
 // eslint-disable-next-line import/extensions
 import Logo from "@bciers/img/src/BCID_CleanBC_rev_tagline_colour.svg";
+import HelpDrawer from "./HelpDrawer";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -28,19 +29,17 @@ export default function Header() {
             <h1 className="text-white font-bold cursor-default ml-6 flex-grow text-xs p-1 sm:text-xl md:text-[28px] md:p-0">
               B.C. Industrial Emissions Reporting System
             </h1>
-            {/* 👇️ Authentication content for laptop & desktop */}
-            {session && (
-              <div className="hidden md:flex">
-                <Profile />
-              </div>
-            )}
-          </div>
-          {/* 👇️ Authentication content for mobile & tablet */}
-          {session && (
-            <div className="flex justify-start md:hidden">
-              <Profile />
+            <div className="hidden md:flex">
+              <HelpDrawer />
+              {/* 👇️ Authentication content for laptop & desktop */}
+              {session && <Profile />}
             </div>
-          )}
+          </div>
+          <div className="flex justify-start md:hidden">
+            <HelpDrawer />
+            {/* 👇️ Authentication content for mobile & tablet */}
+            {session && <Profile />}
+          </div>
         </div>
       </div>
     </header>
