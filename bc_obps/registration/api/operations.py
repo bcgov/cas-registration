@@ -26,13 +26,13 @@ from registration.models.operation_designated_operator_timeline import Operation
 
 
 @router.get(
-    "/operations",
+    "/operations-timelines",
     response={200: List[OperationTimelineListOut], custom_codes_4xx: Message},
     tags=OPERATION_TAGS,
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(CustomPagination)
-def list_operations(
+def list_operations_timelines(
     request: HttpRequest,
     filters: OperationTimelineFilterSchema = Query(...),
     sort_field: Optional[str] = "operation__created_at",
