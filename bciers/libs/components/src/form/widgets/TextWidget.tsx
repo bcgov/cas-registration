@@ -59,6 +59,7 @@ const TextWidget: React.FC<WidgetProps> = ({
     width: "100%",
   };
 
+  const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     return (
       <NumberField.Root
@@ -72,6 +73,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       >
         <NumberField.Group>
           <NumberField.Input
+            aria-label={name}
             className={`w-full px-[14px] py-4 rounded-sm border`}
             style={numberStyles}
             // sx doesn't like numberInput and tailwind doesn't like dynamic colors
