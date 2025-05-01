@@ -196,11 +196,13 @@ export const permissionRules: PermissionRule[] = [
         reportVersionId,
         token,
       );
+
       return (
         reportOperation?.operation_report_status ===
         ReportOperationStatus.SUBMITTED
       );
     },
+
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
@@ -220,7 +222,7 @@ export const permissionRules: PermissionRule[] = [
       );
       return Boolean(reportVersionId && pathname.match(pathRegex));
     },
-    validate: async (reportVersionId, token) => {
+    validate: async (reportVersionId) => {
       const needsVerification = getReportNeedsVerification(reportVersionId);
       return needsVerification;
     },
@@ -247,8 +249,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (reportVersionId, token, request) => {
       if (
-        !reportRoutesSubmitted.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesSubmitted.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -275,8 +277,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (reportVersionId, token, request) => {
       if (
-        !reportRoutesReportingOperation.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesReportingOperation.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
