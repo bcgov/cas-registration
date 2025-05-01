@@ -10,7 +10,7 @@ class ReportingVersionOut(ModelSchema):
 
     class Meta:
         model = ReportVersion
-        fields = ["report_type"]
+        fields = ["updated_at", "report_type", "report", "status"]
 
 
 class ReportVersionTypeIn(Schema):
