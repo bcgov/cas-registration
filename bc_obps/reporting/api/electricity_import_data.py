@@ -6,7 +6,7 @@ from reporting.schema.generic import Message
 from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 from ..models import ElectricityImportData
-from ..schema.electricity_import_data import ElectricityImportDataIn, ElectricityImportDataOut
+from ..schema.electricity_import_data import ElectricityImportDataSchema
 from ..service.electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
 
 
@@ -20,7 +20,7 @@ from ..service.electricity_import_data_service import ElectricityImportDataServi
 def save_electricity_import_data(
     request: HttpRequest,
     version_id: int,
-    payload: ElectricityImportDataIn,
+    payload: ElectricityImportDataSchema,
 ) -> Literal[200]:
     payload_data = ElectricityImportFormData(**payload.dict())
 
@@ -30,7 +30,7 @@ def save_electricity_import_data(
 
 @router.get(
     "report-version/{version_id}/electricity-import-data",
-    response={200: ElectricityImportDataOut, 404: Message, 400: Message, 500: Message},
+    response={200: ElectricityImportDataSchema, 404: Message, 400: Message, 500: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",

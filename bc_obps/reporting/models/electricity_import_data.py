@@ -91,5 +91,11 @@ class ElectricityImportData(TimeStampedModel):
             *TimeStampedModel.Meta.triggers,
             immutable_report_version_trigger(),
         ]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["report_version"],
+                name="unique_electricity_import_data_per_report_version",
+            )
+        ]
 
     Rls = ElectricityImportDataRls
