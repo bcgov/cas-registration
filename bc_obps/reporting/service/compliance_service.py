@@ -306,16 +306,18 @@ class ComplianceService:
         compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
             id=compliance_summary_record_id,
             report_version=report_version_record,
-            emissions_attributable_for_reporting=compliance_data_to_save.emissions_attributable_for_reporting,
-            reporting_only_emissions=compliance_data_to_save.reporting_only_emissions,
-            emissions_attributable_for_compliance=compliance_data_to_save.emissions_attributable_for_compliance,
-            emissions_limit=compliance_data_to_save.emissions_limit,
-            excess_emissions=compliance_data_to_save.excess_emissions,
-            credited_emissions=compliance_data_to_save.credited_emissions,
-            reduction_factor=compliance_data_to_save.regulatory_values.reduction_factor,
-            tightening_rate=compliance_data_to_save.regulatory_values.tightening_rate,
-            initial_compliance_period=compliance_data_to_save.regulatory_values.initial_compliance_period,
-            compliance_period=compliance_data_to_save.regulatory_values.compliance_period,
+            defaults={
+                "emissions_attributable_for_reporting": compliance_data_to_save.emissions_attributable_for_reporting,
+                "reporting_only_emissions": compliance_data_to_save.reporting_only_emissions,
+                "emissions_attributable_for_compliance": compliance_data_to_save.emissions_attributable_for_compliance,
+                "emissions_limit": compliance_data_to_save.emissions_limit,
+                "excess_emissions": compliance_data_to_save.excess_emissions,
+                "credited_emissions": compliance_data_to_save.credited_emissions,
+                "reduction_factor": compliance_data_to_save.regulatory_values.reduction_factor,
+                "tightening_rate": compliance_data_to_save.regulatory_values.tightening_rate,
+                "initial_compliance_period": compliance_data_to_save.regulatory_values.initial_compliance_period,
+                "compliance_period": compliance_data_to_save.regulatory_values.compliance_period,
+            },
         )
         for product_data_to_save in compliance_data_to_save.products:
             product_data_id = None
@@ -330,9 +332,11 @@ class ComplianceService:
                 report_version=report_version_record,
                 report_compliance_summary=compliance_summary_record,
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
-                annual_production=product_data_to_save.annual_production,
-                apr_dec_production=product_data_to_save.apr_dec_production,
-                emission_intensity=product_data_to_save.emission_intensity,
-                allocated_industrial_process_emissions=product_data_to_save.allocated_industrial_process_emissions,
-                allocated_compliance_emissions=product_data_to_save.allocated_compliance_emissions,
+                defaults={
+                    "annual_production": product_data_to_save.annual_production,
+                    "apr_dec_production": product_data_to_save.apr_dec_production,
+                    "emission_intensity": product_data_to_save.emission_intensity,
+                    "allocated_industrial_process_emissions": product_data_to_save.allocated_industrial_process_emissions,
+                    "allocated_compliance_emissions": product_data_to_save.allocated_compliance_emissions,
+                },
             )
