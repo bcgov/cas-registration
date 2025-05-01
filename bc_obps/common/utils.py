@@ -1,48 +1,54 @@
 import os
-from typing import Optional
-
+from typing import Optional, List
 from django.apps import apps
 from django.core.management import call_command
 from decimal import Decimal
 
 
+def get_fixture_files() -> List[str]:
+    """Return list of fixture files based on environment."""
+    fixture_base = 'common/fixtures/dashboard'
+
+    def fixtures(*paths: str) -> List[str]:
+        return [f"{fixture_base}/{path}" for path in paths]
+
+    base_fixtures = fixtures(
+        "administration/external.json",
+        "administration/internal.json",
+        "operators/internal.json",
+        "registration/external.json",
+        "reporting/external.json",
+        "reporting/internal.json",
+    )
+
+    is_prod = os.environ.get("ENVIRONMENT") == "prod"
+    env_fixtures = fixtures(
+        *(
+            [
+                "bciers/prod/external.json",
+                "bciers/prod/internal.json",
+            ]
+            if is_prod
+            else [
+                "bciers/dev/external.json",
+                "bciers/dev/internal.json",
+                "compliance/external.json",
+                "compliance/internal.json",
+            ]
+        )
+    )
+
+    return base_fixtures + env_fixtures
+
+
 def reset_dashboard_data() -> None:
     """
-    Reset the DashboardData objects to the initial state by deleting all existing objects and reloading the fixtures.
+    Reset DashboardData objects to initial state by clearing existing data and loading fixtures.
     """
-    fixture_files = [
-        'common/fixtures/dashboard/administration/external.json',
-        'common/fixtures/dashboard/administration/internal.json',
-        'common/fixtures/dashboard/operators/internal.json',
-        'common/fixtures/dashboard/registration/external.json',
-        'common/fixtures/dashboard/reporting/external.json',
-        'common/fixtures/dashboard/reporting/internal.json',
-    ]
-
-    if os.environ.get('ENVIRONMENT') == 'prod':
-        fixture_files.extend(
-            [
-                'common/fixtures/dashboard/bciers/prod/external.json',
-                'common/fixtures/dashboard/bciers/prod/internal.json',
-            ]
-        )
-    else:
-        fixture_files.extend(
-            [
-                'common/fixtures/dashboard/bciers/dev/external.json',
-                'common/fixtures/dashboard/bciers/dev/internal.json',
-                'common/fixtures/dashboard/compliance/external.json',
-                'common/fixtures/dashboard/compliance/internal.json',
-            ]
-        )
-    print(f"Loading fixtures: {fixture_files}")
-
-    # Delete all existing DashboardData objects
     DashboardData = apps.get_model('common', 'DashboardData')
     DashboardData.objects.all().delete()
 
-    # Load the fixtures
-    for fixture in fixture_files:
+    for fixture in get_fixture_files():
         call_command('loaddata', fixture)
 
 
