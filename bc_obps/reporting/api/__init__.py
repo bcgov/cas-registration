@@ -14,7 +14,7 @@ from .report_person_responsible import get_report_person_responsible_by_version_
 from .report_person_responsible import save_report_contact
 from .reports import get_registration_purpose_by_version_id
 from .reports import get_regulated_products_by_version_id
-from .reports import get_report_type_by_version
+from .reports import get_report_version
 from .reports import delete_report_version
 from .reports import create_report_version
 from .gas_type import get_gas_type

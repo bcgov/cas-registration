@@ -106,15 +106,15 @@ def get_regulated_products_by_version_id(
 
 
 @router.get(
-    "/report-version/{version_id}/report-type",
+    "/report-version/{version_id}",
     response={200: ReportingVersionOut, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="Retrieve the report type for a specific reporting version, including the reporting year and due date.",
+    description="Retrieve report version details",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_type_by_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
-    report_type = ReportService.get_report_type_by_version_id(version_id)
-    return 200, report_type
+def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
+    report_version = ReportVersion.objects.get(id=version_id)
+    return 200, report_version
 
 
 @router.get(
