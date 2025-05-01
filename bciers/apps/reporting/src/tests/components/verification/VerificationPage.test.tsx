@@ -10,8 +10,6 @@ import { OperationTypes } from "@bciers/utils/src/enums";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
-import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 vi.mock("@reporting/src/app/components/verification/VerificationForm", () => ({
   default: vi.fn(),
@@ -46,9 +44,6 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 vi.mock("@reporting/src/app/utils/getIsSupplementaryReport", () => ({
   getIsSupplementaryReport: vi.fn(),
 }));
-vi.mock("@reporting/src/app/components/taskList/reportingFlows", () => ({
-  getFlow: vi.fn(),
-}));
 
 const mockVerificationForm = VerificationForm as ReturnType<typeof vi.fn>;
 const mockGetReportVerification = getReportVerification as ReturnType<
@@ -74,8 +69,6 @@ const mockGetIsSupplementaryReport = getIsSupplementaryReport as ReturnType<
   typeof vi.fn
 >;
 
-const mockGetFlow = getFlow as ReturnType<typeof vi.fn>;
-
 describe("VerificationPage component", () => {
   it("renders the VerificationForm component with the correct data", async () => {
     const mockVersionId = 12345;
@@ -100,7 +93,6 @@ describe("VerificationPage component", () => {
       is_supplementary_report_version: false,
     });
     mockGetNavigationInformation.mockResolvedValue(dummyNavigationInformation);
-    mockGetFlow.mockResolvedValue(ReportingFlow.SFO);
 
     render(await VerificationPage({ version_id: mockVersionId }));
 
@@ -110,7 +102,6 @@ describe("VerificationPage component", () => {
     expect(mockCreateVerificationSchema).toHaveBeenCalledWith(
       mockFacilityList.facilities,
       OperationTypes.SFO,
-      false,
       false,
     );
 
@@ -123,9 +114,7 @@ describe("VerificationPage component", () => {
         navigationInformation: dummyNavigationInformation,
         isSupplementaryReport: (await mockGetIsSupplementaryReport())
           .is_supplementary_report_version,
-        isEIO: false,
       },
-
       {},
     );
   });
