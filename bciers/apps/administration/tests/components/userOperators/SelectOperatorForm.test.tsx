@@ -18,6 +18,7 @@ const radioLegalName = "Search by Business Legal Name";
 const radioCRANumber = "Search by Canada Revenue Agency (CRA) Business Number";
 const placeHolderLegalName = "Enter Business Legal Name";
 const buttonLegalName = "Select Operator";
+const nameCRANumber = "CRA Business Number";
 const buttonCRANumber = "Search Operator";
 const requiredLegalName = "Legal name is required";
 const requiredCRANumber = "CRA Business Number should be 9 digits.";
@@ -135,7 +136,7 @@ describe("Select Operator Form", () => {
     // Select Search Operator by CRA number...
     selectSearchByCRANumber();
     // Get the search field for entering the operator's cra number
-    const searchField = screen.getByRole("textbox");
+    const searchField = screen.getByRole("textbox", { name: nameCRANumber });
     // Enter text into the search by input field - cra_business_number
     await userEvent.type(searchField, operatorCRA);
     // Verify that the search field contains the operator's cra number
@@ -174,7 +175,7 @@ describe("Select Operator Form", () => {
     // Select Search Operator by CRA number...
     selectSearchByCRANumber();
     // Get the search field for entering the operator's cra number
-    const searchField = screen.getByRole("textbox");
+    const searchField = screen.getByRole("textbox", { name: nameCRANumber });
     // Enter text into the search by input field - cra_business_number
     await userEvent.type(searchField, operatorCRA);
     // Verify that the search field contains the operator's cra number
