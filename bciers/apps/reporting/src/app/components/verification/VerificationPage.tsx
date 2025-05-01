@@ -7,9 +7,8 @@ import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNe
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { extendVerificationData } from "@reporting/src/app/utils/verification/extendVerificationData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
-import { HeaderStep, ReportingFlow, ReportingPage } from "../taskList/types";
+import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
 
 // import { verificationSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 export default async function VerificationPage({
@@ -19,8 +18,6 @@ export default async function VerificationPage({
   // 🚀 Fetch the operation associated with the specified version ID
   const reportOperation = await getReportingOperation(version_id);
   const operationType = reportOperation?.operation_type;
-  const flow = await getFlow(version_id);
-  const isEIO = flow === ReportingFlow.EIO;
 
   // 🚀 Fetch initial form data
   const initialData = (await getReportVerification(version_id)) || {};
@@ -34,7 +31,6 @@ export default async function VerificationPage({
     facilityList.facilities,
     operationType,
     isSupplementaryReport.is_supplementary_report_version,
-    isEIO,
   );
 
   //🔍 Check if reports need verification
@@ -60,7 +56,6 @@ export default async function VerificationPage({
         isSupplementaryReport={
           isSupplementaryReport.is_supplementary_report_version
         }
-        isEIO={flow === ReportingFlow.EIO}
       />
     </>
   );

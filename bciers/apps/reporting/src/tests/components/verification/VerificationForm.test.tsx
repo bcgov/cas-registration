@@ -79,7 +79,6 @@ const renderVerificationForm = (operationType: string) => {
         } as any
       }
       isSupplementaryReport={false}
-      isEIO={false}
     />,
   );
 };
