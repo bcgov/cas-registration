@@ -10,13 +10,13 @@ spec:
   jobTemplate:
     spec:
       backoffLimit: 0
-      activeDeadlineSeconds: 1800
+      activeDeadlineSeconds: 7200 # 2hrs to match cron schedule
       template:
         metadata:
           labels: {{ include "cas-bciers.labels" . | nindent 12 }}
             component: job-with-database-access
         spec:
-          activeDeadlineSeconds: 1800
+          activeDeadlineSeconds: 7200 # 2hrs to match cron schedule
           restartPolicy: Never
           serviceAccountName: deployer
           containers:
@@ -33,7 +33,7 @@ spec:
               - -c
               - |
                 set -euo pipefail;
-                flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status -r 119 -d 30
+                flock -w 45 --verbose /data/locks/.check.lock .venv/bin/python manage.py check_document_file_status -r 239 -d 30
             volumeMounts:
               - name: check-document-file-status-lock
                 mountPath: /data/locks
