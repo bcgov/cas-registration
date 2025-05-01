@@ -141,9 +141,9 @@ export class OperatorPOM {
       OperatorFormField.HAS_PARENT_COMPANY,
     );
     this.fieldPostal = page.getByLabel(OperatorFormField.POSTAL_CODE);
-    this.fieldSelectCRA = page.getByPlaceholder(
-      SelectOperatorFormField.PLACEHOLDER_CRA,
-    );
+    this.fieldSelectCRA = page.getByRole("textbox", {
+      name: SelectOperatorFormField.NAME_CRA,
+    });
     this.fieldSelectLegalName = page.getByPlaceholder(
       SelectOperatorFormField.PLACEHOLDER_LEGAL_NAME,
     );
