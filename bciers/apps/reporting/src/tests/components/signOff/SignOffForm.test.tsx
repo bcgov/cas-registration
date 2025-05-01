@@ -3,60 +3,28 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import SignOffForm from "@reporting/src/app/components/signOff/SignOffForm";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
+import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
 
-const mockSchema = {
-  type: "object",
-  properties: {
-    acknowledgement_of_review: {
-      type: "boolean",
-      title:
-        "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
-      default: false,
-    },
-    acknowledgement_of_records: {
-      type: "boolean",
-      title:
-        "I understand that the Ministry responsible for the administration and enforcement of the Greenhouse Gas Industrial Reporting and Control Act may require records from the Operator evidencing the truth of this report.",
-      default: false,
-    },
-    acknowledgement_of_information: {
-      type: "boolean",
-      title:
-        "I understand that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
-      default: false,
-    },
-    acknowledgement_of_errors: {
-      type: "boolean",
-      title:
-        "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
-      default: false,
-    },
-    signature: {
-      type: "string",
-      format: "signature",
-      title: "Enter your full name here",
-    },
-    date: {
-      type: "string",
-      title: "Date signed",
-    },
-  },
-};
+const renderSignOffFormWithSchema = ({
+  isSupplementary = false,
+  isRegulated = true,
+  flow = ReportingFlow.SFO,
+}) => {
+  const schema = buildSignOffSchema(isSupplementary, isRegulated, flow);
 
-// ⛏️ Helper function to render the form
-const renderSignOffForm = () => {
   render(
     <SignOffForm
       version_id={1}
       navigationInformation={dummyNavigationInformation}
-      isSupplementaryReport={false}
-      isRegulatedOperation={true}
-      schema={mockSchema}
+      schema={schema}
     />,
   );
+
+  return schema;
 };
 
-describe("SignOffForm Component", () => {
+describe("SignOffForm Component (with actual schema)", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     useRouter.mockReturnValue({
@@ -64,78 +32,144 @@ describe("SignOffForm Component", () => {
     });
   });
 
-  it("renders the form with the correct text and fields", async () => {
-    renderSignOffForm();
+  it("renders supplementary flow correctly with isRegulated: true", () => {
+    const schema = renderSignOffFormWithSchema({
+      isSupplementary: true,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
 
-    // Check for the presence of the important texts
-    const texts = [
-      "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
-      "I understand that the Ministry responsible for the administration and enforcement of the Greenhouse Gas Industrial Reporting and Control Act may require records from the Operator evidencing the truth of this report.",
-      "I understand that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act.",
-      "I understand that the information provided in this report will impact the compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties.",
-    ];
+    const supplementaryFields = schema.supplementary?.properties ?? {}; // Use dot notation here
 
-    texts.forEach((text) => {
-      expect(screen.getByText(text)).toBeInTheDocument();
+    Object.values(supplementaryFields).forEach((field: any) => {
+      if (field.title) {
+        expect(screen.getByText(field.title)).toBeInTheDocument();
+      }
+    });
+
+    // Ensure the regulated field is present
+    expect(
+      screen.getByText(
+        "I understand that the correction of any errors, omissions, or misstatements in the new submission of this report may lead to an additional compliance obligation, and, if submitted after the compliance obligation deadline, applicable interest.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("renders supplementary flow correctly with isRegulated: false", () => {
+    const schema = renderSignOffFormWithSchema({
+      isSupplementary: true,
+      isRegulated: false,
+      flow: ReportingFlow.SFO,
+    });
+
+    const supplementaryFields = schema.supplementary?.properties ?? {}; // Use dot notation here
+
+    Object.values(supplementaryFields).forEach((field: any) => {
+      if (field.title) {
+        expect(screen.getByText(field.title)).toBeInTheDocument();
+      }
+    });
+
+    // Ensure the regulated field is NOT present
+    expect(
+      screen.queryByText(
+        "I understand that the correction of any errors, omissions, or misstatements in the new submission of this report may lead to an additional compliance obligation, and, if submitted after the compliance obligation deadline, applicable interest.",
+      ),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders non-supplementary, non-EIO flow correctly", () => {
+    const schema = renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    // Ensure core and non-EIO-specific fields are present
+    Object.values(schema.properties).forEach((field: any) => {
+      if (field.title) {
+        expect(screen.getByText(field.title)).toBeInTheDocument();
+      }
+    });
+  });
+
+  it("renders supplementary flow correctly", () => {
+    const schema = renderSignOffFormWithSchema({
+      isSupplementary: true,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    const supplementaryFields = schema.supplementary?.properties ?? {}; // Use dot notation here
+    Object.values(supplementaryFields).forEach((field: any) => {
+      if (field.title) {
+        expect(screen.getByText(field.title)).toBeInTheDocument();
+      }
+    });
+  });
+
+  it("renders EIO-specific fields when flow is EIO", () => {
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: false,
+      flow: ReportingFlow.EIO,
     });
 
     expect(
-      screen.getByPlaceholderText("Enter your full name here"),
+      screen.getByText(
+        "I understand that any errors, omissions, or misstatements provided in this report can lead to administrative penalties.",
+      ),
     ).toBeInTheDocument();
-    expect(screen.getByText("Submit Report")).toBeInTheDocument();
   });
 
-  it("enables the submit button when all checkboxes are checked and the signature is filled", async () => {
-    renderSignOffForm();
+  it("enables submit when all required fields are filled", async () => {
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
 
-    // Identify checkboxes and simulate user interactions
-    const checkboxes = [
-      "I certify that I have reviewed the annual report",
-      "I understand that the Ministry responsible for the administration and enforcement",
-      "I understand that this information is being collected",
-      "I understand that the information provided in this report will impact the compliance obligation",
-    ];
+    // Click all checkboxes
+    const checkboxes = screen.getAllByRole("checkbox");
+    checkboxes.forEach((cb) => fireEvent.click(cb));
 
-    for (const checkboxLabel of checkboxes) {
-      const checkbox = screen.getByRole("checkbox", {
-        name: new RegExp(checkboxLabel, "i"),
-      });
-      fireEvent.click(checkbox);
-    }
-
-    const signatureField = screen.getByPlaceholderText(
-      "Enter your full name here",
-    );
+    // Fill in signature field
+    const signatureField = screen.getByLabelText(/signature/i);
     fireEvent.change(signatureField, { target: { value: "John Doe" } });
 
-    const submitButton = screen.getByText(/submit report/i);
+    const submitButton = screen.getByRole("button", { name: /submit report/i });
 
-    // Wait for the submit button to become enabled
-    await waitFor(() => expect(submitButton).not.toBeDisabled());
+    await waitFor(() => {
+      expect(submitButton).not.toBeDisabled();
+    });
   });
 
-  it("disables the submit button initially", () => {
-    renderSignOffForm();
-    const submitButton = screen.getByText(/submit report/i);
+  it("disables submit initially", () => {
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
+    });
+
+    const submitButton = screen.getByRole("button", { name: /submit report/i });
     expect(submitButton).toBeDisabled();
   });
 
-  it("toggles the checkbox state when clicked", () => {
-    renderSignOffForm();
-
-    const reviewCheckbox = screen.getByRole("checkbox", {
-      name: /i certify that i have reviewed the annual report/i,
+  it("toggles checkbox states", () => {
+    renderSignOffFormWithSchema({
+      isSupplementary: false,
+      isRegulated: true,
+      flow: ReportingFlow.SFO,
     });
 
-    // Initially, the checkbox should be unchecked
-    expect(reviewCheckbox).not.toBeChecked();
+    const checkbox = screen.getByRole("checkbox", {
+      name: /I certify that I have reviewed the annual report/i,
+    });
 
-    // Click the checkbox to check it
-    fireEvent.click(reviewCheckbox);
-    expect(reviewCheckbox).toBeChecked();
-
-    // Click again to uncheck it
-    fireEvent.click(reviewCheckbox);
-    expect(reviewCheckbox).not.toBeChecked();
+    expect(checkbox).not.toBeChecked();
+    fireEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+    fireEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
   });
 });

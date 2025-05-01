@@ -24,5 +24,6 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
 
         operation = ReportVersion.objects.select_related('report__operation').get(id=version_id).report.operation
         if not operation.is_regulated_operation:
+            logger.info(f"Non-regulated operation: Ignoring compliance summary for version id {version_id}")
             return
         ComplianceSummaryService.create_compliance_summary(version_id, user_guid)
