@@ -3,6 +3,7 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -33,7 +34,7 @@ const uiSchema = {
               label: false,
             },
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
             coalPurchases: {
               "ui:ArrayFieldTemplate": NestedArrayFieldTemplate,

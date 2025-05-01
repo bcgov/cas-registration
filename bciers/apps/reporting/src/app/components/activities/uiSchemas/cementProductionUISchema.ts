@@ -6,6 +6,7 @@ import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxT
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import GridItemFieldTemplate from "@bciers/components/form/fields/GridItemFieldTemplate";
 import CollapsibleDefinitionFieldTemplate from "@bciers/components/form/fields/CollapsibleDefinitionFieldTemplate";
+import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const gridSchema = {
   "ui:FieldTemplate": GridItemFieldTemplate,
@@ -84,7 +85,7 @@ const uiSchema = {
               "quarter4",
             ],
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
             description: {
               "ui:FieldTemplate": InlineFieldTemplate,

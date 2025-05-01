@@ -7,6 +7,7 @@ import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLe
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import { DateWidget, MultiSelectWidget } from "@bciers/components/form/widgets";
 import { SectionFieldTemplate } from "@bciers/components/form/fields";
+import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -105,7 +106,7 @@ const uiSchema = {
               label: false,
             },
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
           },
         },
@@ -138,7 +139,7 @@ const uiSchema = {
               label: false,
             },
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
             lastDateOfSlopeCoefficientsMeasurement: {
               "ui:widget": DateWidget,
@@ -177,7 +178,7 @@ const uiSchema = {
               label: false,
             },
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
           },
         },

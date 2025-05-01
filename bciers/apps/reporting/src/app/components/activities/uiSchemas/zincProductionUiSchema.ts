@@ -3,6 +3,7 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -46,7 +47,7 @@ const uiSchema = {
               "reducingAgents",
             ],
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
             monthsMissingDataProcedures: {
               "ui:FieldTemplate": InlineFieldTemplate,

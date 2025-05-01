@@ -2,6 +2,7 @@ import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArrayFieldTemplate";
 import { InlineFieldTemplate } from "@bciers/components/form/fields";
+import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -50,7 +51,7 @@ const uiSchema = {
               label: false,
             },
             methodology: {
-              "ui:FieldTemplate": InlineFieldTemplate,
+              "ui:FieldTemplate": MethodologyFieldTemplate,
             },
             isWoodyBiomass: {
               "ui:options": {
