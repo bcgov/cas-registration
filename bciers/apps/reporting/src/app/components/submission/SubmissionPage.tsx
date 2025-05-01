@@ -1,4 +1,3 @@
-import { getTodaysDateWithTime } from "@reporting/src/app/utils/formatDate";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
@@ -9,11 +8,8 @@ const SubmissionPage = async ({ version_id }: HasReportVersion) => {
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
   const reportVersionDetails = await getReportVersionDetails(version_id);
   const submissionDate =
-    formatTimestamp(
-      reportVersionDetails.updated_at || getTodaysDateWithTime(),
-    ) || "";
-
-  console.log("Submission Date:", submissionDate);
+    reportVersionDetails.updated_at &&
+    formatTimestamp(reportVersionDetails.updated_at);
 
   const reportId = reportVersionDetails.report;
 
