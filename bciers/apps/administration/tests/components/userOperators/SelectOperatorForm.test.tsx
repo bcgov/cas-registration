@@ -20,7 +20,7 @@ const placeHolderLegalName = "Enter Business Legal Name";
 const placeHolderCRANumber = "Enter CRA Business Number";
 const buttonLegalName = "Select Operator";
 const buttonCRANumber = "Search Operator";
-const requiredLegalName = "Legal name is required";
+const requiredLegalName = "Business Legal Name is required";
 const requiredCRANumber = "CRA Business Number should be 9 digits.";
 const responseLegalName = {
   id: id,
