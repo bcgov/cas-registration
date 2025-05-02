@@ -144,7 +144,18 @@ class ComplianceDashboardService:
         if not summary or not summary.obligation:
             return PaymentsListOut(rows=[], row_count=0)
 
-        payments = ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)
-        payment_objects = [PaymentOut(**payment) for payment in payments]
+        payment_records = ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)
+        payment_objects = [
+            PaymentOut(
+                id=record.id,
+                paymentReceivedDate=record.paymentReceivedDate,
+                paymentAmountApplied=record.paymentAmountApplied,
+                paymentMethod=record.paymentMethod,
+                transactionType=record.transactionType,
+                receiptNumber=record.receiptNumber,
+                referenceNumber=record.referenceNumber,
+            )
+            for record in payment_records
+        ]
 
         return PaymentsListOut(rows=payment_objects, row_count=len(payment_objects))
