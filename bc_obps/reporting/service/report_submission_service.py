@@ -49,8 +49,7 @@ class ReportSubmissionService:
         report_version.status = ReportVersion.ReportVersionStatus.Submitted
         report_version.save()
 
-        if is_regulated_operation:
-            # Send a signal that the report has been submitted
-            report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
+        # Send a signal that the report has been submitted
+        report_submitted.send(sender=ReportSubmissionService, version_id=version_id, user_guid=user_guid)
 
         return report_version
