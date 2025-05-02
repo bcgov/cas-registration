@@ -11,62 +11,38 @@ from decimal import Decimal
 from django.db.models import Sum
 from typing import Dict, List
 from django.db import transaction
+from dataclasses import dataclass
 
 
+@dataclass
 class RegulatoryValues:
-    def __init__(
-        self,
-        reduction_factor: Decimal,
-        tightening_rate: Decimal,
-        initial_compliance_period: int,
-        compliance_period: int,
-    ):
-        self.reduction_factor = reduction_factor
-        self.tightening_rate = tightening_rate
-        self.initial_compliance_period = initial_compliance_period
-        self.compliance_period = compliance_period
+    reduction_factor: Decimal
+    tightening_rate: Decimal
+    initial_compliance_period: int
+    compliance_period: int
 
 
+@dataclass
 class ReportProductComplianceData:
-    def __init__(
-        self,
-        name: str,
-        product_id: int,
-        annual_production: Decimal,
-        apr_dec_production: Decimal,
-        emission_intensity: Decimal,
-        allocated_industrial_process_emissions: Decimal,
-        allocated_compliance_emissions: Decimal,
-    ):
-        self.name = name
-        self.product_id = product_id
-        self.annual_production = annual_production
-        self.apr_dec_production = apr_dec_production
-        self.emission_intensity = emission_intensity
-        self.allocated_industrial_process_emissions = allocated_industrial_process_emissions
-        self.allocated_compliance_emissions = allocated_compliance_emissions
+    name: str
+    product_id: int
+    annual_production: Decimal
+    apr_dec_production: Decimal
+    emission_intensity: Decimal
+    allocated_industrial_process_emissions: Decimal
+    allocated_compliance_emissions: Decimal
 
 
+@dataclass
 class ComplianceData:
-    def __init__(
-        self,
-        emissions_attributable_for_reporting: Decimal,
-        reporting_only_emissions: Decimal,
-        emissions_attributable_for_compliance: Decimal,
-        emissions_limit: Decimal,
-        excess_emissions: Decimal,
-        credited_emissions: Decimal,
-        regulatory_values: RegulatoryValues,
-        products: List[ReportProductComplianceData],
-    ):
-        self.emissions_attributable_for_reporting = emissions_attributable_for_reporting
-        self.reporting_only_emissions = reporting_only_emissions
-        self.emissions_attributable_for_compliance = emissions_attributable_for_compliance
-        self.emissions_limit = emissions_limit
-        self.excess_emissions = excess_emissions
-        self.credited_emissions = credited_emissions
-        self.regulatory_values = regulatory_values
-        self.products = products
+    emissions_attributable_for_reporting: Decimal
+    reporting_only_emissions: Decimal
+    emissions_attributable_for_compliance: Decimal
+    emissions_limit: Decimal
+    excess_emissions: Decimal
+    credited_emissions: Decimal
+    regulatory_values: RegulatoryValues
+    products: List[ReportProductComplianceData]
 
 
 class ComplianceService:
