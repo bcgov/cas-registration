@@ -1,12 +1,15 @@
 import { RJSFValidationError } from "@rjsf/utils";
 
-const getFieldName = (message: string) => {
-  // we need to extract the field name from the rjsf error string
-  const match = message.match(/'(.*?)'/);
+const getFieldNameIfExists = (text: string | undefined) => {
+  // we need to extract the field name from error.stack or error.message (it appears in different places depending on the error type)
+  if (!text) {
+    return;
+  }
+  // the field name is between the first and second single quotes
+  const match = text.match(/'(.*?)'/);
   if (match && match[1]) {
     return match[1];
   }
-  return;
 };
 
 export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
@@ -42,7 +45,7 @@ const customTransformErrors = (
           return error.property.includes(field);
         })
       ) {
-        error.message = "Registration Purpose is required";
+        error.message = "Select a Registration Purpose";
         return error;
       }
       if (
@@ -89,10 +92,8 @@ const customTransformErrors = (
     // custom messages for general errors
     if (error?.name === "enum") {
       // for enum errors, the field name is in the error.stack, not the error.message
-      const fieldName = getFieldName(error?.stack);
-      error.message = fieldName
-        ? `${getFieldName(fieldName)} is required`
-        : `Required field`;
+      const fieldName = getFieldNameIfExists(error?.stack);
+      error.message = fieldName ? `Select a ${fieldName}` : `Select an option`;
       return error;
     }
     if (error?.name === "minItems") {
@@ -117,8 +118,8 @@ const customTransformErrors = (
       return error;
     }
     if (error?.name === "required") {
-      // @ts-ignore - if there is an error, it will always have a message
-      error.message = `${getFieldName(error.message)} is required`;
+      const fieldName = getFieldNameIfExists(error?.message);
+      error.message = fieldName ? `${fieldName} is required` : `Required field`;
       return error;
     }
     return error;

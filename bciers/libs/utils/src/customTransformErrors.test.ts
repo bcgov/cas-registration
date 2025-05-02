@@ -24,7 +24,7 @@ const enumError = [
     params: {
       allowedValues: ["red", "green", "blue"],
     },
-    stack: "'color' must be equal to one of the allowed values",
+    stack: "'Color' must be equal to one of the allowed values",
     schemaPath: "#/properties/color/enum",
   },
 ];
@@ -59,11 +59,11 @@ const requiredFieldError = [
   {
     name: "required",
     property: "legal_name",
-    message: "must have required property 'Legal Name'",
+    message: "must have required property 'Business Legal Name'",
     params: {
       missingProperty: "legal_name",
     },
-    stack: "must have required property 'Legal Name'",
+    stack: "must have required property 'Business Legal Name'",
     schemaPath: "#/required",
   },
 ];
@@ -207,7 +207,7 @@ const attachmentError = [
   {
     name: "required",
     property: ".section2.boundary_map",
-    message: "must have required property '.section2.boundary_map'",
+    message: "must have required property 'Boundary Map'",
     params: {
       missingProperty: "boundary_map",
     },
@@ -239,6 +239,24 @@ describe("customTransformErrors", () => {
     expect(transformedErrors[0].message).toBe("Select a Color");
   });
 
+  it("returns the fallback error message for enum field", () => {
+    const originalErrorMessage = requiredFieldError[0].message;
+    //@ts-ignore
+    const transformedErrors = customTransformErrors(
+      [
+        {
+          name: "enum",
+          property: "legal_name",
+          stack: "uh-oh spaghetti-o",
+        },
+      ],
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Select an option");
+  });
+
   it("returns the transformed error message for must be string error", () => {
     const originalErrorMessage = stringError[0].message;
     const transformedErrors = customTransformErrors(
@@ -268,7 +286,26 @@ describe("customTransformErrors", () => {
     );
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
-    expect(transformedErrors[0].message).toBe("Legal name is required");
+    expect(transformedErrors[0].message).toBe(
+      "Business Legal Name is required",
+    );
+  });
+  it("returns the fallback error message for required field", () => {
+    const originalErrorMessage = requiredFieldError[0].message;
+    //@ts-ignore
+    const transformedErrors = customTransformErrors(
+      [
+        {
+          name: "required",
+          property: "legal_name",
+          stack: "uh-oh spaghetti-o",
+        },
+      ],
+      customFormatsErrorMessages,
+    );
+
+    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
+    expect(transformedErrors[0].message).toBe("Required field");
   });
 
   it("returns the transformed error message for a nested required field", () => {
@@ -352,7 +389,7 @@ describe("customTransformErrors", () => {
     );
 
     expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
-    expect(transformedErrors[0].message).toBe("Attachment is required");
+    expect(transformedErrors[0].message).toBe("Boundary Map is required");
   });
 
   it("returns the transformed error message for CRA Business Number", () => {
