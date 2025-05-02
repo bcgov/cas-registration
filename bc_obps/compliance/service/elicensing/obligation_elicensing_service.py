@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Dict, Any, List
+from typing import List, Optional, Dict, Any
 
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
@@ -10,8 +10,11 @@ from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
     InvoiceCreationRequest,
+    InvoiceQueryResponse,
+    InvoiceFee,
 )
-from service.compliance.elicensing.schema import FeeCreationItem
+from registration.models.operator import Operator
+from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -27,59 +30,141 @@ class ObligationELicensingService:
     """
 
     @classmethod
-    def get_obligation_invoice_payments(cls, obligation_id: int) -> List[Dict[str, Any]]:
+    def get_obligation_invoice_payments(cls, obligation_id: int) -> List[PaymentRecord]:
         """
-        Get payments for a compliance obligation's invoice.
+        Get all payments and adjustments for a compliance obligation's invoice.
 
         Args:
             obligation_id: The ID of the compliance obligation
 
         Returns:
-            List of payment records formatted for the frontend
+            List of payment records including both payments and adjustments
+
+        Raises:
+            ComplianceObligation.DoesNotExist: If the obligation doesn't exist
+            ValueError: If client or invoice links are missing
+            requests.RequestException: If there's an API error
         """
-        # Get the invoice link for the obligation
-        invoice_link = ELicensingLink.objects.filter(
-            content_type__model='complianceobligation',
-            object_id=obligation_id,
-            elicensing_object_kind=ELicensingLink.ObjectKind.INVOICE,
-        ).first()
-
-        if not invoice_link or not invoice_link.elicensing_object_id:
-            return []
-
-        # Get the client link for the obligation
         obligation = ComplianceObligation.objects.get(id=obligation_id)
-        client_link = ELicensingLink.objects.filter(
-            content_type__model='operator',
-            object_id=obligation.compliance_summary.report.operation.operator.id,
-            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
-        ).first()
-
-        if not client_link or not client_link.elicensing_object_id:
-            logger.error(f"No client link found for obligation {obligation_id}")
+        invoice = cls._get_obligation_invoice(obligation)
+        if not invoice:
             return []
 
-        # Get payments from eLicensing
-        invoice = elicensing_api_client.query_invoice(
-            client_link.elicensing_object_id, invoice_link.elicensing_object_id
+        return cls._parse_invoice_payments(invoice)
+
+    @classmethod
+    def _get_obligation_invoice(cls, obligation: ComplianceObligation) -> Optional[InvoiceQueryResponse]:
+        """
+        Get the invoice for a compliance obligation from eLicensing.
+
+        Args:
+            obligation: The compliance obligation object
+
+        Returns:
+            InvoiceQueryResponse if found, None if no payments exist
+
+        Raises:
+            ValueError: If client or invoice links are missing
+            requests.RequestException: If there's an API error
+        """
+        # Get client link from operator
+        client_link = ELicensingLinkService.get_link_for_model(
+            Operator, obligation.compliance_summary.report.operation.operator.id, ELicensingLink.ObjectKind.CLIENT
+        )
+        invoice_link = ELicensingLinkService.get_link_for_model(
+            ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE
         )
 
+        if not client_link or not invoice_link:
+            error_msg = (
+                f"No client or invoice link found for obligation {obligation.id}. "
+                f"Client link: {client_link}, Invoice link: {invoice_link}"
+            )
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
+        client_id = client_link.elicensing_object_id
+        invoice_number = invoice_link.elicensing_object_id
+
+        if not client_id or not invoice_number:
+            error_msg = (
+                f"Missing client_id or invoice_number for obligation {obligation.id}. "
+                f"Client ID: {client_id}, Invoice number: {invoice_number}"
+            )
+            logger.error(error_msg)
+            raise ValueError(error_msg)
+
+        try:
+            return elicensing_api_client.query_invoice(client_id, invoice_number)
+        except Exception as e:
+            error_msg = f"Failed to query invoice for obligation {obligation.id}: {str(e)}"
+            logger.error(error_msg)
+            raise
+
+    @classmethod
+    def _parse_invoice_payments(cls, invoice: InvoiceQueryResponse) -> List[PaymentRecord]:
+        """
+        Parse payments and adjustments from an invoice.
+
+        Args:
+            invoice: The invoice response from eLicensing
+
+        Returns:
+            List of payment records
+        """
         payments = []
         for fee in invoice.fees:
-            for payment in fee.payments:
-                payments.append(
-                    {
-                        "id": str(payment.paymentObjectId),
-                        "paymentReceivedDate": payment.receivedDate,
-                        "paymentAmountApplied": payment.amount,
-                        "paymentMethod": payment.method,
-                        "transactionType": "Payment",
-                        "referenceNumber": payment.referenceNumber,
-                        "receiptNumber": payment.receiptNumber,
-                    }
-                )
-
+            payments.extend(cls._parse_fee_payments(fee))
+            payments.extend(cls._parse_fee_adjustments(fee))
         return payments
+
+    @classmethod
+    def _parse_fee_payments(cls, fee: InvoiceFee) -> List[PaymentRecord]:
+        """
+        Parse payments from a fee.
+
+        Args:
+            fee: The fee object from eLicensing
+
+        Returns:
+            List of payment records
+        """
+        return [
+            PaymentRecord(
+                id=str(payment.paymentObjectId),
+                paymentReceivedDate=payment.receivedDate,
+                paymentAmountApplied=payment.amount,
+                paymentMethod=payment.method,
+                transactionType="Payment",
+                referenceNumber=payment.referenceNumber,
+                receiptNumber=payment.receiptNumber,
+            )
+            for payment in fee.payments
+        ]
+
+    @classmethod
+    def _parse_fee_adjustments(cls, fee: InvoiceFee) -> List[PaymentRecord]:
+        """
+        Parse adjustments from a fee.
+
+        Args:
+            fee: The fee object from eLicensing
+
+        Returns:
+            List of adjustment records formatted as payments
+        """
+        return [
+            PaymentRecord(
+                id=str(adjustment.adjustmentObjectId),
+                paymentReceivedDate=adjustment.date,
+                paymentAmountApplied=adjustment.amount,
+                paymentMethod="Adjustment",
+                transactionType="Payment Adjustment",
+                referenceNumber=adjustment.reason,
+                receiptNumber=str(adjustment.adjustmentObjectId),
+            )
+            for adjustment in fee.adjustments
+        ]
 
     @classmethod
     def process_obligation_integration(cls, obligation_id: int) -> None:
