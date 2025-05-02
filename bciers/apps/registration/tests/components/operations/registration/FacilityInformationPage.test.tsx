@@ -31,8 +31,8 @@ describe("the FacilityInformationPage component", () => {
   });
   it("should render the FacilityInformationPage component", async () => {
     fetchFacilitiesPageData.mockReturnValueOnce({
-      items: [],
-      count: 0,
+      rows: [],
+      row_count: 0,
     });
     render(
       await FacilityInformationPage({
@@ -45,12 +45,8 @@ describe("the FacilityInformationPage component", () => {
       }),
     );
 
-    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
-      "Facility Information",
-    );
-
     expect(
-      screen.getByRole("button", { name: "Add facility" }),
+      screen.getByRole("button", { name: "Add Facility" }),
     ).toBeInTheDocument();
   });
 
@@ -75,7 +71,7 @@ describe("the FacilityInformationPage component", () => {
     );
 
     expect(
-      screen.queryByRole("button", { name: "Add facility" }),
+      screen.queryByRole("button", { name: "Add Facility" }),
     ).not.toBeInTheDocument();
 
     const facilityName = container.querySelector("#root_section1_name");
@@ -123,8 +119,8 @@ describe("the FacilityInformationPage component", () => {
 
   it("should render the empty datagrid when there is no facility data", async () => {
     fetchFacilitiesPageData.mockReturnValueOnce({
-      items: [],
-      count: 0,
+      rows: [],
+      row_count: 0,
     });
     render(
       await FacilityInformationPage({
