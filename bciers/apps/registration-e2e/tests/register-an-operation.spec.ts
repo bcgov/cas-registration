@@ -15,6 +15,9 @@ import {
   OperationRegistrationSteps,
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
+import { ContactsPOM } from "../../administration-e2e/poms/contacts";
+import { ContactE2EValue } from "@/administration-e2e/utils/enums";
+
 const happoPlaywright = require("happo-playwright");
 
 test.beforeAll(async () => {
@@ -125,7 +128,18 @@ test.describe("Test register operations", () => {
       variant: "default",
     });
     await analyzeAccessibility(page);
+
+    // Check operation representative in contacts grid
+    componentName = "Operation Representative in contacts grid";
+    const contactInformation = new ContactsPOM(page);
+    await contactInformation.route();
+    await contactInformation.searchContactsGrid(ContactE2EValue.EMAIL_ADDRESS);
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: componentName,
+      variant: "filled",
+    });
   });
+
   test("Register an existing LFO operation", async ({ page }) => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
