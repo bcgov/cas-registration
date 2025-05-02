@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { vi } from "vitest";
 import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
+import { setupComplianceSummaryReviewTest } from "../../../../utils/complianceSummaryReviewTestUtils";
 
 vi.mock(
   "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
@@ -24,7 +25,7 @@ vi.mock(
       RequestIssuanceOfEarnedCredits: 1,
       TrackStatusOfIssuance: 2,
     },
-    getRequestIssuanceTaskList: vi.fn().mockReturnValue([
+    getRequestIssuanceTaskList: vi.fn().mockImplementation((id) => [
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -33,19 +34,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: "/compliance-summaries/123/request-issuance/review-compliance-summary",
+            link: `/compliance-summaries/${id}/request-issuance/review-compliance-summary`,
             isActive: true,
           },
           {
             type: "Page",
             title: "Request Issuance of Earned Credits",
-            link: "/compliance-summaries/123/request-issuance/request-issuance-of-earned-credits",
+            link: `/compliance-summaries/${id}/request-issuance/request-issuance-of-earned-credits`,
             isActive: false,
           },
           {
             type: "Page",
             title: "Track Status of Issuance",
-            link: "/compliance-summaries/123/request-issuance/track-status-of-issuance",
+            link: `/compliance-summaries/${id}/request-issuance/track-status-of-issuance`,
             isActive: false,
           },
         ],
@@ -73,75 +74,24 @@ vi.mock(
   }),
 );
 
-const mockActivePageEnum = {
-  ReviewComplianceSummary: 0,
-  RequestIssuanceOfEarnedCredits: 1,
-  TrackStatusOfIssuance: 2,
-} as const;
-
-describe("ComplianceSummaryReviewPage", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renders the component with the correct props", async () => {
-    const complianceSummaryId = "123";
-
-    const component = await ComplianceSummaryReviewPage({
-      compliance_summary_id: complianceSummaryId,
-    });
-    render(component);
-
-    const { getRequestIssuanceComplianceSummaryData } = await import(
-      "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData"
-    );
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
-    );
-
-    expect(getRequestIssuanceComplianceSummaryData).toHaveBeenCalledWith(
-      Number(complianceSummaryId),
-    );
-
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
-      123,
-      2024,
-      mockActivePageEnum.ReviewComplianceSummary,
-    );
-
-    const reviewComponent = screen.getByTestId("review-component");
-    expect(reviewComponent).toBeInTheDocument();
-    expect(screen.getByTestId("form-data-operation-name")).toHaveTextContent(
-      "Test Operation",
-    );
-    expect(screen.getByTestId("compliance-summary-id")).toHaveTextContent(
-      "123",
-    );
-    expect(screen.getByTestId("task-list-elements")).toHaveTextContent(
-      "task-list-present",
-    );
-  });
-
-  it("handles string compliance_summary_id by converting it to a number", async () => {
-    const complianceSummaryId = "456";
-
-    const component = await ComplianceSummaryReviewPage({
-      compliance_summary_id: complianceSummaryId,
-    });
-    render(component);
-
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
-    );
-
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
-      456,
-      2024,
-      mockActivePageEnum.ReviewComplianceSummary,
-    );
-
-    expect(screen.getByTestId("compliance-summary-id")).toHaveTextContent(
-      "456",
-    );
-  });
-});
+// Using a generic test setup function to reduce code duplication between similar test files
+// This approach helps us maintain consistent test coverage while minimizing SonarQube duplication warnings
+setupComplianceSummaryReviewTest({
+  complianceSummaryPageComponent: ComplianceSummaryReviewPage,
+  dataUtilPath:
+    "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  dataUtilName: "getRequestIssuanceComplianceSummaryData",
+  taskListSchemaPath:
+    "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema",
+  taskListFunctionName: "getRequestIssuanceTaskList",
+  testDescription: "ComplianceSummaryReviewPage",
+  mockData: {
+    operation_name: "Test Operation",
+    operation_id: 123,
+    reporting_year: 2024,
+    excess_emissions: "-15.0",
+    emission_limit: "100.0",
+    emissions_attributable_for_compliance: "85.0",
+    earned_credits: 15,
+  },
+})();
