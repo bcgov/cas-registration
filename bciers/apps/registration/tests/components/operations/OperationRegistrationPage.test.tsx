@@ -61,9 +61,7 @@ describe("the OperationRegistrationPage component", () => {
       }),
     );
 
-    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
-      "Facility Information",
-    );
+    expect(screen.getByRole("button", { name: /Add facility/i })).toBeVisible();
   });
 
   it("should render 5 steps and the Opt-in Application Form if the registration purpose is Opt-in", async () => {
