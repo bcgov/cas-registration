@@ -77,6 +77,7 @@ export class ContactsPOM {
 
   async route() {
     await this.page.goto(this.url);
+    await this.page.waitForTimeout(500);
   }
 
   async clickAddContacts() {

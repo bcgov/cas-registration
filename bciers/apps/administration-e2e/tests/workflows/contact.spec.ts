@@ -36,7 +36,7 @@ test.describe("Test add/edit contact", () => {
     // 🛸 Navigate to contacts page
     const contactsPage = new ContactsPOM(page);
     await contactsPage.route();
-    await page.waitForTimeout(500);
+
     // Add a new contact
     await clickButton(page, /add contact/i);
 
@@ -63,9 +63,8 @@ test.describe("Test add/edit contact", () => {
   });
 
   test("Edit a contact", async ({ page }) => {
-    const contactsPage = new ContactsPOM(page);
-
     // 🛸 Navigate to contacts page
+    const contactsPage = new ContactsPOM(page);
     await contactsPage.route();
 
     // Search by email since email is unique
@@ -80,7 +79,7 @@ test.describe("Test add/edit contact", () => {
     const viewLink = await view.getAttribute("href");
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Contact grid",
+      component: "Contacts grid",
       variant: "filled",
     });
     // TODO: investigate accessibility failing
@@ -92,17 +91,12 @@ test.describe("Test add/edit contact", () => {
     await expect(page.getByText(/Contact Details/i)).toBeVisible();
 
     // Edit form
-    await expect(page.getByRole("button", { name: /Edit/i })).toBeVisible();
-    await clickButton(page, /Edit/i);
+    await expect(page.getByRole("button", { name: /edit/i })).toBeVisible();
+    await clickButton(page, /edit/i);
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
 
     // Edit the contact information
     await contactsPage.contactInformation("fill");
-    await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "Edit Contact form",
-      variant: "filled",
-    });
-    await analyzeAccessibility(page);
     await clickButton(page, /save/i);
 
     // Verify that fields were updated
@@ -111,6 +105,7 @@ test.describe("Test add/edit contact", () => {
       component: "Contact form",
       variant: "filled",
     });
+    await analyzeAccessibility(page);
   });
 
   //Note: Creating contact from registration is under register-an-operation.spec.ts
