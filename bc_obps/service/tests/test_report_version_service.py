@@ -65,6 +65,7 @@ class TestReportVersionService(TestCase):
             "FacilityReport",
             "ReportActivity",
             "ReportAttachment",
+            "ReportAttachmentConfirmation",
             "ReportEmission",
             "ReportFuel",
             "ReportMethodology",

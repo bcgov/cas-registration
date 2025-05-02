@@ -6,6 +6,7 @@ from . import (
     operation_boroid_presence,
     report_attachments_are_scanned,
 )
+from . import supplementary_report_attachments_confirmation
 
 
 __all__ = [
@@ -14,4 +15,5 @@ __all__ = [
     "mandatory_verification_statement",
     "operation_boroid_presence",
     "report_attachments_are_scanned",
+    "supplementary_report_attachments_confirmation",
 ]

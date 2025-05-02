@@ -78,6 +78,7 @@ class ReportVersionTest(BaseTestCase):
                 None,
                 0,
             ),
+            ("report_attachment_confirmation", "report attachment confirmation", None, None),
         ]
 
     def test_unique_draft_version_per_report(self):
