@@ -2,6 +2,7 @@
 
 from django.db import migrations
 from reporting.service.compliance_service import ComplianceService
+import common.lib.pgtrigger as pgtrigger
 
 
 def populate_compliance_data_for_existing_reports(apps, schema_monitor):
@@ -11,8 +12,11 @@ def populate_compliance_data_for_existing_reports(apps, schema_monitor):
 
     # Retrieve submitted report versions & persist the compliance data for those versions
     ReportVersion = apps.get_model("reporting", "ReportVersion")
-    for r in ReportVersion.objects.filter(status='Submitted'):
-        ComplianceService.save_compliance_data(r.id)
+    with pgtrigger.ignore(
+        "reporting.ReportVersion:immutable_report_version", "reporting.ReportVersion.set_updated_audit_columns"
+    ):
+        for r in ReportVersion.objects.filter(status='Submitted'):
+            ComplianceService.save_compliance_data(r.id)
 
 
 class Migration(migrations.Migration):
