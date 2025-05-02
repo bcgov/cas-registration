@@ -76,6 +76,7 @@ class ObligationELicensingService:
                             "paymentMethod": payment.method,
                             "transactionType": "Payment",
                             "referenceNumber": payment.referenceNumber,
+                            "receiptNumber": payment.receiptNumber,
                         }
                     )
 

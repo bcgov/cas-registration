@@ -10,7 +10,7 @@ class PaymentOut(Schema):
     paymentAmountApplied: float
     paymentMethod: str
     transactionType: str
-    referenceNumber: str
+    receiptNumber: str
 
 
 class PaymentsListOut(Schema):

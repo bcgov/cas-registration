@@ -34,7 +34,7 @@ export const MonetaryPaymentsGrid = ({ data }: MonetaryPaymentsGridProps) => {
         paymentAmountApplied: 0,
         paymentMethod: "-",
         transactionType: "-",
-        referenceNumber: "-",
+        receiptNumber: "-",
       },
     ],
     row_count: 1,
