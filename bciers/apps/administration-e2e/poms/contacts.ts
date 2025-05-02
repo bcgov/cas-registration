@@ -7,7 +7,6 @@ import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import {
   AppRoute,
-  ContactButtonText,
   ContactFormField,
   ContactE2EValue,
 } from "@/administration-e2e/utils/enums";
@@ -19,10 +18,6 @@ export class ContactsPOM {
   readonly page: Page;
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.CONTACTS;
-
-  // Button Locators
-
-  readonly addContactsButton: Locator;
 
   // Field Locators
 
@@ -46,10 +41,6 @@ export class ContactsPOM {
 
   constructor(page: Page) {
     this.page = page;
-
-    this.addContactsButton = page.getByRole("button", {
-      name: ContactButtonText.ADD_CONTACT,
-    });
 
     // Initialize field locators
     this.fieldFirstName = page.getByLabel(ContactFormField.FIRST_NAME);
@@ -78,10 +69,6 @@ export class ContactsPOM {
   async route() {
     await this.page.goto(this.url);
     await this.page.waitForTimeout(500);
-  }
-
-  async clickAddContacts() {
-    await this.addContactsButton.click();
   }
 
   async fillFields(
