@@ -3,7 +3,6 @@ import { CarbonRegistryAccountInfo } from "@/compliance/src/app/components/compl
 import * as schemaModule from "@/compliance/src/app/utils/carbonRegistryAccountSchema";
 import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 
-
 // Spy on the schema module functions instead of mocking them completely
 vi.spyOn(schemaModule, "buildCarbonRegistryAccountSchema");
 vi.spyOn(schemaModule, "buildCarbonRegistryAccountUiSchema");

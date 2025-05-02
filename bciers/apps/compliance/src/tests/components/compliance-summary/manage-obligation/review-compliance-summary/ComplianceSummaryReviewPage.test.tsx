@@ -1,9 +1,8 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, vi } from "vitest";
-import ComplianceSummaryReviewPage from "../../../../../app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewPage";
+import { vi } from "vitest";
+import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewPage";
+import { setupComplianceSummaryReviewTest } from "../../../../utils/complianceSummaryReviewTestUtils";
 
-vi.mock("../../../../../app/utils/getComplianceSummary", () => ({
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
   getComplianceSummary: vi.fn().mockResolvedValue({
     operation_name: "Test Operation",
     operation_id: 123,
@@ -22,10 +21,10 @@ vi.mock(
   () => ({
     ActivePage: {
       ReviewComplianceSummary: 0,
-      DownloadPaymentInstructions: 2,
-      PayObligationTrackPayments: 3,
+      DownloadPaymentInstructions: 1,
+      PayObligationTrackPayments: 2,
     },
-    getComplianceSummaryTaskList: vi.fn().mockReturnValue([
+    getComplianceSummaryTaskList: vi.fn().mockImplementation((id) => [
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -34,19 +33,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: "/compliance-summaries/123/manage-obligation/review-compliance-summary",
+            link: `/compliance-summaries/${id}/manage-obligation/review-compliance-summary`,
             isActive: true,
           },
           {
             type: "Page",
             title: "Download Payment Instructions",
-            link: "/compliance-summaries/123/manage-obligation/download-payment-instructions",
+            link: `/compliance-summaries/${id}/manage-obligation/download-payment-instructions`,
             isActive: false,
           },
           {
             type: "Page",
             title: "Pay Obligation and Track Payment(s)",
-            link: "/compliance-summaries/123/manage-obligation/pay-obligation-track-payments",
+            link: `/compliance-summaries/${id}/manage-obligation/pay-obligation-track-payments`,
             isActive: false,
           },
         ],
@@ -56,7 +55,7 @@ vi.mock(
 );
 
 vi.mock(
-  "../../../../../app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent",
+  "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent",
   () => ({
     default: (props: any) => (
       <div data-testid="review-component">
@@ -74,78 +73,23 @@ vi.mock(
   }),
 );
 
-const mockActivePageEnum = {
-  ReviewComplianceSummary: 0,
-  DownloadPaymentInstructions: 1,
-  PayObligationTrackPayments: 2,
-} as const;
-
-describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renders the component with the correct props", async () => {
-    const complianceSummaryId = "123";
-
-    const component = await ComplianceSummaryReviewPage({
-      compliance_summary_id: complianceSummaryId,
-    });
-    render(component);
-
-    const { getComplianceSummary } = await import(
-      "../../../../../app/utils/getComplianceSummary"
-    );
-    const { getComplianceSummaryTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/1_manageObligationSchema"
-    );
-
-    expect(getComplianceSummary).toHaveBeenCalledWith(123);
-
-    expect(getComplianceSummaryTaskList).toHaveBeenCalledWith(
-      123,
-      2024,
-      mockActivePageEnum.ReviewComplianceSummary,
-    );
-
-    const reviewComponent = screen.getByTestId("review-component");
-    expect(reviewComponent).toBeVisible();
-    expect(screen.getByTestId("form-data-operation-name")).toHaveTextContent(
-      "Test Operation",
-    );
-    expect(screen.getByTestId("compliance-summary-id")).toHaveTextContent(
-      "123",
-    );
-    expect(screen.getByTestId("task-list-elements")).toHaveTextContent(
-      "task-list-present",
-    );
-  });
-
-  it("handles string compliance_summary_id by converting it to a number", async () => {
-    const complianceSummaryId = "456";
-
-    const component = await ComplianceSummaryReviewPage({
-      compliance_summary_id: complianceSummaryId,
-    });
-    render(component);
-
-    const { getComplianceSummary } = await import(
-      "../../../../../app/utils/getComplianceSummary"
-    );
-    const { getComplianceSummaryTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/1_manageObligationSchema"
-    );
-
-    expect(getComplianceSummary).toHaveBeenCalledWith(456);
-
-    expect(getComplianceSummaryTaskList).toHaveBeenCalledWith(
-      456,
-      2024,
-      mockActivePageEnum.ReviewComplianceSummary,
-    );
-
-    expect(screen.getByTestId("compliance-summary-id")).toHaveTextContent(
-      "456",
-    );
-  });
-});
+setupComplianceSummaryReviewTest({
+  complianceSummaryPageComponent: ComplianceSummaryReviewPage,
+  dataUtilPath: "@/compliance/src/app/utils/getComplianceSummary",
+  dataUtilName: "getComplianceSummary",
+  taskListSchemaPath:
+    "@/compliance/src/app/components/taskLists/1_manageObligationSchema",
+  taskListFunctionName: "getComplianceSummaryTaskList",
+  testDescription: "ComplianceSummaryReviewPage (Manage Obligation)",
+  mockData: {
+    operation_name: "Test Operation",
+    operation_id: 123,
+    reporting_year: 2024,
+    excess_emissions: "15.0",
+    emission_limit: "100.0",
+    emissions_attributable_for_compliance: "115.0",
+    obligation_id: "OB-2024-123",
+    compliance_charge_rate: 80,
+    equivalent_value: 1200,
+  },
+})();
