@@ -3,7 +3,7 @@ import {
   getComplianceSummaryTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationSchema";
 import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
-import ComplianceSummaryReviewComponent from "../../manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
+import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
 
@@ -18,7 +18,6 @@ export default async function ComplianceSummaryReviewPage(props: Props) {
   const complianceSummary = await getComplianceSummary(complianceSummaryId);
   const taskListElements = getComplianceSummaryTaskList(
     complianceSummaryId,
-
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,
   );

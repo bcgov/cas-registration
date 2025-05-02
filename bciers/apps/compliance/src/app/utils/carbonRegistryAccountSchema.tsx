@@ -3,7 +3,7 @@ import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuan
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { BC_GOV_TEXT, BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import { Typography, Link, Box } from "@mui/material";
-import CustomTextField from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CustomTextField";
+import CustomTextField from "../widgets/CustomTextField";
 
 export const buildCarbonRegistryAccountSchema = (): RJSFSchema => ({
   type: "object",
@@ -15,6 +15,7 @@ export const buildCarbonRegistryAccountSchema = (): RJSFSchema => ({
     bccrHoldingAccountId: {
       type: "string",
       title: "BCCR Holding Account ID:",
+      pattern: "^\\d{15}$",
     },
   },
 });
@@ -69,7 +70,7 @@ export const buildCarbonRegistryAccountUiSchema = (
       },
     },
     "ui:help": (
-      <Box className="ml-[58px] mt-[5px]">
+      <Box className="ml-[52px] mt-[5px]">
         <Typography variant="body2" color={BC_GOV_TEXT}>
           No account?{" "}
           <Link

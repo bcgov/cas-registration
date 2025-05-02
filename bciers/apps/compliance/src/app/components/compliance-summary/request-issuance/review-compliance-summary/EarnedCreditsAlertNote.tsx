@@ -19,7 +19,7 @@ export const EarnedCreditsAlertNote = () => {
             rel="noopener noreferrer"
             className="text-bc-link-blue underline decoration-[1.2px] font-bold"
           >
-            B.C. Carbon Registrys
+            B.C. Carbon Registry
           </Link>{" "}
           (BCCR). Once issued, you may trade or use them to meet your compliance
           obligation.

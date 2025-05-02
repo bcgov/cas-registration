@@ -1,4 +1,3 @@
-"use client";
 import { TitleRow } from "../../TitleRow";
 import { AutomaticOverduePenaltyAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/AutomaticOverduePenaltyAlertNote";
 import { InfoRow } from "../../InfoRow";

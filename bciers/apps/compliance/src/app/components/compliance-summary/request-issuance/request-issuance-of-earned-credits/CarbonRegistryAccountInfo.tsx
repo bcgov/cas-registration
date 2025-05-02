@@ -10,15 +10,14 @@ import {
 } from "@/compliance/src/app/utils/carbonRegistryAccountSchema";
 import { IChangeEvent } from "@rjsf/core";
 import { TitleRow } from "../../TitleRow";
+import validator from "@rjsf/validator-ajv8";
 
 interface CarbonRegistryAccountInfoProps {
   data: RequestIssuanceData;
-  onValidationChange?: (isValid: boolean) => void;
 }
 
 export const CarbonRegistryAccountInfo = ({
   data,
-  onValidationChange,
 }: CarbonRegistryAccountInfoProps) => {
   const [formData, setFormData] = useState({
     bccrHoldingAccountId: "",
@@ -30,30 +29,13 @@ export const CarbonRegistryAccountInfo = ({
   const uiSchema = buildCarbonRegistryAccountUiSchema(data);
 
   // Handle form changes
-  const handleChange = (e: IChangeEvent) => {
-    const updatedFormData = e.formData;
+  const handleChange = (e: IChangeEvent<FormData>) => {
+    const updatedFormData = {
+      ...formData,
+      ...e.formData,
+    };
+
     setFormData(updatedFormData);
-
-    // Validate the form data - we only care about validation for the success icon
-    // We don't want to show any error messages
-    const holdingAccountValid =
-      updatedFormData.bccrHoldingAccountId === data.validBccrHoldingAccountId &&
-      /^\d{15}$/.test(updatedFormData.bccrHoldingAccountId);
-
-    const tradingNameValid =
-      !updatedFormData.bccrTradingName ||
-      updatedFormData.bccrTradingName === data.bccrTradingName;
-
-    const formValid = holdingAccountValid && tradingNameValid;
-
-    if (onValidationChange) {
-      onValidationChange(formValid);
-    }
-
-    // Suppress any errors from being displayed
-    if (e.errors) {
-      e.errors = [];
-    }
   };
 
   return (
@@ -63,38 +45,24 @@ export const CarbonRegistryAccountInfo = ({
     >
       <GlobalStyles
         styles={{
-          '[data-component="carbon-registry-account-info"] .md\\:w-2\\/3': {
-            width: "100% !important",
-            maxWidth: "100% !important",
-          },
-          '[data-component="carbon-registry-account-info"] .form-group.field.field-object':
-            {
-              width: "100% !important",
-            },
-          '[data-component="carbon-registry-account-info"] .flex.flex-col.md\\:flex-row.items-start.md\\:items-center':
-            {
-              width: "100% !important",
-            },
           '[data-component="carbon-registry-account-info"] .flex.items-center.w-full':
             {
               width: "100% !important",
             },
-          // Add margin between label and input field
-          '[data-component="carbon-registry-account-info"] .flex.flex-col.md\\:flex-row.items-start.md\\:items-center > div:first-of-type':
-            {
-              marginRight: "30px !important",
-            },
+          '[data-component="carbon-registry-account-info"] [role="alert"]': {
+            display: "none !important",
+          },
         }}
       />
+
       <TitleRow label="B.C. Carbon Registry (BCCR) Account Information" />
       <FormBase
         schema={schema}
         uiSchema={uiSchema}
         formData={formData}
         onChange={handleChange}
-        showErrorList={false}
         liveValidate={true}
-        noHtml5Validate={true}
+        validator={validator}
       />
     </Box>
   );
