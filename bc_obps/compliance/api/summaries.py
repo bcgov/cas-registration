@@ -4,8 +4,12 @@ from django.db.models import QuerySet
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from compliance.models import ComplianceSummary
+<<<<<<< HEAD
 from compliance.schema.compliance_summary import ComplianceSummaryOut, ComplianceSummaryListOut
 from compliance.schema.payments import PaymentsListOut, PaymentOut
+=======
+from compliance.schema.compliance_summary import ComplianceSummaryListOut
+>>>>>>> 91cbf10e0 (chore: check)
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
@@ -59,3 +63,4 @@ def get_compliance_summary_payments(request: HttpRequest, summary_id: int) -> Tu
     response = PaymentsListOut(rows=payment_objects, row_count=len(payment_objects))
 
     return 200, response
+# Note: POST endpoint for creating a new summary would be added here when needed

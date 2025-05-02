@@ -1,6 +1,6 @@
 import { getComplianceSummary } from "../../../utils/getComplianceSummary";
 import { getComplianceSummaryPayments } from "../../../utils/getComplianceSummaryPayments";
-import { PaymentsData } from "../../../types/payments";
+import { PaymentsData } from "@/compliance/src/app/types/payments";
 
 interface ComplianceSummaryReviewPageData {
   complianceSummary: any;

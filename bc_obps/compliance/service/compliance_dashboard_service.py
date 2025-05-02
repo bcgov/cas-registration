@@ -8,6 +8,7 @@ from registration.models.operation import Operation
 from typing import Optional, List, Dict, Any
 from compliance.service.compliance_summary_service import ComplianceSummaryService
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from compliance.schema.payments import PaymentsListOut, PaymentOut
 
 
 class ComplianceDashboardService:
@@ -128,7 +129,7 @@ class ComplianceDashboardService:
         return summary
     
     @classmethod
-    def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> List[Dict[str, Any]]:
+    def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> PaymentsListOut:
         """
         Get payments for a compliance summary's obligation invoice.
 
@@ -137,10 +138,13 @@ class ComplianceDashboardService:
             summary_id: The ID of the compliance summary
 
         Returns:
-            List of payment records formatted for the frontend
+            PaymentsListOut object containing the payment records
         """
         summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
         if not summary or not summary.obligation:
-            return []
+            return PaymentsListOut(rows=[], row_count=0)
 
-        return ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)
+        payments = ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)
+        payment_objects = [PaymentOut(**payment) for payment in payments]
+
+        return PaymentsListOut(rows=payment_objects, row_count=len(payment_objects))

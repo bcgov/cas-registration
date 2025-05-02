@@ -9,9 +9,9 @@ from compliance.service.elicensing.elicensing_link_service import ELicensingLink
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
-    FeeCreationItem,
     InvoiceCreationRequest,
 )
+from service.compliance.elicensing.schema import FeeCreationItem
 from django.db import transaction
 
 logger = logging.getLogger(__name__)

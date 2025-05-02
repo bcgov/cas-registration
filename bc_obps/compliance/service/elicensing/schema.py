@@ -1,5 +1,6 @@
 from typing import Optional, List, Literal
 from dataclasses import dataclass, field
+from decimal import Decimal
 
 
 @dataclass
@@ -80,7 +81,7 @@ class FeeCreationItem:
     feeGUID: str
     feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
     feeDescription: str  # Mandatory field
-    feeAmount: float
+    feeAmount: Decimal
     feeDate: str  # Format: YYYY-MM-DD
 
 
@@ -100,7 +101,7 @@ class FeeItem:
     businessAreaCode: Optional[str] = None
     feeProfileGroupName: Optional[str] = None
     feeDescription: Optional[str] = None
-    feeAmount: Optional[float] = None
+    feeAmount: Optional[Decimal] = None
     feeDate: Optional[str] = None
 
 
@@ -135,8 +136,8 @@ class PaymentDistribution:
     transactionDate: str
     method: str
     reason: str
-    amount: float
-    taxAmount: float
+    amount: Decimal
+    taxAmount: Decimal
 
 
 @dataclass
@@ -145,7 +146,7 @@ class Payment:
     receiptNumber: str
     receivedDate: str
     depositDate: str
-    amount: float
+    amount: Decimal
     method: str
     cashHandlingArea: str
     referenceNumber: str
@@ -158,15 +159,15 @@ class Payment:
 
 @dataclass
 class FeeAdjustment:
-    adjustmentGUID: str
     adjustmentObjectId: str
-    adjustmentTotal: float
-    amount: float
-    taxAmounts: float
+    adjustmentTotal: Decimal
+    amount: Decimal
     date: str
     reason: str
     type: str
-    comment: str
+    adjustmentGUID: Optional[str] = None
+    taxAmounts: Optional[Decimal] = None
+    comment: Optional[str] = None
 
 
 @dataclass
@@ -176,12 +177,12 @@ class InvoiceFee:
     businessAreaCode: str
     feeDate: str
     description: str
-    baseAmount: float
-    taxTotal: float
-    adjustmentTotal: float
-    taxAdjustmentTotal: float
-    paymentBaseAmount: float
-    paymentTotal: float
+    baseAmount: Decimal
+    taxTotal: Decimal
+    adjustmentTotal: Decimal
+    taxAdjustmentTotal: Decimal
+    paymentBaseAmount: Decimal
+    paymentTotal: Decimal
     invoiceNumber: str
     payments: List[Payment] = field(default_factory=list)
     adjustments: List[FeeAdjustment] = field(default_factory=list)
@@ -193,7 +194,7 @@ class InvoiceQueryResponse:
     clientGUID: str
     invoiceNumber: str
     invoiceDueDate: str
-    invoiceOutstandingBalance: float
-    invoiceFeeBalance: float
-    invoiceInterestBalance: float
+    invoiceOutstandingBalance: Decimal
+    invoiceFeeBalance: Decimal
+    invoiceInterestBalance: Decimal
     fees: List[InvoiceFee]
