@@ -42,7 +42,7 @@ describe("CarbonRegistryAccountInfo", () => {
 
   it("renders form fields for BCCR account information", () => {
     render(<CarbonRegistryAccountInfo data={mockData} />);
-    
+
     // Check that the form contains the expected field labels
     // This tests the integration with the schema without testing implementation details
     expect(screen.getByText(/BCCR Trading Name/i)).toBeVisible();
