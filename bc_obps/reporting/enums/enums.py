@@ -20,6 +20,7 @@ class ReportingTableNames(Enum):
     REPORT_ATTACHMENT = 'report_attachment'
     REPORT_COMPLIANCE_SUMMARY = 'report_compliance_summary'
     REPORT_COMPLIANCE_SUMMARY_PRODUCT = 'report_compliance_summary_product'
+    REPORT_ATTACHMENT_CONFIRMATION = 'report_attachment_confirmation'
     REPORT_EMISSION = 'report_emission'
     REPORT_EMISSION_ALLOCATION = 'report_emission_allocation'
     REPORT_FUEL = 'report_fuel'

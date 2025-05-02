@@ -35,6 +35,7 @@ describe("The attachments form", () => {
         version_id={1}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -45,6 +46,7 @@ describe("The attachments form", () => {
     ).toBeInTheDocument();
     expect(screen.getByText("Note:")).toBeInTheDocument();
   });
+
   it("renders an attachment element for each attachment type, and populates with initial data if it exists", () => {
     const attachmentData = {
       verification_statement: {
@@ -65,6 +67,7 @@ describe("The attachments form", () => {
         version_id={1}
         initialUploadedAttachments={attachmentData}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -130,6 +133,7 @@ describe("The attachments form", () => {
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -158,7 +162,7 @@ describe("The attachments form", () => {
     );
   });
 
-  it("Submits the page if the verification statement doesn't have to be submitted", async () => {
+  it("submits the page if the verification statement doesn't have to be submitted", async () => {
     mockPostAttachments.mockReturnValue({});
 
     render(
@@ -167,6 +171,7 @@ describe("The attachments form", () => {
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={false}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -181,7 +186,7 @@ describe("The attachments form", () => {
   });
 
   it("submits the changed files along with their type", async () => {
-    mockPostAttachments.mockReturnValue([]);
+    mockPostAttachments.mockResolvedValue({ attachments: [] });
 
     render(
       <AttachmentsForm
@@ -189,6 +194,7 @@ describe("The attachments form", () => {
         version_id={1346}
         initialUploadedAttachments={{}}
         isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
       />,
     );
 
@@ -207,7 +213,8 @@ describe("The attachments form", () => {
       fireEvent.click(screen.getByText("Save & Continue"));
     });
 
-    expect(mockPostAttachments).toHaveBeenCalledOnce();
+    // use the standard matcher for call count
+    expect(mockPostAttachments).toHaveBeenCalledTimes(1);
 
     const sentVersionId = mockPostAttachments.mock.calls[0][0];
     const sentFormDataKeys = Array.from(
@@ -221,5 +228,59 @@ describe("The attachments form", () => {
     expect(sentFormDataKeys).toEqual(["files", "file_types"]);
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
     expect(useRouter().push).toHaveBeenCalledWith("continue");
+  });
+
+  it("disables the submit button when supplementary report is true and confirmations are not checked", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={false}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+    expect(submitButton).toBeDisabled();
+  });
+
+  it("enables the submit button when supplementary report is true and confirmations are checked", () => {
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={false}
+        isSupplementaryReport={true}
+      />,
+    );
+
+    const submitButton = screen.getByText("Save & Continue");
+
+    const confirmUploadedCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that I have uploaded any attachments that are required/i,
+    });
+
+    // Initially, the checkbox should be unchecked
+    expect(confirmUploadedCheckbox).not.toBeChecked();
+
+    // Click the checkbox
+    fireEvent.click(confirmUploadedCheckbox);
+
+    expect(submitButton).toBeDisabled();
+    //  expect(submitButton).not.toBeDisabled();
+
+    const confirmRelevantCheckbox = screen.getByRole("checkbox", {
+      name: /i confirm that any previously uploaded attachments/i,
+    });
+
+    // Initially, the checkbox should be unchecked
+    expect(confirmRelevantCheckbox).not.toBeChecked();
+
+    // Click the checkbox
+    fireEvent.click(confirmRelevantCheckbox);
+
+    expect(submitButton).not.toBeDisabled();
   });
 });
