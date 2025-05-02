@@ -31,7 +31,7 @@ def assert_immutable_report_version(
     )
 
     if decimal_value_to_update != Decimal('0'):
-        setattr(model_under_test, str_field_to_update, Decimal('1.0'))
+        setattr(model_under_test, str_field_to_update, decimal_value_to_update)
     else:
         setattr(model_under_test, str_field_to_update, "{'test': 'allow change'}")
     model_under_test.save()
