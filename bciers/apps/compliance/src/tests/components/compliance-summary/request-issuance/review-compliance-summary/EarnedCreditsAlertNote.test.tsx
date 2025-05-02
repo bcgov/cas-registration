@@ -28,7 +28,7 @@ describe("EarnedCreditsAlertNote", () => {
     render(<EarnedCreditsAlertNote />);
 
     const alertIcon = screen.getByTestId("alert-icon");
-    expect(alertIcon).toBeInTheDocument();
+    expect(alertIcon).toBeVisible();
     expect(alertIcon).toHaveAttribute("width", "40");
     expect(alertIcon).toHaveAttribute("height", "40");
   });
@@ -38,25 +38,23 @@ describe("EarnedCreditsAlertNote", () => {
 
     expect(
       screen.getByText(/The earned credits have not been issued yet/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/You may request issuance of them/),
-    ).toBeInTheDocument();
+    ).toBeVisible();
+    expect(screen.getByText(/You may request issuance of them/)).toBeVisible();
     expect(
       screen.getByText(/as long as you have an active trading account/),
-    ).toBeInTheDocument();
+    ).toBeVisible();
     expect(
       screen.getByText(
         /Once issued, you may trade or use them to meet your compliance obligation/,
       ),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("includes a link to the B.C. Carbon Registry with correct attributes", () => {
     render(<EarnedCreditsAlertNote />);
 
-    const link = screen.getByText("B.C. Carbon Registrys");
-    expect(link).toBeInTheDocument();
+    const link = screen.getByText("B.C. Carbon Registry");
+    expect(link).toBeVisible();
     expect(link).toHaveAttribute("href", "https://www.bc-ctr.ca/");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");

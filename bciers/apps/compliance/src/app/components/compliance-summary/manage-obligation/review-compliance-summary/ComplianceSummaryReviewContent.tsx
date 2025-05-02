@@ -1,4 +1,4 @@
-"use-client";
+"use client";
 import { FormReport } from "./FormReport";
 import { ComplianceHeading } from "../../ComplianceHeading";
 import { ComplianceObligation } from "./ComplianceObligation";

@@ -6,7 +6,7 @@ import { actionHandler } from "@bciers/actions";
  * @returns The compliance summary data with issuance information
  */
 export const getRequestIssuanceComplianceSummaryData = async (
-  complianceSummaryId?: string,
+  complianceSummaryId?: number,
 ) => {
   if (complianceSummaryId) {
     try {

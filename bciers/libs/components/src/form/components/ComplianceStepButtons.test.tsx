@@ -17,11 +17,14 @@ describe("ComplianceStepButtons", () => {
   it("renders back and continue buttons when URLs are provided", () => {
     render(<ComplianceStepButtons backUrl="/back" continueUrl="/continue" />);
 
-    expect(screen.getByTestId("back-button")).toBeInTheDocument();
-    expect(screen.getByTestId("continue-button")).toBeInTheDocument();
+    const backButton = screen.getByRole("button", { name: /back/i });
+    const continueButton = screen.getByRole("button", { name: /continue/i });
 
-    expect(screen.getByTestId("back-button")).toHaveTextContent("Back");
-    expect(screen.getByTestId("continue-button")).toHaveTextContent("Continue");
+    expect(backButton).toBeVisible();
+    expect(continueButton).toBeVisible();
+
+    expect(backButton).toHaveTextContent("Back");
+    expect(continueButton).toHaveTextContent("Continue");
   });
 
   it("renders custom button text when provided", () => {
@@ -34,10 +37,13 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    expect(screen.getByTestId("back-button")).toHaveTextContent("Go Back");
-    expect(screen.getByTestId("continue-button")).toHaveTextContent(
-      "Save and Continue",
-    );
+    const backButton = screen.getByRole("button", { name: /go back/i });
+    const continueButton = screen.getByRole("button", {
+      name: /save and continue/i,
+    });
+
+    expect(backButton).toHaveTextContent("Go Back");
+    expect(continueButton).toHaveTextContent("Save and Continue");
   });
 
   it("disables buttons when disabled props are true", () => {
@@ -50,8 +56,11 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    expect(screen.getByTestId("back-button")).toBeDisabled();
-    expect(screen.getByTestId("continue-button")).toBeDisabled();
+    const backButton = screen.getByRole("button", { name: /back/i });
+    const continueButton = screen.getByRole("button", { name: /continue/i });
+
+    expect(backButton).toBeDisabled();
+    expect(continueButton).toBeDisabled();
   });
 
   it("renders middle button when text and click handler are provided", () => {
@@ -66,8 +75,8 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    const middleButton = screen.getByTestId("middle-button");
-    expect(middleButton).toBeInTheDocument();
+    const middleButton = screen.getByRole("button", { name: /save draft/i });
+    expect(middleButton).toBeVisible();
     expect(middleButton).toHaveTextContent("Save Draft");
 
     fireEvent.click(middleButton);
@@ -99,7 +108,8 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    fireEvent.click(screen.getByTestId("back-button"));
+    const backButton = screen.getByRole("button", { name: /back/i });
+    fireEvent.click(backButton);
     expect(mockBackClick).toHaveBeenCalledTimes(1);
   });
 
@@ -114,7 +124,8 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    fireEvent.click(screen.getByTestId("continue-button"));
+    const continueButton = screen.getByRole("button", { name: /continue/i });
+    fireEvent.click(continueButton);
     expect(mockContinueClick).toHaveBeenCalledTimes(1);
   });
 
@@ -132,8 +143,8 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    const container = screen.getByTestId("back-button").closest("div")
-      ?.parentElement;
+    const backButton = screen.getByRole("button", { name: /back/i });
+    const container = backButton.closest("div")?.parentElement;
     expect(container).toHaveStyle("margin-top: 50px");
     expect(container).toHaveStyle("background-color: rgb(255, 0, 0)");
   });
@@ -147,8 +158,9 @@ describe("ComplianceStepButtons", () => {
       />,
     );
 
-    expect(screen.getByTestId("custom-button")).toBeInTheDocument();
-    expect(screen.getByTestId("custom-button")).toHaveTextContent("Custom");
+    const customButton = screen.getByRole("button", { name: /custom/i });
+    expect(customButton).toBeVisible();
+    expect(customButton).toHaveTextContent("Custom");
   });
 
   it("renders children when provided", () => {
@@ -158,7 +170,8 @@ describe("ComplianceStepButtons", () => {
       </ComplianceStepButtons>,
     );
 
-    expect(screen.getByTestId("child-button")).toBeInTheDocument();
-    expect(screen.getByTestId("child-button")).toHaveTextContent("Child");
+    const childButton = screen.getByRole("button", { name: /child/i });
+    expect(childButton).toBeVisible();
+    expect(childButton).toHaveTextContent("Child");
   });
 });

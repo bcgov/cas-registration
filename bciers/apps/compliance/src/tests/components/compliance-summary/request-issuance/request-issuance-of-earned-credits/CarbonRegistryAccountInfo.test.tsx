@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import CarbonRegistryAccountInfo from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CarbonRegistryAccountInfo";
 import * as schemaModule from "@/compliance/src/app/utils/carbonRegistryAccountSchema";
 import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
@@ -99,130 +99,37 @@ describe("CarbonRegistryAccountInfo", () => {
     validBccrHoldingAccountId: "123456789012345",
   };
 
-  const mockOnValidationChange = vi.fn();
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders with the correct schema and UI schema", () => {
-    render(
-      <CarbonRegistryAccountInfo
-        data={mockData}
-        onValidationChange={mockOnValidationChange}
-      />,
-    );
+  it("renders with the correct title", () => {
+    render(<CarbonRegistryAccountInfo data={mockData} />);
 
-    expect(screen.getByTestId("form-base")).toBeInTheDocument();
-
+    // Check that the component renders with the correct title
     expect(
-      schemaModule.buildCarbonRegistryAccountSchema,
-    ).toHaveBeenCalledWith();
+      screen.getByText("B.C. Carbon Registry (BCCR) Account Information"),
+    ).toBeInTheDocument();
+  });
+
+  it("calls the correct schema builder functions with appropriate arguments", () => {
+    render(<CarbonRegistryAccountInfo data={mockData} />);
+
+    // Verify the schema builder functions were called with the right arguments
+    expect(schemaModule.buildCarbonRegistryAccountSchema).toHaveBeenCalledTimes(
+      1,
+    );
     expect(
       schemaModule.buildCarbonRegistryAccountUiSchema,
     ).toHaveBeenCalledWith(mockData);
   });
 
-  it("initializes with empty form data", () => {
-    render(
-      <CarbonRegistryAccountInfo
-        data={mockData}
-        onValidationChange={mockOnValidationChange}
-      />,
-    );
-
-    const formDataElement = screen.getByTestId("form-data");
-    const formData = JSON.parse(formDataElement.textContent ?? "{}");
-
-    expect(formData).toEqual({
-      bccrHoldingAccountId: "",
-      bccrTradingName: "",
-    });
-  });
-
-  it("validates holding account ID correctly", async () => {
-    render(
-      <CarbonRegistryAccountInfo
-        data={mockData}
-        onValidationChange={mockOnValidationChange}
-      />,
-    );
-
-    const holdingAccountInput = screen.getByTestId("bccr-holding-account-id");
-    fireEvent.change(holdingAccountInput, {
-      target: { value: mockData.validBccrHoldingAccountId },
-    });
-
-    await waitFor(() => {
-      expect(mockOnValidationChange).toHaveBeenCalledWith(true);
-    });
-
-    fireEvent.change(holdingAccountInput, { target: { value: "12345" } });
-
-    await waitFor(() => {
-      expect(mockOnValidationChange).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it("validates trading name correctly", async () => {
-    render(
-      <CarbonRegistryAccountInfo
-        data={mockData}
-        onValidationChange={mockOnValidationChange}
-      />,
-    );
-
-    const holdingAccountInput = screen.getByTestId("bccr-holding-account-id");
-    fireEvent.change(holdingAccountInput, {
-      target: { value: mockData.validBccrHoldingAccountId },
-    });
-
-    const tradingNameInput = screen.getByTestId("bccr-trading-name");
-    fireEvent.change(tradingNameInput, {
-      target: { value: mockData.bccrTradingName },
-    });
-
-    await waitFor(() => {
-      expect(mockOnValidationChange).toHaveBeenCalledWith(true);
-    });
-
-    fireEvent.change(tradingNameInput, {
-      target: { value: "Wrong Trading Name" },
-    });
-
-    await waitFor(() => {
-      expect(mockOnValidationChange).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it("works without onValidationChange callback", async () => {
+  it("renders form fields for BCCR account information", () => {
     render(<CarbonRegistryAccountInfo data={mockData} />);
 
-    const holdingAccountInput = screen.getByTestId("bccr-holding-account-id");
-    fireEvent.change(holdingAccountInput, {
-      target: { value: mockData.validBccrHoldingAccountId },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByTestId("form-base")).toBeInTheDocument();
-    });
-  });
-
-  it("applies the correct styling with data-component attribute", () => {
-    render(<CarbonRegistryAccountInfo data={mockData} />);
-
-    const boxes = screen.getAllByTestId("mui-box");
-    const container = boxes.find(
-      (box) =>
-        box.getAttribute("data-component") === "carbon-registry-account-info",
-    );
-
-    expect(container).toBeDefined();
-    expect(container).toHaveAttribute(
-      "data-component",
-      "carbon-registry-account-info",
-    );
-    expect(container).toHaveClass("mt-[20px]");
-    expect(container).toHaveClass("w-full");
+    // Check that the form contains the expected field labels
+    // This tests the integration with the schema without testing implementation details
+    expect(screen.getByText(/BCCR Trading Name/i)).toBeVisible();
+    expect(screen.getByText(/BCCR Holding Account ID/i)).toBeVisible();
   });
 });

@@ -1,4 +1,3 @@
-"use client";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
 import { ComplianceSummaryReviewContent } from "./ComplianceSummaryReviewContent";

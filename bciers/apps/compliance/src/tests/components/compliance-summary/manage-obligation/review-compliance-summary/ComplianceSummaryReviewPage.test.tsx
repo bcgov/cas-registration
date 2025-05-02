@@ -1,30 +1,31 @@
+import React from "react";
 import { render, screen } from "@testing-library/react";
-import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
+import { describe, expect, vi } from "vitest";
+import ComplianceSummaryReviewPage from "../../../../../app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewPage";
 
-vi.mock(
-  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
-  () => ({
-    getRequestIssuanceComplianceSummaryData: vi.fn().mockResolvedValue({
-      operation_name: "Test Operation",
-      operation_id: 123,
-      reporting_year: 2024,
-      excess_emissions: "-15.0",
-      emission_limit: "100.0",
-      emissions_attributable_for_compliance: "85.0",
-      earned_credits: 15,
-    }),
+vi.mock("../../../../../app/utils/getComplianceSummary", () => ({
+  getComplianceSummary: vi.fn().mockResolvedValue({
+    operation_name: "Test Operation",
+    operation_id: 123,
+    reporting_year: 2024,
+    excess_emissions: "15.0",
+    emission_limit: "100.0",
+    emissions_attributable_for_compliance: "115.0",
+    obligation_id: "OB-2024-123",
+    compliance_charge_rate: 80,
+    equivalent_value: 1200,
   }),
-);
+}));
 
 vi.mock(
-  "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema",
+  "@/compliance/src/app/components/taskLists/1_manageObligationSchema",
   () => ({
     ActivePage: {
       ReviewComplianceSummary: 0,
-      RequestIssuanceOfEarnedCredits: 1,
-      TrackStatusOfIssuance: 2,
+      DownloadPaymentInstructions: 2,
+      PayObligationTrackPayments: 3,
     },
-    getRequestIssuanceTaskList: vi.fn().mockReturnValue([
+    getComplianceSummaryTaskList: vi.fn().mockReturnValue([
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -33,19 +34,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: "/compliance-summaries/123/request-issuance/review-compliance-summary",
+            link: "/compliance-summaries/123/manage-obligation/review-compliance-summary",
             isActive: true,
           },
           {
             type: "Page",
-            title: "Request Issuance of Earned Credits",
-            link: "/compliance-summaries/123/request-issuance/request-issuance-of-earned-credits",
+            title: "Download Payment Instructions",
+            link: "/compliance-summaries/123/manage-obligation/download-payment-instructions",
             isActive: false,
           },
           {
             type: "Page",
-            title: "Track Status of Issuance",
-            link: "/compliance-summaries/123/request-issuance/track-status-of-issuance",
+            title: "Pay Obligation and Track Payment(s)",
+            link: "/compliance-summaries/123/manage-obligation/pay-obligation-track-payments",
             isActive: false,
           },
         ],
@@ -55,7 +56,7 @@ vi.mock(
 );
 
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewComponent",
+  "../../../../../app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent",
   () => ({
     default: (props: any) => (
       <div data-testid="review-component">
@@ -75,11 +76,11 @@ vi.mock(
 
 const mockActivePageEnum = {
   ReviewComplianceSummary: 0,
-  RequestIssuanceOfEarnedCredits: 1,
-  TrackStatusOfIssuance: 2,
+  DownloadPaymentInstructions: 1,
+  PayObligationTrackPayments: 2,
 } as const;
 
-describe("ComplianceSummaryReviewPage", () => {
+describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -92,25 +93,23 @@ describe("ComplianceSummaryReviewPage", () => {
     });
     render(component);
 
-    const { getRequestIssuanceComplianceSummaryData } = await import(
-      "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData"
+    const { getComplianceSummary } = await import(
+      "../../../../../app/utils/getComplianceSummary"
     );
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
-    );
-
-    expect(getRequestIssuanceComplianceSummaryData).toHaveBeenCalledWith(
-      Number(complianceSummaryId),
+    const { getComplianceSummaryTaskList } = await import(
+      "@/compliance/src/app/components/taskLists/1_manageObligationSchema"
     );
 
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
+    expect(getComplianceSummary).toHaveBeenCalledWith(123);
+
+    expect(getComplianceSummaryTaskList).toHaveBeenCalledWith(
       123,
       2024,
       mockActivePageEnum.ReviewComplianceSummary,
     );
 
     const reviewComponent = screen.getByTestId("review-component");
-    expect(reviewComponent).toBeInTheDocument();
+    expect(reviewComponent).toBeVisible();
     expect(screen.getByTestId("form-data-operation-name")).toHaveTextContent(
       "Test Operation",
     );
@@ -130,11 +129,16 @@ describe("ComplianceSummaryReviewPage", () => {
     });
     render(component);
 
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
+    const { getComplianceSummary } = await import(
+      "../../../../../app/utils/getComplianceSummary"
+    );
+    const { getComplianceSummaryTaskList } = await import(
+      "@/compliance/src/app/components/taskLists/1_manageObligationSchema"
     );
 
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
+    expect(getComplianceSummary).toHaveBeenCalledWith(456);
+
+    expect(getComplianceSummaryTaskList).toHaveBeenCalledWith(
       456,
       2024,
       mockActivePageEnum.ReviewComplianceSummary,
