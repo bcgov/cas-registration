@@ -150,7 +150,6 @@ class Payment:
     method: str
     cashHandlingArea: str
     referenceNumber: str
-    receiptNumber: str
     onlineOrderNumber: Optional[str] = None
     onlineTransactionId: Optional[str] = None
     onlineApprovalCode: Optional[str] = None

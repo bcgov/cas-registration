@@ -69,7 +69,9 @@ class ObligationELicensingService:
         """
         # Get client link from operator
         client_link = ELicensingLinkService.get_link_for_model(
-            Operator, obligation.compliance_summary.report.operation.operator.id, ELicensingLink.ObjectKind.CLIENT
+            Operator,
+            uuid.UUID(str(obligation.compliance_summary.report.operation.operator.id)),
+            ELicensingLink.ObjectKind.CLIENT,
         )
         invoice_link = ELicensingLinkService.get_link_for_model(
             ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE

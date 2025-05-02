@@ -153,7 +153,6 @@ class ComplianceDashboardService:
                 paymentMethod=record.paymentMethod,
                 transactionType=record.transactionType,
                 receiptNumber=record.receiptNumber,
-                referenceNumber=record.referenceNumber,
             )
             for record in payment_records
         ]
