@@ -1,4 +1,5 @@
 from typing import List
+from decimal import Decimal
 from ninja import Schema
 
 
@@ -7,7 +8,7 @@ class PaymentOut(Schema):
 
     id: str
     paymentReceivedDate: str
-    paymentAmountApplied: float
+    paymentAmountApplied: Decimal
     paymentMethod: str
     transactionType: str
     receiptNumber: str

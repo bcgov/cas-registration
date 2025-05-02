@@ -464,11 +464,15 @@ class ELicensingAPIClient:
 
     def _parse_fee(self, fee_data: Dict) -> InvoiceFee:
         payments = [self._parse_payment(p) for p in fee_data.get("payments", [])]
-        adjustments = [FeeAdjustment(**a) for a in fee_data.get("adjustments", [])]
+        adjustments = [self._parse_adjustment(a) for a in fee_data.get("adjustments", [])]
 
         fee_data["payments"] = payments
         fee_data["adjustments"] = adjustments
         return InvoiceFee(**fee_data)
+
+    @staticmethod
+    def _parse_adjustment(adjustment_data: Dict) -> FeeAdjustment:
+        return FeeAdjustment(**adjustment_data)
 
     @staticmethod
     def _parse_payment(payment_data: Dict) -> Payment:
