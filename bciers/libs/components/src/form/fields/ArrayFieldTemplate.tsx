@@ -31,13 +31,13 @@ const ArrayFieldTemplate = ({
   onAddClick,
   uiSchema,
   registry,
-  rawErrors,
 }: ArrayFieldTemplateProps) => {
   const {
     removable = true,
     arrayAddLabel = "Add",
     canDeleteFirst = false,
   } = getUiOptions(uiSchema, registry.globalUiOptions);
+
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const customItemName = uiSchema?.["ui:options"]?.customItemName as boolean;
   const note = uiSchema?.["ui:options"]?.note as string;
@@ -69,13 +69,6 @@ const ArrayFieldTemplate = ({
                     <MinusSVG />
                   </button>
                 )}
-              </div>
-            )}
-            {rawErrors && rawErrors.length > 0 && (
-              <div className="text-red-500 mb-2">
-                {rawErrors.map((error, index) => (
-                  <div key={index}>{error}</div>
-                ))}
               </div>
             )}
             {{
