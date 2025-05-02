@@ -4,7 +4,7 @@ export interface Payment {
   paymentAmountApplied: number;
   paymentMethod: string;
   transactionType: string;
-  referenceNumber: string;
+  receiptNumber: string;
 }
 
 export interface PaymentsData {

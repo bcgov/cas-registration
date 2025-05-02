@@ -29,8 +29,8 @@ const monetaryPaymentsColumns = (): GridColDef[] => {
       type: "string",
     },
     {
-      field: "referenceNumber",
-      headerName: "Reference Number",
+      field: "receiptNumber",
+      headerName: "Receipt Number",
       width: 201.2,
       type: "string",
     },
