@@ -141,8 +141,7 @@ export class ContactsPOM {
     const row = this.page.getByRole("row").filter({ hasText: email });
 
     await expect(row.first()).toBeVisible();
-    const rowCount = await row.count();
-    await expect(rowCount).toBe(1);
+    return row;
   }
 
   // ###  Assertions ###

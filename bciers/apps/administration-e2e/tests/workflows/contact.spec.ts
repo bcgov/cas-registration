@@ -68,15 +68,17 @@ test.describe("Test add/edit contact", () => {
     await contactsPage.route();
 
     // Search by email since email is unique
-    await contactsPage.searchContactsGrid("bill.blue@example.com");
+    const searchResult = await contactsPage.searchContactsGrid(
+      "bill.blue@example.com",
+    );
+    const rowCount = await searchResult.count();
+    await expect(rowCount).toBe(1);
 
     // Get the href attribute
-    const row = page
-      .getByRole("row")
-      .filter({ hasText: "bill.blue@example.com" });
-
-    const view = row.getByRole("link", { name: "View Details" });
-    const viewLink = await view.getAttribute("href");
+    const viewDetails = searchResult.getByRole("link", {
+      name: /view details/i,
+    });
+    const viewLink = await viewDetails.getAttribute("href");
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Contacts grid",
