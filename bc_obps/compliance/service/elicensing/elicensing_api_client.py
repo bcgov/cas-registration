@@ -455,29 +455,26 @@ class ELicensingAPIClient:
         response = self._make_request(endpoint, method='GET', params=params)
         response.raise_for_status()
 
-        json_response = response.json()
+        return self._parse_invoice_response(response.json())
 
-        # Parse fees and their payments
-        fees = []
-        for fee_data in json_response.get('fees', []):
-            payments = []
-            for payment_data in fee_data.get('payments', []):
-                distributions = []
-                for dist_data in payment_data.get('distributions', []):
-                    distributions.append(PaymentDistribution(**dist_data))
-                payment_data['distributions'] = distributions
-                payments.append(Payment(**payment_data))
+    def _parse_invoice_response(self, data: Dict) -> InvoiceQueryResponse:
+        fees = [self._parse_fee(fee_data) for fee_data in data.get("fees", [])]
+        data["fees"] = fees
+        return InvoiceQueryResponse(**data)
 
-            adjustments = []
-            for adj_data in fee_data.get('adjustments', []):
-                adjustments.append(FeeAdjustment(**adj_data))
+    def _parse_fee(self, fee_data: Dict) -> InvoiceFee:
+        payments = [self._parse_payment(p) for p in fee_data.get("payments", [])]
+        adjustments = [FeeAdjustment(**a) for a in fee_data.get("adjustments", [])]
 
-            fee_data['payments'] = payments
-            fee_data['adjustments'] = adjustments
-            fees.append(InvoiceFee(**fee_data))
+        fee_data["payments"] = payments
+        fee_data["adjustments"] = adjustments
+        return InvoiceFee(**fee_data)
 
-        json_response['fees'] = fees
-        return InvoiceQueryResponse(**json_response)
+    @staticmethod
+    def _parse_payment(payment_data: Dict) -> Payment:
+        distributions = [PaymentDistribution(**d) for d in payment_data.get("distributions", [])]
+        payment_data["distributions"] = distributions
+        return Payment(**payment_data)
 
     def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """
