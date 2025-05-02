@@ -31,6 +31,7 @@ export const selectOperatorSchema: RJSFSchema = {
         required: ["legal_name"],
         properties: {
           legal_name: {
+            title: "Business Legal Name",
             type: "string",
             minLength: 1,
             maxLength: 100,
@@ -66,6 +67,7 @@ export const selectOperatorUiSchema = {
     "ui:FieldTemplate": FieldTemplateWithSubmitButton,
     "ui:widget": "OperatorSearchWidget",
     "ui:placeholder": "Enter Business Legal Name",
+
     "ui:options": {
       label: false,
       buttonLabel: "Select Operator",
