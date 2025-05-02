@@ -67,29 +67,6 @@ install:
 		helm upgrade $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
 	fi;
 
-.PHONY: install_reg1
-install_reg1: ## Installs the helm Registration part 1 chart on the OpenShift cluster
-install_reg1: check_environment
-install_reg1:
-install_reg1: GIT_SHA1=$(shell git rev-parse HEAD)
-install_reg1: IMAGE_TAG=$(GIT_SHA1)
-install_reg1: NAMESPACE=$(OBPS_NAMESPACE_PREFIX)-$(ENVIRONMENT)
-install_reg1: CHART_DIR=./helm/cas-registration
-install_reg1: CHART_INSTANCE=cas-registration
-install_reg1: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
-										--set defaultImageTag=$(IMAGE_TAG) \
-										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml
-install_reg1:
-	@set -euo pipefail; \
-	helm dep up $(CHART_DIR); \
-	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
-		echo "ERROR: Postgres is not deployed to $(NAMESPACE)."; \
-	elif ! helm status --namespace $(NAMESPACE) $(CHART_INSTANCE); then \
-		echo 'Installing the application'; \
-		helm install $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
-	else \
-		helm upgrade $(HELM_OPTS) $(CHART_INSTANCE) $(CHART_DIR); \
-	fi;
 
 .PHONY: generate_credentials
 generate_credentials:
