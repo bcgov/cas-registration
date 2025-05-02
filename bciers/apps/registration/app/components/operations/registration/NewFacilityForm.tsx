@@ -88,6 +88,11 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
   console.log("formState", formState);
   return (
     <>
+      <div
+        className={`w-full form-group field field-object form-heading-label`}
+      >
+        <div className="form-heading">Facility Information</div>
+      </div>
       {showForm ? (
         <>
           <FormBase
@@ -95,7 +100,16 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
             onChange={handleFormChange}
             onSubmit={handleSubmit}
             schema={facilitiesLfoSchema}
-            uiSchema={facilitiesLfoUiSchema}
+            uiSchema={{
+              ...facilitiesLfoUiSchema,
+              // remove the facility group heading
+              section1: {
+                ...facilitiesLfoUiSchema.section1,
+                "ui:options": {
+                  label: false,
+                },
+              },
+            }}
             liveValidate
           >
             <div>
