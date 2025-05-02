@@ -5,63 +5,44 @@ from reporting.models import NaicsRegulatoryValue, ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
 from reporting.models.emission_category import EmissionCategory
 from reporting.service.emission_category_service import EmissionCategoryService
+from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct
+from registration.models import RegulatedProduct
 from decimal import Decimal
 from django.db.models import Sum
 from typing import Dict, List
+from django.db import transaction
+from dataclasses import dataclass
 
 
+@dataclass
 class RegulatoryValues:
-    def __init__(
-        self,
-        reduction_factor: Decimal,
-        tightening_rate: Decimal,
-        initial_compliance_period: int,
-        compliance_period: int,
-    ):
-        self.reduction_factor = reduction_factor
-        self.tightening_rate = tightening_rate
-        self.initial_compliance_period = initial_compliance_period
-        self.compliance_period = compliance_period
+    reduction_factor: Decimal
+    tightening_rate: Decimal
+    initial_compliance_period: int
+    compliance_period: int
 
 
+@dataclass
 class ReportProductComplianceData:
-    def __init__(
-        self,
-        name: str,
-        annual_production: Decimal,
-        apr_dec_production: Decimal,
-        emission_intensity: Decimal,
-        allocated_industrial_process_emissions: Decimal,
-        allocated_compliance_emissions: Decimal,
-    ):
-        self.name = name
-        self.annual_production = annual_production
-        self.apr_dec_production = apr_dec_production
-        self.emission_intensity = emission_intensity
-        self.allocated_industrial_process_emissions = allocated_industrial_process_emissions
-        self.allocated_compliance_emissions = allocated_compliance_emissions
+    name: str
+    product_id: int
+    annual_production: Decimal
+    apr_dec_production: Decimal
+    emission_intensity: Decimal
+    allocated_industrial_process_emissions: Decimal
+    allocated_compliance_emissions: Decimal
 
 
+@dataclass
 class ComplianceData:
-    def __init__(
-        self,
-        emissions_attributable_for_reporting: Decimal,
-        reporting_only_emissions: Decimal,
-        emissions_attributable_for_compliance: Decimal,
-        emissions_limit: Decimal,
-        excess_emissions: Decimal,
-        credited_emissions: Decimal,
-        regulatory_values: RegulatoryValues,
-        products: List[ReportProductComplianceData],
-    ):
-        self.emissions_attributable_for_reporting = emissions_attributable_for_reporting
-        self.reporting_only_emissions = reporting_only_emissions
-        self.emissions_attributable_for_compliance = emissions_attributable_for_compliance
-        self.emissions_limit = emissions_limit
-        self.excess_emissions = excess_emissions
-        self.credited_emissions = credited_emissions
-        self.regulatory_values = regulatory_values
-        self.products = products
+    emissions_attributable_for_reporting: Decimal
+    reporting_only_emissions: Decimal
+    emissions_attributable_for_compliance: Decimal
+    emissions_limit: Decimal
+    excess_emissions: Decimal
+    credited_emissions: Decimal
+    regulatory_values: RegulatoryValues
+    products: List[ReportProductComplianceData]
 
 
 class ComplianceService:
@@ -253,6 +234,7 @@ class ComplianceService:
             compliance_product_list.append(
                 ReportProductComplianceData(
                     name=rp.product.name,
+                    product_id=rp.product_id,
                     annual_production=production_totals["annual_amount"],
                     apr_dec_production=production_totals["apr_dec"],
                     emission_intensity=ei,
@@ -288,3 +270,49 @@ class ComplianceService:
         )
 
         return return_object
+
+    @classmethod
+    @transaction.atomic()
+    def save_compliance_data(cls, report_version_id: int) -> None:
+        compliance_data_to_save = ComplianceService.get_calculated_compliance_data(report_version_id)
+        compliance_summary_record_id = None
+        report_version_record = ReportVersion.objects.get(id=report_version_id)
+        if ReportComplianceSummary.objects.filter(report_version_id=report_version_id).exists():
+            compliance_summary_record_id = ReportComplianceSummary.objects.get(report_version_id=report_version_id).id
+        compliance_summary_record, _ = ReportComplianceSummary.objects.update_or_create(
+            id=compliance_summary_record_id,
+            report_version=report_version_record,
+            defaults={
+                "emissions_attributable_for_reporting": compliance_data_to_save.emissions_attributable_for_reporting,
+                "reporting_only_emissions": compliance_data_to_save.reporting_only_emissions,
+                "emissions_attributable_for_compliance": compliance_data_to_save.emissions_attributable_for_compliance,
+                "emissions_limit": compliance_data_to_save.emissions_limit,
+                "excess_emissions": compliance_data_to_save.excess_emissions,
+                "credited_emissions": compliance_data_to_save.credited_emissions,
+                "reduction_factor": compliance_data_to_save.regulatory_values.reduction_factor,
+                "tightening_rate": compliance_data_to_save.regulatory_values.tightening_rate,
+                "initial_compliance_period": compliance_data_to_save.regulatory_values.initial_compliance_period,
+                "compliance_period": compliance_data_to_save.regulatory_values.compliance_period,
+            },
+        )
+        for product_data_to_save in compliance_data_to_save.products:
+            product_data_id = None
+            if ReportComplianceSummaryProduct.objects.filter(
+                report_version_id=report_version_id, product_id=product_data_to_save.product_id
+            ):
+                product_data_id = ReportComplianceSummaryProduct.objects.get(
+                    report_version_id=report_version_id, product_id=product_data_to_save.product_id
+                ).id
+            ReportComplianceSummaryProduct.objects.update_or_create(
+                id=product_data_id,
+                report_version=report_version_record,
+                report_compliance_summary=compliance_summary_record,
+                product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
+                defaults={
+                    "annual_production": product_data_to_save.annual_production,
+                    "apr_dec_production": product_data_to_save.apr_dec_production,
+                    "emission_intensity": product_data_to_save.emission_intensity,
+                    "allocated_industrial_process_emissions": product_data_to_save.allocated_industrial_process_emissions,
+                    "allocated_compliance_emissions": product_data_to_save.allocated_compliance_emissions,
+                },
+            )

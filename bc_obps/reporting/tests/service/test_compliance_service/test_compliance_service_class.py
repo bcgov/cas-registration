@@ -1,4 +1,5 @@
 from django.test import TestCase
+from reporting.models import ReportComplianceSummary, ReportComplianceSummaryProduct, ReportEmission, ReportProduct
 from reporting.service.compliance_service import ComplianceService
 from reporting.tests.service.test_compliance_service.infrastructure import ComplianceTestInfrastructure
 from decimal import Decimal
@@ -63,3 +64,53 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.emissions_limit == 0
         assert result.excess_emissions == 0
         assert result.credited_emissions == 0
+
+    def test_saves_compliance_data(self):
+        build_data = ComplianceTestInfrastructure.build()
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+        ComplianceService.save_compliance_data(build_data.report_version_1.id)
+        report_compliance_summary_record = ReportComplianceSummary.objects.get(
+            report_version_id=build_data.report_version_1.id
+        )
+        report_compliance_product_records = ReportComplianceSummaryProduct.objects.filter(
+            report_compliance_summary_id=report_compliance_summary_record.id
+        )
+
+        assert (
+            report_compliance_summary_record.emissions_attributable_for_compliance
+            == result.emissions_attributable_for_compliance
+        )
+        for idx, p in enumerate(report_compliance_product_records):
+            assert p.annual_production == result.products[idx].annual_production
+
+    def test_updates_compliance_data(self):
+        build_data = ComplianceTestInfrastructure.build()
+        initial_result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+        # Save the data
+        ComplianceService.save_compliance_data(build_data.report_version_1.id)
+        # Change an emission & product value & Update the compliance data
+        ReportEmission.objects.filter(id=build_data.report_emission_1.id).update(
+            json_data={"equivalentEmission": 10.1111}
+        )
+        ReportProduct.objects.filter(id=build_data.report_product_1.id).update(
+            annual_production=Decimal('1250'),
+            production_data_apr_dec=Decimal('250'),
+        )
+        ComplianceService.save_compliance_data(build_data.report_version_1.id)
+        updated_result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        report_compliance_summary_record = ReportComplianceSummary.objects.get(
+            report_version_id=build_data.report_version_1.id
+        )
+        report_compliance_product_records = ReportComplianceSummaryProduct.objects.filter(
+            report_compliance_summary_id=report_compliance_summary_record.id
+        )
+
+        assert initial_result != updated_result
+
+        assert (
+            report_compliance_summary_record.emissions_attributable_for_compliance
+            == updated_result.emissions_attributable_for_compliance
+        )
+        for idx, p in enumerate(report_compliance_product_records):
+            assert p.annual_production == updated_result.products[idx].annual_production
