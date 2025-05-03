@@ -8,6 +8,7 @@ import {
   BC_GOV_BACKGROUND_COLOR_GREY,
 } from "@bciers/styles";
 import { Box, Button } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 interface ComplianceStepButtonsProps {
   backUrl?: string;
@@ -32,6 +33,7 @@ interface ComplianceStepButtonsProps {
   noSaveButton?: boolean;
   customButtons?: React.ReactNode;
   children?: React.ReactNode;
+  style?: React.CSSProperties; // Optional additional styles
 }
 
 const ComplianceStepButtons: React.FunctionComponent<
@@ -55,7 +57,16 @@ const ComplianceStepButtons: React.FunctionComponent<
 
   customButtons,
   children,
+  style,
 }) => {
+  const router = useRouter();
+
+  // Default navigation function
+  const navigate = (url?: string) => {
+    if (url) {
+      router.push(url);
+    }
+  };
   return (
     <Box
       sx={{
@@ -64,17 +75,18 @@ const ComplianceStepButtons: React.FunctionComponent<
         mt: 2,
         mb: 2,
       }}
+      style={style}
     >
       <div>
         {(backUrl || onBackClick) && (
           <Button
             variant="outlined"
-            onClick={onBackClick}
+            onClick={onBackClick ?? (() => navigate(backUrl))}
             disabled={backButtonDisabled}
             data-testid="back-button"
             sx={{
-              width: "120px",
-              height: "50px",
+              padding: "10px",
+              minWidth: "120px",
               borderColor: BC_GOV_BACKGROUND_COLOR_BLUE,
               color: BC_GOV_LINKS_COLOR,
               "&:hover": {
@@ -98,9 +110,8 @@ const ComplianceStepButtons: React.FunctionComponent<
             disabled={middleButtonDisabled}
             data-testid="middle-button"
             sx={{
-              width: "240px",
-              height: "50px",
-              padding: 0,
+              padding: "10px",
+              minWidth: "120px",
               borderColor: BC_GOV_BACKGROUND_COLOR_BLUE,
               color: BC_GOV_LINKS_COLOR,
               "&:hover": {
@@ -121,12 +132,12 @@ const ComplianceStepButtons: React.FunctionComponent<
         {(continueUrl || onContinueClick) && (
           <Button
             variant="contained"
-            onClick={onContinueClick}
+            onClick={onContinueClick ?? (() => navigate(continueUrl))}
             disabled={submitButtonDisabled}
             data-testid="continue-button"
             sx={{
-              width: "120px",
-              height: "50px",
+              padding: "10px",
+              minWidth: "120px",
               backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
               "&:hover": {
                 backgroundColor: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
