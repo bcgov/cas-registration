@@ -4,10 +4,15 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import requests
 import logging
-import json
 from service.compliance.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from service.compliance.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from service.compliance.bc_carbon_registry.schema import SearchFilter, Pagination, FilterModel, GenericResponse
+from service.compliance.bc_carbon_registry.schema import (
+    SearchFilter,
+    Pagination,
+    FilterModel,
+    AccountDetailsResponse,
+    ProjectPayload,
+)
 from django.conf import settings
 
 # Configure logging for tests
@@ -117,7 +122,7 @@ def valid_issuance_payload():
                 "verificationStartDate": "2025-01-01",
                 "verificationEndDate": "2025-01-31",
                 "monitoringPeriod": "01/01/2025 - 31/01/2025",
-                "verifierId": 204,
+                "verifierId": "103100000028644",
                 "mixedUnits": [
                     {
                         "holding_quantity": 100,
@@ -129,6 +134,7 @@ def valid_issuance_payload():
                         "zipcode": "H0H0H0",
                         "province": "BC",
                         "defined_unit_id": "103000000392535",
+                        "project_type_id": "140000000000002",
                     }
                 ],
             }
@@ -306,27 +312,75 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.return_value = mock_success_response
         payload = SearchFilter(pagination=Pagination(), filterModel=FilterModel())
         # Act
-        result = client._make_request(method="POST", endpoint="/test", data=payload, response_model=GenericResponse)
+        result = client._make_request(method="POST", endpoint="/test", data=payload)
         # Assert
         assert result == {"success": True, "result": {"id": "123"}}
         mock_request.assert_called_once_with(
             method="POST",
             url=f"{API_URL}/test",
-            headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"},
-            json=payload.model_dump_json(),
+            headers={
+                "Authorization": f"Bearer {TOKEN}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            json=payload.model_dump(exclude_none=True),
             params=None,
         )
 
-    def test_make_request_validation_error(self, authenticated_client, caplog):
-        """Test handling of invalid response format."""
+    def test_make_request_invalid_response_validation(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
-        mock_request.return_value = Mock(status_code=200, json=lambda: {"invalid_field": "value"})
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {"invalid_field": "value"},  # Invalid schema for response_model
+        )
+        mock_request.return_value = mock_response
+        payload = SearchFilter(pagination=Pagination(), filterModel=FilterModel())
+
+        # Act & Assert
+        with pytest.raises(BCCarbonRegistryError, match="Invalid response format"):
+            client._make_request(
+                method="POST",
+                endpoint="/test",
+                data=payload,
+                response_model=AccountDetailsResponse,  # Expecting AccountDetailsResponse schema
+            )
+
+    def test_make_request_non_200_status(self, authenticated_client, caplog):
+        # Arrange
+        client, mock_request = authenticated_client
+        mock_response = Mock(status_code=400, text="Bad Request")
+        mock_response.raise_for_status.side_effect = requests.HTTPError("400 Bad Request")
+        mock_request.return_value = mock_response
+
         # Act & Assert
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(BCCarbonRegistryError, match="Invalid response format"):
-                client._make_request(method="GET", endpoint="/test", response_model=GenericResponse)
-            assert "Invalid response from" in caplog.text
+            with pytest.raises(BCCarbonRegistryError, match="Request failed"):
+                client._make_request(method="GET", endpoint="/test")
+            assert "Request to" in caplog.text
+
+    def test_check_pagination_params_invalid(self, setup, caplog):
+        # Arrange
+        client = setup
+
+        # Act & Assert
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(ValueError, match="limit must be positive and start non-negative"):
+                client._check_pagination_params(limit=0, start=0)
+            with pytest.raises(ValueError, match="limit must be positive and start non-negative"):
+                client._check_pagination_params(limit=10, start=-1)
+            assert "Invalid pagination parameters" in caplog.text
+
+    def test_submit_payload_empty(self, setup):
+        # Arrange
+        client = setup
+        empty_payload = {}
+
+        # Act & Assert
+        with pytest.raises(BCCarbonRegistryError, match="Invalid payload"):
+            client._submit_payload(
+                data=empty_payload, url="/test", payload_model=ProjectPayload, error_message="Invalid payload"
+            )
 
     def test_get_account_details_success(self, authenticated_client):
         # Arrange
@@ -386,6 +440,30 @@ class TestBCCarbonRegistryAPIClient:
         assert_account_keys(result["entities"])
         mock_request.assert_called_once()
 
+    def test_get_account_details_non_existent(self, authenticated_client):
+        # Arrange
+        client, mock_request = authenticated_client
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {
+                "totalEntities": 0,
+                "totalPages": 0,
+                "numberOfElements": 0,
+                "first": True,
+                "last": True,
+                "entities": [],
+            },
+        )
+        mock_request.return_value = mock_response
+
+        # Act
+        result = client.get_account_details(MOCK_FIFTEEN_DIGIT_STRING)
+
+        # Assert
+        assert result["totalEntities"] == 0
+        assert len(result["entities"]) == 0
+        mock_request.assert_called_once()
+
     def test_list_all_accounts_empty_result(self, authenticated_client):
         # Arrange
         client, mock_request = authenticated_client
@@ -420,7 +498,7 @@ class TestBCCarbonRegistryAPIClient:
         )
         mock_request.return_value = mock_response
         # Act
-        result = client.list_holding_accounts(compliance_account_id=MOCK_FIFTEEN_DIGIT_STRING, limit=10, start=0)
+        result = client.list_holding_accounts(master_account_id=MOCK_FIFTEEN_DIGIT_STRING, limit=10, start=0)
         # Assert
         assert result["totalEntities"] == 1
         assert len(result["entities"]) == 1
@@ -428,26 +506,26 @@ class TestBCCarbonRegistryAPIClient:
         mock_request.assert_called_once_with(
             method="POST",
             url=f"{API_URL}/es/account/pagePrivateSearchByFilter",
-            headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"},
-            json=json.dumps(
-                {
-                    "pagination": {
-                        "start": 0,
-                        "limit": 10,
-                        "sortOptions": [{"sort": "accountName.keyword", "dir": "ASC"}],
-                    },
-                    "filterModel": {
-                        "entityId": None,
-                        "accountTypeId": {"columnFilters": [{"filterType": "Text", "type": "in", "filter": "14"}]},
-                        "masterAccountId": {
-                            "columnFilters": [{"filterType": "Text", "type": "in", "filter": MOCK_FIFTEEN_DIGIT_STRING}]
-                        },
-                        "accountId": None,
-                    },
-                    "groupKeys": [],
+            headers={
+                "Authorization": f"Bearer {TOKEN}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            json={
+                "pagination": {
+                    "start": 0,
+                    "limit": 10,
+                    "sortOptions": [{"sort": "accountName.keyword", "dir": "ASC"}],
                 },
-                separators=(",", ":"),
-            ),
+                "filterModel": {
+                    "accountTypeId": {"columnFilters": [{"filterType": "Text", "type": "in", "filter": "14"}]},
+                    "masterAccountId": {
+                        "columnFilters": [{"filterType": "Text", "type": "in", "filter": MOCK_FIFTEEN_DIGIT_STRING}]
+                    },
+                    "stateCode": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "ACTIVE"}]},
+                },
+                "groupKeys": [],
+            },
             params=None,
         )
 
@@ -456,9 +534,9 @@ class TestBCCarbonRegistryAPIClient:
         client = setup
         # Act & Assert
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(ValueError, match="compliance_account_id must be a numeric string"):
-                client.list_holding_accounts(compliance_account_id="invalid")
-            assert "Invalid compliance_account_id" in caplog.text
+            with pytest.raises(ValueError, match="master_account_id must be a numeric string"):
+                client.list_holding_accounts(master_account_id="invalid")
+            assert "Invalid master_account_id" in caplog.text
 
     def test_list_all_units_success(self, authenticated_client):
         # Arrange
@@ -491,7 +569,7 @@ class TestBCCarbonRegistryAPIClient:
         )
         mock_request.return_value = mock_response
         # Act
-        result = client.list_all_units(account_id="123", limit=10, start=0)
+        result = client.list_all_units(holding_account_id="123", limit=10, start=0)
         # Assert
         assert result["totalEntities"] == 1
         assert len(result["entities"]) == 1
@@ -518,9 +596,33 @@ class TestBCCarbonRegistryAPIClient:
         client = setup
         # Act & Assert
         with caplog.at_level(logging.ERROR):
-            with pytest.raises(ValueError, match="account_id must be a numeric string"):
-                client.list_all_units(account_id="invalid")
-            assert "Invalid account_id" in caplog.text
+            with pytest.raises(ValueError, match="holding_account_id must be a numeric string"):
+                client.list_all_units(holding_account_id="invalid")
+            assert "Invalid holding_account_id" in caplog.text
+
+    def test_list_all_units_no_units_in_vintage(self, authenticated_client):
+        # Arrange
+        client, mock_request = authenticated_client
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {
+                "totalEntities": 0,
+                "totalPages": 0,
+                "numberOfElements": 0,
+                "first": True,
+                "last": True,
+                "entities": [],
+            },
+        )
+        mock_request.return_value = mock_response
+
+        # Act
+        result = client.list_all_units(holding_account_id="123", limit=10, start=0)
+
+        # Assert
+        assert result["totalEntities"] == 0
+        assert len(result["entities"]) == 0
+        mock_request.assert_called_once()
 
     def test_get_project_details_success(self, authenticated_client):
         # Arrange
@@ -528,8 +630,8 @@ class TestBCCarbonRegistryAPIClient:
         mock_response = Mock(
             status_code=200,
             json=lambda: {
-                "id": MOCK_FIFTEEN_DIGIT_STRING,
-                "account_id": MOCK_FIFTEEN_DIGIT_STRING,
+                "id": MOCK_FIFTEEN_DIGIT_INT,
+                "account_id": MOCK_FIFTEEN_DIGIT_INT,
                 "project_name": "Test Project",
                 "project_description": "Test Description",
             },
@@ -538,12 +640,12 @@ class TestBCCarbonRegistryAPIClient:
         # Act
         result = client.get_project_details(project_id="456")
         # Assert
-        assert result["id"] == MOCK_FIFTEEN_DIGIT_STRING
-        assert result["account_id"] == MOCK_FIFTEEN_DIGIT_STRING
+        assert result["id"] == MOCK_FIFTEEN_DIGIT_INT
+        assert result["account_id"] == MOCK_FIFTEEN_DIGIT_INT
         assert result["project_name"] == "Test Project"
         assert result["project_description"] == "Test Description"
         mock_request.assert_called_once_with(
-            method="POST",
+            method="GET",
             url=f"{API_URL}/raas-project-api/project-manager/getById/456",
             headers=mock_request.call_args.kwargs["headers"],
             json=None,
@@ -559,15 +661,25 @@ class TestBCCarbonRegistryAPIClient:
                 client.get_project_details(project_id="invalid")
             assert "Invalid project_id" in caplog.text
 
-    def test_create_project_success(self, authenticated_client, valid_project_payload, mock_success_response):
+    def test_create_project_success(self, authenticated_client, valid_project_payload):
         # Arrange
         client, mock_request = authenticated_client
-        mock_request.return_value = mock_success_response
+        mock_request.return_value = Mock(
+            status_code=200,
+            json=lambda: {
+                "id": 103000000392508,
+                "account_id": 103100000028575,
+                "project_name": "Test Project",
+                "project_description": "Test Description",
+            },
+        )
         # Act
         result = client.create_project(valid_project_payload)
         # Assert
-        assert result["success"] is True
-        assert result["result"]["id"] == "123"
+        assert result["id"] == 103000000392508
+        assert result["account_id"] == 103100000028575
+        assert result["project_name"] == "Test Project"
+        assert result["project_description"] == "Test Description"
         mock_request.assert_called_once()
 
     def test_create_project_invalid_payload(self, setup, valid_project_payload):
