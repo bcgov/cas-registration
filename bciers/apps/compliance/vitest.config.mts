@@ -12,9 +12,8 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
-    // exclude: ["node_modules", "dist", "e2e"],
     alias: {
-      "@/dashboard": path.resolve(__dirname, "../dashboard/src/"),
+      "@/compliance": path.resolve(__dirname, "../compliance"),
       "@": path.resolve(__dirname, "./"),
       app: path.resolve(__dirname, "./app"),
     },
