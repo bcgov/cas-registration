@@ -1,7 +1,7 @@
 import requests
 import logging
 from zoneinfo import ZoneInfo
-from typing import Dict, Optional, Type, Any
+from typing import Dict, Optional, Type, Any, Union, Literal
 from datetime import datetime, timedelta
 from django.conf import settings
 from pydantic import BaseModel, ValidationError
@@ -17,9 +17,9 @@ from service.compliance.bc_carbon_registry.schema import (
     ProjectDetailsResponse,
     ProjectPayload,
     TransferPayload,
-    GenericResponse,
     IssuancePayload,
     SubAccountPayload,
+    SearchFilterWrapper,
 )
 from requests.exceptions import Timeout, ConnectionError, HTTPError, RequestException
 
@@ -91,7 +91,7 @@ class BCCarbonRegistryAPIClient:
         token = getattr(self, "token", None)
         token_expiry = getattr(self, "token_expiry", None)
         if token is None or token_expiry is None or datetime.now(ZoneInfo("UTC")) >= token_expiry:
-            logger.warning("Token missing or expired. Re-authenticating.")
+            logger.warning("Token missing or expired. Re-authenticating...")
             self._authenticate()
 
     def _make_request(
@@ -112,12 +112,17 @@ class BCCarbonRegistryAPIClient:
         :return: Parsed JSON response.
         """
         self._ensure_authenticated()
-        headers = {"Authorization": f"Bearer {self.token}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
         url = f"{self.api_url}{endpoint}"
 
-        json_data = data.model_dump_json() if data else None
+        # exclude_none=True to remove None values (Cause issues when sending None values when filtering)
+        data_dict = data.model_dump(exclude_none=True) if data else None
         try:
-            response = requests.request(method=method, url=url, headers=headers, json=json_data, params=params)
+            response = requests.request(method=method, url=url, headers=headers, json=data_dict, params=params)
             response.raise_for_status()
             response_json = response.json()
             if response_model:
@@ -125,19 +130,20 @@ class BCCarbonRegistryAPIClient:
             else:
                 validated_response = response_json
             return validated_response
-        except requests.RequestException as e:
-            logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
-            raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
         except ValidationError as e:
             logger.error("Invalid response from %s: %s", url, str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Invalid response format: {str(e)}", endpoint=url) from e
+        except Exception as e:
+            logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
+            raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
 
     def _submit_payload(
         self,
         data: Dict,
         url: str,
         payload_model: Type[Any],
-        response_model: Optional[type[BaseModel]] = GenericResponse,
+        method: Literal["POST", "PUT", "PATCH"] = "POST",
+        response_model: Optional[type[BaseModel]] = None,
         error_message: str = "Invalid payload",
     ) -> Dict:
         """
@@ -155,22 +161,36 @@ class BCCarbonRegistryAPIClient:
             payload = payload_model(**data)
         except ValidationError as e:
             raise BCCarbonRegistryError(f"{error_message}: {str(e)}") from e
-        return self._make_request("POST", url, data=payload, response_model=response_model)
+        return self._make_request(method, url, data=payload, response_model=response_model)
 
-    def get_account_details(self, account_id: str) -> Dict:
+    @staticmethod
+    def _check_pagination_params(limit: int, start: int) -> None:
+        """
+        Check if pagination parameters are valid.
+        :param limit: Number of items to retrieve.
+        :param start: Starting index for pagination.
+        :raises ValueError: If pagination parameters are invalid
+        """
+        if limit < 1 or start < 0:
+            logger.error("Invalid pagination parameters: limit=%s, start=%s", limit, start)
+            raise ValueError("limit must be positive and start non-negative")
+
+    def get_account_details(self, account_id: Union[str, int]) -> Dict:
         """
         Retrieves account details for the given account ID. This endpoint works for both compliance and holding accounts.
         :param account_id: The ID of the account to retrieve.
         """
         url = "/raas-report-api/es/account/pagePrivateSearchByFilter"
-        if not account_id.isdigit():
+        if isinstance(account_id, str) and not account_id.isdigit():
             logger.error("Invalid account_id: %s", account_id)
             raise ValueError("account_id must be a numeric string")
-        payload = SearchFilter(
-            pagination=Pagination(),
-            filterModel=FilterModel(
-                entityId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]}
-            ),
+
+        payload = SearchFilterWrapper(
+            searchFilter=SearchFilter(
+                filterModel=FilterModel(
+                    accountId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]}
+                ),
+            )
         )
         return self._make_request("POST", url, data=payload, response_model=AccountDetailsResponse)
 
@@ -182,16 +202,15 @@ class BCCarbonRegistryAPIClient:
         NOTE: We can extend filterModel to filter by different options in the future. (e.g. accountTypeId, entityId, etc.)
         """
         url = "/raas-report-api/es/account/pagePrivateSearchByFilter"
-        if limit < 1 or start < 0:
-            logger.error("Invalid pagination parameters: limit=%s, start=%s", limit, start)
-            raise ValueError("limit must be positive and start non-negative")
-        payload = SearchFilter(pagination=Pagination(start=start, limit=limit))
+        self._check_pagination_params(limit, start)
+
+        payload = SearchFilterWrapper(searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit)))
         return self._make_request("POST", url, data=payload, response_model=AccountDetailsResponse)
 
-    def list_holding_accounts(self, compliance_account_id: str, limit: int = 20, start: int = 0) -> Dict:
+    def list_holding_accounts(self, master_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
         """
-        Lists all holding accounts associated with a compliance account.
-        :param compliance_account_id: The ID of the compliance account.
+        Lists all holding accounts by compliance account
+        :param master_account_id: The ID of the master account
         :param limit: Number of holding accounts to retrieve.
         :param start: Starting index for pagination.
 
@@ -205,9 +224,12 @@ class BCCarbonRegistryAPIClient:
         """
         url = "/es/account/pagePrivateSearchByFilter"
         COMPLIANCE_ACCOUNT_TYPE_ID = "14"
-        if not compliance_account_id.isdigit():
-            logger.error("Invalid compliance_account_id: %s", compliance_account_id)
-            raise ValueError("compliance_account_id must be a numeric string")
+        self._check_pagination_params(limit, start)
+
+        if isinstance(master_account_id, str) and not master_account_id.isdigit():
+            logger.error("Invalid master_account_id: %s", master_account_id)
+            raise ValueError("master_account_id must be a numeric string")
+
         payload = SearchFilter(
             pagination=Pagination(start=start, limit=limit),
             filterModel=FilterModel(
@@ -215,25 +237,40 @@ class BCCarbonRegistryAPIClient:
                     "columnFilters": [ColumnFilter(filterType="Text", type="in", filter=COMPLIANCE_ACCOUNT_TYPE_ID)]
                 },
                 masterAccountId={
-                    "columnFilters": [ColumnFilter(filterType="Text", type="in", filter=compliance_account_id)]
+                    "columnFilters": [ColumnFilter(filterType="Text", type="in", filter=master_account_id)]
                 },
+                stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
             ),
         )
         return self._make_request("POST", url, data=payload, response_model=AccountDetailsResponse)
 
-    def list_all_units(self, account_id: str, limit: int = 20, start: int = 0) -> Dict:
+    def list_all_units(self, holding_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
         """
-        List compliance units for a given account.
+        List compliance units for a given holding account.
+        We need to list the units that are ACTIVE and issued in the last 3 years.(Using vintage filter)
         """
         url = "/raas-report-api/es/unit/pagePrivateSearchByFilter"
-        if not account_id.isdigit():
-            logger.error("Invalid account_id: %s", account_id)
-            raise ValueError("account_id must be a numeric string")
-        payload = SearchFilter(
-            pagination=Pagination(start=start, limit=limit),
-            filterModel=FilterModel(
-                accountId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]}
-            ),
+        self._check_pagination_params(limit, start)
+
+        if isinstance(holding_account_id, str) and not holding_account_id.isdigit():
+            logger.error("Invalid holding_account_id: %s", holding_account_id)
+            raise ValueError("holding_account_id must be a numeric string")
+
+        payload = SearchFilterWrapper(
+            searchFilter=SearchFilter(
+                pagination=Pagination(start=start, limit=limit),
+                filterModel=FilterModel(
+                    accountId={
+                        "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=holding_account_id)]
+                    },
+                    stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
+                    vintage={
+                        "columnFilters": [
+                            ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=datetime.now().year - 3)
+                        ]
+                    },
+                ),
+            )
         )
         return self._make_request(
             "POST",
@@ -242,20 +279,37 @@ class BCCarbonRegistryAPIClient:
             response_model=UnitDetailsResponse,
         )
 
-    def get_project_details(self, project_id: str) -> Dict:
-        """Get project details by project ID."""
+    def get_project_details(self, project_id: Union[str, int]) -> Dict:
         url = f"/raas-project-api/project-manager/getById/{project_id}"
-        if not project_id.isdigit():
+        if isinstance(project_id, str) and not project_id.isdigit():
             logger.error("Invalid project_id: %s", project_id)
             raise ValueError("project_id must be a numeric string")
-        return self._make_request("POST", url, response_model=ProjectDetailsResponse)
+        return self._make_request("GET", url, response_model=ProjectDetailsResponse)
 
     def create_project(self, project_data: Dict) -> Dict:
-        """Create a new project"""
+        """
+        Example payload: (default values not included)
+        {
+            'account_id': '103100000028641',
+            'project_name': 'Test BC Project - Billie Blue 10',
+            'project_description': 'Test Description - Billie Blue 10',
+            'mixedUnitList': [
+                {
+                    'city': 'Vancouver',
+                   'address_line_1': 'Test - Billie Blue 10',
+                   'zipcode': 'H0H0H0',
+                   'province': 'BC',
+                   'period_start_date': '2025-03-01',
+                   'period_end_date': '2025-03-31'
+                }
+            ],
+        }
+        """
         return self._submit_payload(
             data=project_data,
-            url="/raas-project-api/project-manager/project",
+            url="/raas-project-api/project-manager/doSubmit",
             payload_model=ProjectPayload,
+            response_model=ProjectDetailsResponse,
             error_message="Invalid project payload",
         )
 
@@ -271,6 +325,19 @@ class BCCarbonRegistryAPIClient:
         The existing record is updated with the remaining quantity and stays in Active status.
 
         :param transfer_data: Dictionary containing transfer details.
+
+        Example payload: (default values not included)
+        {
+            "destination_account_id": "103100000028649",
+            "mixedUnitList": [
+                {
+                    "account_id": "103100000028641",
+                    "serial_no": "BC-BCO-IN-104100000030260-01012039-31122039-21887521-21888518-SPG",
+                    "new_quantity": 1,
+                    "id": "103200000392472",
+                }
+            ]
+        }
         """
         return self._submit_payload(
             data=transfer_data,
@@ -283,6 +350,33 @@ class BCCarbonRegistryAPIClient:
         """
         Create an issuance.
         An issuance record is created in Draft status along with units are created with the holding_quantity mentioned in payload in NEW status.
+
+        Example payload: (default values not included)
+        {
+            "account_id": "103100000028641",
+            "issuance_requested_date": "2025-05-01T13:13:28.547Z",
+            "project_id": "104100000030325",
+            "verifications": [
+                {
+                    "verificationStartDate": "01/01/2025",
+                    "verificationEndDate": "31/01/2025",
+                    "monitoringPeriod": "01/01/2025 - 31/01/2025",
+                    "verifierId": "103100000028644",
+                    "mixedUnits": [
+                        {
+                            "holding_quantity": 5,
+                            "vintage_start": "2025-01-01T00:00:00Z",
+                            "vintage_end": "2025-01-31T00:00:00Z",
+                            "city": "Vancouver",
+                            "address_line_1": "Test - Billie Blue 3",
+                            "zipcode": "H0H0H0",
+                            "defined_unit_id": "103200000392481",
+                            "project_type_id": "140000000000002"
+                        }
+                    ]
+                }
+            ]
+        }
         """
         return self._submit_payload(
             data=issuance_data,
@@ -292,7 +386,27 @@ class BCCarbonRegistryAPIClient:
         )
 
     def create_sub_account(self, sub_account_data: Dict) -> Dict:
-        """Create a subaccount in holding account"""
+        """
+        Create a subaccount for holding account
+
+        Example payload: (default values not included)
+        {
+            "master_account_id": "103100000028641",
+            "compliance_year": 2025,
+            "organization_classification_id": "100000000000096",
+            "type_of_organization": "140000000000002", We can get this from account details (type_of_account_holder) and then map it to the below list
+            "boro_id": "25-0004",
+            "registered_name": "Test Billie Blue Subaccount 2 May 1 - operation name",
+            "trading_name": "Test Billie Blue Subaccount 2 May 1 - operation name",
+            "registration_number_assigend_by_registrar": "registration_number_assigned_by_registrar TEST 4"
+        }
+
+        Account Holder Type
+        ------------------
+        140000000000001		    Individual
+        140000000000002 		Corporation
+        140000000000003 		Partnership
+        """
         return self._submit_payload(
             data=sub_account_data,
             url="/br-reg/rest/account-manager/doSubmit",
