@@ -42,7 +42,7 @@ from .report_emission_allocation import ReportEmissionAllocation
 from .report_product_emission_allocation import ReportProductEmissionAllocation
 from .report_operation_representative import ReportOperationRepresentative
 from .report_sign_off import ReportSignOff
-from .electricity_import_data import ElectricityImportData
+from .report_electricity_import_data import ElectricityImportData
 from .report_compliance_summary import ReportComplianceSummary
 from .report_compliance_summary_product import ReportComplianceSummaryProduct
 from .report_attachment_confirmation import ReportAttachmentConfirmation

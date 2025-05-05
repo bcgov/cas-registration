@@ -1,15 +1,9 @@
 from ninja import ModelSchema
-from pydantic import alias_generators
 from reporting.models import ElectricityImportData
-
-
-def to_snake(string: str) -> str:
-    return alias_generators.to_snake(string)
 
 
 class ElectricityImportDataSchema(ModelSchema):
     class Meta:
-        alias_generator = to_snake
         model = ElectricityImportData
         fields = [
             'import_specified_electricity',
