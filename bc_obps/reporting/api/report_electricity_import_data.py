@@ -5,7 +5,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.generic import Message
 from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
-from ..models import ElectricityImportData
+from ..models import ReportElectricityImportData
 from ..schema.report_electricity_import_data import ElectricityImportDataSchema
 from ..service.report_electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
 
@@ -38,6 +38,6 @@ def save_electricity_import_data(
 )
 def get_electricity_import_data(
     request: HttpRequest, version_id: int
-) -> tuple[Literal[200], ElectricityImportData | None]:
+) -> tuple[Literal[200], ReportElectricityImportData | None]:
     electricity_import_data = ElectricityImportDataService.get_electricity_import_data(version_id)
     return 200, electricity_import_data
