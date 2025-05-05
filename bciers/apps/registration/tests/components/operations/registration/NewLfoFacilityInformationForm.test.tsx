@@ -67,7 +67,7 @@ describe("the NewLfoFacilityForm component", () => {
       render(<NewLfoFacilityForm {...defaultProps} />);
 
       const addButton = screen.getByRole("button", {
-        name: "Add Facility",
+        name: "Add New Facility",
       });
 
       act(() => {
@@ -127,7 +127,7 @@ describe("the NewLfoFacilityForm component", () => {
     render(<NewLfoFacilityForm {...defaultProps} />);
 
     const addFacilityButton = screen.getByRole("button", {
-      name: "Add Facility",
+      name: "Add New Facility",
     });
 
     act(() => {

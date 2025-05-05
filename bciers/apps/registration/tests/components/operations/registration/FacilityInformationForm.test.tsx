@@ -58,7 +58,7 @@ describe("the FacilityInformationForm component", () => {
     );
     expect(
       screen.queryByRole("button", {
-        name: "Add Facility",
+        name: "Add New Facility",
       }),
     ).not.toBeInTheDocument();
     expect(screen.getByTestId("field-template-label")).toHaveTextContent(
@@ -77,7 +77,7 @@ describe("the FacilityInformationForm component", () => {
 
     expect(
       screen.getByRole("button", {
-        name: "Add Facility",
+        name: "Add New Facility",
       }),
     ).toBeVisible();
 
