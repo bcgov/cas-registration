@@ -13,7 +13,7 @@ from service.form_builder_service import FormBuilderService
 def enable_jsonschema_draft_2020_validation(schema: Any) -> None:
     """
     RJSF uses draft-07 and doesn't support the `unevaluatedProperties` keyword.
-    This method replces the `dependencies` keyword with `dependentSchemas` and adds
+    This method replaces the `dependencies` keyword with `dependentSchemas` and adds
     `unevaluatedProperties: False` to the schema where appropriate, to enable
     validation with draft-2020-12.
     """
