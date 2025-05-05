@@ -16,7 +16,7 @@ import {
   facilitiesLfoUiSchema,
 } from "@/administration/app/data/jsonSchema/facilitiesLfo";
 
-interface NewFacilityFormProps
+interface NewLfoFacilityFormProps
   extends Omit<FormPropsWithTheme<any>, "schema" | "uiSchema"> {
   operationId: UUID;
   formData: FacilityInformationFormData;
@@ -24,7 +24,7 @@ interface NewFacilityFormProps
   onSuccess?: (createdFacility: any) => void;
 }
 
-const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
+const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
   const {
     formData,
     operationId,
@@ -85,7 +85,7 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
     // router.refresh(); // does nothing
     return response;
   };
-  console.log("formState", formState);
+
   return (
     <>
       <div
@@ -95,21 +95,13 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
       </div>
       {showForm ? (
         <>
+          Add Facility
           <FormBase
             formData={formState}
             onChange={handleFormChange}
             onSubmit={handleSubmit}
             schema={facilitiesLfoSchema}
-            uiSchema={{
-              ...facilitiesLfoUiSchema,
-              // remove the facility group heading
-              section1: {
-                ...facilitiesLfoUiSchema.section1,
-                "ui:options": {
-                  label: false,
-                },
-              },
-            }}
+            uiSchema={facilitiesLfoUiSchema}
             liveValidate
           >
             <div>
@@ -145,4 +137,4 @@ const NewFacilityForm: FC<NewFacilityFormProps> = (props) => {
   );
 };
 
-export default NewFacilityForm;
+export default NewLfoFacilityForm;

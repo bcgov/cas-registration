@@ -10,13 +10,12 @@ import {
   facilityInformationSfoSchema,
   facilityInformationSfoUiSchema,
 } from "apps/registration/app/data/jsonSchema/operationRegistration/facilityInformation";
-import { FacilitySfoFormData } from "apps/registration/app/components/operations/registration/types";
 import { createUnnestedFormData } from "@bciers/components/form/formDataUtils";
 import { facilitiesSfoSchema } from "@/administration/app/data/jsonSchema/facilitiesSfo";
 
 interface FacilitySfoFormProps {
   facilityId?: UUID;
-  formData: FacilitySfoFormData;
+  formData: { [key: string]: any };
   operationId: UUID | "create";
   step: number;
   steps: string[];

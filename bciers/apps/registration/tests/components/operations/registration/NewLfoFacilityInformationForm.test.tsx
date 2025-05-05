@@ -20,7 +20,7 @@ import {
   fillNameAndTypeFields,
   toggleAndFillStartDate,
 } from "./FacilitySfoForm.test";
-import NewFacilityForm from "@/registration/app/components/operations/registration/NewFacilityForm";
+import NewLfoFacilityForm from "@/registration/app/components/operations/registration/NewLfoFacilityForm";
 
 useSession.mockReturnValue({
   data: {
@@ -53,7 +53,7 @@ const defaultProps = {
   onSuccess: vi.fn(),
 };
 
-describe("the NewFacilityForm component", () => {
+describe("the NewLfoFacilityForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -64,7 +64,7 @@ describe("the NewFacilityForm component", () => {
       timeout: 20000,
     },
     async () => {
-      render(<NewFacilityForm {...defaultProps} />);
+      render(<NewLfoFacilityForm {...defaultProps} />);
 
       const addButton = screen.getByRole("button", {
         name: "Add Facility",
@@ -120,11 +120,11 @@ describe("the NewFacilityForm component", () => {
     },
   );
 
-  it("should throw error if user attempts to Save without filling the form", async () => {
+  it("should show an alert if there's an error", async () => {
     actionHandler.mockResolvedValueOnce({
       error: "a problem",
     });
-    render(<NewFacilityForm {...defaultProps} />);
+    render(<NewLfoFacilityForm {...defaultProps} />);
 
     const addFacilityButton = screen.getByRole("button", {
       name: "Add Facility",
