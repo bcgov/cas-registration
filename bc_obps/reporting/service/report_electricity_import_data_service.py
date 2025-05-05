@@ -2,7 +2,7 @@ from dataclasses import dataclass, asdict
 from decimal import Decimal
 from typing import Optional
 
-from reporting.models import ReportVersion, ElectricityImportData
+from reporting.models import ReportVersion, ReportElectricityImportData
 
 
 @dataclass
@@ -23,14 +23,16 @@ class ElectricityImportDataService:
     @staticmethod
     def get_electricity_import_data(
         report_version_id: int,
-    ) -> Optional[ElectricityImportData]:
-        return ElectricityImportData.objects.filter(report_version__id=report_version_id).first()
+    ) -> Optional[ReportElectricityImportData]:
+        return ReportElectricityImportData.objects.filter(report_version__id=report_version_id).first()
 
     @staticmethod
-    def save_electricity_import_data(version_id: int, payload: ElectricityImportFormData) -> ElectricityImportData:
+    def save_electricity_import_data(
+        version_id: int, payload: ElectricityImportFormData
+    ) -> ReportElectricityImportData:
         report_version = ReportVersion.objects.get(pk=version_id)
         payload_dict = asdict(payload)
-        electricity_import_data, _ = ElectricityImportData.objects.update_or_create(
+        electricity_import_data, _ = ReportElectricityImportData.objects.update_or_create(
             report_version=report_version,
             defaults=payload_dict,
         )
