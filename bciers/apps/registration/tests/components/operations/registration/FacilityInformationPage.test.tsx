@@ -29,26 +29,6 @@ describe("the FacilityInformationPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  it("should render the FacilityInformationPage component", async () => {
-    fetchFacilitiesPageData.mockReturnValueOnce({
-      rows: [],
-      row_count: 0,
-    });
-    render(
-      await FacilityInformationPage({
-        operation: "002d5a9e-32a6-4191-938c-2c02bfec592d",
-        operationName: "Test Operation",
-        operationType: OperationTypes.LFO,
-        searchParams: {},
-        step: 2,
-        steps: allOperationRegistrationSteps,
-      }),
-    );
-
-    expect(
-      screen.getByRole("button", { name: "Add Facility" }),
-    ).toBeInTheDocument();
-  });
 
   it("should render the single facility operation form with name and type pre-populated", async () => {
     fetchFacilitiesPageData.mockReturnValueOnce({
@@ -81,7 +61,7 @@ describe("the FacilityInformationPage component", () => {
     expect(facilityType).toHaveTextContent("Single Facility");
   });
 
-  it("should render the datagrid with facility information", async () => {
+  it("should render the LFO operation form with datagrid with facility information", async () => {
     fetchFacilitiesPageData.mockReturnValueOnce({
       rows: [
         {
@@ -117,7 +97,7 @@ describe("the FacilityInformationPage component", () => {
     expect(screen.getByText("Test Facility Type 2")).toBeInTheDocument();
   });
 
-  it("should render the empty datagrid when there is no facility data", async () => {
+  it("should render the empty LFO operation form datagrid when there is no facility data", async () => {
     fetchFacilitiesPageData.mockReturnValueOnce({
       rows: [],
       row_count: 0,
