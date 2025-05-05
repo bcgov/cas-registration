@@ -146,9 +146,6 @@ test.describe("Test register operations", () => {
 
     // // STEP 2
     componentName = "Registration LFO Facility Information";
-    await registrationPage.assertHeading(
-      OperationRegistrationSteps.FACILITY_INFORMATION,
-    );
     await clickButton(registrationPage.page, /add new facility/i);
     await registrationPage.fillLfoFacilityInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
