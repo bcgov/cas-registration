@@ -2,6 +2,8 @@ import json
 from unittest.mock import patch
 from model_bakery.baker import make_recipe
 import pytest
+from registration.models.activity import Activity
+from reporting.models.reporting_year import ReportingYear
 from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
     Severity,
@@ -44,7 +46,9 @@ class TestReportActivityJsonValidator:
 
         assert not schema["unevaluatedProperties"]
         assert not schema["properties"]["test_prop"]["unevaluatedProperties"]
-        assert not schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"]["properties"]["test_prop_2"]
+        assert not schema["properties"]["test_prop"]["dependentSchemas"]["test_prop_1"]["properties"]["test_prop_2"][
+            "unevaluatedProperties"
+        ]
 
         assert "dependentSchemas" in schema and "dependencies" not in schema
         assert (
@@ -80,6 +84,23 @@ class TestReportActivityJsonValidator:
 
         raw_activity_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
+            facility_report__facility__id="00000000-0000-0000-0000-000000000011",
+            activity__slug="test-activity",
+            json_data={
+                "testSourceType": True,
+                "sourceTypes": {
+                    "testSourceType": {
+                        "prop1": "value1",
+                    }
+                },
+            },
+        )
+
+        errors = validate(raw_activity_data.facility_report.report_version)
+        assert errors == {}
+
+        raw_activity_data = make_recipe(
+            "reporting.tests.utils.report_raw_activity_data",
             facility_report__facility__id="00000000-0000-0000-0000-000000000012",
             activity__slug="test-activity",
             json_data={
@@ -102,7 +123,7 @@ class TestReportActivityJsonValidator:
         }
 
     @patch("service.form_builder_service.FormBuilderService.build_form_schema")
-    def test_validate_with_dependent_schema(self, mock_build_form_schema):
+    def test_validate_with_nested_dependent_schema(self, mock_build_form_schema):
         mock_build_form_schema.return_value = json.dumps(
             {
                 "schema": {
@@ -166,13 +187,24 @@ class TestReportActivityJsonValidator:
         errors = validate(raw_activity_data.facility_report.report_version)
         assert errors == {}
 
-        # Need to test the other branch of the dependent schema
-        # Need to test no matching branch of the dependent schema
+        raw_activity_data = make_recipe(
+            "reporting.tests.utils.report_raw_activity_data",
+            facility_report__facility__id="00000000-0000-0000-0000-000000000013",
+            activity__slug="test-activity",
+            json_data={
+                "testSourceType": True,
+                "sourceTypes": {
+                    "testSourceType": {
+                        "prop1": "value2",
+                    }
+                },
+            },
+        )
 
-    def test_validate_with_field_type():
-        raise
+        errors = validate(raw_activity_data.facility_report.report_version)
+        assert errors == {}
 
-    def test_validate_integration():
+    def test_validate_integration(self):
         test_data = {
             "fuelCombustionForElectricityGeneration": True,
             "sourceTypes": {
@@ -249,6 +281,14 @@ class TestReportActivityJsonValidator:
             },
         }
 
-        assert test_data == {}
+        raw_activity_data = make_recipe(
+            "reporting.tests.utils.report_raw_activity_data",
+            facility_report__facility__id="00000000-0000-0000-0000-000000000014",
+            facility_report__report_version__report__reporting_year=ReportingYear.objects.get(reporting_year=2024),
+            activity=Activity.objects.get(slug="electricity_generation"),
+            json_data=test_data,
+        )
 
-        raise
+        errors = validate(raw_activity_data.facility_report.report_version)
+
+        assert errors == {}
