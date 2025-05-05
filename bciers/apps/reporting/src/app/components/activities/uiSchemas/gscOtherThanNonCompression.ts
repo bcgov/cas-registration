@@ -3,6 +3,7 @@ import NestedArrayFieldTemplate from "@bciers/components/form/fields/NestedArray
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
+import MethodologyFieldTemplate from "@bciers/components/form/fields/MethodologyFieldTemplate";
 
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -113,7 +114,7 @@ const uiSchema = {
                       label: false,
                     },
                     methodology: {
-                      "ui:FieldTemplate": InlineFieldTemplate,
+                      "ui:FieldTemplate": MethodologyFieldTemplate,
                     },
                   },
                 },
@@ -200,7 +201,7 @@ const uiSchema = {
                       label: false,
                     },
                     methodology: {
-                      "ui:FieldTemplate": InlineFieldTemplate,
+                      "ui:FieldTemplate": MethodologyFieldTemplate,
                     },
                   },
                 },
@@ -288,7 +289,7 @@ const uiSchema = {
                       label: false,
                     },
                     methodology: {
-                      "ui:FieldTemplate": InlineFieldTemplate,
+                      "ui:FieldTemplate": MethodologyFieldTemplate,
                     },
                   },
                 },
