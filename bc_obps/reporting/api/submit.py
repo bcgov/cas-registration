@@ -26,6 +26,7 @@ def submit_report_version(request: HttpRequest, version_id: int, payload: Report
             payload.acknowledgement_of_records,
             payload.acknowledgement_of_information,
             payload.acknowledgement_of_possible_costs,
+            payload.acknowledgement_of_errors,
             payload.acknowledgement_of_new_version,
             payload.acknowledgement_of_corrections,
         ),
