@@ -32,6 +32,7 @@ class TestReportSubmissionService:
         # Arrange
         version_id = 1
         user_guid = uuid.uuid4()
+        mock_validate_report_version.return_value = {}
 
         # Create a fake Report instance object
         fake_operation = MagicMock()
