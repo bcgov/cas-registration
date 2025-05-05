@@ -16,4 +16,4 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.ELECTRICITY_IMPORT_DATA)
+    grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.REPORT_ELECTRICITY_IMPORT_DATA)
