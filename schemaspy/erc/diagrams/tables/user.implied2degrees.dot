@@ -12,6 +12,10 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "closure_event":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "closure_event_facilities":"elipses":w -> "closure_event":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "closure_event_facilities":"elipses":w -> "facility":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_charge_rate":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_charge_rate":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_charge_rate":"reporting_year_id":w -> "reporting_year":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_charge_rate":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_obligation":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_obligation":"compliance_summary_id":w -> "compliance_summary":"id":e [arrowhead=none dir=back arrowtail=teeodot];
   "compliance_obligation":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -158,6 +162,20 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
   "report_attachment":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment":"report_version_id":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_attachment_confirmation":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_attachment_confirmation":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_attachment_confirmation":"report_version_id":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_attachment_confirmation":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"report_version_id":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"product_id":w -> "regulated_product":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"report_compliance_summary_id":w -> "report_compliance_summary":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"report_version_id":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"gas_type_id":w -> "gas_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -439,6 +457,22 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     target="_top"
     tooltip="closure_event_facilities"
   ];
+  "compliance_charge_rate" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="144" HEIGHT="16"><B>compliance_charge_rate</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="144" HEIGHT="16">id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="archived_by_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="144" HEIGHT="16">archived_by_id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="created_by_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="144" HEIGHT="16">created_by_id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="reporting_year_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="144" HEIGHT="16">reporting_year_id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="updated_by_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="144" HEIGHT="16">updated_by_id</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="compliance_charge_rate.html"
+    target="_top"
+    tooltip="compliance_charge_rate"
+  ];
   "compliance_obligation" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
@@ -620,7 +654,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="79" HEIGHT="16"><B>methodology</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">52 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
     </TABLE>>
     URL="methodology.html"
     target="_top"
@@ -752,7 +786,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="110" HEIGHT="16"><B>regulated_product</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">41 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">5 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 1</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">41 rows</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">6 &gt;</TD></TR>
     </TABLE>>
     URL="regulated_product.html"
     target="_top"
@@ -801,6 +835,39 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     URL="report_attachment.html"
     target="_top"
     tooltip="report_attachment"
+  ];
+  "report_attachment_confirmation" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="197" HEIGHT="16"><B>report_attachment_confirmation</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="report_attachment_confirmation.html"
+    target="_top"
+    tooltip="report_attachment_confirmation"
+  ];
+  "report_compliance_summary" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="173" HEIGHT="16"><B>report_compliance_summary</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+    </TABLE>>
+    URL="report_compliance_summary.html"
+    target="_top"
+    tooltip="report_compliance_summary"
+  ];
+  "report_compliance_summary_product" [
+   label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="225" HEIGHT="16"><B>report_compliance_summary_product</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+    </TABLE>>
+    URL="report_compliance_summary_product.html"
+    target="_top"
+    tooltip="report_compliance_summary_product"
   ];
   "report_emission" [
    label=<
@@ -1065,7 +1132,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="87" HEIGHT="16"><B>report_version</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">20 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">23 &gt;</TD></TR>
     </TABLE>>
     URL="report_version.html"
     target="_top"
@@ -1087,7 +1154,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="88" HEIGHT="16"><B>reporting_year</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
     </TABLE>>
     URL="reporting_year.html"
     target="_top"
@@ -1189,7 +1256,7 @@ digraph "twoDegreesRelationshipsDiagramImplied" {
       <TR><TD PORT="created_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="127" HEIGHT="16">created_by_id</TD></TR></TABLE></TD><TD PORT="created_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
       <TR><TD PORT="updated_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="127" HEIGHT="16">updated_at</TD></TR></TABLE></TD><TD PORT="updated_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
       <TR><TD PORT="updated_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="127" HEIGHT="16">updated_by_id</TD></TR></TABLE></TD><TD PORT="updated_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">148 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 7</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">160 &gt;</TD></TR>
     </TABLE>>
     URL="user.html"
     target="_top"

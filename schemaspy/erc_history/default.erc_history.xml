@@ -223,6 +223,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="obligation_id" nullable="false" remarks="A human-readable identifier for the obligation in format YY-OOOO-R-V" size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="18" name="fee_amount_dollars" nullable="true" remarks="The fee amount in CAD dollars" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="fee_date" nullable="true" remarks="The date the fee was created" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="20" name="fee_rate_dollars" nullable="true" remarks="The fee rate used to calculate the fee amount in CAD dollars per tCO2e" size="10" type="numeric" typeCode="2"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="compliance_obligation_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>

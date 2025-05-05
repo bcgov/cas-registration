@@ -6,8 +6,8 @@ reporting_year
 app_role
 business_role
 activity
-emission_category
 regulated_product
+emission_category
 source_type
 gas_type
 methodology
@@ -40,6 +40,7 @@ document_type
 reporting_field
 well_authorization_number
 closure_event
+report_compliance_summary
 restart_event
 temporary_shutdown_event
 report_emission_allocation
@@ -65,8 +66,10 @@ temporary_shutdown_event_facilities
 transfer_event_facilities
 emission_category_mapping
 report_verification_visit
+compliance_charge_rate
 compliance_obligation
 report_additional_data
+report_attachment_confirmation
 report_sign_off
 compliance_product
 document
@@ -78,6 +81,7 @@ report_new_entrant_production
 report_operation_representative
 report_raw_activity_data
 report_verification
+report_compliance_summary_product
 report_methodology
 report_person_responsible
 partner_operator

@@ -285,6 +285,41 @@
             <column ascending="true" name="facility_id"/>
          </index>
       </table>
+      <table name="compliance_charge_rate" remarks="A table to store compliance charge rates by reporting year" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="4" name="rate" nullable="false" remarks="The compliance charge rate in CAD dollars per tCO2e" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_charge_ra_archived_by_id_682fc47c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_charge_rate_created_by_id_0d4d0951_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="reporting_year_id" nullable="false" remarks="The associated reporting year for this compliance charge rate" size="10" type="int4" typeCode="4">
+            <parent column="reporting_year" foreignKey="compliance_charge_ra_reporting_year_id_7c75318a_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="reporting_year"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_charge_rate_updated_by_id_365b2139_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="compliance_charge_rate_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_charge_rate_archived_by_id_682fc47c" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_charge_rate_created_by_id_0d4d0951" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_charge_rate_reporting_year_id_7c75318a" unique="false">
+            <column ascending="true" name="reporting_year_id"/>
+         </index>
+         <index name="compliance_charge_rate_updated_by_id_365b2139" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="compliance_obligation" remarks="A table to store compliance obligations" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -307,6 +342,9 @@
             <parent column="id" foreignKey="compliance_obligatio_compliance_summary_i_ac6e5790_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_summary"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="obligation_id" nullable="false" remarks="A human-readable identifier for the obligation in format YY-OOOO-R-V" size="30" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="13" name="fee_amount_dollars" nullable="true" remarks="The fee amount in CAD dollars" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="fee_date" nullable="true" remarks="The date the fee was created" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="15" name="fee_rate_dollars" nullable="true" remarks="The fee rate used to calculate the fee amount in CAD dollars per tCO2e" size="10" type="numeric" typeCode="2"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_obligation_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -499,7 +537,7 @@
          </index>
          <index name="exclude_overlapping_configuration_records_by_date_range" unique="false"/>
       </table>
-      <table name="configuration_element" numRows="300" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
+      <table name="configuration_element" numRows="391" remarks="Element of a configuration, representing a single relationship between multiple entities. Used to define an allowable activity-sourceType-gasType-methodology relationship as per WCI" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="configurationelement_id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element_reporting_fields"/>
          </column>
@@ -550,7 +588,7 @@
             <column ascending="true" name="valid_to_id"/>
          </index>
       </table>
-      <table name="configuration_element_reporting_fields" numRows="481" remarks="" schema="erc" type="TABLE">
+      <table name="configuration_element_reporting_fields" numRows="535" remarks="" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="configurationelement_id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="configuration_elemen_configurationelement_2b63faad_fk_configura" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
@@ -1103,7 +1141,7 @@
             <column ascending="true" name="id"/>
          </index>
       </table>
-      <table name="methodology" remarks="Table contains the set of reporting methodologies that can be applied to an emission as outlined in GGERR (Greenhous Gas Emission Reporting Regulation)" schema="erc" type="TABLE">
+      <table name="methodology" numRows="52" remarks="Table contains the set of reporting methodologies that can be applied to an emission as outlined in GGERR (Greenhous Gas Emission Reporting Regulation)" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="methodology_id" foreignKey="configuration_element_methodology_id_de7aa928_fk_methodology_id" implied="false" onDeleteCascade="false" schema="erc" table="configuration_element"/>
             <child column="methodology_id" foreignKey="custom_methodology_s_methodology_id_fe0f1db6_fk_methodolo" implied="false" onDeleteCascade="false" schema="erc" table="custom_methodology_schema"/>
@@ -1724,6 +1762,7 @@
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="regulatedproduct_id" foreignKey="operation_regulated__regulatedproduct_id_5e0156ca_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="operation_regulated_products"/>
             <child column="product_id" foreignKey="product_emission_int_product_id_05c2d355_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="product_emission_intensity"/>
+            <child column="product_id" foreignKey="report_compliance_su_product_id_ef8f22ff_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
             <child column="product_id" foreignKey="report_new_entrant_p_product_id_750578cd_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="report_new_entrant_production"/>
             <child column="regulatedproduct_id" foreignKey="report_operation_reg_regulatedproduct_id_10ce22ab_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="report_operation_regulated_products"/>
             <child column="product_id" foreignKey="report_product_product_id_95eeddf5_fk_regulated_product_id" implied="false" onDeleteCascade="false" schema="erc" table="report_product"/>
@@ -1936,6 +1975,142 @@
          <index name="unique_attachment_type_per_report_version" unique="true">
             <column ascending="true" name="report_version_id"/>
             <column ascending="true" name="attachment_type"/>
+         </index>
+      </table>
+      <table name="report_attachment_confirmation" remarks="Table containing attachment confirmation information for the supplementary report version" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="confirm_supplementary_required_attachments_uploaded" nullable="false" remarks="Whether the user confirmed that any attachments required for the supplementary report were uploaded." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="confirm_supplementary_existing_attachments_relevant" nullable="false" remarks="Whether the user confirmed that previously uploaded attachments that have not been updated are still relevant to the supplementary report." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_attachment_co_archived_by_id_f0557ba8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_attachment_co_created_by_id_8fbeab4b_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="report_version_id" nullable="false" remarks="The supplementary report this attachment confirmation information relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_attachment_co_report_version_id_6a5733cf_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_attachment_co_updated_by_id_858ef822_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_attachment_confirmation_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_attachment_confirmation_archived_by_id_f0557ba8" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_attachment_confirmation_created_by_id_8fbeab4b" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_attachment_confirmation_report_version_id_6a5733cf" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_attachment_confirmation_updated_by_id_858ef822" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+         <index name="unique_supplementary_report_attachment_confirmation_per_report_" unique="true">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+      </table>
+      <table name="report_compliance_summary" remarks="This table contains the compliance summary data calculated for a regulated operation." schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="report_compliance_summary_id" foreignKey="report_compliance_su_report_compliance_su_d5d32d93_fk_report_co" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="emissions_attributable_for_reporting" nullable="false" remarks="Total emissions in tCO2e that are considered attributable for reporting. This is the sum of all emissions reported from 'basic' emission categories" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="5" name="reporting_only_emissions" nullable="false" remarks="Total emissions in tCO2e that are considered to be reporting-only emissions. This is the sum of emissions reported from 'excluded' categories and emissions from unregulated products" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="6" name="emissions_attributable_for_compliance" nullable="false" remarks="Total emissions in tCO2e that are counted for compliance. This is the total difference between reporting emissions and reporting-only emissions" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="7" name="emissions_limit" nullable="false" remarks="The emissions limit for the regulated operation. Calculation is in the Greenhouse Gas Emission Reporting Regulation (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#section14)" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="8" name="excess_emissions" nullable="false" remarks="The total amount of emissions that a regulated operation emmitted above the emissions limit. Definition in in the Greenhouse Gas Emission Reporting Regulation (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#section14)" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="9" name="credited_emissions" nullable="false" remarks="The total amount of emissions that a regulated operation emitted below the emissions limit. Definition in the Greenhouse Gas Emission Reporting Regulation (https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#section14)" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="10" name="reduction_factor" nullable="false" remarks="The Province developed distinct reduction factors for products in the B.C. OBPS with disproportionately higher industrial process emissions than those produced in other sectors. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="11" name="tightening_rate" nullable="false" remarks="Tightening rates are planned, yearly, gradual increases to BC OBPS stringency. https://www2.gov.bc.ca/assets/gov/environment/climate-change/action/carbon-tax/obps-technical-backgrounder.pdf" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="initial_compliance_period" nullable="false" remarks="The first compliance period (year) that the OBPS (Output Based Pricing System) program began" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="compliance_period" nullable="false" remarks="The compliance period (year) that this compliance summary data was reported for" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_compliance_su_archived_by_id_d276d5f3_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_compliance_su_created_by_id_7646c3a0_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="report_version_id" nullable="false" remarks="The version of the report this compliance summary data relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_compliance_su_report_version_id_c0b45af7_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_compliance_su_updated_by_id_f5fa7d9a_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_compliance_summary_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_compliance_summary_archived_by_id_d276d5f3" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_compliance_summary_created_by_id_7646c3a0" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_compliance_summary_report_version_id_c0b45af7" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_compliance_summary_updated_by_id_f5fa7d9a" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="report_compliance_summary_product" remarks="This table contains the compliance summary data for each product calculated for a regulated operation." schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="annual_production" nullable="false" remarks="Amount of product produced for the year" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="5" name="apr_dec_production" nullable="false" remarks="Amount of product produced between April &amp; December" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="6" name="emission_intensity" nullable="false" remarks="The published B.C. productionweighted average emission intensity (PWAEI) for that product found in Schedule A.1 of the GGERR. https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015#ScheduleA" size="10" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="7" name="allocated_industrial_process_emissions" nullable="false" remarks="Total amount of emissions allocated to this product that are categorised as Industrial Process emissions" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="4" id="8" name="allocated_compliance_emissions" nullable="false" remarks="Total amount of emissions allocated to this product that are considered as part of the compliance obligation" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_compliance_su_archived_by_id_39f93ef8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_compliance_su_created_by_id_b43fa929_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="product_id" nullable="false" remarks="The id of the regulated_product record this product data is for" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_compliance_su_product_id_ef8f22ff_fk_regulated" implied="false" onDeleteCascade="false" schema="erc" table="regulated_product"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="report_compliance_summary_id" nullable="false" remarks="The report_compliance_summary parent object this product data relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_compliance_su_report_compliance_su_d5d32d93_fk_report_co" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="report_version_id" nullable="false" remarks="The version of the report this compliance summary data relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_compliance_su_report_version_id_dfda5148_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_compliance_su_updated_by_id_278c0856_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_compliance_summary_product_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_compliance_summary__report_compliance_summary__d5d32d93" unique="false">
+            <column ascending="true" name="report_compliance_summary_id"/>
+         </index>
+         <index name="report_compliance_summary_product_archived_by_id_39f93ef8" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_compliance_summary_product_created_by_id_b43fa929" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_compliance_summary_product_product_id_ef8f22ff" unique="false">
+            <column ascending="true" name="product_id"/>
+         </index>
+         <index name="report_compliance_summary_product_report_version_id_dfda5148" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_compliance_summary_product_updated_by_id_278c0856" unique="false">
+            <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
       <table name="report_emission" remarks="A table to store the reported emission-specific data, in a JSON format" schema="erc" type="TABLE">
@@ -2960,6 +3135,9 @@
             <child column="report_version_id" foreignKey="report_activity_report_version_id_4e080365_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_activity"/>
             <child column="report_version_id" foreignKey="report_additional_da_report_version_id_e44d1bb3_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_additional_data"/>
             <child column="report_version_id" foreignKey="report_attachment_report_version_id_fe3c6d89_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment"/>
+            <child column="report_version_id" foreignKey="report_attachment_co_report_version_id_6a5733cf_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment_confirmation"/>
+            <child column="report_version_id" foreignKey="report_compliance_su_report_version_id_c0b45af7_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary"/>
+            <child column="report_version_id" foreignKey="report_compliance_su_report_version_id_dfda5148_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
             <child column="report_version_id" foreignKey="report_emission_report_version_id_9731ba04_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="report_version_id" foreignKey="report_emission_allo_report_version_id_bfa0af09_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_emission_allocation"/>
             <child column="report_version_id" foreignKey="report_fuel_report_version_id_bee0037a_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_fuel"/>
@@ -3035,6 +3213,7 @@
       </table>
       <table name="reporting_year" remarks="Reporting year" schema="erc" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="reporting_year" nullable="false" remarks="Year for the reporting year, unique and serves as primary key" size="10" type="int4" typeCode="4">
+            <child column="reporting_year_id" foreignKey="compliance_charge_ra_reporting_year_id_7c75318a_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
             <child column="reporting_year_id" foreignKey="compliance_period_reporting_year_id_b7122d1a_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="compliance_period"/>
             <child column="reporting_year_id" foreignKey="report_reporting_year_id_8b6e1d1a_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="report"/>
          </column>
@@ -3291,6 +3470,9 @@
             <child column="archived_by_id" foreignKey="closure_event_archived_by_id_96767b18_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="closure_event"/>
             <child column="created_by_id" foreignKey="closure_event_created_by_id_e772be54_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="closure_event"/>
             <child column="updated_by_id" foreignKey="closure_event_updated_by_id_c7b0cdfd_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="closure_event"/>
+            <child column="archived_by_id" foreignKey="compliance_charge_ra_archived_by_id_682fc47c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
+            <child column="created_by_id" foreignKey="compliance_charge_rate_created_by_id_0d4d0951_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
+            <child column="updated_by_id" foreignKey="compliance_charge_rate_updated_by_id_365b2139_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
             <child column="archived_by_id" foreignKey="compliance_obligation_archived_by_id_80f75b00_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
             <child column="created_by_id" foreignKey="compliance_obligation_created_by_id_e2485278_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
             <child column="updated_by_id" foreignKey="compliance_obligation_updated_by_id_05a4c582_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
@@ -3354,6 +3536,15 @@
             <child column="archived_by_id" foreignKey="report_attachment_archived_by_id_3c83922b_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment"/>
             <child column="created_by_id" foreignKey="report_attachment_created_by_id_9eb01891_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment"/>
             <child column="updated_by_id" foreignKey="report_attachment_updated_by_id_f2464d4a_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment"/>
+            <child column="archived_by_id" foreignKey="report_attachment_co_archived_by_id_f0557ba8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment_confirmation"/>
+            <child column="created_by_id" foreignKey="report_attachment_co_created_by_id_8fbeab4b_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment_confirmation"/>
+            <child column="updated_by_id" foreignKey="report_attachment_co_updated_by_id_858ef822_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment_confirmation"/>
+            <child column="archived_by_id" foreignKey="report_compliance_su_archived_by_id_d276d5f3_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary"/>
+            <child column="created_by_id" foreignKey="report_compliance_su_created_by_id_7646c3a0_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary"/>
+            <child column="updated_by_id" foreignKey="report_compliance_su_updated_by_id_f5fa7d9a_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary"/>
+            <child column="archived_by_id" foreignKey="report_compliance_su_archived_by_id_39f93ef8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
+            <child column="created_by_id" foreignKey="report_compliance_su_created_by_id_b43fa929_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
+            <child column="updated_by_id" foreignKey="report_compliance_su_updated_by_id_278c0856_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
             <child column="archived_by_id" foreignKey="report_emission_archived_by_id_af46c2eb_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="created_by_id" foreignKey="report_emission_created_by_id_a6994672_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="updated_by_id" foreignKey="report_emission_updated_by_id_3392df36_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
