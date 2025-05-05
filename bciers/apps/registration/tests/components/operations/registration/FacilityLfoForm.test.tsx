@@ -89,7 +89,7 @@ describe("the FacilityLfoForm component", () => {
     render(<FacilityLfoForm {...defaultProps} />);
     expect(
       screen.getByRole("button", {
-        name: /add facility/i,
+        name: /add new facility/i,
       }),
     ).toBeVisible();
     expect(
@@ -199,7 +199,7 @@ describe("the FacilityLfoForm component", () => {
       });
       render(<FacilityLfoForm {...defaultProps} />);
       const addButton = screen.getByRole("button", {
-        name: /add facility/i,
+        name: /add new facility/i,
       });
 
       act(() => {
@@ -287,7 +287,7 @@ describe("the FacilityLfoForm component", () => {
       );
 
       const addButton = screen.getByRole("button", {
-        name: /add facility/i,
+        name: /add new facility/i,
       });
 
       act(() => {
