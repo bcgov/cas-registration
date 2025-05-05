@@ -51,7 +51,7 @@ describe("the FacilityInformationPage component", () => {
     );
 
     expect(
-      screen.queryByRole("button", { name: "Add Facility" }),
+      screen.queryByRole("button", { name: "Add New Facility" }),
     ).not.toBeInTheDocument();
 
     const facilityName = container.querySelector("#root_section1_name");

@@ -52,8 +52,6 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
   );
 
   const handleSubmit = async (e: IChangeEvent) => {
-    console.log("did i fire");
-
     setFacilityFormIsSubmitting(true);
     // Clear any old errors
     setError(undefined);
@@ -82,7 +80,6 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
     setShowForm(false);
     setFacilityFormIsSubmitting(false);
     setFormState({}); // reset form state
-    // router.refresh(); // does nothing
     return response;
   };
 
@@ -95,7 +92,9 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
       </div>
       {showForm ? (
         <>
-          Add Facility
+          <div className="py-2 w-full font-bold text-bc-bg-blue mb-4">
+            Add Facility
+          </div>
           <FormBase
             formData={formState}
             onChange={handleFormChange}
@@ -124,7 +123,7 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
               setShowForm(!showForm);
             }}
           >
-            Add Facility
+            Add New Facility
           </Button>
         </div>
       )}
