@@ -1,3 +1,17 @@
+# [3.1.0](https://github.com/bcgov/cas-registration/compare/v3.0.0...v3.1.0) (2025-05-05)
+
+### Bug Fixes
+
+- correct activities and regulated_products error message ([df812e4](https://github.com/bcgov/cas-registration/commit/df812e412a24bd37fb4f22d9374eceb6de23a6c4))
+
+### Features
+
+- add compliance dashboard tiles ([386ff41](https://github.com/bcgov/cas-registration/commit/386ff41e4f6a626584a60d3a22f3b5c1e40d28ab))
+- add earned credits request ([70bb82a](https://github.com/bcgov/cas-registration/commit/70bb82a14391b950f3e942773ef1052e8e5c1984))
+- Add tooltip, icon and new tab alert banner which also generalized reg new tab banner ([7657ee6](https://github.com/bcgov/cas-registration/commit/7657ee6118e7bbf3219659591803f7cf1fdec737))
+- **compliance:** creates fee and invoice record in eLicensing ([#3119](https://github.com/bcgov/cas-registration/issues/3119)) ([83a473c](https://github.com/bcgov/cas-registration/commit/83a473c0ee355e16c9257aef685a64bf9d288801))
+- Create help drawer menu component with links in the nav header ([a3e8cc8](https://github.com/bcgov/cas-registration/commit/a3e8cc803603077bb95a7cfafe3ad6bcaca68013))
+
 # [3.0.0](https://github.com/bcgov/cas-registration/compare/v2.3.0...v3.0.0) (2025-04-22)
 
 ### Major change
