@@ -540,3 +540,10 @@ export async function stabilizeAccordion(
   expect(await arrowDropDownElements.count()).toBe(expectedArrowDropdownCount);
   await waitForElementToStabilize(page, "section");
 }
+
+export function getStorageStateForRole(role: string) {
+  const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
+  const processEnv = process.env[envKey];
+
+  return JSON.parse(processEnv as string);
+}

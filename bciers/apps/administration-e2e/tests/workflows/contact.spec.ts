@@ -1,37 +1,19 @@
-import { test, expect } from "@playwright/test";
-import { AppName } from "@/administration-e2e/utils/constants";
+import { expect } from "@playwright/test";
+import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   analyzeAccessibility,
-  setupTestEnvironment,
   takeStabilizedScreenshot,
   clickButton,
 } from "@bciers/e2e/utils/helpers";
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
 
 const happoPlaywright = require("happo-playwright");
-
-test.beforeAll(async () => {
-  await setupTestEnvironment(AppName + "-" + UserRole.INDUSTRY_USER_ADMIN);
-});
-
-test.beforeEach(async ({ context }) => {
-  await happoPlaywright.init(context);
-});
-
-test.afterEach(async () => {
-  await happoPlaywright.finish();
-});
+const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("Test add/edit contact", () => {
-  // 👤 run test using the storageState for this role
-  const storageState = JSON.parse(
-    process.env.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE as string,
-  );
-  test.use({ storageState: storageState });
-
   test("Manually add a contact", async ({ page }) => {
     // 🛸 Navigate to contacts page
     const contactsPage = new ContactsPOM(page);

@@ -1,13 +1,10 @@
-import { test } from "@playwright/test";
-
-import { AppName } from "@/administration-e2e/utils/constants";
 import { UserRole } from "@bciers/e2e/utils/enums";
+import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { expect } from "@playwright/test";
 // 🛠️ Helpers
 import {
   analyzeAccessibility,
   clickButton,
-  setupTestEnvironment,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import { RegistrationPOM } from "../poms/registration";
@@ -19,30 +16,11 @@ import { ContactsPOM } from "../../administration-e2e/poms/contacts";
 import { ContactE2EValue } from "@/administration-e2e/utils/enums";
 
 const happoPlaywright = require("happo-playwright");
-
-test.beforeAll(async () => {
-  // Note: can run multiple times if using multiple workers (or, if a test fails you'll get a new worker- can't be helped)
-  // So, ensure this runs only once by using only 1 worker
-  // Setup fixtures for admin-industry_user
-  await setupTestEnvironment(AppName + "-" + UserRole.INDUSTRY_USER);
-});
-
-test.beforeEach(async ({ context }) => {
-  await happoPlaywright.init(context);
-});
-
-test.afterEach(async () => {
-  await happoPlaywright.finish();
-});
+const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("Test register operations", () => {
-  // 👤 run test using the storageState for this role
-  const storageState = JSON.parse(
-    process.env.E2E_INDUSTRY_USER_ADMIN_STORAGE_STATE as string,
-  );
-  test.use({ storageState: storageState });
   test("Register a new SFO operation", async ({ page }) => {
     // 🛸 Navigate to registration page
     const registrationPage = new RegistrationPOM(page);
