@@ -149,7 +149,7 @@ test.describe("Test register operations", () => {
     await registrationPage.assertHeading(
       OperationRegistrationSteps.FACILITY_INFORMATION,
     );
-    await clickButton(registrationPage.page, /add facility/i);
+    await clickButton(registrationPage.page, /add new facility/i);
     await registrationPage.fillLfoFacilityInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: componentName,
