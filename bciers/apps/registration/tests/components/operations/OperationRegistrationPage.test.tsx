@@ -61,7 +61,11 @@ describe("the OperationRegistrationPage component", () => {
       }),
     );
 
-    expect(screen.getByRole("button", { name: /Add facility/i })).toBeVisible();
+    expect(
+      screen.getByText("Facility Information", {
+        selector: "div.form-heading",
+      }),
+    ).toBeVisible();
   });
 
   it("should render 5 steps and the Opt-in Application Form if the registration purpose is Opt-in", async () => {
