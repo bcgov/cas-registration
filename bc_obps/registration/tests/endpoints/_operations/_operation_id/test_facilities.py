@@ -8,6 +8,7 @@ from registration.tests.utils.bakers import (
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery import baker
+from unittest.mock import patch, MagicMock
 
 
 class TestFacilitiesEndpoint(CommonTestSetup):
@@ -241,3 +242,27 @@ class TestFacilitiesEndpoint(CommonTestSetup):
         assert facility.name == 'zip'
         assert facility.address is not None
         assert facility.address.street_address == '123 Facility Lane'
+
+    # DELETE
+    @patch(
+        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
+        autospec=True,
+    )
+    def test_delete_facilities_by_operation_id(self, mock_delete_facilities_by_operation_id: MagicMock):
+        operation = baker.make_recipe('registration.tests.utils.operation')
+
+        # Act: Mock the authorization and perform the request
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=baker.make_recipe('registration.tests.utils.operator')
+        )
+        response = TestUtils.mock_delete_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("delete_facilities_by_operation_id", kwargs={'operation_id': operation.id}),
+        )
+        mock_delete_facilities_by_operation_id.assert_called_once_with(
+            self.user.user_guid,
+            operation.id,
+        )
+        assert response.status_code == 200
+        assert response.json().get('message') == "Facilities deleted successfully."
