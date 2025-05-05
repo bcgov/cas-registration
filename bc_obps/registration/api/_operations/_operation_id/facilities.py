@@ -9,7 +9,7 @@ from registration.schema import (
 )
 from common.permissions import authorize
 from registration.api.router import router
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
@@ -40,3 +40,24 @@ def list_facilities_by_operation_id(
     return FacilityDesignatedOperationTimelineService.list_timeline_by_operation_id(
         get_current_user_guid(request), operation_id, sort_field, sort_order, filters
     )
+
+
+## DELETE ##
+@router.delete(
+    "/operations/{uuid:operation_id}/facilities",
+    response={200: None, custom_codes_4xx: Message},
+    tags=FACILITY_TAGS,
+    description="""Deletes facilities by operation id.""",
+    auth=authorize("approved_authorized_roles"),
+)
+def delete_facilities_by_operation_id(
+    request: HttpRequest,
+    operation_id: UUID,
+) -> Tuple[Literal[200], dict[str, str]]:
+    """
+    Deletes facilities by operation id.
+    """
+    FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(
+        get_current_user_guid(request), operation_id
+    )
+    return 200, {"message": "Facilities deleted successfully."}
