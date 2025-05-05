@@ -45,7 +45,7 @@ def list_facilities_by_operation_id(
 ## DELETE ##
 @router.delete(
     "/operations/{uuid:operation_id}/facilities",
-    response={200: None, custom_codes_4xx: Message},
+    response={200: dict[str, str], custom_codes_4xx: Message},
     tags=FACILITY_TAGS,
     description="""Deletes facilities by operation id.""",
     auth=authorize("approved_authorized_roles"),
