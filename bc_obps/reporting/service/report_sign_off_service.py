@@ -15,6 +15,7 @@ class ReportSignOffAcknowledgements:
     acknowledgement_of_possible_costs: Optional[bool]
     acknowledgement_of_new_version: Optional[bool]
     acknowledgement_of_corrections: Optional[bool]
+    acknowledgement_of_errors: Optional[bool]
 
 
 @dataclass
