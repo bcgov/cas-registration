@@ -11,6 +11,8 @@ import { useRouter } from "next/navigation";
 import { NavigationInformation } from "../taskList/types";
 import { getDictFromAttachmentArray } from "./AttachmentsPage";
 import { Checkbox } from "@mui/material";
+import Alert from "@mui/material/Alert";
+import AlertIcon from "@bciers/components/icons/AlertIcon";
 
 interface Props extends HasReportVersion {
   initialUploadedAttachments: {
@@ -190,6 +192,12 @@ const AttachmentsForm: React.FC<Props> = ({
         noFormSave={() => handleSubmit(false)}
         submitButtonDisabled={submitDisabled}
       >
+        {isSupplementaryReport && (
+          <Alert severity="warning" icon={<AlertIcon fill="#635231" />}>
+            Review your attachments and replace any that are no longer
+            applicable to this report.
+          </Alert>
+        )}
         <p>
           Please upload any of the documents below that is applicable to your
           report:
