@@ -24,7 +24,7 @@ from reporting.models import (
     ReportUnit,
     ReportVerification,
     ReportVersion,
-    ElectricityImportData,
+    ReportElectricityImportData,
 )
 
 
@@ -125,7 +125,7 @@ class ReportSupplementaryVersionService:
     @staticmethod
     def clone_electricity_import_data(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
         # Retrieve the ElectricityImportData instance associated with the old report version
-        electricity_import_data_to_clone = ElectricityImportData.objects.filter(
+        electricity_import_data_to_clone = ReportElectricityImportData.objects.filter(
             report_version=old_report_version
         ).first()
 

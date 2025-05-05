@@ -1,10 +1,10 @@
 from ninja import ModelSchema
-from reporting.models import ElectricityImportData
+from reporting.models import ReportElectricityImportData
 
 
 class ElectricityImportDataSchema(ModelSchema):
     class Meta:
-        model = ElectricityImportData
+        model = ReportElectricityImportData
         fields = [
             'import_specified_electricity',
             'import_specified_emissions',

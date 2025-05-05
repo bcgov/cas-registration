@@ -2,14 +2,14 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
-from reporting.models.rls_configs.electricity_import_data import Rls as ElectricityImportDataRls
+from reporting.models.rls_configs.electricity_import_data import Rls as ReportElectricityImportDataRls
 
 
-class ElectricityImportData(TimeStampedModel):
+class ReportElectricityImportData(TimeStampedModel):
     report_version = models.ForeignKey(
         ReportVersion,
         on_delete=models.CASCADE,
-        related_name="electricity_import_data",
+        related_name="report_electricity_import_data",
         db_comment="The associated report version for this electricity import data",
     )
     import_specified_electricity = models.DecimalField(
@@ -84,7 +84,7 @@ class ElectricityImportData(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
-        db_table = 'erc"."electricity_import_data'
+        db_table = 'erc"."report_electricity_import_data'
         app_label = "reporting"
         db_table_comment = "Table storing Electricity Import Data for the reporting system"
         triggers = [
@@ -98,4 +98,4 @@ class ElectricityImportData(TimeStampedModel):
             )
         ]
 
-    Rls = ElectricityImportDataRls
+    Rls = ReportElectricityImportDataRls

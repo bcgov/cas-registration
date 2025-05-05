@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django.test import TestCase
 from model_bakery.baker import make_recipe
-from reporting.models import ElectricityImportData
+from reporting.models import ReportElectricityImportData
 from reporting.service.report_electricity_import_data_service import (
     ElectricityImportDataService,
     ElectricityImportFormData,
@@ -32,7 +32,7 @@ class TestElectricityImportDataService(TestCase):
         )
 
         self.assertIsNotNone(result)
-        self.assertIsInstance(result, ElectricityImportData)
+        self.assertIsInstance(result, ReportElectricityImportData)
         self.assertEqual(result.report_version, self.report_version)
 
         for field, value in input_data.items():
