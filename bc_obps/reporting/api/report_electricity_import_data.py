@@ -6,8 +6,8 @@ from reporting.schema.generic import Message
 from .router import router
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 from ..models import ElectricityImportData
-from ..schema.electricity_import_data import ElectricityImportDataSchema
-from ..service.electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
+from ..schema.report_electricity_import_data import ElectricityImportDataSchema
+from ..service.report_electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
 
 
 @router.post(

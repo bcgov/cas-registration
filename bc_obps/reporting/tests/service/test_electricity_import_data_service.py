@@ -2,7 +2,10 @@ from decimal import Decimal
 from django.test import TestCase
 from model_bakery.baker import make_recipe
 from reporting.models import ElectricityImportData
-from reporting.service.electricity_import_data_service import ElectricityImportDataService, ElectricityImportFormData
+from reporting.service.report_electricity_import_data_service import (
+    ElectricityImportDataService,
+    ElectricityImportFormData,
+)
 
 
 class TestElectricityImportDataService(TestCase):
