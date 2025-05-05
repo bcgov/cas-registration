@@ -63,17 +63,7 @@ export default function SignOffForm({
       setErrors(undefined);
       setSubmitButtonDisabled(true);
 
-      const { supplementary = {}, signature, date, ...rest } = formState;
-
-      const payload = {
-        acknowledgements: {
-          ...rest,
-          ...supplementary,
-        },
-        signature,
-        date,
-      };
-      const response: any = await postSubmitReport(version_id, payload);
+      const response: any = await postSubmitReport(version_id, formState);
       setSubmitButtonDisabled(false);
 
       if (response?.error) {
