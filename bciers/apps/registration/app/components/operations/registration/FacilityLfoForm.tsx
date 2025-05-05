@@ -8,7 +8,7 @@ import {
   FacilityRow,
 } from "apps/administration/app/components/facilities/types";
 import MultiStepBase from "@bciers/components/form/MultiStepBase";
-import NewFacilityForm from "./NewFacilityForm";
+import NewLfoFacilityForm from "./NewLfoFacilityForm";
 
 interface FacilityLfoFormProps {
   facilityId?: UUID;
@@ -36,7 +36,7 @@ export default function FacilityLfoForm({
   const [facilityFormIsSubmitting, setFacilityFormIsSubmitting] =
     useState(false);
 
-  // 🚩 Local grid data state, seeded from the server, updated on NewFacilityForm onSuccess
+  // 🚩 Local grid data state, seeded from the server, updated on NewLfoFacilityForm onSuccess
   const [gridData, setGridData] = useState<FacilityInitialData>(
     initialGridData ?? { rows: [], row_count: 0 },
   );
@@ -102,7 +102,7 @@ export default function FacilityLfoForm({
       submitButtonText="Continue"
       submitButtonDisabled={!operationHasFacilities}
       beforeForm={
-        <NewFacilityForm
+        <NewLfoFacilityForm
           operationId={operationId as UUID}
           formData={formData}
           setFacilityFormIsSubmitting={setFacilityFormIsSubmitting}

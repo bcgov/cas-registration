@@ -16,9 +16,7 @@ function FieldTemplate({
   const isLabel = uiSchema?.["ui:options"]?.label !== false;
   const labelOverride = uiSchema?.["ui:options"]?.labelOverride as string;
   const labelOverrideStyle = uiSchema?.["ui:options"]?.labelOverrideStyle;
-  console.log("label", label);
-  console.log("style", style);
-  console.log("classNames", classNames);
+
   return (
     <div style={style} className={`w-full ${classNames}`}>
       {isLabel && label && (

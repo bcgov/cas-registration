@@ -70,13 +70,17 @@ describe("the FacilityInformationForm component", () => {
   it("should render the LFO FacilityInformationForm component", () => {
     render(<FacilityInformationForm {...defaultProps} />);
     expect(
+      screen.getByText("Facility Information", {
+        selector: "div.form-heading",
+      }),
+    ).toBeVisible();
+
+    expect(
       screen.getByRole("button", {
         name: "Add Facility",
       }),
     ).toBeVisible();
-    expect(
-      screen.queryByTestId("field-template-label"),
-    ).not.toBeInTheDocument();
+
     expect(screen.getByRole("grid")).toBeVisible();
   });
 });
