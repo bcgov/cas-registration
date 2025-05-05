@@ -1,6 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
 import { FieldTemplate } from "@bciers/components/form/fields";
-import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 
 export const eioSchema: RJSFSchema = {
   title: "Electricity Import Data",
@@ -52,66 +51,52 @@ export const eioSchema: RJSFSchema = {
 export const eioUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-
-  // "ui:order": ["import_specified_electricity"],
   import_specified_electricity: {
-    "ui:FieldTemplate": InlineFieldTemplate,
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "MWh",
-      width: "70%",
     },
   },
   import_specified_emissions: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
   import_unspecified_electricity: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "MWh",
     },
   },
   import_unspecified_emissions: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
   export_specified_electricity: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "MWh",
     },
   },
   export_specified_emissions: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
   export_unspecified_electricity: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "MWh",
     },
   },
   export_unspecified_emissions: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "tCO2e",
     },
   },
   canadian_entitlement_electricity: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "MWh",
     },
   },
   canadian_entitlement_emissions: {
-    "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "tCO2e",
     },
