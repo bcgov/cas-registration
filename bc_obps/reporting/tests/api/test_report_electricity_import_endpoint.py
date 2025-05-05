@@ -2,8 +2,8 @@ from model_bakery import baker
 from unittest.mock import patch, MagicMock
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.schema.electricity_import_data import ElectricityImportDataSchema
-from reporting.service.electricity_import_data_service import ElectricityImportFormData
+from reporting.schema.report_electricity_import_data import ElectricityImportDataSchema
+from reporting.service.report_electricity_import_data_service import ElectricityImportFormData
 
 
 class TestElectricityImportDataApi(CommonTestSetup):
@@ -61,7 +61,7 @@ class TestElectricityImportDataApi(CommonTestSetup):
     """Tests for POST save electricity import data endpoint."""
 
     @patch(
-        "reporting.service.electricity_import_data_service.ElectricityImportDataService.save_electricity_import_data"
+        "reporting.service.report_electricity_import_data_service.ElectricityImportDataService.save_electricity_import_data"
     )
     def test_saves_electricity_import_data(self, mock_save_electricity_import_data: MagicMock):
         payload = ElectricityImportDataSchema(
