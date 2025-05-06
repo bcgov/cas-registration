@@ -14,6 +14,7 @@ class Pagination(BaseModel):
     model_config = ConfigDict(from_attributes=True)  # to build models and look up discriminators using python object
     start: Optional[NonNegativeInt] = 0
     limit: Optional[NonNegativeInt] = 20
+    # For sorting, use `.keyword` if the field is a text field otherwise use the field name directly
     sortOptions: Optional[List[Dict[str, str]]] = [{"sort": "accountName.keyword", "dir": "ASC"}]
 
 
