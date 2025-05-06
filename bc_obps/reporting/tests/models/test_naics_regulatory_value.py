@@ -6,8 +6,10 @@ from django.test import TestCase
 
 class TestInitialData(TestCase):
     def test_all_naics_have_regulatory_values(self):
-        naics_regulatory_values_list = NaicsRegulatoryValue.objects.all().values_list('id', flat=True)
-        missing_records = NaicsCode.objects.all().exclude(id__in=naics_regulatory_values_list).count()
+        naics_regulatory_values_list = NaicsRegulatoryValue.objects.all().values_list(
+            'naics_code__naics_code', flat=True
+        )
+        missing_records = NaicsCode.objects.all().exclude(naics_code__in=naics_regulatory_values_list).count()
 
         self.assertEqual(missing_records, 0)
 
@@ -18,7 +20,7 @@ class TestInitialData(TestCase):
         naics_regulatory_values_85 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.85').count()
         naics_regulatory_values_8 = NaicsRegulatoryValue.objects.filter(reduction_factor='0.8').count()
 
-        self.assertEqual(naics_regulatory_values_65, 27)
+        self.assertEqual(naics_regulatory_values_65, 41)
         self.assertEqual(naics_regulatory_values_95, 1)
         self.assertEqual(naics_regulatory_values_9, 3)
         self.assertEqual(naics_regulatory_values_85, 1)
