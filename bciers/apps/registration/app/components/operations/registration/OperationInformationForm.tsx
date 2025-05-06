@@ -18,6 +18,7 @@ import {
 } from "@/registration/app/components/operations/registration/enums";
 import { eioOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
 import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import ConfirmChangeOfTypeModal from "./ConfirmChangeOfTypeModal";
 
 interface OperationInformationFormProps {
   rawFormData: { [key: string]: any };
@@ -48,6 +49,8 @@ const OperationInformationForm = ({
   );
   const [confirmedFormState, setConfirmedFormState] = useState(nestedFormData);
   const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
+    useState<boolean>(false);
+  const [isConfirmTypeChangeModalOpen, setIsConfirmTypeChangeModalOpen] =
     useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const [currentUiSchema, setCurrentUiSchema] = useState(
@@ -157,6 +160,7 @@ const OperationInformationForm = ({
     });
     return response;
   };
+
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
@@ -167,7 +171,7 @@ const OperationInformationForm = ({
     setConfirmedFormState(createNestedFormData(operationData, schema));
     setKey(Math.random()); // NOSONAR
   };
-
+  // purpose change
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
       data.section1?.registration_purpose;
@@ -222,6 +226,53 @@ const OperationInformationForm = ({
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
   };
+  // type change
+  const handleSelectedTypeChange = (data: any) => {
+    const newSelectedType: RegistrationPurposes = data.section2?.type;
+    // if purpose is being selected for the first time, we don't need to show
+    // the ConfirmChangeOfTypeModal.
+    if (newSelectedType && !confirmedFormState?.section2?.type) {
+      setConfirmedFormState({
+        ...confirmedFormState,
+        section2: {
+          ...confirmedFormState.section2,
+          type: newSelectedType,
+        },
+      });
+    }
+    // if there was already a type selected, we need to confirm the user
+    // wants to change their registration purpose before actioning it.
+    else if (newSelectedType && confirmedFormState?.section2?.type) {
+      setPendingFormState({
+        ...confirmedFormState,
+        section2: {
+          ...confirmedFormState.section2,
+          type: newSelectedType,
+        },
+      });
+      setIsConfirmPurposeChangeModalOpen(true);
+    }
+  };
+
+  const cancelTypeChange = () => {
+    setPendingFormState({});
+    setKey(Math.random());
+    setIsConfirmTypeChangeModalOpen(false);
+  };
+
+  const confirmTypeChange = () => {
+    if (pendingFormState?.section1?.registration_purpose) {
+      setConfirmedFormState((prevState) => ({
+        ...prevState,
+        section1: {
+          ...prevState.section1,
+          registration_purpose: pendingFormState.section1.registration_purpose,
+        },
+      }));
+    }
+    setPendingFormState({});
+    setIsConfirmTypeChangeModalOpen(false);
+  };
 
   return (
     <>
@@ -229,6 +280,11 @@ const OperationInformationForm = ({
         open={isConfirmPurposeChangeModalOpen}
         cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
         confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
+      />
+      <ConfirmChangeOfTypeModal
+        open={isConfirmTypeChangeModalOpen}
+        cancelTypeChange={cancelTypeChange}
+        confirmTypeChange={confirmTypeChange}
       />
       <MultiStepBase
         key={key}
@@ -242,6 +298,8 @@ const OperationInformationForm = ({
         onChange={(e: IChangeEvent) => {
           let newSelectedOperation = e.formData?.section1?.operation;
           let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+          let newSelectedType = e.formData?.section2?.type;
+          console.log("newSelectedType", newSelectedType);
           if (
             newSelectedOperation &&
             newSelectedOperation !== selectedOperation
@@ -254,6 +312,11 @@ const OperationInformationForm = ({
             confirmedFormState?.section1?.registration_purpose
           ) {
             handleSelectedPurposeChange(e.formData);
+            return;
+          }
+          if (newSelectedType !== confirmedFormState?.section2?.type) {
+            console.log("confirmedFormState?.section2?.type");
+            handleSelectedTypeChange(e.formData);
             return;
           }
           setConfirmedFormState(e.formData);
