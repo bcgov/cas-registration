@@ -26,7 +26,7 @@ export default async function FinalReviewPage({
   const needsVerification = await getReportNeedsVerification(version_id);
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
-    ReportingPage.FinalReview,
+    ReportingPage.ChangeReview,
     version_id,
     "",
     { skipVerification: !needsVerification },

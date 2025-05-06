@@ -46,6 +46,7 @@ from .report_electricity_import_data import ReportElectricityImportData
 from .report_compliance_summary import ReportComplianceSummary
 from .report_compliance_summary_product import ReportComplianceSummaryProduct
 from .report_attachment_confirmation import ReportAttachmentConfirmation
+from .report_change import ReportChange
 
 __all__ = [
     "ReportDataBaseModel",
@@ -93,4 +94,5 @@ __all__ = [
     "ReportComplianceSummary",
     "ReportComplianceSummaryProduct",
     "ReportAttachmentConfirmation",
+    "ReportChange",
 ]

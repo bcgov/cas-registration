@@ -25,9 +25,10 @@ export enum ReportingPage {
 
   ComplianceSummary = "ComplianceSummary",
 
+  ChangeReview = "ChangeReview",
+  FinalReview = "FinalReview",
   Verification = "Verification",
   Attachments = "Attachments",
-  FinalReview = "FinalReview",
   SignOff = "SignOff",
 }
 
