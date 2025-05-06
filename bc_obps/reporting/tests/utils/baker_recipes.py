@@ -15,7 +15,7 @@ from reporting.models import (
     ReportNewEntrantEmission,
     ReportNewEntrantProduction,
     ReportOperationRepresentative,
-    ElectricityImportData,
+    ReportElectricityImportData,
 )
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -95,7 +95,7 @@ report_operation = Recipe(ReportOperation, report_version=foreign_key(report_ver
 
 report_verification = Recipe(ReportVerification, report_version=foreign_key(report_version))
 
-electricity_import_data = Recipe(ElectricityImportData, report_version=foreign_key(report_version))
+electricity_import_data = Recipe(ReportElectricityImportData, report_version=foreign_key(report_version))
 configuration = Recipe(
     Configuration,
     # We make one config per week
