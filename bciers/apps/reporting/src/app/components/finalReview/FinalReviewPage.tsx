@@ -23,13 +23,14 @@ export default async function FinalReviewPage({
     flowData,
   );
   //🔍 Check if reports need verification
-  const needsVerification = await getReportNeedsVerification(version_id);
+  const { show_verification_page: showVerificationPage } =
+    await getReportNeedsVerification(version_id);
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.FinalReview,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    { skipVerification: !showVerificationPage },
   );
 
   return (

@@ -16,7 +16,9 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         - If a verification statement is required, ensures the presence of a corresponding attachment.
     """
     # Check if verification is mandatory
-    isVerificationMandatory = ReportVerificationService.get_report_needs_verification(report_version.id)
+    isVerificationMandatory = ReportVerificationService.get_report_needs_verification(report_version.id).get(
+        "verification_required"
+    )
 
     errors = {}
 

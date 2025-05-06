@@ -21,9 +21,9 @@ class TestMandatoryVerificationStatementValidator:
         self, mock_get_attachment, mock_get_verification, mock_get_needs_verification
     ):
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = True
+        mock_get_needs_verification.return_value = {"show_verification_page": True, "verification_required": True}
         mock_get_verification.return_value = MagicMock()  # Ensure verification exists
-        mock_get_attachment.return_value = MagicMock()  # Ensure Attachment exist
+        mock_get_attachment.return_value = MagicMock()  # Ensure Attachment exists
 
         # Act
         result = mandatory_verification_statement.validate(report_version)
@@ -45,7 +45,7 @@ class TestMandatoryVerificationStatementValidator:
     ):
         # Arrange
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = False
+        mock_get_needs_verification.return_value = {"show_verification_page": False, "verification_required": False}
 
         # Act
         result = mandatory_verification_statement.validate(report_version)
@@ -63,12 +63,11 @@ class TestMandatoryVerificationStatementValidator:
     ):
         # Arrange
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = True
+        mock_get_needs_verification.return_value = {"show_verification_page": True, "verification_required": True}
         mock_get_verification.return_value = MagicMock()  # Ensure verification exists
         mock_get_attachment.side_effect = ReportAttachment.DoesNotExist
 
         # Act & Assert
-
         result = mandatory_verification_statement.validate(report_version)
 
         mock_get_attachment.assert_called_once_with(
@@ -91,11 +90,10 @@ class TestMandatoryVerificationStatementValidator:
     ):
         # Arrange
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = True
+        mock_get_needs_verification.return_value = {"show_verification_page": True, "verification_required": True}
         mock_get_verification.side_effect = ReportVerification.DoesNotExist  # Verification does not exist
 
         # Act & Assert
-
         result = mandatory_verification_statement.validate(report_version)
 
         mock_get_verification.assert_called_once_with(report_version_id=report_version.id)

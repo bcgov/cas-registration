@@ -59,7 +59,10 @@ describe("AttachmentsPage", () => {
         confirm_supplementary_existing_attachments_relevant: true,
       },
     });
-    mockGetReportNeedsVerification.mockResolvedValue(true);
+    mockGetReportNeedsVerification.mockResolvedValue({
+      show_verification_page: true,
+    });
+
     mockGetIsSupplementaryReport.mockResolvedValue({
       is_supplementary_report_version: false,
     });
