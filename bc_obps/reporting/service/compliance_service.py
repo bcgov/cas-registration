@@ -1,5 +1,3 @@
-from django.core.exceptions import ValidationError
-from registration.models.naics_code import NaicsCode
 from reporting.models.report_emission import ReportEmission
 from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
 from reporting.models.report_product import ReportProduct
@@ -56,17 +54,6 @@ class ComplianceService:
     def get_regulatory_values_by_naics_code(report_version_id: int) -> RegulatoryValues:
         data = ReportVersion.objects.select_related('report__operation').get(pk=report_version_id)
         naics_code_id = data.report.operation.naics_code_id
-        if naics_code_id:
-            naics_code = NaicsCode.objects.get(id=naics_code_id)
-            if naics_code.is_regulated is False:
-                raise ValidationError(
-                    {
-                        'primary_naics_code': [
-                            f"NAICS code {naics_code.naics_code} is not applicable to regulated operations. Cannot calculate compliance data."
-                        ]
-                    }
-                )
-
         compliance_year = data.report.reporting_year.reporting_year
         regulatory_values = NaicsRegulatoryValue.objects.get(
             naics_code_id=naics_code_id,
