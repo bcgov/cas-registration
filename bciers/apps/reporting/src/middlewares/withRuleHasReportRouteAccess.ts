@@ -34,6 +34,7 @@ import {
   IDP,
 } from "@bciers/utils/src/enums";
 
+import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 /**
  * Defines an extra context that provides caching helpers for API data.
  */
@@ -195,11 +196,13 @@ export const permissionRules: PermissionRule[] = [
         reportVersionId,
         token,
       );
+
       return (
         reportOperation?.operation_report_status ===
         ReportOperationStatus.SUBMITTED
       );
     },
+
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
@@ -219,12 +222,8 @@ export const permissionRules: PermissionRule[] = [
       );
       return Boolean(reportVersionId && pathname.match(pathRegex));
     },
-    validate: async (reportVersionId, token) => {
-      // Directly call fetchResponse here since it may not be reused elsewhere.
-      const needsVerification = await fetchResponse(
-        `${REPORT_VERSION_API_BASE}${reportVersionId}${ApiEndpoints.NEEDS_VERIFICATION}`,
-        token.user_guid,
-      );
+    validate: async (reportVersionId) => {
+      const needsVerification = getReportNeedsVerification(reportVersionId);
       return needsVerification;
     },
     redirect: (reportVersionId, request) =>

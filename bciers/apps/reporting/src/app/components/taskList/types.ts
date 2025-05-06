@@ -15,6 +15,8 @@ export enum ReportingPage {
   AllocationOfEmissions = "AllocationOfEmissions",
   EndOfReport = "EndOfReport",
 
+  ElectricityImportData = "ElectricityImportData",
+
   EmissionsData = "EmissionsData",
 
   AdditionalReportingData = "AdditionalReportingData",
@@ -87,6 +89,7 @@ export interface TaskListPageFactoryContext {
   currentActivity?: ActivityData;
   skipVerification?: boolean;
   returnToFacilitiesTable?: boolean;
+  isElectricityImport?: boolean;
 }
 
 type SyncTaskListPageFactory = (

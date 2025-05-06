@@ -7,6 +7,7 @@ from reporting.models.report_person_responsible import ReportPersonResponsible
 from reporting.models.report_product_emission_allocation import (
     ReportProductEmissionAllocation,
 )
+
 from registration.models import NaicsCode
 from registration.models.activity import Activity
 from reporting.models import (
@@ -14,6 +15,7 @@ from reporting.models import (
     ReportNewEntrantEmission,
     ReportNewEntrantProduction,
     ReportOperationRepresentative,
+    ReportElectricityImportData,
 )
 from reporting.models import ReportAdditionalData
 from reporting.models.activity_json_schema import ActivityJsonSchema
@@ -93,6 +95,7 @@ report_operation = Recipe(ReportOperation, report_version=foreign_key(report_ver
 
 report_verification = Recipe(ReportVerification, report_version=foreign_key(report_version))
 
+electricity_import_data = Recipe(ReportElectricityImportData, report_version=foreign_key(report_version))
 configuration = Recipe(
     Configuration,
     # We make one config per week

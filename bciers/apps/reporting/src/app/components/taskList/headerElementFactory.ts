@@ -16,7 +16,9 @@ export const headerElementFactories: {
   }),
   [HeaderStep.ReportInformation]: (context) => ({
     type: "Section",
-    title: `${context?.facilityName ?? "Facility"} information`,
+    title: context?.isElectricityImport
+      ? "Report Information"
+      : `${context?.facilityName ?? "Facility"} information`,
     isExpanded: true,
   }),
   [HeaderStep.SignOffSubmit]: () => ({

@@ -24,6 +24,7 @@ from reporting.models import (
     ReportUnit,
     ReportVerification,
     ReportVersion,
+    ReportElectricityImportData,
 )
 
 
@@ -53,6 +54,7 @@ class ReportSupplementaryVersionService:
         ReportSupplementaryVersionService.clone_report_version_operation(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_representatives(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_person_responsible(report_version, new_report_version)
+        ReportSupplementaryVersionService.clone_electricity_import_data(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_additional_data(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_new_entrant_data(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_verification(report_version, new_report_version)
@@ -119,6 +121,19 @@ class ReportSupplementaryVersionService:
             report_additional_data_to_clone.pk = None
             report_additional_data_to_clone.report_version = new_report_version
             report_additional_data_to_clone.save()
+
+    @staticmethod
+    def clone_electricity_import_data(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
+        # Retrieve the ElectricityImportData instance associated with the old report version
+        electricity_import_data_to_clone = ReportElectricityImportData.objects.filter(
+            report_version=old_report_version
+        ).first()
+
+        if electricity_import_data_to_clone:
+            # Clone the instance by resetting the primary key and updating the report version
+            electricity_import_data_to_clone.pk = None
+            electricity_import_data_to_clone.report_version = new_report_version
+            electricity_import_data_to_clone.save()
 
     @staticmethod
     def clone_report_version_new_entrant_data(

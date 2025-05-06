@@ -15,6 +15,7 @@ class ReportSignOffAcknowledgements:
     acknowledgement_of_possible_costs: Optional[bool]
     acknowledgement_of_new_version: Optional[bool]
     acknowledgement_of_corrections: Optional[bool]
+    acknowledgement_of_errors: Optional[bool]
 
 
 @dataclass
@@ -34,6 +35,7 @@ class ReportSignOffService:
                 acknowledgement_of_review=acknowledgements.acknowledgement_of_review,
                 acknowledgement_of_records=acknowledgements.acknowledgement_of_records,
                 acknowledgement_of_information=acknowledgements.acknowledgement_of_information,
+                acknowledgement_of_errors=acknowledgements.acknowledgement_of_errors,
                 acknowledgement_of_possible_costs=acknowledgements.acknowledgement_of_possible_costs,
                 acknowledgement_of_new_version=acknowledgements.acknowledgement_of_new_version,
                 acknowledgement_of_corrections=acknowledgements.acknowledgement_of_corrections,
@@ -54,6 +56,7 @@ class ReportSignOffService:
                 acknowledgements.acknowledgement_of_information
                 or acknowledgements.acknowledgement_of_information is None
             )
+            and (acknowledgements.acknowledgement_of_errors or acknowledgements.acknowledgement_of_errors is None)
             and (
                 acknowledgements.acknowledgement_of_possible_costs
                 or acknowledgements.acknowledgement_of_possible_costs is None

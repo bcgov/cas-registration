@@ -20,6 +20,7 @@ import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacil
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
+  showActivities,
   showBoroId,
   showRegulatedProducts,
 } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
@@ -104,6 +105,7 @@ export default function OperationReviewForm({
         reportType,
         showRegulatedProducts(newData.registration_purpose),
         showBoroId(newData.registration_purpose),
+        showActivities(newData.registration_purpose),
       ),
     );
     setNavigationInfo(
