@@ -50,7 +50,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
         # Arrange: If the service returns True (is_initial), then the endpoint should return False.
         is_initial = True
         mock_is_initial_report_version.return_value = is_initial
-        expected_response = {"is_supplementary_report_version": not is_initial}  # Expected: False
+        expected_response = not is_initial  # Expected: False
 
         # Act: Make GET request to the endpoint.
         endpoint_under_test = "is_supplementary_report_version"

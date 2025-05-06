@@ -1,80 +1,62 @@
 "use client";
-import { useState } from "react";
+
+import React, { useState } from "react";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import { IChangeEvent } from "@rjsf/core";
-import { SignOffFormItems } from "@reporting/src/app/components/signOff/types";
-import { getTodaysDateForReportSignOff } from "@reporting/src/app/utils/formatDate";
-import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
+import {
+  changeReviewSchema,
+  changeReviewUiSchema,
+} from "@reporting/src/data/jsonSchema/changeReview/changeReview";
+import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { getValidationErrorMessage } from "@reporting/src/app/utils/reportValidationMessages";
-import { useRouter } from "next/navigation";
-import { createSignOffUiSchema } from "@reporting/src/app/components/signOff/createSignOffUiSchema";
-import { createSignOffSchema } from "@reporting/src/app/components/signOff/createSignOffSchema";
-import postSubmitReport from "@bciers/actions/api/postSubmitReport";
 
-interface Props extends HasReportVersion {
+interface ChangeReviewProps {
+  versionId: number;
+  initialFormData: any;
   navigationInformation: NavigationInformation;
-  isRegulatedOperation: boolean;
-  isSupplementaryReport: boolean;
 }
-export default function ChangeReviewForm({
-  version_id,
+
+interface FormData {
+  captured_emissions_section: {
+    purpose_note?: string;
+    capture_emissions: boolean;
+    capture_type?: string[];
+    emissions_on_site_use?: number;
+    emissions_on_site_sequestration?: number;
+    emissions_off_site_transfer?: number;
+  };
+  additional_data_section?: {
+    electricity_generated?: number;
+  };
+}
+
+export default function ChangeReveiwForm({
+  versionId,
+  initialFormData,
   navigationInformation,
-  isRegulatedOperation,
-  isSupplementaryReport,
-}: Props) {
-  const router = useRouter();
-  const [formState, setFormState] = useState({
-    acknowledgements: {},
-    signature: "",
-    date: "",
-    supplementary: {},
-  });
+}: ChangeReviewProps) {
+  const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
-  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
 
-  const allChecked = (formData: SignOffFormItems) => {
-    const { supplementary, signature, ...rest } = formData;
-    return (
-      !!signature && Object.values({ ...rest, ...supplementary }).every(Boolean)
-    );
-  };
-  const uiSchema = createSignOffUiSchema(
-    isSupplementaryReport,
-    isRegulatedOperation,
-  );
-  const schema = createSignOffSchema(
-    isSupplementaryReport,
-    isRegulatedOperation,
-  );
+  const handleSubmit = async (data: any) => {
+    const endpoint = `reporting/report-version/${versionId}/change-review`;
+    const method = "POST";
 
-  const handleChange = (e: IChangeEvent) => {
-    const updatedData = { ...e.formData };
-    if (e.formData.signature) {
-      updatedData.date = getTodaysDateForReportSignOff();
+    const payload = {
+      report_version: versionId,
+      ...data.captured_emissions_section,
+      ...data.additional_data_section,
+    };
+    const response = await actionHandler(endpoint, method, endpoint, {
+      body: JSON.stringify(payload),
+    });
+
+    if (response?.error) {
+      setErrors([response.error]);
+      return false;
     }
 
-    setFormState(updatedData);
-    setSubmitButtonDisabled(!allChecked(updatedData));
-  };
-
-  const handleSubmit = async () => {
-    if (!submitButtonDisabled) {
-      setErrors(undefined);
-      setSubmitButtonDisabled(true);
-
-      const response: any = await postSubmitReport(version_id, formState);
-      setSubmitButtonDisabled(false);
-
-      if (response?.error) {
-        setErrors([getValidationErrorMessage(response.error)]);
-        setSubmitButtonDisabled(false);
-        return false;
-      }
-      router.push(navigationInformation.continueUrl);
-      return true;
-    }
-    return false;
+    setErrors(undefined);
+    return true;
   };
 
   return (
@@ -82,16 +64,15 @@ export default function ChangeReviewForm({
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={schema}
-      uiSchema={uiSchema}
-      formData={formState}
-      onSubmit={handleSubmit}
-      buttonText={"Submit Report"}
-      onChange={handleChange}
-      saveButtonDisabled={true}
-      submitButtonDisabled={submitButtonDisabled} // Disable button if not all checkboxes are checked
-      continueUrl={navigationInformation.continueUrl}
+      schema={changeReviewSchema}
+      uiSchema={changeReviewUiSchema}
+      formData={formData}
       backUrl={navigationInformation.backUrl}
+      onChange={(data: any) => {
+        setFormData(data.formData);
+      }}
+      onSubmit={(data: any) => handleSubmit(data.formData)}
+      continueUrl={navigationInformation.continueUrl}
       errors={errors}
     />
   );

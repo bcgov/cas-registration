@@ -1,31 +1,42 @@
 import { RJSFSchema } from "@rjsf/utils";
-import {
-  FieldTemplate,
-  TitleOnlyFieldTemplate,
-} from "@bciers/components/form/fields";
+import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import SectionFieldTemplate from "@bciers/components/form/fields/SectionFieldTemplate";
+import { ComplianceNote } from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
+import TextAreaWidget from "@bciers/components/form/widgets/TextAreaWidget";
 
 export const changeReviewSchema: RJSFSchema = {
-  title: "Reason for Edits",
   type: "object",
+  title: "Reason for Edits",
   properties: {
-    reason_for_change: {
-      type: "string",
-      title:
-        "Please explain the reason for submitting this supplementary report. Include an explanation for why each inaccuracy or omission in the previous report occurred:",
+    error_reason_section: {
+      type: "object",
+      properties: {
+        compliance_note: { type: "object", readOnly: true },
+        reason_for_error: {
+          type: "boolean",
+          title:
+            "Please explain the reason for submitting this supplementary report. Include an explanation for why each inaccuracy or omission in the previous report occurred.",
+        },
+      },
     },
   },
-  required: ["reason_for_change"],
 };
 
 export const changeReviewUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
-  "ui:order": ["reason_for_change"],
-  reason_for_change: {
-    "ui:widget": "TextareaWidget",
-    "ui:placeholder": "Enter your reason here…",
-    "ui:options": {
-      rows: 5,
+  "ui:classNames": "form-heading-label",
+
+  error_reason_section: {
+    "ui:FieldTemplate": SectionFieldTemplate,
+    "ui:options": { label: false },
+    "ui:order": ["compliance_note", "reason_for_error"],
+    compliance_note: {
+      "ui:FieldTemplate": TitleOnlyFieldTemplate,
+      "ui:title": ComplianceNote,
     },
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    reason_for_error: {
+      "ui:widget": TextAreaWidget,
+    },
   },
 };

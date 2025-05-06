@@ -9,9 +9,11 @@ import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
 import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
 
 export default async function SignOffPage({ version_id }: HasReportVersion) {
-  //🔍 Check if reports need verification
-  const needsVerification = await getReportNeedsVerification(version_id);
+  // 🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
+  // 🔍 Check if reports need verification
+  const needsVerification = await getReportNeedsVerification(version_id);
+
   const isRegulatedOperation =
     (await getRegistrationPurpose(version_id))?.registration_purpose ===
     "OBPS Regulated Operation";
@@ -21,12 +23,15 @@ export default async function SignOffPage({ version_id }: HasReportVersion) {
     ReportingPage.SignOff,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    {
+      skipChangeReview: !isSupplementaryReport,
+      skipVerification: !needsVerification,
+    },
   );
   const flow = await getFlow(version_id);
 
   const schema = buildSignOffSchema(
-    isSupplementaryReport.is_supplementary_report_version,
+    isSupplementaryReport,
     isRegulatedOperation,
     flow,
   );

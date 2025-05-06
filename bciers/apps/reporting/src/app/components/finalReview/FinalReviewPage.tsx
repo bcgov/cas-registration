@@ -1,5 +1,6 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import reviewDataFactory, {
   ReviewData,
@@ -22,14 +23,21 @@ export default async function FinalReviewPage({
     version_id,
     flowData,
   );
-  //🔍 Check if reports need verification
+
+  // 🔍 Check if is a supplementary report
+  const isSupplementaryReport = await getIsSupplementaryReport(version_id);
+  // 🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
+
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
-    ReportingPage.ChangeReview,
+    ReportingPage.FinalReview,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    {
+      skipChangeReview: !isSupplementaryReport,
+      skipVerification: !needsVerification,
+    },
   );
 
   return (

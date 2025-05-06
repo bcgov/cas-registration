@@ -22,7 +22,6 @@ class ReportChange(TimeStampedModel):
         db_comment="Reason explaining why this supplementary report change was made",
     )
 
-
     class Meta(TimeStampedModel.Meta):
         db_table = 'erc"."report_change'
         app_label = "reporting"

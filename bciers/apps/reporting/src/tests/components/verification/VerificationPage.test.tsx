@@ -89,9 +89,7 @@ describe("VerificationPage component", () => {
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
     mockGetReportNeedsVerification.mockResolvedValue(true);
     mockGetReportingOperation.mockResolvedValue(mockReportOperation);
-    mockGetIsSupplementaryReport.mockResolvedValue({
-      is_supplementary_report_version: false,
-    });
+    mockGetIsSupplementaryReport.mockResolvedValue(false);
     mockGetNavigationInformation.mockResolvedValue(dummyNavigationInformation);
 
     render(await VerificationPage({ version_id: mockVersionId }));
@@ -112,8 +110,7 @@ describe("VerificationPage component", () => {
         verificationSchema: mockVerificationSchema,
         initialData: mockInitialData,
         navigationInformation: dummyNavigationInformation,
-        isSupplementaryReport: (await mockGetIsSupplementaryReport())
-          .is_supplementary_report_version,
+        isSupplementaryReport: await mockGetIsSupplementaryReport(),
       },
       {},
     );

@@ -89,6 +89,7 @@ export interface TaskListPageFactoryContext {
   orderedActivities?: ActivityData[];
   currentActivity?: ActivityData;
   skipVerification?: boolean;
+  skipChangeReview?: boolean;
   returnToFacilitiesTable?: boolean;
   isElectricityImport?: boolean;
 }
