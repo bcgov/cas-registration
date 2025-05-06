@@ -87,7 +87,9 @@ describe("VerificationPage component", () => {
     mockGetReportVerification.mockResolvedValue(mockInitialData);
     mockGetReportFacilityList.mockResolvedValue(mockFacilityList);
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
-    mockGetReportNeedsVerification.mockResolvedValue(true);
+    mockGetReportNeedsVerification.mockResolvedValue({
+      show_verification_page: true,
+    });
     mockGetReportingOperation.mockResolvedValue(mockReportOperation);
     mockGetIsSupplementaryReport.mockResolvedValue({
       is_supplementary_report_version: false,
@@ -103,6 +105,7 @@ describe("VerificationPage component", () => {
       mockFacilityList.facilities,
       OperationTypes.SFO,
       false,
+      false,
     );
 
     expect(mockVerificationForm).toHaveBeenCalledWith(
@@ -112,8 +115,7 @@ describe("VerificationPage component", () => {
         verificationSchema: mockVerificationSchema,
         initialData: mockInitialData,
         navigationInformation: dummyNavigationInformation,
-        isSupplementaryReport: (await mockGetIsSupplementaryReport())
-          .is_supplementary_report_version,
+        isSupplementaryReport: false,
       },
       {},
     );

@@ -7,34 +7,35 @@ import {
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import {
-  REPORTING_BASE,
-  REPORT_BASE,
-  REPORT_VERSION_API_BASE,
-  REPORT_APP_BASE,
+  ApiEndpoints,
+  AppRoutes,
   extractReportVersionId,
   fetchResponse,
   getUserRole,
-  ApiEndpoints,
-  AppRoutes,
+  REPORT_APP_BASE,
+  REPORT_BASE,
+  REPORT_VERSION_API_BASE,
+  REPORTING_BASE,
   reportRoutesLFO,
   reportRoutesReportingOperation,
   reportRoutesSubmitted,
-  restrictedRoutesNewEntrant,
   restrictedRoutesEIO,
+  restrictedRoutesNewEntrant,
   restrictedRoutesSubmitted,
 } from "./constants";
 import {
-  NEW_ENTRANT_REGISTRATION_PURPOSE,
   ELECTRICITY_IMPORT_OPERATION,
+  NEW_ENTRANT_REGISTRATION_PURPOSE,
   REPORTING_OPERATION,
 } from "@reporting/src/app/utils/constants";
 import {
+  IDP,
   OperationTypes,
   ReportOperationStatus,
-  IDP,
 } from "@bciers/utils/src/enums";
 
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+
 /**
  * Defines an extra context that provides caching helpers for API data.
  */
@@ -213,7 +214,7 @@ export const permissionRules: PermissionRule[] = [
   },
   // Rule: check access to restricted Verification route
   {
-    name: "accessVerification",
+    name: "showVerification",
     isApplicable: (request, reportVersionId) => {
       const { pathname } = request.nextUrl;
       // use regex for accurately matching in-case of future verification type routes
@@ -223,8 +224,9 @@ export const permissionRules: PermissionRule[] = [
       return Boolean(reportVersionId && pathname.match(pathRegex));
     },
     validate: async (reportVersionId) => {
-      const needsVerification = getReportNeedsVerification(reportVersionId);
-      return needsVerification;
+      const needsVerification =
+        await getReportNeedsVerification(reportVersionId);
+      return needsVerification.show_verification_page;
     },
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
