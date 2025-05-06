@@ -18,6 +18,8 @@ class ReportVerification(TimeStampedModel):
     )
 
     verification_body_name = models.CharField(
+        null=True,
+        blank=True,
         max_length=1000,
         db_comment="The name of the verification body conducting the verification",
     )
@@ -28,6 +30,8 @@ class ReportVerification(TimeStampedModel):
 
     accredited_by = models.CharField(
         max_length=10,
+        null=True,
+        blank=True,
         choices=AccreditedBy.choices,
         db_comment="The verification accreditation body",
     )
@@ -47,6 +51,8 @@ class ReportVerification(TimeStampedModel):
     )
 
     threats_to_independence = models.BooleanField(
+        null=True,
+        blank=True,
         db_comment="Indicates whether there were any threats to independence noted",
     )
 
