@@ -87,7 +87,7 @@ class TestReportVersionService(TestCase):
             "ReportVerificationVisit",
             "ReportEmissionAllocation",
             "ReportProductEmissionAllocation",
-            "ElectricityImportData",
+            "ReportElectricityImportData",
             "ReportComplianceSummary",
             "ReportComplianceSummaryProduct",
         }

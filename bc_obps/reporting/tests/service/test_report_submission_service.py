@@ -59,6 +59,7 @@ class TestReportSubmissionService:
                 acknowledgement_of_information=True,
                 acknowledgement_of_possible_costs=True,
                 acknowledgement_of_new_version=None,
+                acknowledgement_of_errors=None,
                 acknowledgement_of_corrections=None,
             ),
             signature="signature",
