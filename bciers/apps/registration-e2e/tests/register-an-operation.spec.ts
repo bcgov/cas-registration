@@ -146,9 +146,7 @@ test.describe("Test register operations", () => {
 
     // // STEP 2
     componentName = "Registration LFO Facility Information";
-    await registrationPage.assertHeading(
-      OperationRegistrationSteps.FACILITY_INFORMATION,
-    );
+    await clickButton(registrationPage.page, /add new facility/i);
     await registrationPage.fillLfoFacilityInformation();
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: componentName,
@@ -156,14 +154,15 @@ test.describe("Test register operations", () => {
     });
     // TODO fix the accessibility errors and uncomment:  https://github.com/bcgov/cas-registration/issues/3198
     // await analyzeAccessibility(page, componentName);
-    await registrationPage.clickSaveAndContinue();
+    await clickButton(registrationPage.page, /continue/i); // button on this form is `Continue` instead of `Save and Continue`
     await registrationPage.waitForRegistrationUrl(3);
 
-    // // STEP 2
+    // // STEP 3
     componentName = "Registration Opt-In Application";
     await registrationPage.assertHeading(
       OperationRegistrationSteps.OPT_IN_APPLICATION,
     );
+
     await registrationPage.fillOptInInformation(registrationPage.page);
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: componentName,

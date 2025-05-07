@@ -194,9 +194,7 @@ export const facilitiesLfoSchema: RJSFSchema = {
 
 export const facilitiesLfoUiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
-  "ui: options": {
-    label: false,
-  },
+
   section1: {
     "ui:FieldTemplate": SectionFieldTemplate,
     "ui:order": [

@@ -135,7 +135,7 @@ export class RegistrationPOM {
   }
 
   async fillLfoFacilityInformation() {
-    await clickButton(this.page, /add facility/i);
+    await clickButton(this.page, /add new facility/i);
     await this.page.getByLabel(/facility name\*/i).fill("a");
     await fillComboxboxWidget(this.page, /facility type+/i, "Small Aggregate");
   }
