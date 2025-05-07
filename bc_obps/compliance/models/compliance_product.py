@@ -35,6 +35,7 @@ class ComplianceProduct(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
+        app_label = "compliance"
         db_table_comment = "A table to store per-product compliance data"
         db_table = 'erc"."compliance_product'
         constraints = [
