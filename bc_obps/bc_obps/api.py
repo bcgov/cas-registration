@@ -28,7 +28,7 @@ api.add_router("/common/", common_router, tags=["V1"])
 api.add_router("/registration/", registration_router, tags=["V1"])
 api.add_router("/reporting/", reporting_router, tags=["V1"])
 
-if settings.ENVIRONMENT != "prod":
+if settings.ENVIRONMENT != "prod" or settings.CI == "true":
     from compliance.api import router as compliance_router
 
     api.add_router("/compliance/", compliance_router, tags=["V1"])
