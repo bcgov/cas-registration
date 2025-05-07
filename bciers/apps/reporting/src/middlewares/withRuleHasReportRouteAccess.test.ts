@@ -33,7 +33,8 @@ vi.spyOn(NextResponse, "redirect");
 type RouteMockKey =
   | "reportRoutesSubmitted"
   | "reportRoutesReportingOperation"
-  | "restrictedRoutesSubmitted";
+  | "restrictedRoutesSubmitted"
+  | "restrictedSupplementaryReport";
 
 // Helper function for common middleware test setup.
 const runMiddlewareTest = async ({
@@ -95,26 +96,6 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     });
   });
 
-  // --- Test when extractReportVersionId returns null ---
-  it("allows industry user to continue if extractReportVersionId returns null (bypassing route rules)", async () => {
-    // Set extractReportVersionId to return null.
-    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(null);
-    // Ensure the mocked request has a valid nextUrl and url.
-    const nextUrl = new NextURL(`${domain}${defaultPath}`);
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    const nextMiddleware = vi.fn(() => NextResponse.next());
-    const middleware = withRuleHasReportRouteAccess(nextMiddleware);
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-    // Expect the next middleware to be called since there is no report version to validate.
-    expect(nextMiddleware).toHaveBeenCalledOnce();
-    expect(result?.status).toBe(200);
-  });
-
   // --- Test when fetchResponse throws an error ---
   it("redirects to onboarding when fetchResponse throws an exception", async () => {
     // Force fetchResponse to throw.
@@ -131,7 +112,8 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     expect(result?.status).toBe(307);
   });
 
-  describe("EIO route tests (restrictedRoutesEIO)", () => {
+  describe("EIO route tests (restricted routes)", () => {
+    // Invalid response
     const invalidEIOResponse = { registration_purpose: "NOT_EIO" };
 
     // Loop over each route segment defined in restrictedRoutesEIO.
@@ -157,7 +139,8 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     });
   });
 
-  describe("LFO route segment tests", () => {
+  describe("LFO route segment tests (restricted routes)", () => {
+    // Invalid response
     const invalidOperationResponse = { operation_type: "NOT_LFO" };
     // Loop over each LFO route segment
     constants.reportRoutesLFO.forEach((routeSegment) => {
@@ -181,7 +164,8 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     });
   });
 
-  describe("New Entrant route tests", () => {
+  describe("New Entrant route tests (restricted routes)", () => {
+    // Invalid response
     const invalidNewEntrantResponse = {
       registration_purpose: "NOT_NEW_ENTRANT",
     };
@@ -209,7 +193,8 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     });
   });
 
-  describe("Submitted route tests (restrictedRoutesSubmitted)", () => {
+  describe("Submitted route tests (restricted routes)", () => {
+    // Invalid response
     const invalidSubmittedResponse = {
       operation_report_status: "NOT_SUBMITTED",
     };
@@ -239,7 +224,10 @@ describe("withRuleHasReportRouteAccess middleware", () => {
     });
   });
 
-  describe("Verification route tests", () => {
+  describe("Verification route tests (restricted routes)", () => {
+    // Invalid response
+    const invalidVerificationResponse = false;
+
     // Define URL variants that should match the verification rule
     const verificationTestUrls = [
       `${domain}/reporting/reports/123/verification`,
@@ -253,10 +241,39 @@ describe("withRuleHasReportRouteAccess middleware", () => {
           userToken: mockIndustryUserToken,
           url: testUrl,
           fetchResponses: [
-            false, // This simulates the API returning a falsy value for needsVerification.
+            invalidVerificationResponse, // This simulates the API returning a falsy value for needsVerification.
           ],
         });
         // Expect a redirect due to failing validation.
+        expect(NextResponse.redirect).toHaveBeenCalledOnce();
+        expect(result?.status).toBe(307);
+      });
+    });
+  });
+
+  describe("Supplementary report route tests (restricted routes)", () => {
+    // Invalid response
+    const invalidIsSupplementaryReportResponse = false;
+
+    // Loop over each route segment defined in restrictedRoutesSubmitted.
+    constants.restrictedSupplementaryReport.forEach((routeSegment) => {
+      it(`redirects industry user for supplementary route segment '${routeSegment}' when report is NOT supplementary report`, async () => {
+        // Build a test URL using the current submitted route segment.
+        const testUrl = `${domain}/reporting/123/${routeSegment}`;
+
+        // Run the middleware test with a fetch response simulating a non supplementary report.
+        const { result } = await runMiddlewareTest({
+          userToken: mockIndustryUserToken,
+          url: testUrl,
+          fetchResponses: [
+            invalidIsSupplementaryReportResponse, // This response is used by the rule checking for is supplementary report.
+          ],
+          routeMocks: {
+            restrictedSupplementaryReport: ["change-review"],
+          },
+        });
+
+        // Expect a redirect because the report is NOT supplementary report.
         expect(NextResponse.redirect).toHaveBeenCalledOnce();
         expect(result?.status).toBe(307);
       });

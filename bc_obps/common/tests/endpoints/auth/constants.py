@@ -100,6 +100,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_report_change_by_version_id",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_regulated_products_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },
@@ -219,6 +224,11 @@ ENDPOINTS = {
         {
             "method": "post",
             "endpoint_name": "save_report_verification",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "post",
+            "endpoint_name": "save_report_change",
             "kwargs": {"version_id": MOCK_INT},
         },
         {

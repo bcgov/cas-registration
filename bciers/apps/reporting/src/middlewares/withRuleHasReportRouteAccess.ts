@@ -248,13 +248,10 @@ export const permissionRules: PermissionRule[] = [
         ),
       ),
     validate: async (reportVersionId, _request, context) => {
-      const reportOperation =
+      const isSupplementaryReport =
         await context!.getIsSupplementaryReport(reportVersionId);
 
-      return (
-        reportOperation?.operation_report_status ===
-        ReportOperationStatus.SUBMITTED
-      );
+      return isSupplementaryReport === true;
     },
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(

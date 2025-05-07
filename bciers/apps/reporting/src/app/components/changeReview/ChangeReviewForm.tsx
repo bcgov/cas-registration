@@ -16,20 +16,10 @@ interface ChangeReviewProps {
 }
 
 interface FormData {
-  captured_emissions_section: {
-    purpose_note?: string;
-    capture_emissions: boolean;
-    capture_type?: string[];
-    emissions_on_site_use?: number;
-    emissions_on_site_sequestration?: number;
-    emissions_off_site_transfer?: number;
-  };
-  additional_data_section?: {
-    electricity_generated?: number;
-  };
+  reason_for_change: string;
 }
 
-export default function ChangeReveiwForm({
+export default function ChangeReviewForm({
   versionId,
   initialFormData,
   navigationInformation,
@@ -37,19 +27,12 @@ export default function ChangeReveiwForm({
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [errors, setErrors] = useState<string[]>();
 
-  const handleSubmit = async (data: any) => {
-    const endpoint = `reporting/report-version/${versionId}/change-review`;
+  const handleSubmit = async (data: FormData) => {
+    const endpoint = `reporting/report-version/${versionId}/report-change`;
     const method = "POST";
-
-    const payload = {
-      report_version: versionId,
-      ...data.captured_emissions_section,
-      ...data.additional_data_section,
-    };
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(payload),
+      body: JSON.stringify(formData),
     });
-
     if (response?.error) {
       setErrors([response.error]);
       return false;
