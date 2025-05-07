@@ -1,7 +1,8 @@
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 import { ChangeEvent, MutableRefObject, useRef } from "react";
 import getAttachmentFileUrl from "../../utils/getAttachmentFileUrl";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, IconButton } from "@mui/material";
+import DeleteForeverIcon from "@bciers/components/icons/DeleteForeverIcon";
 
 interface Props {
   versionId: number;
@@ -93,6 +94,9 @@ const AttachmentElement: React.FC<Props> = ({
         accept={accept}
         data-testid="attachment-file-picker"
       />
+      <IconButton>
+        <DeleteForeverIcon />
+      </IconButton>
       {fileName ? (
         <ul className="m-0 py-0 flex flex-col justify-start">
           <li>
