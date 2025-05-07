@@ -260,12 +260,12 @@ const OperationInformationForm = ({
   };
 
   const confirmTypeChange = () => {
-    if (pendingFormState?.section1?.registration_purpose) {
+    if (pendingFormState?.section2?.type) {
       setConfirmedFormState((prevState) => ({
         ...prevState,
-        section1: {
-          ...prevState.section1,
-          registration_purpose: pendingFormState.section1.registration_purpose,
+        section2: {
+          ...prevState.section2,
+          type: pendingFormState.section2.type,
         },
       }));
     }
