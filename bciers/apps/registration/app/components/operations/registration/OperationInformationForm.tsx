@@ -17,8 +17,7 @@ import {
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
 import { eioOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
-import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
-import ConfirmChangeOfTypeModal from "./ConfirmChangeOfTypeModal";
+import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
 
 interface OperationInformationFormProps {
   rawFormData: { [key: string]: any };
@@ -228,7 +227,7 @@ const OperationInformationForm = ({
   };
   // type change
   const handleSelectedTypeChange = (data: any) => {
-    const newSelectedType: RegistrationPurposes = data.section2?.type;
+    const newSelectedType = data.section2?.type;
     // if purpose is being selected for the first time, we don't need to show
     // the ConfirmChangeOfTypeModal.
     if (newSelectedType && !confirmedFormState?.section2?.type) {
@@ -250,7 +249,7 @@ const OperationInformationForm = ({
           type: newSelectedType,
         },
       });
-      setIsConfirmPurposeChangeModalOpen(true);
+      setIsConfirmTypeChangeModalOpen(true);
     }
   };
 
@@ -276,15 +275,19 @@ const OperationInformationForm = ({
 
   return (
     <>
-      <ConfirmChangeOfRegistrationPurposeModal
+      <ConfirmChangeOfFieldModal
         open={isConfirmPurposeChangeModalOpen}
-        cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
-        confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
+        onCancel={cancelRegistrationPurposeChange}
+        onConfirm={confirmRegistrationPurposeChange}
+        modalText="Are you sure you want to change your registration purpose? If you proceed, some of the form data you have entered will be lost."
+        confirmButtonText="Change registration purpose"
       />
-      <ConfirmChangeOfTypeModal
+      <ConfirmChangeOfFieldModal
         open={isConfirmTypeChangeModalOpen}
-        cancelTypeChange={cancelTypeChange}
-        confirmTypeChange={confirmTypeChange}
+        onCancel={cancelTypeChange}
+        onConfirm={confirmTypeChange}
+        confirmButtonText="Change operation type"
+        modalText="Are you sure you want to change your operation type? If you proceed, some of the form data you have entered will be lost."
       />
       <MultiStepBase
         key={key}
