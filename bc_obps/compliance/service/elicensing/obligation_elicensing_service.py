@@ -74,7 +74,7 @@ class ObligationELicensingService:
             ELicensingLink.ObjectKind.CLIENT,
         )
         invoice_link = ELicensingLinkService.get_link_for_model(
-            ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE
+            ComplianceObligation, uuid.UUID(str(obligation.id)), ELicensingLink.ObjectKind.INVOICE
         )
 
         if not client_link or not invoice_link:
