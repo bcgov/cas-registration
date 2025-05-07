@@ -21,6 +21,7 @@ class ComplianceChargeRate(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
+        app_label = "compliance"
         db_table_comment = "A table to store compliance charge rates by reporting year"
         db_table = 'erc"."compliance_charge_rate'
         ordering = ['reporting_year']

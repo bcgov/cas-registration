@@ -1,9 +1,9 @@
 from decimal import Decimal
 from uuid import UUID
 from unittest.mock import patch, MagicMock
+from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from django.test import SimpleTestCase
 from compliance.models.compliance_summary import ComplianceSummary
-from service.compliance.compliance_dashboard_service import ComplianceDashboardService
 
 
 class TestComplianceDashboardService(SimpleTestCase):
@@ -31,7 +31,7 @@ class TestComplianceDashboardService(SimpleTestCase):
         else:
             self.assertEqual(result.excess_emissions_percentage, expected_percentage)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     def test_get_compliance_summary_issuance_data_not_found(self, mock_get_summary):
         mock_get_summary.return_value = None
 
@@ -40,7 +40,7 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertIsNone(result)
         mock_get_summary.assert_called_once_with(self.user_guid, self.summary_id)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     def test_with_positive_excess_emissions(self, mock_get_summary):
         mock_summary = self._patch_summary(mock_get_summary, "10.0", "100.0", "110.0")
 
@@ -50,7 +50,7 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result, mock_summary)
         self._assert_default_compliance_fields(result, 100, 110.0)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     def test_with_negative_excess_emissions(self, mock_get_summary):
         mock_summary = self._patch_summary(mock_get_summary, "-15.0", "100.0", "85.0")
 
@@ -60,7 +60,7 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result, mock_summary)
         self._assert_default_compliance_fields(result, 15, 85.0)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     def test_with_zero_emission_limit(self, mock_get_summary):
         mock_summary = self._patch_summary(mock_get_summary, "10.0", "0.0", "10.0")
 
@@ -70,7 +70,7 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result, mock_summary)
         self._assert_default_compliance_fields(result, 100, None)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     def test_with_none_emission_limit(self, mock_get_summary):
         mock_summary = self._patch_summary(mock_get_summary, "10.0", None, "10.0")
 

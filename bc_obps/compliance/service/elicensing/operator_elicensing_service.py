@@ -1,8 +1,8 @@
 import logging
 import uuid
+from compliance.service.elicensing.elicensing_api_client import ClientCreationRequest, ELicensingAPIClient
+from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
 from django.db import transaction
-from service.compliance.elicensing.elicensing_api_client import ELicensingAPIClient, ClientCreationRequest
-from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
 from registration.models.operator import Operator
 from compliance.models.elicensing_link import ELicensingLink
 

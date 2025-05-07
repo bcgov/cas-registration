@@ -71,6 +71,7 @@ class ComplianceSummary(TimeStampedModel):
             return self.ComplianceStatus.OBLIGATION_FULLY_MET
 
     class Meta(TimeStampedModel.Meta):
+        app_label = "compliance"
         db_table_comment = "A table to store compliance summaries for reports"
         db_table = 'erc"."compliance_summary'
         constraints = [

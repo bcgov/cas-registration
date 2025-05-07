@@ -1,5 +1,5 @@
 from django.http import HttpRequest, StreamingHttpResponse
-from compliance.services.invoice_service import InvoiceService
+from compliance.service.invoice_service import InvoiceService
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message

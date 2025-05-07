@@ -1,11 +1,11 @@
 from uuid import UUID
+from compliance.service.compliance_summary_service import ComplianceSummaryService
 from django.db.models import QuerySet, OuterRef, Subquery
 from compliance.models.compliance_summary import ComplianceSummary
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
 from typing import Optional
-from service.compliance.compliance_summary_service import ComplianceSummaryService
 
 
 class ComplianceDashboardService:
