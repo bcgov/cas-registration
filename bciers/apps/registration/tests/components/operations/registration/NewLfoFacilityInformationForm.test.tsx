@@ -14,13 +14,13 @@ import {
   useSession,
 } from "@bciers/testConfig/mocks";
 import { UUID } from "crypto";
+import NewLfoFacilityForm from "@/registration/app/components/operations/registration/NewLfoFacilityForm";
 import {
   fillAddressFields,
   fillLatitudeLongitudeFields,
   fillNameAndTypeFields,
   toggleAndFillStartDate,
-} from "./FacilitySfoForm.test";
-import NewLfoFacilityForm from "@/registration/app/components/operations/registration/NewLfoFacilityForm";
+} from "./utils";
 
 useSession.mockReturnValue({
   data: {

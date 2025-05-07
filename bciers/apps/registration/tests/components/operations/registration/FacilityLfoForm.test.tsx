@@ -21,7 +21,7 @@ import {
   fillLatitudeLongitudeFields,
   fillNameAndTypeFields,
   toggleAndFillStartDate,
-} from "./FacilitySfoForm.test";
+} from "./utils";
 
 useSession.mockReturnValue({
   data: {
