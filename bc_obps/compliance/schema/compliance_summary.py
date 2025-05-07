@@ -103,3 +103,34 @@ class ComplianceSummaryIssuanceOut(ModelSchema):
             'emission_limit',
             'excess_emissions',
         ]
+
+
+class ComplianceSummaryRequestIssuanceOut(ModelSchema):
+    """Schema for compliance summary request issuance data"""
+
+    operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
+    reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
+    bccr_trading_name: str
+    bccr_holding_account_id: str
+
+    class Meta:
+        model = ComplianceSummary
+        fields = [
+            'id',
+        ]
+
+
+class RequestIssuanceTrackStatusOut(ModelSchema):
+    """Schema for request issuance track status data"""
+
+    operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
+    bccr_trading_name: str
+    earned_credits: Optional[int] = None
+    issuance_status: str
+    directors_comments: str
+
+    class Meta:
+        model = ComplianceSummary
+        fields = [
+            'id',
+        ]
