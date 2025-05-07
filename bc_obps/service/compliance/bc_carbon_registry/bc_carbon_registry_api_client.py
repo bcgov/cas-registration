@@ -397,8 +397,7 @@ class BCCarbonRegistryAPIClient:
             "type_of_organization": "140000000000002", We can get this from account details (type_of_account_holder) and then map it to the below list
             "boro_id": "25-0004",
             "registered_name": "Test Billie Blue Subaccount 2 May 1 - operation name",
-            "trading_name": "Test Billie Blue Subaccount 2 May 1 - operation name",
-            "registration_number_assigend_by_registrar": "registration_number_assigned_by_registrar TEST 4"
+            "trading_name": "Test Billie Blue Subaccount 2 May 1 - operation name"
         }
 
         Account Holder Type
