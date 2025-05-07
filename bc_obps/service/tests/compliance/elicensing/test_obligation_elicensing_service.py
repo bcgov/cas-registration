@@ -7,7 +7,7 @@ from decimal import Decimal
 import pytest
 from django.utils import timezone
 
-from service.compliance.elicensing.obligation_elicensing_service import ObligationELicensingService
+from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
 from compliance.models.compliance_summary import ComplianceSummary
