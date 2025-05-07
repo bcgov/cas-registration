@@ -5,8 +5,8 @@ from typing import Dict, Optional, Type, Any, Union, Literal
 from datetime import datetime, timedelta
 from django.conf import settings
 from pydantic import BaseModel, ValidationError
-from service.compliance.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from service.compliance.bc_carbon_registry.schema import (
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
+from compliance.service.bc_carbon_registry.schema import (
     TokenResponse,
     SearchFilter,
     Pagination,
