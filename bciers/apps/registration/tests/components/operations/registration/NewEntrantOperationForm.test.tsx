@@ -152,7 +152,9 @@ describe("the NewEntrantOperationForm component", () => {
     });
 
     await userEvent.click(submitButton);
-    expect(screen.getByText("Attachment is required")).toBeVisible();
+    expect(
+      screen.getByText("New Entrant Application is required"),
+    ).toBeVisible();
   });
 
   it("should fill the form and redirect to the next page", async () => {
