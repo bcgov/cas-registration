@@ -14,7 +14,7 @@ const monetaryPaymentsColumns = (): GridColDef[] => {
       headerName: "Payment Amount Applied",
       width: 201.2,
       type: "number",
-      valueFormatter: (params) => formatMonetaryValue(params.value),
+      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
     },
     {
       field: "paymentMethod",

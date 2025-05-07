@@ -1,7 +1,6 @@
-import { InfoRow } from "../InfoRow";
-import { TitleRow } from "../TitleRow";
+import { InfoRow } from "../../InfoRow";
+import { TitleRow } from "../../TitleRow";
 import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
-
 
 export const ComplianceObligation = ({ data }: any) => {
   return (
