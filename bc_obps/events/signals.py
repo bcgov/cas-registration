@@ -27,4 +27,6 @@ from django.dispatch import Signal
 report_submitted = Signal()
 # Signal parameters: 'version_id', 'user_guid'
 
+# Registration signals
+operation_registration_purpose_changed = Signal()
 # Add more signals as needed for different app domains
