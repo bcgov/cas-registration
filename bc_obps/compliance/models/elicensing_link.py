@@ -67,6 +67,7 @@ class ELicensingLink(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
+        app_label = "compliance"
         db_table_comment = "A table to store links between system objects and eLicensing objects"
         db_table = 'erc"."elicensing_link'
         unique_together = ('content_type', 'object_id', 'elicensing_object_kind')
