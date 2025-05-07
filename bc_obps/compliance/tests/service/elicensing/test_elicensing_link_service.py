@@ -1,10 +1,10 @@
 from unittest.mock import patch, MagicMock
 import uuid
 
+from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
 import pytest
 from django.contrib.contenttypes.models import ContentType
 
-from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
 from compliance.models.elicensing_link import ELicensingLink
 from registration.models.operator import Operator
 
@@ -40,8 +40,8 @@ class TestELicensingLinkService:
     """Tests for the ELicensingLinkService class"""
 
     @pytest.mark.django_db
-    @patch('service.compliance.elicensing.elicensing_link_service.ContentType.objects.get_for_model')
-    @patch('service.compliance.elicensing.elicensing_link_service.ELicensingLink.objects.get')
+    @patch('compliance.service.elicensing.elicensing_link_service.ContentType.objects.get_for_model')
+    @patch('compliance.service.elicensing.elicensing_link_service.ELicensingLink.objects.get')
     def test_get_link_for_model_success(
         self, mock_get, mock_get_for_model, mock_operator_id, mock_content_type, mock_elicensing_link
     ):
@@ -65,8 +65,8 @@ class TestELicensingLinkService:
         )
 
     @pytest.mark.django_db
-    @patch('service.compliance.elicensing.elicensing_link_service.ContentType.objects.get_for_model')
-    @patch('service.compliance.elicensing.elicensing_link_service.ELicensingLink.objects.get')
+    @patch('compliance.service.elicensing.elicensing_link_service.ContentType.objects.get_for_model')
+    @patch('compliance.service.elicensing.elicensing_link_service.ELicensingLink.objects.get')
     def test_get_link_for_model_not_found(self, mock_get, mock_get_for_model, mock_operator_id, mock_content_type):
         """Test getting a link that doesn't exist"""
         # Set up mocks
@@ -88,8 +88,8 @@ class TestELicensingLinkService:
         )
 
     @pytest.mark.django_db
-    @patch('service.compliance.elicensing.elicensing_link_service.ContentType.objects.get_for_model')
-    @patch('service.compliance.elicensing.elicensing_link_service.ELicensingLink.objects.get')
+    @patch('compliance.service.elicensing.elicensing_link_service.ContentType.objects.get_for_model')
+    @patch('compliance.service.elicensing.elicensing_link_service.ELicensingLink.objects.get')
     def test_get_link_for_model_with_custom_elicensing_object_kind(
         self, mock_get, mock_get_for_model, mock_operator_id, mock_content_type, mock_elicensing_link
     ):

@@ -1,7 +1,7 @@
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 import pytest
 from decimal import Decimal
 from unittest.mock import patch, MagicMock
-from service.compliance.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.models.compliance_charge_rate import ComplianceChargeRate
 from reporting.models.reporting_year import ReportingYear
 

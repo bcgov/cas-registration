@@ -1,11 +1,11 @@
 from unittest.mock import patch, MagicMock
 import uuid
+from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
 import requests
 
 import pytest
 from django.utils import timezone
 
-from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
 from registration.models.operator import Operator
 from compliance.models.elicensing_link import ELicensingLink
 
@@ -85,21 +85,21 @@ def mock_elicensing_link():
 @pytest.fixture
 def mock_link_service():
     """Mock ELicensingLinkService"""
-    with patch('service.compliance.elicensing.operator_elicensing_service.ELicensingLinkService') as mock:
+    with patch('compliance.service.elicensing.operator_elicensing_service.ELicensingLinkService') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_operator_get():
     """Mock Operator.objects.get"""
-    with patch('service.compliance.elicensing.operator_elicensing_service.Operator.objects.get') as mock:
+    with patch('compliance.service.elicensing.operator_elicensing_service.Operator.objects.get') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_api_client():
     """Mock elicensing_api_client"""
-    with patch('service.compliance.elicensing.operator_elicensing_service.elicensing_api_client') as mock:
+    with patch('compliance.service.elicensing.operator_elicensing_service.elicensing_api_client') as mock:
         yield mock
 
 

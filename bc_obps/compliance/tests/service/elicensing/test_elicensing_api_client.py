@@ -1,18 +1,18 @@
 from unittest.mock import patch, MagicMock
-import pytest
-import requests
-from service.compliance.elicensing.elicensing_api_client import (
-    ELicensingAPIClient,
+from compliance.service.elicensing.elicensing_api_client import (
     ClientCreationRequest,
-    FeeCreationRequest,
+    ELicensingAPIClient,
     FeeCreationItem,
+    FeeCreationRequest,
     InvoiceCreationRequest,
 )
+import pytest
+import requests
 
 
 @pytest.fixture
 def mock_settings():
-    with patch('service.compliance.elicensing.elicensing_api_client.settings') as mock_settings:
+    with patch('compliance.service.elicensing.elicensing_api_client.settings') as mock_settings:
         mock_settings.ELICENSING_API_URL = 'https://test-api.example.com'
         mock_settings.ELICENSING_AUTH_TOKEN = 'test-token'
         yield mock_settings
@@ -147,7 +147,7 @@ class TestELicensingAPIClient:
             'Accept': 'application/json',
         }
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.get')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.get')
     def test_make_request_get(self, mock_get, mock_settings):
         """Test the _make_request method with GET"""
         # Reset the singleton instance for testing
@@ -170,7 +170,7 @@ class TestELicensingAPIClient:
         # Check that we got the expected response
         assert response == mock_response
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.post')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.post')
     def test_make_request_post(self, mock_post, mock_settings):
         """Test the _make_request method with POST"""
         # Reset the singleton instance for testing
@@ -193,7 +193,7 @@ class TestELicensingAPIClient:
         # Check that we got the expected response
         assert response == mock_response
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.put')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.put')
     def test_make_request_put(self, mock_put, mock_settings):
         """Test the _make_request method with PUT"""
         # Reset the singleton instance for testing
@@ -216,7 +216,7 @@ class TestELicensingAPIClient:
         # Check that we got the expected response
         assert response == mock_response
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.get')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.get')
     def test_make_request_error_handling_json(self, mock_get, mock_settings):
         """Test error handling in _make_request with JSON error response"""
         # Reset the singleton instance for testing
@@ -234,7 +234,7 @@ class TestELicensingAPIClient:
         # Check that we got the expected response
         assert response == mock_response
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.get')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.get')
     def test_make_request_error_handling_text(self, mock_get, mock_settings):
         """Test error handling in _make_request with text error response"""
         # Reset the singleton instance for testing
@@ -253,7 +253,7 @@ class TestELicensingAPIClient:
         # Check that we got the expected response
         assert response == mock_response
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.get')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.get')
     def test_make_request_connection_error(self, mock_get, mock_settings):
         """Test connection error handling in _make_request"""
         # Reset the singleton instance for testing
@@ -268,7 +268,7 @@ class TestELicensingAPIClient:
         with pytest.raises(requests.RequestException):
             client._make_request('/test', method='GET')
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.post')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.post')
     def test_create_client_success(
         self, mock_post, mock_settings, client_creation_request, client_creation_response_data
     ):
@@ -310,7 +310,7 @@ class TestELicensingAPIClient:
         assert response.clientObjectId == client_creation_response_data['clientObjectId']
         assert response.clientGUID == client_creation_response_data['clientGUID']
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.get')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.get')
     def test_query_client_success(self, mock_get, mock_settings, client_response_data):
         """Test the query_client method success case"""
         # Reset the singleton instance for testing
@@ -343,7 +343,7 @@ class TestELicensingAPIClient:
         assert response.postalCode == client_response_data['postalCode']
         assert response.email == client_response_data['email']
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.get')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.get')
     def test_query_client_error(self, mock_get, mock_settings):
         """Test the query_client method error case"""
         # Reset the singleton instance for testing
@@ -362,7 +362,7 @@ class TestELicensingAPIClient:
         with pytest.raises(requests.HTTPError):
             client.query_client('test-id')
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.post')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.post')
     def test_create_fees_success(self, mock_post, mock_settings, fee_creation_request, fee_response_data):
         """Test the create_fees method success case"""
         # Reset the singleton instance for testing
@@ -410,7 +410,7 @@ class TestELicensingAPIClient:
             assert actual_fee.feeAmount == expected_fee['feeAmount']
             assert actual_fee.feeDate == expected_fee['feeDate']
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.post')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.post')
     def test_create_fees_error(self, mock_post, mock_settings, fee_creation_request):
         """Test the create_fees method with error response"""
         # Reset the singleton instance for testing
@@ -429,7 +429,7 @@ class TestELicensingAPIClient:
         with pytest.raises(requests.HTTPError):
             client.create_fees('test-id', fee_creation_request)
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.post')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.post')
     def test_create_invoice_success(self, mock_post, mock_settings, invoice_creation_request, invoice_response_data):
         """Test the create_invoice method success case"""
         # Reset the singleton instance for testing
@@ -462,7 +462,7 @@ class TestELicensingAPIClient:
         assert response.clientGUID == invoice_response_data['clientGUID']
         assert response.invoiceNumber == invoice_response_data['invoiceNumber']
 
-    @patch('service.compliance.elicensing.elicensing_api_client.requests.post')
+    @patch('compliance.service.elicensing.elicensing_api_client.requests.post')
     def test_create_invoice_error(self, mock_post, mock_settings, invoice_creation_request):
         """Test the create_invoice method with error response"""
         # Reset the singleton instance for testing
