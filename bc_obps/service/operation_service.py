@@ -30,6 +30,7 @@ from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from service.document_service import DocumentService
+from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
 from registration.schema import (
     OperationInformationIn,
@@ -389,6 +390,10 @@ class OperationService:
 
         if payload.registration_purpose != operation.registration_purpose:
             payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
+        if payload.type != operation.type:
+            FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid,
+                operation_id=operation.id
+            )
 
         operation_data = payload.dict(
             include={

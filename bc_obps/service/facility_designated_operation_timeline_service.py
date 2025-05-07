@@ -66,5 +66,5 @@ class FacilityDesignatedOperationTimelineService:
         user = UserDataAccessService.get_by_guid(user_guid)
         UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
 
-        Facility.objects.filter(operation_id=operation_id).delete()
         FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id).delete()
+        Facility.objects.filter(operation_id=operation_id).delete()
