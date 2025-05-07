@@ -19,11 +19,12 @@ const TextWidget: React.FC<WidgetProps> = ({
   uiSchema,
   placeholder,
   value,
+  name,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
   const max =
     uiSchema?.["ui:options"]?.max && Number(uiSchema?.["ui:options"]?.max);
-  const maxNumDbLimit = 2147483647;
+  const maxNumDbLimit = Number.MAX_SAFE_INTEGER;
 
   const maxNum = max || maxNumDbLimit;
 
@@ -59,12 +60,12 @@ const TextWidget: React.FC<WidgetProps> = ({
     width: "100%",
   };
 
-  const name = uiSchema?.["ui:options"]?.title || "";
+  // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     return (
       <NumberField.Root
         id={id}
-        name={id}
+        name={name}
         disabled={disabled || readonly}
         value={value}
         onValueChange={handleNumberChange}
@@ -74,7 +75,7 @@ const TextWidget: React.FC<WidgetProps> = ({
         <NumberField.Group>
           <NumberField.Input
             aria-label={name}
-            className={`w-full px-[14px] py-4 rounded-sm border`}
+            className={`w-full px-[14px] py-4 rounded border`}
             style={numberStyles}
             // sx doesn't like numberInput and tailwind doesn't like dynamic colors
             onMouseEnter={(e) => {
@@ -92,7 +93,7 @@ const TextWidget: React.FC<WidgetProps> = ({
       <TextField
         id={id}
         disabled={disabled || readonly}
-        name={id}
+        name={name}
         value={value}
         onChange={handleChange}
         sx={styles}
