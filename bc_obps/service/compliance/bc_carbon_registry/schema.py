@@ -178,7 +178,7 @@ class ProjectPayload(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
     account_id: FifteenDigitString  # "103100000028575"
     project_name: str  # "Test BC Project"
-    project_description: str  # "Test BC Project Description"
+    project_description: str  # "Test BC Project Description" - 2000 characters max
     mixedUnitList: List[ProjectPayloadMixedUnit]
     # Optional fields (Default based on the S&P API documentation)
     newRecord: Optional[bool] = True
@@ -243,6 +243,7 @@ class IssuancePayload(BaseModel):
     verifications: List[IssuancePayloadVerification]
     # Optional fields
     unit_type_id: Optional[FifteenDigitString] = "140000000000001"  # "140000000000001" - BCE
+    system_state:  Optional[str] = "CUSTOMER_INITIATED"
 
 
 ####### SubAccount ########
