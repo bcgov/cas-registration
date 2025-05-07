@@ -92,9 +92,6 @@ const NewLfoFacilityForm: FC<NewLfoFacilityFormProps> = (props) => {
       </div>
       {showForm ? (
         <>
-          <div className="py-2 w-full font-bold text-bc-bg-blue mb-4">
-            Add Facility
-          </div>
           <FormBase
             formData={formState}
             onChange={handleFormChange}
