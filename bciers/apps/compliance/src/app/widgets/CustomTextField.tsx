@@ -120,7 +120,7 @@ const CustomTextField = (props: WidgetProps) => {
           endAdornment: isValid ? (
             <InputAdornment position="end">
               <div className="w-[24px] h-[24px] flex items-center justify-center scale-90 -mr-1">
-                {Check}
+                <Check />
               </div>
             </InputAdornment>
           ) : undefined,
