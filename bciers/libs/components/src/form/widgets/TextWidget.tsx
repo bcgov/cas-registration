@@ -1,10 +1,12 @@
 "use client";
 
 import { TextField } from "@mui/material";
+import { NumberField } from "@base-ui-components/react/number-field";
 import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
+  BC_GOV_LINKS_COLOR,
 } from "@bciers/styles/colors";
 
 const TextWidget: React.FC<WidgetProps> = ({
@@ -17,20 +19,23 @@ const TextWidget: React.FC<WidgetProps> = ({
   uiSchema,
   placeholder,
   value,
+  name,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
   const max =
     uiSchema?.["ui:options"]?.max && Number(uiSchema?.["ui:options"]?.max);
-  const maxNumDbLimit = 2147483647;
+  const maxNumDbLimit = Number.MAX_SAFE_INTEGER;
 
   const maxNum = max || maxNumDbLimit;
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
-    if (type === "number" && !isNaN(Number(val)) && Number(val) > maxNum)
-      return;
-
     onChange(val === "" ? undefined : val);
+  };
+
+  const handleNumberChange = (val: number | null) => {
+    if (!val) return;
+    onChange(val);
   };
 
   const isError = rawErrors && rawErrors.length > 0;
@@ -43,19 +48,58 @@ const TextWidget: React.FC<WidgetProps> = ({
         borderColor,
       },
     },
+    font: "inherit",
   };
 
-  return (
-    <TextField
-      id={id}
-      disabled={disabled || readonly}
-      name={id}
-      value={value}
-      onChange={handleChange}
-      sx={styles}
-      type={type}
-      placeholder={placeholder}
-    />
-  );
+  const numberStyles = {
+    border: "1px solid #fafafc",
+    font: "inherit",
+  };
+
+  const widthStyle = {
+    width: "100%",
+  };
+
+  // const name = uiSchema?.["ui:options"]?.title || "";
+  if (type === "number") {
+    return (
+      <NumberField.Root
+        id={id}
+        name={name}
+        disabled={disabled || readonly}
+        value={value}
+        onValueChange={handleNumberChange}
+        max={maxNum}
+        style={widthStyle}
+      >
+        <NumberField.Group>
+          <NumberField.Input
+            aria-label={name}
+            className={`w-full px-[14px] py-4 rounded border`}
+            style={numberStyles}
+            // sx doesn't like numberInput and tailwind doesn't like dynamic colors
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = borderColor;
+            }}
+          />
+        </NumberField.Group>
+      </NumberField.Root>
+    );
+  } else {
+    return (
+      <TextField
+        id={id}
+        disabled={disabled || readonly}
+        name={name}
+        value={value}
+        onChange={handleChange}
+        sx={styles}
+        placeholder={placeholder}
+      />
+    );
+  }
 };
 export default TextWidget;

@@ -17,8 +17,8 @@ const operatorCRA = "123456789";
 const radioLegalName = "Search by Business Legal Name";
 const radioCRANumber = "Search by Canada Revenue Agency (CRA) Business Number";
 const placeHolderLegalName = "Enter Business Legal Name";
-const placeHolderCRANumber = "Enter CRA Business Number";
 const buttonLegalName = "Select Operator";
+const nameCRANumber = "cra_business_number";
 const buttonCRANumber = "Search Operator";
 const requiredLegalName = "Legal name is required";
 const requiredCRANumber = "CRA Business Number should be 9 digits.";
@@ -92,9 +92,7 @@ describe("Select Operator Form", () => {
 
     // Verify the search_type radio button action changes - cra number
     fireEvent.click(radioOperatorCRANumber);
-    expect(
-      screen.getByPlaceholderText(placeHolderCRANumber),
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText(radioCRANumber)).toBeInTheDocument();
     expect(screen.getByText(buttonCRANumber)).toBeInTheDocument();
     // Verify the add operator button is available
     expectLink("Add Operator", "/select-operator/add-operator");
@@ -138,11 +136,11 @@ describe("Select Operator Form", () => {
     // Select Search Operator by CRA number...
     selectSearchByCRANumber();
     // Get the search field for entering the operator's cra number
-    const searchField = screen.getByPlaceholderText(placeHolderCRANumber);
+    const searchField = screen.getByRole("textbox", { name: nameCRANumber });
     // Enter text into the search by input field - cra_business_number
     await userEvent.type(searchField, operatorCRA);
     // Verify that the search field contains the operator's cra number
-    expect(searchField).toHaveValue(Number(operatorCRA));
+    expect(searchField).toHaveValue(operatorCRA);
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseLegalName);
     // Submit the form
@@ -177,11 +175,11 @@ describe("Select Operator Form", () => {
     // Select Search Operator by CRA number...
     selectSearchByCRANumber();
     // Get the search field for entering the operator's cra number
-    const searchField = screen.getByPlaceholderText(placeHolderCRANumber);
+    const searchField = screen.getByRole("textbox", { name: nameCRANumber });
     // Enter text into the search by input field - cra_business_number
     await userEvent.type(searchField, operatorCRA);
     // Verify that the search field contains the operator's cra number
-    expect(searchField).toHaveValue(Number(operatorCRA));
+    expect(searchField).toHaveValue(operatorCRA);
     // Mock the actionHandler to return an operator on submit
     actionHandler.mockResolvedValueOnce(responseError);
     // Attempt to submit the form without entering a legal_name

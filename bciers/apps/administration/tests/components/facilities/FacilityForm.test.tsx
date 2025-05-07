@@ -146,10 +146,12 @@ const checkMandatoryFieldValues = async (schema: RJSFSchema) => {
 
   expect(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-  ).toHaveValue(defaultFillFormValues.latitude_of_largest_emissions);
+  ).toHaveValue(defaultFillFormValues.latitude_of_largest_emissions.toString());
   expect(
     screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-  ).toHaveValue(defaultFillFormValues.longitude_of_largest_emissions);
+  ).toHaveValue(
+    defaultFillFormValues.longitude_of_largest_emissions.toString(),
+  );
 };
 // ⛏️ Helper function to check optional field values
 const checkOptionalFieldValues = (
@@ -172,10 +174,10 @@ const checkOptionalFieldValues = (
   expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue(postal_code);
   expect(
     screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-  ).toHaveValue(latitude_of_largest_emissions);
+  ).toHaveValue(latitude_of_largest_emissions.toString());
   expect(
     screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-  ).toHaveValue(longitude_of_largest_emissions);
+  ).toHaveValue(longitude_of_largest_emissions.toString());
 };
 
 // ⛏️ Helper function to edit form fields
@@ -197,7 +199,9 @@ export const editFormFields = async (schema: RJSFSchema) => {
 
   if (isLfoFacility) {
     // edit the well authorization number
-    const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
+    const firstWellAuthInput = screen.getByRole("textbox", {
+      name: "well_authorization_numbers-0",
+    });
     await userEvent.clear(firstWellAuthInput); // clear the existing value
     fireEvent.change(firstWellAuthInput, {
       target: { value: defaultUpdateFormValues.well_authorization_numbers },
@@ -271,7 +275,9 @@ const fillOptionalFields = async (schema: RJSFSchema) => {
   if (schema === facilitiesLfoSchema) {
     // fill well authorization numbers
     await userEvent.click(screen.getByText("Add Well Authorization Number"));
-    const firstWellAuthInput = screen.getAllByRole("spinbutton")[0];
+    const firstWellAuthInput = screen.getByRole("textbox", {
+      name: "well_authorization_numbers-0",
+    });
     // have to use fireEvent for number fields
     fireEvent.change(firstWellAuthInput, {
       target: { value: defaultFillFormValues.well_authorization_numbers },
@@ -394,10 +400,10 @@ describe("FacilityForm component", () => {
     expect(screen.getByLabelText(/Postal Code+/i)).toHaveValue("");
     expect(
       screen.getByLabelText(/Latitude of Largest Point of Emissions+/i),
-    ).toHaveValue(null);
+    ).toHaveValue("");
     expect(
       screen.getByLabelText(/Longitude of Largest Point of Emissions+/i),
-    ).toHaveValue(null);
+    ).toHaveValue("");
     // submit button
     const saveButton = screen.getByRole("button", { name: /save/i });
     expect(saveButton).toBeEnabled();

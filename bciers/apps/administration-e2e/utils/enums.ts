@@ -61,7 +61,7 @@ export enum OperatorFormField {
   BC_CRN = "BC Corporate Registry Number*",
   BUSINESS_ADDRESS = "Business Mailing Address*",
   BUSINESS_STRUCTURE = "Business Structure*",
-  CRA = "CRA Business Number*",
+  CRA = "cra_business_number",
   FORM = "form",
   HEADER_OPERATOR = "Operator Information",
   HEADER_OPERATOR_ADDRESS = "Operator Address",
@@ -77,7 +77,7 @@ export enum OperatorFormField {
 // Select Operator Form fields selectors
 export enum SelectOperatorFormField {
   PLACEHOLDER_LEGAL_NAME = "Enter Business Legal Name",
-  PLACEHOLDER_CRA = "Enter CRA Business Number",
+  NAME_CRA = "cra_business_number",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
   SEARCH_BY_LEGAL_NAME = "Search by Business Legal Name",
 }

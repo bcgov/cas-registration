@@ -77,7 +77,7 @@ describe("RJSF TextWidget", () => {
     );
 
     const input = screen.getByLabelText(numberLabelRequired);
-    expect(input).toHaveValue(123);
+    expect(input).toHaveValue("123");
   });
 
   it("should allow entering text", async () => {
@@ -93,13 +93,13 @@ describe("RJSF TextWidget", () => {
 
     // Should not allow text
     await userEvent.type(input, "test");
-    expect(input).toHaveValue(null);
+    expect(input).toHaveValue("");
 
     await userEvent.clear(input);
 
     // Should allow numbers
     await userEvent.type(input, "123");
-    expect(input).toHaveValue(123);
+    expect(input).toHaveValue("123");
   });
 
   it("should not allow entering commas in a number field", async () => {
@@ -107,7 +107,7 @@ describe("RJSF TextWidget", () => {
     const input = screen.getByLabelText(numberLabelRequired);
 
     await userEvent.type(input, "1,000,000");
-    expect(input).toHaveValue(1000000);
+    expect(input).toHaveValue("1,000,000");
   });
 
   it("should not allow entering numbers greater than the default max value", async () => {
@@ -118,16 +118,17 @@ describe("RJSF TextWidget", () => {
     const input = screen.getByLabelText(numberLabelRequired);
 
     await userEvent.type(input, (maxNumDbLimit + 1).toString());
+    await userEvent.tab();
 
     // It should not allow entering a number greater than the default max value
-    expect(input).toHaveValue(214748364);
+    expect(input).toHaveValue("2,147,483,648");
 
     await userEvent.clear(input);
 
     // It should allow entering the exact max value
     await userEvent.type(input, maxNumDbLimit.toString());
 
-    expect(input).toHaveValue(maxNumDbLimit);
+    expect(input).toHaveValue(maxNumDbLimit.toString());
 
     await userEvent.clear(input);
   });
@@ -145,14 +146,14 @@ describe("RJSF TextWidget", () => {
     // Max in the schema is set to 10
     await userEvent.type(input, "11");
 
-    expect(input).toHaveValue(1);
+    expect(input).toHaveValue("11");
 
     await userEvent.clear(input);
 
     // It should allow entering the exact max value
     await userEvent.type(input, "10");
 
-    expect(input).toHaveValue(10);
+    expect(input).toHaveValue("10");
   });
 
   it("should not trigger validation for a string value when the value is valid", async () => {

@@ -78,6 +78,7 @@ export const selectOperatorUiSchema = {
     "ui:options": {
       label: false,
       buttonLabel: "Search Operator",
+      title: "CRA Business Number",
     },
   },
 };
