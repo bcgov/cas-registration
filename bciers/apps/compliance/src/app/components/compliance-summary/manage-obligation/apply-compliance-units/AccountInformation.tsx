@@ -11,7 +11,7 @@ interface AccountInformationProps {
   data: {
     bccrTradingName: string;
     obpsComplianceAccountId: string;
-    validBccrHoldingAccountId: string;
+    bccrHoldingAccountId: string;
   };
   onValidationChange?: (isValid: boolean) => void;
   title?: string;
@@ -49,7 +49,7 @@ const AccountInformation: React.FC<AccountInformationProps> = ({
     }
 
     const isValid15Digits = /^\d{15}$/.test(value);
-    const matchesValidId = value === data.validBccrHoldingAccountId;
+    const matchesValidId = value === data.bccrHoldingAccountId;
 
     const validationResult = isValid15Digits && matchesValidId;
     setIsValid(validationResult);
@@ -67,7 +67,7 @@ const AccountInformation: React.FC<AccountInformationProps> = ({
     }
   }, [
     formData.bccrHoldingAccountId,
-    data.validBccrHoldingAccountId,
+    data.bccrHoldingAccountId,
     onValidationChange,
   ]);
 
@@ -92,7 +92,7 @@ const AccountInformation: React.FC<AccountInformationProps> = ({
         endAdornment={
           isValid ? (
             <InputAdornment className="w-5 h-5" position="end">
-              {Check}
+              <Check />
             </InputAdornment>
           ) : undefined
         }

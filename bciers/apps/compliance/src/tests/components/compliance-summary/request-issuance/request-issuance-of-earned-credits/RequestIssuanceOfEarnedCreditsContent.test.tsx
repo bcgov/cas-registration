@@ -35,7 +35,7 @@ vi.mock("@bciers/components/form/components/ComplianceStepButtons", () => ({
 describe("RequestIssuanceOfEarnedCreditsContent", () => {
   const mockData: RequestIssuanceData = {
     bccrTradingName: "Test Trading Name",
-    validBccrHoldingAccountId: "123456789012345",
+    bccrHoldingAccountId: "123456789012345",
     reportingYear: 2023,
     operation_name: "Test Operation",
   };

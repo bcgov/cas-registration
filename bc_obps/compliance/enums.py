@@ -8,3 +8,4 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_PRODUCT = "compliance_product"
     ELICENSING_LINK = "elicensing_link"
     COMPLIANCE_CHARGE_RATE = "compliance_charge_rate"
+    ISSUANCE_REQUEST = "issuance_request"

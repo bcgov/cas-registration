@@ -16,7 +16,7 @@ interface CarbonRegistryAccountInfoProps {
 export const CarbonRegistryAccountInfo = ({
   data,
 }: CarbonRegistryAccountInfoProps) => {
-  const schema = buildCarbonRegistryAccountSchema();
+  const schema = buildCarbonRegistryAccountSchema(data);
   const uiSchema = buildCarbonRegistryAccountUiSchema(data);
 
   return (
