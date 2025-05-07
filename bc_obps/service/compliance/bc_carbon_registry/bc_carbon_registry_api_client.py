@@ -380,7 +380,7 @@ class BCCarbonRegistryAPIClient:
         """
         return self._submit_payload(
             data=issuance_data,
-            url="/br-reg/rest/market-issuance-manager/save",
+            url="/br-reg/rest/market-issuance-manager/doSubmit",
             payload_model=IssuancePayload,
             error_message="Invalid issuance payload",
         )
