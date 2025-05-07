@@ -30,7 +30,9 @@ class ComplianceObligation(TimeStampedModel):
         db_comment="The compliance summary this obligation belongs to",
     )
     emissions_amount_tco2e = models.DecimalField(
-        max_digits=20, decimal_places=4, db_comment="The amount of excess emissions in tCO2e"
+        max_digits=20,
+        decimal_places=4,
+        db_comment="The amount of excess emissions in tCO2e",
     )
     status = models.CharField(
         max_length=50,
@@ -55,7 +57,11 @@ class ComplianceObligation(TimeStampedModel):
     )
 
     fee_amount_dollars = models.DecimalField(
-        max_digits=20, decimal_places=2, null=True, blank=True, db_comment="The fee amount in CAD dollars"
+        max_digits=20,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_comment="The fee amount in CAD dollars",
     )
     fee_rate_dollars = models.DecimalField(
         max_digits=10,
@@ -72,6 +78,7 @@ class ComplianceObligation(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
+        app_label = "compliance"
         db_table_comment = "A table to store compliance obligations"
         db_table = 'erc"."compliance_obligation'
 

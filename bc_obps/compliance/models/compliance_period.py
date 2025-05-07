@@ -32,6 +32,7 @@ class CompliancePeriod(TimeStampedModel):
     )
 
     class Meta(TimeStampedModel.Meta):
+        app_label = "compliance"
         db_table_comment = "A table to store compliance periods"
         db_table = 'erc"."compliance_period'
         ordering = ['-end_date']

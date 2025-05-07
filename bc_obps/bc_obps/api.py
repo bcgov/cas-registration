@@ -5,7 +5,6 @@ from common.api import router as common_router
 from registration.api import router as registration_router
 from reporting.api import router as reporting_router
 from service.error_service.handle_exception import handle_exception
-from compliance.api import router as compliance_router
 from registration.utils import generate_useful_error
 
 # Docs: https://swagger.io/docs/open-source-tools/swagger-ui/usage/configuration/
@@ -27,4 +26,6 @@ api.add_exception_handler(Exception, handle_exception)  # Global exception handl
 api.add_router("/common/", common_router, tags=["V1"])
 api.add_router("/registration/", registration_router, tags=["V1"])
 api.add_router("/reporting/", reporting_router, tags=["V1"])
-api.add_router("/compliance/", compliance_router, tags=["V1"])
+
+# Uncomment the following line to enable the compliance router
+# api.add_router("/compliance/", compliance_router, tags=["V1"])
