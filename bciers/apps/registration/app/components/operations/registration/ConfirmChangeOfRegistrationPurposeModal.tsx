@@ -21,8 +21,14 @@ export default function ConfirmChangeOfRegistrationPurposeModal({
       onConfirm={confirmRegistrationPurposeChange}
       confirmText="Change registration purpose"
     >
-      Are you sure you want to change your registration purpose? If you proceed,
-      some of the form data you have entered will be lost.
+      <div>Are you sure you want to change your registration purpose?</div>
+      <ul className="list-disc pl-5 mt-2">
+        <li>Some operation information you have entered will be deleted.</li>
+        <li>
+          If this operation’s report is in progress, it will be deleted and
+          restarted.
+        </li>
+      </ul>
     </SimpleModal>
   );
 }

@@ -15,3 +15,4 @@ class ReportingConfig(AppConfig):
 
     def ready(self):
         pre_migrate.connect(create_erc_schemas, sender=self)
+        from . import signals  # noqa: F401
