@@ -33,7 +33,7 @@ ENVIRONMENT = os.environ.get("ENVIRONMENT")
 CI = os.environ.get("CI")
 
 # If we're in the CI environment, don't hit Google Cloud Storage
-if CI == 'true' or ENVIRONMENT == 'local':
+if ENVIRONMENT == 'local' or CI == 'true':
     # Use local file storage for tests
     MEDIA_ROOT = os.path.join(BASE_DIR, 'test_media/')
     STORAGES = {
@@ -89,9 +89,7 @@ RLS_GRANT_APPS = [
     "reporting",
 ]
 
-
-# Only apply RLS policies for compliance app if ENVIRONMENT is dev or test
-if ENVIRONMENT in ["local", "dev", "test"]:
+if ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true":
     RLS_GRANT_APPS += ["compliance"]
     LOCAL_APPS += NON_PROD_APPS
 
