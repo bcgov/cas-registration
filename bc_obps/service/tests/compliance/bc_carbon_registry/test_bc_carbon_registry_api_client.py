@@ -151,7 +151,6 @@ def valid_sub_account_payload():
         "master_account_id": "103000000037199",
         "type_of_organization": "140000000000001",
         "trading_name": "Test BC Subaccount Trading",
-        "registration_number_assigend_by_registrar": "dwd",
         "boro_id": "12-3456",
     }
 
