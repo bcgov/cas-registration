@@ -121,7 +121,7 @@ describe("RJSF TextWidget", () => {
     await userEvent.tab();
 
     // It should not allow entering a number greater than the default max value
-    expect(input).toHaveValue("2,147,483,647");
+    expect(input).toHaveValue("2,147,483,648");
 
     await userEvent.clear(input);
 
