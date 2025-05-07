@@ -243,7 +243,7 @@ class IssuancePayload(BaseModel):
     verifications: List[IssuancePayloadVerification]
     # Optional fields
     unit_type_id: Optional[FifteenDigitString] = "140000000000001"  # "140000000000001" - BCE
-    system_state:  Optional[str] = "CUSTOMER_INITIATED"
+    system_state: Optional[str] = "CUSTOMER_INITIATED"
 
 
 ####### SubAccount ########
