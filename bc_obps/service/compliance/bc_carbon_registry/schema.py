@@ -256,7 +256,6 @@ class SubAccountPayload(BaseModel):
     ]  # type_of_account_holder from master account (Corporation)
     registered_name: str  # we can use operation name for now
     trading_name: str  # we can use operation name for now
-    registration_number_assigend_by_registrar: str  # "dwd"
     boro_id: str = Field(pattern=r"^\d{2}-\d{4}$")
     # Optional fields (Default based on the S&P API documentation)
     account_type_id: Optional[PositiveInt] = 14  # Compliance
