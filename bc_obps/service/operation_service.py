@@ -392,7 +392,7 @@ class OperationService:
             payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
         if payload.type != operation.type:
             FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid,
-                operation_id=operation.id
+                operation.id
             )
 
         operation_data = payload.dict(

@@ -36,6 +36,7 @@ from registration.models.operation import Operation
 from registration.tests.constants import MOCK_DATA_URL
 from model_bakery import baker
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from unittest.mock import patch, MagicMock, ANY
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
@@ -1028,11 +1029,16 @@ class TestOperationServiceV2UpdateOperation:
         assert Operation.objects.count() == 1
         assert operation.contacts.count() == 3
 
-    @staticmethod
-    def test_update_operation_with_eio():
+    @classmethod
+    @patch(
+        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
+      
+    )
+    def test_update_operation_with_eio(cls,mock_delete_facilities_by_operation_id: MagicMock):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator
+            'registration.tests.utils.operation', operator=approved_user_operator.operator,
+            type=Operation.Types.SFO,
         )
         contacts = baker.make_recipe(
             'registration.tests.utils.contact',
@@ -1044,7 +1050,7 @@ class TestOperationServiceV2UpdateOperation:
             registration_purpose='Electricity Import Operation',
             regulated_products=[1],
             name="I am updated",
-            type=Operation.Types.SFO,
+            type=Operation.Types.EIO,
             naics_code_id=1,
             secondary_naics_code_id=2,
             tertiary_naics_code_id=3,
@@ -1058,6 +1064,10 @@ class TestOperationServiceV2UpdateOperation:
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
+        )
+        mock_delete_facilities_by_operation_id.assert_called_once_with(
+            approved_user_operator.user.user_guid,
+            operation.id,
         )
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
@@ -1107,6 +1117,44 @@ class TestOperationServiceV2UpdateOperation:
             OptedInOperationDetail.objects.count() == 1
         )  # only 1 record (to make sure we didn't create duplicate new ones)
         assert OptedInOperationDetail._base_manager.count() == 1  # 1 operation total including archived records
+
+    @classmethod
+    @patch(
+        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
+      
+    )
+    def test_update_operation_with_new_type(cls, mock_delete_facilities_by_operation_id: MagicMock):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            type=Operation.Types.SFO,
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+        )
+        payload = OperationInformationInUpdate(
+            registration_purpose='Potential Reporting Operation',
+            name="Test Update Operation Name",
+            type=Operation.Types.LFO,
+            naics_code_id=1,
+            secondary_naics_code_id=1,
+            tertiary_naics_code_id=2,
+            activities=[2],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
+        )
+        operation = OperationService.update_operation(
+            approved_user_operator.user.user_guid, payload, existing_operation.id
+        )
+        mock_delete_facilities_by_operation_id.assert_called_once_with(
+            approved_user_operator.user.user_guid,
+            existing_operation.id,
+        )
+        operation.refresh_from_db()
+        assert Operation.objects.count() == 1
+        assert operation.type == Operation.Types.LFO
+        
 
 
 class TestCreateOrUpdateEio:
@@ -1782,3 +1830,46 @@ class TestListOperationTimeline:
             approved_user_operator.user.user_guid, sort_field="created_at", sort_order="desc", filters=filters
         )
         assert timeline.count() == 2
+
+class TestChangeOperationType:
+    """
+    Note that these tests are different from the integration tests for handling change of
+    registration purpose as these unit tests only go as far as confirming that the
+    OperationInformationIn payload is generated correctly.
+    """
+
+    @classmethod
+    @patch(
+        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
+        autospec=True,
+    )
+    def test_delete_service_called_if_type_changes(cls, mock_delete_facilities_by_operation_id: MagicMock):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            type=Operation.Types.SFO,
+        )
+       
+
+        submitted_payload = OperationInformationIn(
+            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
+            name='Updated Operation',
+            type=Operation.Types.SFO,
+            activities=[1, 2, 3],
+        )
+        returned_payload = OperationService.update_operation(
+            approved_user_operator.user.user_guid, operation, submitted_payload
+        )
+        mock_delete_facilities_by_operation_id.assert_called_once_with(
+            approved_user_operator.user.user_guid,
+            operation.id,
+        )
+
+        assert returned_payload.registration_purpose == Operation.Purposes.REPORTING_OPERATION
+        assert OptedInOperationDetail.objects.count() == 0
+
+        # assert handle_change_of_registration_purpose isn't modifying parts of the payload that should be untouched
+        assert returned_payload.name == "Updated Operation"
+
+    
