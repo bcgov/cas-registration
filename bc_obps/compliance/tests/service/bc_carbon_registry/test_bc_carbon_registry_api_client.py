@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import requests
 import logging
-from service.compliance.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
-from service.compliance.bc_carbon_registry.exceptions import BCCarbonRegistryError
-from service.compliance.bc_carbon_registry.schema import (
+from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
+from compliance.service.bc_carbon_registry.schema import (
     SearchFilter,
     Pagination,
     FilterModel,
