@@ -14,6 +14,11 @@ import * as constants from "./constants";
 import { REPORTING_OPERATION } from "@reporting/src/app/utils/constants";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 
+import * as regPurpUtil from "@reporting/src/app/utils/getRegistrationPurpose";
+import * as verifyUtil from "@reporting/src/app/utils/getReportNeedsVerification";
+import * as suppUtil from "@reporting/src/app/utils/getIsSupplementaryReport";
+import * as opUtil from "@reporting/src/app/utils/getReportingOperation";
+
 const domain = "https://localhost:3000";
 const defaultPath = "/reporting/123/default-path";
 
@@ -79,7 +84,7 @@ describe("withRuleHasReportRouteAccess middleware", () => {
 
   // --- Failure tests for all rules ---
   permissionRules.forEach((rule) => {
-    it(`redirects industry user when "${rule.name}" validation fails (edge: rule returns false)`, async () => {
+    it(`redirects industry user when "${rule.name}" validation fails`, async () => {
       const { result } = await runMiddlewareTest({
         userToken: mockIndustryUserToken,
         url: `${domain}/reporting/123/test-path-${rule.name}`,
@@ -259,54 +264,118 @@ describe("withRuleHasReportRouteAccess middleware", () => {
   });
 
   // --- Passing tests for route rules ---
+
+  it("allows industry user to continue if reportVersionId returns null", async () => {
+    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(null);
+    const nextUrl = new NextURL(`${domain}${defaultPath}`);
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    const nextMiddleware = vi.fn(() => NextResponse.next());
+    const middleware = withRuleHasReportRouteAccess(nextMiddleware);
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+    expect(nextMiddleware).toHaveBeenCalledOnce();
+    expect(result?.status).toBe(200);
+  });
+
   it('allows industry user when "routeSubmittedReport" rule passes validation', async () => {
-    const { nextMiddleware, result } = await runMiddlewareTest({
-      userToken: mockIndustryUserToken,
-      url: `${domain}/reporting/reports/123/submitted`,
-      fetchResponses: [
-        { operation_report_status: ReportOperationStatus.SUBMITTED }, // For accessSubmitted rule
-        {}, // For any additional rule that may be skipped.
-        { operation_report_status: ReportOperationStatus.SUBMITTED }, // For routeSubmittedReport rule
-      ],
-      routeMocks: {
-        reportRoutesSubmitted: ["submitted", "submission"],
-      },
+    // Extract version ID
+    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(123);
+
+    // Set up request URL
+    const nextUrl = new NextURL(`${domain}/reporting/reports/123/submitted`);
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    // Mock getToken
+    getToken.mockResolvedValue(mockIndustryUserToken);
+
+    // Stub the four helpers in the order the rules invoke them:
+    //    a) accessSubmitted uses getReportingOperation
+    vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.SUBMITTED,
     });
+    //    b) routeSubmittedReport uses getIsSupplementaryReport
+    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.SUBMITTED,
+    });
+    //    c) routeReportingOperation (last in the list) uses getRegistrationPurpose
+    vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
+      registration_purpose: "NOT_REPORTING_OPERATION", // so isApplicable returns false
+    });
+    //    d) accessVerification uses getReportNeedsVerification (never really called here,
+    //       but stub to prevent accidental calls)
+    vi.spyOn(verifyUtil, "getReportNeedsVerification").mockResolvedValue(false);
+
+    // Override the route‐list constant
+    vi.spyOn(constants, "reportRoutesSubmitted", "get").mockReturnValue([
+      "submitted",
+      "submission",
+    ]);
+
+    // Run middleware
+    const nextMiddleware = vi.fn(() => NextResponse.next());
+    const middleware = withRuleHasReportRouteAccess(nextMiddleware);
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+
+    // Assert it flows through
     expect(nextMiddleware).toHaveBeenCalledOnce();
     expect(result?.status).toBe(200);
   });
 
   it('allows industry user when "routeReportingOperation" rule passes validation', async () => {
-    const { nextMiddleware, result } = await runMiddlewareTest({
-      userToken: mockIndustryUserToken,
-      url: `${domain}/reporting/reports/123/review-operation-information`,
-      fetchResponses: [
-        { registration_purpose: REPORTING_OPERATION }, // For routeReportingOperation (pass)
-        {}, // For any additional rule that may be skipped.
-        {}, // For another skipped rule.
-      ],
-      routeMocks: {
-        reportRoutesReportingOperation: [
-          "review-operation-information",
-          "person-responsible",
-          "activities",
-          "non-attributable",
-          "emission-summary",
-          "additional-reporting-data",
-          "final-review",
-          "verification",
-          "attachments",
-          "sign-off",
-          "review-facilities",
-          "report-information",
-          "review-facility-information",
-          "end-of-facility-report",
-          "operation-emission-summary",
-          "submitted",
-          "submission",
-        ],
-      },
+    // Extract version ID
+    vi.spyOn(constants, "extractReportVersionId").mockReturnValue(123);
+
+    // Set up request URL
+    const nextUrl = new NextURL(
+      `${domain}/reporting/reports/123/review-operation-information`,
+    );
+
+    when(mockedRequest.nextUrl).thenReturn(nextUrl);
+    when(mockedRequest.url).thenReturn(domain);
+
+    // Mock getToken
+    getToken.mockResolvedValue(mockIndustryUserToken);
+
+    // Stub the four helpers in the order the rules invoke them:
+    //    a) accessSubmitted uses getReportingOperation
+    vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.DRAFT,
     });
+    //    b) routeSubmittedReport uses getIsSupplementaryReport
+    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.DRAFT,
+    });
+    //    c) routeReportingOperation (last in the list) uses getRegistrationPurpose
+    vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
+      registration_purpose: REPORTING_OPERATION,
+    });
+    //    d) accessVerification uses getReportNeedsVerification (never really called here,
+    //       but stub to prevent accidental calls)
+    vi.spyOn(verifyUtil, "getReportNeedsVerification").mockResolvedValue(false);
+
+    // Override the route‐list constant
+    vi.spyOn(constants, "reportRoutesSubmitted", "get").mockReturnValue([
+      "submitted",
+      "submission",
+    ]);
+
+    // Run middleware
+    const nextMiddleware = vi.fn(() => NextResponse.next());
+    const middleware = withRuleHasReportRouteAccess(nextMiddleware);
+    const result = await middleware(
+      instance(mockedRequest),
+      mockNextFetchEvent,
+    );
+
+    // Assert it flows through
     expect(nextMiddleware).toHaveBeenCalledOnce();
     expect(result?.status).toBe(200);
   });

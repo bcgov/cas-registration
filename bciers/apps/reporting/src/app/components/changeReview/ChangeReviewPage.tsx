@@ -1,15 +1,13 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import ChangeReviewForm from "./ChangeReviewForm";
-import { getReportAdditionalData } from "../../utils/getReportAdditionalData";
-import { getNavigationInformation } from "../taskList/navigationInformation";
-import { HeaderStep, ReportingPage } from "../taskList/types";
+import { getReportAdditionalData } from "@reporting/src/app/utils/getReportAdditionalData";
+import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
-  TaskListContext,
-  getTaskListContext,
-} from "@reporting/src/app/components/taskList/taskListPages/taskListContext";
+  HeaderStep,
+  ReportingPage,
+} from "@reporting/src/app/components/taskList/types";
+import ChangeReviewForm from "./ChangeReviewForm";
 
 export default async function ChangeReviewPage({
   version_id,
