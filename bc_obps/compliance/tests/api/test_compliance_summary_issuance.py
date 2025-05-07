@@ -22,7 +22,7 @@ class TestComplianceSummaryIssuanceAPI(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.compliance_summary.report.operator)
 
     @patch(
-        'service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_issuance_data'
+        'compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_issuance_data'
     )
     def test_get_compliance_summary_issuance(self, mock_get_issuance_data: MagicMock):
         """Test the GET endpoint for retrieving compliance summary issuance data."""
@@ -62,7 +62,7 @@ class TestComplianceSummaryIssuanceAPI(CommonTestSetup):
         # Verify the service method was called with the correct parameters
         mock_get_issuance_data.assert_called_once()
 
-    @patch('service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id')
+    @patch('compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id')
     def test_get_compliance_summary_issuance_not_found(self, mock_get_summary_by_id):
         """
         Test that the API returns a 404 Not Found response when the compliance

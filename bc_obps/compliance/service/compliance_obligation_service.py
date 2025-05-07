@@ -1,10 +1,10 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from reporting.models.report_version import ReportVersion
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
-from service.compliance.compliance_charge_rate_service import ComplianceChargeRateService
 import logging
 
 logger = logging.getLogger(__name__)

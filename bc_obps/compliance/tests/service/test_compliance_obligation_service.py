@@ -2,8 +2,8 @@ import uuid
 from unittest.mock import patch, MagicMock
 from decimal import Decimal
 from datetime import date
+from compliance.service.compliance_obligation_service import ComplianceObligationService
 import pytest
-from service.compliance.compliance_obligation_service import ComplianceObligationService
 from compliance.models import ComplianceObligation, ComplianceSummary
 from reporting.models import Report, ReportVersion, ReportingYear
 
@@ -95,9 +95,9 @@ class TestComplianceObligationService:
         assert "Operation Name: Unregulated Test Operation" in error_msg
 
     @pytest.mark.django_db
-    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_success(
         self,
         mock_get_rate,
@@ -125,9 +125,9 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_client_not_created(
         self,
         mock_get_rate,
@@ -155,9 +155,9 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_attribute_error(
         self,
         mock_get_rate,
@@ -185,9 +185,9 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_request_exception(
         self,
         mock_get_rate,
@@ -215,9 +215,9 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_generic_exception(
         self,
         mock_get_rate,
@@ -245,9 +245,9 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('service.compliance.compliance_obligation_service.ComplianceSummary.objects.get')
-    @patch('service.compliance.compliance_obligation_service.ComplianceObligation.objects.create')
-    @patch('service.compliance.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
+    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_unregulated_operation(
         self,
         mock_get_rate,

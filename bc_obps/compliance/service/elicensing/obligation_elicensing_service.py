@@ -4,9 +4,9 @@ from typing import Dict, Any
 
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
-from service.compliance.elicensing.operator_elicensing_service import OperatorELicensingService
-from service.compliance.elicensing.elicensing_link_service import ELicensingLinkService
-from service.compliance.elicensing.elicensing_api_client import (
+from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
+from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
+from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
     FeeCreationItem,
