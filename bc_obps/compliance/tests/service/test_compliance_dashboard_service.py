@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from django.test import SimpleTestCase
 from compliance.models.compliance_summary import ComplianceSummary
+from datetime import datetime
 
 
 class TestComplianceDashboardService(SimpleTestCase):
@@ -147,16 +148,16 @@ class TestComplianceDashboardService(SimpleTestCase):
         # Mock payment records
         mock_payment1 = MagicMock()
         mock_payment1.id = "payment1"
-        mock_payment1.paymentReceivedDate = "2024-01-01"
-        mock_payment1.paymentAmountApplied = 100.00
+        mock_payment1.paymentReceivedDate = datetime(2024, 1, 1)
+        mock_payment1.paymentAmountApplied = Decimal("100.00")
         mock_payment1.paymentMethod = "EFT/Wire - OBPS"
         mock_payment1.transactionType = "Payment"
         mock_payment1.receiptNumber = "R123"
 
         mock_payment2 = MagicMock()
         mock_payment2.id = "payment2"
-        mock_payment2.paymentReceivedDate = "2024-01-02"
-        mock_payment2.paymentAmountApplied = 200.00
+        mock_payment2.paymentReceivedDate = datetime(2024, 1, 2)
+        mock_payment2.paymentAmountApplied = Decimal("200.00")
         mock_payment2.paymentMethod = "EFT/Wire - OBPS"
         mock_payment2.transactionType = "Payment"
         mock_payment2.receiptNumber = "R456"
@@ -173,16 +174,16 @@ class TestComplianceDashboardService(SimpleTestCase):
 
         # Verify first payment
         self.assertEqual(result.rows[0].id, "payment1")
-        self.assertEqual(result.rows[0].paymentReceivedDate, "2024-01-01")
-        self.assertEqual(result.rows[0].paymentAmountApplied, 100.00)
+        self.assertEqual(result.rows[0].paymentReceivedDate, datetime(2024, 1, 1))
+        self.assertEqual(result.rows[0].paymentAmountApplied, Decimal("100.00"))
         self.assertEqual(result.rows[0].paymentMethod, "EFT/Wire - OBPS")
         self.assertEqual(result.rows[0].transactionType, "Payment")
         self.assertEqual(result.rows[0].receiptNumber, "R123")
 
         # Verify second payment
         self.assertEqual(result.rows[1].id, "payment2")
-        self.assertEqual(result.rows[1].paymentReceivedDate, "2024-01-02")
-        self.assertEqual(result.rows[1].paymentAmountApplied, 200.00)
+        self.assertEqual(result.rows[1].paymentReceivedDate, datetime(2024, 1, 2))
+        self.assertEqual(result.rows[1].paymentAmountApplied, Decimal("200.00"))
         self.assertEqual(result.rows[1].paymentMethod, "EFT/Wire - OBPS")
         self.assertEqual(result.rows[1].transactionType, "Payment")
         self.assertEqual(result.rows[1].receiptNumber, "R456")
