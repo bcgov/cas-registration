@@ -80,9 +80,9 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result, mock_summary)
         self._assert_default_compliance_fields(result, 100, None)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     @patch(
-        "service.compliance.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
+        "compliance.service.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
     )
     def test_get_compliance_summary_payments_not_found(self, mock_get_payments, mock_get_summary):
         """Test when summary is not found"""
@@ -95,9 +95,9 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result.rows, [])
         self.assertEqual(result.row_count, 0)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     @patch(
-        "service.compliance.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
+        "compliance.service.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
     )
     def test_get_compliance_summary_payments_no_obligation(self, mock_get_payments, mock_get_summary):
         """Test when summary has no obligation"""
@@ -112,9 +112,9 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result.rows, [])
         self.assertEqual(result.row_count, 0)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     @patch(
-        "service.compliance.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
+        "compliance.service.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
     )
     def test_get_compliance_summary_payments_no_payments(self, mock_get_payments, mock_get_summary):
         """Test when summary has obligation but no payments"""
@@ -132,9 +132,9 @@ class TestComplianceDashboardService(SimpleTestCase):
         self.assertEqual(result.rows, [])
         self.assertEqual(result.row_count, 0)
 
-    @patch("service.compliance.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
+    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
     @patch(
-        "service.compliance.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
+        "compliance.service.elicensing.obligation_elicensing_service.ObligationELicensingService.get_obligation_invoice_payments"
     )
     def test_get_compliance_summary_payments_with_payments(self, mock_get_payments, mock_get_summary):
         """Test when summary has obligation with payments"""
