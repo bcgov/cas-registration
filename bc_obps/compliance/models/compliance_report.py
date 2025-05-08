@@ -31,7 +31,9 @@ class ComplianceReport(TimeStampedModel):
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
-        db_table_comment = "This table is the parent anchor table of all compliance data for an operation and compliance period"
+        db_table_comment = (
+            "This table is the parent anchor table of all compliance data for an operation and compliance period"
+        )
         db_table = 'erc"."compliance_report'
         constraints = [
             models.UniqueConstraint(
