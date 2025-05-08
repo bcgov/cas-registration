@@ -187,7 +187,7 @@ class Migration(migrations.Migration):
         '''
         Remove data for non-regulated NAICS codes to erc.naics_regulatory_value
         '''
-        NaicsRegulatoryValue = apps.get_model('registration', 'NaicsRegulatoryValue')
+        NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
         NaicsRegulatoryValue.objects.filter(
             naics_code_id__in=[
                 '111412',
