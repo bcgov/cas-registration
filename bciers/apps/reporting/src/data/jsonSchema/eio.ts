@@ -7,43 +7,53 @@ export const eioSchema: RJSFSchema = {
   properties: {
     import_specified_electricity: {
       title: "Amount of imported electricity - specified sources",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     import_specified_emissions: {
       title: "Emissions from specified imports",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     import_unspecified_electricity: {
       title: "Amount of imported electricity - unspecified sources",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     import_unspecified_emissions: {
       title: "Emissions from unspecified imports",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_specified_electricity: {
       title: "Amount of exported electricity - specified sources",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_specified_emissions: {
       title: "Emissions from specified exports",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_unspecified_electricity: {
       title: "Amount of exported electricity - unspecified sources",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_unspecified_emissions: {
       title: "Emissions from unspecified exports",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     canadian_entitlement_electricity: {
       title: "Amount of electricity categorized as Canadian Entitlement Power",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
     canadian_entitlement_emissions: {
       title: "Emissions from Canadian Entitlement Power",
-      type: ["string", "null"],
+      type: ["number", "null"],
+      minimum: 0,
     },
   },
 };

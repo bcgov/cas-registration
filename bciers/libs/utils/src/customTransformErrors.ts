@@ -1,22 +1,13 @@
 import { RJSFValidationError } from "@rjsf/utils";
 
-const formatProperty = (property: string) => {
-  if (
-    ["bc_corporate_registry_number"].some((field) => {
-      // @ts-ignore - we already checked for error.property's existance above
-      return property.includes(field);
-    })
-  ) {
+const formatProperty = (property: string | undefined) => {
+  if (!property) return ""; // Handle undefined case
+  if (property.includes("bc_corporate_registry_number")) {
     return "BC Corporate Registry number";
   }
-  const removedPrefixes = property.split(".").pop() || property;
-  const removedUnderstores = removedPrefixes.replace(/_/g, " ");
-  return (
-    removedUnderstores.charAt(0).toUpperCase() +
-    removedUnderstores.slice(1).toLowerCase()
-  );
+  const formatted = property.split(".").pop()?.replace(/_/g, " ") || property;
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1).toLowerCase();
 };
-
 export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
   "CRA Business Number should be 9 digits.";
 const MANDATORY_ATTACHMENT_VALIDATION_ERROR = "Attachment is required";
@@ -30,102 +21,56 @@ const customTransformErrors = (
   customFormatsErrorMessages: { [key: string]: string },
 ) => {
   return errors.map((error) => {
-    // custom messages for general errors
     if (error?.name === "minItems") {
-      error.message = `Select at least one option`;
-      return error;
-    }
-    if (error?.name === "enum") {
-      // @ts-ignore
-      error.message = `Select a ${formatProperty(error.property)}`;
-      return error;
-    }
-    if (error?.message === "must be number") {
-      error.message = `Enter numbers only`;
-      return error;
-    }
-    if (error?.message === "must be string") {
-      error.message = `Enter letters only`;
-      return error;
-    }
-
-    // custom messages for specific properties
-    if (error?.property) {
+      error.message = "Select at least one option";
+    } else if (error?.name === "enum") {
+      error.message = `Select a ${formatProperty(error.property ?? "")}`;
+    } else if (
+      error?.message === "must be number" ||
+      error?.message === "must be number,null"
+    ) {
+      error.message = "Enter numbers only";
+    } else if (error?.message === "must be >= 0") {
+      error.message = "Enter a number >= 0";
+    } else if (error?.message === "must be string") {
+      error.message = "Enter letters only";
+    } else if (error?.property) {
       if (error.message === "must be equal to constant") {
-        error.message = undefined; // this is to handle the registration purpose dependencies. Since the schema uses oneOf, validation expects the complete oneOf formData, which we don't always have yet when a user clicks submit on an incomplete form
-      }
-      if (
-        // we use some because fields can be nested in sections
-        ["acitivities", "regulated_products"].some((field) => {
-          // @ts-ignore - we already checked for error.property's existance above
-          return error?.name === "required" && error.property.includes(field);
-        })
+        error.message = undefined;
+      } else if (
+        ["acitivities", "regulated_products"].some(
+          (field) => error.property?.includes(field),
+        )
       ) {
-        error.message = `Select at least one option`;
-        return error;
-      }
-      if (
-        // we use some because fields can be nested in sections
+        error.message = "Select at least one option";
+      } else if (
         [
           "cra_business_number",
           "po_cra_business_number",
           "partner_cra_business_number",
-        ].some((field) => {
-          // @ts-ignore - we already checked for error.property's existance above
-          return error.property.includes(field);
-        })
+        ].some((field) => error.property?.includes(field))
       ) {
         error.message = CRA_BUSINESS_NUMBER_VALIDATION_ERROR;
-        return error;
-      }
-      if (
+      } else if (
         [
           "new_entrant_application",
           "boundary_map",
           "process_flow_diagram",
-        ].some((field) => {
-          // @ts-ignore
-          return error.property.includes(field);
-        })
+        ].some((field) => error.property?.includes(field))
       ) {
         error.message = MANDATORY_ATTACHMENT_VALIDATION_ERROR;
-        return error;
-      }
-      if (
-        ["latitude_of_largest_emissions"].some((field) => {
-          // @ts-ignore
-          return error.property.includes(field);
-        })
-      ) {
+      } else if (error.property?.includes("latitude_of_largest_emissions")) {
         error.message = LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR;
-        return error;
-      }
-      if (
-        ["longitude_of_largest_emissions"].some((field) => {
-          // @ts-ignore
-          return error.property.includes(field);
-        })
-      ) {
+      } else if (error.property?.includes("longitude_of_largest_emissions")) {
         error.message = LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR;
-        return error;
       }
-    }
-    // custom messages for format validation
-    if (
-      // note that format validation appears to only work for string type fields, not number ones
+    } else if (
       error.name === "format" &&
       customFormatsErrorMessages[error.params.format]
     ) {
       error.message = customFormatsErrorMessages[error.params.format];
-      return error;
-    }
-    if (error?.name === "required") {
-      // @ts-ignore
-      // we need to transform the property name (e.g. legal_name) into a string (e.g. Legal name)
-      const fieldName = formatProperty(error.property);
-
-      error.message = `${fieldName} is required`;
-      return error;
+    } else if (error?.name === "required") {
+      error.message = `${formatProperty(error.property ?? "")} is required`;
     }
     return error;
   });

@@ -23,6 +23,7 @@ def submit_report_version(request: HttpRequest, version_id: int, payload: Report
     data = ReportSignOffData(
         acknowledgements=ReportSignOffAcknowledgements(
             payload.acknowledgement_of_review,
+            payload.acknowledgement_of_certification,
             payload.acknowledgement_of_records,
             payload.acknowledgement_of_information,
             payload.acknowledgement_of_possible_costs,
