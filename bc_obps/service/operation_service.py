@@ -32,6 +32,7 @@ from uuid import UUID
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from service.data_access_service.opted_in_operation_detail_service import OptedInOperationDataAccessService
 from service.document_service import DocumentService
+from service.facility_designated_operation_timeline_service import FacilityDesignatedOperationTimelineService
 from service.facility_service import FacilityService
 from registration.schema import (
     OperationInformationIn,
@@ -396,6 +397,10 @@ class OperationService:
                 sender=OperationService,
                 operation_id=operation.id,
             )
+        if payload.type != operation.type:
+            if operation.status == Operation.Statuses.REGISTERED:
+                raise Exception("Cannot change the type of an operation that has already been registered.")
+            FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid, operation.id)
 
         operation_data = payload.dict(
             include={

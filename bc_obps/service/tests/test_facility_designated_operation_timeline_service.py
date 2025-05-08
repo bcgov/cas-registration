@@ -1,6 +1,8 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.constants import UNAUTHORIZED_MESSAGE
+from registration.models.facility import Facility
+from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.schema import (
     FacilityDesignatedOperationTimelineFilterSchema,
 )
@@ -175,3 +177,50 @@ class TestFacilityDesignatedOperationTimelineService:
         # Verify the changes are saved in the database
         timeline.refresh_from_db()
         assert timeline.end_date == end_date
+
+
+class TestDeleteFacilitiesByOperationId:
+    @staticmethod
+    def test_delete_facilities_by_operation_id_for_unapproved_user():
+        industry_user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+        operation = baker.make_recipe('registration.tests.utils.operation')
+
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(
+                industry_user.user_guid, operation.id
+            )
+
+    @staticmethod
+    def test_delete_facilities_by_operation_id():
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        random_operation = baker.make_recipe('registration.tests.utils.operation')
+        # 10 facilities for operation
+        facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=10)
+        for facility in facilities:
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                facility=facility,
+                end_date=None,
+                operation=operation,
+            )
+
+        # timelines for 5 active facilities for other random operation
+        for _ in range(5):
+            baker.make_recipe(
+                'registration.tests.utils.facility_designated_operation_timeline',
+                facility=baker.make_recipe('registration.tests.utils.facility'),
+                end_date=None,
+                operation=random_operation,
+            )
+
+        FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(
+            approved_user_operator.user.user_guid, operation.id
+        )
+
+        # Verify that the facilities have been deleted
+        assert FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation.id).count() == 0
+        assert Facility.objects.filter(operation_id=operation.id).count() == 0
+        # Verify that the other facilities are still present
+        assert FacilityDesignatedOperationTimeline.objects.count() == 5
+        assert Facility.objects.filter(operation_id=random_operation.id).count() == 5
