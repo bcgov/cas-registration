@@ -179,7 +179,7 @@ describe("the OperationInformationForm component", () => {
   it("renders the OperationInformationForm component", async () => {
     render(
       <OperationInformationForm
-        formData={{}}
+        formData={{ type: "Single Facility Operation" }}
         schema={testSchema}
         operationId={operationId}
         eioSchema={testSchema}
@@ -188,7 +188,10 @@ describe("the OperationInformationForm component", () => {
     );
 
     expect(screen.getByText(/Operation Name/i)).toBeVisible();
-    expect(screen.getByText(/Operation Type/i)).toBeVisible();
+    expect(screen.getByText(/Single Facility Operation/i)).toHaveAttribute(
+      "class",
+      "read-only-widget whitespace-pre-line",
+    );
 
     expect(screen.getByRole("button", { name: "Edit" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
