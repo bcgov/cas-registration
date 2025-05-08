@@ -2,12 +2,14 @@ from datetime import datetime
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from registration.models.facility import Facility
 from registration.schema import FacilityDesignatedOperationTimelineFilterSchema
 from service.data_access_service.user_service import UserDataAccessService
 from ninja import Query
 from registration.models import User
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from service.user_operator_service import UserOperatorService
+from django.db import transaction
 
 
 class FacilityDesignatedOperationTimelineService:
@@ -57,3 +59,12 @@ class FacilityDesignatedOperationTimelineService:
         timeline.end_date = end_date
         timeline.save(update_fields=["end_date"])
         return timeline
+
+    @classmethod
+    @transaction.atomic()
+    def delete_facilities_by_operation_id(cls, user_guid: UUID, operation_id: UUID) -> None:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+
+        FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation_id).delete()
+        Facility.objects.filter(operation_id=operation_id).delete()
