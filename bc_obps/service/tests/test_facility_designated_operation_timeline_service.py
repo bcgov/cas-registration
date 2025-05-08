@@ -196,7 +196,7 @@ class TestDeleteFacilitiesByOperationId:
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
         random_operation = baker.make_recipe('registration.tests.utils.operation')
         # 10 facilities for operation
-        facilities = baker.make_recipe('registration.tests.utils.facility', _quantity=10)
+        facilities = baker.make_recipe('registration.tests.utils.facility', operation=operation, _quantity=10)
         for facility in facilities:
             baker.make_recipe(
                 'registration.tests.utils.facility_designated_operation_timeline',
@@ -209,7 +209,7 @@ class TestDeleteFacilitiesByOperationId:
         for _ in range(5):
             baker.make_recipe(
                 'registration.tests.utils.facility_designated_operation_timeline',
-                facility=baker.make_recipe('registration.tests.utils.facility'),
+                facility=baker.make_recipe('registration.tests.utils.facility', operation=random_operation),
                 end_date=None,
                 operation=random_operation,
             )
@@ -221,6 +221,7 @@ class TestDeleteFacilitiesByOperationId:
         # Verify that the facilities have been deleted
         assert FacilityDesignatedOperationTimeline.objects.filter(operation_id=operation.id).count() == 0
         assert Facility.objects.filter(operation_id=operation.id).count() == 0
-        # Verify that the other facilities are still present
+        # Verify that the other facilities are still present and attached to  random operation
         assert FacilityDesignatedOperationTimeline.objects.count() == 5
+        assert Facility.objects.count() == 5
         assert Facility.objects.filter(operation_id=random_operation.id).count() == 5
