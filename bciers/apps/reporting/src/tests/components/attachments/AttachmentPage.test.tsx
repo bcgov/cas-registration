@@ -63,10 +63,7 @@ describe("AttachmentsPage", () => {
       show_verification_page: true,
       verification_required: true,
     });
-
-    mockGetIsSupplementaryReport.mockResolvedValue({
-      is_supplementary_report_version: false,
-    });
+    mockGetIsSupplementaryReport.mockResolvedValue(false);
     mockGetNavigationInformation.mockResolvedValue("navinfo");
 
     // await the async page component…

@@ -28,25 +28,31 @@ export default async function VerificationPage({
 
   // 🚀 Fetch the list of facilities associated with the specified version ID
   const facilityList = await getReportFacilityList(version_id);
+
+  //🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
-  // Create schema with dynamic facility list for operation type
-  const verificationSchema = createVerificationSchema(
-    facilityList.facilities,
-    operationType,
-    isSupplementaryReport.is_supplementary_report_version,
-    isEIO,
-  );
 
   //🔍 Check if reports need verification
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
+
+  // Create schema with dynamic facility list for operation type
+  const verificationSchema = createVerificationSchema(
+    facilityList.facilities,
+    operationType,
+    isSupplementaryReport,
+    isEIO,
+  );
 
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.Verification,
     version_id,
     "",
-    { skipVerification: !showVerificationPage },
+    {
+      skipVerification: !showVerificationPage,
+      skipChangeReview: !isSupplementaryReport,
+    },
   );
 
   // Render the verification form
@@ -58,9 +64,7 @@ export default async function VerificationPage({
         verificationSchema={verificationSchema}
         initialData={transformedData}
         navigationInformation={navInfo}
-        isSupplementaryReport={
-          isSupplementaryReport.is_supplementary_report_version
-        }
+        isSupplementaryReport={isSupplementaryReport}
       />
     </>
   );

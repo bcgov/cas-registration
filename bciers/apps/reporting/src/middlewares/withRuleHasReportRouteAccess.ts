@@ -7,21 +7,19 @@ import {
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import {
-  ApiEndpoints,
-  AppRoutes,
   extractReportVersionId,
-  fetchResponse,
   getUserRole,
   REPORT_APP_BASE,
   REPORT_BASE,
-  REPORT_VERSION_API_BASE,
   REPORTING_BASE,
+  AppRoutes,
   reportRoutesLFO,
   reportRoutesReportingOperation,
   reportRoutesSubmitted,
   restrictedRoutesEIO,
   restrictedRoutesNewEntrant,
   restrictedRoutesSubmitted,
+  restrictedSupplementaryReport,
 } from "./constants";
 import {
   ELECTRICITY_IMPORT_OPERATION,
@@ -33,8 +31,10 @@ import {
   OperationTypes,
   ReportOperationStatus,
 } from "@bciers/utils/src/enums";
-
+import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 
 /**
  * Defines an extra context that provides caching helpers for API data.
@@ -42,8 +42,12 @@ import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportV
 type RuleContext = {
   registrationPurposeCache: Record<number, any>;
   reportOperationCache: Record<number, any>;
-  getRegistrationPurpose: (reportVersionId: number, token: any) => Promise<any>;
-  getReportOperation: (reportVersionId: number, token: any) => Promise<any>;
+  reportVerificationStatusCache: Record<number, any>;
+  isSupplementaryReportCache: Record<number, any>;
+  getRegistrationPurpose: (reportVersionId: number) => Promise<any>;
+  getReportOperation: (reportVersionId: number) => Promise<any>;
+  getReportVerificationStatus: (reportVersionId: number) => Promise<any>;
+  getIsSupplementaryReport: (reportVersionId: number) => Promise<any>;
 };
 
 /**
@@ -54,12 +58,10 @@ type PermissionRule = {
   isApplicable: (
     request: NextRequest,
     reportVersionId?: number,
-    token?: any,
     context?: RuleContext,
   ) => boolean | Promise<boolean>;
   validate: (
     reportVersionId: number,
-    token: any,
     request?: NextRequest,
     context?: RuleContext,
   ) => Promise<boolean> | boolean;
@@ -72,27 +74,41 @@ type PermissionRule = {
 const createRuleContext = (): RuleContext => {
   const registrationPurposeCache: Record<number, any> = {};
   const reportOperationCache: Record<number, any> = {};
+  const reportVerificationStatusCache: Record<number, any> = {};
+  const isSupplementaryReportCache: Record<number, any> = {};
 
   return {
     registrationPurposeCache,
     reportOperationCache,
-    getRegistrationPurpose: async (reportVersionId: number, token: any) => {
+    reportVerificationStatusCache,
+    isSupplementaryReportCache,
+    getRegistrationPurpose: async (reportVersionId: number) => {
       if (!registrationPurposeCache[reportVersionId]) {
-        registrationPurposeCache[reportVersionId] = await fetchResponse(
-          `${REPORT_VERSION_API_BASE}${reportVersionId}${ApiEndpoints.REGISTRATION_PURPOSE}`,
-          token.user_guid,
-        );
+        registrationPurposeCache[reportVersionId] =
+          await getRegistrationPurpose(reportVersionId);
       }
       return registrationPurposeCache[reportVersionId];
     },
-    getReportOperation: async (reportVersionId: number, token: any) => {
+    getReportOperation: async (reportVersionId: number) => {
       if (!reportOperationCache[reportVersionId]) {
-        reportOperationCache[reportVersionId] = await fetchResponse(
-          `${REPORT_VERSION_API_BASE}${reportVersionId}${ApiEndpoints.REPORT_OPERATION}`,
-          token.user_guid,
-        );
+        reportOperationCache[reportVersionId] =
+          await getReportingOperation(reportVersionId);
       }
       return reportOperationCache[reportVersionId];
+    },
+    getReportVerificationStatus: async (reportVersionId: number) => {
+      if (!reportVerificationStatusCache[reportVersionId]) {
+        reportVerificationStatusCache[reportVersionId] =
+          await getReportVerificationStatus(reportVersionId);
+      }
+      return reportVerificationStatusCache[reportVersionId];
+    },
+    getIsSupplementaryReport: async (reportVersionId: number) => {
+      if (!isSupplementaryReportCache[reportVersionId]) {
+        isSupplementaryReportCache[reportVersionId] =
+          await getIsSupplementaryReport(reportVersionId);
+      }
+      return isSupplementaryReportCache[reportVersionId];
     },
   };
 };
@@ -104,18 +120,15 @@ export const permissionRules: PermissionRule[] = [
   // Rule: check access to restricted New Entrant routes
   {
     name: "accessNewEntrant",
-    isApplicable: (request, reportVersionId) =>
+    isApplicable: (request) =>
       Boolean(
-        reportVersionId &&
-          restrictedRoutesNewEntrant.some((path) =>
-            request.nextUrl.pathname.includes(path),
-          ),
+        restrictedRoutesNewEntrant.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
       ),
-    validate: async (reportVersionId, token, _request, context) => {
-      const registrationPurpose = await context!.getRegistrationPurpose(
-        reportVersionId,
-        token,
-      );
+    validate: async (reportVersionId, _request, context) => {
+      const registrationPurpose =
+        await context!.getRegistrationPurpose(reportVersionId);
       return (
         registrationPurpose?.registration_purpose ===
         NEW_ENTRANT_REGISTRATION_PURPOSE
@@ -132,18 +145,15 @@ export const permissionRules: PermissionRule[] = [
   // Rule: check access to restricted EIO routes
   {
     name: "accessEIO",
-    isApplicable: (request, reportVersionId) =>
+    isApplicable: (request) =>
       Boolean(
-        reportVersionId &&
-          restrictedRoutesEIO.some((path) =>
-            request.nextUrl.pathname.includes(path),
-          ),
+        restrictedRoutesEIO.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
       ),
-    validate: async (reportVersionId, token, _request, context) => {
-      const registrationPurpose = await context!.getRegistrationPurpose(
-        reportVersionId,
-        token,
-      );
+    validate: async (reportVersionId, _request, context) => {
+      const registrationPurpose =
+        await context!.getRegistrationPurpose(reportVersionId);
       return (
         registrationPurpose?.registration_purpose ===
         ELECTRICITY_IMPORT_OPERATION
@@ -160,18 +170,13 @@ export const permissionRules: PermissionRule[] = [
   // Rule: check access to restricted LFO routes
   {
     name: "accessLFO",
-    isApplicable: (request, reportVersionId) =>
+    isApplicable: (request) =>
       Boolean(
-        reportVersionId &&
-          reportRoutesLFO.some((path) =>
-            request.nextUrl.pathname.includes(path),
-          ),
+        reportRoutesLFO.some((path) => request.nextUrl.pathname.includes(path)),
       ),
-    validate: async (reportVersionId, token, _request, context) => {
-      const reportOperation = await context!.getReportOperation(
-        reportVersionId,
-        token,
-      );
+    validate: async (reportVersionId, _request, context) => {
+      const reportOperation =
+        await context!.getReportOperation(reportVersionId);
       return reportOperation?.operation_type === OperationTypes.LFO;
     },
     redirect: (reportVersionId, request) =>
@@ -185,25 +190,21 @@ export const permissionRules: PermissionRule[] = [
   // Rule: check access to restricted submitted routes
   {
     name: "accessSubmitted",
-    isApplicable: (request, reportVersionId) =>
+    isApplicable: (request) =>
       Boolean(
-        reportVersionId &&
-          restrictedRoutesSubmitted.some((path) =>
-            request.nextUrl.pathname.includes(path),
-          ),
+        restrictedRoutesSubmitted.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
       ),
-    validate: async (reportVersionId, token, _request, context) => {
-      const reportOperation = await context!.getReportOperation(
-        reportVersionId,
-        token,
-      );
+    validate: async (reportVersionId, _request, context) => {
+      const reportOperation =
+        await context!.getReportOperation(reportVersionId);
 
       return (
         reportOperation?.operation_report_status ===
         ReportOperationStatus.SUBMITTED
       );
     },
-
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
@@ -215,18 +216,41 @@ export const permissionRules: PermissionRule[] = [
   // Rule: check access to restricted Verification route
   {
     name: "accessVerification",
-    isApplicable: (request, reportVersionId) => {
+    isApplicable: (request) => {
       const { pathname } = request.nextUrl;
       // use regex for accurately matching in-case of future verification type routes
       const pathRegex = new RegExp(
         `^(\\/${REPORTING_BASE})?\\/${REPORT_BASE}\\/\\d+\\${AppRoutes.VERIFICATION}$`,
       );
-      return Boolean(reportVersionId && pathname.match(pathRegex));
+      return Boolean(pathname.match(pathRegex));
     },
-    validate: async (reportVersionId) => {
+    validate: async (reportVersionId, _request, context) => {
       const verificationStatus =
-        await getReportVerificationStatus(reportVersionId);
+        await await context!.getReportVerificationStatus(reportVersionId);
       return verificationStatus.show_verification_page;
+    },
+    redirect: (reportVersionId, request) =>
+      NextResponse.redirect(
+        new URL(
+          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.OPERATION}`,
+          request.url,
+        ),
+      ),
+  },
+  // Rule: check access to supplementary report routes
+  {
+    name: "accessSupplementaryReport",
+    isApplicable: (request) =>
+      Boolean(
+        restrictedSupplementaryReport.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
+    validate: async (reportVersionId, _request, context) => {
+      const isSupplementaryReport =
+        await context!.getIsSupplementaryReport(reportVersionId);
+
+      return isSupplementaryReport === true;
     },
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
@@ -239,20 +263,20 @@ export const permissionRules: PermissionRule[] = [
   // Rule for submitted report routing
   {
     name: "routeSubmittedReport",
-    isApplicable: async (request, reportVersionId, token) => {
-      const reportOperation = await fetchResponse(
-        `${REPORT_VERSION_API_BASE}${reportVersionId}${ApiEndpoints.REPORT_OPERATION}`,
-        token.user_guid,
-      );
+    isApplicable: async (_request, reportVersionId, context) => {
+      if (!reportVersionId) return false;
+      const reportOperation =
+        await context!.getIsSupplementaryReport(reportVersionId);
+
       return (
         reportOperation?.operation_report_status ===
         ReportOperationStatus.SUBMITTED
       );
     },
-    validate: (reportVersionId, token, request) => {
+    validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesSubmitted.some(
-          (path) => request?.nextUrl.pathname.includes(path),
+        !reportRoutesSubmitted.some((path) =>
+          request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -262,7 +286,7 @@ export const permissionRules: PermissionRule[] = [
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
-          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.SUBMITTED}`,
+          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.OPERATION}`,
           request.url,
         ),
       ),
@@ -270,17 +294,17 @@ export const permissionRules: PermissionRule[] = [
   // Rule for Reporting Operation routing
   {
     name: "routeReportingOperation",
-    isApplicable: async (request, reportVersionId, token) => {
-      const registrationPurpose = await fetchResponse(
-        `${REPORT_VERSION_API_BASE}${reportVersionId}${ApiEndpoints.REGISTRATION_PURPOSE}`,
-        token.user_guid,
-      );
+    isApplicable: async (_request, reportVersionId, context) => {
+      if (!reportVersionId) return false;
+
+      const registrationPurpose =
+        await context!.getRegistrationPurpose(reportVersionId);
       return registrationPurpose?.registration_purpose === REPORTING_OPERATION;
     },
-    validate: (reportVersionId, token, request) => {
+    validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesReportingOperation.some(
-          (path) => request?.nextUrl.pathname.includes(path),
+        !reportRoutesReportingOperation.some((path) =>
+          request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -305,21 +329,15 @@ const checkHasPathAccess = async (request: NextRequest, token: any) => {
   try {
     const { pathname } = request.nextUrl;
     const reportVersionId = extractReportVersionId(pathname);
+    if (!reportVersionId) return null;
     // Create a caching context for this request
     const context = createRuleContext();
     // Iterate over each rule and validate if it applies
     for (const rule of permissionRules) {
-      if (reportVersionId) {
-        if (await rule.isApplicable(request, reportVersionId, token, context)) {
-          const isValid = await rule.validate(
-            reportVersionId,
-            token,
-            request,
-            context,
-          );
-          if (!isValid) {
-            return rule.redirect(reportVersionId, request);
-          }
+      if (await rule.isApplicable(request, reportVersionId, context)) {
+        const isValid = await rule.validate(reportVersionId, request, context);
+        if (!isValid) {
+          return rule.redirect(reportVersionId, request);
         }
       }
     }
