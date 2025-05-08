@@ -128,15 +128,15 @@ Define environment variables for the application.
       key: apiUrl
       name: bccr-integration
 - name: BCCR_CLIENT_ID
-    valueFrom:
-      secretKeyRef:
-        key: clientId
-        name: bccr-integration
+  valueFrom:
+    secretKeyRef:
+      key: clientId
+      name: bccr-integration
 - name: BCCR_CLIENT_SECRET
-    valueFrom:
-      secretKeyRef:
-        key: clientSecret
-        name: bccr-integration
+  valueFrom:
+    secretKeyRef:
+      key: clientSecret
+      name: bccr-integration
 - name: DB_USER
   valueFrom:
     secretKeyRef:
