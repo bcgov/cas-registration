@@ -217,7 +217,7 @@ export const permissionRules: PermissionRule[] = [
   // Rule: check access to restricted Verification route
   {
     name: "accessVerification",
-    isApplicable: (request, reportVersionId) => {
+    isApplicable: (request) => {
       const { pathname } = request.nextUrl;
       // use regex for accurately matching in-case of future verification type routes
       const pathRegex = new RegExp(
@@ -276,8 +276,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesSubmitted.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesSubmitted.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -304,8 +304,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesReportingOperation.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesReportingOperation.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -326,7 +326,7 @@ export const permissionRules: PermissionRule[] = [
  * Checks if the incoming request has access to the desired path by evaluating it against
  * a set of permission rules.
  */
-const checkHasPathAccess = async (request: NextRequest, token: any) => {
+const checkHasPathAccess = async (request: NextRequest) => {
   try {
     const { pathname } = request.nextUrl;
     const reportVersionId = extractReportVersionId(pathname);
@@ -359,7 +359,7 @@ export const withRuleHasReportRouteAccess: MiddlewareFactory = (
     // Apply industry user-specific routing rules
     if (role === IDP.BCEIDBUSINESS) {
       try {
-        const response = await checkHasPathAccess(request, token);
+        const response = await checkHasPathAccess(request);
         if (response) {
           return response;
         }

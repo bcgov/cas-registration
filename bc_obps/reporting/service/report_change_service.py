@@ -4,13 +4,13 @@ from django.db import transaction
 from reporting.models.report_version import ReportVersion
 from reporting.models.report_change import ReportChange
 
+
 @dataclass
 class ReportChangeData:
     reason_for_change: str
 
 
 class ReportChangeService:
-    
     @staticmethod
     def get_report_change_by_version_id(
         report_version_id: int,
@@ -28,7 +28,7 @@ class ReportChangeService:
 
     @staticmethod
     @transaction.atomic
-    def save_report_change(report_version_id: int, data: ReportChangeData) -> ReportChange | None:
+    def save_report_change(report_version_id: int, data: ReportChangeData) -> ReportChange:
         report_version = ReportVersion.objects.get(pk=report_version_id)
         report_change, created = ReportChange.objects.update_or_create(
             report_version=report_version,

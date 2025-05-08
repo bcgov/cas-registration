@@ -1,5 +1,4 @@
 from typing import Literal, Tuple
-from typing import Dict
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -19,7 +18,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
 )
 def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], bool]:
     is_initial = ReportVersionService.is_initial_report_version(version_id)
-    return 200,  not is_initial
+    return 200, not is_initial
 
 
 @router.post(
