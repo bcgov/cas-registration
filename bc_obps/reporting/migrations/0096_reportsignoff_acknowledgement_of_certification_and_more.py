@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0096_reportelectricityimportdata_and_more'),
+        ('reporting', '0095_V3_1_0'),
     ]
 
     operations = [
