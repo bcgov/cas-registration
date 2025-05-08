@@ -12,20 +12,22 @@ vi.mock("@bciers/components/icons/AlertIcon", () => ({
 describe("MonetaryPaymentsAlertNote", () => {
   it("renders the alert with correct message", () => {
     render(<MonetaryPaymentsAlertNote />);
-    
-    expect(screen.getByText("You have not made any monetary payment yet.")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("You have not made any monetary payment yet."),
+    ).toBeInTheDocument();
   });
 
   it("renders with alert icon", () => {
     render(<MonetaryPaymentsAlertNote />);
-    
+
     expect(screen.getByTestId("alert-icon")).toBeInTheDocument();
   });
 
   it("renders with info severity", () => {
     render(<MonetaryPaymentsAlertNote />);
-    
+
     const alert = screen.getByRole("alert");
     expect(alert).toHaveClass("MuiAlert-standardInfo");
   });
-}); 
+});
