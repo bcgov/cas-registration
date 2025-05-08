@@ -56,20 +56,20 @@ class Migration(migrations.Migration):
         NaicsCode = apps.get_model('registration', 'NaicsCode')
         NaicsCode.objects.filter(
             naics_code__in=[
-                '111412'
-                '111419'
-                '221111'
-                '221112'
-                '221119'
-                '221121'
-                '221210'
-                '221320'
-                '221330'
-                '486110'
-                '493110'
-                '493190'
-                '562210'
-                '811199'
+                '111412',
+                '111419',
+                '221111',
+                '221112',
+                '221119',
+                '221121',
+                '221210',
+                '221320',
+                '221330',
+                '486110',
+                '493110',
+                '493190',
+                '562210',
+                '811199',
             ]
         ).delete()
 
@@ -189,7 +189,7 @@ class Migration(migrations.Migration):
         '''
         NaicsRegulatoryValue = apps.get_model('reporting', 'NaicsRegulatoryValue')
         NaicsRegulatoryValue.objects.filter(
-            naics_code_id__in=[
+            naics_code__naics_code__in=[
                 '111412',
                 '111419',
                 '221111',
