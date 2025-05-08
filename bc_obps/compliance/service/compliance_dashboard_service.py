@@ -5,8 +5,7 @@ from compliance.models.compliance_summary import ComplianceSummary
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional, List, Dict, Any
-from compliance.service.compliance_summary_service import ComplianceSummaryService
+from typing import Optional
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from compliance.schema.payments import PaymentsListOut, PaymentOut
 
