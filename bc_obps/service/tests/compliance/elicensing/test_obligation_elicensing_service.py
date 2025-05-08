@@ -16,100 +16,161 @@ from reporting.models.reporting_year import ReportingYear
 from registration.models.operation import Operation
 from registration.models.operator import Operator
 
+# Constants for test data
+TEST_FEE_ID = "test-fee-id"
+TEST_INVOICE_NUMBER = "test-invoice-number"
+TEST_CLIENT_ID = "test-client-id"
+TEST_FEE_AMOUNT = Decimal('1000.00')
+TEST_FEE_DATE = date(2024, 1, 1)
+TEST_DEADLINE = date(2024, 12, 31)
+TEST_REPORTING_YEAR = 2024
+
 
 @pytest.fixture
-def mock_obligation() -> MagicMock:
+def mock_reporting_year() -> MagicMock:
+    """Mock a ReportingYear object"""
+    mock_year = MagicMock(spec=ReportingYear)
+    mock_year.reporting_year = TEST_REPORTING_YEAR
+    return mock_year
+
+
+@pytest.fixture
+def mock_compliance_period(mock_reporting_year) -> MagicMock:
+    """Mock a CompliancePeriod object"""
+    mock_period = MagicMock(spec=CompliancePeriod)
+    mock_period.reporting_year = mock_reporting_year
+    return mock_period
+
+
+@pytest.fixture
+def mock_operator() -> MagicMock:
+    """Mock an Operator object"""
+    mock_operator = MagicMock(spec=Operator)
+    mock_operator.id = uuid.uuid4()
+    return mock_operator
+
+
+@pytest.fixture
+def mock_operation(mock_operator) -> MagicMock:
+    """Mock an Operation object"""
+    mock_operation = MagicMock(spec=Operation)
+    mock_operation.operator = mock_operator
+    return mock_operation
+
+
+@pytest.fixture
+def mock_compliance_summary(mock_compliance_period, mock_operation) -> MagicMock:
+    """Mock a ComplianceSummary object"""
+    mock_summary = MagicMock(spec=ComplianceSummary)
+    mock_summary.compliance_period = mock_compliance_period
+    mock_summary.report.operation = mock_operation
+    return mock_summary
+
+
+@pytest.fixture
+def mock_obligation(mock_compliance_summary) -> MagicMock:
     """Mock a ComplianceObligation object"""
     obligation = MagicMock(spec=ComplianceObligation)
     obligation.id = uuid.uuid4()
-    obligation.fee_amount_dollars = Decimal('1000.00')
-    obligation.fee_date = date(2024, 1, 1)
-    obligation.obligation_deadline = date(2024, 12, 31)
-
-    # Mock compliance summary
-    mock_summary = MagicMock(spec=ComplianceSummary)
-    mock_period = MagicMock(spec=CompliancePeriod)
-    mock_year = MagicMock(spec=ReportingYear)
-    mock_year.reporting_year = 2024
-    mock_period.reporting_year = mock_year
-    mock_summary.compliance_period = mock_period
-
-    # Mock operation and operator
-    mock_operation = MagicMock(spec=Operation)
-    mock_operator = MagicMock(spec=Operator)
-    mock_operator.id = uuid.uuid4()
-    mock_operation.operator = mock_operator
-    mock_summary.report.operation = mock_operation
-
-    obligation.compliance_summary = mock_summary
+    obligation.fee_amount_dollars = TEST_FEE_AMOUNT
+    obligation.fee_date = TEST_FEE_DATE
+    obligation.obligation_deadline = TEST_DEADLINE
+    obligation.compliance_summary = mock_compliance_summary
     return obligation
 
 
 @pytest.fixture
-def mock_client_link():
+def mock_elicensing_link(object_kind: str = "CLIENT", object_id: str = TEST_CLIENT_ID) -> MagicMock:
+    """Generic fixture for creating ELicensingLink mocks"""
+    link = MagicMock(spec=ELicensingLink)
+    link.id = uuid.uuid4()
+    link.elicensing_guid = uuid.uuid4()
+    link.elicensing_object_id = object_id
+    link.elicensing_object_kind = object_kind
+    link.sync_status = "SUCCESS"
+    link.last_sync_at = timezone.now()
+    return link
+
+
+@pytest.fixture
+def mock_client_link(mock_elicensing_link) -> MagicMock:
     """Mock an ELicensingLink object for client"""
-    link = MagicMock(spec=ELicensingLink)
-    link.id = 1
-    link.elicensing_guid = uuid.uuid4()
-    link.elicensing_object_id = "test-client-id"
-    link.elicensing_object_kind = ELicensingLink.ObjectKind.CLIENT
-    link.sync_status = "SUCCESS"
-    link.last_sync_at = timezone.now()
-    return link
+    return mock_elicensing_link
 
 
 @pytest.fixture
-def mock_fee_link():
+def mock_fee_link(mock_elicensing_link) -> MagicMock:
     """Mock an ELicensingLink object for fee"""
-    link = MagicMock(spec=ELicensingLink)
-    link.id = 2
-    link.elicensing_guid = uuid.uuid4()
-    link.elicensing_object_id = "test-fee-id"
-    link.elicensing_object_kind = ELicensingLink.ObjectKind.FEE
-    link.sync_status = "SUCCESS"
-    link.last_sync_at = timezone.now()
-    return link
+    mock_elicensing_link.elicensing_object_kind = ELicensingLink.ObjectKind.FEE
+    mock_elicensing_link.elicensing_object_id = TEST_FEE_ID
+    return mock_elicensing_link
 
 
 @pytest.fixture
-def mock_invoice_link():
+def mock_invoice_link(mock_elicensing_link) -> MagicMock:
     """Mock an ELicensingLink object for invoice"""
-    link = MagicMock(spec=ELicensingLink)
-    link.id = 3
-    link.elicensing_guid = uuid.uuid4()
-    link.elicensing_object_id = "test-invoice-number"
-    link.elicensing_object_kind = ELicensingLink.ObjectKind.INVOICE
-    link.sync_status = "SUCCESS"
-    link.last_sync_at = timezone.now()
-    return link
+    mock_elicensing_link.elicensing_object_kind = ELicensingLink.ObjectKind.INVOICE
+    mock_elicensing_link.elicensing_object_id = TEST_INVOICE_NUMBER
+    return mock_elicensing_link
 
 
 @pytest.fixture
 def mock_obligation_get():
     """Mock ComplianceObligation.objects.get"""
-    with patch('service.compliance.elicensing.obligation_elicensing_service.ComplianceObligation.objects.get') as mock:
+    with patch('compliance.service.elicensing.obligation_elicensing_service.ComplianceObligation.objects.get') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_operator_service():
     """Mock OperatorELicensingService"""
-    with patch('service.compliance.elicensing.obligation_elicensing_service.OperatorELicensingService') as mock:
+    with patch('compliance.service.elicensing.obligation_elicensing_service.OperatorELicensingService') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_link_service():
     """Mock ELicensingLinkService"""
-    with patch('service.compliance.elicensing.obligation_elicensing_service.ELicensingLinkService') as mock:
+    with patch('compliance.service.elicensing.obligation_elicensing_service.ELicensingLinkService') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_api_client():
     """Mock elicensing_api_client"""
-    with patch('service.compliance.elicensing.obligation_elicensing_service.elicensing_api_client') as mock:
+    with patch('compliance.service.elicensing.obligation_elicensing_service.elicensing_api_client') as mock:
         yield mock
+
+
+def create_mock_fee_response():
+    """Helper to create a mock fee response"""
+    mock_response = MagicMock()
+    mock_response.fees = [MagicMock(feeObjectId=TEST_FEE_ID, feeGUID=str(uuid.uuid4()))]
+    return mock_response
+
+
+def create_mock_invoice_response():
+    """Helper to create a mock invoice response"""
+    mock_response = MagicMock()
+    mock_response.invoiceNumber = TEST_INVOICE_NUMBER
+    return mock_response
+
+
+def create_mock_payment():
+    """Helper to create a mock payment"""
+    return MagicMock(
+        paymentObjectId=uuid.uuid4(),
+        receivedDate="2024-01-01",
+        amount=1000.00,
+        method="EFT/Wire - OBPS",
+        referenceNumber="ref123",
+        receiptNumber="receipt123",
+    )
+
+
+def create_mock_adjustment():
+    """Helper to create a mock adjustment"""
+    return MagicMock(adjustmentObjectId=uuid.uuid4(), date="2024-01-02", amount=-100.00, reason="Refund")
 
 
 class TestObligationELicensingService:
@@ -124,17 +185,16 @@ class TestObligationELicensingService:
         assert "feeGUID" in result
         assert result["feeProfileGroupName"] == "OBPS Compliance Obligation"
         assert result["feeDescription"] == "2024 GGIRCA Compliance Obligation"
-        assert result["feeAmount"] == Decimal('1000.00')
-        assert result["feeDate"] == "2024-01-01"
+        assert result["feeAmount"] == TEST_FEE_AMOUNT
+        assert result["feeDate"] == TEST_FEE_DATE.isoformat()
 
     def test_map_obligation_to_invoice_data(self, mock_obligation: MagicMock) -> None:
         """Test mapping obligation data to invoice data"""
-        fee_id = "test-fee-id"
-        result = ObligationELicensingService._map_obligation_to_invoice_data(mock_obligation, fee_id)
+        result = ObligationELicensingService._map_obligation_to_invoice_data(mock_obligation, TEST_FEE_ID)
 
-        assert result["paymentDueDate"] == "2024-12-31"
+        assert result["paymentDueDate"] == TEST_DEADLINE.isoformat()
         assert result["businessAreaCode"] == "OBPS"
-        assert result["fees"] == [fee_id]
+        assert result["fees"] == [TEST_FEE_ID]
 
     @pytest.mark.django_db
     def test_process_obligation_integration_success(
@@ -153,15 +213,8 @@ class TestObligationELicensingService:
         mock_obligation_get.return_value = mock_obligation
         mock_operator_service.sync_client_with_elicensing.return_value = mock_client_link
         mock_link_service.create_link.side_effect = [mock_fee_link, mock_invoice_link]
-
-        # Setup API responses
-        mock_fee_response = MagicMock()
-        mock_fee_response.fees = [MagicMock(feeObjectId="test-fee-id", feeGUID=str(uuid.uuid4()))]
-        mock_api_client.create_fees.return_value = mock_fee_response
-
-        mock_invoice_response = MagicMock()
-        mock_invoice_response.invoiceNumber = "test-invoice-number"
-        mock_api_client.create_invoice.return_value = mock_invoice_response
+        mock_api_client.create_fees.return_value = create_mock_fee_response()
+        mock_api_client.create_invoice.return_value = create_mock_invoice_response()
 
         # Call the method
         ObligationELicensingService.process_obligation_integration(mock_obligation.id)
@@ -186,11 +239,7 @@ class TestObligationELicensingService:
         # Setup mocks
         mock_obligation_get.return_value = mock_obligation
         mock_link_service.create_link.return_value = mock_fee_link
-
-        # Setup API response
-        mock_response = MagicMock()
-        mock_response.fees = [MagicMock(feeObjectId="test-fee-id", feeGUID=str(uuid.uuid4()))]
-        mock_api_client.create_fees.return_value = mock_response
+        mock_api_client.create_fees.return_value = create_mock_fee_response()
 
         # Call the method
         result = ObligationELicensingService.sync_fee_with_elicensing(mock_obligation.id, mock_client_link)
@@ -215,11 +264,7 @@ class TestObligationELicensingService:
         # Setup mocks
         mock_obligation_get.return_value = mock_obligation
         mock_link_service.create_link.return_value = mock_invoice_link
-
-        # Setup API response
-        mock_response = MagicMock()
-        mock_response.invoiceNumber = "test-invoice-number"
-        mock_api_client.create_invoice.return_value = mock_response
+        mock_api_client.create_invoice.return_value = create_mock_invoice_response()
 
         # Call the method
         result = ObligationELicensingService.sync_invoice_with_elicensing(
@@ -236,7 +281,6 @@ class TestObligationELicensingService:
         self,
         mock_obligation_get: MagicMock,
         mock_api_client: MagicMock,
-        mock_link_service: MagicMock,
         mock_obligation: MagicMock,
         mock_client_link: MagicMock,
     ) -> None:
@@ -254,7 +298,6 @@ class TestObligationELicensingService:
         self,
         mock_obligation_get: MagicMock,
         mock_api_client: MagicMock,
-        mock_link_service: MagicMock,
         mock_obligation: MagicMock,
         mock_client_link: MagicMock,
         mock_fee_link: MagicMock,
@@ -288,17 +331,8 @@ class TestObligationELicensingService:
         # Setup API response
         mock_invoice = MagicMock()
         mock_fee = MagicMock()
-        mock_payment = MagicMock(
-            paymentObjectId=uuid.uuid4(),
-            receivedDate="2024-01-01",
-            amount=1000.00,
-            method="EFT/Wire - OBPS",
-            referenceNumber="ref123",
-            receiptNumber="receipt123",
-        )
-        mock_adjustment = MagicMock(adjustmentObjectId=uuid.uuid4(), date="2024-01-02", amount=-100.00, reason="Refund")
-        mock_fee.payments = [mock_payment]
-        mock_fee.adjustments = [mock_adjustment]
+        mock_fee.payments = [create_mock_payment()]
+        mock_fee.adjustments = [create_mock_adjustment()]
         mock_invoice.fees = [mock_fee]
         mock_api_client.query_invoice.return_value = mock_invoice
 
@@ -307,7 +341,7 @@ class TestObligationELicensingService:
 
         # Verify result and calls
         assert len(result) == 2  # One payment and one adjustment
-        assert result[0].paymentAmountApplied == Decimal('1000.00')
+        assert result[0].paymentAmountApplied == TEST_FEE_AMOUNT
         assert result[0].paymentMethod == "EFT/Wire - OBPS"
         assert result[0].transactionType == "Payment"
         assert result[1].paymentAmountApplied == Decimal('-100.00')
