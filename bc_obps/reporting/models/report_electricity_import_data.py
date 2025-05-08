@@ -12,74 +12,54 @@ class ReportElectricityImportData(TimeStampedModel):
         related_name="report_electricity_import_data",
         db_comment="The associated report version for this electricity import data",
     )
-    import_specified_electricity = models.DecimalField(
+    import_specified_electricity = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Amount of imported electricity - specified sources",
     )
-    import_specified_emissions = models.DecimalField(
+    import_specified_emissions = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Emissions from specified imports",
     )
-    import_unspecified_electricity = models.DecimalField(
+    import_unspecified_electricity = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Amount of imported electricity - unspecified sources",
     )
-    import_unspecified_emissions = models.DecimalField(
+    import_unspecified_emissions = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Emissions from unspecified imports",
     )
-    export_specified_electricity = models.DecimalField(
+    export_specified_electricity = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Amount of exported electricity - specified sources",
     )
-    export_specified_emissions = models.DecimalField(
+    export_specified_emissions = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Emissions from specified exports",
     )
-    export_unspecified_electricity = models.DecimalField(
+    export_unspecified_electricity = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Amount of exported electricity - unspecified sources",
     )
-    export_unspecified_emissions = models.DecimalField(
+    export_unspecified_emissions = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Emissions from unspecified exports",
     )
-    canadian_entitlement_electricity = models.DecimalField(
+    canadian_entitlement_electricity = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Amount of electricity categorized as Canadian Entitlement Power",
     )
-    canadian_entitlement_emissions = models.DecimalField(
+    canadian_entitlement_emissions = models.FloatField(
         blank=True,
         null=True,
-        decimal_places=4,
-        max_digits=20,
         db_comment="Emissions from Canadian Entitlement Power",
     )
 

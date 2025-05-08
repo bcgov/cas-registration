@@ -7,7 +7,7 @@ export const eioSchema: RJSFSchema = {
   properties: {
     import_specified_electricity: {
       title: "Amount of imported electricity - specified sources",
-      type: ["number", "null"],
+      type: ["number"],
       minimum: 0,
     },
     import_specified_emissions: {

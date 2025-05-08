@@ -14,7 +14,8 @@ from ..service.report_electricity_import_data_service import ElectricityImportDa
     "report-version/{version_id}/electricity-import-data",
     response={200: int, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Saves the data for the production data page into multiple ReportProduct rows""",
+    description="""Saves electricity import data for the specified report version.
+    The data is validated and stored in the database.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
 def save_electricity_import_data(
@@ -32,8 +33,7 @@ def save_electricity_import_data(
     "report-version/{version_id}/electricity-import-data",
     response={200: Optional[ElectricityImportDataSchema], 404: Message, 400: Message, 500: Message},
     tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
-    Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
+    description="""Retrieves electricity import data for the specified report version""",
     auth=approved_industry_user_report_version_composite_auth,
 )
 def get_electricity_import_data(
