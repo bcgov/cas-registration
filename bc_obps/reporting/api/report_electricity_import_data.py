@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -30,7 +30,7 @@ def save_electricity_import_data(
 
 @router.get(
     "report-version/{version_id}/electricity-import-data",
-    response={200: ElectricityImportDataSchema, 404: Message, 400: Message, 500: Message},
+    response={200: Optional[ElectricityImportDataSchema], 404: Message, 400: Message, 500: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes `version_id` (primary key of the ReportVersion model) and `facility_id` to return a single matching `facility_report` object.
     Includes the associated activity IDs if found; otherwise, returns an error message if not found or in case of other issues.""",
