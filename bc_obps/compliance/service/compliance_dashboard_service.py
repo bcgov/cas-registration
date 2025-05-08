@@ -126,7 +126,7 @@ class ComplianceDashboardService:
         setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
 
         return summary
-    
+
     @classmethod
     def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> PaymentsListOut:
         """
