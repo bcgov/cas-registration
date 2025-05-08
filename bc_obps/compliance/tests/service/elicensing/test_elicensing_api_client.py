@@ -2,10 +2,10 @@ from unittest.mock import patch, MagicMock
 from compliance.service.elicensing.elicensing_api_client import (
     ClientCreationRequest,
     ELicensingAPIClient,
-    FeeCreationItem,
     FeeCreationRequest,
     InvoiceCreationRequest,
 )
+from compliance.service.elicensing.schema import FeeCreationItem
 import pytest
 import requests
 
