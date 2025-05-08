@@ -10,6 +10,7 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
+import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
 export default async function FinalReviewPage({
   version_id,
@@ -24,12 +25,16 @@ export default async function FinalReviewPage({
   );
   //🔍 Check if reports need verification
   const needsVerification = await getReportNeedsVerification(version_id);
+  const isSupplementaryReport = await getIsSupplementaryReport(version_id);
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.FinalReview,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    {
+      skipChangeReview: !isSupplementaryReport,
+      skipVerification: !needsVerification,
+    },
   );
 
   return (

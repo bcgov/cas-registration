@@ -21,12 +21,15 @@ export default async function SignOffPage({ version_id }: HasReportVersion) {
     ReportingPage.SignOff,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    {
+      skipChangeReview: !isSupplementaryReport,
+      skipVerification: !needsVerification,
+    },
   );
   const flow = await getFlow(version_id);
 
   const schema = buildSignOffSchema(
-    isSupplementaryReport.is_supplementary_report_version,
+    isSupplementaryReport,
     isRegulatedOperation,
     flow,
   );

@@ -16,9 +16,7 @@ const SubmissionPage = async ({ version_id }: HasReportVersion) => {
   return (
     <SubmissionSuccess
       submissionDate={submissionDate}
-      isSupplementaryReport={
-        isSupplementaryReport.is_supplementary_report_version
-      }
+      isSupplementaryReport={isSupplementaryReport}
       reportId={reportId}
     />
   );

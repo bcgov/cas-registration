@@ -39,6 +39,7 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
       onChange={(e) => onChange(e.target.value || undefined)}
       placeholder={placeholder}
       style={styles}
+      minRows={3}
     />
   );
 };
