@@ -27,6 +27,7 @@ class ReportSignOffTest(BaseTestCase):
             ("acknowledgement_of_possible_costs", "acknowledgement of possible costs", None, None),
             ("acknowledgement_of_new_version", "acknowledgement of new version", None, None),
             ("acknowledgement_of_corrections", "acknowledgement of corrections", None, None),
+            ("acknowledgement_of_certification", "acknowledgement of certification", None, None),
             ("signature", "signature", None, None),
             ("signing_date", "signing date", None, None),
         ]
