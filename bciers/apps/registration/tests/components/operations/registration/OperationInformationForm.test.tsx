@@ -548,6 +548,49 @@ describe("the OperationInformationForm component", () => {
     });
   });
 
+  it("should show the confirmation modal when the selected type changes", async () => {
+    fetchFormEnums(Apps.REGISTRATION);
+    render(
+      <OperationInformationForm
+        rawFormData={{ type: "Single Facility Operation" }}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const operationType = screen.getByRole("combobox", {
+      name: /Operation Type+/i,
+    });
+
+    act(() => {
+      userEvent.click(operationType);
+    });
+
+    await waitFor(() => {
+      userEvent.click(
+        screen.getByRole("option", { name: "Linear Facilities Operation" }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Are you sure you want to change your operation type+/i,
+        ),
+      ).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: /Change operation type/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/operation type*/i)).toHaveValue(
+        "Linear Facilities Operation",
+      );
+    });
+  });
+
   it("should trigger validation errors", async () => {
     fetchFormEnums(Apps.REGISTRATION);
     render(
