@@ -16,11 +16,7 @@ class ComplianceReport(TimeStampedModel):
         db_comment="The emissions report associated with this compliance report",
     )
 
-    operation = models.ForeignKey(
-      Operation,
-      on_delete=models.PROTECT,
-      related_name="compliance_reports"
-    )
+    operation = models.ForeignKey(Operation, on_delete=models.PROTECT, related_name="compliance_reports")
 
     compliance_period = models.ForeignKey(
         CompliancePeriod,
