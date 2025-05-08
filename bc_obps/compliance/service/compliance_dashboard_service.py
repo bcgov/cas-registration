@@ -5,9 +5,27 @@ from compliance.models.compliance_summary import ComplianceSummary
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional
+from typing import Optional, List
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
-from compliance.schema.payments import PaymentsListOut, PaymentOut
+from dataclasses import dataclass
+from datetime import datetime
+from decimal import Decimal
+
+
+@dataclass
+class Payment:
+    id: int
+    paymentReceivedDate: datetime
+    paymentAmountApplied: Decimal
+    paymentMethod: str
+    transactionType: str
+    receiptNumber: str
+
+
+@dataclass
+class PaymentsList:
+    rows: List[Payment]
+    row_count: int
 
 
 class ComplianceDashboardService:
@@ -128,7 +146,7 @@ class ComplianceDashboardService:
         return summary
 
     @classmethod
-    def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> PaymentsListOut:
+    def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> PaymentsList:
         """
         Get payments for a compliance summary's obligation invoice.
 
@@ -137,15 +155,15 @@ class ComplianceDashboardService:
             summary_id: The ID of the compliance summary
 
         Returns:
-            PaymentsListOut object containing the payment records
+            PaymentsList object containing the payment records
         """
         summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
         if not summary or not summary.obligation:
-            return PaymentsListOut(rows=[], row_count=0)
+            return PaymentsList(rows=[], row_count=0)
 
         payment_records = ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)
         payment_objects = [
-            PaymentOut(
+            Payment(
                 id=record.id,
                 paymentReceivedDate=record.paymentReceivedDate,
                 paymentAmountApplied=record.paymentAmountApplied,
@@ -156,4 +174,4 @@ class ComplianceDashboardService:
             for record in payment_records
         ]
 
-        return PaymentsListOut(rows=payment_objects, row_count=len(payment_objects))
+        return PaymentsList(rows=payment_objects, row_count=len(payment_objects))
