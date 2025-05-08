@@ -57,7 +57,7 @@ type PermissionRule = {
   name: string;
   isApplicable: (
     request: NextRequest,
-    reportVersionId?: number,
+    reportVersionId: number,
     context?: RuleContext,
   ) => boolean | Promise<boolean>;
   validate: (
@@ -264,7 +264,6 @@ export const permissionRules: PermissionRule[] = [
   {
     name: "routeSubmittedReport",
     isApplicable: async (_request, reportVersionId, context) => {
-      if (!reportVersionId) return false;
       const reportOperation =
         await context!.getIsSupplementaryReport(reportVersionId);
 
@@ -275,8 +274,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesSubmitted.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesSubmitted.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -295,16 +294,14 @@ export const permissionRules: PermissionRule[] = [
   {
     name: "routeReportingOperation",
     isApplicable: async (_request, reportVersionId, context) => {
-      if (!reportVersionId) return false;
-
       const registrationPurpose =
         await context!.getRegistrationPurpose(reportVersionId);
       return registrationPurpose?.registration_purpose === REPORTING_OPERATION;
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesReportingOperation.some((path) =>
-          request?.nextUrl.pathname.includes(path),
+        !reportRoutesReportingOperation.some(
+          (path) => request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -325,7 +322,7 @@ export const permissionRules: PermissionRule[] = [
  * Checks if the incoming request has access to the desired path by evaluating it against
  * a set of permission rules.
  */
-const checkHasPathAccess = async (request: NextRequest, token: any) => {
+const checkHasPathAccess = async (request: NextRequest) => {
   try {
     const { pathname } = request.nextUrl;
     const reportVersionId = extractReportVersionId(pathname);
@@ -358,7 +355,7 @@ export const withRuleHasReportRouteAccess: MiddlewareFactory = (
     // Apply industry user-specific routing rules
     if (role === IDP.BCEIDBUSINESS) {
       try {
-        const response = await checkHasPathAccess(request, token);
+        const response = await checkHasPathAccess(request);
         if (response) {
           return response;
         }

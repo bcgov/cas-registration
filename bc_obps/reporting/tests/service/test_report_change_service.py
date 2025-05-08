@@ -8,9 +8,7 @@ class TestReportChangeService(TestCase):
     def setUp(self):
         # Arrange: Create a report version and additional data
         self.report_version = make_recipe('reporting.tests.utils.report_version')
-        self.report_change = make_recipe(
-            'reporting.tests.utils.report_change', report_version=self.report_version
-        )
+        self.report_change = make_recipe('reporting.tests.utils.report_change', report_version=self.report_version)
 
     def test_get_report_change_returns_correct_instance(self):
         """
@@ -18,9 +16,7 @@ class TestReportChangeService(TestCase):
         for a given report version ID.
         """
 
-        retrieved_data = ReportChangeService.get_report_change_by_version_id(
-            report_version_id=self.report_version.id
-        )
+        retrieved_data = ReportChangeService.get_report_change_by_version_id(report_version_id=self.report_version.id)
         self.assertIsNotNone(retrieved_data)
         self.assertEqual(retrieved_data.report_version.id, self.report_version.id)
         self.assertEqual(

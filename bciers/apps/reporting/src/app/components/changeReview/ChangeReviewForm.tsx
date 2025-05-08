@@ -31,7 +31,7 @@ export default function ChangeReviewForm({
     const endpoint = `reporting/report-version/${versionId}/report-change`;
     const method = "POST";
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(formData),
+      body: JSON.stringify(data),
     });
     if (response?.error) {
       setErrors([response.error]);

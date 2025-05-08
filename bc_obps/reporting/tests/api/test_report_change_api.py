@@ -1,9 +1,10 @@
+from dataclasses import asdict
 from model_bakery import baker
 from unittest.mock import patch, MagicMock, AsyncMock
 
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from reporting.schema.report_change import ReportChangeIn
+from reporting.service.report_change_service import ReportChangeData
 from reporting.tests.utils.report_access_validation import assert_report_version_ownership_is_validated
 
 
@@ -16,9 +17,7 @@ class TestReportChangeApi(CommonTestSetup):
     """Tests for the get_report_change_by_version_id endpoint."""
 
     @patch("reporting.service.report_change_service.ReportChangeService.get_report_change_by_version_id")
-    def test_get_report_change_by_version_id_returns_expected_data(
-        self, mock_get_report_change: MagicMock
-    ):
+    def test_get_report_change_by_version_id_returns_expected_data(self, mock_get_report_change: MagicMock):
         mock_instance = baker.make_recipe(
             "reporting.tests.utils.report_change",
             report_version=self.report_version,
@@ -40,11 +39,8 @@ class TestReportChangeApi(CommonTestSetup):
     """Tests for the save_report_change endpoint."""
 
     @patch("reporting.service.report_change_service.ReportChangeService.save_report_change")
-    def test_save_report_change_returns_expected_data(
-        self, mock_save_report_change: MagicMock | AsyncMock
-    ):
-        payload = ReportChangeIn(
-            report_version=self.report_version.id,            
+    def test_save_report_change_returns_expected_data(self, mock_save_report_change: MagicMock | AsyncMock):
+        payload = ReportChangeData(
             reason_for_change="testing",
         )
 
@@ -59,7 +55,7 @@ class TestReportChangeApi(CommonTestSetup):
             self,
             "industry_user",
             self.content_type,
-            payload.dict(),
+            asdict(payload),
             custom_reverse_lazy(
                 "save_report_change",
                 kwargs={"version_id": self.report_version.id},

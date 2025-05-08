@@ -1,5 +1,5 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { getReportChange } from "@reporting/src/app/utils/getReportChange";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
@@ -18,7 +18,8 @@ export default async function ChangeReviewPage({
   // 🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
   //🔍 Check if needs verification
-  const needsVerification = await getReportNeedsVerification(version_id);
+  const { show_verification_page: showVerificationPage } =
+    await getReportVerificationStatus(version_id);
 
   // Build task list
   const navInfo = await getNavigationInformation(
@@ -27,8 +28,8 @@ export default async function ChangeReviewPage({
     version_id,
     "",
     {
+      skipVerification: !showVerificationPage,
       skipChangeReview: !isSupplementaryReport,
-      skipVerification: !needsVerification,
     },
   );
 

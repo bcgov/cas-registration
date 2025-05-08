@@ -6,7 +6,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.models.report_change import ReportChange
 from reporting.schema.report_change import ReportChangeIn, ReportChangeOut
-from reporting.service.report_change_service import ReportChangeService
+from reporting.service.report_change_service import ReportChangeService, ReportChangeData
 from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 
@@ -33,5 +33,8 @@ def get_report_change_by_version_id(
 def save_report_change(
     request: HttpRequest, version_id: int, payload: ReportChangeIn
 ) -> tuple[Literal[200], ReportChange]:
-    report_change = ReportChangeService.save_report_change(version_id, payload)
+    data = ReportChangeData(
+        reason_for_change=payload.reason_for_change,
+    )
+    report_change = ReportChangeService.save_report_change(version_id, data)
     return 200, report_change
