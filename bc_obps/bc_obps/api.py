@@ -1,6 +1,9 @@
 from django.http import HttpRequest, HttpResponse
 from ninja import NinjaAPI, Swagger
 from ninja.errors import ValidationError
+from common.api import router as common_router
+from registration.api import router as registration_router
+from reporting.api import router as reporting_router
 from service.error_service.handle_exception import handle_exception
 from registration.utils import generate_useful_error
 from django.conf import settings
@@ -20,6 +23,10 @@ def custom_validation_errors(request: HttpRequest, exc: ValidationError) -> Http
 
 
 api.add_exception_handler(Exception, handle_exception)  # Global exception handler
+
+api.add_router("/common/", common_router, tags=["V1"])
+api.add_router("/registration/", registration_router, tags=["V1"])
+api.add_router("/reporting/", reporting_router, tags=["V1"])
 
 if settings.ENVIRONMENT != "prod" or settings.CI == "true":
     from compliance.api import router as compliance_router
