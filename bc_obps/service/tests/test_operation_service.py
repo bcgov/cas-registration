@@ -1123,14 +1123,14 @@ class TestOperationServiceV2UpdateOperation:
         "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
       
     )
-    def test_update_operation_with_new_type(cls, mock_delete_facilities_by_operation_id: MagicMock):
+    def test_unregistered_update_operation_with_new_type(cls, mock_delete_facilities_by_operation_id: MagicMock):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
             'registration.tests.utils.operation',
             type=Operation.Types.SFO,
             operator=approved_user_operator.operator,
             created_by=approved_user_operator.user,
-            status=Operation.Statuses.REGISTERED,
+            status=Operation.Statuses.DRAFT,
         )
         payload = OperationInformationInUpdate(
             registration_purpose='Potential Reporting Operation',
@@ -1154,6 +1154,39 @@ class TestOperationServiceV2UpdateOperation:
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         assert operation.type == Operation.Types.LFO
+
+    @classmethod
+    @patch(
+        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
+      
+    )
+    def test_cannot_update_type_of_registered_operation(cls, mock_delete_facilities_by_operation_id: MagicMock):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        existing_operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            type=Operation.Types.SFO,
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+        )
+        payload = OperationInformationInUpdate(
+            registration_purpose='Potential Reporting Operation',
+            name="Test Update Operation Name",
+            type=Operation.Types.LFO,
+            naics_code_id=1,
+            secondary_naics_code_id=1,
+            tertiary_naics_code_id=2,
+            activities=[2],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
+        )
+        with pytest.raises(Exception, match="Cannot change the type of an operation that has already been registered."):
+            OperationService.update_operation(
+                approved_user_operator.user.user_guid, payload, existing_operation.id
+            )
+        mock_delete_facilities_by_operation_id.assert_not_called()
+        
         
 
 

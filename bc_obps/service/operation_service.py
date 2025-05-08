@@ -391,6 +391,8 @@ class OperationService:
         if payload.registration_purpose != operation.registration_purpose:
             payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
         if payload.type != operation.type:
+            if operation.status == Operation.Statuses.REGISTERED:
+                raise Exception("Cannot change the type of an operation that has already been registered.")
             FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid,
                 operation.id
             )
