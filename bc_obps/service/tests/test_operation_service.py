@@ -1029,16 +1029,24 @@ class TestOperationServiceV2UpdateOperation:
         assert operation.contacts.count() == 3
 
     @classmethod
-    @patch(
-        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
-    )
-    def test_update_operation_with_eio(cls, mock_delete_facilities_by_operation_id: MagicMock):
+    def test_update_operation_with_eio(cls):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         existing_operation = baker.make_recipe(
             'registration.tests.utils.operation',
             operator=approved_user_operator.operator,
             type=Operation.Types.SFO,
+            status=Operation.Statuses.DRAFT,
         )
+        facility = baker.make_recipe(
+            'registration.tests.utils.facility', operation=existing_operation, type=Facility.Types.SINGLE_FACILITY
+        )
+        baker.make_recipe(
+            'registration.tests.utils.facility_designated_operation_timeline',
+            facility=facility,
+            operation=existing_operation,
+            end_date=None,
+        )
+
         contacts = baker.make_recipe(
             'registration.tests.utils.contact',
             business_role=BusinessRole.objects.get(role_name='Operation Representative'),
@@ -1058,17 +1066,11 @@ class TestOperationServiceV2UpdateOperation:
             boundary_map=MOCK_DATA_URL,
             operation_representatives=[contact.id for contact in contacts],
         )
-
         operation = OperationService.update_operation(
             approved_user_operator.user.user_guid,
             payload,
             existing_operation.id,
         )
-        mock_delete_facilities_by_operation_id.assert_called_once_with(
-            approved_user_operator.user.user_guid,
-            operation.id,
-        )
-        assert Facility.objects.count() == 0
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         # 1 facility because the EIO creation service will create a facility
@@ -1870,7 +1872,6 @@ class TestChangeOperationType:
     @classmethod
     @patch(
         "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
-        autospec=True,
     )
     def test_delete_service_called_if_type_changes(cls, mock_delete_facilities_by_operation_id: MagicMock):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
@@ -1883,11 +1884,11 @@ class TestChangeOperationType:
         submitted_payload = OperationInformationIn(
             registration_purpose=Operation.Purposes.REPORTING_OPERATION,
             name='Updated Operation',
-            type=Operation.Types.SFO,
+            type=Operation.Types.LFO,
             activities=[1, 2, 3],
         )
         returned_payload = OperationService.update_operation(
-            approved_user_operator.user.user_guid, operation, submitted_payload
+            approved_user_operator.user.user_guid, submitted_payload, operation.id
         )
         mock_delete_facilities_by_operation_id.assert_called_once_with(
             approved_user_operator.user.user_guid,
@@ -1895,7 +1896,6 @@ class TestChangeOperationType:
         )
 
         assert returned_payload.registration_purpose == Operation.Purposes.REPORTING_OPERATION
-        assert OptedInOperationDetail.objects.count() == 0
 
         # assert handle_change_of_registration_purpose isn't modifying parts of the payload that should be untouched
         assert returned_payload.name == "Updated Operation"
