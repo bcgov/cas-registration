@@ -331,7 +331,6 @@ const OperationInformationForm = ({
             return;
           }
           if (newSelectedType !== confirmedFormState?.section2?.type) {
-            console.log("confirmedFormState?.section2?.type");
             handleSelectedTypeChange(e.formData);
             return;
           }
