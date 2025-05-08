@@ -3,7 +3,8 @@ from enum import Enum
 
 class ComplianceTableNames(Enum):
     COMPLIANCE_PERIOD = "compliance_period"
-    COMPLIANCE_SUMMARY = "compliance_summary"
+    COMPLIANCE_REPORT = "compliance_report"
+    COMPLIANCE_REPORT_VERSION = "compliance_report_version"
     COMPLIANCE_OBLIGATION = "compliance_obligation"
     COMPLIANCE_PRODUCT = "compliance_product"
     ELICENSING_LINK = "elicensing_link"
