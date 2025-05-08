@@ -4,7 +4,7 @@ from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from compliance.schema.payments import PaymentsListOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from service.compliance.compliance_dashboard_service import ComplianceDashboardService
+from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from ...router import router
 
