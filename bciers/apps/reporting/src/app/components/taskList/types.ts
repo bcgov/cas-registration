@@ -25,6 +25,7 @@ export enum ReportingPage {
 
   ComplianceSummary = "ComplianceSummary",
 
+  ChangeReview = "ChangeReview",
   Verification = "Verification",
   Attachments = "Attachments",
   FinalReview = "FinalReview",
@@ -88,6 +89,7 @@ export interface TaskListPageFactoryContext {
   orderedActivities?: ActivityData[];
   currentActivity?: ActivityData;
   skipVerification?: boolean;
+  skipChangeReview?: boolean;
   returnToFacilitiesTable?: boolean;
   isElectricityImport?: boolean;
 }

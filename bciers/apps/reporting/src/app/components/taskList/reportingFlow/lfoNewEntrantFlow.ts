@@ -23,6 +23,7 @@ export const lfoNewEntrantFlow: ReportingFlowDescription = {
   ],
   [HeaderStep.ComplianceSummary]: [ReportingPage.ComplianceSummary],
   [HeaderStep.SignOffSubmit]: [
+    ReportingPage.ChangeReview,
     ReportingPage.FinalReview,
     ReportingPage.Verification,
     ReportingPage.Attachments,
