@@ -74,6 +74,7 @@ class ReportVersionTest(BaseTestCase):
             ("report_sign_off", "report sign off", None, None),
             ("report_electricity_import_data", "report electricity import data", None, None),
             ("report_attachment_confirmation", "report attachment confirmation", None, None),
+            ("report_change", "report change", None, None),
         ]
 
     def test_unique_draft_version_per_report(self):
