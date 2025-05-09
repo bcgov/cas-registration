@@ -15,6 +15,7 @@ import {
   FormField,
   MessageTextResponse,
 } from "@bciers/e2e/utils/enums";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 import AxeBuilder from "@axe-core/playwright";
 
 // 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
@@ -269,24 +270,35 @@ export async function fieldsClear(page: Page, formFields: string | any[]) {
 }
 
 // 🛠️ Function: fills required form fields correctly
-export async function fillRequiredFormFields(page: Page) {
-  // Locate all required fields within the fieldset
-  const requiredFields = await getFieldRequired(page);
-  if (requiredFields) {
-    // ✔️ Set required input fields
-    for (const input of requiredFields) {
-      const labelText = await input.textContent();
-      const inputField = await page.getByLabel(labelText as string);
-      // Click the field to focus it
-      await inputField.click();
-      switch (labelText) {
-        case FormField.PHONE:
-          await inputField.fill(E2EValue.INPUT_PHONE); //Format should be ### ### ####
-          break;
-        default:
-          await inputField.fill(`${E2EValue.PREFIX} ${labelText}`);
-          break;
+export async function fillRequiredFormFields(
+  page: Page,
+  fieldLabels: string[],
+  values: { [key: string]: string },
+  mode: "fill" | "read" = "fill",
+) {
+  for (const labelText of fieldLabels) {
+    const inputFields = await page.getByLabel(labelText);
+    const inputField = inputFields.nth((await inputFields.count()) - 1);
+    if (mode === "fill") {
+      const currentValue = await inputField.inputValue();
+      // clear field for editing form
+      if (currentValue) {
+        await inputField.clear();
       }
+      // Special condition for province
+      if (/province/i.test(labelText)) {
+        await inputField.fill(values[labelText]);
+        await page.getByRole("option", { name: values[labelText] }).click();
+      } else {
+        await inputField.fill(values[labelText]);
+      }
+    } else if (mode === "read") {
+      const isPhoneField = /telephone number/i.test(labelText);
+      const expectedValue = isPhoneField
+        ? `+1 ${values[labelText]}`
+        : values[labelText];
+      const text = await page.getByText(expectedValue, { exact: true });
+      await expect(text).toBeVisible();
     }
   }
 }
@@ -539,4 +551,19 @@ export async function stabilizeAccordion(
   );
   expect(await arrowDropDownElements.count()).toBe(expectedArrowDropdownCount);
   await waitForElementToStabilize(page, "section");
+}
+
+export function getStorageStateForRole(role: string) {
+  const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
+  const processEnv = process.env[envKey];
+
+  return JSON.parse(processEnv as string);
+}
+
+export async function assertSuccessfulSnackbar(page: Page) {
+  await expect(
+    page
+      .locator(".MuiSnackbar-root")
+      .getByText(FrontendMessages.SUBMIT_CONFIRMATION),
+  ).toBeVisible();
 }
