@@ -3,9 +3,10 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from reporting.models.report_version import ReportVersion
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.models.compliance_summary import ComplianceSummary
+from compliance.models.compliance_report_version import ComplianceReportVersion
 import logging
 
 logger = logging.getLogger(__name__)
@@ -19,52 +20,52 @@ class ComplianceObligationService:
     @classmethod
     @transaction.atomic
     def create_compliance_obligation(
-        cls, compliance_summary_id: int, emissions_amount: Decimal, report_version: ReportVersion
+        cls, compliance_report_version_id: int, emissions_amount: Decimal
     ) -> ComplianceObligation:
         """
-        Creates a compliance obligation for a compliance summary.
+        Creates a compliance obligation for a compliance report version.
         This method focuses purely on domain logic - creating the obligation record.
         Integration with external systems is handled by separate services.
 
         Args:
-            compliance_summary_id (int): The ID of the compliance summary
+            compliance_report_version_id (int): The ID of the compliance report version
             emissions_amount (Decimal): The amount of excess emissions in tCO2e
-            report_version (ReportVersion): The report version for calculating the obligation deadline and obligation_id
 
         Returns:
             ComplianceObligation: The created compliance obligation
 
         Raises:
-            ComplianceSummary.DoesNotExist: If the compliance summary doesn't exist
+            ComplianceReportVersion.DoesNotExist: If the compliance report version doesn't exist
             ComplianceChargeRate.DoesNotExist: If no compliance charge rate exists for the reporting year
             ValueError: If the operation is not regulated by BC OBPS (no obligation_id can be generated)
         """
-        # Get the compliance summary
-        compliance_summary = ComplianceSummary.objects.get(id=compliance_summary_id)
+        # Get the compliance report_version
+        compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
 
         # Calculate obligation deadline (November 30 of the following year)
-        obligation_deadline = date(report_version.report.reporting_year.reporting_year + 1, 11, 30)
+        obligation_deadline = date(
+            compliance_report_version.report_version.report.reporting_year.reporting_year + 1, 11, 30
+        )
 
         # Get the compliance charge rate for the reporting year
-        fee_rate_dollars = ComplianceChargeRateService.get_rate_for_year(report_version.report.reporting_year)
+        fee_rate_dollars = ComplianceChargeRateService.get_rate_for_year(
+            compliance_report_version.report_version.report.reporting_year
+        )
 
         # Calculate fee amount: emissions_amount_tco2e * fee rate
         fee_amount_dollars = (emissions_amount * fee_rate_dollars).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         # Create the obligation with fee data
         obligation = ComplianceObligation.objects.create(
-            compliance_summary=compliance_summary,
-            emissions_amount_tco2e=emissions_amount,
-            status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
-            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
+            compliance_report_version=compliance_report_version,
+            obligation_id=cls._get_obligation_id(compliance_report_version.report_version),
             obligation_deadline=obligation_deadline,
-            obligation_id=cls._get_obligation_id(report_version),
             fee_amount_dollars=fee_amount_dollars,
-            fee_rate_dollars=fee_rate_dollars,
-            fee_date=date.today(),
+            fee_created_at=date.today(),
+            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
         )
 
-        logger.info(f"Created compliance obligation {obligation.id} for summary {compliance_summary_id}")
+        logger.info(f"Created compliance obligation {obligation.id} for report version {compliance_report_version_id}")
 
         return obligation
 
@@ -161,17 +162,17 @@ class ComplianceObligationService:
         return obligation
 
     @classmethod
-    def get_obligation_for_summary(cls, compliance_summary_id: int) -> ComplianceObligation:
+    def get_obligation_for_report_version(cls, compliance_report_version_id: int) -> ComplianceObligation:
         """
-        Gets the compliance obligation for a compliance summary
+        Gets the compliance obligation for a compliance report_version
 
         Args:
-            compliance_summary_id (int): The ID of the compliance summary
+            compliance_report_version_id (int): The ID of the compliance report_version
 
         Returns:
             ComplianceObligation: The compliance obligation
 
         Raises:
-            ComplianceObligation.DoesNotExist: If no obligation exists for the summary
+            ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
         """
-        return ComplianceObligation.objects.get(compliance_summary_id=compliance_summary_id)
+        return ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
