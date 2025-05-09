@@ -44,7 +44,7 @@ class RlsPolicy:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
         breakpoint()
-        # brianna see the grants for how to do this
+     
         execute_string = "CREATE POLICY %s ON %s.%s FOR %s TO %s"
         params = [self.policy_name, self.schema, self.table, self.operation.value, self.role.value]
 
