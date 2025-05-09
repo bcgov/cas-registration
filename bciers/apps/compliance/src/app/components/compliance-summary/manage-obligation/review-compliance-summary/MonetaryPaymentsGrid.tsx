@@ -40,7 +40,7 @@ export const MonetaryPaymentsGrid = ({ data }: MonetaryPaymentsGridProps) => {
     row_count: 1,
   };
 
-  const gridData = !data ? initialData : data;
+  const gridData = data ?? initialData;
   const showAlert = !data || data.rows.length === 0;
 
   return (
