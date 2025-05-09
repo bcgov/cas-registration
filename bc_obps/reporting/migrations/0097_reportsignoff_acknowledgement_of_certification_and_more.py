@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0095_V3_1_0'),
+        ('reporting', '0096_remove_facilityreport_set_created_audit_columns_and_more'),
     ]
 
     operations = [
