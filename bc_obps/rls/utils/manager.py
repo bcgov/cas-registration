@@ -93,8 +93,10 @@ class RlsManager:
                 if hasattr(rls, 'm2m_rls_list'):
                     for m2m_rls in rls.m2m_rls_list:
                         cls.apply_m2m_rls(cursor, m2m_rls)
-
-            # TODO: Implement the following part when the RlsPolicy class is implemented
+                if hasattr(rls, 'policies'):
+                    cursor.execute(f'alter table {rls.schema}.{rls.table} enable row level security')
+                    for policy in rls.policies:
+                        policy.apply_policy(cursor)
             # if rls.enable_rls:
             #     cursor.execute('alter table %s.%s enable row level security', [rls.schema, rls.table])
             #     for policy in rls.policies:
