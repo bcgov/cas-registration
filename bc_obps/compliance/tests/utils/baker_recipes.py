@@ -5,9 +5,13 @@ from compliance.models import (
     ComplianceSummary,
     ComplianceProduct,
     ComplianceObligation,
+    ELicensingLink,
 )
 from reporting.tests.utils.baker_recipes import report, report_version, report_product
 from reporting.models import ReportingYear
+from django.contrib.contenttypes.models import ContentType
+from registration.models.operator import Operator
+import uuid
 
 # CompliancePeriod recipe
 compliance_period = Recipe(
@@ -55,4 +59,16 @@ compliance_obligation = Recipe(
     penalty_status=ComplianceObligation.PenaltyStatus.NONE,
     obligation_deadline="2025-11-30",
     obligation_id="21-0001-1-1",  # Default test obligation ID in format YY-OOOO-R-V
+)
+
+# ELicensingLink recipe
+elicensing_link = Recipe(
+    ELicensingLink,
+    elicensing_guid=uuid.uuid4(),
+    elicensing_object_id="test-client-id",
+    elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
+    content_type=foreign_key(Recipe(ContentType, model=Operator)),
+    object_id=str(uuid.uuid4()),
+    sync_status="SUCCESS",
+    last_sync_at=None,
 )
