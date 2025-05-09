@@ -48,6 +48,12 @@ class RlsMiddleware:
         """
         Sets the database session context for the given user, including their GUID and role.
         If no user is provided, resets the context.
+
+        Django guarantees that each API request will be handled on the same database
+        connection, but it doesn't create a new, fresh postgres session for each API request.
+        This means that if django is configured to use a db connection pool, context values,
+        like `set role` and `set some_param`, might bleed between user requests if they're
+        not properly reset by this middleware.
         """
         try:
             with connection.cursor() as cursor:
