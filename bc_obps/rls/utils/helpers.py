@@ -6,17 +6,6 @@ from rls.utils.m2m import M2mRls
 from rls.utils.policy import RlsPolicy
 
 
-# brianna access to their own operator, e.g. statement only
-approved_industry_user_statement = """
-                    operator_id IN (
-                        SELECT o.id
-                        FROM erc.operator o
-                        JOIN erc.user_operator uo
-                        ON o.id = uo.operator_id
-                        AND uo.user_id = current_setting('my.guid', true)::uuid
-                        AND uo.status = 'Approved'
-                    )
-                    """
 
 
 
