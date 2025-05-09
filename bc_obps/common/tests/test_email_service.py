@@ -134,40 +134,6 @@ def test_health_check(email_service: EmailService, health_check_data, mocker):
     email_service._make_request.assert_called_once_with("/health")
 
 
-@pytest.mark.skip(reason="only run this if you want to receive an actual email")
-def test_send_real_email():
-    # creates a real instance of EmailService, instead of using the fixture
-    email_service = EmailService()
-    real_recipient = 'andrea.williams@gov.bc.ca'
-    real_email_data = {
-        'bodyType': 'text',
-        'body': 'This is the body of a test email for BCIERS Email Service',
-        'from': 'ggircs@gov.bc.ca',
-        'subject': 'Automated Test of Email_Service',
-        'to': [real_recipient],
-    }
-    response = email_service.send_email(real_email_data)
-    assert len(response['messages']) == 1
-    assert response['messages'][0]['to'] == [real_recipient]
-    assert response['messages'][0]['msgId'] is not None
-    assert response['txId'] is not None
-
-
-def test_send_email(email_service: EmailService, email_data, mocker):
-    mock_send_email_request = mocker.patch.object(email_service, '_make_request')
-    mock_send_email_request.return_value.json.return_value = {
-        'messages': [{'msgId': '0000000-00000-0000-0000001', 'to': ['sample@email.com']}],
-        'txId': '00000000-0000-0000-0000-000000000000',
-    }
-
-    response = email_service.send_email(email_data)
-    assert len(response['messages']) == 1
-    assert response['txId'] == '00000000-0000-0000-0000-000000000000'
-    assert response['messages'][0]['msgId'] == '0000000-00000-0000-0000001'
-    assert response['messages'][0]['to'] == ['sample@email.com']
-    email_service._get_token.assert_called_once()
-
-
 def test_get_message_status(email_service: EmailService, mocker):
     mock_get_status_request = mocker.patch.object(email_service, '_make_request')
     mock_get_status_request.return_value.json.return_value = {

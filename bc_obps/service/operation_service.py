@@ -2,7 +2,7 @@ import os
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from registration.emails import send_registration_and_boro_id_email
-from registration.enums.enums import BoroEmailTemplateNames
+from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
 from service.contact_service import ContactService
 from service.data_access_service.document_service import DocumentDataAccessService
@@ -109,7 +109,7 @@ class OperationService:
         # (not from the Admin module), and once an operation is registered, it can no longer be accessed from the Registration workflow.
         if operation.status == Operation.Statuses.REGISTERED:
             send_registration_and_boro_id_email(
-                BoroEmailTemplateNames.CONFIRMATION,
+                EmailTemplateNames.REGISTRATION_CONFIRMATION,
                 operation.operator.legal_name,
                 operation,
                 UserDataAccessService.get_by_guid(user_guid),
@@ -622,7 +622,9 @@ class OperationService:
             raise Exception('Failed to create a BORO ID for the operation.')
 
         # send an email to every Operation Representative for the operation, notifying them that a BORO ID has been issued.
-        send_registration_and_boro_id_email(BoroEmailTemplateNames.ISSUANCE, operation.operator.legal_name, operation)
+        send_registration_and_boro_id_email(
+            EmailTemplateNames.BORO_ID_ISSUANCE, operation.operator.legal_name, operation
+        )
         return operation.bc_obps_regulated_operation
 
     @classmethod

@@ -6,9 +6,9 @@ class IdPs(Enum):
     BCEIDBUSINESS = "bceidbusiness"
 
 
-class BoroEmailTemplateNames(Enum):
-    CONFIRMATION = 'BORO ID Application Confirmation'
-    ISSUANCE = 'BORO ID Issuance'
+class EmailTemplateNames(Enum):
+    REGISTRATION_CONFIRMATION = "Registration Submission Acknowledgement"
+    BORO_ID_ISSUANCE = 'BORO ID Issuance'
 
 
 class AccessRequestStates(Enum):
