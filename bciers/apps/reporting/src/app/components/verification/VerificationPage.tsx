@@ -30,7 +30,7 @@ export default async function VerificationPage({
   const verificationSchema = createVerificationSchema(
     facilityList.facilities,
     operationType,
-    isSupplementaryReport.is_supplementary_report_version,
+    isSupplementaryReport,
   );
 
   //🔍 Check if reports need verification
@@ -41,7 +41,10 @@ export default async function VerificationPage({
     ReportingPage.Verification,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    {
+      skipChangeReview: !isSupplementaryReport,
+      skipVerification: !needsVerification,
+    },
   );
 
   // Render the verification form
@@ -53,9 +56,7 @@ export default async function VerificationPage({
         verificationSchema={verificationSchema}
         initialData={transformedData}
         navigationInformation={navInfo}
-        isSupplementaryReport={
-          isSupplementaryReport.is_supplementary_report_version
-        }
+        isSupplementaryReport={isSupplementaryReport}
       />
     </>
   );

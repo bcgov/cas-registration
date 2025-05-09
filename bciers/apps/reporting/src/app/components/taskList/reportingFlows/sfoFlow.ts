@@ -15,6 +15,7 @@ export const sfoFlow: ReportingFlowDescription = {
   [HeaderStep.AdditionalInformation]: [ReportingPage.AdditionalReportingData],
   [HeaderStep.ComplianceSummary]: [ReportingPage.ComplianceSummary],
   [HeaderStep.SignOffSubmit]: [
+    ReportingPage.ChangeReview,
     ReportingPage.FinalReview,
     ReportingPage.Verification,
     ReportingPage.Attachments,
