@@ -8,16 +8,19 @@ import { OutstandingComplianceObligation } from "./OutstandingComplianceObligati
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
 import { useState } from "react";
+import { PaymentsData } from "@/compliance/src/app/types/payments";
 
 interface Props {
   readonly continueUrl: string;
   readonly backUrl?: string;
   readonly data: any;
   readonly complianceSummaryId?: number;
+  readonly paymentsData?: PaymentsData;
 }
 
 export function ComplianceSummaryReviewContent(props: Props) {
-  const { backUrl, continueUrl, data, complianceSummaryId } = props;
+  const { backUrl, continueUrl, data, complianceSummaryId, paymentsData } =
+    props;
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
   const handleGenerateInvoice = async () => {
@@ -48,7 +51,7 @@ export function ComplianceSummaryReviewContent(props: Props) {
         data={""}
         complianceSummaryId={complianceSummaryId}
       />
-      <MonetaryPaymentsGrid data={""} />
+      <MonetaryPaymentsGrid data={paymentsData} />
       <OutstandingComplianceObligation data={data} />
       <AutomaticOverduePenalty data={data} />
 
