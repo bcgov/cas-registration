@@ -47,7 +47,7 @@ class TimeStampedModel(BaseModel):
                 name="set_created_audit_columns",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Insert,
-                func="new.created_by_id = (select current_setting('my.guid', true)); new.created_at = now(); return new;",
+                func="new.created_by_id = (select nullif(current_setting('my.guid', true), '')); new.created_at = now(); return new;",
             ),
             # On Update
             pgtrigger.Trigger(
