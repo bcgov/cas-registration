@@ -1,7 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
-from compliance.models import ComplianceReportVersion
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from .rls_configs.compliance_obligation import Rls as ComplianceObligationRls
 
 
