@@ -1,7 +1,7 @@
 from uuid import UUID
-from compliance.service.compliance_summary_service import ComplianceSummaryService
-from django.db.models import QuerySet, OuterRef, Subquery
-from compliance.models.compliance_summary import ComplianceSummary
+from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+from django.db.models import QuerySet
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
@@ -14,54 +14,42 @@ class ComplianceDashboardService:
     """
 
     @classmethod
-    def get_compliance_summaries_for_dashboard(cls, user_guid: UUID) -> QuerySet[ComplianceSummary]:
+    def get_compliance_report_versions_for_dashboard(cls, user_guid: UUID) -> QuerySet[ComplianceReportVersion]:
         """
         Fetches all compliance summaries for the user's operations
         """
         user = UserDataAccessService.get_by_guid(user_guid)
 
-        # Get the latest compliance summary for each operation
-        # First, get the latest submitted report version for each operation
-        compliance_summary_subquery = (
-            ComplianceSummary.objects.filter(
-                report__operation_id=OuterRef("id"),
-                current_report_version__status='Submitted',
-            )
-            .select_related('report', 'report__operation', 'compliance_period', 'obligation')
-            .order_by('-compliance_period__end_date')
-            .values('id')[:1]  # Take only the first one (most recent compliance period)
-        )
-
         operations = (
             OperationDataAccessService.get_all_operations_for_user(user)
             .filter(status=Operation.Statuses.REGISTERED)
-            .annotate(compliance_summary_id=Subquery(compliance_summary_subquery))
+            .values_list('id')
         )
 
-        # Get all compliance summaries for the filtered operations
-        summaries = (
-            ComplianceSummary.objects.select_related('report', 'report__operation', 'compliance_period', 'obligation')
-            .filter(id__in=[op.compliance_summary_id for op in operations if hasattr(op, 'compliance_summary_id')])
-            .order_by('-compliance_period__end_date', 'report__operation__name')
+        # Get all compliance report versions for the filtered operations
+        compliance_report_versions = ComplianceReportVersion.objects.filter(
+            compliance_report__operation_id__in=operations
         )
 
         # Calculate and attach the outstanding balance to each summary
-        for summary in summaries:
-            summary.outstanding_balance = ComplianceSummaryService.calculate_outstanding_balance(summary)  # type: ignore[attr-defined]
+        for version in compliance_report_versions:
+            version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
 
-        return summaries
+        return compliance_report_versions
 
     @classmethod
-    def get_compliance_summary_by_id(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceSummary]:
+    def get_compliance_report_version_by_id(
+        cls, user_guid: UUID, compliance_report_version_id: int
+    ) -> Optional[ComplianceReportVersion]:
         """
-        Fetches a specific compliance summary by ID if it belongs to one of the user's operations
+        Fetches a specific compliance report version by ID if it belongs to one of the user's operations
 
         Args:
             user_guid: The GUID of the user requesting the summary
-            summary_id: The ID of the compliance summary to retrieve
+            compliance_report_version_id: The ID of the compliance summary to retrieve
 
         Returns:
-            The requested ComplianceSummary object or None if not found
+            The requested ComplianceReportVersion object or None if not found
         """
         user = UserDataAccessService.get_by_guid(user_guid)
 
@@ -71,56 +59,57 @@ class ComplianceDashboardService:
         )
 
         # Get the compliance summary if it belongs to one of the user's operations
-        summary = (
-            ComplianceSummary.objects.select_related(
-                'report', 'report__operation', 'current_report_version', 'compliance_period', 'obligation'
-            )
-            .filter(id=summary_id, report__operation__in=operations)
-            .first()
-        )
+        compliance_report_version = ComplianceReportVersion.objects.select_related(
+            'report_version__report',
+            'report_version__report__operation',
+            'compliance_report__compliance_period',
+            'obligation',
+        ).get(id=compliance_report_version_id, report_version__report__operation__in=operations)
 
         # Calculate and attach the outstanding balance
-        if summary:
-            summary.outstanding_balance = ComplianceSummaryService.calculate_outstanding_balance(summary)  # type: ignore[attr-defined]
+        if compliance_report_version:
+            compliance_report_version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(compliance_report_version)  # type: ignore[attr-defined]
 
-        return summary
+        return compliance_report_version
 
-    @classmethod
-    def get_compliance_summary_issuance_data(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceSummary]:
-        """
-        Fetches issuance data for a specific compliance summary
+    ## The below method will be tackled in issue #117
 
-        Args:
-            user_guid: The GUID of the user requesting the issuance data
-            summary_id: The ID of the compliance summary to retrieve issuance data for
+    # @classmethod
+    # def get_compliance_summary_issuance_data(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceReportVersion]:
+    #     """
+    #     Fetches issuance data for a specific compliance summary
 
-        Returns:
-            The ComplianceSummary object augmented with issuance data or None if not found
-        """
-        summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
+    #     Args:
+    #         user_guid: The GUID of the user requesting the issuance data
+    #         summary_id: The ID of the compliance summary to retrieve issuance data for
 
-        if not summary:
-            return None
+    #     Returns:
+    #         The ComplianceReportVersion object augmented with issuance data or None if not found
+    #     """
+    #     summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
 
-        earned_credits: int = 100
-        earned_credits_issued = False
-        issuance_status = "Issuance not requested"
+    #     if not summary:
+    #         return None
 
-        if summary.excess_emissions < 0:
-            # Convert Decimal to int
-            earned_credits = int(abs(summary.excess_emissions))
+    #     earned_credits: int = 100
+    #     earned_credits_issued = False
+    #     issuance_status = "Issuance not requested"
 
-            earned_credits_issued = False
+    #     if summary.excess_emissions < 0:
+    #         # Convert Decimal to int
+    #         earned_credits = int(abs(summary.excess_emissions))
 
-        excess_emissions_percentage = None
-        if summary.emission_limit and summary.emission_limit > 0:
-            excess_emissions_percentage = round(
-                (summary.emissions_attributable_for_compliance / summary.emission_limit) * 100, 2
-            )
+    #         earned_credits_issued = False
 
-        setattr(summary, "earned_credits", earned_credits)
-        setattr(summary, "earned_credits_issued", earned_credits_issued)
-        setattr(summary, "issuance_status", issuance_status)
-        setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
+    #     excess_emissions_percentage = None
+    #     if summary.emission_limit and summary.emission_limit > 0:
+    #         excess_emissions_percentage = round(
+    #             (summary.emissions_attributable_for_compliance / summary.emission_limit) * 100, 2
+    #         )
 
-        return summary
+    #     setattr(summary, "earned_credits", earned_credits)
+    #     setattr(summary, "earned_credits_issued", earned_credits_issued)
+    #     setattr(summary, "issuance_status", issuance_status)
+    #     setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
+
+    #     return summary
