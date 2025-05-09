@@ -45,7 +45,7 @@ class ComplianceObligation(TimeStampedModel):
         db_comment="The fee amount in CAD dollars",
     )
 
-    fee_created_at = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
+    fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
 
     penalty_status = models.CharField(
         max_length=50,
