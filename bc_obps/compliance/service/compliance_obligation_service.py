@@ -116,29 +116,6 @@ class ComplianceObligationService:
         return date(year + 1, 11, 30)
 
     @classmethod
-    def update_obligation_status(cls, obligation_id: int, new_status: str) -> ComplianceObligation:
-        """
-        Updates the status of a compliance obligation
-
-        Args:
-            obligation_id (int): The ID of the compliance obligation
-            new_status (str): The new status (use ComplianceObligation.ObligationStatus choices)
-
-        Returns:
-            ComplianceObligation: The updated compliance obligation
-
-        Raises:
-            ComplianceObligation.DoesNotExist: If the compliance obligation doesn't exist
-            ValidationError: If the new status is invalid
-        """
-        obligation = ComplianceObligation.objects.get(id=obligation_id)
-
-        obligation.status = new_status
-        obligation.save()
-
-        return obligation
-
-    @classmethod
     def update_penalty_status(cls, obligation_id: int, new_status: str) -> ComplianceObligation:
         """
         Updates the penalty status of a compliance obligation
