@@ -332,7 +332,7 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ('fee_created_at', models.DateField(blank=True, db_comment='The date the fee was created', null=True)),
+                ('fee_date', models.DateField(blank=True, db_comment='The date the fee was created', null=True)),
                 (
                     'penalty_status',
                     models.CharField(
@@ -511,7 +511,7 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ('fee_created_at', models.DateField(blank=True, db_comment='The date the fee was created', null=True)),
+                ('fee_date', models.DateField(blank=True, db_comment='The date the fee was created', null=True)),
                 (
                     'penalty_status',
                     models.CharField(
