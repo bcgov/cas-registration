@@ -1,6 +1,6 @@
 from typing import Dict
 from uuid import UUID
-from registration.schema import UserIn, UserUpdateIn, UserOut
+from registration.schema import UserIn, UserUpdateIn
 from registration.models import AppRole, Operator, UserOperator, User
 from django.db.models import QuerySet
 from registration.schema.user import UserUpdateRoleIn
@@ -56,7 +56,13 @@ class UserDataAccessService:
 
     @classmethod
     def get_user_profile(cls, user_guid: UUID) -> User:
-        return User.objects.only(*UserOut.Meta.fields, "app_role").select_related('app_role').get(user_guid=user_guid)
+        return (
+            User.objects.only(
+                "first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name", "app_role"
+            )
+            .select_related('app_role')
+            .get(user_guid=user_guid)
+        )
 
     @classmethod
     def create_user(cls, user_guid: UUID, role: AppRole, user_data: UserIn) -> User:
