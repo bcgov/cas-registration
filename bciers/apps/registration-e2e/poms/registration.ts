@@ -6,6 +6,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { ContactE2EValue } from "@/administration-e2e/utils/enums";
 import {
   checkAllRadioButtons,
   clickButton,
@@ -149,15 +150,29 @@ export class RegistrationPOM {
   }
 
   async fillNewOperationRepresentative() {
-    await this.page.getByLabel(/first+/i).fill("f");
-    await this.page.getByLabel(/last+/i).fill("f");
-    await this.page.getByLabel(/job title+/i).fill("f");
-    await this.page.getByLabel(/business email+/i).fill("email@email.com");
-    await this.page.getByLabel(/business telephone+/i).fill("2505555555");
-    await this.page.getByLabel(/business mailing+/i).fill("f");
-    await this.page.getByLabel(/municipality+/i).fill("f");
-    await fillComboxboxWidget(this.page, /province+/i, "Alberta");
-    await this.page.getByLabel(/postal code+/i).fill("H0H 0H0");
+    await this.page.getByLabel(/first+/i).fill(ContactE2EValue.FIRST_NAME);
+    await this.page.getByLabel(/last+/i).fill(ContactE2EValue.LAST_NAME);
+    await this.page.getByLabel(/job title+/i).fill(ContactE2EValue.POSITION);
+    await this.page
+      .getByLabel(/business email+/i)
+      .fill(ContactE2EValue.EMAIL_ADDRESS);
+    await this.page
+      .getByLabel(/business telephone+/i)
+      .fill(ContactE2EValue.TELEPHONE_NUMBER);
+    await this.page
+      .getByLabel(/business mailing+/i)
+      .fill(ContactE2EValue.MAILING_ADDRESS);
+    await this.page
+      .getByLabel(/municipality+/i)
+      .fill(ContactE2EValue.MUNICIPALITY);
+    await fillComboxboxWidget(
+      this.page,
+      /province+/i,
+      ContactE2EValue.PROVINCE,
+    );
+    await this.page
+      .getByLabel(/postal code+/i)
+      .fill(ContactE2EValue.POSTAL_CODE);
     await clickButton(this.page, /save operation representative/i);
   }
 
