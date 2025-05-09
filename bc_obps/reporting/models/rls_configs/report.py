@@ -1,8 +1,6 @@
-from common.enums import Schemas
 from reporting.enums.enums import ReportingTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import generate_rls_grants, generate_rls_policies
-from rls.utils.policy import RlsPolicy
 
 
 class Rls:

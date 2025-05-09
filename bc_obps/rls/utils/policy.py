@@ -2,6 +2,7 @@ from typing import Optional, Literal
 from django.db.backends.utils import CursorWrapper
 from rls.enums import RlsRoles, RlsOperations
 
+
 class RlsPolicy:
     """
     Represents a Role-Level Security (RLS) policy for a specific table and schema.
@@ -29,6 +30,7 @@ class RlsPolicy:
             )
         )
         """
+
     def __init__(
         self,
         role: RlsRoles,
@@ -54,14 +56,12 @@ class RlsPolicy:
         Args:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
-        execute_string = (
-            f"CREATE POLICY {self.policy_name} ON {self.schema}.{self.table} FOR {self.operation.value} TO {self.role.value} "
-        )
+        execute_string = f"CREATE POLICY {self.policy_name} ON {self.schema}.{self.table} FOR {self.operation.value} TO {self.role.value} "
 
         if self.using_statement:
-            execute_string += " USING {self.using_statement}"
+            execute_string += f" USING {self.using_statement}"
         if self.check_statement:
-            execute_string += " WITH CHECK {self.check_statement}"
+            execute_string += f" WITH CHECK {self.check_statement}"
         execute_string += ";"
 
         try:
