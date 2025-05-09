@@ -1,8 +1,8 @@
+from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from django.db import transaction
 from decimal import Decimal
-from reporting.models.report_version import ReportVersion
 from compliance.models.compliance_report_version import ComplianceReportVersion
 import logging
 
@@ -30,16 +30,18 @@ class ComplianceReportVersionService:
             ReportVersion.DoesNotExist: If report version doesn't exist
         """
         with transaction.atomic():
-            report_version = ReportVersion.objects.select_related('report_compliance_summary').get(id=report_version_id)
+            report_compliance_summary = ReportComplianceSummary.objects.select_related('report_version').get(
+                report_version_id=report_version_id
+            )
 
             ## TODO: WILL NEED SUPPLEMENTARY REPORT HANDLING LOGIC HERE (issue pending) ##
-            credited_emissions = report_version.report_compliance_summary.credited_emissions
-            excess_emissions = report_version.report_compliance_summmary.excess_emissions
+            credited_emissions = report_compliance_summary.credited_emissions
+            excess_emissions = report_compliance_summary.excess_emissions
 
             # Create compliance report version
             compliance_report_version = ComplianceReportVersion.objects.create(
-                report_version=report_version.report,
-                compliance_summary=report_version.report_compliance_summary,
+                report_version=report_compliance_summary.report_version,
+                report_compliance_summary=report_compliance_summary,
                 status=ComplianceReportVersionService._determine_compliance_status(
                     excess_emissions, credited_emissions
                 ),
@@ -128,8 +130,8 @@ class ComplianceReportVersionService:
         """
 
         # Start with the base outstanding balance (excess emissions if positive, otherwise 0)
-        if compliance_report_version.excess_emissions > Decimal('0'):
-            outstanding_balance = compliance_report_version.excess_emissions
+        if compliance_report_version.report_compliance_summary.excess_emissions > Decimal('0'):
+            outstanding_balance = compliance_report_version.report_compliance_summary.excess_emissions
         else:
             outstanding_balance = Decimal('0')
 

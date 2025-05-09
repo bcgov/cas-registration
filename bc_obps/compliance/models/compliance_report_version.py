@@ -1,5 +1,6 @@
 from django.db import models
 from reporting.models.report_compliance_summary import ReportComplianceSummary
+from reporting.models.report_version import ReportVersion
 from registration.models.time_stamped_model import TimeStampedModel
 from compliance.models.compliance_report import ComplianceReport
 from .rls_configs.compliance_report_version import Rls as ComplianceReportVersionRls
@@ -16,15 +17,22 @@ class ComplianceReportVersion(TimeStampedModel):
     compliance_report = models.ForeignKey(
         ComplianceReport,
         on_delete=models.CASCADE,
-        related_name="compliance_summaries",
+        related_name="compliance_report_versions",
         db_comment="The parent compliance report object that this compliance report version belongs to",
     )
 
-    compliance_summary = models.OneToOneField(
+    report_version = models.OneToOneField(
+        ReportVersion,
+        on_delete=models.CASCADE,
+        related_name="compliance_report_version",
+        db_comment="The emissions report version that this compliance report version was generated from",
+    )
+
+    report_compliance_summary = models.OneToOneField(
         ReportComplianceSummary,
         on_delete=models.CASCADE,
         related_name="compliance_report_version",
-        db_comment="The compliance summary from the reporting module that this compliance report version was generated from",
+        db_comment="The compliance summary data from the reporting module that this compliance report version relates to",
     )
 
     excess_emissions_delta_from_previous = models.DecimalField(
