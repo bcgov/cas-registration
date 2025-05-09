@@ -8,14 +8,13 @@ from registration.models.operation import Operation
 from typing import Optional, List
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from dataclasses import dataclass
-from datetime import datetime
 from decimal import Decimal
 
 
 @dataclass
 class Payment:
-    id: int
-    paymentReceivedDate: datetime
+    id: str
+    paymentReceivedDate: str
     paymentAmountApplied: Decimal
     paymentMethod: str
     transactionType: str

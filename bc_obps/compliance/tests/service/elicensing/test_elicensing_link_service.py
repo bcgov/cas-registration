@@ -32,7 +32,7 @@ def mock_elicensing_link():
     link.elicensing_object_id = "test-client-id"
     link.elicensing_object_kind = ELicensingLink.ObjectKind.CLIENT
     link.content_type_id = 1
-    link.object_id = uuid.uuid4()
+    link.object_id = str(uuid.uuid4())
     return link
 
 

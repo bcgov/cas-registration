@@ -85,3 +85,39 @@ class TestELicensingLink(TestCase):
         assert invoice_link.elicensing_guid is not None
         assert invoice_link.content_object == self.operator
         assert invoice_link.elicensing_object_kind == ELicensingLink.ObjectKind.INVOICE
+
+    def test_create_elicensing_link_with_uuid(self):
+        """Test creating an ELicensingLink with UUID object_id"""
+        now = datetime.now()
+        link = ELicensingLink.objects.create(
+            content_type=self.operator_content_type,
+            object_id=str(self.operator.id),
+            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
+            elicensing_object_id="12345",
+            last_sync_at=now,
+            sync_status="SUCCESS",
+        )
+
+        # Verify that the link was created
+        assert link.id is not None
+        assert link.elicensing_guid is not None
+        assert link.content_object == self.operator
+        assert link.elicensing_object_id == "12345"
+        assert isinstance(link.id, int)
+        assert isinstance(link.elicensing_guid, uuid.UUID)
+        assert link.last_sync_at == now
+        assert link.sync_status == "SUCCESS"
+
+    def test_create_elicensing_link_with_integer(self):
+        """Test creating an ELicensingLink with integer object_id"""
+        # Create a test object with integer ID
+        test_id = 12345
+        link = ELicensingLink.objects.create(
+            content_type=self.operator_content_type,
+            object_id=str(test_id),
+            elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
+            elicensing_object_id="12345",
+        )
+
+        assert link.id is not None
+        assert link.object_id == str(test_id)

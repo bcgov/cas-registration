@@ -70,11 +70,11 @@ class ObligationELicensingService:
         # Get client link from operator
         client_link = ELicensingLinkService.get_link_for_model(
             Operator,
-            uuid.UUID(str(obligation.compliance_summary.report.operation.operator.id)),
+            obligation.compliance_summary.report.operation.operator.id,
             ELicensingLink.ObjectKind.CLIENT,
         )
         invoice_link = ELicensingLinkService.get_link_for_model(
-            ComplianceObligation, uuid.UUID(str(obligation.id)), ELicensingLink.ObjectKind.INVOICE
+            ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE
         )
 
         if not client_link or not invoice_link:
@@ -175,7 +175,7 @@ class ObligationELicensingService:
         This includes creating a fee and syncing it with eLicensing.
 
         Args:
-            obligation_id: The ID of the compliance obligation to process
+            obligation_id: The ID of the compliance obligation
 
         Raises:
             ComplianceObligation.DoesNotExist: If the obligation doesn't exist
