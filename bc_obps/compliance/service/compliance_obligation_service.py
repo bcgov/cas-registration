@@ -61,7 +61,7 @@ class ComplianceObligationService:
             obligation_id=cls._get_obligation_id(compliance_report_version.report_version),
             obligation_deadline=obligation_deadline,
             fee_amount_dollars=fee_amount_dollars,
-            fee_created_at=date.today(),
+            fee_date=date.today(),
             penalty_status=ComplianceObligation.PenaltyStatus.NONE,
         )
 
