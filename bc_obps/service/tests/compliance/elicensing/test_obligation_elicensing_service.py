@@ -7,6 +7,8 @@ from decimal import Decimal
 import pytest
 from django.utils import timezone
 
+pytestmark = pytest.mark.django_db
+
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
@@ -196,7 +198,6 @@ class TestObligationELicensingService:
         assert result["businessAreaCode"] == "OBPS"
         assert result["fees"] == [TEST_FEE_ID]
 
-    @pytest.mark.django_db
     def test_process_obligation_integration_success(
         self,
         mock_obligation_get: MagicMock,
@@ -225,7 +226,6 @@ class TestObligationELicensingService:
         mock_api_client.create_invoice.assert_called_once()
         assert mock_link_service.create_link.call_count == 2
 
-    @pytest.mark.django_db
     def test_sync_fee_with_elicensing_success(
         self,
         mock_obligation_get: MagicMock,
@@ -249,7 +249,6 @@ class TestObligationELicensingService:
         mock_api_client.create_fees.assert_called_once()
         mock_link_service.create_link.assert_called_once()
 
-    @pytest.mark.django_db
     def test_sync_invoice_with_elicensing_success(
         self,
         mock_obligation_get: MagicMock,
@@ -276,7 +275,6 @@ class TestObligationELicensingService:
         mock_api_client.create_invoice.assert_called_once()
         mock_link_service.create_link.assert_called_once()
 
-    @pytest.mark.django_db
     def test_sync_fee_with_elicensing_api_error(
         self,
         mock_obligation_get: MagicMock,
@@ -293,7 +291,6 @@ class TestObligationELicensingService:
         with pytest.raises(requests.RequestException):
             ObligationELicensingService.sync_fee_with_elicensing(mock_obligation.id, mock_client_link)
 
-    @pytest.mark.django_db
     def test_sync_invoice_with_elicensing_api_error(
         self,
         mock_obligation_get: MagicMock,
@@ -313,7 +310,6 @@ class TestObligationELicensingService:
                 mock_obligation.id, mock_client_link, mock_fee_link
             )
 
-    @pytest.mark.django_db
     def test_get_obligation_invoice_payments_success(
         self,
         mock_obligation_get: MagicMock,
@@ -351,7 +347,6 @@ class TestObligationELicensingService:
         mock_link_service.get_link_for_model.assert_called()
         mock_api_client.query_invoice.assert_called_once()
 
-    @pytest.mark.django_db
     def test_get_obligation_invoice_payments_no_links(
         self,
         mock_obligation_get: MagicMock,
@@ -367,7 +362,6 @@ class TestObligationELicensingService:
         with pytest.raises(ValueError, match="No client or invoice link found"):
             ObligationELicensingService.get_obligation_invoice_payments(mock_obligation.id)
 
-    @pytest.mark.django_db
     def test_get_obligation_invoice_payments_api_error(
         self,
         mock_obligation_get: MagicMock,
@@ -387,7 +381,6 @@ class TestObligationELicensingService:
         with pytest.raises(requests.RequestException):
             ObligationELicensingService.get_obligation_invoice_payments(mock_obligation.id)
 
-    @pytest.mark.django_db
     def test_get_obligation_invoice_payments_no_invoice(
         self,
         mock_obligation_get: MagicMock,
