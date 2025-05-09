@@ -7,7 +7,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("registration", "0110_add_non_regulated_naics_codes"),
+        ("registration", "0108_V3_1_0"),
     ]
 
     operations = [

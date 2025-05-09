@@ -9,8 +9,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0110_add_non_regulated_naics_codes'),
-        ('reporting', '0096_reportsignoff_acknowledgement_of_certification_and_more'),
+        ('registration', '0111_add_non_regulated_naics_codes'),
+        ('reporting', '0097_reportsignoff_acknowledgement_of_certification_and_more'),
     ]
 
     operations = [
