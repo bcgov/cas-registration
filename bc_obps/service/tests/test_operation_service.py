@@ -1108,6 +1108,37 @@ class TestOperationServiceV2UpdateOperation:
         )  # only 1 record (to make sure we didn't create duplicate new ones)
         assert OptedInOperationDetail._base_manager.count() == 1  # 1 operation total including archived records
 
+    @staticmethod
+    @patch("service.operation_service.operation_registration_purpose_changed.send")
+    def test_signal_emitted_on_registration_purpose_change(mock_signal_send):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            registration_purpose='OBPS Regulated Operation',
+            created_by=approved_user_operator.user,
+            status=Operation.Statuses.REGISTERED,
+        )
+        payload = OperationInformationInUpdate(
+            registration_purpose='Potential Reporting Operation',
+            name="Test Update Operation Name",
+            type=Operation.Types.SFO,
+            naics_code_id=1,
+            secondary_naics_code_id=1,
+            tertiary_naics_code_id=2,
+            activities=[2],
+            process_flow_diagram=MOCK_DATA_URL,
+            boundary_map=MOCK_DATA_URL,
+            operation_representatives=[baker.make_recipe('registration.tests.utils.contact').id],
+        )
+
+        OperationService.update_operation(approved_user_operator.user.user_guid, payload, operation.id)
+
+        mock_signal_send.assert_called_once_with(
+            sender=OperationService,
+            operation_id=operation.id,
+        )
+
 
 class TestCreateOrUpdateEio:
     @staticmethod
