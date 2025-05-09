@@ -1,7 +1,6 @@
 from django.db import models
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from registration.models.time_stamped_model import TimeStampedModel
-from reporting.models import ReportComplianceSummary
 from compliance.models.compliance_report import ComplianceReport
 from .rls_configs.compliance_report_version import Rls as ComplianceReportVersionRls
 
@@ -32,14 +31,14 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="The delta of the excess emissions reported in the compliance_summary for this version and the previous one",
         decimal_places=4,
         max_digits=20,
-        default=0.0000
+        default=0.0000,
     )
 
     credited_emissions_delta_from_previous = models.DecimalField(
         db_comment="The delta of the credited emissions reported in the compliance_summary for this version and the previous one",
         decimal_places=4,
         max_digits=20,
-        default=0.0000
+        default=0.0000,
     )
 
     status = models.CharField(
