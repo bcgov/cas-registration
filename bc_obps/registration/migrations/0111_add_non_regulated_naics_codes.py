@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0109_historicalnaicscode_is_regulated_and_more'),
+        ('registration', '0110_historicalnaicscode_is_regulated_and_more'),
     ]
 
     def unregulated_naics_code_data(apps, schema_monitor):
