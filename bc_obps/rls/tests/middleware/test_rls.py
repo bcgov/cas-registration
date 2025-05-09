@@ -41,25 +41,25 @@ class TestRlsMiddleware(TestCase):
 
         response = self.middleware(request)
 
-        # Assert _set_user_context was called with the correct user GUID
+        # Assert _set_user_context was called with the correct user
         mock_set_user_context.assert_called_once_with(self.user)
         # Assert response is passed correctly
         self.assertEqual(response.content, b"OK")
 
     @patch("rls.middleware.rls.RlsMiddleware._set_user_context")
-    def test_user_context_not_set_for_anonymous_user(self, mock_set_user_context):
+    def test_user_context_reset_for_anonymous_user(self, mock_set_user_context):
         request = self.factory.get("/")
         request.current_user = None
 
         response = self.middleware(request)
 
-        # Assert _set_user_context was not called
-        mock_set_user_context.assert_not_called()
+        # Assert _set_user_context was called with None
+        mock_set_user_context.assert_called_once_with(None)
         # Assert response is passed correctly
         self.assertEqual(response.content, b"OK")
 
     @patch("rls.middleware.rls.connection.cursor")
-    def test_set_user_context_executes_set_query(self, mock_cursor):
+    def test_set_user_context_executes_set_query_for_authenticated_user(self, mock_cursor):
         self.middleware._set_user_context(self.user)
 
         # Assert the database queries were executed with the correct parameters
@@ -69,11 +69,31 @@ class TestRlsMiddleware(TestCase):
         cursor_instance.execute.assert_any_call('set role %s', [self.user.app_role.role_name])
 
     @patch("rls.middleware.rls.connection.cursor")
-    def test_set_user_context_logs_error_on_failure(self, mock_cursor):
+    def test_set_user_context_executes_reset_query_for_anonymous_user(self, mock_cursor):
+        self.middleware._set_user_context(None)
+
+        # Assert the database reset queries were executed
+        mock_cursor.assert_called_once()
+        cursor_instance = mock_cursor().__enter__()
+        cursor_instance.execute.assert_any_call('reset my.guid')
+        cursor_instance.execute.assert_any_call('reset role')
+
+    @patch("rls.middleware.rls.connection.cursor")
+    def test_set_user_context_logs_error_on_failure_authenticated(self, mock_cursor):
         mock_cursor.side_effect = Exception("Database error")
 
         with self.assertLogs("rls.middleware.rls", level="ERROR") as log:
-            self.middleware._set_user_context(self.user.user_guid)
+            self.middleware._set_user_context(self.user)
+
+        # Assert the error was logged
+        self.assertIn("Failed to set user context: Database error", log.output[0])
+
+    @patch("rls.middleware.rls.connection.cursor")
+    def test_set_user_context_logs_error_on_failure_anonymous(self, mock_cursor):
+        mock_cursor.side_effect = Exception("Database error")
+
+        with self.assertLogs("rls.middleware.rls", level="ERROR") as log:
+            self.middleware._set_user_context(None)
 
         # Assert the error was logged
         self.assertIn("Failed to set user context: Database error", log.output[0])
