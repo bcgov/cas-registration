@@ -55,16 +55,6 @@ class UserDataAccessService:
         return User.objects.only('app_role').select_related('app_role').get(user_guid=user_guid).app_role
 
     @classmethod
-    def get_user_profile(cls, user_guid: UUID) -> User:
-        return (
-            User.objects.only(
-                "first_name", "last_name", "position_title", "email", "phone_number", "bceid_business_name", "app_role"
-            )
-            .select_related('app_role')
-            .get(user_guid=user_guid)
-        )
-
-    @classmethod
     def create_user(cls, user_guid: UUID, role: AppRole, user_data: UserIn) -> User:
         return User.objects.create(
             user_guid=user_guid,
