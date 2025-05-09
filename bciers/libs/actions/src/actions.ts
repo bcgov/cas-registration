@@ -38,7 +38,7 @@ export async function getToken() {
 /**
  * Generic action handler that sends a request to the specified API endpoint
  * and returns the response as a JSON object.
- * @param apiUrl The relative URL of the API endpoint to send the request to.
+ * @param endpoint The relative URL of the API endpoint to send the request to.
  * @param method The HTTP method to use for the request (GET, POST, PUT, DELETE, PATCH).
  * @param pathToRevalidate The path of the data to revalidate after the request is complete.
  * @param options Optional data to include in the request body (example: body for POST, PUT, and PATCH requests, overriding cache control).
