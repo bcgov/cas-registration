@@ -8,6 +8,5 @@ class ComplianceObligationOut(ModelSchema):
     class Meta:
         model = ComplianceObligation
         fields = [
-            'emissions_amount_tco2e',
-            'status',
+            'id',
         ]
