@@ -4,6 +4,7 @@ from django.db import connection
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 from registration.models import User
+from django.db.backends.utils import CursorWrapper
 
 logger = logging.getLogger(__name__)
 
@@ -29,18 +30,30 @@ class RlsMiddleware:
         user: Optional[User] = getattr(request, 'current_user', None)
         # Note from Dylan for later:
         # when we get to actually setting roles, we'll want to still set a role here. We might need an "Unauthenticated" role to set in this case.
-        if user:
-            self._set_user_context(user)
-        else:
-            logger.info("Anonymous user detected, skipping user context setup", exc_info=True)
+        self._set_user_context(user)
         return self.get_response(request)
 
     @staticmethod
-    def _set_user_context(user: User) -> None:
+    def _set_user_guid_and_role(cursor: CursorWrapper, user: User) -> None:
+        cursor.execute('set my.guid = %s', [str(user.user_guid)])
+        # set the role based on the user's app role
+        cursor.execute('set role %s', [user.app_role.role_name])
+
+    @staticmethod
+    def _reset_user_guid_and_role(cursor: CursorWrapper) -> None:
+        cursor.execute('reset my.guid')
+        cursor.execute('reset role')
+
+    def _set_user_context(self, user: Optional[User]) -> None:
+        """
+        Sets the database session context for the given user, including their GUID and role.
+        If no user is provided, resets the context.
+        """
         try:
             with connection.cursor() as cursor:
-                cursor.execute('set my.guid = %s', [str(user.user_guid)])
-                # set the role based on the user's app role
-                cursor.execute('set role %s', [user.app_role.role_name])
+                if user:
+                    self._set_user_guid_and_role(cursor, user)
+                else:
+                    self._reset_user_guid_and_role(cursor)
         except Exception as e:
-            logger.error(f"Failed to set user context: {e}", exc_info=True)
+            logger.error(f"Failed to set user context: {str(e)}", exc_info=True)
