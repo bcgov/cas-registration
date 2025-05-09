@@ -3,7 +3,6 @@ from model_bakery.recipe import Recipe, foreign_key
 from compliance.models import (
     CompliancePeriod,
     ComplianceSummary,
-    ComplianceProduct,
     ComplianceObligation,
 )
 from reporting.tests.utils.baker_recipes import report, report_version, report_product
@@ -32,18 +31,6 @@ compliance_summary = Recipe(
     credited_emissions=Decimal("0.0"),
     reduction_factor=Decimal("0.95"),
     tightening_rate=Decimal("0.01"),
-)
-
-# ComplianceProduct recipe
-compliance_product = Recipe(
-    ComplianceProduct,
-    compliance_summary=foreign_key(compliance_summary),
-    report_product=foreign_key(report_product),
-    annual_production=Decimal("1000.0"),
-    apr_dec_production=Decimal("750.0"),
-    emission_intensity=Decimal("0.1"),
-    allocated_industrial_process_emissions=Decimal("50.0"),
-    allocated_compliance_emissions=Decimal("40.0"),
 )
 
 # ComplianceObligation recipe

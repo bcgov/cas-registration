@@ -1,6 +1,6 @@
 from decimal import Decimal
 from model_bakery import baker
-from compliance.models import CompliancePeriod, ComplianceSummary, ComplianceProduct, ComplianceObligation
+from compliance.models import CompliancePeriod, ComplianceSummary, ComplianceObligation
 
 
 def compliance_period_baker(**kwargs) -> CompliancePeriod:
@@ -72,42 +72,6 @@ def compliance_summary_baker(**kwargs) -> ComplianceSummary:
     defaults.update(kwargs)
 
     return baker.make(ComplianceSummary, **defaults)
-
-
-def compliance_product_baker(**kwargs) -> ComplianceProduct:
-    """
-    Create a ComplianceProduct instance with default values.
-
-    Args:
-        **kwargs: Override default values for ComplianceProduct fields
-
-    Returns:
-        ComplianceProduct: A ComplianceProduct instance
-    """
-    defaults = {
-        "annual_production": Decimal("1000.0"),
-        "apr_dec_production": Decimal("750.0"),
-        "emission_intensity": Decimal("0.1"),
-        "allocated_industrial_process_emissions": Decimal("50.0"),
-        "allocated_compliance_emissions": Decimal("40.0"),
-    }
-
-    # If compliance_summary is not provided, create one
-    if "compliance_summary" not in kwargs:
-        kwargs["compliance_summary"] = compliance_summary_baker()
-
-    # If report_product is not provided, create one
-    if "report_product" not in kwargs:
-        from reporting.tests.utils.bakers import report_product_baker
-
-        kwargs["report_product"] = report_product_baker(
-            report_version=kwargs["compliance_summary"].current_report_version
-        )
-
-    # Update defaults with provided kwargs
-    defaults.update(kwargs)
-
-    return baker.make(ComplianceProduct, **defaults)
 
 
 def compliance_obligation_baker(**kwargs) -> ComplianceObligation:
