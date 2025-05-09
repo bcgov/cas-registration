@@ -1,8 +1,7 @@
 from typing import List, Optional
-from registration.enums.enums import AccessRequestStates, AccessRequestTypes
+from registration.enums.enums import AccessRequestStates, AccessRequestTypes, EmailTemplateNames
 from registration.models.operation import Operation
 from service.email.email_service import EmailService
-from registration.enums.enums import BoroEmailTemplateNames
 import logging
 
 from registration.models import User
@@ -28,7 +27,7 @@ class Recipient:
 
 
 def send_registration_and_boro_id_email(
-    template_name: BoroEmailTemplateNames,
+    template_name: EmailTemplateNames,
     operator_legal_name: str,
     operation: Operation,
     registration_creator: Optional[User] = None,
