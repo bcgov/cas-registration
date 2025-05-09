@@ -18,11 +18,13 @@ from ..router import router
     auth=authorize("approved_industry_user"),
 )
 def get_compliance_report_version(
-    request: HttpRequest, summary_id: int
+    request: HttpRequest, compliance_report_version_id: int
 ) -> Tuple[Literal[200], Optional[ComplianceReportVersion]]:
     """Get a compliance report version by ID"""
     user_guid = get_current_user_guid(request)
-    compliance_report_version = ComplianceDashboardService.get_compliance_report_version_by_id(user_guid, summary_id)
+    compliance_report_version = ComplianceDashboardService.get_compliance_report_version_by_id(
+        user_guid, compliance_report_version_id
+    )
     return 200, compliance_report_version
 
 
