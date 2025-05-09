@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from common.permissions import authorize
 from common.api.utils import get_current_user_guid
 from compliance.models import ComplianceReportVersion
-from bc_obps.compliance.schema.compliance_report_version import ComplianceReportVersionListOut
+from compliance.schema.compliance_report_version import ComplianceReportVersionListOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja.pagination import paginate, PageNumberPagination
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
