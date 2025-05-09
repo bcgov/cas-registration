@@ -1,8 +1,8 @@
 from django.db import models
-from bc_obps.reporting.models.report_compliance_summary import ReportComplianceSummary
+from reporting.models.report_compliance_summary import ReportComplianceSummary
 from registration.models.time_stamped_model import TimeStampedModel
 from reporting.models import ReportComplianceSummary
-from compliance.models import ComplianceReport
+from compliance.models.compliance_report import ComplianceReport
 from .rls_configs.compliance_report_version import Rls as ComplianceReportVersionRls
 
 
