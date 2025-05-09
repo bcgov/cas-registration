@@ -22,27 +22,30 @@ export default async function UserPage() {
   // get user's data
   let formData: UserProfilePartialFormData | { error: string } =
     await getUserFormData();
-  if ("error" in formData) {
-    if (formData.error.includes("Not Found")) {
-      // No user found, create formData to reflect new user in user table
-      isCreate = true;
-      // 👤 Use NextAuth.js hook to get information about the user's session
-      /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
-       */
-      const session = await auth();
-      const names = getUserFullName(session)?.split(" ");
 
-      formData = {
-        first_name: names?.[0],
-        last_name: names?.[1],
-        email: session?.user?.email ?? undefined,
-      };
-    } else {
-      return (
-        <div>{`Server Error: ${formData.error}. Please try again later.`}</div>
-      );
-    }
+  // Handle error case
+  if ("error" in formData) {
+    return (
+      <div>{`Server Error: ${formData.error}. Please try again later.`}</div>
+    );
   }
+
+  // If formData has error or is empty, populate from session
+  if (Object.keys(formData).length === 0) {
+    // No user found, create formData to reflect new user in user table
+    isCreate = true;
+    // 👤 Use NextAuth.js hook to get information about the user's session
+    /* When calling from the server-side i.e., in Route Handlers, React Server Components, API routes,
+     */
+    const session = await auth();
+    const names = getUserFullName(session)?.split(" ");
+    formData = {
+      first_name: names?.[0],
+      last_name: names?.[1],
+      email: session?.user?.email ?? undefined,
+    };
+  }
+
   // Render the UserForm with the formData values
   return <UserForm formData={formData} isCreate={isCreate} />;
 }
