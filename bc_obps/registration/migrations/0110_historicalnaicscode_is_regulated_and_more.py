@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0108_V3_1_0'),
+        ('registration', '0109_remove_closureevent_set_created_audit_columns_and_more'),
     ]
 
     operations = [
