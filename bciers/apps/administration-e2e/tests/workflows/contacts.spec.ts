@@ -78,12 +78,11 @@ test.describe("Test add/edit contact", () => {
     // Edit form
     await expect(page.getByRole("button", { name: /edit/i })).toBeVisible();
     await clickButton(page, /edit/i);
-    await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /cancel/i })).toBeVisible();
 
     // Edit the contact information
     await contactsPage.contactInformation("fill");
     await clickButton(page, /save/i);
-    await page.waitForLoadState("load");
 
     // Verify that fields were updated
     await contactsPage.contactInformation("read");
