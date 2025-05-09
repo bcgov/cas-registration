@@ -5,7 +5,7 @@ from compliance.models import (
     ComplianceSummary,
     ComplianceObligation,
 )
-from reporting.tests.utils.baker_recipes import report, report_version, report_product
+from reporting.tests.utils.baker_recipes import report, report_version
 from reporting.models import ReportingYear
 
 # CompliancePeriod recipe
