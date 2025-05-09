@@ -1,29 +1,12 @@
 from decimal import Decimal
 from typing import List, cast, Optional, Union
 from ninja import ModelSchema, Field
-from compliance.models.compliance_product import ComplianceProduct
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
 
 # Constants for field aliases
 OPERATION_NAME_ALIAS = "report.operation.name"
 REPORTING_YEAR_ALIAS = "compliance_period.end_date.year"
-
-
-class ComplianceProductOut(ModelSchema):
-    """Schema for compliance product output"""
-
-    product_name: str = Field(..., alias="report_product.product.name")
-
-    class Meta:
-        model = ComplianceProduct
-        fields = [
-            'annual_production',
-            'apr_dec_production',
-            'emission_intensity',
-            'allocated_industrial_process_emissions',
-            'allocated_compliance_emissions',
-        ]
 
 
 class ComplianceObligationOut(ModelSchema):
@@ -61,7 +44,6 @@ class ComplianceSummaryOut(ModelSchema):
     operation_bcghg_id: str = Field(..., alias="report.operation.bcghg_id.id")
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     compliance_status: str = Field(..., alias="compliance_status")
-    products: List[ComplianceProductOut]
     obligation: ComplianceObligationOut
     excess_emissions: Decimal
     outstanding_balance: Optional[Decimal] = None

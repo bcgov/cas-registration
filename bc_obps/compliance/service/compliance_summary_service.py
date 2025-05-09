@@ -9,7 +9,6 @@ from reporting.models.report_version import ReportVersion
 from reporting.models import ReportProduct
 from reporting.service.compliance_service import ComplianceService as ReportComplianceService
 from compliance.models.compliance_summary import ComplianceSummary
-from compliance.models.compliance_product import ComplianceProduct
 from django.core.exceptions import ValidationError
 import logging
 
@@ -120,19 +119,6 @@ class ComplianceSummaryService:
             rp.product.name: rp
             for rp in ReportProduct.objects.select_related('product').filter(report_version_id=report_version_id)
         }
-
-        # Create compliance products
-        for product_data in product_data_list:
-            report_product = report_products[product_data.name]
-            ComplianceProduct.objects.create(
-                compliance_summary=summary,
-                report_product=report_product,
-                annual_production=product_data.annual_production,
-                apr_dec_production=product_data.apr_dec_production,
-                emission_intensity=product_data.emission_intensity,
-                allocated_industrial_process_emissions=product_data.allocated_industrial_process_emissions,
-                allocated_compliance_emissions=product_data.allocated_compliance_emissions,
-            )
 
     @classmethod
     def get_compliance_summary(cls, summary_id: int) -> ComplianceSummary:
