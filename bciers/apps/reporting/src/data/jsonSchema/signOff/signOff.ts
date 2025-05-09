@@ -12,12 +12,23 @@ const baseFields = (flow: string): RJSFSchema["properties"] => ({
       "Before clicking 'Submit', please confirm that you understand and agree with the following statements:",
     type: "string",
   },
-  acknowledgement_of_review: {
-    title:
-      "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
-    type: "boolean",
-    default: false,
-  },
+  ...(flow === ReportingFlow.EIO
+    ? {
+        acknowledgement_of_certification: {
+          title:
+            "I certify that the amount of total emissions reported, and all other information included in this report, is complete and accurate.",
+          type: "boolean",
+          default: false,
+        },
+      }
+    : {
+        acknowledgement_of_review: {
+          title:
+            "I certify that I have reviewed the annual report, and that I have exercised due diligence to ensure that the information included in this report is true and complete.",
+          type: "boolean",
+          default: false,
+        },
+      }),
   acknowledgement_of_records: {
     title:
       "I understand that the Ministry responsible for the administration and enforcement of the Greenhouse Gas Industrial Reporting and Control Act may require records from the Operator evidencing the truth of this report.",
@@ -111,6 +122,7 @@ export const signOffUiSchema = {
   "ui:order": [
     "submission_note",
     "acknowledgement_of_review",
+    "acknowledgement_of_certification",
     "acknowledgement_of_records",
     "acknowledgement_of_information",
     "acknowledgement_of_errors",
@@ -124,6 +136,13 @@ export const signOffUiSchema = {
     "ui:classNames": "mt-2 mb-5",
   },
   acknowledgement_of_review: {
+    "ui:FieldTemplate": BasicFieldTemplate,
+    "ui:widget": "CheckboxWidget",
+    "ui:options": {
+      alignment: "top",
+    },
+  },
+  acknowledgement_of_certification: {
     "ui:FieldTemplate": BasicFieldTemplate,
     "ui:widget": "CheckboxWidget",
     "ui:options": {

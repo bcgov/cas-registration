@@ -40,12 +40,20 @@ const customTransformErrors = (
       error.message = `Select a ${formatProperty(error.property)}`;
       return error;
     }
-    if (error?.message === "must be number") {
+
+    if (
+      error?.message === "must be number" ||
+      error?.message === "must be number,null"
+    ) {
       error.message = `Enter numbers only`;
       return error;
     }
     if (error?.message === "must be string") {
       error.message = `Enter letters only`;
+      return error;
+    }
+    if (error?.message === "must be >= 0") {
+      error.message = "Enter a number >= 0";
       return error;
     }
 

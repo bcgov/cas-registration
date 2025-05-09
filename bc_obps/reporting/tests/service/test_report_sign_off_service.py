@@ -23,6 +23,7 @@ class TestReportSignOffService(TestCase):
                 acknowledgement_of_possible_costs=True,
                 acknowledgement_of_new_version=None,
                 acknowledgement_of_corrections=None,
+                acknowledgement_of_certification=None,
             ),
             signature="signature",
         )

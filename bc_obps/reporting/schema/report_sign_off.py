@@ -4,7 +4,8 @@ from ninja import Schema
 
 
 class ReportSignOffIn(Schema):
-    acknowledgement_of_review: bool
+    acknowledgement_of_review: Optional[bool] = None
+    acknowledgement_of_certification: Optional[bool] = None
     acknowledgement_of_records: bool
     acknowledgement_of_information: Optional[bool] = None
     acknowledgement_of_errors: Optional[bool] = None

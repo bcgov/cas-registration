@@ -1,6 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
 import { FieldTemplate } from "@bciers/components/form/fields";
-import InlineFieldTemplate from "@bciers/components/form/fields/InlineFieldTemplate";
 
 export const eioSchema: RJSFSchema = {
   title: "Electricity Import Data",
@@ -8,43 +7,53 @@ export const eioSchema: RJSFSchema = {
   properties: {
     import_specified_electricity: {
       title: "Amount of imported electricity - specified sources",
-      type: "string",
+      type: ["number"],
+      minimum: 0,
     },
     import_specified_emissions: {
       title: "Emissions from specified imports",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     import_unspecified_electricity: {
       title: "Amount of imported electricity - unspecified sources",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     import_unspecified_emissions: {
       title: "Emissions from unspecified imports",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_specified_electricity: {
       title: "Amount of exported electricity - specified sources",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_specified_emissions: {
       title: "Emissions from specified exports",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_unspecified_electricity: {
       title: "Amount of exported electricity - unspecified sources",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     export_unspecified_emissions: {
       title: "Emissions from unspecified exports",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     canadian_entitlement_electricity: {
       title: "Amount of electricity categorized as Canadian Entitlement Power",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
     canadian_entitlement_emissions: {
       title: "Emissions from Canadian Entitlement Power",
-      type: "string",
+      type: ["number", "null"],
+      minimum: 0,
     },
   },
 };
@@ -52,10 +61,7 @@ export const eioSchema: RJSFSchema = {
 export const eioUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-
-  // "ui:order": ["import_specified_electricity"],
   import_specified_electricity: {
-    "ui:FieldTemplate": InlineFieldTemplate,
     "ui:placeholder": "Data",
     "ui:options": {
       displayUnit: "MWh",

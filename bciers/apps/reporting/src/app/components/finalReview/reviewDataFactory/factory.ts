@@ -11,6 +11,7 @@ import {
   ReportingPage,
   ReportingFlowDescription,
 } from "@reporting/src/app/components/taskList/types";
+import electricityImportDataFactoryItem from "@reporting/src/app/components/finalReview/reviewDataFactory/electricityImportData";
 
 export type ReviewData = {
   schema: RJSFSchema;
@@ -40,6 +41,7 @@ export default async function reviewDataFactory(
     [ReportingPage.ReviewOperationInfo]: operationReviewFactoryItem,
     [ReportingPage.PersonResponsible]: personResponsibleFactoryItem,
     [ReportingPage.Activities]: facilityActivitiesFactoryItem,
+    [ReportingPage.ElectricityImportData]: electricityImportDataFactoryItem,
     [ReportingPage.AdditionalReportingData]: additionalReportingDataFactoryItem,
     [ReportingPage.NewEntrantInformation]: newEntrantInformationFactoryItem,
     [ReportingPage.OperationEmissionSummary]:

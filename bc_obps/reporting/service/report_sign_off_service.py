@@ -9,7 +9,8 @@ from django.core.exceptions import ValidationError
 
 @dataclass
 class ReportSignOffAcknowledgements:
-    acknowledgement_of_review: bool
+    acknowledgement_of_review: Optional[bool]
+    acknowledgement_of_certification: Optional[bool]
     acknowledgement_of_records: bool
     acknowledgement_of_information: Optional[bool]
     acknowledgement_of_possible_costs: Optional[bool]
@@ -33,12 +34,13 @@ class ReportSignOffService:
             report_sign_off_record, _ = ReportSignOff.objects.update_or_create(
                 report_version_id=report_version_id,
                 acknowledgement_of_review=acknowledgements.acknowledgement_of_review,
+                acknowledgement_of_corrections=acknowledgements.acknowledgement_of_corrections,
                 acknowledgement_of_records=acknowledgements.acknowledgement_of_records,
+                acknowledgement_of_certification=acknowledgements.acknowledgement_of_certification,
                 acknowledgement_of_information=acknowledgements.acknowledgement_of_information,
                 acknowledgement_of_errors=acknowledgements.acknowledgement_of_errors,
                 acknowledgement_of_possible_costs=acknowledgements.acknowledgement_of_possible_costs,
                 acknowledgement_of_new_version=acknowledgements.acknowledgement_of_new_version,
-                acknowledgement_of_corrections=acknowledgements.acknowledgement_of_corrections,
                 signature=data.signature,
                 signing_date=datetime.datetime.now(),
             )
@@ -49,24 +51,15 @@ class ReportSignOffService:
 
     @staticmethod
     def validate_report_sign_off(acknowledgements: ReportSignOffAcknowledgements) -> bool:
-        return (
-            acknowledgements.acknowledgement_of_review
-            and acknowledgements.acknowledgement_of_records
-            and (
-                acknowledgements.acknowledgement_of_information
-                or acknowledgements.acknowledgement_of_information is None
-            )
-            and (acknowledgements.acknowledgement_of_errors or acknowledgements.acknowledgement_of_errors is None)
-            and (
-                acknowledgements.acknowledgement_of_possible_costs
-                or acknowledgements.acknowledgement_of_possible_costs is None
-            )
-            and (
-                acknowledgements.acknowledgement_of_new_version
-                or acknowledgements.acknowledgement_of_new_version is None
-            )
-            and (
-                acknowledgements.acknowledgement_of_corrections
-                or acknowledgements.acknowledgement_of_corrections is None
-            )
+        return all(
+            [
+                acknowledgements.acknowledgement_of_records,
+                acknowledgements.acknowledgement_of_review in (True, None),
+                acknowledgements.acknowledgement_of_certification in (True, None),
+                acknowledgements.acknowledgement_of_information in (True, None),
+                acknowledgements.acknowledgement_of_errors in (True, None),
+                acknowledgements.acknowledgement_of_possible_costs in (True, None),
+                acknowledgements.acknowledgement_of_new_version in (True, None),
+                acknowledgements.acknowledgement_of_corrections in (True, None),
+            ]
         )

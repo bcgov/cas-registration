@@ -18,6 +18,8 @@ class ReportSignOff(TimeStampedModel):
     )
 
     acknowledgement_of_review = models.BooleanField(
+        null=True,
+        blank=True,
         default=False,
         db_comment="Whether the user has certified that they have reviewed the report, and that they have ensured that the information included in this report is true and complete.",
     )
@@ -53,6 +55,12 @@ class ReportSignOff(TimeStampedModel):
             "of this report may lead to an additional compliance obligation, and, if submitted after the compliance obligation deadline, "
             "applicable interest."
         ),
+    )
+    acknowledgement_of_certification = models.BooleanField(
+        null=True,
+        blank=True,
+        default=False,
+        db_comment="Whether the user has certified that the amount of total emissions reported, and all other information included in this report, is complete and accurate.",
     )
     signature = models.TextField(
         db_comment="The signature of the user who signed off the report",
