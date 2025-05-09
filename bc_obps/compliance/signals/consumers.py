@@ -1,5 +1,5 @@
 from django.dispatch import receiver
-from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from reporting.models import ReportVersion
 from reporting.signals.signals import report_submitted
 from typing import Any, Type
@@ -18,12 +18,11 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
         **kwargs: Signal arguments including version_id and user_guid
     """
     version_id = kwargs.get('version_id')
-    user_guid = kwargs.get('user_guid')
 
-    if version_id and user_guid:
+    if version_id:
 
         operation = ReportVersion.objects.select_related('report__operation').get(id=version_id).report.operation
         if not operation.is_regulated_operation:
             logger.info(f"Non-regulated operation: Ignoring compliance summary for version id {version_id}")
             return
-        ComplianceReportVersion.create_compliance_report_version(version_id, user_guid)
+        ComplianceReportVersionService.create_compliance_report_version(version_id)
