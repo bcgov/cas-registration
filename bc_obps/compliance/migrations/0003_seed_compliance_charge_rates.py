@@ -42,7 +42,7 @@ def reverse_seed_compliance_charge_rates(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0006_complianceobligation_fee_amount_dollars_and_more'),
+        ('compliance', '0002_seed_compliance_periods'),
     ]
 
     operations = [

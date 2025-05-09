@@ -42,7 +42,6 @@ class TestComplianceSummaryService:
     @patch('compliance.service.compliance_summary_service.ReportVersion.objects.select_related')
     @patch('compliance.service.compliance_summary_service.ReportComplianceService.get_calculated_compliance_data')
     @patch('compliance.service.compliance_summary_service.ComplianceSummary.objects.create')
-    @patch('compliance.service.compliance_summary_service.ComplianceProduct.objects.create')
     @patch('compliance.service.compliance_summary_service.ComplianceObligationService.create_compliance_obligation')
     @patch('compliance.service.compliance_summary_service.ReportProduct.objects.select_related')
     def test_create_compliance_summary_with_excess_emissions(
