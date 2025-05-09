@@ -23,7 +23,7 @@ class ComplianceObligation(TimeStampedModel):
         ComplianceReportVersion,
         on_delete=models.CASCADE,
         related_name="obligation",
-        db_comment="The compliance summary this obligation belongs to",
+        db_comment="The compliance report version this obligation belongs to",
     )
 
     obligation_id = models.CharField(

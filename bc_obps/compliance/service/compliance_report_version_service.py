@@ -32,17 +32,17 @@ class ComplianceReportVersionService:
         with transaction.atomic():
             report_version = ReportVersion.objects.select_related('report_compliance_summary').get(id=report_version_id)
 
-
-            ## TODO: WILL NEED SUPPLEMENTARY REPORT HANDLING LOGIC HERE ##
+            ## TODO: WILL NEED SUPPLEMENTARY REPORT HANDLING LOGIC HERE (issue pending) ##
             credited_emissions = report_version.report_compliance_summary.credited_emissions
             excess_emissions = report_version.report_compliance_summmary.excess_emissions
-
 
             # Create compliance report version
             compliance_report_version = ComplianceReportVersion.objects.create(
                 report_version=report_version.report,
                 compliance_summary=report_version.report_compliance_summary,
-                status=ComplianceReportVersionService._determine_compliance_status(excess_emissions, credited_emissions)
+                status=ComplianceReportVersionService._determine_compliance_status(
+                    excess_emissions, credited_emissions
+                ),
             )
 
             # Create compliance obligation if there are excess emissions
@@ -55,7 +55,7 @@ class ComplianceReportVersionService:
                 # This is done outside of the main transaction to prevent rollback if integration fails
                 transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
 
-            # TODO: Create earned credits object if there are credited emissions
+            # TODO: Create earned credits object if there are credited emissions (issue #117)
 
             return compliance_report_version
 
