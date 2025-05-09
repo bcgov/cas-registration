@@ -1,11 +1,14 @@
+import os
 import pytest
 import base64
 from model_bakery import baker
 from common.permissions import raise_401_if_user_not_authorized
 from registration.models import User, UserOperator, AppRole
+from registration.models.operation import Operation
 from registration.utils import (
     file_to_data_url,
     data_url_to_file,
+    is_document_scan_complete,
     update_model_instance,
     generate_useful_error,
 )
@@ -14,6 +17,7 @@ from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase
 from registration.tests.utils.bakers import document_baker, user_operator_baker
 import requests
+from service.tests.test_operation_service import set_up_valid_mock_operation
 
 pytestmark = pytest.mark.django_db
 
@@ -284,3 +288,39 @@ class TestDataUrlToFile:
 
         with pytest.raises(base64.binascii.Error):
             data_url_to_file(data_url)
+
+
+class TestDocumentScanStatus:
+    @staticmethod
+    def test_is_document_scan_complete_skipped_in_ci(monkeypatch):
+        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "develop", "CI": "true"})
+
+        operation = set_up_valid_mock_operation(
+            Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
+        )
+
+        assert is_document_scan_complete(operation) is True
+
+    @staticmethod
+    def test_is_document_scan_complete_skipped_in_local(monkeypatch):
+        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "local", "CI": "true"})
+
+        operation = set_up_valid_mock_operation(
+            Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Quarantined"
+        )
+
+        assert is_document_scan_complete(operation) is True
+
+    @staticmethod
+    def test_is_document_scan_complete_runs_fail(monkeypatch):
+        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "develop", "CI": "false"})
+        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
+
+        assert is_document_scan_complete(operation) is False
+
+    @staticmethod
+    def test_is_document_scan_complete_runs_success(monkeypatch):
+        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "develop", "CI": "false"})
+        operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Clean")
+
+        assert is_document_scan_complete(operation) is True
