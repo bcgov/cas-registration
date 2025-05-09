@@ -19,14 +19,17 @@ class ELicensingLinkService:
 
     @classmethod
     def get_link_for_model(
-        cls, model_class: Type[T], object_id: uuid.UUID, elicensing_object_kind: str = ELicensingLink.ObjectKind.CLIENT
+        cls,
+        model_class: Type[T],
+        object_id: str | uuid.UUID | int,
+        elicensing_object_kind: str = ELicensingLink.ObjectKind.CLIENT,
     ) -> Optional[ELicensingLink]:
         """
         Get an eLicensing link for any model and object type.
 
         Args:
             model_class: The model class of the related object
-            object_id: The UUID of the related object
+            object_id: The ID of the related object (can be UUID, int, or str)
             elicensing_object_kind: The kind of eLicensing object (defaults to CLIENT)
 
         Returns:
@@ -35,7 +38,7 @@ class ELicensingLinkService:
         content_type = ContentType.objects.get_for_model(cast(models.Model, model_class))
         try:
             return ELicensingLink.objects.get(
-                content_type=content_type, object_id=object_id, elicensing_object_kind=elicensing_object_kind
+                content_type=content_type, object_id=str(object_id), elicensing_object_kind=elicensing_object_kind
             )
         except ELicensingLink.DoesNotExist:
             return None
@@ -63,7 +66,7 @@ class ELicensingLinkService:
         content_type = ContentType.objects.get_for_model(model_instance)
         return ELicensingLink.objects.create(
             content_type=content_type,
-            object_id=getattr(model_instance, 'id'),
+            object_id=str(getattr(model_instance, 'id')),
             elicensing_object_id=elicensing_object_id,
             elicensing_object_kind=elicensing_object_kind,
             elicensing_guid=elicensing_guid,
