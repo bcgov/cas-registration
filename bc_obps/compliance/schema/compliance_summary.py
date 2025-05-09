@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import List, cast, Optional, Union
+from typing import cast, Optional, Union
 from ninja import ModelSchema, Field
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_summary import ComplianceSummary
