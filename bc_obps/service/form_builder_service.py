@@ -213,12 +213,16 @@ def handle_source_type_schema(
             "properties"
         ]["gasType"]["enum"] = gas_type_enum
         st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
+            "required"
+        ] = ["emission"]
+        st_schema["properties"]["units"]["items"]["properties"]["fuels"]["items"]["properties"]["emissions"]["items"][
             "dependencies"
         ] = gas_type_one_of
     elif source_type_schema.has_unit and not source_type_schema.has_fuel:
         st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
         ] = gas_type_enum
+        st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["required"] = ["emission"]
         st_schema["properties"]["units"]["items"]["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     elif not source_type_schema.has_unit and source_type_schema.has_fuel:
         fuel_list = list(FuelTypeDataAccessService.get_fuels().values_list("name", flat=True))
@@ -228,9 +232,11 @@ def handle_source_type_schema(
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["properties"]["gasType"][
             "enum"
         ] = gas_type_enum
+        st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["required"] = ["emission"]
         st_schema["properties"]["fuels"]["items"]["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     else:
         st_schema["properties"]["emissions"]["items"]["properties"]["gasType"]["enum"] = gas_type_enum
+        st_schema["properties"]["emissions"]["items"]["required"] = ["emission"]
         st_schema["properties"]["emissions"]["items"]["dependencies"] = gas_type_one_of
     return st_schema
 
