@@ -4,8 +4,12 @@ from django.db import transaction
 from django.http import HttpRequest
 from ninja import File, Form, UploadedFile
 from reporting.constants import EMISSIONS_REPORT_TAGS
+from reporting.models.report_attachment import ReportAttachment
 from reporting.schema.generic import Message
-from reporting.schema.report_attachment import AttachmentsWithConfirmationOut
+from reporting.schema.report_attachment import (
+    AttachmentsWithConfirmationOut,
+    InternalReportAttachmentOut,
+)
 from reporting.service.report_attachment_service import ReportAttachmentService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
@@ -30,7 +34,6 @@ def save_report_attachments(
     confirm_supplementary_existing_attachments_relevant: Optional[bool] = Form(None),
     confirm_supplementary_required_attachments_uploaded: Optional[bool] = Form(None),
 ) -> Tuple[int, dict]:
-
     # Handle files if they were supplied
     if files is not None:
         if file_types is None or len(file_types) != len(files):
@@ -83,3 +86,13 @@ def get_report_attachments(
 )
 def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: int) -> Tuple[Literal[200], str]:
     return 200, ReportAttachmentService.get_attachment(version_id, file_id).get_file_url()
+
+
+@router.get(
+    "attachments",
+    response={200: list[InternalReportAttachmentOut], custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Returns the list of all attachments for all reports.""",
+)
+def get_all_attachments(request: HttpRequest) -> Tuple[Literal[200], str]:
+    return 200, ReportAttachment.objects.all()
