@@ -2,6 +2,7 @@ from uuid import UUID
 from django.db.models import Case, When, Value, BooleanField
 from django.db import transaction
 from django.db.models import QuerySet
+from common.exceptions import UserError
 from registration.models import Activity
 from registration.models import RegulatedProduct
 from registration.models.operation import Operation
@@ -51,7 +52,7 @@ class ReportService:
     @transaction.atomic()
     def create_report(cls, operation_id: UUID, reporting_year: int) -> int:
         if ReportDataAccessService.report_exists(operation_id, reporting_year):
-            raise Exception("A report already exists for this operation and year, unable to create a new one.")
+            raise UserError("A report already exists for this operation and year, unable to create a new one.")
 
         # Fetching report context
         operation = (

@@ -1,4 +1,5 @@
 from uuid import UUID
+from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.user import User
 from registration.schema.user import UserUpdateRoleIn
@@ -34,7 +35,7 @@ class UserService:
             include_archived: Whether or not to included archived users when doing operations on users.
         """
         if updating_user_guid == user_to_update_guid:
-            raise Exception('You cannot change your own user role.')
+            raise UserError('You cannot change your own user role.')
 
         user: User = UserDataAccessService.update_user(user_to_update_guid, updated_data, include_archived)
 

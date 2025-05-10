@@ -5,6 +5,7 @@ from uuid import UUID
 from zoneinfo import ZoneInfo
 from django.db import transaction
 from django.db.models import QuerySet
+from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import User
 from registration.models.event.transfer_event import TransferEvent
@@ -82,7 +83,7 @@ class TransferEventService:
                 overlapping_operation_query = overlapping_operation_query.exclude(id=current_transfer_id)
 
             if overlapping_operation_query.exists():
-                raise Exception("An active transfer event already exists for the selected operation.")
+                raise UserError("An active transfer event already exists for the selected operation.")
 
         if facility_ids:
             # Check for overlapping transfer events with the facilities
@@ -98,7 +99,7 @@ class TransferEventService:
                 overlapping_facilities_query = overlapping_facilities_query.exclude(id=current_transfer_id)
 
             if overlapping_facilities_query.exists():
-                raise Exception(
+                raise UserError(
                     "One or more facilities in this transfer event are already part of an active transfer event."
                 )
 
@@ -120,7 +121,7 @@ class TransferEventService:
         user = UserDataAccessService.get_by_guid(user_guid)
 
         if not user.is_cas_analyst():
-            raise Exception("User is not authorized to create transfer events.")
+            raise UserError("User is not authorized to create transfer events.")
 
         # Validate against overlapping transfer events
         if payload.transfer_entity == "Operation":
@@ -138,11 +139,11 @@ class TransferEventService:
         transfer_event = None
         if payload.transfer_entity == "Operation":
             if not payload.operation:
-                raise Exception("Operation is required for operation transfer events.")
+                raise UserError("Operation is required for operation transfer events.")
 
             # make sure that the from_operator and to_operator are different(we can't transfer operations within the same operator)
             if payload.from_operator == payload.to_operator:
-                raise Exception("Operations cannot be transferred within the same operator.")
+                raise UserError("Operations cannot be transferred within the same operator.")
 
             prepared_payload.update(
                 {
@@ -153,13 +154,13 @@ class TransferEventService:
 
         elif payload.transfer_entity == "Facility":
             if not all([payload.facilities, payload.from_operation, payload.to_operation]):
-                raise Exception(
+                raise UserError(
                     "Facilities, from_operation, and to_operation are required for facility transfer events."
                 )
 
             # make sure that the from_operation and to_operation are different(we can't transfer facilities within the same operation)
             if payload.from_operation == payload.to_operation:
-                raise Exception("Facilities cannot be transferred within the same operation.")
+                raise UserError("Facilities cannot be transferred within the same operation.")
 
             prepared_payload.update(
                 {
@@ -300,7 +301,7 @@ class TransferEventService:
             raise Exception(UNAUTHORIZED_MESSAGE)
         transfer_event = TransferEventDataAccessService.get_by_id(transfer_id)
         if transfer_event.status != TransferEvent.Statuses.TO_BE_TRANSFERRED:
-            raise Exception("Only transfer events with status 'To be transferred' can be modified.")
+            raise UserError("Only transfer events with status 'To be transferred' can be modified.")
         return transfer_event
 
     @classmethod
@@ -315,7 +316,7 @@ class TransferEventService:
     ) -> None:
         operation_id = payload.operation
         if not operation_id:
-            raise Exception("Operation is required for operation transfer events.")
+            raise UserError("Operation is required for operation transfer events.")
         cls._validate_no_overlapping_transfer_events(operation_id=operation_id, current_transfer_id=transfer_id)
         TransferEventDataAccessService.update_transfer_event(
             user_guid, transfer_id, {"operation_id": operation_id, "effective_date": payload.effective_date}  # type: ignore[attr-defined] # mypy not aware of model schema field
@@ -327,7 +328,7 @@ class TransferEventService:
     ) -> None:
         facility_ids = payload.facilities
         if not facility_ids:
-            raise Exception("Facilities are required for facility transfer events.")
+            raise UserError("Facilities are required for facility transfer events.")
         cls._validate_no_overlapping_transfer_events(facility_ids=facility_ids, current_transfer_id=transfer_id)
         updated_transfer_event = TransferEventDataAccessService.update_transfer_event(
             user_guid, transfer_id, payload.dict(include=["effective_date"])
