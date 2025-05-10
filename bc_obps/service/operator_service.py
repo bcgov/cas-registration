@@ -1,4 +1,5 @@
 from typing import Optional, Union, List
+from common.exceptions import UserError
 from registration.models.parent_operator import ParentOperator
 from registration.models.partner_operator import PartnerOperator
 from registration.schema import PartnerOperatorIn, OperatorIn, OperatorFilterSchema, ParentOperatorIn, OperatorSearchOut
@@ -21,19 +22,19 @@ class OperatorService:
         cls, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
     ) -> Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]:
         if not cra_business_number and not legal_name:
-            raise Exception("No search value provided")
+            raise UserError("No search value provided")
         if cra_business_number:
             try:
                 operator: Operator = OperatorDataAccessService.get_operators_by_cra_number(cra_business_number)
                 return OperatorSearchOut.model_validate(operator)
             except Exception:
-                raise Exception("No matching operator found. Retry or add operator.")
+                raise UserError("No matching operator found. Retry or add operator.")
         elif legal_name:
             try:
                 operators: QuerySet[Operator] = OperatorDataAccessService.get_operators_by_legal_name(legal_name)
                 return [OperatorSearchOut.model_validate(operator) for operator in operators]
             except Exception:
-                raise Exception("No matching operator found. Retry or add operator.")
+                raise UserError("No matching operator found. Retry or add operator.")
         return []
 
     @classmethod
