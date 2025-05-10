@@ -1,6 +1,7 @@
 import os
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
+from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
 from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
@@ -123,7 +124,7 @@ class OperationService:
     ) -> OptedInOperationDetail:
         operation = OperationService.get_if_authorized(user_guid, operation_id, ['id', 'operator_id'])
         if not operation.opted_in_operation:
-            raise Exception("Operation does not have an opted-in operation.")
+            raise UserError("Operation does not have an opted-in operation.")
         return OptedInOperationDataAccessService.update_opted_in_operation_detail(
             operation.opted_in_operation.id, payload
         )
@@ -172,7 +173,7 @@ class OperationService:
                     payload.email != contact.email,  # type: ignore[attr-defined]
                 ]
             ):
-                raise Exception("Cannot update first name, last name, or email of existing contact.")
+                raise UserError("Cannot update first name, last name, or email of existing contact.")
             contact = ContactService.update_contact(user_guid, existing_contact_id, payload)
         else:
             contact = ContactService.create_contact(user_guid, payload)
@@ -610,11 +611,11 @@ class OperationService:
         operation: Operation = OperationDataAccessService.get_by_id(operation_id)
 
         if operation.bc_obps_regulated_operation:
-            raise Exception('Operation already has a BORO ID.')
+            raise UserError('Operation already has a BORO ID.')
         if not operation.is_regulated_operation:
-            raise Exception('Non-regulated operations cannot be issued BORO IDs.')
+            raise UserError('Non-regulated operations cannot be issued BORO IDs.')
         if operation.status != Operation.Statuses.REGISTERED:
-            raise Exception('Operations must be registered before they can be issued a BORO ID.')
+            raise UserError('Operations must be registered before they can be issued a BORO ID.')
 
         operation.generate_unique_boro_id(user_guid=user_guid)
         operation.save(update_fields=['bc_obps_regulated_operation'])
