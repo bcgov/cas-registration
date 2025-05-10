@@ -1,6 +1,7 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from common.exceptions import UserError
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from service.data_access_service.facility_designated_operation_timeline_service import (
     FacilityDesignatedOperationTimelineDataAccessService,
@@ -113,7 +114,7 @@ class FacilityService:
 
         # Check for duplicates within the new_numbers
         if len(new_numbers) != len(set(new_numbers)):
-            raise Exception("Well Authorization Number: Duplicates are not allowed.")
+            raise UserError("Well Authorization Number: Duplicates are not allowed.")
 
         # Convert existing numbers to a queryset for filtering
         existing_numbers_queryset = WellAuthorizationNumber.objects.filter(

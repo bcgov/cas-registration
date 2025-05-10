@@ -1,6 +1,7 @@
 from typing import Literal, Tuple
 from uuid import UUID
 from django.http import HttpRequest
+from common.exceptions import UserError
 from registration.schema import OperationRegistrationSubmissionIn, OperationUpdateStatusOut, Message
 from service.operation_service import OperationService
 from registration.constants import OPERATION_TAGS
@@ -26,7 +27,7 @@ def operation_registration_submission(
     if not all(
         [payload.acknowledgement_of_review, payload.acknowledgement_of_information, payload.acknowledgement_of_records]
     ):
-        raise Exception("All checkboxes must be checked to submit the registration.")
+        raise UserError("All checkboxes must be checked to submit the registration.")
 
     return 200, OperationService.update_status(
         get_current_user_guid(request), operation_id, Operation.Statuses.REGISTERED
