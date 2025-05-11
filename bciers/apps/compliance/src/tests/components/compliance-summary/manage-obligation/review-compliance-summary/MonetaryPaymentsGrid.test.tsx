@@ -1,6 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { MonetaryPaymentsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid";
 import { PaymentsData } from "@/compliance/src/app/types/payments";
+import { vi } from "vitest";
+
+// Mock useSearchParams
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
 
 describe("MonetaryPaymentsGrid", () => {
   const mockPaymentsData: PaymentsData = {
@@ -20,14 +26,14 @@ describe("MonetaryPaymentsGrid", () => {
   it("renders the alert note when no data is provided", () => {
     render(<MonetaryPaymentsGrid />);
     expect(
-      screen.getByText("No monetary payments have been made"),
+      screen.getByText("You have not made any monetary payment yet."),
     ).toBeInTheDocument();
   });
 
   it("renders the alert note when data has no rows", () => {
     render(<MonetaryPaymentsGrid data={{ rows: [], row_count: 0 }} />);
     expect(
-      screen.getByText("No monetary payments have been made"),
+      screen.getByText("You have not made any monetary payment yet."),
     ).toBeInTheDocument();
   });
 
