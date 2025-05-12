@@ -1,6 +1,7 @@
+from rls.utils.policy import RlsPolicy
 from reporting.enums.enums import ReportingTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants
+from rls.utils.helpers import generate_rls_grants, generate_rls_policies
 
 
 class Rls:
@@ -17,3 +18,10 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, ReportingTableNames.REPORT_VERIFICATION)
+
+    # policies = generate_rls_policies(
+    #     roles=RlsRoles,
+    #     operations=RlsOperations,
+    #     table=ReportingTableNames.REPORT_VERIFICATION,
+    #     using_statement=RlsPolicy.REPORT_USING_STATEMENT,
+    # )
