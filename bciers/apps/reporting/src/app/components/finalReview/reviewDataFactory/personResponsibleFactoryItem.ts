@@ -12,7 +12,12 @@ const personResponsibleFactoryItem: ReviewDataFactoryItem = async (
   const { sync_button: any, ...personResponsibleUiSchemaWithoutSyncButton } =
     personResponsibleUiSchema;
 
-  personResponsibleSchema.properties = {
+  // Deep copy to avoid long-lived module JSON mutation persistence
+  const localFactoryPersonResponsibleSchema = JSON.parse(
+    JSON.stringify(personResponsibleSchema),
+  );
+
+  localFactoryPersonResponsibleSchema.properties = {
     person_responsible: { type: "string", title: " " },
   };
 
@@ -21,7 +26,7 @@ const personResponsibleFactoryItem: ReviewDataFactoryItem = async (
   return [
     {
       schema: createPersonResponsibleSchema(
-        personResponsibleSchema,
+        localFactoryPersonResponsibleSchema,
         [],
         1,
         contactData,
