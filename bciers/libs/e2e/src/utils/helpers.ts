@@ -561,9 +561,9 @@ export function getStorageStateForRole(role: string) {
 }
 
 export async function assertSuccessfulSnackbar(page: Page) {
-  await expect(
-    page
-      .locator(".MuiSnackbar-root")
-      .getByText(FrontendMessages.SUBMIT_CONFIRMATION),
-  ).toBeVisible();
+  const snackbarLocator = page
+    .locator(".MuiSnackbar-root")
+    .getByText(FrontendMessages.SUBMIT_CONFIRMATION);
+  await snackbarLocator.waitFor();
+  await expect(snackbarLocator).toBeVisible();
 }
