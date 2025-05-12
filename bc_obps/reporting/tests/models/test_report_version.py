@@ -67,18 +67,6 @@ class ReportVersionTest(BaseTestCase):
             ),
             ("report_sign_off", "report sign off", None, None),
             ("report_electricity_import_data", "report electricity import data", None, None),
-            (
-                "report_compliance_summary",
-                "report compliance summary",
-                None,
-                0,
-            ),
-            (
-                "report_compliance_summary_products",
-                "report compliance summary product",
-                None,
-                0,
-            ),
             ("report_attachment_confirmation", "report attachment confirmation", None, None),
         ]
 
