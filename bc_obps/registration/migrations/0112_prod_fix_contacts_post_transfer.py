@@ -3,16 +3,12 @@
 from django.db import migrations
 
 """
-One-time forward-only migration to be applied to prod data.
-Purpose: delete operation representatives from operation_contacts table for operations that have been transferred to a new operator.
+Forward-only prod data migration to remove the contacts associated with an operation that has been transferred, if the contact is associated with the from_operator (not the to_operator) of the transfer.
 """
 
 
 def remove_contacts_from_transferred_operations(apps, schema_editor):
     TransferEvent = apps.get_model("registration", "TransferEvent")
-    Contact = apps.get_model("registration", "Contact")
-
-    contacts_count_before = Contact.objects.count()
 
     # fetch all transfer events
     transfer_events = TransferEvent.objects.all()
@@ -21,30 +17,13 @@ def remove_contacts_from_transferred_operations(apps, schema_editor):
     for transfer_event in transfer_events:
         operation = transfer_event.operation
         from_operator = transfer_event.from_operator
-        to_operator = transfer_event.to_operator
         operation_contacts = operation.contacts.all()
-
-        operation_contacts_count_before = operation_contacts.count()
 
         # for each contact in operation_contacts, check if the contact is associated with the from_operator. If so, delete it.
         for contact in operation_contacts:
             if contact.operator == from_operator:
-                # log the removal
-                print(
-                    f"\nRemoving contact {contact.first_name} {contact.last_name} (operator {contact.operator.id}) from {operation.name} (operation {operation.id}) for transfer from {from_operator.legal_name} ({from_operator.id}) to {to_operator.legal_name} ({to_operator.id})"
-                )
-
                 # remove the contact from the operation (without deleting the contact - it might be used elsewhere)
                 operation.contacts.remove(contact)
-
-        operation_contacts_count_after = operation.contacts.count()
-        print(f"\nOperation contacts count before: {operation_contacts_count_before}")
-        print(f"Operation contacts count after: {operation_contacts_count_after}")
-
-    contacts_count_after = Contact.objects.count()
-    print(f"\nContacts count before: {contacts_count_before}")
-    print(f"Contacts count after: {contacts_count_after}")
-    # we should NOT have deleted any contacts
 
 
 class Migration(migrations.Migration):
