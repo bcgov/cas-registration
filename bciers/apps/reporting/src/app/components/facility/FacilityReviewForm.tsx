@@ -38,6 +38,11 @@ const FacilityReview: React.FC<Props> = ({
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
 
+    if ((formData as any).activities.length === 0) {
+      setErrors(["You must select at least one activity"]);
+      return false;
+    }
+
     const activityNameToIdMap = new Map(
       activitiesData.map((activity: ActivityData) => [
         activity.name,
@@ -53,6 +58,7 @@ const FacilityReview: React.FC<Props> = ({
         .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
         .map(Number), // Ensure all IDs are numbers
     };
+
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(updatedFormData),
     });
