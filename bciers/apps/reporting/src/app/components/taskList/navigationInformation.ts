@@ -6,7 +6,7 @@ import {
   TaskListPageFactoryContext,
   TaskListPageFactoryData,
 } from "./types";
-import { getFlow, reportingFlows } from "./reportingFlows";
+import { getFlow, reportingFlow } from "./reportingFlow";
 import { pageElementFactory } from "./taskListPages/pageElementFactory";
 import { headerElementFactory } from "./headerElementFactory";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
@@ -65,7 +65,7 @@ export async function getNavigationInformation(
   const flow = await getFlow(reportVersionId);
 
   // build tasklist from factories
-  const flowData = reportingFlows[flow] as ReportingFlowDescription;
+  const flowData = reportingFlow[flow] as ReportingFlowDescription;
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
   const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];

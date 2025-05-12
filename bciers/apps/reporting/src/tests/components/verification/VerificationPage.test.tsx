@@ -22,6 +22,9 @@ vi.mock("@reporting/src/app/utils/getReportVerification", () => ({
 vi.mock("@reporting/src/app/utils/getReportFacilityList", () => ({
   getReportFacilityList: vi.fn(),
 }));
+vi.mock("@reporting/src/app/components/taskList/reportingFlow", () => ({
+  getFlow: vi.fn(),
+}));
 
 vi.mock(
   "@reporting/src/app/components/verification/createVerificationSchema",
@@ -87,9 +90,7 @@ describe("VerificationPage component", () => {
     mockGetReportVerification.mockResolvedValue(mockInitialData);
     mockGetReportFacilityList.mockResolvedValue(mockFacilityList);
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
-    mockGetReportNeedsVerification.mockResolvedValue({
-      show_verification_page: true,
-    });
+    mockGetReportNeedsVerification.mockResolvedValue(true);
     mockGetReportingOperation.mockResolvedValue(mockReportOperation);
     mockGetIsSupplementaryReport.mockResolvedValue({
       is_supplementary_report_version: false,
@@ -115,7 +116,8 @@ describe("VerificationPage component", () => {
         verificationSchema: mockVerificationSchema,
         initialData: mockInitialData,
         navigationInformation: dummyNavigationInformation,
-        isSupplementaryReport: false,
+        isSupplementaryReport: (await mockGetIsSupplementaryReport())
+          .is_supplementary_report_version,
       },
       {},
     );

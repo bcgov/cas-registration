@@ -1,6 +1,6 @@
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { pageFactories } from "@reporting/src/app/components/taskList/taskListPages/pageFactories";
-import { reportingFlows } from "@reporting/src/app/components/taskList/reportingFlows";
+import { reportingFlow } from "@reporting/src/app/components/taskList/reportingFlow";
 import {
   HeaderStep,
   ReportingFlow,
@@ -98,7 +98,7 @@ describe("The getNavigationInformation function", () => {
     expect(navInfo.continueUrl).toEqual("next-first");
   });
   it("Finds the next and previous page in the next and previous headers", async () => {
-    (reportingFlows as any).TestFlow = {
+    (reportingFlow as any).TestFlow = {
       PreviousHeader: ["TestPreviousPage"],
       TestHeader: ["TestPage"],
       NextHeader: ["TestNextPage"],
@@ -128,7 +128,7 @@ describe("The getNavigationInformation function", () => {
     );
   });
   it("Returns the list of headers and the proper index", async () => {
-    (reportingFlows as any).TestFlow = {
+    (reportingFlow as any).TestFlow = {
       PreviousHeader: ["TestPreviousPage"],
       TestHeader: ["TestPage"],
       NextHeader: ["TestNextPage"],
