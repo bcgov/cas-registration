@@ -7,11 +7,10 @@ Common data models used in the OBPS application are located in the `bc_obps/comm
 ## Email Notifications
 
 Email notifications are an essential part of the application's communication strategy. They provide users with important information, updates, and alerts. We use CHES (Common Hosted Email Service) to send email notifications to users.
-To send real emails, you need to set up CHES credentials in your environment variables. You can find the required CHES credentials in the 1Password document `OBPS backend ENV`.
+
+If you want to send emails locally, you need to set up CHES credentials in your environment variables. You can find the required CHES credentials in the 1Password document `OBPS backend ENV`. (Comment them out to stop sending emails.)
 
 You also need to set up the `EmailService` singleton object (like `email_service = EmailService()`) in the `.py` file to access the `EmailService` object.
-
-**Note**: Make sure to not send real emails in the development environment by commenting out the CHES credentials in the `bc_obps/.env` file.
 
 ## Audit Trail Implementation
 

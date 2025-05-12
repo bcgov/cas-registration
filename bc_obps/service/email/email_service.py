@@ -129,35 +129,6 @@ class EmailService(object):
             logger.error(f'Logger: Exception retrieving message status for {message_id} - {str(exc)}')
             raise
 
-    def send_email(self, email_data: Dict) -> Optional[Any]:
-        """
-        Email (content in either text or HTML format) is queued to be sent to each recipient listed in 'to'.
-
-        Required input data:
-            {
-                'bodyType': 'text' | 'html',
-                'body': str,
-                'from': str (email),
-                'subject': 'str,
-                'to': List[str] (one email per str),
-            }
-
-        See {self.api_url}/docs for more (optional) fields.
-
-        Response contains 'msgId' (message ID) and 'txId' (transaction ID), to be used as identifiers when querying message or transaction status.
-        """
-        self._get_token()
-        try:
-            response = self._make_request(
-                '/email',
-                method='POST',
-                data=email_data,
-            )
-            return response.json()
-        except Exception as exc:
-            logger.error(f'Logger: Exception in send_email {str(exc)}')
-            raise
-
     def merge_template_and_send(self, email_template_data: Dict) -> Optional[Any]:
         """
         Given an email template with variables for customized content, CHES API merges the template with the given
