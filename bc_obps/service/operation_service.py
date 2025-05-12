@@ -599,7 +599,7 @@ class OperationService:
 
         for condition, error_message in check_conditions():
             if not condition():
-                raise Exception(error_message)
+                raise UserError(error_message)
 
     @classmethod
     def generate_boro_id(cls, user_guid: UUID, operation_id: UUID) -> Optional[BcObpsRegulatedOperation]:

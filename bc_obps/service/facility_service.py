@@ -162,7 +162,7 @@ class FacilityService:
 
         # Validate that SFO and EIO can only have one facility
         if operation.facilities.count() > 0 and operation.type != Operation.Types.LFO:
-            raise Exception(
+            raise UserError(
                 "This type of operation (SFO or EIO) can only have one facility, this page should not be accessible"
             )
 
