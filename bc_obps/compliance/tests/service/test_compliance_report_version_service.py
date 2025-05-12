@@ -2,20 +2,13 @@ from decimal import Decimal
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 import pytest
 from unittest.mock import patch, MagicMock
-from uuid import UUID
 from compliance.models import ComplianceReportVersion
+from model_bakery import baker
 
 pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
 
 
 class TestComplianceReportVersionService:
-    @pytest.fixture
-    def mock_report_version(self):
-        report_version = MagicMock()
-        report_version.id = 1
-        report_version.report.reporting_year_id = 2024
-        return report_version
-
     @pytest.fixture
     def mock_compliance_data(self):
         compliance_data = MagicMock()
@@ -28,57 +21,33 @@ class TestComplianceReportVersionService:
         compliance_data.regulatory_values.reduction_factor = Decimal('0.95')
         compliance_data.regulatory_values.tightening_rate = Decimal('0.01')
 
-        product = MagicMock()
-        product.name = "Test Product"
-        product.annual_production = Decimal('1000.0')
-        product.apr_dec_production = Decimal('750.0')
-        product.emission_intensity = Decimal('0.1')
-        product.allocated_industrial_process_emissions = Decimal('50.0')
-        product.allocated_compliance_emissions = Decimal('40.0')
-        compliance_data.products = [product]
-
         return compliance_data
 
-    @patch('compliance.service.compliance_report_version_service.ReportVersion.objects.select_related')
-    @patch(
-        'compliance.service.compliance_report_version_service.ReportComplianceService.get_calculated_compliance_data'
-    )
-    @patch('compliance.service.compliance_report_version_service.ComplianceReportVersion.objects.create')
     @patch(
         'compliance.service.compliance_report_version_service.ComplianceObligationService.create_compliance_obligation'
     )
-    @patch('compliance.service.compliance_report_version_service.ReportProduct.objects.select_related')
-    def test_create_compliance_report_version_with_excess_emissions(
-        self,
-        mock_report_products,
-        mock_create_obligation,
-        mock_create_product,
-        mock_create_report_version,
-        mock_get_compliance_data,
-        mock_get_report_version,
-        mock_report_version,
-        mock_compliance_data,
-    ):
+    def test_create_compliance_report_version_with_excess_emissions(self, mock_create_obligation):
         # Arrange
-        user_guid = UUID('12345678-1234-5678-1234-567812345678')
-        mock_get_report_version.return_value.get.return_value = mock_report_version
-        mock_get_compliance_data.return_value = mock_compliance_data
-        mock_report_version = MagicMock()
-        mock_create_report_version.return_value = mock_report_version
-
-        # Mock report products
-        mock_report_product = MagicMock()
-        mock_report_product.product.name = "Test Product"
-        mock_report_products.return_value.filter.return_value = [mock_report_product]
+        report_compliance_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
+        )
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report_id=report_compliance_summary.report_version.report_id,
+            operation_id=report_compliance_summary.report_version.report.operation_id,
+        )
 
         # Act
-        result = ComplianceReportVersionService.create_compliance_report_version(1, user_guid)
+        result = ComplianceReportVersionService.create_compliance_report_version(
+            compliance_report, report_compliance_summary.report_version.id
+        )
 
         # Assert
-        mock_create_report_version.assert_called_once()
-        mock_create_product.assert_called_once()
         mock_create_obligation.assert_called_once()
-        assert result == mock_report_version
+
+        assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        assert result.report_compliance_summary_id == report_compliance_summary.id
+        assert result.compliance_report_id == compliance_report.id
 
     def test_determine_compliance_status(self):
         # Test OBLIGATION_NOT_MET
