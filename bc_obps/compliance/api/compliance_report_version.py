@@ -13,7 +13,7 @@ from .router import router
 
 
 @router.get(
-    "/compliance_report_versions",
+    "/compliance-report-versions",
     response={200: List[ComplianceReportVersionListOut], custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get all compliance report versions for the current user's operations",
@@ -26,4 +26,4 @@ def get_compliance_report_versions_list(request: HttpRequest) -> QuerySet[Compli
     return ComplianceDashboardService.get_compliance_report_versions_for_dashboard(user_guid)
 
 
-# Note: POST endpoint for creating a new summary would be added here when needed
+# Note: POST endpoint for creating a new version would be added here when needed

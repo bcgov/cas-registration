@@ -31,7 +31,7 @@ class ComplianceDashboardService:
             compliance_report__operation_id__in=operations
         )
 
-        # Calculate and attach the outstanding balance to each summary
+        # Calculate and attach the outstanding balance to each compliance_report_version
         for version in compliance_report_versions:
             version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
 
@@ -45,8 +45,8 @@ class ComplianceDashboardService:
         Fetches a specific compliance report version by ID if it belongs to one of the user's operations
 
         Args:
-            user_guid: The GUID of the user requesting the summary
-            compliance_report_version_id: The ID of the compliance summary to retrieve
+            user_guid: The GUID of the user requesting the compliance_report_version
+            compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve
 
         Returns:
             The requested ComplianceReportVersion object or None if not found
@@ -58,7 +58,7 @@ class ComplianceDashboardService:
             status=Operation.Statuses.REGISTERED
         )
 
-        # Get the compliance summary if it belongs to one of the user's operations
+        # Get the compliance compliance_report_version if it belongs to one of the user's operations
         compliance_report_version = ComplianceReportVersion.objects.select_related(
             'report_version__report',
             'report_version__report__operation',
@@ -72,39 +72,39 @@ class ComplianceDashboardService:
 
         return compliance_report_version
 
-    ## The below method will be tackled in issue #117
+    # Issuance to be handled in #117
 
     # @classmethod
-    # def get_compliance_summary_issuance_data(cls, user_guid: UUID, summary_id: int) -> Optional[ComplianceReportVersion]:
+    # def get_compliance_compliance_report_version_issuance_data(cls, user_guid: UUID, compliance_report_version_id: int) -> Optional[ComplianceReportVersion]:
     #     """
-    #     Fetches issuance data for a specific compliance summary
+    #     Fetches issuance data for a specific compliance compliance_report_version
 
     #     Args:
     #         user_guid: The GUID of the user requesting the issuance data
-    #         summary_id: The ID of the compliance summary to retrieve issuance data for
+    #         compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve issuance data for
 
     #     Returns:
     #         The ComplianceReportVersion object augmented with issuance data or None if not found
     #     """
-    #     summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
+    #     compliance_report_version = cls.get_compliance_compliance_report_version_by_id(user_guid, compliance_report_version_id)
 
-    #     if not summary:
+    #     if not compliance_report_version:
     #         return None
 
     #     earned_credits: int = 100
     #     earned_credits_issued = False
     #     issuance_status = "Issuance not requested"
 
-    #     if summary.excess_emissions < 0:
+    #     if compliance_report_version.report_compliance_summary.excess_emissions < 0:
     #         # Convert Decimal to int
-    #         earned_credits = int(abs(summary.excess_emissions))
+    #         earned_credits = int(abs(compliance_report_version.report_compliance_summary.excess_emissions))
 
     #         earned_credits_issued = False
 
     #     excess_emissions_percentage = None
-    #     if summary.emission_limit and summary.emission_limit > 0:
+    #     if compliance_report_version.report_compliance_summary.emission_limit and compliance_report_version.report_compliance_summary.emission_limit > 0:
     #         excess_emissions_percentage = round(
-    #             (summary.emissions_attributable_for_compliance / summary.emission_limit) * 100, 2
+    #             (compliance_report_version.emissions_attributable_for_compliance / compliance_report_version.report_compliance_summary.emission_limit) * 100, 2
     #         )
 
     #     setattr(summary, "earned_credits", earned_credits)
