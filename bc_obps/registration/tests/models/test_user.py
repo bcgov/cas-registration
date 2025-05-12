@@ -187,6 +187,12 @@ class UserModelTest(BaseTestCase):
             ("compliancereportversion_created", "compliance report version", None, None),
             ("compliancereportversion_updated", "compliance report version", None, None),
             ("compliancereportversion_archived", "compliance report version", None, None),
+            ("reportcompliancesummary_created", "report compliance summary", None, None),
+            ("reportcompliancesummary_updated", "report compliance summary", None, None),
+            ("reportcompliancesummary_archived", "report compliance summary", None, None),
+            ("reportcompliancesummaryproduct_created", "report compliance summary product", None, None),
+            ("reportcompliancesummaryproduct_updated", "report compliance summary product", None, None),
+            ("reportcompliancesummaryproduct_archived", "report compliance summary product", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
