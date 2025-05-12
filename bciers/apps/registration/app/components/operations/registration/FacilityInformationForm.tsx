@@ -27,9 +27,11 @@ export default function FacilityInformationForm({
   operationName,
   step,
   steps,
+  isCreating,
 }: FacilityInformationFormProps) {
   return isOperationSfo ? (
     <FacilitySfoForm
+      isCreating={isCreating}
       facilityId={facilityId}
       step={step}
       steps={steps}

@@ -19,6 +19,7 @@ interface FacilitySfoFormProps {
   operationId: UUID | "create";
   step: number;
   steps: string[];
+  isCreating: boolean;
 }
 
 const FacilitySfoForm = ({
@@ -26,6 +27,8 @@ const FacilitySfoForm = ({
   operationId,
   step,
   steps,
+  facilityId,
+  isCreating,
 }: FacilitySfoFormProps) => {
   const [formState, setFormState] = useState(formData ?? {});
   // Get the list of sections in the SFO schema - used to unnest the formData
@@ -41,20 +44,26 @@ const FacilitySfoForm = ({
   );
 
   const handleSubmit = async (e: IChangeEvent) => {
-    const body = [
-      {
-        ...createUnnestedFormData(e.formData, formSectionListSfo),
-        operation_id: operationId,
-      },
-    ];
-    const response = await actionHandler(
-      "registration/facilities",
-      "POST",
-      "",
-      {
-        body: JSON.stringify(body),
-      },
-    );
+    const method = isCreating ? "POST" : "PUT";
+
+    const endpoint = isCreating
+      ? "registration/facilities"
+      : `registration/facilities/${facilityId}`;
+
+    const sfoFormData = {
+      ...createUnnestedFormData(e.formData, formSectionListSfo),
+      operation_id: operationId,
+      facility_id: facilityId,
+    };
+
+    // We may want to update the PUT route to accept an array of facilities
+    // just as we do in the POST route
+    const body = isCreating ? [sfoFormData] : sfoFormData;
+
+    const response = await actionHandler(endpoint, method, "", {
+      body: JSON.stringify(body),
+    });
+
     if (!response || response?.error) {
       return { error: response.error };
     }
