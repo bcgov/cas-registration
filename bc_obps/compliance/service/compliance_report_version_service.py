@@ -1,3 +1,4 @@
+from compliance.models.compliance_report import ComplianceReport
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
@@ -16,7 +17,9 @@ class ComplianceReportVersionService:
 
     @classmethod
     @transaction.atomic
-    def create_compliance_report_version(cls, report_version_id: int) -> ComplianceReportVersion:
+    def create_compliance_report_version(
+        cls, compliance_report: ComplianceReport, report_version_id: int
+    ) -> ComplianceReportVersion:
         """
         Creates a compliance report version for a submitted report version
 
@@ -40,6 +43,7 @@ class ComplianceReportVersionService:
 
             # Create compliance report version
             compliance_report_version = ComplianceReportVersion.objects.create(
+                compliance_report=compliance_report,
                 report_version=report_compliance_summary.report_version,
                 report_compliance_summary=report_compliance_summary,
                 status=ComplianceReportVersionService._determine_compliance_status(
