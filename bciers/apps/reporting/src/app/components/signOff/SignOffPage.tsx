@@ -1,5 +1,5 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import SignOffForm from "./SignOffForm";
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
@@ -11,7 +11,7 @@ import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signO
 export default async function SignOffPage({ version_id }: HasReportVersion) {
   //🔍 Check if reports need verification
   const { show_verification_page: showVerificationPage } =
-    await getReportNeedsVerification(version_id);
+    await getReportVerificationStatus(version_id);
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
   const isRegulatedOperation =
     (await getRegistrationPurpose(version_id))?.registration_purpose ===

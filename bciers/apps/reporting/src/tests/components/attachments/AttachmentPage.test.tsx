@@ -3,7 +3,7 @@ import AttachmentsForm from "@reporting/src/app/components/attachments/Attachmen
 import AttachmentsPage from "@reporting/src/app/components/attachments/AttachmentsPage";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
 vi.mock("@reporting/src/app/components/attachments/AttachmentsForm", () => ({
@@ -12,8 +12,8 @@ vi.mock("@reporting/src/app/components/attachments/AttachmentsForm", () => ({
 vi.mock("@reporting/src/app/utils/getAttachments", () => ({
   default: vi.fn(),
 }));
-vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
-  getReportNeedsVerification: vi.fn(),
+vi.mock("@reporting/src/app/utils/getReportVerificationStatus", () => ({
+  getReportVerificationStatus: vi.fn(),
 }));
 vi.mock("@reporting/src/app/utils/getIsSupplementaryReport", () => ({
   getIsSupplementaryReport: vi.fn(),
@@ -28,8 +28,8 @@ const mockAttachmentsForm = AttachmentsForm as unknown as ReturnType<
 const mockGetAttachments = getAttachments as unknown as ReturnType<
   typeof vi.fn
 >;
-const mockGetReportNeedsVerification =
-  getReportNeedsVerification as unknown as ReturnType<typeof vi.fn>;
+const mockGetReportVerificationStatus =
+  getReportVerificationStatus as unknown as ReturnType<typeof vi.fn>;
 const mockGetIsSupplementaryReport =
   getIsSupplementaryReport as unknown as ReturnType<typeof vi.fn>;
 const mockGetNavigationInformation =
@@ -59,8 +59,9 @@ describe("AttachmentsPage", () => {
         confirm_supplementary_existing_attachments_relevant: true,
       },
     });
-    mockGetReportNeedsVerification.mockResolvedValue({
+    mockGetReportVerificationStatus.mockResolvedValue({
       show_verification_page: true,
+      verification_required: true,
     });
 
     mockGetIsSupplementaryReport.mockResolvedValue({

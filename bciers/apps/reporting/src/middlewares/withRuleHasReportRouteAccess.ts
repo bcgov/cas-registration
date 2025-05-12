@@ -34,7 +34,7 @@ import {
   ReportOperationStatus,
 } from "@bciers/utils/src/enums";
 
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 
 /**
  * Defines an extra context that provides caching helpers for API data.
@@ -214,7 +214,7 @@ export const permissionRules: PermissionRule[] = [
   },
   // Rule: check access to restricted Verification route
   {
-    name: "showVerification",
+    name: "accessVerification",
     isApplicable: (request, reportVersionId) => {
       const { pathname } = request.nextUrl;
       // use regex for accurately matching in-case of future verification type routes
@@ -224,9 +224,9 @@ export const permissionRules: PermissionRule[] = [
       return Boolean(reportVersionId && pathname.match(pathRegex));
     },
     validate: async (reportVersionId) => {
-      const needsVerification =
-        await getReportNeedsVerification(reportVersionId);
-      return needsVerification.show_verification_page;
+      const verificationStatus =
+        await getReportVerificationStatus(reportVersionId);
+      return verificationStatus.show_verification_page;
     },
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(

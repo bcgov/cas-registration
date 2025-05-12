@@ -83,7 +83,7 @@ class ReportVerificationService:
         return report_verification
 
     @staticmethod
-    def get_report_needs_verification(report_version_id: int) -> dict:
+    def get_report_verification_status(report_version_id: int) -> dict:
         """
         Determines if verification is needed and if the verification page should be shown.
         """

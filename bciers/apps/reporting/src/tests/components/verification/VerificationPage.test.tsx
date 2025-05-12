@@ -4,7 +4,7 @@ import VerificationForm from "@reporting/src/app/components/verification/Verific
 import { getReportVerification } from "@reporting/src/app/utils/getReportVerification";
 import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { OperationTypes } from "@bciers/utils/src/enums";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
@@ -33,8 +33,8 @@ vi.mock(
   }),
 );
 
-vi.mock("@reporting/src/app/utils/getReportNeedsVerification", () => ({
-  getReportNeedsVerification: vi.fn(),
+vi.mock("@reporting/src/app/utils/getReportVerificationStatus", () => ({
+  getReportVerificationStatus: vi.fn(),
 }));
 
 vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
@@ -59,9 +59,8 @@ const mockGetReportFacilityList = getReportFacilityList as ReturnType<
 const mockCreateVerificationSchema = createVerificationSchema as ReturnType<
   typeof vi.fn
 >;
-const mockGetReportNeedsVerification = getReportNeedsVerification as ReturnType<
-  typeof vi.fn
->;
+const mockGetReportVerificationStatus =
+  getReportVerificationStatus as ReturnType<typeof vi.fn>;
 const mockGetReportingOperation = getReportingOperation as ReturnType<
   typeof vi.fn
 >;
@@ -90,7 +89,7 @@ describe("VerificationPage component", () => {
     mockGetReportVerification.mockResolvedValue(mockInitialData);
     mockGetReportFacilityList.mockResolvedValue(mockFacilityList);
     mockCreateVerificationSchema.mockReturnValue(mockVerificationSchema);
-    mockGetReportNeedsVerification.mockResolvedValue(true);
+    mockGetReportVerificationStatus.mockResolvedValue(true);
     mockGetReportingOperation.mockResolvedValue(mockReportOperation);
     mockGetIsSupplementaryReport.mockResolvedValue({
       is_supplementary_report_version: false,

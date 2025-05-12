@@ -27,7 +27,7 @@ from .report_activity import save_report_activity_data, load_report_activity_dat
 from .report_facilities import get_report_facility_list_by_version_id
 from .report_verification import (
     get_report_verification_by_version_id,
-    get_report_needs_verification,
+    get_report_verification_status,
     save_report_verification,
 )
 from .report_attachments import save_report_attachments, get_report_attachments
