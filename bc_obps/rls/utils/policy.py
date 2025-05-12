@@ -2,6 +2,7 @@
 from typing import Optional, Literal
 from django.db.backends.utils import CursorWrapper
 from rls.enums import RlsRoles, RlsOperations
+from psycopg.sql import SQL, Identifier
 
 
 class RlsPolicy:
@@ -43,20 +44,27 @@ class RlsPolicy:
         Args:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
-        breakpoint()
-     
-        execute_string = "CREATE POLICY %s ON %s.%s FOR %s TO %s"
-        params = [self.policy_name, self.schema, self.table, self.operation.value, self.role.value]
-
-        if self.using_statement:
-            execute_string += " USING (%s)"
-            params.append(self.using_statement)
-        if self.check_statement:
-            execute_string += " WITH CHECK (%s)"
-            params.append(self.check_statement)
-        execute_string += ";"
-
         try:
-            cursor.execute(execute_string, params)
+            # Safely create the SQL query
+            base_query = SQL("CREATE POLICY {policy} ON {schema}.{table} FOR {operation} TO {role}").format(
+                policy=Identifier(self.policy_name),
+                schema=Identifier(self.schema.value),
+                table=Identifier(self.table.value),
+                operation=SQL(self.operation.value),
+                role=SQL(self.role.value),
+            )
+
+            if self.using_statement:
+                base_query += SQL(" USING ({})").format(SQL(self.using_statement))
+
+            if self.check_statement:
+                base_query += SQL(" WITH CHECK ({})").format(SQL(self.check_statement))
+
+            base_query += SQL(";")
+
+            # Execute the query
+            cursor.execute(base_query)
+
         except Exception as e:
-            raise RuntimeError(f"Failed to apply policy: {execute_string}") from e
+            # Handle exception and print out query for debugging
+            raise RuntimeError(f"Failed to apply policy: {base_query.as_string(cursor.cursor)}") from e
