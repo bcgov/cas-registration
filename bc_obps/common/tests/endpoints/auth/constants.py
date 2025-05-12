@@ -66,12 +66,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_compliance_report_version",
-            "kwargs": {"summary_id": MOCK_INT},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_compliance_summary_issuance",
-            "kwargs": {"summary_id": MOCK_INT},
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
         {
             "method": "get",

@@ -1,14 +1,14 @@
 from decimal import Decimal
-from compliance.service.compliance_summary_service import ComplianceSummaryService
+from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 import pytest
 from unittest.mock import patch, MagicMock
 from uuid import UUID
-from compliance.models import ComplianceSummary
+from compliance.models import ComplianceReportVersion
 
 pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
 
 
-class TestComplianceSummaryService:
+class TestComplianceReportVersionService:
     @pytest.fixture
     def mock_report_version(self):
         report_version = MagicMock()
@@ -39,17 +39,21 @@ class TestComplianceSummaryService:
 
         return compliance_data
 
-    @patch('compliance.service.compliance_summary_service.ReportVersion.objects.select_related')
-    @patch('compliance.service.compliance_summary_service.ReportComplianceService.get_calculated_compliance_data')
-    @patch('compliance.service.compliance_summary_service.ComplianceSummary.objects.create')
-    @patch('compliance.service.compliance_summary_service.ComplianceObligationService.create_compliance_obligation')
-    @patch('compliance.service.compliance_summary_service.ReportProduct.objects.select_related')
-    def test_create_compliance_summary_with_excess_emissions(
+    @patch('compliance.service.compliance_report_version_service.ReportVersion.objects.select_related')
+    @patch(
+        'compliance.service.compliance_report_version_service.ReportComplianceService.get_calculated_compliance_data'
+    )
+    @patch('compliance.service.compliance_report_version_service.ComplianceReportVersion.objects.create')
+    @patch(
+        'compliance.service.compliance_report_version_service.ComplianceObligationService.create_compliance_obligation'
+    )
+    @patch('compliance.service.compliance_report_version_service.ReportProduct.objects.select_related')
+    def test_create_compliance_report_version_with_excess_emissions(
         self,
         mock_report_products,
         mock_create_obligation,
         mock_create_product,
-        mock_create_summary,
+        mock_create_report_version,
         mock_get_compliance_data,
         mock_get_report_version,
         mock_report_version,
@@ -59,8 +63,8 @@ class TestComplianceSummaryService:
         user_guid = UUID('12345678-1234-5678-1234-567812345678')
         mock_get_report_version.return_value.get.return_value = mock_report_version
         mock_get_compliance_data.return_value = mock_compliance_data
-        mock_summary = MagicMock()
-        mock_create_summary.return_value = mock_summary
+        mock_report_version = MagicMock()
+        mock_create_report_version.return_value = mock_report_version
 
         # Mock report products
         mock_report_product = MagicMock()
@@ -68,23 +72,23 @@ class TestComplianceSummaryService:
         mock_report_products.return_value.filter.return_value = [mock_report_product]
 
         # Act
-        result = ComplianceSummaryService.create_compliance_summary(1, user_guid)
+        result = ComplianceReportVersionService.create_compliance_report_version(1, user_guid)
 
         # Assert
-        mock_create_summary.assert_called_once()
+        mock_create_report_version.assert_called_once()
         mock_create_product.assert_called_once()
         mock_create_obligation.assert_called_once()
-        assert result == mock_summary
+        assert result == mock_report_version
 
     def test_determine_compliance_status(self):
         # Test OBLIGATION_NOT_MET
-        status = ComplianceSummaryService._determine_compliance_status(Decimal('10.0'), Decimal('0.0'))
-        assert status == ComplianceSummary.ComplianceStatus.OBLIGATION_NOT_MET
+        status = ComplianceReportVersionService._determine_compliance_status(Decimal('10.0'), Decimal('0.0'))
+        assert status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
 
         # Test EARNED_CREDITS
-        status = ComplianceSummaryService._determine_compliance_status(Decimal('0.0'), Decimal('10.0'))
-        assert status == ComplianceSummary.ComplianceStatus.EARNED_CREDITS
+        status = ComplianceReportVersionService._determine_compliance_status(Decimal('0.0'), Decimal('10.0'))
+        assert status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
 
         # Test OBLIGATION_FULLY_MET
-        status = ComplianceSummaryService._determine_compliance_status(Decimal('0.0'), Decimal('0.0'))
-        assert status == ComplianceSummary.ComplianceStatus.OBLIGATION_FULLY_MET
+        status = ComplianceReportVersionService._determine_compliance_status(Decimal('0.0'), Decimal('0.0'))
+        assert status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET

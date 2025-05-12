@@ -4,21 +4,21 @@ from decimal import Decimal
 from datetime import date
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 import pytest
-from compliance.models import ComplianceObligation, ComplianceSummary
+from compliance.models import ComplianceObligation, ComplianceReportVersion
 from reporting.models import Report, ReportVersion, ReportingYear
 from django.core.exceptions import ValidationError
 
 
 @pytest.fixture
-def mock_compliance_summary():
-    """Create a mock compliance summary with required attributes"""
-    summary = MagicMock(spec=ComplianceSummary)
-    summary.id = 1
-    summary.report = MagicMock(spec=Report)
-    summary.report.operator = MagicMock()
-    summary.report.operator.id = uuid.uuid4()
-    summary.report.reporting_year_id = 2023
-    return summary
+def mock_compliance_report_version():
+    """Create a mock compliance compliance_report_version with required attributes"""
+    compliance_report_version = MagicMock(spec=ComplianceReportVersion)
+    compliance_report_version.id = 1
+    compliance_report_version.report_version.report = MagicMock(spec=Report)
+    compliance_report_version.report_version.report.operator = MagicMock()
+    compliance_report_version.report_version.report.operator.id = uuid.uuid4()
+    compliance_report_version.report_version.report.reporting_year_id = 2023
+    return compliance_report_version
 
 
 @pytest.fixture
@@ -59,7 +59,6 @@ def mock_compliance_obligation():
     """Create a mock compliance obligation"""
     obligation = MagicMock(spec=ComplianceObligation)
     obligation.id = 1
-    obligation.status = ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET
     return obligation
 
 
@@ -95,178 +94,172 @@ class TestComplianceObligationService:
         assert "Operation ID:" in error_msg
 
     @pytest.mark.django_db
-    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceReportVersion.objects.get')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_success(
         self,
         mock_get_rate,
         mock_create,
-        mock_get_summary,
-        mock_compliance_summary,
+        mock_get_compliance_report_version,
+        mock_compliance_report_version,
         mock_compliance_obligation,
-        mock_report_version,
     ):
         """Test successful creation of a compliance obligation"""
         # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
+        mock_get_compliance_report_version.return_value = mock_compliance_report_version
         mock_create.return_value = mock_compliance_obligation
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
+            compliance_report_version_id=1, emissions_amount=Decimal('100.0')
         )
 
         # Verify results
         assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
+        mock_get_compliance_report_version.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
+        mock_get_rate.assert_called_once_with(mock_compliance_report_version.report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceReportVersion.objects.get')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_client_not_created(
         self,
         mock_get_rate,
         mock_create,
-        mock_get_summary,
-        mock_compliance_summary,
+        mock_get_compliance_report_version,
+        mock_compliance_report_version,
         mock_compliance_obligation,
-        mock_report_version,
     ):
         """Test compliance obligation creation when fee creation fails"""
         # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
+        mock_get_compliance_report_version.return_value = mock_compliance_report_version
         mock_create.return_value = mock_compliance_obligation
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
+            compliance_report_version_id=1, emissions_amount=Decimal('100.0')
         )
 
         # Verify results - obligation should still be created even if fee creation fails
         assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
+        mock_get_compliance_report_version.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
+        mock_get_rate.assert_called_once_with(mock_compliance_report_version.report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceReportVersion.objects.get')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_attribute_error(
         self,
         mock_get_rate,
         mock_create,
-        mock_get_summary,
-        mock_compliance_summary,
+        mock_get_compliance_report_version,
+        mock_compliance_report_version,
         mock_compliance_obligation,
-        mock_report_version,
     ):
         """Test compliance obligation creation handling exception during fee creation"""
         # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
+        mock_get_compliance_report_version.return_value = mock_compliance_report_version
         mock_create.return_value = mock_compliance_obligation
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
+            compliance_report_version_id=1, emissions_amount=Decimal('100.0')
         )
 
         # Verify results - obligation should still be created despite fee creation error
         assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
+        mock_get_compliance_report_version.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
+        mock_get_rate.assert_called_once_with(mock_compliance_report_version.report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceReportVersion.objects.get')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_request_exception(
         self,
         mock_get_rate,
         mock_create,
-        mock_get_summary,
-        mock_compliance_summary,
+        mock_get_compliance_report_version,
+        mock_compliance_report_version,
         mock_compliance_obligation,
-        mock_report_version,
     ):
         """Test compliance obligation creation handling RequestException during eLicensing client creation"""
         # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
+        mock_get_compliance_report_version.return_value = mock_compliance_report_version
         mock_create.return_value = mock_compliance_obligation
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
+            compliance_report_version_id=1, emissions_amount=Decimal('100.0')
         )
 
         # Verify results - obligation should still be created despite API error
         assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
+        mock_get_compliance_report_version.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
+        mock_get_rate.assert_called_once_with(mock_compliance_report_version.report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceReportVersion.objects.get')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_generic_exception(
         self,
         mock_get_rate,
         mock_create,
-        mock_get_summary,
-        mock_compliance_summary,
+        mock_get_compliance_report_version,
+        mock_compliance_report_version,
         mock_compliance_obligation,
-        mock_report_version,
     ):
         """Test compliance obligation creation handling generic Exception during eLicensing client creation"""
         # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
+        mock_get_compliance_report_version.return_value = mock_compliance_report_version
         mock_create.return_value = mock_compliance_obligation
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method
         result = ComplianceObligationService.create_compliance_obligation(
-            compliance_summary_id=1, emissions_amount=Decimal('100.0'), report_version=mock_report_version
+            compliance_report_version_id=1, emissions_amount=Decimal('100.0')
         )
 
         # Verify results - obligation should still be created despite error
         assert result == mock_compliance_obligation
-        mock_get_summary.assert_called_once_with(id=1)
+        mock_get_compliance_report_version.assert_called_once_with(id=1)
         mock_create.assert_called_once()
-        mock_get_rate.assert_called_once_with(mock_report_version.report.reporting_year)
+        mock_get_rate.assert_called_once_with(mock_compliance_report_version.report_version.report.reporting_year)
 
     @pytest.mark.django_db
-    @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
+    @patch('compliance.service.compliance_obligation_service.ComplianceReportVersion.objects.get')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_unregulated_operation(
         self,
         mock_get_rate,
         mock_create,
-        mock_get_summary,
-        mock_compliance_summary,
+        mock_get_compliance_report_version,
+        mock_compliance_report_version,
         mock_report_version_unregulated,
     ):
         """Test compliance obligation creation fails when operation is not regulated by BC OBPS"""
         # Set up mocks
-        mock_get_summary.return_value = mock_compliance_summary
+        mock_compliance_report_version.report_version = mock_report_version_unregulated
+        mock_get_compliance_report_version.return_value = mock_compliance_report_version
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method and expect ValueError
         with pytest.raises(ValidationError) as excinfo:
             ComplianceObligationService.create_compliance_obligation(
-                compliance_summary_id=1,
-                emissions_amount=Decimal('100.0'),
-                report_version=mock_report_version_unregulated,
+                compliance_report_version_id=mock_compliance_report_version.id, emissions_amount=Decimal('100.0')
             )
 
         # Verify error message
@@ -275,7 +268,7 @@ class TestComplianceObligationService:
 
         # Verify ComplianceObligation.objects.create was not called
         mock_create.assert_not_called()
-        mock_get_rate.assert_called_once_with(mock_report_version_unregulated.report.reporting_year)
+        mock_get_rate.assert_called_once_with(mock_compliance_report_version.report_version.report.reporting_year)
 
     def test_get_obligation_deadline(self):
         """Test get_obligation_deadline returns the correct date"""
