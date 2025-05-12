@@ -34,7 +34,7 @@ const TextWidget: React.FC<WidgetProps> = ({
   };
 
   const handleNumberChange = (val: number | null) => {
-    if (!val) return;
+    if (val === null || val === undefined) return;
     onChange(val);
   };
 
