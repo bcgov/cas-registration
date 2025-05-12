@@ -1,12 +1,8 @@
-from decimal import Decimal
 from model_bakery.recipe import Recipe, foreign_key
-from compliance.models import (
-    CompliancePeriod,
-    ComplianceSummary,
-    ComplianceObligation,
-)
-from reporting.tests.utils.baker_recipes import report, report_version
+from compliance.models import CompliancePeriod, ComplianceReportVersion, ComplianceObligation, ComplianceReport
+from reporting.tests.utils.baker_recipes import report, report_version, report_compliance_summary
 from reporting.models import ReportingYear
+from registration.tests.utils.baker_recipes import operation
 
 # CompliancePeriod recipe
 compliance_period = Recipe(
@@ -17,28 +13,26 @@ compliance_period = Recipe(
     reporting_year=foreign_key(Recipe(ReportingYear)),
 )
 
-# ComplianceSummary recipe
-compliance_summary = Recipe(
-    ComplianceSummary,
+# ComplianceReport recipe
+compliance_report = Recipe(
+    ComplianceReport,
     report=foreign_key(report),
-    current_report_version=foreign_key(report_version),
     compliance_period=foreign_key(compliance_period),
-    emissions_attributable_for_reporting=Decimal("100.0"),
-    reporting_only_emissions=Decimal("10.0"),
-    emissions_attributable_for_compliance=Decimal("90.0"),
-    emission_limit=Decimal("80.0"),
-    excess_emissions=Decimal("10.0"),
-    credited_emissions=Decimal("0.0"),
-    reduction_factor=Decimal("0.95"),
-    tightening_rate=Decimal("0.01"),
+    operation=foreign_key(operation),
+)
+
+# ComplianceSummary recipe
+compliance_report_version = Recipe(
+    ComplianceReportVersion,
+    compliance_report=foreign_key(compliance_report),
+    report_version=foreign_key(report_version),
+    report_compliance_summary=foreign_key(report_compliance_summary),
 )
 
 # ComplianceObligation recipe
 compliance_obligation = Recipe(
     ComplianceObligation,
-    compliance_summary=foreign_key(compliance_summary),
-    emissions_amount_tco2e=Decimal("10.0"),
-    status=ComplianceObligation.ObligationStatus.OBLIGATION_NOT_MET,
+    compliance_summary=foreign_key(compliance_report_version),
     penalty_status=ComplianceObligation.PenaltyStatus.NONE,
     obligation_deadline="2025-11-30",
     obligation_id="21-0001-1-1",  # Default test obligation ID in format YY-OOOO-R-V
