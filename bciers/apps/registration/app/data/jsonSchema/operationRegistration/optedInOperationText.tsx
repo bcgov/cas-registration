@@ -14,7 +14,11 @@ const optedInOperationPreface = (
       our website
     </a>{" "}
     and{" "}
-    <a href={readinessConsiderationsLink} target="_blank">
+    <a
+      href={readinessConsiderationsLink}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       Readiness Considerations
     </a>{" "}
     prior to applying.
@@ -25,7 +29,7 @@ const meetsSection3EmissionsRequirementsText = (
   <span>
     Does this operation have emissions that are attributable for the purposes of
     section 3 of{" "}
-    <a href={actLink} target="_blank">
+    <a href={actLink} target="_blank" rel="noopener noreferrer">
       the Act
     </a>
     ?
@@ -44,7 +48,7 @@ const meetsSection6EmissionsRequirementsText = (
   <span>
     Does this operation have emissions that are attributable for the purposes of
     section 6 of{" "}
-    <a href={actLink} target="_blank">
+    <a href={actLink} target="_blank" rel="noopener noreferrer">
       the Act
     </a>
     ?
@@ -56,7 +60,7 @@ const meetsNaicsCode1122562ClassificationRequirementsText = (
   <span>
     Is this operation&rsquo;s primary economic activity classified by the
     following{" "}
-    <a href={naicsLink} target="_blank">
+    <a href={naicsLink} target="_blank" rel="noopener noreferrer">
       NAICS Code - 11, 22, or 562?
     </a>
   </span>
@@ -66,7 +70,7 @@ const meetsProducingGgerScheduleA1RegulatedProductText = (
   <span>
     Does this operation produce a regulated product listed in Table 2 of
     Schedule A.1 of{" "}
-    <a href={ggerrLink} target="_blank">
+    <a href={ggerrLink} target="_blank" rel="noopener noreferrer">
       the GGERR
     </a>
     ?
@@ -77,7 +81,7 @@ const meetsReportingAndRegulatedObligationsText = (
   <span>
     Is this operation capable of fulfilling the obligations of a reporting
     operation and a regulated operation under{" "}
-    <a href={actLink} target="_blank">
+    <a href={actLink} target="_blank" rel="noopener noreferrer">
       the Act
     </a>{" "}
     and the regulations?
