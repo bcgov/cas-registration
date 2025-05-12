@@ -47,22 +47,22 @@ class ApplicationAccessService:
 
         Args:
             user_guid (uuid): The user for whom eligibility is being checked.
-            operator_id (uuid): The if of the operator to which admin access is being requested.
+            operator_id (uuid): The id of the operator to which admin access is being requested.
 
         Returns:
             True or raises an exception.
         """
         approved_admins = UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED)
         if approved_admins.filter(user_guid=user_guid).exists():
-            raise UserError("You are already an admin for this Operator!")
+            raise UserError("You are already an admin for this Operator.")
         if len(approved_admins) > 0:
-            raise UserError("This Operator already has an admin user!")
+            raise UserError("This Operator already has an admin user.")
         # User already has a pending request for this operator
         # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator and if we show the UserOperator request form, they could submit another request and end up with two
         pending_admins = UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.PENDING)
 
         if pending_admins.filter(user_guid=user_guid).exists():
-            raise UserError("You already have a pending request for this Operator!")
+            raise UserError("You already have a pending request for this Operator.")
 
         return True
 
