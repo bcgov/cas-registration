@@ -17,7 +17,7 @@ class Rls:
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.OPERATION)
     policies = generate_rls_policies(role_grants_mapping, RegistrationTableNames.OPERATION, 
                                      """
-                    operation_id IN (
+                    id IN (
                         SELECT operation.id
                         FROM erc.operation
                         JOIN erc.user_operator uo

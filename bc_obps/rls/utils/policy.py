@@ -45,6 +45,7 @@ class RlsPolicy:
             cursor (Cursor): The database cursor for executing SQL commands.
         """
         try:
+            # brianna this format thing may be unnecessary, chekc
             # Safely create the SQL query
             base_query = SQL("CREATE POLICY {policy} ON {schema}.{table} FOR {operation} TO {role}").format(
                 policy=Identifier(self.policy_name),
