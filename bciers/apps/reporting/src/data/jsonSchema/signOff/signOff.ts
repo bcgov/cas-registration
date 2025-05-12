@@ -16,7 +16,7 @@ const baseFields = (flow: string): RJSFSchema["properties"] => ({
     ? {
         acknowledgement_of_certification: {
           title:
-            "I certify that the amount of total emissions reported, and all other information included in this report, is complete and accurate.",
+            "I have reviewed this report and certify that the amount of total emissions reported, and all other information included in this report, is complete and accurate.",
           type: "boolean",
           default: false,
         },
