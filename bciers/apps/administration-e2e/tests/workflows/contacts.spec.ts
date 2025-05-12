@@ -24,12 +24,6 @@ test.describe("Test add/edit contact", () => {
     // Add a new contact
     await contactsPage.clickAddButton();
 
-    // Note is only visible when adding a contact
-    const footnote = page.getByText(
-      /you can assign this representative to an operation directly/i,
-    );
-    await expect(footnote).toBeVisible();
-
     // Fill contact information
     await contactsPage.contactInformation("fill");
     await takeStabilizedScreenshot(happoPlaywright, page, {
@@ -43,7 +37,7 @@ test.describe("Test add/edit contact", () => {
     await assertSuccessfulSnackbar(page);
 
     // Verify note is not visible
-    await expect(footnote).toBeHidden();
+    await contactsPage.assertFootnoteIsVisible(false);
   });
 
   test("Edit a contact", async ({ page }) => {

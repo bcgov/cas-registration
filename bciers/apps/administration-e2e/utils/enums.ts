@@ -100,6 +100,10 @@ export enum ContactButtonText {
   ADD_CONTACT = "Add Contact",
 }
 
+export enum ContactFootnote {
+  CONTACT_FOOTNOTE = "you can assign this representative to an operation directly",
+}
+
 // Contacts Form fields selectors
 export enum ContactFormField {
   FIRST_NAME = "First Name*",

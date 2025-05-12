@@ -10,6 +10,7 @@ import {
   ContactFormField,
   ContactE2EValue,
   ContactButtonText,
+  ContactFootnote,
 } from "@/administration-e2e/utils/enums";
 import { fillRequiredFormFields } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
@@ -118,14 +119,17 @@ export class ContactsPOM {
   }
 
   async clickAddButton() {
+    const addButton = this.page.getByRole("button", {
+      name: ContactButtonText.ADD_CONTACT,
+    });
     await this.page.waitForTimeout(500);
     try {
-      await this.page
-        .getByRole("button", { name: ContactButtonText.ADD_CONTACT })
-        .click();
+      await addButton.click();
+      await this.assertFootnoteIsVisible(true);
     } catch (error) {
       console.warn("UI Navigation failed, falling back to direct URL");
       await this.page.goto(`${this.url}/add-contact`);
+      await this.assertFootnoteIsVisible(true);
     }
   }
 
@@ -135,5 +139,14 @@ export class ContactsPOM {
     const path = await this.url;
     const currentUrl = await this.page.url();
     expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
+  }
+
+  async assertFootnoteIsVisible(input: boolean) {
+    const footnote = ContactFootnote.CONTACT_FOOTNOTE;
+    if (input) {
+      await this.page.waitForSelector(`text=/${footnote}/i`, { timeout: 5000 });
+    } else {
+      await expect(this.page.getByText(footnote)).toBeHidden();
+    }
   }
 }
