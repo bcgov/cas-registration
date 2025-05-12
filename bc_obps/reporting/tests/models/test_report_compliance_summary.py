@@ -45,6 +45,7 @@ class ReportComplianceSummaryModelTest(BaseTestCase):
                 None,
                 0,
             ),
+            ('compliance_report_version', 'compliance report version', None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):
