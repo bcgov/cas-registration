@@ -10,7 +10,7 @@ from django.utils import timezone
 
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
-from compliance.models.compliance_summary import ComplianceSummary
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_period import CompliancePeriod
 from reporting.models.reporting_year import ReportingYear
 from registration.models.operation import Operation
@@ -26,22 +26,22 @@ def mock_obligation() -> MagicMock:
     obligation.fee_date = date(2024, 1, 1)
     obligation.obligation_deadline = date(2024, 12, 31)
 
-    # Mock compliance summary
-    mock_summary = MagicMock(spec=ComplianceSummary)
+    # Mock compliance report_version
+    mock_compliance_report_version = MagicMock(spec=ComplianceReportVersion)
     mock_period = MagicMock(spec=CompliancePeriod)
     mock_year = MagicMock(spec=ReportingYear)
     mock_year.reporting_year = 2024
     mock_period.reporting_year = mock_year
-    mock_summary.compliance_period = mock_period
+    mock_compliance_report_version.compliance_report.compliance_period = mock_period
 
     # Mock operation and operator
     mock_operation = MagicMock(spec=Operation)
     mock_operator = MagicMock(spec=Operator)
     mock_operator.id = uuid.uuid4()
     mock_operation.operator = mock_operator
-    mock_summary.report.operation = mock_operation
+    mock_compliance_report_version.compliance_report.report.operation = mock_operation
 
-    obligation.compliance_summary = mock_summary
+    obligation.compliance_report_version = mock_compliance_report_version
     return obligation
 
 
