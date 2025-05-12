@@ -9,7 +9,7 @@ def update_gwp(apps, _):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('reporting', '0097_reportsignoff_acknowledgement_of_errors'),
+        ('reporting', '0099_remove_reportelectricityimportdata_set_created_audit_columns_and_more'),
     ]
 
     operations = [
