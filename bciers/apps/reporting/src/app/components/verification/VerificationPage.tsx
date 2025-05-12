@@ -9,7 +9,7 @@ import { extendVerificationData } from "@reporting/src/app/utils/verification/ex
 import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingFlow, ReportingPage } from "../taskList/types";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
+import { getFlow } from "@reporting/src/app/components/taskList/reportingFlow";
 
 // import { verificationSchema } from "@reporting/src/data/jsonSchema/verification/verification";
 export default async function VerificationPage({

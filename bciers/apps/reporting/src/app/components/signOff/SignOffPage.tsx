@@ -5,7 +5,7 @@ import { getNavigationInformation } from "../taskList/navigationInformation";
 import { HeaderStep, ReportingPage } from "../taskList/types";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
+import { getFlow } from "@reporting/src/app/components/taskList/reportingFlow";
 import { buildSignOffSchema } from "@reporting/src/data/jsonSchema/signOff/signOff";
 
 export default async function SignOffPage({ version_id }: HasReportVersion) {

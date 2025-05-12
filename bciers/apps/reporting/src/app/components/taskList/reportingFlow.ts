@@ -14,7 +14,7 @@ import { sfoReportingOnlyFlow } from "./reportingFlows/sfoReportingOnlyFlow";
 import { eioFlow } from "./reportingFlows/eioFlow";
 import { ReportingFlow, ReportingFlowDescription } from "./types";
 
-export const reportingFlows: {
+export const reportingFlow: {
   [Flow in ReportingFlow]?: ReportingFlowDescription;
 } = {
   [ReportingFlow.EIO]: eioFlow,
@@ -78,7 +78,7 @@ export async function getFlowData(
   // Determine the flow for the provided report version ID.
   const flow = await getFlow(reportVersionId);
   // Retrieve the corresponding ReportingFlowDescription from the mapping.
-  const flowData = reportingFlows[flow] as ReportingFlowDescription;
+  const flowData = reportingFlow[flow] as ReportingFlowDescription;
 
   // If no description is found, throw an error.
   if (!flowData) {
