@@ -43,7 +43,7 @@ class TestReportVerificationService(TestCase):
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
-    def test_get_report_needs_verification_returns_true_for_regulated_purpose(
+    def test_get_report_verification_status_returns_true_for_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
@@ -56,7 +56,7 @@ class TestReportVerificationService(TestCase):
         }
 
         # Act: Call the method to determine if the report needs verification
-        result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
+        result = ReportVerificationService.get_report_verification_status(self.report_version.id)
 
         # Assert: Verify that the method correctly identifies the need for verification
         self.assertTrue(result["show_verification_page"])
@@ -66,7 +66,7 @@ class TestReportVerificationService(TestCase):
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
-    def test_get_report_needs_verification_returns_false_for_non_regulated_purpose(
+    def test_get_report_verification_status_returns_false_for_non_regulated_purpose(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
@@ -79,7 +79,7 @@ class TestReportVerificationService(TestCase):
         }
 
         # Act: Call the method to determine if the report needs verification
-        result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
+        result = ReportVerificationService.get_report_verification_status(self.report_version.id)
 
         # Assert: Verify that no verification is needed
         self.assertFalse(result["show_verification_page"])
@@ -89,7 +89,7 @@ class TestReportVerificationService(TestCase):
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
-    def test_get_report_needs_verification_returns_true_for_reporting_operation_with_high_emissions(
+    def test_get_report_verification_status_returns_true_for_reporting_operation_with_high_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
@@ -101,7 +101,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.return_value = {"attributable_for_threshold": Decimal("26000")}
 
         # Act: Call the method to determine if the report needs verification
-        result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
+        result = ReportVerificationService.get_report_verification_status(self.report_version.id)
 
         # Assert: Verify that verification is needed
         self.assertTrue(result["show_verification_page"])
@@ -111,7 +111,7 @@ class TestReportVerificationService(TestCase):
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
-    def test_get_report_needs_verification_returns_false_for_reporting_operation_with_low_emissions(
+    def test_get_report_verification_status_returns_false_for_reporting_operation_with_low_emissions(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
@@ -123,7 +123,7 @@ class TestReportVerificationService(TestCase):
         mock_get_emissions.return_value = {"attributable_for_threshold": Decimal("24000")}
 
         # Act: Call the method to determine if the report needs verification
-        result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
+        result = ReportVerificationService.get_report_verification_status(self.report_version.id)
 
         # Assert: Verify that no verification is needed
         self.assertFalse(result["show_verification_page"])
@@ -133,7 +133,7 @@ class TestReportVerificationService(TestCase):
 
     @patch("reporting.service.emission_category_service.EmissionCategoryService.get_all_category_totals_by_version")
     @patch("service.report_service.ReportService.get_registration_purpose_by_version_id")
-    def test_get_report_needs_verification_returns_true_for_electricity_import_operation(
+    def test_get_report_verification_status_returns_true_for_electricity_import_operation(
         self, mock_get_registration_purpose, mock_get_emissions
     ):
         """
@@ -146,7 +146,7 @@ class TestReportVerificationService(TestCase):
         }
 
         # Act: Call the method to determine if the report needs verification
-        result = ReportVerificationService.get_report_needs_verification(self.report_version.id)
+        result = ReportVerificationService.get_report_verification_status(self.report_version.id)
 
         # Assert: Verify that verification is needed
         self.assertTrue(result["show_verification_page"])

@@ -3,7 +3,7 @@ import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilit
 import { createVerificationSchema } from "@reporting/src/app/components/verification/createVerificationSchema";
 import VerificationForm from "@reporting/src/app/components/verification/VerificationForm";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { extendVerificationData } from "@reporting/src/app/utils/verification/extendVerificationData";
 import { getNavigationInformation } from "../taskList/navigationInformation";
@@ -39,7 +39,7 @@ export default async function VerificationPage({
 
   //🔍 Check if reports need verification
   const { show_verification_page: showVerificationPage } =
-    await getReportNeedsVerification(version_id);
+    await getReportVerificationStatus(version_id);
 
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,

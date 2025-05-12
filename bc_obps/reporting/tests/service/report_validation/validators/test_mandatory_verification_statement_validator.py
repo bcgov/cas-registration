@@ -14,7 +14,7 @@ from reporting.service.report_validation.validators import (
 
 @pytest.mark.django_db
 class TestMandatoryVerificationStatementValidator:
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_with_verification_needed_success(
@@ -37,7 +37,7 @@ class TestMandatoryVerificationStatementValidator:
 
         assert not result
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_with_verification_not_needed_success(
@@ -55,7 +55,7 @@ class TestMandatoryVerificationStatementValidator:
         mock_get_verification.assert_not_called()
         assert not result
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_report_missing_verification_statement(
@@ -82,7 +82,7 @@ class TestMandatoryVerificationStatementValidator:
             )
         }
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_report_missing_report_verification(
