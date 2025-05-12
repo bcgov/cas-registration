@@ -166,12 +166,6 @@ class UserModelTest(BaseTestCase):
             ("complianceperiod_created", "compliance period", None, None),
             ("complianceperiod_updated", "compliance period", None, None),
             ("complianceperiod_archived", "compliance period", None, None),
-            ("compliancesummary_created", "compliance summary", None, None),
-            ("compliancesummary_updated", "compliance summary", None, None),
-            ("compliancesummary_archived", "compliance summary", None, None),
-            ("complianceproduct_created", "compliance product", None, None),
-            ("complianceproduct_updated", "compliance product", None, None),
-            ("complianceproduct_archived", "compliance product", None, None),
             ("complianceobligation_created", "compliance obligation", None, None),
             ("complianceobligation_updated", "compliance obligation", None, None),
             ("complianceobligation_archived", "compliance obligation", None, None),
@@ -187,6 +181,12 @@ class UserModelTest(BaseTestCase):
             ("reportattachmentconfirmation_created", "report attachment confirmation", None, None),
             ("reportattachmentconfirmation_updated", "report attachment confirmation", None, None),
             ("reportattachmentconfirmation_archived", "report attachment confirmation", None, None),
+            ("compliancereport_created", "compliance report", None, None),
+            ("compliancereport_updated", "compliance report", None, None),
+            ("compliancereport_archived", "compliance report", None, None),
+            ("compliancereportversion_created", "compliance report version", None, None),
+            ("compliancereportversion_updated", "compliance report version", None, None),
+            ("compliancereportversion_archived", "compliance report version", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
