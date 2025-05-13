@@ -2,8 +2,8 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 import reviewDataFactory, {
   ReviewData,
 } from "@reporting/src/app/components/finalReview/reviewDataFactory/factory";
-import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
 import SubmittedForm from "./SubmittedForm";
+import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
 
 export default async function SubmittedPage({ version_id }: HasReportVersion) {
   // Get the report version flow data definitions
