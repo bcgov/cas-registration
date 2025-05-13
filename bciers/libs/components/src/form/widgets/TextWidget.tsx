@@ -52,8 +52,12 @@ const TextWidget: React.FC<WidgetProps> = ({
   };
 
   const numberStyles = {
-    border: "1px solid #fafafc",
+    border: "1px solid",
+    borderColor: borderColor,
     font: "inherit",
+    width: "100%",
+    padding: "14px",
+    borderRadius: "4px",
   };
 
   const widthStyle = {
@@ -75,7 +79,6 @@ const TextWidget: React.FC<WidgetProps> = ({
         <NumberField.Group>
           <NumberField.Input
             aria-label={name}
-            className={`w-full px-[14px] py-4 rounded border`}
             style={numberStyles}
             // sx doesn't like numberInput and tailwind doesn't like dynamic colors
             onMouseEnter={(e) => {
