@@ -30,7 +30,7 @@ export function ComplianceSummaryReviewContent(props: Props) {
 
       const invoiceUrl = `/compliance/api/invoice/${complianceSummaryId}`;
 
-      window.open(invoiceUrl, "_blank");
+      window.open(invoiceUrl, "_blank", "noopener,noreferrer");
     } catch (error) {
       console.error("Error generating invoice:", error);
       throw new Error(error instanceof Error ? error.message : String(error));

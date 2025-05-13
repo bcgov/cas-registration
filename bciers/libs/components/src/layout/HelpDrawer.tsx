@@ -28,6 +28,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/bc-output-based-pricing-system"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box
@@ -50,6 +51,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/bc_obps_guidance.pdf"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box
@@ -75,6 +77,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www2.gov.bc.ca/assets/gov/environment/climate-change/ind/obps/guidance/boundary_map_guidance.pdf"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box
@@ -99,6 +102,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/reporting/quantify"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box
@@ -123,6 +127,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box
@@ -140,6 +145,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box
@@ -157,6 +163,7 @@ export default function HelpDrawer() {
       <Link
         href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/248_2015"
         target="_blank"
+        rel="noopener noreferrer"
         underline="hover"
       >
         <Box

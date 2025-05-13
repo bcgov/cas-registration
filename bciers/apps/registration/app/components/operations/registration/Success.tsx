@@ -36,7 +36,11 @@ const Submission = ({
           </ul>
           <p className="mb-0">
             To report any of these events, please use the following link:{" "}
-            <Link href={reportAnEventLink} target="_blank">
+            <Link
+              href={reportAnEventLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Link to form
             </Link>
           </p>
