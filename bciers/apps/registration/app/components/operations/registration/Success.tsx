@@ -19,7 +19,7 @@ const Submission = ({
       <h2 className="form-heading mt-0">Submission</h2>
       <section className="flex flex-col items-center justify-center max-w-[600px] mx-auto mt-10">
         <div className="flex flex-col items-center justify-center">
-          {Check}
+          <Check />
           <h3 className="mb-2 mt-4">Registration complete</h3>
           <p className="m-0">This operation has been registered.</p>
         </div>

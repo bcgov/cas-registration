@@ -1,7 +1,7 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
 import { IssuanceStatusApprovedNote } from "../../../../../app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
+import { setupIssuanceStatusNoteTest } from "../../../../utils/issuanceStatusNoteTestUtils";
+import { vi } from "vitest";
+import React from "react";
 
 vi.mock("@bciers/components/icons/Check", () => ({
   __esModule: true,
@@ -43,55 +43,26 @@ vi.mock("@mui/material", async () => {
   };
 });
 
-describe("IssuanceStatusApprovedNote", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("renders the component with correct styling", () => {
-    render(<IssuanceStatusApprovedNote />);
-
-    const noteElement = screen.getByRole("note");
-    expect(noteElement).toBeVisible();
-
-    expect(noteElement.className).toContain("p-4");
-    expect(noteElement.className).toContain("mb-[10px]");
-    expect(noteElement.className).toContain("bg-[#DCE9F6]");
-    expect(noteElement.className).toContain("text-bc-text");
-  });
-
-  it("displays the Check icon", () => {
-    render(<IssuanceStatusApprovedNote />);
-
-    const checkIcon = screen.getByLabelText("check icon");
-    expect(checkIcon).toBeVisible();
-    expect(checkIcon).toHaveAttribute("width", "24");
-  });
-
-  it("contains the correct text message", () => {
-    render(<IssuanceStatusApprovedNote />);
-
-    expect(screen.getByText(/your request is approved/i)).toBeVisible();
-    expect(
-      screen.getByText(
-        /the earned credits have been issued to your holding account/i,
-      ),
-    ).toBeVisible();
-    expect(screen.getByText(/successfully/i)).toBeVisible();
-  });
-
-  it("includes a link to the B.C. Carbon Registry with correct attributes", () => {
-    render(<IssuanceStatusApprovedNote />);
-
-    const link = screen.getByRole("link", { name: /b\.c\. carbon registry/i });
-    expect(link).toBeVisible();
-
-    expect(link).toHaveAttribute("href", "#");
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noopener noreferrer");
-
-    expect(link.className).toContain("text-bc-link-blue");
-    expect(link.className).toContain("underline");
-    expect(link.className).toContain("font-bold");
-  });
-});
+setupIssuanceStatusNoteTest({
+  component: IssuanceStatusApprovedNote,
+  testDescription: "IssuanceStatusApprovedNote",
+  expectedStyling: {
+    containerClasses: ["p-4", "mb-[10px]", "bg-[#DCE9F6]", "text-bc-text"],
+  },
+  expectedIcon: {
+    type: "check",
+    width: "24",
+  },
+  expectedTextContent: [
+    /your request is approved/i,
+    /the earned credits have been issued to your holding account/i,
+    /successfully/i,
+  ],
+  expectedLink: {
+    text: /b\.c\. carbon registry/i,
+    href: "#",
+    target: "_blank",
+    rel: "noopener noreferrer",
+    classes: ["text-bc-link-blue", "underline", "font-bold"],
+  },
+})();
