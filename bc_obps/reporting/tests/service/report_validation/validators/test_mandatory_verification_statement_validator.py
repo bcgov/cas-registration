@@ -14,16 +14,16 @@ from reporting.service.report_validation.validators import (
 
 @pytest.mark.django_db
 class TestMandatoryVerificationStatementValidator:
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_with_verification_needed_success(
         self, mock_get_attachment, mock_get_verification, mock_get_needs_verification
     ):
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = True
+        mock_get_needs_verification.return_value = {"show_verification_page": True, "verification_required": True}
         mock_get_verification.return_value = MagicMock()  # Ensure verification exists
-        mock_get_attachment.return_value = MagicMock()  # Ensure Attachment exist
+        mock_get_attachment.return_value = MagicMock()  # Ensure Attachment exists
 
         # Act
         result = mandatory_verification_statement.validate(report_version)
@@ -37,7 +37,7 @@ class TestMandatoryVerificationStatementValidator:
 
         assert not result
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_with_verification_not_needed_success(
@@ -45,7 +45,7 @@ class TestMandatoryVerificationStatementValidator:
     ):
         # Arrange
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = False
+        mock_get_needs_verification.return_value = {"show_verification_page": False, "verification_required": False}
 
         # Act
         result = mandatory_verification_statement.validate(report_version)
@@ -55,7 +55,7 @@ class TestMandatoryVerificationStatementValidator:
         mock_get_verification.assert_not_called()
         assert not result
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_report_missing_verification_statement(
@@ -63,12 +63,11 @@ class TestMandatoryVerificationStatementValidator:
     ):
         # Arrange
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = True
+        mock_get_needs_verification.return_value = {"show_verification_page": True, "verification_required": True}
         mock_get_verification.return_value = MagicMock()  # Ensure verification exists
         mock_get_attachment.side_effect = ReportAttachment.DoesNotExist
 
         # Act & Assert
-
         result = mandatory_verification_statement.validate(report_version)
 
         mock_get_attachment.assert_called_once_with(
@@ -83,7 +82,7 @@ class TestMandatoryVerificationStatementValidator:
             )
         }
 
-    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_needs_verification")
+    @patch("reporting.service.report_verification_service.ReportVerificationService.get_report_verification_status")
     @patch("reporting.models.report_verification.ReportVerification.objects.get")
     @patch("reporting.models.report_attachment.ReportAttachment.objects.get")
     def test_validate_report_missing_report_verification(
@@ -91,11 +90,10 @@ class TestMandatoryVerificationStatementValidator:
     ):
         # Arrange
         report_version = make_recipe("reporting.tests.utils.report_version")
-        mock_get_needs_verification.return_value = True
+        mock_get_needs_verification.return_value = {"show_verification_page": True, "verification_required": True}
         mock_get_verification.side_effect = ReportVerification.DoesNotExist  # Verification does not exist
 
         # Act & Assert
-
         result = mandatory_verification_statement.validate(report_version)
 
         mock_get_verification.assert_called_once_with(report_version_id=report_version.id)

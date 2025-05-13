@@ -1,5 +1,5 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import reviewDataFactory, {
   ReviewData,
@@ -23,13 +23,14 @@ export default async function FinalReviewPage({
     flowData,
   );
   //🔍 Check if reports need verification
-  const needsVerification = await getReportNeedsVerification(version_id);
+  const { show_verification_page: showVerificationPage } =
+    await getReportVerificationStatus(version_id);
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.FinalReview,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    { skipVerification: !showVerificationPage },
   );
 
   return (

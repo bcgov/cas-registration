@@ -1,6 +1,6 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import getAttachments from "@reporting/src/app/utils/getAttachments";
-import { getReportNeedsVerification } from "@reporting/src/app/utils/getReportNeedsVerification";
+import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
   HeaderStep,
@@ -30,14 +30,19 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
   const isSupplementaryReport =
     isSupplementaryReportResponse.is_supplementary_report_version;
 
+  const {
+    show_verification_page: showVerificationPage,
+    verification_required: verificationRequired,
+  } = await getReportVerificationStatus(version_id);
+
   //🔍 Check if reports need verification
-  const needsVerification = await getReportNeedsVerification(version_id);
+
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.Attachments,
     version_id,
     "",
-    { skipVerification: !needsVerification },
+    { skipVerification: !showVerificationPage },
   );
 
   return (
@@ -45,7 +50,7 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
       version_id={version_id}
       initialUploadedAttachments={uploadedAttachmentsDict}
       navigationInformation={navInfo}
-      isVerificationStatementMandatory={needsVerification}
+      isVerificationStatementMandatory={verificationRequired}
       isSupplementaryReport={isSupplementaryReport}
       initialSupplementaryConfirmation={initialSupplementaryConfirmation}
     />

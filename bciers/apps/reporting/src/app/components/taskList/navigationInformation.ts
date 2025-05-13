@@ -6,10 +6,13 @@ import {
   TaskListPageFactoryContext,
   TaskListPageFactoryData,
 } from "./types";
-import { getFlow, reportingFlows } from "./reportingFlows";
 import { pageElementFactory } from "./taskListPages/pageElementFactory";
 import { headerElementFactory } from "./headerElementFactory";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import {
+  getFlow,
+  reportingFlows,
+} from "@reporting/src/app/components/taskList/reportingFlows";
 
 /**
  * Utility function to get the link of a TaskListElement object.
