@@ -27,7 +27,7 @@ describe("getUUIDFromEndpoint", () => {
   it("should throw an error if the endpoint is not allowed", () => {
     const endpoint = "registration/user/not-allowed-endpoint";
     expect(() => getUUIDFromEndpoint(endpoint)).toThrowError(
-      "Endpoint is not allowed",
+      "Unauthorized user",
     );
   });
 });

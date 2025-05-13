@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
-
+import { signIn } from "next-auth/react";
 import { Alert, AlertTitle } from "@mui/material";
 
 interface Props {
@@ -11,6 +11,12 @@ export default function ErrorBoundary({ error }: Props) {
   useEffect(() => {
     if (error) {
       try {
+        if (error.message === "Unauthorized user") {
+          signIn();
+          // Skip logging to Sentry
+          return;
+        }
+
         // Attempt to log the error to Sentry
         const id = Sentry.captureException(error);
         setEventId(id); // Store Sentry event ID

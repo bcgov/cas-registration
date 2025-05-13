@@ -30,7 +30,7 @@ const SessionTimeoutHandler: React.FC = () => {
       .catch((error) => console.error("Failed to fetch logout URL:", error));
   }, []);
 
-  const handleLogout = () => signOut({ callbackUrl: logoutUrl });
+  const handleLogout = () => signOut({ redirectTo: logoutUrl });
 
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {

@@ -11,7 +11,7 @@ function getUUIDFromEndpoint(endpoint: string): string | null {
   );
 
   if (!isEndpointAllowed) {
-    throw new Error("Endpoint is not allowed");
+    throw new Error("Unauthorized user");
   }
   // Split the endpoint URL by '/'
   const segments = endpoint.split("/");
