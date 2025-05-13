@@ -1,7 +1,7 @@
 from django.dispatch import receiver
 from compliance.service.compliance_summary_service import ComplianceSummaryService
 from reporting.models import ReportVersion
-from events.signals import report_submitted
+from reporting.signals.signals import report_submitted
 from typing import Any, Type
 import logging
 

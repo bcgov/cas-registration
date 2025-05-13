@@ -5,6 +5,7 @@ from common.exceptions import UserError
 from registration.emails import send_registration_and_boro_id_email
 from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
+from registration.signals.signals import operation_registration_purpose_changed
 from service.contact_service import ContactService
 from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_designated_operator_timeline_service import (
@@ -47,7 +48,6 @@ from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from events.signals import operation_registration_purpose_changed
 
 
 class OperationService:

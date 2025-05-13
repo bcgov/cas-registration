@@ -3,7 +3,7 @@ Signal handlers for the common app.
 """
 
 from django.dispatch import receiver
-from events.signals import report_submitted
+from reporting.signals.signals import report_submitted
 import logging
 from typing import Any, Type
 
