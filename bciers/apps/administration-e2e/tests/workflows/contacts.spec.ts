@@ -57,7 +57,6 @@ test.describe("Test add/edit contact", () => {
       })
       .first();
     await stabilizeGrid(page, 1);
-    await viewDetails.click();
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Contacts grid",
@@ -66,6 +65,7 @@ test.describe("Test add/edit contact", () => {
     // TODO: investigate accessibility failing
     // await analyzeAccessibility(page);
 
+    await viewDetails.click();
     // Check for presence of heading
     await expect(page.getByText(/Contact Details/i)).toBeVisible();
 
