@@ -1,4 +1,5 @@
 from django.db.models import QuerySet
+from common.exceptions import UserError
 from registration.utils import update_model_instance
 from registration.models import Operator, User, UserOperator
 from uuid import UUID
@@ -22,7 +23,7 @@ class OperatorDataAccessService:
             operator_id, UserOperator.Statuses.APPROVED
         )
         if not approved_admin_users:
-            raise Exception('This operator does not have a business guid yet.')
+            raise UserError('This operator does not have a business guid yet.')
         # all approved admins will have the same business_guid so we can use first one
         first_approved_admin: User = approved_admin_users.first()  # type: ignore[assignment] # we know this will not be None
         return first_approved_admin.business_guid
