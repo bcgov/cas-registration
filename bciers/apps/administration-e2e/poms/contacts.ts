@@ -122,7 +122,10 @@ export class ContactsPOM {
     const addButton = this.page.getByRole("button", {
       name: ContactButtonText.ADD_CONTACT,
     });
-    await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(1000);
+    // Wait for the button to be visible and enabled
+    await expect(addButton).toBeVisible();
+    await expect(addButton).toBeEnabled();
     await addButton.click();
     await this.assertFootnoteIsVisible(true);
   }
