@@ -85,9 +85,10 @@ LOCAL_APPS = [
     "reporting",
     "common",
     "rls",
+    "events",
 ]
 
-NON_PROD_APPS = ["compliance", "events"]
+NON_PROD_APPS = ["compliance"]
 
 RLS_GRANT_APPS = [
     "registration",
