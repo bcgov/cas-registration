@@ -24,8 +24,8 @@ class ExceptionResponse:
 
 class ExceptionHandler:
     EXCEPTION_MAP: dict[tuple[type[BaseException], ...], ExceptionResponse] = {
-        (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
+        (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),
         (PermissionError,): ExceptionResponse("Permission denied.", 403),
         (InternalError, ProgrammingError, DatabaseError): ExceptionResponse(
