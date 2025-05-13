@@ -5,7 +5,7 @@ export const purposePreface = (
     Please select the purpose of registering this operation. You may only select
     one option from the dropdown. Definitions of the options can be found in the
     glossary in the{" "}
-    <a target="_blank" href={bcObpsGuidanceLink}>
+    <a target="_blank" rel="noopener noreferrer" href={bcObpsGuidanceLink}>
       Program and Reporting Guidance
     </a>
     .
