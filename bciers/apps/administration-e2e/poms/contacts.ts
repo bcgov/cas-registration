@@ -123,14 +123,8 @@ export class ContactsPOM {
       name: ContactButtonText.ADD_CONTACT,
     });
     await this.page.waitForTimeout(500);
-    try {
-      await addButton.click();
-      await this.assertFootnoteIsVisible(true);
-    } catch (error) {
-      console.warn("UI Navigation failed, falling back to direct URL");
-      await this.page.goto(`${this.url}/add-contact`);
-      await this.assertFootnoteIsVisible(true);
-    }
+    await addButton.click();
+    await this.assertFootnoteIsVisible(true);
   }
 
   // ###  Assertions ###
