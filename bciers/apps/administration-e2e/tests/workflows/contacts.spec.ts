@@ -34,6 +34,7 @@ test.describe("Test add/edit contact", () => {
 
     // Submit form
     await clickButton(page, /save/i);
+    await page.waitForLoadState("load");
     await assertSuccessfulSnackbar(page);
 
     // Verify note is not visible
