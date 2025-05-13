@@ -153,5 +153,5 @@ class TestReportVerificationApi(CommonTestSetup):
 
     def test_validates_report_version_id(self):
         assert_report_version_ownership_is_validated("get_report_verification_by_version_id")
-        assert_report_version_ownership_is_validated("get_report_needs_verification")
+        assert_report_version_ownership_is_validated("get_report_verification_status")
         assert_report_version_ownership_is_validated("save_report_verification", method="post")

@@ -5,13 +5,13 @@ import {
 } from "../../utils/constants";
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
 import { getReportingOperation } from "../../utils/getReportingOperation";
-import { lfoFlow } from "./reportingFlows/lfoFlow";
-import { lfoNewEntrantFlow } from "./reportingFlows/lfoNewEntrantFlow";
-import { lfoReportingOnlyFlow } from "./reportingFlows/lfoReportingOnlyFlow";
-import { sfoFlow } from "./reportingFlows/sfoFlow";
-import { sfoNewEntrantFlow } from "./reportingFlows/sfoNewEntrantFlow";
-import { sfoReportingOnlyFlow } from "./reportingFlows/sfoReportingOnlyFlow";
-import { eioFlow } from "./reportingFlows/eioFlow";
+import { lfoFlow } from "@reporting/src/app/components/taskList/reportingFlow/lfoFlow";
+import { lfoNewEntrantFlow } from "@reporting/src/app/components/taskList/reportingFlow/lfoNewEntrantFlow";
+import { lfoReportingOnlyFlow } from "@reporting/src/app/components/taskList/reportingFlow/lfoReportingOnlyFlow";
+import { sfoFlow } from "@reporting/src/app/components/taskList/reportingFlow/sfoFlow";
+import { sfoNewEntrantFlow } from "@reporting/src/app/components/taskList/reportingFlow/sfoNewEntrantFlow";
+import { sfoReportingOnlyFlow } from "@reporting/src/app/components/taskList/reportingFlow/sfoReportingOnlyFlow";
+import { eioFlow } from "@reporting/src/app/components/taskList/reportingFlow/eioFlow";
 import { ReportingFlow, ReportingFlowDescription } from "./types";
 
 export const reportingFlows: {

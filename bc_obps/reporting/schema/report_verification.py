@@ -9,10 +9,10 @@ class ReportVerificationBase(ModelSchema):
     Base schema for shared fields in ReportVerification schemas
     """
 
-    verification_body_name: str
-    accredited_by: str
-    scope_of_verification: str
-    threats_to_independence: bool
+    verification_body_name: Optional[str] = None
+    accredited_by: Optional[str] = None
+    scope_of_verification: Optional[str] = None
+    threats_to_independence: Optional[bool] = None
     verification_conclusion: str
 
     class Meta:

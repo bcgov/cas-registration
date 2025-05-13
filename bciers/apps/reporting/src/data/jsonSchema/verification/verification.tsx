@@ -14,12 +14,12 @@ import { attachmentNote } from "./verificationText";
 const sharedSchemaProperties: RJSFSchema["properties"] = {
   verification_body_name: {
     title: "Verification body name",
-    type: "string",
+    type: ["string", "null"],
   },
   accredited_by: {
     title: "Accredited by",
-    type: "string",
-    enum: ["ANAB", "SCC"],
+    type: ["string", "null"],
+    enum: ["ANAB", "SCC", null],
   },
   // scope_of_verification: {
   //   title: "Scope of verification",
@@ -47,7 +47,7 @@ const sharedSchemaProperties: RJSFSchema["properties"] = {
   // },
   threats_to_independence: {
     title: "Were there any threats to independence noted",
-    type: "boolean",
+    type: ["boolean", "null"],
   },
   // verification_conclusion: {
   //   title: "Verification conclusion",
@@ -99,6 +99,7 @@ const sharedUiSchema: UiSchema = {
   },
   accredited_by: {
     "ui:placeholder": "Select accrediting body",
+    "ui:emptyValue": null,
   },
   // scope_of_verification: {
   //   "ui:placeholder": "Select scope of verification",

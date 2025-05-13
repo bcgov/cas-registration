@@ -83,30 +83,28 @@ class ReportVerificationService:
         return report_verification
 
     @staticmethod
-    def get_report_needs_verification(report_version_id: int) -> bool:
+    def get_report_verification_status(report_version_id: int) -> dict:
         """
-        Determines if a report needs verification data based on its purpose
-        and emissions attributable for reporting threshold
+        Determines if verification is needed and if the verification page should be shown.
         """
-        REGULATED_OPERATION_PURPOSES = {
+        REGULATED_PURPOSES = {
             Operation.Purposes.OBPS_REGULATED_OPERATION,
             Operation.Purposes.OPTED_IN_OPERATION,
             Operation.Purposes.NEW_ENTRANT_OPERATION,
         }
-        ATTRIBUTABLE_EMISSION_THRESHOLD = Decimal("25000")  # 25,000 TCo₂e
+        EMISSION_THRESHOLD = Decimal("25000")
 
-        # Fetch registration purpose
-        registration_purpose = ReportService.get_registration_purpose_by_version_id(report_version_id)
-        registration_purpose_value = registration_purpose.get("registration_purpose", {})
+        purpose = ReportService.get_registration_purpose_by_version_id(report_version_id).get(
+            "registration_purpose", {}
+        )
+        show_page = required = False
 
-        # Check the REGULATED_OPERATION_PURPOSES
-        if registration_purpose_value in REGULATED_OPERATION_PURPOSES:
-            return True
-
-        # Emission threshold: verification data is required if the registration purpose is Reporting Operation, and attributable_for_threshold TCo₂e >= 25,000
-        if registration_purpose_value == Operation.Purposes.REPORTING_OPERATION:
+        if purpose in REGULATED_PURPOSES or purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
+            show_page = True
+            required = purpose in REGULATED_PURPOSES
+        elif purpose == Operation.Purposes.REPORTING_OPERATION:
             totals = EmissionCategoryService.get_all_category_totals_by_version(report_version_id)
-            attributable_for_threshold = totals.get("attributable_for_threshold")
-            return (attributable_for_threshold or Decimal("0")) >= ATTRIBUTABLE_EMISSION_THRESHOLD
+            if totals.get("attributable_for_threshold", Decimal("0")) >= EMISSION_THRESHOLD:
+                show_page = required = True
 
-        return False
+        return {"show_verification_page": show_page, "verification_required": required}

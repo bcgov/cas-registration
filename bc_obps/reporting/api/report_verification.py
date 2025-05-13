@@ -24,14 +24,14 @@ def get_report_verification_by_version_id(
 
 
 @router.get(
-    "/report-version/{version_id}/report-needs-verification",
-    response={200: bool, custom_codes_4xx: Message},
+    "/report-version/{version_id}/report-verification-status",
+    response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Checks if a report needs verification data based on its purpose and attributable emissions.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_needs_verification(request: HttpRequest, version_id: int) -> tuple[Literal[200], bool]:
-    return 200, ReportVerificationService.get_report_needs_verification(version_id)
+def get_report_verification_status(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
+    return 200, ReportVerificationService.get_report_verification_status(version_id)
 
 
 @router.post(
