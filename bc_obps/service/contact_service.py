@@ -1,6 +1,7 @@
 from typing import Optional
 from django.db.models import QuerySet
 from uuid import UUID
+from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.contact import Contact
 from registration.schema import (
@@ -139,7 +140,7 @@ class ContactService:
         if not address or any(
             not getattr(address, field, None) for field in ['street_address', 'municipality', 'province', 'postal_code']
         ):
-            raise Exception(
+            raise UserError(
                 f'The contact {contact.first_name} {contact.last_name} is missing address information. Please return to Contacts and fill in their address information before assigning them as an Operation Representative here.'
             )
 
@@ -150,4 +151,4 @@ class ContactService:
         if contact.business_role.role_name == "Operation Representative" and any(
             not address_data.get(field) for field in ['street_address', 'municipality', 'province', 'postal_code']
         ):
-            raise Exception("This contact is an 'Operation Representative' and must have all address-related fields.")
+            raise UserError("This contact is an 'Operation Representative' and must have all address-related fields.")

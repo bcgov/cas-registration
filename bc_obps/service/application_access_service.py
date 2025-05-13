@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 from uuid import UUID
+from common.exceptions import UserError
 from registration.enums.enums import AccessRequestStates, AccessRequestTypes
 from registration.emails import send_operator_access_request_email
 from service.email.email_service import EmailService
@@ -29,7 +30,7 @@ class ApplicationAccessService:
         users_business_bceid = UserDataAccessService.get_by_guid(user_guid).business_guid
 
         if operators_business_bceid != users_business_bceid:
-            raise Exception(
+            raise UserError(
                 "Your business BCeID does not have access to this operator. Please contact your operator's administrator to request the correct business BCeID. If this issue persists, please contact"
             )
         return True
@@ -46,22 +47,22 @@ class ApplicationAccessService:
 
         Args:
             user_guid (uuid): The user for whom eligibility is being checked.
-            operatorIid (uuid): The if of the operator to which admin access is being requested.
+            operator_id (uuid): The id of the operator to which admin access is being requested.
 
         Returns:
             True or raises an exception.
         """
         approved_admins = UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.APPROVED)
         if approved_admins.filter(user_guid=user_guid).exists():
-            raise Exception("You are already an admin for this Operator!")
+            raise UserError("You are already an admin for this Operator.")
         if len(approved_admins) > 0:
-            raise Exception("This Operator already has an admin user!")
+            raise UserError("This Operator already has an admin user.")
         # User already has a pending request for this operator
         # NOTE: This is a bit of a weird case, but it's possible for a user to have a pending request for an operator and if we show the UserOperator request form, they could submit another request and end up with two
         pending_admins = UserOperatorDataAccessService.get_admin_users(operator_id, UserOperator.Statuses.PENDING)
 
         if pending_admins.filter(user_guid=user_guid).exists():
-            raise Exception("You already have a pending request for this Operator!")
+            raise UserError("You already have a pending request for this Operator.")
 
         return True
 

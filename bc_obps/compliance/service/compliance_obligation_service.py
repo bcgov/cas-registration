@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
+from django.core.exceptions import ValidationError
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from reporting.models.report_version import ReportVersion
 from django.db import transaction
@@ -81,13 +82,13 @@ class ComplianceObligationService:
             str: The formatted obligation ID
 
         Raises:
-            ValueError: If the operation is not regulated by BC OBPS
+            ValidationError: If the operation is not regulated by BC OBPS
         """
         # Get BORO ID (format: YY-OOOO)
         operation = report_version.report.operation
         if operation.bc_obps_regulated_operation is None:
-            raise ValueError(
-                f"Cannot create a compliance obligation for an operation not regulated by BC OBPS. Operation ID: {operation.id}, Operation Name: {operation.name}"
+            raise ValidationError(
+                f"Cannot create a compliance obligation for an operation not regulated by BC OBPS. Operation ID: {operation.id}"
             )
 
         operation_part = operation.bc_obps_regulated_operation.id

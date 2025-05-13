@@ -1,3 +1,4 @@
+from common.exceptions import UserError
 from service.application_access_service import ApplicationAccessService
 import pytest
 from model_bakery import baker
@@ -34,7 +35,7 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
 
-        with pytest.raises(Exception, match="You are already an admin for this Operator!"):
+        with pytest.raises(UserError, match="You are already an admin for this Operator."):
             ApplicationAccessService.is_user_eligible_to_request_admin_access(
                 operator.id,
                 user.user_guid,
@@ -53,7 +54,7 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.APPROVED,
         )
 
-        with pytest.raises(Exception, match="This Operator already has an admin user!"):
+        with pytest.raises(UserError, match="This Operator already has an admin user."):
             ApplicationAccessService.is_user_eligible_to_request_admin_access(
                 operator.id,
                 user.user_guid,
@@ -71,7 +72,7 @@ class TestCheckUserAdminRequestEligibility:
             status=UserOperator.Statuses.PENDING,
         )
 
-        with pytest.raises(Exception, match="You already have a pending request for this Operator!"):
+        with pytest.raises(UserError, match="You already have a pending request for this Operator."):
             ApplicationAccessService.is_user_eligible_to_request_admin_access(
                 operator.id,
                 user.user_guid,
