@@ -10,7 +10,7 @@ const optedInOperationPreface = (
   <div>
     Complete the following fields to apply to be an Opt-in Operation in the B.C.
     OBPS. Ensure that you have read through{" "}
-    <a href={bcObpsLink} target="_blank">
+    <a href={bcObpsLink} target="_blank" rel="noopener noreferrer">
       our website
     </a>{" "}
     and{" "}
