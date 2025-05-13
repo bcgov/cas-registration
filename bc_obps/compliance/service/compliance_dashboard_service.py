@@ -28,7 +28,7 @@ class ComplianceDashboardService:
 
         # Get all compliance report versions for the filtered operations
         compliance_report_versions = ComplianceReportVersion.objects.filter(
-            compliance_report__operation_id__in=operations
+            compliance_report__report__operation_id__in=operations
         )
 
         # Calculate and attach the outstanding balance to each compliance_report_version
@@ -60,11 +60,13 @@ class ComplianceDashboardService:
 
         # Get the compliance compliance_report_version if it belongs to one of the user's operations
         compliance_report_version = ComplianceReportVersion.objects.select_related(
-            'report_version__report',
-            'report_version__report__operation',
+            'report_compliance_summary__report_version__report',
+            'report_compliance_summary__report_version__report__operation',
             'compliance_report__compliance_period',
             'obligation',
-        ).get(id=compliance_report_version_id, report_version__report__operation__in=operations)
+        ).get(
+            id=compliance_report_version_id, report_compliance_summary__report_version__report__operation__in=operations
+        )
 
         # Calculate and attach the outstanding balance
         if compliance_report_version:
