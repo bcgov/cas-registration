@@ -27,7 +27,8 @@ export default async function ContactPage({
   }
 
   const noteMsg = isCreating
-    ? "Once added, this new contact can be selected wherever needed or applicable."
+    ? // Chesca
+      "Test once added, this new contact can be selected wherever needed or applicable."
     : "View or update information of this contact here.";
 
   // To get the user's role from the session
