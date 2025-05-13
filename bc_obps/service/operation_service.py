@@ -47,6 +47,7 @@ from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from events.signals import operation_registration_purpose_changed
 
 
 class OperationService:
@@ -390,6 +391,11 @@ class OperationService:
 
         if payload.registration_purpose != operation.registration_purpose:
             payload = cls.handle_change_of_registration_purpose(user_guid, operation, payload)
+            # send a signal that the registration purpose has changed
+            operation_registration_purpose_changed.send(
+                sender=OperationService,
+                operation_id=operation.id,
+            )
 
         operation_data = payload.dict(
             include={
