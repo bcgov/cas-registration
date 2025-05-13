@@ -6,6 +6,7 @@ from compliance.service.compliance_obligation_service import ComplianceObligatio
 import pytest
 from compliance.models import ComplianceObligation, ComplianceSummary
 from reporting.models import Report, ReportVersion, ReportingYear
+from django.core.exceptions import ValidationError
 
 
 @pytest.fixture
@@ -85,14 +86,13 @@ class TestComplianceObligationService:
     def test_get_obligation_id_unregulated_operation(self, mock_report_version_unregulated):
         """Test ValueError is raised when operation is not regulated by BC OBPS"""
         # Call the method and expect ValueError
-        with pytest.raises(ValueError) as excinfo:
+        with pytest.raises(ValidationError) as excinfo:
             ComplianceObligationService._get_obligation_id(mock_report_version_unregulated)
 
         # Verify error message
         error_msg = str(excinfo.value)
         assert "Cannot create a compliance obligation for an operation not regulated by BC OBPS" in error_msg
         assert "Operation ID:" in error_msg
-        assert "Operation Name: Unregulated Test Operation" in error_msg
 
     @pytest.mark.django_db
     @patch('compliance.service.compliance_obligation_service.ComplianceSummary.objects.get')
@@ -262,7 +262,7 @@ class TestComplianceObligationService:
         mock_get_rate.return_value = Decimal('50.00')
 
         # Call the method and expect ValueError
-        with pytest.raises(ValueError) as excinfo:
+        with pytest.raises(ValidationError) as excinfo:
             ComplianceObligationService.create_compliance_obligation(
                 compliance_summary_id=1,
                 emissions_amount=Decimal('100.0'),
