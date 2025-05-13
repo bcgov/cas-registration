@@ -45,6 +45,7 @@ const defaultProps = {
   formData: {},
   step: 2,
   steps: allOperationRegistrationSteps,
+  isCreating: true,
 };
 
 describe("the FacilitySfoForm component", () => {
