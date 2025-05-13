@@ -6,8 +6,9 @@ import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { Session } from "next-auth";
+import * as Sentry from "@sentry/nextjs";
 
-export const ACTIVITY_THROTTLE_SECONDS = 4 * 60; // Throttle user activity checks (4 minutes)
+export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Throttle user activity checks (4 minutes)
 export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes)
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
@@ -21,20 +22,26 @@ const SessionTimeoutHandler: React.FC = () => {
   const [sessionTimeout, setSessionTimeout] = useState<number>(
     getExpirationTimeInSeconds(session?.expires),
   );
-  const [logoutUrl, setLogoutUrl] = useState<string | undefined>(undefined);
+  const [logoutUrl, setLogoutUrl] = useState<string>("/");
 
   useEffect(() => {
     // Fetch the logout URL from environment variables when component mounts
     getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL")
-      .then(setLogoutUrl)
-      .catch((error) => console.error("Failed to fetch logout URL:", error));
+      .then((url) => setLogoutUrl(url || "/"))
+      .catch((error) => {
+        Sentry.captureException(error);
+        console.error("Failed to fetch logout URL:", error);
+      });
   }, []);
 
-  const handleLogout = () => signOut({ callbackUrl: logoutUrl });
+  const handleLogout = () => signOut({ redirectTo: logoutUrl });
 
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
-    if (status !== "authenticated") return;
+    if (status !== "authenticated") {
+      await handleLogout();
+      return;
+    }
     try {
       const newSession: Session | null = await update();
       if (!newSession?.expires) {
