@@ -33,9 +33,7 @@ class ComplianceReportVersionService:
             ReportVersion.DoesNotExist: If report version doesn't exist
         """
         with transaction.atomic():
-            report_compliance_summary = ReportComplianceSummary.objects.select_related('report_version').get(
-                report_version_id=report_version_id
-            )
+            report_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version_id)
 
             ## TODO: WILL NEED SUPPLEMENTARY REPORT HANDLING LOGIC HERE (issue pending) ##
             credited_emissions = report_compliance_summary.credited_emissions
@@ -44,7 +42,6 @@ class ComplianceReportVersionService:
             # Create compliance report version
             compliance_report_version = ComplianceReportVersion.objects.create(
                 compliance_report=compliance_report,
-                report_version=report_compliance_summary.report_version,
                 report_compliance_summary=report_compliance_summary,
                 status=ComplianceReportVersionService._determine_compliance_status(
                     excess_emissions, credited_emissions

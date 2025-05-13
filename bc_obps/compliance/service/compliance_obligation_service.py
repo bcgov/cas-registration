@@ -3,7 +3,6 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from reporting.models.report_version import ReportVersion
-from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
@@ -40,16 +39,20 @@ class ComplianceObligationService:
             ValueError: If the operation is not regulated by BC OBPS (no obligation_id can be generated)
         """
         # Get the compliance report_version
-        compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+        compliance_report_version = ComplianceReportVersion.objects.select_related(
+            'report_compliance_summary__report_version__report'
+        ).get(id=compliance_report_version_id)
 
         # Calculate obligation deadline (November 30 of the following year)
         obligation_deadline = date(
-            compliance_report_version.report_version.report.reporting_year.reporting_year + 1, 11, 30
+            compliance_report_version.report_compliance_summary.report_version.report.reporting_year.reporting_year + 1,
+            11,
+            30,
         )
 
         # Get the compliance charge rate for the reporting year
         fee_rate_dollars = ComplianceChargeRateService.get_rate_for_year(
-            compliance_report_version.report_version.report.reporting_year
+            compliance_report_version.report_compliance_summary.report_version.report.reporting_year
         )
 
         # Calculate fee amount: emissions_amount_tco2e * fee rate
@@ -58,7 +61,7 @@ class ComplianceObligationService:
         # Create the obligation with fee data
         obligation = ComplianceObligation.objects.create(
             compliance_report_version=compliance_report_version,
-            obligation_id=cls._get_obligation_id(compliance_report_version.report_version),
+            obligation_id=cls._get_obligation_id(compliance_report_version.report_compliance_summary.report_version),
             obligation_deadline=obligation_deadline,
             fee_amount_dollars=fee_amount_dollars,
             fee_date=date.today(),
