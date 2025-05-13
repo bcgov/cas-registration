@@ -9,7 +9,7 @@ import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
-import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlow";
+import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
 
 export default async function FinalReviewPage({
   version_id,
