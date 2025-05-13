@@ -10,7 +10,7 @@
       "swrs_facility_id": 1001,
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0014",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Reporting Operation",
       "contacts": [1, 2]
     }
@@ -42,7 +42,7 @@
       "naics_code": 20,
       "regulated_products": [1],
       "status": "Draft",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation"
     }
   },
@@ -77,7 +77,7 @@
       "regulated_products": [1],
       "status": "Registered",
       "bc_obps_regulated_operation": "23-0002",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [1]
     }
@@ -113,7 +113,7 @@
       "regulated_products": [1],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0004",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Opted-in Operation",
       "contacts": [1]
     }
@@ -130,7 +130,7 @@
       "bcghg_id": "23219990006",
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0005",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Potential Reporting Operation",
       "contacts": [2]
     }
@@ -147,7 +147,7 @@
       "bcghg_id": "23219990007",
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0006",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Electricity Import Operation",
       "contacts": [1]
     }
@@ -165,7 +165,7 @@
       "regulated_products": [2],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0007",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "New Entrant Operation",
       "contacts": [1]
     }
@@ -181,7 +181,7 @@
       "naics_code": 21,
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0008",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Reporting Operation",
       "contacts": [2]
     }
@@ -199,7 +199,7 @@
       "regulated_products": [3],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0009",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [1, 2]
     }
@@ -216,7 +216,7 @@
       "bcghg_id": "23219990011",
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0010",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "Reporting Operation",
       "contacts": [1, 2]
     }
@@ -233,7 +233,7 @@
       "regulated_products": [3, 4],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0011",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [1]
     }
@@ -262,7 +262,7 @@
       "naics_code": 21,
       "regulated_products": [3],
       "status": "Draft",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation"
     }
   },
@@ -286,14 +286,14 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-25T15:27:00.000Z",
-      "name": "Bees LFO - Registered",
+      "name": "Registered Bees LFO - Excess Emission",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990016",
       "regulated_products": [5],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0012",
-      "activities": [1, 5],
+      "activities": [1],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3]
     }
@@ -308,7 +308,7 @@
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "status": "Not Started",
-      "activities": [1, 5]
+      "activities": [1]
     }
   },
   {
@@ -335,14 +335,15 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-28T15:27:00.000Z",
-      "name": "Bat LFO - Registered",
+      "name": "Registered Bat LFO - Credited Emission",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990019",
+      "regulated_products": [1],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0016",
-      "registration_purpose": "Reporting Operation",
       "activities": [1],
+      "registration_purpose": "OBPS Regulated Operation",
       "contacts": [3]
     }
   },
@@ -351,13 +352,14 @@
     "pk": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Bin LFO - Registered",
+      "name": "Registered Bin LFO - No Excess and Credit",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990020",
+      "regulated_products": [41],
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0017",
-      "registration_purpose": "Reporting Operation",
+      "registration_purpose": "OBPS Regulated Operation",
       "activities": [1],
       "contacts": [3]
     }
@@ -374,7 +376,7 @@
       "status": "Registered",
       "bc_obps_regulated_operation": "24-0018",
       "registration_purpose": "Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [4]
     }
   },
@@ -410,7 +412,7 @@
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [7]
     }
   },
@@ -424,7 +426,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [8]
     }
   },
@@ -438,7 +440,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [9]
     }
   },
@@ -452,7 +454,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [10]
     }
   },
@@ -466,7 +468,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [11]
     }
   },
@@ -480,7 +482,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [12]
     }
   },
@@ -494,7 +496,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [13]
     }
   },
@@ -508,7 +510,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [14]
     }
   },
@@ -522,7 +524,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [15]
     }
   },
@@ -536,7 +538,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [16]
     }
   },
@@ -550,7 +552,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [17]
     }
   },
@@ -564,7 +566,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [18]
     }
   },
@@ -578,7 +580,7 @@
       "naics_code": 20,
       "status": "Registered",
       "registration_purpose": "Potential Reporting Operation",
-      "activities": [1, 5],
+      "activities": [1],
       "contacts": [19]
     }
   }
