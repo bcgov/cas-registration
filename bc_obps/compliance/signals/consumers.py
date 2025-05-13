@@ -27,15 +27,12 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
             return
         if not (
             ComplianceReport.objects.filter(
-                report_id=report_version.report_id, operation_id=report_version.report.operation_id
+                report_id=report_version.report_id,
             )
         ).exists():
             ComplianceReport.objects.create(
                 report=report_version.report,
-                operation=report_version.report.operation,
                 compliance_period=CompliancePeriod.objects.get(reporting_year=report_version.report.reporting_year),
             )
-        compliance_report = ComplianceReport.objects.get(
-            report_id=report_version.report_id, operation_id=report_version.report.operation_id
-        )
+        compliance_report = ComplianceReport.objects.get(report_id=report_version.report_id)
         ComplianceReportVersionService.create_compliance_report_version(compliance_report, version_id)

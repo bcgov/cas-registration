@@ -14,10 +14,10 @@ def mock_compliance_report_version():
     """Create a mock compliance compliance_report_version with required attributes"""
     compliance_report_version = MagicMock(spec=ComplianceReportVersion)
     compliance_report_version.id = 1
-    compliance_report_version.report_version.report = MagicMock(spec=Report)
-    compliance_report_version.report_version.report.operator = MagicMock()
-    compliance_report_version.report_version.report.operator.id = uuid.uuid4()
-    compliance_report_version.report_version.report.reporting_year_id = 2023
+    compliance_report_version.report_compliance_summary.report_version.report = MagicMock(spec=Report)
+    compliance_report_version.report_compliance_summary.report_version.report.operator = MagicMock()
+    compliance_report_version.report_compliance_summary.report_version.report.operator.id = uuid.uuid4()
+    compliance_report_version.report_compliance_summary.report_version.report.reporting_year_id = 2023
     return compliance_report_version
 
 

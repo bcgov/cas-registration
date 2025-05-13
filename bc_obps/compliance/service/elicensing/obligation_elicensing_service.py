@@ -46,7 +46,7 @@ class ObligationELicensingService:
 
                 # Ensure client exists in eLicensing
                 client_link = OperatorELicensingService.sync_client_with_elicensing(
-                    obligation.compliance_report_version.report_version.report.operation.operator.id
+                    obligation.compliance_report_version.report_compliance_summary.report_version.report.operation.operator.id
                 )
 
                 # Create fee in eLicensing

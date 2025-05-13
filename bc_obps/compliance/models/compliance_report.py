@@ -1,6 +1,5 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from registration.models import Operation
 from reporting.models.report import Report
 from .compliance_period import CompliancePeriod
 from .rls_configs.compliance_report import Rls as ComplianceReportRls
@@ -11,12 +10,10 @@ class ComplianceReport(TimeStampedModel):
 
     report = models.OneToOneField(
         Report,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="compliance_report",
         db_comment="The emissions report associated with this compliance report",
     )
-
-    operation = models.ForeignKey(Operation, on_delete=models.PROTECT, related_name="compliance_reports")
 
     compliance_period = models.ForeignKey(
         CompliancePeriod,
