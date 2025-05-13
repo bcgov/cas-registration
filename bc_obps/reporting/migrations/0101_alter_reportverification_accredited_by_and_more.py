@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0099_remove_reportelectricityimportdata_set_created_audit_columns_and_more'),
+        ('reporting', '0100_update_gwp_perfluoroethane'),
     ]
 
     operations = [

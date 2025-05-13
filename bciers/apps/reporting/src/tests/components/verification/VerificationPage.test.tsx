@@ -10,6 +10,7 @@ import { OperationTypes } from "@bciers/utils/src/enums";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { dummyNavigationInformation } from "../taskList/utils";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 vi.mock("@reporting/src/app/components/verification/VerificationForm", () => ({
   default: vi.fn(),
@@ -21,9 +22,6 @@ vi.mock("@reporting/src/app/utils/getReportVerification", () => ({
 
 vi.mock("@reporting/src/app/utils/getReportFacilityList", () => ({
   getReportFacilityList: vi.fn(),
-}));
-vi.mock("@reporting/src/app/components/taskList/reportingFlow", () => ({
-  getFlow: vi.fn(),
 }));
 
 vi.mock(
@@ -71,6 +69,14 @@ const mockGetIsSupplementaryReport = getIsSupplementaryReport as ReturnType<
   typeof vi.fn
 >;
 
+vi.mock("@reporting/src/app/components/taskList/reportingFlows", () => ({
+  reportingFlows: {
+    TestFlow: {
+      TestHeader: ["TestPage", "TestPage2", "TestPage3"],
+    },
+  },
+  getFlow: vi.fn().mockReturnValue("TestFlow" as ReportingFlow),
+}));
 describe("VerificationPage component", () => {
   it("renders the VerificationForm component with the correct data", async () => {
     const mockVersionId = 12345;
