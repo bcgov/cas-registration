@@ -77,8 +77,8 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         )
 
         if user.is_irc_user():
-            # IRC users only see registered operations
-            return queryset.filter(operation__status=Operation.Statuses.REGISTERED, end_date__isnull=True)
+            # IRC users see all operations (subject to filtering that's done on the endpoint)
+            return queryset.filter(end_date__isnull=True)
         else:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
