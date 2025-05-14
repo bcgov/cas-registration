@@ -1,13 +1,18 @@
 from typing import List, Literal, Optional, Tuple
 from common.api.utils.current_user_utils import get_current_user_guid
+from common.permissions import authorize
 from django.db import transaction
+from django.db.models import QuerySet
 from django.http import HttpRequest
-from ninja import File, Form, UploadedFile
+from ninja import File, Form, Query, UploadedFile
+from ninja.pagination import paginate
+from registration.utils import CustomPagination
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.models.report_attachment import ReportAttachment
 from reporting.schema.generic import Message
 from reporting.schema.report_attachment import (
     AttachmentsWithConfirmationOut,
+    InternalReportAttachmentFilterSchema,
     InternalReportAttachmentOut,
 )
 from reporting.service.report_attachment_service import ReportAttachmentService
@@ -93,6 +98,19 @@ def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: in
     response={200: list[InternalReportAttachmentOut], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the list of all attachments for all reports.""",
+    auth=authorize("authorized_irc_user"),
 )
-def get_all_attachments(request: HttpRequest) -> Tuple[Literal[200], str]:
-    return 200, ReportAttachment.objects.all()
+@paginate(CustomPagination)
+def get_all_attachments(
+    request: HttpRequest,
+    filters: InternalReportAttachmentFilterSchema = Query(...),
+    sort_field: Optional[str] = "id",
+    sort_order: Optional[Literal["desc", "asc"]] = "desc",
+    paginate_result: bool = Query(True, description="Whether to paginate the results"),
+) -> QuerySet[ReportAttachment]:
+    sort_direction = "-" if sort_order == "desc" else ""
+    sort_by = f"{sort_direction}{sort_field}"
+
+    data = filters.filter(ReportAttachment.objects.all()).order_by(sort_by)
+
+    return data
