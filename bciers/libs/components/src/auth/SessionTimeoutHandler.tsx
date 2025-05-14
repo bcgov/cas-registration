@@ -6,9 +6,10 @@ import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { Session } from "next-auth";
+import * as Sentry from "@sentry/nextjs";
 
 export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Throttle user activity checks (4 minutes)
-export const MODAL_DISPLAY_SECONDS = 60; // Seconds before timeout to show logout warning modal (5 minutes)
+export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes)
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
@@ -24,7 +25,11 @@ const SessionTimeoutHandler: React.FC = () => {
 
   const handleLogout = async () => {
     const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-    await signOut({ redirectTo: logoutUrl });
+    if (!logoutUrl) {
+      Sentry.captureException("Failed to fetch logout URL");
+      console.error("Failed to fetch logout URL");
+    }
+    await signOut({ redirectTo: logoutUrl || "/" });
   };
 
   // Refreshes the session and updates the timeout based on new expiration
