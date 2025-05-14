@@ -45,6 +45,7 @@ export const createOperationInformationSchema = async (
       type: "string",
       title: "Operation Type",
       enum: [OperationTypes.SFO, OperationTypes.LFO],
+      ...(app === Apps.ADMINISTRATION && { readOnly: true }),
     },
     naics_code_id: {
       type: "number",

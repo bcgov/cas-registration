@@ -7,7 +7,7 @@ interface Props {
   onCancel: () => void;
   onConfirm: () => void;
   confirmButtonText?: string;
-  modalText: Element;
+  modalText: string | React.ReactNode;
 }
 
 export default function ConfirmChangeOfFieldModal({
