@@ -20,14 +20,16 @@ import Loading from "../loading/SkeletonForm";
  */
 
 export default function defaultPageFactory<TPageParams extends {}>(
-  Component: React.FC<TPageParams & { searchParams?: Record<string, string> }>,
+  Component: React.FC<
+    TPageParams & { searchParams?: Record<string, string | number | undefined> }
+  >,
 ) {
   return async function Page({
     params,
     searchParams,
   }: {
     params: TPageParams;
-    searchParams?: Record<string, string>;
+    searchParams?: Record<string, string | number | undefined>;
   }) {
     return (
       <Suspense fallback={<Loading />}>
