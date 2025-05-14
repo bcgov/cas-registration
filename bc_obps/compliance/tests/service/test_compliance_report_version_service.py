@@ -32,9 +32,7 @@ class TestComplianceReportVersionService:
             'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
         )
         compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report',
-            report_id=report_compliance_summary.report_version.report_id,
-            operation_id=report_compliance_summary.report_version.report.operation_id,
+            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
         )
 
         # Act

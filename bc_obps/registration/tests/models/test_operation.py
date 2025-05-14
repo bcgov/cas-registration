@@ -93,7 +93,6 @@ class OperationModelTest(BaseTestCase):
             ("contacts", "contacts", None, None),
             ("date_of_first_shipment", "date of first shipment", 1000, None),
             ("status", "status", 1000, None),
-            ("compliance_reports", "compliance report", None, None),
         ]
 
     def test_unique_boro_id_per_operation(self):
