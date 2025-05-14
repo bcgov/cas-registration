@@ -15,5 +15,4 @@ class RegistrationConfig(AppConfig):
 
     def ready(self):
         pre_migrate.connect(create_erc_schemas, sender=self)
-        from .signals import signals  # noqa: F401
-        from .signals import consumers  # noqa: F401
+        from .signals import signals, consumers  # noqa: F401

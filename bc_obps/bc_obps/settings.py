@@ -85,7 +85,6 @@ LOCAL_APPS = [
     "reporting",
     "common",
     "rls",
-    "events",
 ]
 
 NON_PROD_APPS = ["compliance"]
