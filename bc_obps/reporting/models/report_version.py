@@ -16,10 +16,12 @@ class ReportVersion(TimeStampedModel):
         db_comment="The report to which this version applied.",
         related_name="report_versions",
     )
+
     is_latest_submitted = models.BooleanField(
         db_comment="True if this version is the latest submitted one",
         default=False,
     )
+
     report_type = models.CharField(
         max_length=1000,
         db_comment="Report type",
@@ -40,9 +42,9 @@ class ReportVersion(TimeStampedModel):
 
     reason_for_change = models.TextField(
         blank=True,
+        null=True,
         db_comment="Reason explaining why a supplementary report change was made.",
     )
-
 
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table representing the multiple versions that a single report can have."

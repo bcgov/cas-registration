@@ -14,7 +14,7 @@ class TestReportValidationService:
             "reporting.service.report_validation.validators.operation_boroid_presence",
             "reporting.service.report_validation.validators.mandatory_verification_statement",
             "reporting.service.report_validation.validators.report_attachments_are_scanned",
-            "reporting.service.report_validation.validators.supplementary_report_change",
+            "reporting.service.report_validation.validators.supplementary_report_version_change",
             "reporting.service.report_validation.validators.supplementary_report_attachments_confirmation",
             "reporting.service.report_validation.validators.report_activity_json_validation",
         ]

@@ -256,7 +256,7 @@ export const permissionRules: PermissionRule[] = [
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
-          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.OPERATION}`,
+          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.REVIEW}`,
           request.url,
         ),
       ),
@@ -266,7 +266,7 @@ export const permissionRules: PermissionRule[] = [
     name: "routeSubmittedReport",
     isApplicable: async (_request, reportVersionId, context) => {
       const reportOperation =
-        await context!.getIsSupplementaryReport(reportVersionId);
+        await context!.getReportOperation(reportVersionId);
 
       return (
         reportOperation?.operation_report_status ===
@@ -286,7 +286,7 @@ export const permissionRules: PermissionRule[] = [
     redirect: (reportVersionId, request) =>
       NextResponse.redirect(
         new URL(
-          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.OPERATION}`,
+          `${REPORT_APP_BASE}${reportVersionId}${AppRoutes.SUBMITTED}`,
           request.url,
         ),
       ),
