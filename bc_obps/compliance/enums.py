@@ -6,6 +6,5 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_REPORT = "compliance_report"
     COMPLIANCE_REPORT_VERSION = "compliance_report_version"
     COMPLIANCE_OBLIGATION = "compliance_obligation"
-    COMPLIANCE_PRODUCT = "compliance_product"
     ELICENSING_LINK = "elicensing_link"
     COMPLIANCE_CHARGE_RATE = "compliance_charge_rate"
