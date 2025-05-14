@@ -1,7 +1,7 @@
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 import { ChangeEvent, MutableRefObject, useRef } from "react";
-import getAttachmentFileUrl from "../../utils/getAttachmentFileUrl";
 import { CircularProgress } from "@mui/material";
+import downloadAttachment from "./download";
 
 interface Props {
   versionId: number;
@@ -40,19 +40,7 @@ const AttachmentElement: React.FC<Props> = ({
     e.preventDefault();
     e.stopPropagation();
 
-    // This should not happen in a regular scenario
-    if (!fileId) throw new Error("Unable to download a file without an id.");
-
-    const response = await getAttachmentFileUrl(versionId, fileId);
-
-    // 'download' attribute is not available for an external URL like our storage API
-    const anchorTag = document.createElement("a");
-    Object.assign(anchorTag, {
-      target: "_blank",
-      rel: "noopener noreferrer",
-      href: response,
-    });
-    anchorTag.click();
+    await downloadAttachment(versionId, fileId);
   };
 
   const handleChange = (evt: ChangeEvent<HTMLInputElement>) => {
