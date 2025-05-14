@@ -38,6 +38,12 @@ class ReportVersion(TimeStampedModel):
         default=ReportVersionStatus.Draft,
     )
 
+    reason_for_change = models.TextField(
+        blank=True,
+        db_comment="Reason explaining why a supplementary report change was made.",
+    )
+
+
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table representing the multiple versions that a single report can have."
         db_table = 'erc"."report_version'

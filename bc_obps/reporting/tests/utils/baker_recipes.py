@@ -41,7 +41,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.models.facility_report import FacilityReport
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_verification_visit import ReportVerificationVisit
-from reporting.models.report_change import ReportChange
+
 
 from registration.tests.utils.baker_recipes import (
     operation,
@@ -325,10 +325,4 @@ report_attachment_confirmation = Recipe(
     report_version=foreign_key(report_version),
     confirm_supplementary_required_attachments_uploaded=True,
     confirm_supplementary_existing_attachments_relevant=True,
-)
-
-report_change = Recipe(
-    ReportChange,
-    report_version=foreign_key(report_version),
-    reason_for_change="Reason explaining why this supplementary report change was made",
 )

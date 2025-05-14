@@ -5,12 +5,12 @@ from reporting.service.report_validation.report_validation_error import (
     ReportValidationError,
     Severity,
 )
-from reporting.models.report_change import ReportChange
 
+from reporting.models.report_version import ReportVersion
 
 def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
     """
-    Validates that if the report is supplementary, the user has a ReportChange record
+    Validates that if the report is supplementary, the user has a ReportVersion record with review_change
     """
     # Check if the report version is supplementary
     is_initial_version = ReportVersionService.is_initial_report_version(report_version.id)
@@ -18,14 +18,14 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
         return {}
 
     errors = {}
-    # Check for the ReportChange entry
+    # Check for the ReportVersion has value in field review_change
     try:
-        ReportChange.objects.get(report_version_id=report_version.id)
+        report_change: ReportVersion = report_version.review_change
 
     except ObjectDoesNotExist:
         errors["missing_supplementary_report_change"] = ReportValidationError(
             Severity.ERROR,
-            "No report change review found for this supplementary report version.",
+            "No change review value found for this supplementary report version.",
         )
 
     return errors
