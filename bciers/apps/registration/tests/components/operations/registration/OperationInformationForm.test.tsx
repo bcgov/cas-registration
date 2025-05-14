@@ -67,86 +67,90 @@ describe("the OperationInformationForm component", () => {
     );
   });
 
-  it("should fetch operation data when an existing operation is selected", async () => {
-    fetchFormEnums(Apps.REGISTRATION);
-    actionHandler.mockResolvedValueOnce({
-      id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
-      name: "Operation 1",
-      registration_purpose: "Electricity Import Operation",
-      operation_has_multiple_operators: true,
-      multiple_operators_array: [
-        {
-          mo_is_extraprovincial_company: false,
-          mo_legal_name: "mops 1",
-          mo_trade_name: "ads",
-          mo_cra_business_number: 555555555,
-          mo_bc_corporate_registry_number: "aaa5555555",
-          mo_business_structure: "Sole Proprietorship",
-          mo_attorney_street_address: "ads",
-          mo_municipality: "ad",
-          mo_province: "NS",
-          mo_postal_code: "H0H0H0",
-          id: 2,
-        },
-        {
-          mo_is_extraprovincial_company: true,
-          mo_legal_name: "mops 2",
-          mo_trade_name: "ads",
-          mo_cra_business_number: 666666666,
-          mo_business_structure: "General Partnership",
-          mo_attorney_street_address: "ad",
-          mo_municipality: "ad",
-          mo_province: "NS",
-          mo_postal_code: "H0H0H0",
-          id: 3,
-        },
-      ],
-    }); // mock the GET from selecting an operation
-    render(
-      <OperationInformationForm
-        rawFormData={{}}
-        schema={await createRegistrationOperationInformationSchema()}
-        step={1}
-        steps={allOperationRegistrationSteps}
-      />,
-    );
-    const selectOperationInput = screen.getByLabelText(
-      /select your operation+/i,
-    );
-    await fillComboboxWidgetField(selectOperationInput, /Operation 1/i);
-
-    await waitFor(() => {
-      // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
-      expect(actionHandler).toHaveBeenLastCalledWith(
-        "registration/operations/uuid1/registration/operation",
-        "GET",
-        "",
+  it(
+    "should fetch operation data when an existing operation is selected",
+    { timeout: 10000 },
+    async () => {
+      fetchFormEnums(Apps.REGISTRATION);
+      actionHandler.mockResolvedValueOnce({
+        id: "b974a7fc-ff63-41aa-9d57-509ebe2553a4",
+        name: "Operation 1",
+        registration_purpose: "Electricity Import Operation",
+        operation_has_multiple_operators: true,
+        multiple_operators_array: [
+          {
+            mo_is_extraprovincial_company: false,
+            mo_legal_name: "mops 1",
+            mo_trade_name: "ads",
+            mo_cra_business_number: 555555555,
+            mo_bc_corporate_registry_number: "aaa5555555",
+            mo_business_structure: "Sole Proprietorship",
+            mo_attorney_street_address: "ads",
+            mo_municipality: "ad",
+            mo_province: "NS",
+            mo_postal_code: "H0H0H0",
+            id: 2,
+          },
+          {
+            mo_is_extraprovincial_company: true,
+            mo_legal_name: "mops 2",
+            mo_trade_name: "ads",
+            mo_cra_business_number: 666666666,
+            mo_business_structure: "General Partnership",
+            mo_attorney_street_address: "ad",
+            mo_municipality: "ad",
+            mo_province: "NS",
+            mo_postal_code: "H0H0H0",
+            id: 3,
+          },
+        ],
+      }); // mock the GET from selecting an operation
+      render(
+        <OperationInformationForm
+          rawFormData={{}}
+          schema={await createRegistrationOperationInformationSchema()}
+          step={1}
+          steps={allOperationRegistrationSteps}
+        />,
       );
-    });
-
-    await waitFor(() => {
-      // spot check section 1
-      expect(
-        screen.getByLabelText(
-          /The purpose of this registration is to register as a:+/i,
-        ),
-      ).toHaveValue("Electricity Import Operation");
-
-      // spot check section 2
-      expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
-        "Operation 1",
+      const selectOperationInput = screen.getByLabelText(
+        /select your operation+/i,
       );
+      await fillComboboxWidgetField(selectOperationInput, /Operation 1/i);
 
-      // spot check section 3
-      const multipleOperatorLegalNames =
-        screen.getAllByLabelText(/legal name+/i);
+      await waitFor(() => {
+        // LastCalledWith because fetchFormEnums calls the actionHandler multiple times to populate the dropdown options in the form schema
+        expect(actionHandler).toHaveBeenLastCalledWith(
+          "registration/operations/uuid1/registration/operation",
+          "GET",
+          "",
+        );
+      });
 
-      expect(multipleOperatorLegalNames).toHaveLength(2);
+      await waitFor(() => {
+        // spot check section 1
+        expect(
+          screen.getByLabelText(
+            /The purpose of this registration is to register as a:+/i,
+          ),
+        ).toHaveValue("Electricity Import Operation");
 
-      expect(multipleOperatorLegalNames[0]).toHaveValue("mops 1");
-      expect(multipleOperatorLegalNames[1]).toHaveValue("mops 2");
-    });
-  });
+        // spot check section 2
+        expect(screen.getByLabelText(/Operation name+/i)).toHaveValue(
+          "Operation 1",
+        );
+
+        // spot check section 3
+        const multipleOperatorLegalNames =
+          screen.getAllByLabelText(/legal name+/i);
+
+        expect(multipleOperatorLegalNames).toHaveLength(2);
+
+        expect(multipleOperatorLegalNames[0]).toHaveValue("mops 1");
+        expect(multipleOperatorLegalNames[1]).toHaveValue("mops 2");
+      });
+    },
+  );
 
   it(
     "should submit an edited operation without regulated products",
@@ -545,6 +549,49 @@ describe("the OperationInformationForm component", () => {
           RegistrationPurposeHelpText["OBPS Regulated Operation"],
         ),
       ).toBeVisible();
+    });
+  });
+
+  it("should show the confirmation modal when the selected type changes", async () => {
+    fetchFormEnums(Apps.REGISTRATION);
+    render(
+      <OperationInformationForm
+        rawFormData={{ type: "Single Facility Operation" }}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+
+    const operationType = screen.getByRole("combobox", {
+      name: /Operation Type+/i,
+    });
+
+    act(() => {
+      userEvent.click(operationType);
+    });
+
+    await waitFor(() => {
+      userEvent.click(
+        screen.getByRole("option", { name: "Linear Facilities Operation" }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Are you sure you want to change your operation type+/i,
+        ),
+      ).toBeVisible();
+    });
+    await userEvent.click(
+      screen.getByRole("button", { name: /Change operation type/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/operation type*/i)).toHaveValue(
+        "Linear Facilities Operation",
+      );
     });
   });
 

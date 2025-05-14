@@ -21,7 +21,7 @@ import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
-import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
 
 const OperationInformationForm = ({
   formData,
@@ -137,10 +137,27 @@ const OperationInformationForm = ({
           contact to replace them.
         </Note>
       )}
-      <ConfirmChangeOfRegistrationPurposeModal
+      <ConfirmChangeOfFieldModal
         open={isConfirmPurposeChangeModalOpen}
-        cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
-        confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
+        onCancel={cancelRegistrationPurposeChange}
+        onConfirm={confirmRegistrationPurposeChange}
+        modalText={
+          <>
+            <div>
+              Are you sure you want to change your registration purpose?
+            </div>
+            <ul className="list-disc pl-5 mt-2">
+              <li>
+                Some operation information you have entered will be deleted.
+              </li>
+              <li>
+                If this operation’s report is in progress, it will be deleted
+                and restarted.
+              </li>
+            </ul>
+          </>
+        }
+        confirmButtonText="Change registration purpose"
       />
       <SingleStepTaskListForm
         allowEdit={!role.includes("cas_")}

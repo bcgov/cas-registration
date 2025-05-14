@@ -17,7 +17,7 @@ import {
   RegistrationPurposes,
 } from "@/registration/app/components/operations/registration/enums";
 import { eioOperationInformationSchema } from "@/administration/app/data/jsonSchema/operationInformation/operationInformation";
-import ConfirmChangeOfRegistrationPurposeModal from "@/registration/app/components/operations/registration/ConfirmChangeOfRegistrationPurposeModal";
+import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
 
 interface OperationInformationFormProps {
   rawFormData: { [key: string]: any };
@@ -48,6 +48,8 @@ const OperationInformationForm = ({
   );
   const [confirmedFormState, setConfirmedFormState] = useState(nestedFormData);
   const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
+    useState<boolean>(false);
+  const [isConfirmTypeChangeModalOpen, setIsConfirmTypeChangeModalOpen] =
     useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const [currentUiSchema, setCurrentUiSchema] = useState(
@@ -157,6 +159,7 @@ const OperationInformationForm = ({
     });
     return response;
   };
+
   const handleSelectOperationChange = async (data: any) => {
     const operationId = data.section1.operation;
     setSelectedOperation(operationId);
@@ -167,7 +170,7 @@ const OperationInformationForm = ({
     setConfirmedFormState(createNestedFormData(operationData, schema));
     setKey(Math.random()); // NOSONAR
   };
-
+  // purpose change
   const handleSelectedPurposeChange = (data: any) => {
     const newSelectedPurpose: RegistrationPurposes =
       data.section1?.registration_purpose;
@@ -222,13 +225,83 @@ const OperationInformationForm = ({
     setPendingFormState({});
     setIsConfirmPurposeChangeModalOpen(false);
   };
+  // type change
+  const handleSelectedTypeChange = (data: any) => {
+    const newSelectedType = data.section2?.type;
+    // if type is being selected for the first time, we don't need to show the ConfirmChangeOfTypeModal.
+    if (newSelectedType && !confirmedFormState?.section2?.type) {
+      setConfirmedFormState({
+        ...confirmedFormState,
+        section2: {
+          ...confirmedFormState.section2,
+          type: newSelectedType,
+        },
+      });
+    }
+    // if there was already a type selected, we need to confirm the user
+    // wants to change their type before actioning it.
+    else if (newSelectedType && confirmedFormState?.section2?.type) {
+      setPendingFormState({
+        ...confirmedFormState,
+        section2: {
+          ...confirmedFormState.section2,
+          type: newSelectedType,
+        },
+      });
+      setIsConfirmTypeChangeModalOpen(true);
+    }
+  };
+
+  const cancelTypeChange = () => {
+    setPendingFormState({});
+    setKey(Math.random());
+    setIsConfirmTypeChangeModalOpen(false);
+  };
+
+  const confirmTypeChange = () => {
+    if (pendingFormState?.section2?.type) {
+      setConfirmedFormState((prevState) => ({
+        ...prevState,
+        section2: {
+          ...prevState.section2,
+          type: pendingFormState.section2.type,
+        },
+      }));
+    }
+    setPendingFormState({});
+    setIsConfirmTypeChangeModalOpen(false);
+  };
 
   return (
     <>
-      <ConfirmChangeOfRegistrationPurposeModal
+      <ConfirmChangeOfFieldModal
         open={isConfirmPurposeChangeModalOpen}
-        cancelRegistrationPurposeChange={cancelRegistrationPurposeChange}
-        confirmRegistrationPurposeChange={confirmRegistrationPurposeChange}
+        onCancel={cancelRegistrationPurposeChange}
+        onConfirm={confirmRegistrationPurposeChange}
+        modalText={
+          <>
+            <div>
+              Are you sure you want to change your registration purpose?
+            </div>
+            <ul className="list-disc pl-5 mt-2">
+              <li>
+                Some operation information you have entered will be deleted.
+              </li>
+              <li>
+                If this operation’s report is in progress, it will be deleted
+                and restarted.
+              </li>
+            </ul>
+          </>
+        }
+        confirmButtonText="Change registration purpose"
+      />
+      <ConfirmChangeOfFieldModal
+        open={isConfirmTypeChangeModalOpen}
+        onCancel={cancelTypeChange}
+        onConfirm={confirmTypeChange}
+        confirmButtonText="Change operation type"
+        modalText="Are you sure you want to change your operation type? If you proceed, some of the form data you have entered will be lost."
       />
       <MultiStepBase
         key={key}
@@ -242,6 +315,7 @@ const OperationInformationForm = ({
         onChange={(e: IChangeEvent) => {
           let newSelectedOperation = e.formData?.section1?.operation;
           let newSelectedPurpose = e.formData?.section1?.registration_purpose;
+          let newSelectedType = e.formData?.section2?.type;
           if (
             newSelectedOperation &&
             newSelectedOperation !== selectedOperation
@@ -254,6 +328,10 @@ const OperationInformationForm = ({
             confirmedFormState?.section1?.registration_purpose
           ) {
             handleSelectedPurposeChange(e.formData);
+            return;
+          }
+          if (newSelectedType !== confirmedFormState?.section2?.type) {
+            handleSelectedTypeChange(e.formData);
             return;
           }
           setConfirmedFormState(e.formData);
