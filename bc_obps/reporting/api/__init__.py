@@ -41,7 +41,3 @@ from .report_supplementary_version import create_report_supplementary_version, i
 from .validate_user_reporting_access import validate_user_reporting_access
 from .reports import get_update_report
 from .report_electricity_import_data import save_electricity_import_data, get_electricity_import_data
-from .report_change import (
-    get_report_change_by_version_id,
-    save_report_change,
-)
