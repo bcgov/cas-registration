@@ -9,7 +9,7 @@ import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 
 export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Throttle user activity checks (4 minutes)
-export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes)
+export const MODAL_DISPLAY_SECONDS = 60; // Seconds before timeout to show logout warning modal (5 minutes)
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
@@ -22,17 +22,23 @@ const SessionTimeoutHandler: React.FC = () => {
   const [sessionTimeout, setSessionTimeout] = useState<number>(
     getExpirationTimeInSeconds(session?.expires),
   );
-  const [logoutUrl, setLogoutUrl] = useState<string>("/");
+  // const [logoutUrl, setLogoutUrl] = useState<string>("/");
+  const logoutUrl =
+    process.env.NEXT_PUBLIC_SITEMINDER_KEYCLOAK_LOGOUT_URL || "/";
   console.log("-----------logoutUrl", logoutUrl);
-  useEffect(() => {
-    // Fetch the logout URL from environment variables when component mounts
-    getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL")
-      .then((url) => setLogoutUrl(url || "/"))
-      .catch((error) => {
-        Sentry.captureException(error);
-        console.error("Failed to fetch logout URL:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   // setLogoutUrl("bri");
+  //   // Fetch the logout URL from environment variables when component mounts
+  //   getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL")
+  //     .then((url) => {
+  //       console.log("logoutUrl", url);
+  //       setLogoutUrl("123" || "/");
+  //     })
+  //     .catch((error) => {
+  //       Sentry.captureException(error);
+  //       console.error("Failed to fetch logout URL:", error);
+  //     });
+  // }, []);
 
   const handleLogout = () => signOut({ redirectTo: logoutUrl });
   // Refreshes the session and updates the timeout based on new expiration
@@ -91,7 +97,8 @@ const SessionTimeoutHandler: React.FC = () => {
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === Infinity) return; // No timeout set, exit early
+    if (sessionTimeout === Infinity)
+      return; // No timeout set, exit early
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
       setShowModal(false);
