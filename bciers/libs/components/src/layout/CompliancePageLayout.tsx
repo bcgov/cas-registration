@@ -11,7 +11,7 @@ interface Props {
 }
 
 const CompliancePageLayout: React.FC<Props> = (props) => {
-  const { taskListElements, title = "Compliance Summary", children } = props;
+  const { taskListElements, title, children } = props;
 
   return (
     <Box sx={{ p: 3 }}>

@@ -4,7 +4,7 @@ import RequestIssuanceOfEarnedCreditsPage from "@/compliance/src/app/components/
 vi.mock("@/compliance/src/app/utils/getRequestIssuanceData", () => ({
   getRequestIssuanceData: vi.fn().mockResolvedValue({
     bccrTradingName: "Test Trading Name",
-    validBccrHoldingAccountId: "123456789012345",
+    bccrHoldingAccountId: "123456789012345",
     reportingYear: 2023,
     operation_name: "Test Operation",
   }),
