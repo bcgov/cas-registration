@@ -6,8 +6,12 @@ import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell
 import monetaryPaymentsColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsColumns";
 import monetaryPaymentsGroupColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsGroupColumns";
 import { MonetaryPaymentsAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsAlertNote";
+import { PaymentsData } from "@/compliance/src/app/types/payments";
+interface MonetaryPaymentsGridProps {
+  data?: PaymentsData;
+}
 
-export const MonetaryPaymentsGrid = ({ data }: any) => {
+export const MonetaryPaymentsGrid = ({ data }: MonetaryPaymentsGridProps) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -22,26 +26,27 @@ export const MonetaryPaymentsGrid = ({ data }: any) => {
     [SearchCell],
   );
 
-  const initialData = {
+  const initialData: PaymentsData = {
     rows: [
       {
         id: 1,
         paymentReceivedDate: "-",
-        paymentAmountApplied: "-",
+        paymentAmountApplied: 0,
         paymentMethod: "-",
         transactionType: "-",
-        referenceNumber: "-",
+        receiptNumber: "-",
       },
     ],
     row_count: 1,
   };
 
-  const gridData = data == "" ? initialData : data;
+  const gridData = data ?? initialData;
+  const showAlert = !data || data.rows.length === 0;
 
   return (
     <div style={{ width: "100%", marginBottom: "50px" }}>
       <TitleRow label="Monetary Payments Made" />
-      <MonetaryPaymentsAlertNote />
+      {showAlert && <MonetaryPaymentsAlertNote />}
 
       <DataGrid
         columns={columns}

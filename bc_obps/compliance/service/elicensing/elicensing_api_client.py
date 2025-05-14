@@ -1,136 +1,25 @@
 import logging
-from typing import Dict, Any, Optional, cast, List, Literal
+from typing import Dict, Any, Optional, cast
 import requests
 from django.conf import settings
-from dataclasses import dataclass
+
+from .schema import (
+    ClientResponse,
+    ClientCreationResponse,
+    ClientCreationRequest,
+    FeeCreationRequest,
+    FeeItem,
+    FeeResponse,
+    InvoiceResponse,
+    InvoiceCreationRequest,
+    PaymentDistribution,
+    Payment,
+    FeeAdjustment,
+    InvoiceFee,
+    InvoiceQueryResponse,
+)
 
 logger = logging.getLogger(__name__)
-
-
-@dataclass
-class ClientResponse:
-    """Type definition for the client response from eLicensing API"""
-
-    clientObjectId: str
-    clientGUID: str
-    companyName: str
-    lastName: Optional[str] = None
-    doingBusinessAs: Optional[str] = None
-    firstName: Optional[str] = None
-    middleName: Optional[str] = None
-    title: Optional[str] = None
-    businessPhone: Optional[str] = None
-    homeNumber: Optional[str] = None
-    cellularNumber: Optional[str] = None
-    faxNumber: Optional[str] = None
-    businessPhoneExt: Optional[str] = None
-    bcCompanyRegistrationNumber: Optional[str] = None
-    bcCompanySocietyNumber: Optional[str] = None
-    email: Optional[str] = None
-    dateOfBirth: Optional[str] = None
-    addressLine1: str = ""
-    addressLine2: Optional[str] = None
-    city: str = ""
-    stateProvince: str = ""
-    postalCode: str = ""
-    country: Optional[str] = None
-
-
-@dataclass
-class ClientCreationResponse:
-    """Type definition for the client creation response from eLicensing API"""
-
-    clientObjectId: str
-    clientGUID: str
-
-
-@dataclass
-class ClientCreationRequest:
-    """Type definition for the client creation request to eLicensing API"""
-
-    companyName: str
-    addressLine1: str
-    city: str
-    stateProvince: str
-    postalCode: str
-    clientGUID: str
-    businessAreaCode: str
-    businessPhone: str
-    lastName: Optional[str] = None
-    doingBusinessAs: Optional[str] = None
-    firstName: Optional[str] = None
-    middleName: Optional[str] = None
-    title: Optional[str] = None
-    homeNumber: Optional[str] = None
-    cellularNumber: Optional[str] = None
-    faxNumber: Optional[str] = None
-    businessPhoneExt: Optional[str] = None
-    bcCompanyRegistrationNumber: Optional[str] = None
-    bcCompanySocietyNumber: Optional[str] = None
-    email: Optional[str] = None
-    dateOfBirth: Optional[str] = None
-    addressLine2: Optional[str] = None
-    country: Optional[str] = None
-
-
-# Valid fee profile group names in eLicensing
-FeeProfileGroupName = Literal["OBPS Compliance Obligation", "OBPS Administrative Penalty"]
-
-
-@dataclass
-class FeeCreationItem:
-    """Type definition for a fee item in the fee creation request"""
-
-    businessAreaCode: str
-    feeGUID: str
-    feeProfileGroupName: FeeProfileGroupName  # Must be one of the valid profile group names
-    feeDescription: str  # Mandatory field
-    feeAmount: float
-    feeDate: str  # Format: YYYY-MM-DD
-
-
-@dataclass
-class FeeCreationRequest:
-    """Type definition for the fee creation request to eLicensing API"""
-
-    fees: List[FeeCreationItem]
-
-
-@dataclass
-class FeeItem:
-    """Type definition for a fee item in the eLicensing API response"""
-
-    feeGUID: str
-    feeObjectId: str
-    businessAreaCode: Optional[str] = None
-    feeProfileGroupName: Optional[str] = None
-    feeDescription: Optional[str] = None
-    feeAmount: Optional[float] = None
-    feeDate: Optional[str] = None
-
-
-@dataclass
-class FeeResponse:
-    """Type definition for the fee creation response from eLicensing API"""
-
-    clientObjectId: str
-    clientGUID: str
-    fees: List[FeeItem]
-
-
-@dataclass
-class InvoiceResponse:
-    clientObjectId: str
-    businessAreaCode: str
-    clientGUID: str
-    invoiceNumber: str
-
-
-@dataclass
-class InvoiceCreationRequest:
-    paymentDueDate: str
-    businessAreaCode: str
-    fees: List[str]
 
 
 class ELicensingAPIError(Exception):
@@ -545,42 +434,51 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def query_invoice(self, invoice_number: str) -> Dict[str, Any]:
+    def query_invoice(self, client_id: str, invoice_number: str) -> InvoiceQueryResponse:
         """
         Queries an invoice by invoice number.
 
         Args:
+            client_id: The ID of the client
             invoice_number: The invoice number
 
         Returns:
-            Invoice information
+            InvoiceQueryResponse: Detailed invoice information including fees, payments, and adjustments
 
         Raises:
             requests.RequestException: If the API request fails
-            ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/invoice"
-        params = {"invoiceNumber": invoice_number}
+        endpoint = f"/client/{client_id}/invoice"
+        params = {"InvoiceNumber": invoice_number}
 
         response = self._make_request(endpoint, method='GET', params=params)
+        response.raise_for_status()
 
-        if response.status_code == 200:
-            try:
-                json_response = response.json()
-                if not isinstance(json_response, dict):
-                    raise ValueError(f"Invalid response format: expected dict, got {type(json_response)}")
-                return cast(Dict[str, Any], json_response)
-            except ValueError as e:
-                logger.error(f"Error with invoice query response: {str(e)}, Response: {response.text}")
-                raise
-            except Exception as e:
-                logger.error(f"Error parsing invoice query response: {str(e)}, Response: {response.text}")
-                raise ValueError(f"Failed to parse API response: {str(e)}")
-        else:
-            self._handle_error_response(response, "query invoice")
-            # This line should never be reached due to raise_for_status in _handle_error_response
-            raise RuntimeError("Unexpected code path - API error handling failed")
+        return self._parse_invoice_response(response.json())
+
+    def _parse_invoice_response(self, data: Dict) -> InvoiceQueryResponse:
+        fees = [self._parse_fee(fee_data) for fee_data in data.get("fees", [])]
+        data["fees"] = fees
+        return InvoiceQueryResponse(**data)
+
+    def _parse_fee(self, fee_data: Dict) -> InvoiceFee:
+        payments = [self._parse_payment(p) for p in fee_data.get("payments", [])]
+        adjustments = [self._parse_adjustment(a) for a in fee_data.get("adjustments", [])]
+
+        fee_data["payments"] = payments
+        fee_data["adjustments"] = adjustments
+        return InvoiceFee(**fee_data)
+
+    @staticmethod
+    def _parse_adjustment(adjustment_data: Dict) -> FeeAdjustment:
+        return FeeAdjustment(**adjustment_data)
+
+    @staticmethod
+    def _parse_payment(payment_data: Dict) -> Payment:
+        distributions = [PaymentDistribution(**d) for d in payment_data.get("distributions", [])]
+        payment_data["distributions"] = distributions
+        return Payment(**payment_data)
 
     def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """

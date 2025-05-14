@@ -1,17 +1,20 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
 import { ComplianceSummaryReviewContent } from "./ComplianceSummaryReviewContent";
+import { PaymentsData } from "@/compliance/src/app/types/payments";
 
 interface Props {
   readonly formData: any;
   readonly complianceSummaryId: any;
   readonly taskListElements: TaskListElement[];
+  readonly paymentsData: PaymentsData;
 }
 
 export default function ComplianceSummaryReviewComponent({
   formData,
   complianceSummaryId,
   taskListElements,
+  paymentsData,
 }: Props) {
   const backUrl = `/compliance-summaries`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
@@ -26,6 +29,7 @@ export default function ComplianceSummaryReviewComponent({
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
         complianceSummaryId={complianceSummaryId}
+        paymentsData={paymentsData}
       />
     </CompliancePageLayout>
   );

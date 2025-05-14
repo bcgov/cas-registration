@@ -34,8 +34,9 @@ class ELicensingLink(TimeStampedModel):
         related_name="+",
         db_comment="The type of CAS object this link relates to",
     )
-    object_id = models.UUIDField(
-        db_comment="The ID of the CAS object this link relates to",
+    object_id = models.CharField(
+        max_length=50,
+        db_comment="The ID of the CAS object this link relates to (can be UUID or integer)",
     )
     content_object = GenericForeignKey('content_type', 'object_id')
 
