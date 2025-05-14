@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
+import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   analyzeAccessibility,
@@ -11,7 +11,7 @@ import {
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
 
 const happoPlaywright = require("happo-playwright");
-const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
+const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
@@ -58,7 +58,7 @@ test.describe("Test add/edit contact", () => {
       })
       .first();
     await stabilizeGrid(page, 1);
-
+    await page.waitForTimeout(500);
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Contacts grid",
       variant: "filled",
