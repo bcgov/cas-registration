@@ -4,6 +4,8 @@ from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.models import Operation
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.bakers import report_version_baker
+from service.report_version_service import ReportVersionData
+from dataclasses import asdict
 
 
 class TestReportVersionEndpoint(CommonTestSetup):
@@ -87,3 +89,37 @@ class TestReportVersionEndpoint(CommonTestSetup):
 
         assert response.status_code == 201
         assert response.json() == 1234
+
+    # POST report_version change
+    @patch("service.report_version_service.ReportVersionService.save_report_version")
+    def test_authorized_users_can_save_report_version_change(self, mock_save_report_version_change: MagicMock):
+
+        payload = ReportVersionData(
+            reason_for_change="testing",
+        )
+
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            status="Draft",
+            reason_for_change=payload.reason_for_change,
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+
+        mock_save_report_version_change.return_value = report_version
+
+        response = TestUtils.mock_post_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            asdict(payload),
+            custom_reverse_lazy(
+                "save_report_version",
+                kwargs={"version_id": report_version.id},
+            ),
+        )
+
+        assert response.status_code == 200
+        response_json = response.json()
+        assert response_json["reason_for_change"] == payload.reason_for_change
+
+        mock_save_report_version_change.assert_called_once_with(report_version.id, payload)

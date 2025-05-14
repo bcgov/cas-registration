@@ -73,7 +73,7 @@ it("redirects to onboarding when fetchResponse throws", async () => {
   expect(res!.status).toBe(307);
 });
 
-// Table-driven restricted tests
+// Restricted routes tests
 const restrictedTests: Array<{
   listName: keyof typeof constants;
   invalidResp: any;
@@ -130,10 +130,9 @@ const restrictedTests: Array<{
       vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue(false),
   },
 ];
-
-// turn each entry into a [description, testCase] tuple
+// Turn each entry into a [description, testCase] tuple
 const restrictedRows = restrictedTests.map((t) => [t.description, t] as const);
-
+// Loop the restricted routes
 describe.each(restrictedRows)(
   "restricted %s",
   (description, { listName, invalidResp, matchUrl, mockHelpers }) => {
@@ -152,7 +151,7 @@ describe.each(restrictedRows)(
   },
 );
 
-// Verification tests
+// Verification restricted route
 describe("restricted Verification > redirects industry user for Verification route'", () => {
   it("redirects when verification check fails", async () => {
     vi.spyOn(verifyUtil, "getReportVerificationStatus").mockResolvedValue(
@@ -206,6 +205,9 @@ describe("allowing flows", () => {
   });
 
   it("allows industry user for accessVerification when show_verification_page is true", async () => {
+    vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.DRAFT,
+    });
     vi.spyOn(verifyUtil, "getReportVerificationStatus").mockResolvedValue({
       show_verification_page: true,
     });
@@ -224,7 +226,7 @@ describe("allowing flows", () => {
   });
 
   it("allows industry user for routeSubmittedReport when report is actually SUBMITTED and path matches routeRoutesSubmitted", async () => {
-    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue({
+    vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
       operation_report_status: ReportOperationStatus.SUBMITTED,
     });
     const segment = constants.reportRoutesSubmitted[0];
@@ -235,7 +237,9 @@ describe("allowing flows", () => {
   });
 
   it("allows routeReportingOperation when registration purpose matches REPORTING_OPERATION and path matches reportRoutesReportingOperation", async () => {
-    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue(false);
+    vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.DRAFT,
+    });
     vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
       registration_purpose: REPORTING_OPERATION,
     });
@@ -247,7 +251,9 @@ describe("allowing flows", () => {
   });
 
   it("allows routeEIOReport when registration purpose matches ELECTRICITY_IMPORT_OPERATION and path matches reportRoutesEIO", async () => {
-    vi.spyOn(suppUtil, "getIsSupplementaryReport").mockResolvedValue(false);
+    vi.spyOn(opUtil, "getReportingOperation").mockResolvedValue({
+      operation_report_status: ReportOperationStatus.DRAFT,
+    });
     vi.spyOn(regPurpUtil, "getRegistrationPurpose").mockResolvedValue({
       registration_purpose: ELECTRICITY_IMPORT_OPERATION,
     });

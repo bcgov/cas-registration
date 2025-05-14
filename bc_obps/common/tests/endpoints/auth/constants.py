@@ -145,6 +145,11 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_VERSION},
         },
         {
+            "method": "post",
+            "endpoint_name": "save_report_version",
+            "kwargs": {"version_id": MOCK_VERSION},
+        },
+        {
             "method": "get",
             "endpoint_name": "get_report_attachments",
             "kwargs": {"version_id": MOCK_INT},
@@ -322,16 +327,6 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_basic_gas_types",
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_report_change_by_version_id",
-            "kwargs": {"version_id": MOCK_INT},
-        },
-        {
-            "method": "post",
-            "endpoint_name": "save_report_change",
-            "kwargs": {"version_id": MOCK_INT},
         },
     ],
     "all_roles": [

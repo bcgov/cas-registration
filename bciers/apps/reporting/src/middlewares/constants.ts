@@ -59,6 +59,7 @@ export enum AppRoutes {
   ONBOARDING = "/onboarding",
   OPERATION = "/review-operation-information",
   REPORTS = "/reports",
+  REVIEW = "/final-review",
   SUBMITTED = "/submitted",
   VERIFICATION = "/verification",
 }
@@ -95,6 +96,7 @@ export const reportRoutesReportingOperation = [
   "non-attributable",
   "emission-summary",
   "additional-reporting-data",
+  "change-review",
   "final-review",
   "verification",
   "attachments",
@@ -108,8 +110,10 @@ export const reportRoutesEIO = [
   "review-operation-information",
   "person-responsible",
   "electricity-import-data",
+  "change-review",
   "final-review",
   "verification",
   "attachments",
   "sign-off",
+  ...reportRoutesSubmitted,
 ];

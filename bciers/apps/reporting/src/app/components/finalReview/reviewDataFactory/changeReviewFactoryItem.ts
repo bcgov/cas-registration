@@ -1,5 +1,5 @@
 import { ReviewDataFactoryItem } from "./factory";
-import { getReportChange } from "@reporting/src/app/utils/getReportChange";
+import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
 import {
   changeReviewSchema,
   changeReviewUiSchema,
@@ -7,14 +7,17 @@ import {
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 
 const changeReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
-  // 🔍 Only include this section for supplementary reports
+  // Only include this section for supplementary reports
   const isSupplementary = await getIsSupplementaryReport(versionId);
   if (!isSupplementary) {
-    // return an empty array rather than null, so callers can always do `.flat()` or `.filter(Boolean)`
     return [];
   }
 
-  const reportChangeData = await getReportChange(versionId);
+  // Set schema so compliance note doesn't show up on the final review page
+  delete changeReviewSchema.properties?.compliance_note;
+
+  // Get the change review form data
+  const reportChangeData = await getReportVersionDetails(versionId);
 
   return [
     {

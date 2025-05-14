@@ -15,20 +15,16 @@ interface ChangeReviewProps {
   navigationInformation: NavigationInformation;
 }
 
-interface FormData {
-  reason_for_change: string;
-}
-
 export default function ChangeReviewForm({
   versionId,
   initialFormData,
   navigationInformation,
 }: ChangeReviewProps) {
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<string[]>();
 
   const handleSubmit = async (data: FormData) => {
-    const endpoint = `reporting/report-version/${versionId}/report-change`;
+    const endpoint = `reporting/report-version/${versionId}`;
     const method = "POST";
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(data),
