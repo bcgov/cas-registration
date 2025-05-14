@@ -569,3 +569,18 @@ export async function assertSuccessfulSnackbar(page: Page) {
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
 }
+
+export async function clickWithRetry(
+  page: Page,
+  buttonName: string | RegExp,
+  retries: number,
+) {
+  for (let i = 1; i <= retries; i++) {
+    try {
+      await clickButton(page, buttonName);
+      return;
+    } catch (error) {
+      console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
+    }
+  }
+}
