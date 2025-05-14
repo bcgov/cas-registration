@@ -1,3 +1,20 @@
+# [3.2.0](https://github.com/bcgov/cas-registration/compare/v3.1.0...v3.2.0) (2025-05-14)
+
+### Bug Fixes
+
+- added forward-only prod data migration to remove old contacts as… ([#3344](https://github.com/bcgov/cas-registration/issues/3344)) ([4245d46](https://github.com/bcgov/cas-registration/commit/4245d469b36131f11bc0ddc458e66978bfedd1c3))
+- Attempt to fix personResponsible page in dev by ensuring factory item for review page doesn't overwrite jsonSchema ([f35dbc9](https://github.com/bcgov/cas-registration/commit/f35dbc9e452110cb5a346365374d7c6f2cf9bdf7))
+- disallow 'e' in number fields by separating text and number fields ([d6c0252](https://github.com/bcgov/cas-registration/commit/d6c0252a498c3fa7bc7fca14bfe41f3c3b347a73))
+- handle null case for created_by_id in audit trigger function ([75ed518](https://github.com/bcgov/cas-registration/commit/75ed51810571d5a8267a163f2332dcc189d115e8))
+- improve user context setup by resetting GUID and role for anonymous users ([fd94d63](https://github.com/bcgov/cas-registration/commit/fd94d6311b30bda99467f1b1d36b6008cce8e8fa))
+- yaml indentation in backend env var template ([f0c045d](https://github.com/bcgov/cas-registration/commit/f0c045d9b7e0372b0768ef59f0d959e82289a708))
+
+### Features
+
+- add bccr api client ([85f1c24](https://github.com/bcgov/cas-registration/commit/85f1c24802772ad20d62391daffb493d845025bf))
+- add save button to facility form ([031232c](https://github.com/bcgov/cas-registration/commit/031232cb811ea770cee80f6953a33dae328b2f5d))
+- added signal for registration purspose change ([a220d3a](https://github.com/bcgov/cas-registration/commit/a220d3a474a481b51248b75b0bbd03f9ee760f7b))
+
 # [3.1.0](https://github.com/bcgov/cas-registration/compare/v3.0.0...v3.1.0) (2025-05-05)
 
 ### Bug Fixes
