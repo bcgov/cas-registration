@@ -73,6 +73,33 @@ export default {
       },
     }),
   ],
+  cookies: {
+    sessionToken: {
+      name: "authjs.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "strict", // default
+        path: "/",
+        // secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: "authjs.callback-url",
+      options: {
+        sameSite: "strict",
+        path: "/",
+        // secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: "authjs.csrf-token",
+      options: {
+        sameSite: "strict",
+        path: "/",
+        // secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
     error: "/auth/error", // Error code passed in query string as ?error=
