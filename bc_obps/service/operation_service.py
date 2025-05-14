@@ -399,7 +399,7 @@ class OperationService:
             )
         if payload.type != operation.type:
             if operation.status == Operation.Statuses.REGISTERED:
-                raise Exception("Cannot change the type of an operation that has already been registered.")
+                raise UserError("Cannot change the type of an operation that has already been registered.")
             FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id(user_guid, operation.id)
 
         operation_data = payload.dict(
