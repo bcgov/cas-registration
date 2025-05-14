@@ -11,6 +11,10 @@ import {
   bcObpsGuidanceLink,
   carbonTaxExemptionLink,
 } from "@bciers/utils/src/urls";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -20,6 +24,13 @@ e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
 */
 
 export default function Page() {
+  const { data: session } = useSession();
+  if (session) {
+    // If we are here, then we need a
+    // browser‑driven navigation to carry the sameSite: strict cookie
+    const router = useRouter();
+    return router.push("/dashboard");
+  }
   const headerStyle = "text-bc-bg-blue text-2xl";
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
 
