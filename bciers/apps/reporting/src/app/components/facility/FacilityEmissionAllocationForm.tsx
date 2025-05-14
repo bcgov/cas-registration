@@ -154,7 +154,8 @@ export default function FacilityEmissionAllocationForm({
         .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
-      facility_total_emissions: initialData.facility_total_emissions,
+      facility_total_emissions:
+        initialData.facility_total_emissions?.toString(),
       products: initialData.report_product_emission_allocation_totals,
     },
   }));
@@ -181,7 +182,8 @@ export default function FacilityEmissionAllocationForm({
             )
             .map(calculateEmissionData),
         total_emission_allocations: {
-          facility_total_emissions: initialData.facility_total_emissions,
+          facility_total_emissions:
+            initialData.facility_total_emissions?.toString(),
           products: initialData.report_product_emission_allocation_totals,
         },
       });
