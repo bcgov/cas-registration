@@ -43,11 +43,13 @@ class InternalReportAttachmentFilterSchema(FilterSchema):
     operator: Optional[str] = Field(
         None,
         json_schema_extra={"q": "report_version__report__operator__legal_name__icontains"},
+        alias="report_version__report__operator__legal_name",
     )
     operation: Optional[str] = Field(
         None,
         json_schema_extra={"q": "report_version__report__operation__name__icontains"},
+        alias="report_version__report__operation__name",
     )
-    report_version_id: Optional[int] = Field(None, json_schema_extra={"q": "report_version__id__eq"})
+    report_version_id: Optional[int] = Field(None, json_schema_extra={"q": "report_version__id"})
     attachment_type: Optional[str] = Field(None, json_schema_extra={"q": "attachment_type__icontains"})
     attachment_name: Optional[str] = Field(None, json_schema_extra={"q": "attachment_name__icontains"})
