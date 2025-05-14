@@ -18,7 +18,6 @@ class ReportingTableNames(Enum):
     REPORT_ACTIVITY = 'report_activity'
     REPORT_ADDITIONAL_DATA = 'report_additional_data'
     REPORT_ATTACHMENT = 'report_attachment'
-    REPORT_CHANGE = 'report_change'
     REPORT_COMPLIANCE_SUMMARY = 'report_compliance_summary'
     REPORT_COMPLIANCE_SUMMARY_PRODUCT = 'report_compliance_summary_product'
     REPORT_ATTACHMENT_CONFIRMATION = 'report_attachment_confirmation'

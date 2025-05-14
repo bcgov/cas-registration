@@ -1,7 +1,7 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
-import { getReportChange } from "@reporting/src/app/utils/getReportChange";
+import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import {
   HeaderStep,
@@ -13,7 +13,7 @@ export default async function ChangeReviewPage({
   version_id,
 }: HasReportVersion) {
   // 🚀 Get form data
-  const initialFormData = await getReportChange(version_id);
+  const initialFormData = await getReportVersionDetails(version_id);
 
   // 🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);

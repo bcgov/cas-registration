@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 // Helper functions the page uses to fetch data
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
-import { getReportChange } from "@reporting/src/app/utils/getReportChange";
+import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
 
 // Builds the navigationInformation object for the task list
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
@@ -23,8 +23,8 @@ vi.mock("@reporting/src/app/components/changeReview/ChangeReviewForm", () => ({
 }));
 
 // Stub each data‑fetch helper so they don’t make real API calls
-vi.mock("@reporting/src/app/utils/getReportChange", () => ({
-  getReportChange: vi.fn(),
+vi.mock("@reporting/src/app/utils/getReportVersionDetails", () => ({
+  getReportVersionDetails: vi.fn(),
 }));
 vi.mock("@reporting/src/app/utils/getReportVerificationStatus", () => ({
   getReportVerificationStatus: vi.fn(),
@@ -40,7 +40,9 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 
 // References to mocks with proper typing
 const mockChangeReviewForm = ChangeReviewForm as ReturnType<typeof vi.fn>;
-const mockGetReportChange = getReportChange as ReturnType<typeof vi.fn>;
+const mockgetReportVersionDetails = getReportVersionDetails as ReturnType<
+  typeof vi.fn
+>;
 const mockGetReportVerificationStatus =
   getReportVerificationStatus as unknown as ReturnType<typeof vi.fn>;
 const mockGetNavigationInformation = getNavigationInformation as ReturnType<
@@ -59,7 +61,7 @@ describe("ChangeReviewPage component", () => {
     const mockInitialFormData = { reason_or_change: "value1" };
 
     // Configure each helper to resolve with our fake data
-    mockGetReportChange.mockResolvedValue(mockInitialFormData);
+    mockgetReportVersionDetails.mockResolvedValue(mockInitialFormData);
     mockGetReportVerificationStatus.mockResolvedValue({
       show_verification_page: true,
       verification_required: true,

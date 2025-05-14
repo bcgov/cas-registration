@@ -1,7 +1,7 @@
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
-import { ComplianceNote } from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
+import { complianceNote } from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
 import TextAreaWidget from "@bciers/components/form/widgets/TextAreaWidget";
 
 export const changeReviewSchema: RJSFSchema = {
@@ -24,7 +24,7 @@ export const changeReviewUiSchema = {
   "ui:order": ["compliance_note", "reason_for_change"],
   compliance_note: {
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
-    "ui:title": ComplianceNote,
+    "ui:title": complianceNote,
   },
   reason_for_change: {
     "ui:widget": TextAreaWidget,

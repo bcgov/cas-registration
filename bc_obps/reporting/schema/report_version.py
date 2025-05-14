@@ -10,7 +10,7 @@ class ReportingVersionOut(ModelSchema):
 
     class Meta:
         model = ReportVersion
-        fields = ["updated_at", "report_type", "report", "status",]
+        fields = ["updated_at", "report_type", "report", "status", "reason_for_change"]
 
 
 class ReportVersionTypeIn(Schema):
@@ -19,3 +19,11 @@ class ReportVersionTypeIn(Schema):
     """
 
     report_type: ReportVersion.ReportType
+
+
+class ReportVersionChangeIn(Schema):
+    """
+    Schema for adding reason for change in supplementary report version
+    """
+
+    reason_for_change: str
