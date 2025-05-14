@@ -8,6 +8,7 @@ import SessionTimeoutHandler, {
 import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { LogoutWarningModalProps } from "@bciers/components/auth/LogoutWarningModal";
+import * as Sentry from "@sentry/nextjs";
 
 // Mock dependencies
 vi.mock("next-auth/react", () => ({
@@ -164,7 +165,7 @@ describe("SessionTimeoutHandler", () => {
     screen.getByText("Logout").click();
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
-        callbackUrl: "http://logout.url", // NOSONAR
+        redirectTo: "http://logout.url", // NOSONAR
       });
     });
   });
@@ -208,7 +209,34 @@ describe("SessionTimeoutHandler", () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  it("handles session refresh failure by logging out", async () => {
+  it.only("handles session refresh failure by logging out", async () => {
+    mockUpdate.mockRejectedValue(new Error("Refresh failed"));
+
+    let capturedRefreshSession: () => Promise<void> = () => Promise.resolve();
+
+    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
+      capturedRefreshSession = refreshSession;
+      return () => {}; // Return a no-op cleanup function
+    });
+
+    renderWithSession();
+
+    // Manually invoke the refreshSession to simulate activity
+    await capturedRefreshSession();
+
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "http://logout.url", // NOSONAR
+      });
+    });
+  });
+
+  it("handles session refresh failure by logging out, alerting Sentry, and redirecting to fallback logoutUrl", async () => {
+    const testError = new Error("Oops");
+    const sentrySpy = vi.spyOn(Sentry, "captureException");
+
+    mockGetEnvValue.mockReset(); // we set this in the beforeEach
+    mockGetEnvValue.mockRejectedValueOnce(testError);
     mockUpdate.mockRejectedValue(new Error("Refresh failed"));
 
     let capturedRefreshSession: () => void;
@@ -220,8 +248,17 @@ describe("SessionTimeoutHandler", () => {
     });
 
     renderWithSession();
+
+    await waitFor(() => {
+      expect(sentrySpy).toHaveBeenCalledWith(testError);
+    });
+
     mockTrigger();
 
-    await waitFor(() => expect(mockSignOut).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "/",
+      }),
+    );
   });
 });
