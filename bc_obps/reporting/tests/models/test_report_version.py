@@ -60,12 +60,6 @@ class ReportVersionTest(BaseTestCase):
                 None,
             ),
             (
-                "compliance_report_version",
-                "compliance report version",
-                None,
-                None,
-            ),
-            (
                 "report_compliance_summary",
                 "report compliance summary",
                 None,
