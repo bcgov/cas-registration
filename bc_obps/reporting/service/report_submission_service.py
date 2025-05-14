@@ -5,7 +5,7 @@ from reporting.models.report_version import ReportVersion
 from reporting.service.report_validation.report_validation_service import (
     ReportValidationService,
 )
-from events.signals import report_submitted
+from reporting.signals.signals import report_submitted
 from common.lib import pgtrigger
 from django.db import transaction
 from reporting.service.compliance_service import ComplianceService

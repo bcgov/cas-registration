@@ -9,4 +9,4 @@ class ComplianceConfig(AppConfig):
         """
         Import signals when the app is ready.
         """
-        from . import signals  # noqa: F401
+        from .signals import signals, consumers  # noqa: F401
