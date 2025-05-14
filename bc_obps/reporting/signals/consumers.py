@@ -1,8 +1,6 @@
 import logging
 from typing import Type, Any
-
 from django.dispatch import receiver
-
 from registration.signals.signals import operation_registration_purpose_changed
 from reporting.models import ReportVersion
 from service.report_version_service import ReportVersionService
