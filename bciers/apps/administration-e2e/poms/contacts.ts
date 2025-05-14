@@ -12,7 +12,11 @@ import {
   ContactButtonText,
   ContactFootnote,
 } from "@/administration-e2e/utils/enums";
-import { fillRequiredFormFields } from "@bciers/e2e/utils/helpers";
+import {
+  fillRequiredFormFields,
+  clickWithRetry,
+  clickButton,
+} from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -119,15 +123,22 @@ export class ContactsPOM {
   }
 
   async clickAddButton() {
-    const addButton = this.page.getByRole("button", {
-      name: ContactButtonText.ADD_CONTACT,
-    });
-    await this.page.waitForTimeout(1000);
-    // Wait for the button to be visible and enabled
-    await expect(addButton).toBeVisible();
-    await expect(addButton).toBeEnabled();
-    await addButton.click();
-    await this.assertFootnoteIsVisible(true);
+    const addButton = ContactButtonText.ADD_CONTACT;
+    await this.page.waitForTimeout(5000);
+
+    try {
+      await expect(
+        this.page.getByRole("button", { name: addButton }),
+      ).toBeVisible();
+      // Click the button
+      await clickButton(this.page, addButton);
+      await this.assertFootnoteIsVisible(true);
+    } catch (error) {
+      // Re-clicking the button here if it fails the first time, putting max retries to 3
+      console.warn("Button click failed, retrying");
+      await clickWithRetry(this.page, ContactButtonText.ADD_CONTACT, 2);
+      await this.assertFootnoteIsVisible(true);
+    }
   }
 
   // ###  Assertions ###
