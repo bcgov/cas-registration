@@ -9,7 +9,7 @@ import throttle from "lodash.throttle";
  * @returns A setup function that returns a cleanup function.
  */
 const createThrottledEventHandler = (
-  callback: () => void,
+  callback: (event: Event) => void,
   events: string[],
   throttleTime: number = 60 * 5, // 5 minutes default
 ): (() => () => void) => {

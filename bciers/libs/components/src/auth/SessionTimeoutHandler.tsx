@@ -6,7 +6,6 @@ import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { Session } from "next-auth";
-import * as Sentry from "@sentry/nextjs";
 
 export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Throttle user activity checks (4 minutes)
 export const MODAL_DISPLAY_SECONDS = 60; // Seconds before timeout to show logout warning modal (5 minutes)
@@ -22,25 +21,12 @@ const SessionTimeoutHandler: React.FC = () => {
   const [sessionTimeout, setSessionTimeout] = useState<number>(
     getExpirationTimeInSeconds(session?.expires),
   );
-  // const [logoutUrl, setLogoutUrl] = useState<string>("/");
-  const logoutUrl =
-    process.env.NEXT_PUBLIC_SITEMINDER_KEYCLOAK_LOGOUT_URL || "/";
-  console.log("-----------logoutUrl", logoutUrl);
-  // useEffect(() => {
-  //   // setLogoutUrl("bri");
-  //   // Fetch the logout URL from environment variables when component mounts
-  //   getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL")
-  //     .then((url) => {
-  //       console.log("logoutUrl", url);
-  //       setLogoutUrl("123" || "/");
-  //     })
-  //     .catch((error) => {
-  //       Sentry.captureException(error);
-  //       console.error("Failed to fetch logout URL:", error);
-  //     });
-  // }, []);
 
-  const handleLogout = () => signOut({ redirectTo: logoutUrl });
+  const handleLogout = async () => {
+    const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
+    await signOut({ redirectTo: logoutUrl });
+  };
+
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
     if (status !== "authenticated") {
@@ -76,18 +62,49 @@ const SessionTimeoutHandler: React.FC = () => {
   useEffect(() => {
     if (status !== "authenticated") return;
 
-    // Create a throttled handler to monitor user activity without overloading the system
-    const setupHandler = createThrottledEventHandler(
-      refreshSession,
-      ["mousemove", "keydown", "mousedown", "scroll"], // Events indicating user activity
-      ACTIVITY_THROTTLE_SECONDS,
-    );
-
     let cleanup: (() => void) | undefined;
-    if (!showModal) cleanup = setupHandler(); // Start listening for events and get cleanup function
+
+    // Only set up event listeners if the modal is not open
+    if (!showModal) {
+      // Custom handler to filter visibilitychange events
+      const handleActivity = async (event: Event) => {
+        // Only trigger refreshSession for visibilitychange when document is visible
+        if (
+          event.type === "visibilitychange" &&
+          document.visibilityState !== "visible"
+        ) {
+          return; // Ignore when tab is hidden
+        }
+        await refreshSession();
+      };
+
+      // Create a throttled handler to monitor user activity without overloading the system
+      const setupHandler = createThrottledEventHandler(
+        handleActivity,
+        ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"], // Events indicating user activity
+        ACTIVITY_THROTTLE_SECONDS,
+      );
+      cleanup = setupHandler(); // Start listening for events
+    }
+
+    // Prevent next-auth's default visibilitychange handling when modal is open
+    const preventDefaultVisibilityChange = (event: Event) => {
+      if (showModal) event.stopImmediatePropagation();
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      preventDefaultVisibilityChange,
+      { capture: true },
+    ); // Capture phase to prevent default behavior
 
     return () => {
       if (cleanup) cleanup(); // Cleanup function to remove event listeners when showModal changes or component unmounts
+      document.removeEventListener(
+        "visibilitychange",
+        preventDefaultVisibilityChange,
+        { capture: true },
+      );
     };
   }, [showModal, status]);
 
