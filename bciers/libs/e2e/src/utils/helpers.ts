@@ -287,10 +287,7 @@ export async function fillRequiredFormFields(
       }
       // Special condition for province
       if (/province/i.test(labelText)) {
-        await inputField.fill(values[labelText]);
-        const option = page.getByRole("option", { name: values[labelText] });
-        await expect(option).toBeVisible();
-        await option.click();
+        await fillComboxboxWidget(page, labelText, values[labelText]);
       } else {
         await inputField.fill(values[labelText]);
       }
