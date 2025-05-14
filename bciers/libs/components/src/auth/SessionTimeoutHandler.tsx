@@ -23,7 +23,7 @@ const SessionTimeoutHandler: React.FC = () => {
     getExpirationTimeInSeconds(session?.expires),
   );
   const [logoutUrl, setLogoutUrl] = useState<string>("/");
-
+  console.log("-----------logoutUrl", logoutUrl);
   useEffect(() => {
     // Fetch the logout URL from environment variables when component mounts
     getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL")
@@ -35,7 +35,6 @@ const SessionTimeoutHandler: React.FC = () => {
   }, []);
 
   const handleLogout = () => signOut({ redirectTo: logoutUrl });
-
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
     if (status !== "authenticated") {
