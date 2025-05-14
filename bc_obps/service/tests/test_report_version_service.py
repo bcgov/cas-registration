@@ -88,8 +88,10 @@ class TestReportVersionService(TestCase):
             "ReportEmissionAllocation",
             "ReportProductEmissionAllocation",
             "ReportElectricityImportData",
-            "ReportComplianceSummary",
-            "ReportComplianceSummaryProduct",
+            'ComplianceReportVersion',
+            'ComplianceObligation',
+            'ReportComplianceSummary',
+            'ReportComplianceSummaryProduct',
         }
 
     def test_is_initial_report_version_returns_true_for_first_version(self):

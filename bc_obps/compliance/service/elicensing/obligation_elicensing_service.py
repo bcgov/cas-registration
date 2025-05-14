@@ -46,7 +46,7 @@ class ObligationELicensingService:
 
                 # Ensure client exists in eLicensing
                 client_link = OperatorELicensingService.sync_client_with_elicensing(
-                    obligation.compliance_summary.report.operation.operator.id
+                    obligation.compliance_report_version.report_compliance_summary.report_version.report.operation.operator.id
                 )
 
                 # Create fee in eLicensing
@@ -75,7 +75,7 @@ class ObligationELicensingService:
             "businessAreaCode": "OBPS",
             "feeGUID": str(uuid.uuid4()),
             "feeProfileGroupName": "OBPS Compliance Obligation",
-            "feeDescription": f"{obligation.compliance_summary.compliance_period.reporting_year.reporting_year} GGIRCA Compliance Obligation",
+            "feeDescription": f"{obligation.compliance_report_version.compliance_report.compliance_period.reporting_year.reporting_year} GGIRCA Compliance Obligation",
             "feeAmount": float(obligation.fee_amount_dollars) if obligation.fee_amount_dollars else 0.0,
             "feeDate": obligation.fee_date.strftime("%Y-%m-%d") if obligation.fee_date else None,
         }

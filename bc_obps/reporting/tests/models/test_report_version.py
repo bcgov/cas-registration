@@ -60,25 +60,19 @@ class ReportVersionTest(BaseTestCase):
                 None,
             ),
             (
-                "compliance_summaries",
-                "compliance summary",
-                None,
-                None,
-            ),
-            ("report_sign_off", "report sign off", None, None),
-            ("report_electricity_import_data", "report electricity import data", None, None),
-            (
                 "report_compliance_summary",
                 "report compliance summary",
                 None,
-                0,
+                None,
             ),
             (
                 "report_compliance_summary_products",
                 "report compliance summary product",
                 None,
-                0,
+                None,
             ),
+            ("report_sign_off", "report sign off", None, None),
+            ("report_electricity_import_data", "report electricity import data", None, None),
             ("report_attachment_confirmation", "report attachment confirmation", None, None),
         ]
 
@@ -144,6 +138,12 @@ class ReportVersionTest(BaseTestCase):
             if not any(trigger.name == "immutable_report_version" for trigger in m._meta.triggers)
         ]
 
+        missing_triggers.remove(
+            'ComplianceReportVersion'
+        )  # Created compliance_report_version record should not be immutable after report submission
+        missing_triggers.remove(
+            'ComplianceObligation'
+        )  # Created compliance_obligation record should not be immutable after report submission
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"

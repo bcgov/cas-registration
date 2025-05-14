@@ -1,7 +1,7 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
-from .compliance_summary import ComplianceSummary
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from .rls_configs.compliance_obligation import Rls as ComplianceObligationRls
 
 
@@ -14,42 +14,23 @@ class ComplianceObligation(TimeStampedModel):
     by November 30 of the calendar year following the compliance period.
     """
 
-    class ObligationStatus(models.TextChoices):
-        OBLIGATION_NOT_MET = "OBLIGATION_NOT_MET", "Obligation Not Met"
-        OBLIGATION_MET = "OBLIGATION_MET", "Obligation Met"
-
     class PenaltyStatus(models.TextChoices):
         NONE = "NONE", "None"
         ACCRUING = "ACCRUING", "Accruing"
         PAID = "PAID", "Paid"
 
-    compliance_summary = models.OneToOneField(
-        ComplianceSummary,
-        on_delete=models.PROTECT,
+    compliance_report_version = models.OneToOneField(
+        ComplianceReportVersion,
+        on_delete=models.CASCADE,
         related_name="obligation",
-        db_comment="The compliance summary this obligation belongs to",
+        db_comment="The compliance report version this obligation belongs to",
     )
-    emissions_amount_tco2e = models.DecimalField(
-        max_digits=20,
-        decimal_places=4,
-        db_comment="The amount of excess emissions in tCO2e",
-    )
-    status = models.CharField(
-        max_length=50,
-        choices=ObligationStatus.choices,
-        default=ObligationStatus.OBLIGATION_NOT_MET,
-        db_comment="The status of the obligation (e.g., OBLIGATION_NOT_MET, OBLIGATION_MET)",
-    )
-    penalty_status = models.CharField(
-        max_length=50,
-        choices=PenaltyStatus.choices,
-        default=PenaltyStatus.NONE,
-        db_comment="The status of the penalty (e.g., NONE, ACCRUING, PAID)",
-    )
+
     obligation_id = models.CharField(
         max_length=30,
         db_comment="A human-readable identifier for the obligation in format YY-OOOO-R-V",
     )
+
     obligation_deadline = models.DateField(
         blank=False,
         null=False,
@@ -63,14 +44,15 @@ class ComplianceObligation(TimeStampedModel):
         blank=True,
         db_comment="The fee amount in CAD dollars",
     )
-    fee_rate_dollars = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        null=True,
-        blank=True,
-        db_comment="The fee rate used to calculate the fee amount in CAD dollars per tCO2e",
-    )
+
     fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
+
+    penalty_status = models.CharField(
+        max_length=50,
+        choices=PenaltyStatus.choices,
+        default=PenaltyStatus.NONE,
+        db_comment="The status of the penalty (e.g., NONE, ACCRUING, PAID)",
+    )
 
     history = HistoricalRecords(
         table_name='erc_history"."compliance_obligation_history',

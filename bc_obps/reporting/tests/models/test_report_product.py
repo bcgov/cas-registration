@@ -61,12 +61,6 @@ class ReportProductModelTest(BaseTestCase):
                 None,
                 0,
             ),
-            (
-                "compliance_products",
-                "compliance product",
-                None,
-                None,
-            ),
         ]
 
     def test_unique_report_product_per_product_and_facility_report(self):
