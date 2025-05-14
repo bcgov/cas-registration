@@ -110,7 +110,7 @@ class TestComplianceObligationService:
         compliance_report = baker.make_recipe(
             'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
         )
-        compliance_report.report.reporting_year.reporting_year = 2024
+
         compliance_report_version = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
             report_compliance_summary_id=report_compliance_summary.id,
