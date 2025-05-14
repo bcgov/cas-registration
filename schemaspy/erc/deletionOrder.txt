@@ -17,6 +17,7 @@ facility_designated_operation_timeline
 document
 compliance_product
 report_sign_off
+report_electricity_import_data
 report_attachment_confirmation
 report_additional_data
 compliance_obligation

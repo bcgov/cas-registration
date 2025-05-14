@@ -1221,6 +1221,7 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="naics_code" nullable="false" remarks="NAICS code" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="naics_description" nullable="false" remarks="Description of the NAICS code" size="1000" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="is_regulated" nullable="false" remarks="Whether the NAICS code applies to regulated operations" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="naics_code_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -2113,6 +2114,53 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="report_electricity_import_data" remarks="Table storing Electricity Import Data for the reporting system" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="4" name="import_specified_electricity" nullable="true" remarks="Amount of imported electricity - specified sources" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="5" name="import_specified_emissions" nullable="true" remarks="Emissions from specified imports" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="6" name="import_unspecified_electricity" nullable="true" remarks="Amount of imported electricity - unspecified sources" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="7" name="import_unspecified_emissions" nullable="true" remarks="Emissions from unspecified imports" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="8" name="export_specified_electricity" nullable="true" remarks="Amount of exported electricity - specified sources" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="9" name="export_specified_emissions" nullable="true" remarks="Emissions from specified exports" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="10" name="export_unspecified_electricity" nullable="true" remarks="Amount of exported electricity - unspecified sources" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="11" name="export_unspecified_emissions" nullable="true" remarks="Emissions from unspecified exports" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="12" name="canadian_entitlement_electricity" nullable="true" remarks="Amount of electricity categorized as Canadian Entitlement Power" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="17" id="13" name="canadian_entitlement_emissions" nullable="true" remarks="Emissions from Canadian Entitlement Power" size="17" type="float8" typeCode="8"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_electricity_i_archived_by_id_c1c05cf1_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_electricity_i_created_by_id_c429e9e0_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="report_version_id" nullable="false" remarks="The associated report version for this electricity import data" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="report_electricity_i_report_version_id_06fc27da_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="report_electricity_i_updated_by_id_d0f571ed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="report_electricity_import_data_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="report_electricity_import_data_archived_by_id_c1c05cf1" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="report_electricity_import_data_created_by_id_c429e9e0" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="report_electricity_import_data_report_version_id_06fc27da" unique="false">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+         <index name="report_electricity_import_data_updated_by_id_d0f571ed" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+         <index name="unique_electricity_import_data_per_report_version" unique="true">
+            <column ascending="true" name="report_version_id"/>
+         </index>
+      </table>
       <table name="report_emission" remarks="A table to store the reported emission-specific data, in a JSON format" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="reportemission_id" foreignKey="report_emission_emis_reportemission_id_44c3bb2b_fk_report_em" implied="false" onDeleteCascade="false" schema="erc" table="report_emission_emission_categories"/>
@@ -2907,7 +2955,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="acknowledgement_of_review" nullable="false" remarks="Whether the user has certified that they have reviewed the report, and that they have ensured that the information included in this report is true and complete." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="acknowledgement_of_review" nullable="true" remarks="Whether the user has certified that they have reviewed the report, and that they have ensured that the information included in this report is true and complete." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="acknowledgement_of_records" nullable="false" remarks="Whether the user has understood that the information provided in the report may require records from the Operator evidencing the truth of this report." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="acknowledgement_of_information" nullable="true" remarks="Whether the user has understood that this information is being collected for the purpose of emission reporting under the Greenhouse Gas Industrial Reporting and Control Act and may be disclosed to the Ministry responsible for the administration and enforcement of the Carbon Tax Act." size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="acknowledgement_of_possible_costs" nullable="true" remarks="Whether the user has understood that the information provided in this report can impact any compliance obligation of this operation and that any errors, omissions, or misstatements can lead to an additional compliance obligation or administrative penalties." size="1" type="bool" typeCode="-7"/>
@@ -2927,6 +2975,8 @@
             <parent column="user_guid" foreignKey="report_sign_off_updated_by_id_6cf05dc5_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="acknowledgement_of_corrections" nullable="true" remarks="Whether the user has understood that correction of any errors, omissions, or misstatements in the new submission of this report may lead to an additional compliance obligation, and, if submitted after the compliance obligation deadline, applicable interest." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="acknowledgement_of_certification" nullable="true" remarks="Whether the user has certified that the amount of total emissions reported, and all other information included in this report, is complete and accurate." size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="acknowledgement_of_errors" nullable="true" remarks="Whether the user has acknowledged that any errors, omissions, or misstatements in this report may result in administrative penalties or additional compliance obligations." size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="report_sign_off_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -3055,12 +3105,12 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="verification_body_name" nullable="false" remarks="The name of the verification body conducting the verification" size="1000" type="varchar" typeCode="12">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="verification_body_name" nullable="true" remarks="The name of the verification body conducting the verification" size="1000" type="varchar" typeCode="12">
             <parent column="name" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="business_structure"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accredited_by" nullable="false" remarks="The verification accreditation body" size="10" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="accredited_by" nullable="true" remarks="The verification accreditation body" size="10" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="scope_of_verification" nullable="true" remarks="The scope of the verification" size="50" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="threats_to_independence" nullable="false" remarks="Indicates whether there were any threats to independence noted" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="threats_to_independence" nullable="true" remarks="Indicates whether there were any threats to independence noted" size="1" type="bool" typeCode="-7"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="verification_conclusion" nullable="true" remarks="The conclusion of the verification" size="8" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="report_verification_archived_by_id_e48ad3cc_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
@@ -3138,6 +3188,7 @@
             <child column="report_version_id" foreignKey="report_attachment_co_report_version_id_6a5733cf_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_attachment_confirmation"/>
             <child column="report_version_id" foreignKey="report_compliance_su_report_version_id_c0b45af7_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary"/>
             <child column="report_version_id" foreignKey="report_compliance_su_report_version_id_dfda5148_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
+            <child column="report_version_id" foreignKey="report_electricity_i_report_version_id_06fc27da_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_electricity_import_data"/>
             <child column="report_version_id" foreignKey="report_emission_report_version_id_9731ba04_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="report_version_id" foreignKey="report_emission_allo_report_version_id_bfa0af09_fk_report_ve" implied="false" onDeleteCascade="false" schema="erc" table="report_emission_allocation"/>
             <child column="report_version_id" foreignKey="report_fuel_report_version_id_bee0037a_fk_report_version_id" implied="false" onDeleteCascade="false" schema="erc" table="report_fuel"/>
@@ -3545,6 +3596,9 @@
             <child column="archived_by_id" foreignKey="report_compliance_su_archived_by_id_39f93ef8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
             <child column="created_by_id" foreignKey="report_compliance_su_created_by_id_b43fa929_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
             <child column="updated_by_id" foreignKey="report_compliance_su_updated_by_id_278c0856_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_compliance_summary_product"/>
+            <child column="archived_by_id" foreignKey="report_electricity_i_archived_by_id_c1c05cf1_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_electricity_import_data"/>
+            <child column="created_by_id" foreignKey="report_electricity_i_created_by_id_c429e9e0_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_electricity_import_data"/>
+            <child column="updated_by_id" foreignKey="report_electricity_i_updated_by_id_d0f571ed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="report_electricity_import_data"/>
             <child column="archived_by_id" foreignKey="report_emission_archived_by_id_af46c2eb_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="created_by_id" foreignKey="report_emission_created_by_id_a6994672_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>
             <child column="updated_by_id" foreignKey="report_emission_updated_by_id_3392df36_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="report_emission"/>

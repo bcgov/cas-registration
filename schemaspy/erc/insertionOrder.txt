@@ -70,6 +70,7 @@ compliance_charge_rate
 compliance_obligation
 report_additional_data
 report_attachment_confirmation
+report_electricity_import_data
 report_sign_off
 compliance_product
 document
