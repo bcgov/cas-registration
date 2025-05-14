@@ -34,6 +34,7 @@ export default async function OperationDataGridPage({
         <OperationDataGrid
           initialData={operations}
           isInternalUser={isInternalUser}
+          filteredSearchParams={filteredSearchParams}
         />
       </div>
     </Suspense>

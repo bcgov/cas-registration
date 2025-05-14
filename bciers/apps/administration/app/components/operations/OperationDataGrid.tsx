@@ -7,18 +7,20 @@ import OperationsActionCell from "@bciers/components/datagrid/cells/operations/O
 import OperationFacilitiesActionCell from "apps/administration/app/components/operations/cells/OperationFacilitiesActionCell";
 import operationColumns from "@/administration/app/components/datagrid/models/operations/operationColumns";
 import operationGroupColumns from "@/administration/app/components/datagrid/models/operations/operationGroupColumns";
-import { OperationRow } from "./types";
+import { OperationRow, OperationsSearchParams } from "./types";
 import { fetchOperationsPageData } from "@bciers/actions/api";
 
 const OperationDataGrid = ({
   initialData,
   isInternalUser = false,
+  filteredSearchParams,
 }: {
   isInternalUser?: boolean;
   initialData: {
     rows: OperationRow[];
     row_count: number;
   };
+  filteredSearchParams: OperationsSearchParams;
 }) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
   const SearchCell = useMemo(
@@ -41,11 +43,18 @@ const OperationDataGrid = ({
     [SearchCell, isInternalUser],
   );
 
+  const fetchPageDataWithFilters = async (params: OperationsSearchParams) => {
+    return fetchOperationsPageData({
+      ...filteredSearchParams,
+      ...params,
+    });
+  };
+
   return (
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchOperationsPageData}
+      fetchPageData={fetchPageDataWithFilters}
       paginationMode="server"
       initialData={initialData}
     />
