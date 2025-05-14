@@ -1071,7 +1071,7 @@ class TestOperationServiceV2UpdateOperation:
             payload,
             existing_operation.id,
         )
-        
+
         operation.refresh_from_db()
         assert Operation.objects.count() == 1
         # 1 facility because the EIO creation service will create a facility
@@ -1892,45 +1892,6 @@ class TestListOperationTimeline:
             approved_user_operator.user.user_guid, sort_field="created_at", sort_order="desc", filters=filters
         )
         assert timeline.count() == 2
-
-
-class TestChangeOperationType:
-    """
-    Note that these tests are different from the integration tests for handling change of
-    registration purpose as these unit tests only go as far as confirming that the
-    OperationInformationIn payload is generated correctly.
-    """
-
-    @classmethod
-    @patch(
-        "service.facility_designated_operation_timeline_service.FacilityDesignatedOperationTimelineService.delete_facilities_by_operation_id",
-    )
-    def test_delete_service_called_if_type_changes(cls, mock_delete_facilities_by_operation_id: MagicMock):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        operation = baker.make_recipe(
-            'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
-            type=Operation.Types.SFO,
-        )
-
-        submitted_payload = OperationInformationIn(
-            registration_purpose=Operation.Purposes.REPORTING_OPERATION,
-            name='Updated Operation',
-            type=Operation.Types.LFO,
-            activities=[1, 2, 3],
-        )
-        returned_payload = OperationService.update_operation(
-            approved_user_operator.user.user_guid, submitted_payload, operation.id
-        )
-        mock_delete_facilities_by_operation_id.assert_called_once_with(
-            approved_user_operator.user.user_guid,
-            operation.id,
-        )
-
-        assert returned_payload.registration_purpose == Operation.Purposes.REPORTING_OPERATION
-
-        # assert handle_change_of_registration_purpose isn't modifying parts of the payload that should be untouched
-        assert returned_payload.name == "Updated Operation"
 
 
 class TestChangeOperationType:
