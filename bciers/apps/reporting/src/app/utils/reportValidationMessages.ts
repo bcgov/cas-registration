@@ -1,7 +1,6 @@
 type ReportValidationMessageKey =
   | "missing_report_verification"
   | "verification_statement"
-  | "emission"
   | "fuelType"
   | "gasType"
   | "missing_required_attachment_confirmation"
@@ -14,7 +13,6 @@ const reportValidationMessagesMap: Record<ReportValidationMessageKey, string> =
       "Verification information must be completed with this report. Please complete the Verification page.",
     verification_statement:
       "A verification statement must be uploaded with this report. Please upload a verification statement on the Attachments page.",
-    emission: "Emission is missing Emission.",
     fuelType: "Fuel is missing Fuel Name.",
     gasType: "Emission is missing Gas Type.",
     missing_required_attachment_confirmation:
