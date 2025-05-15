@@ -11,19 +11,18 @@ OBLIGATION_ID_ALIAS = "obligation.obligation_id"
 
 
 class ComplianceReportVersionListOut(ModelSchema):
-    """Schema for compliance summary list output"""
-
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    status: str
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance: Optional[Decimal] = None
     excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
+    compliance_status: str = Field(..., alias="status")
 
     class Meta:
         model = ComplianceReportVersion
         fields = [
             'id',
+            'status'
         ]
 
     @staticmethod
@@ -44,8 +43,6 @@ class ComplianceReportVersionListOut(ModelSchema):
 
 
 class ComplianceReportVersionOut(ModelSchema):
-    """Schema for compliance summary output"""
-
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     operation_bcghg_id: str = Field(..., alias="compliance_report.report.operation.bcghg_id.id")
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
