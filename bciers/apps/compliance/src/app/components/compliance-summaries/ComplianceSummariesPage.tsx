@@ -10,10 +10,6 @@ export default async function ComplianceSummariesPage({
   searchParams: ComplianceSummariesSearchParams;
 }) {
   const initialData = await fetchComplianceSummariesPageData(searchParams);
-  const transformedData = {
-    rows: initialData.items,
-    row_count: initialData.count,
-  };
 
   return (
     <div className="flex flex-col">
@@ -32,7 +28,7 @@ export default async function ComplianceSummariesPage({
           the compliance obligation is paid.
         </Alert>
       </div>
-      <ComplianceSummaries initialData={transformedData} />
+      <ComplianceSummaries initialData={initialData} />
     </div>
   );
 }
