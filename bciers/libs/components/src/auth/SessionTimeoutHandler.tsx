@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
@@ -67,6 +67,18 @@ const SessionTimeoutHandler: React.FC = () => {
   useEffect(() => {
     if (status !== "authenticated") return;
 
+    const refreshIfNotExpired = async () => {
+      const session = await getSession();
+      if (session && new Date(session.expires).getTime() < Date.now()) {
+        await refreshSession();
+      }
+    };
+    createThrottledEventHandler(
+      refreshIfNotExpired,
+      [],
+      ACTIVITY_THROTTLE_SECONDS,
+    );
+
     let cleanup: (() => void) | undefined;
 
     // Only set up event listeners if the modal is not open
@@ -119,7 +131,8 @@ const SessionTimeoutHandler: React.FC = () => {
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === Infinity) return; // No timeout set, exit early
+    if (sessionTimeout === Infinity)
+      return; // No timeout set, exit early
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
       setShowModal(false);
