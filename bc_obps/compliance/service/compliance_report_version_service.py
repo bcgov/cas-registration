@@ -11,9 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class ComplianceReportVersionService:
-    """
-    Service for managing compliance summaries
-    """
 
     @classmethod
     @transaction.atomic
@@ -25,6 +22,7 @@ class ComplianceReportVersionService:
 
         Args:
             report_version_id (int): The ID of the report version
+            compliance_report (ComplianceReport): The compliance report to associate with the version
 
         Returns:
             ComplianceReportVersion: The created compliance report version
@@ -131,10 +129,7 @@ class ComplianceReportVersionService:
         """
 
         # Start with the base outstanding balance (excess emissions if positive, otherwise 0)
-        if compliance_report_version.report_compliance_summary.excess_emissions > Decimal('0'):
-            outstanding_balance = compliance_report_version.report_compliance_summary.excess_emissions
-        else:
-            outstanding_balance = Decimal('0')
+        outstanding_balance = max(compliance_report_version.report_compliance_summary.excess_emissions, Decimal('0'))
 
         # Future extension points:
         # 1. Incorporate monetary payments into the calculation
