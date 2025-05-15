@@ -11,7 +11,7 @@ export const getRequestIssuanceComplianceSummaryData = async (
   if (complianceSummaryId) {
     try {
       const data = await actionHandler(
-        `compliance/summaries/${complianceSummaryId}/issuance`,
+        `compliance/compliance-report-versions/${complianceSummaryId}/issuance`,
         "GET",
         "",
       );
