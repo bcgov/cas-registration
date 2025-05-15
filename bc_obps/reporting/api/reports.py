@@ -111,6 +111,7 @@ def get_regulated_products_by_version_id(
     tags=EMISSIONS_REPORT_TAGS,
     description="Retrieve report version details",
     auth=approved_industry_user_report_version_composite_auth,
+    exclude_none=True,
 )
 def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
     report_version = ReportVersion.objects.get(id=version_id)

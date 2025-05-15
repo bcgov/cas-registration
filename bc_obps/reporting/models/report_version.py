@@ -42,6 +42,7 @@ class ReportVersion(TimeStampedModel):
 
     reason_for_change = models.TextField(
         blank=True,
+        null=True,
         db_comment="Reason explaining why a supplementary report change was made.",
     )
 

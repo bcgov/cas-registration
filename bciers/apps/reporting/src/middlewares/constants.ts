@@ -115,4 +115,5 @@ export const reportRoutesEIO = [
   "verification",
   "attachments",
   "sign-off",
+  ...reportRoutesSubmitted,
 ];

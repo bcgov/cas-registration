@@ -16,6 +16,10 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
   placeholder,
   value,
 }) => {
+  const handleChange = (e: { target: { value: string } }) => {
+    const val = e.target.value;
+    onChange(val === "" ? undefined : val);
+  };
   const isError = rawErrors && rawErrors.length > 0;
   const borderColor = isError ? BC_GOV_SEMANTICS_RED : DARK_GREY_BG_COLOR;
 
@@ -34,9 +38,9 @@ const TextAreaWidget: React.FC<WidgetProps> = ({
     <TextareaAutosize
       id={id}
       disabled={disabled || readonly}
-      aria-label={placeholder || "Text area input"}
-      value={value || ""}
-      onChange={(e) => onChange(e.target.value || undefined)}
+      aria-label={placeholder}
+      value={value}
+      onChange={handleChange}
       placeholder={placeholder}
       style={styles}
       minRows={3}

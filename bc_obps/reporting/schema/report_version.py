@@ -1,3 +1,4 @@
+from typing import Optional
 from ninja import ModelSchema, Schema
 
 from reporting.models import ReportVersion
@@ -5,8 +6,10 @@ from reporting.models import ReportVersion
 
 class ReportingVersionOut(ModelSchema):
     """
-    Schema for the get reporting year endpoint request output
+    Schema for Report Version output
     """
+
+    reason_for_change: Optional[str] = None
 
     class Meta:
         model = ReportVersion
@@ -23,7 +26,7 @@ class ReportVersionTypeIn(Schema):
 
 class ReportVersionChangeIn(Schema):
     """
-    Schema for adding reason for change in supplementary report version
+    Schema for adding reason_for_change in supplementary report version
     """
 
     reason_for_change: str
