@@ -13,7 +13,7 @@ class Rls:
         ],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
-        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
+        RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_EARNED_CREDIT)
