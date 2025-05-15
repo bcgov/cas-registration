@@ -13,7 +13,7 @@ const complianceSummaryGroupColumns = (
     createColumnGroup("operation_name", "Operation Name", SearchCell),
     createColumnGroup("excess_emissions", "Excess Emissions", SearchCell),
     createColumnGroup("outstanding_balance", "Outstanding Balance", SearchCell),
-    createColumnGroup("status", "Compliance Status", SearchCell),
+    createColumnGroup("compliance_status", "Compliance Status", SearchCell),
     createColumnGroup("penalty_status", "Penalty Status", SearchCell),
     createColumnGroup("obligation_id", "Obligation ID", SearchCell),
     createColumnGroup("actions", "Actions", EmptyGroupCell),
