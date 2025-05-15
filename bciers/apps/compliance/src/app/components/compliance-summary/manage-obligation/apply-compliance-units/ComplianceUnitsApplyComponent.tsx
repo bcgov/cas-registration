@@ -1,5 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
+import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { ComplianceUnitsApplyContent } from "./ComplianceUnitsApplyContent";
 
 interface Props {
