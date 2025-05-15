@@ -57,13 +57,17 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
 
     @staticmethod
     def test_get_operations_for_internal_user():
-        # non-registered operation - should not be returned
+        # non-registered operation - should be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
-            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.DRAFT),
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation',
+                status=Operation.Statuses.DRAFT,
+            ),
+            end_date=None,
         )
 
-        # transferred operation
+        # transferred operation - should not be returned, has an end date
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
             operation=baker.make_recipe(
@@ -88,4 +92,4 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
             baker.make_recipe('registration.tests.utils.cas_admin')
         )
 
-        assert timeline.count() == 20
+        assert timeline.count() == 21
