@@ -95,3 +95,36 @@ export enum MessageTextOperatorSelect {
   SELECT_OPERATOR = "Which operator would you like to log in to?",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
 }
+
+export enum ContactButtonText {
+  ADD_CONTACT = "Add Contact",
+}
+
+export enum ContactFootnote {
+  CONTACT_FOOTNOTE = "you can assign this representative to an operation directly",
+}
+
+// Contacts Form fields selectors
+export enum ContactFormField {
+  FIRST_NAME = "First Name*",
+  LAST_NAME = "Last Name*",
+  POSITION = "Job Title / Position*",
+  EMAIL_ADDRESS = "Business Email Address*",
+  TELEPHONE_NUMBER = "Business Telephone Number*",
+  MAILING_ADDRESS = "Business Mailing Address*",
+  MUNICIPALITY = "Municipality*",
+  PROVINCE = "Province*",
+  POSTAL_CODE = "Postal Code*",
+}
+
+export enum ContactE2EValue {
+  FIRST_NAME = "First Name",
+  LAST_NAME = "Last Name",
+  POSITION = "Tester",
+  EMAIL_ADDRESS = "email@email.com",
+  TELEPHONE_NUMBER = "403 403 4033",
+  MAILING_ADDRESS = "4 Privet Dr",
+  MUNICIPALITY = "Surrey",
+  PROVINCE = "Alberta",
+  POSTAL_CODE = "X1X1X1",
+}
