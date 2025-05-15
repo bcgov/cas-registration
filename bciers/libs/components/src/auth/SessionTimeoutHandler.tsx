@@ -119,8 +119,7 @@ const SessionTimeoutHandler: React.FC = () => {
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === Infinity)
-      return; // No timeout set, exit early
+    if (sessionTimeout === Infinity) return; // No timeout set, exit early
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
       setShowModal(false);
