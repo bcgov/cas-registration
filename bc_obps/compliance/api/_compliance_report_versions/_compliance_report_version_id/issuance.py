@@ -14,7 +14,7 @@
 
 
 # @router.get(
-#     "/compliance-report-version/{compliance_report_version_id}/issuance",
+#     "/compliance-report-versions/{compliance_report_version_id}/issuance",
 #     response={200: ComplianceReportVersionIssuanceOut, 404: Message, custom_codes_4xx: Message},
 #     tags=["Compliance"],
 #     description="Get issuance data for a compliance report version",
