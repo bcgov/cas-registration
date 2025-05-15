@@ -5,8 +5,8 @@ import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 export const fetchComplianceSummariesPageData = async (params: {
   [key: string]: any;
 }): Promise<{
-  items: ComplianceSummary[];
-  count: number;
+  rows: ComplianceSummary[];
+  row_count: number;
 }> => {
   const queryParams = buildQueryParams(params);
 
@@ -16,18 +16,8 @@ export const fetchComplianceSummariesPageData = async (params: {
     "",
   );
 
-  if (data?.error) {
-    throw new Error(`Failed to fetch compliance summaries: ${data.error}`);
-  }
-
-  if (!data || typeof data !== "object" || !Array.isArray(data.items)) {
-    throw new Error(
-      "Invalid response format from compliance summaries endpoint",
-    );
-  }
-
   return {
-    items: data.items,
-    count: data.count || 0,
+    rows: data.items,
+    row_count: data.count || 0,
   };
 };
