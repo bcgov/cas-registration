@@ -39,6 +39,7 @@ class ComplianceEarnedCredit(TimeStampedModel):
     issuance_status = models.CharField(
         max_length=100,
         choices=IssuanceStatus.choices,
+        default=IssuanceStatus.CREDITS_NOT_ISSUED,
         db_comment="The status of this of the earned credits in this record.",
     )
 
