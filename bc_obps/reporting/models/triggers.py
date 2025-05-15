@@ -53,7 +53,7 @@ def immutable_report_version_trigger(
 
     return pgtrigger.Trigger(
         name="immutable_report_version",
-        operation=pgtrigger.Update,
+        operation=pgtrigger.Update | pgtrigger.Insert,
         when=pgtrigger.Before,
         func=pgtrigger.Func(
             """

@@ -9,7 +9,7 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
         trigger = immutable_report_version_trigger()
 
         assert trigger.name == "immutable_report_version"
-        assert trigger.operation == pgtrigger.Update
+        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert)
         assert trigger.when == pgtrigger.Before
         assert (
             trigger.func.func
@@ -36,7 +36,7 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
         trigger = immutable_report_version_trigger("some_intermediate_model__report_version")
 
         assert trigger.name == "immutable_report_version"
-        assert trigger.operation == pgtrigger.Update
+        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert)
         assert trigger.when == pgtrigger.Before
         assert (
             trigger.func.func
