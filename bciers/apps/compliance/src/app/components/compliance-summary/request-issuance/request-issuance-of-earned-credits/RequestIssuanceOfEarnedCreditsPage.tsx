@@ -2,7 +2,7 @@ import {
   ActivePage,
   getRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
-import { getRequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
+import { getRequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 import RequestIssuanceOfEarnedCreditsComponent from "./RequestIssuanceOfEarnedCreditsComponent";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
