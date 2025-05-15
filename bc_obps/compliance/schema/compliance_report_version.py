@@ -20,10 +20,7 @@ class ComplianceReportVersionListOut(ModelSchema):
 
     class Meta:
         model = ComplianceReportVersion
-        fields = [
-            'id',
-            'status'
-        ]
+        fields = ['id', 'status']
 
     @staticmethod
     def resolve_operation_name(obj: ComplianceReportVersion) -> str:
