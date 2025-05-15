@@ -6,16 +6,7 @@ import { GridColDef, GridColumnGroupingModel } from "@mui/x-data-grid";
 import { useState } from "react";
 import getAttachmentsList from "../../../utils/getAttachmentsList";
 import { attachmentsGridColumns } from "./columns";
-
-type Attachment = {
-  id: number;
-  operator: string;
-  operation: string;
-  report_version_id: number;
-  attachment_id: number;
-  attachment_type: string;
-  attachment_name: string;
-};
+import { Attachment } from "./AttachmentsListPage";
 
 interface Props {
   initialData: {

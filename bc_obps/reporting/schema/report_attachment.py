@@ -28,7 +28,6 @@ class InternalReportAttachmentOut(ModelSchema):
     operator: str = Field(..., alias="report_version.report.operator.legal_name")
     operation: str = Field(..., alias="report_version.report.operation.name")
     report_version_id: int = Field(..., alias="report_version.id")
-    attachment_id: int = Field(..., alias="id")
 
     class Meta:
         model = ReportAttachment
