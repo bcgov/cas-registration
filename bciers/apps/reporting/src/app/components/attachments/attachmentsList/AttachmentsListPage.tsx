@@ -8,7 +8,6 @@ export type Attachment = {
   operator: string;
   operation: string;
   report_version_id: number;
-  attachment_id: number;
   attachment_type: string;
   attachment_name: string;
 };
