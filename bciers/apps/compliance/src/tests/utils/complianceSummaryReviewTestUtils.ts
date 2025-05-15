@@ -10,11 +10,13 @@ export interface ComplianceSummaryReviewTestConfig {
   taskListFunctionName: string;
   testDescription: string;
   mockData: any;
+  testIsCasStaffProp?: boolean;
 }
 
 function verifyCommonElements(
   expectedComplianceSummaryId: string,
   mockData: any,
+  isCasStaff?: boolean,
 ) {
   const reviewComponent = screen.getByTestId("review-component");
   expect(reviewComponent).toBeVisible();
@@ -27,6 +29,13 @@ function verifyCommonElements(
   expect(screen.getByTestId("task-list-elements")).toHaveTextContent(
     "task-list-present",
   );
+
+  const isCasStaffElement = screen.queryByTestId("is-cas-staff");
+  if (isCasStaffElement && isCasStaff !== undefined) {
+    expect(isCasStaffElement).toHaveTextContent(
+      isCasStaff ? "is-cas-staff" : "not-cas-staff",
+    );
+  }
 }
 
 export function setupComplianceSummaryReviewTest(
@@ -73,6 +82,19 @@ export function setupComplianceSummaryReviewTest(
 
         verifyCommonElements(complianceSummaryId, config.mockData);
       });
+
+      if (config.testIsCasStaffProp) {
+        it("verifies the isCasStaff prop is present in the component", async () => {
+          const complianceSummaryId = "789";
+          const component = await config.complianceSummaryPageComponent({
+            compliance_summary_id: complianceSummaryId,
+          });
+          render(component);
+
+          const isCasStaffElement = screen.queryByTestId("is-cas-staff");
+          expect(isCasStaffElement).toBeVisible();
+        });
+      }
     });
   };
 }

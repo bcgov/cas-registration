@@ -6,12 +6,14 @@ interface Props {
   readonly formData: any;
   readonly complianceSummaryId: any;
   readonly taskListElements: TaskListElement[];
+  readonly isCasStaff: boolean;
 }
 
 export default function RequestIssuanceReviewComponent({
   formData,
   complianceSummaryId,
   taskListElements,
+  isCasStaff,
 }: Props) {
   const backUrl = `/compliance-summaries`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`;
@@ -25,6 +27,7 @@ export default function RequestIssuanceReviewComponent({
         data={formData}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
+        isCasStaff={isCasStaff}
       />
     </CompliancePageLayout>
   );

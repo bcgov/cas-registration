@@ -17,7 +17,7 @@ from .router import router
     response={200: List[ComplianceSummaryListOut], custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get all compliance summaries for the current user's operations",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 @paginate(PageNumberPagination)
 def get_compliance_summaries_list(request: HttpRequest) -> QuerySet[ComplianceSummary]:

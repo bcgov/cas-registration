@@ -15,7 +15,7 @@ from ...router import router
     response={200: ComplianceSummaryIssuanceOut, 404: Message, custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get issuance data for a compliance summary",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 def get_compliance_summary_issuance(
     request: HttpRequest, summary_id: int

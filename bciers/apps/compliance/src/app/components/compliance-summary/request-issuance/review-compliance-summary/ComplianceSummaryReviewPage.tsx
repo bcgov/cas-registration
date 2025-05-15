@@ -6,6 +6,7 @@ import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/ut
 import RequestIssuanceReviewComponent from "./RequestIssuanceReviewComponent";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
   readonly compliance_summary_id: string;
@@ -16,6 +17,9 @@ export default async function ComplianceSummaryReviewPage(props: Props) {
 
   const complianceSummary =
     await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+
+  const role = await getSessionRole();
+  const isCasStaff = role.startsWith("cas_");
 
   const taskListElements = getRequestIssuanceTaskList(
     complianceSummaryId,
@@ -29,6 +33,7 @@ export default async function ComplianceSummaryReviewPage(props: Props) {
         formData={complianceSummary}
         complianceSummaryId={complianceSummaryId}
         taskListElements={taskListElements}
+        isCasStaff={isCasStaff}
       />
     </Suspense>
   );
