@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import TransferEvent
+from registration.models.contact import Contact
 from registration.schema import TransferEventFilterSchema, TransferEventCreateIn
 from service.transfer_event_service import TransferEventService
 import pytest
@@ -539,6 +540,16 @@ class TestTransferEventService:
             operation=baker.make_recipe("registration.tests.utils.operation"),
         )
 
+        # contacts associated with the from operator
+        from_operator_contacts = baker.make_recipe(
+            "registration.tests.utils.contact",
+            operator=transfer_event.from_operator,
+            _quantity=2,
+        )
+
+        # contacts assigned to the operation
+        transfer_event.operation.contacts.set(from_operator_contacts)
+
         user_guid = uuid4()  # Simulating the user GUID
 
         # Scenario 1: Current timeline exists
@@ -555,6 +566,10 @@ class TestTransferEventService:
             mock_get_current_timeline.return_value,
             transfer_event.effective_date,
         )
+
+        # Verify the from_operator contacts are removed but not deleted
+        assert transfer_event.operation.contacts.count() == 0
+        assert Contact.objects.filter(operator=transfer_event.from_operator).count() == 2
 
         # Scenario 2: No current timeline
         mock_get_current_timeline.return_value = None
