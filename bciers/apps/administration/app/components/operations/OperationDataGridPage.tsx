@@ -14,12 +14,16 @@ export default async function OperationDataGridPage({
   const role = await getSessionRole();
   const isInternalUser = role.includes("cas_");
 
+  // IRC users should only see Registered operations
+  const filteredSearchParams = isInternalUser
+    ? { ...searchParams, operation__status: "Registered" }
+    : searchParams;
+
   // Fetch operations data
   const operations: {
     rows: OperationRow[];
     row_count: number;
-  } = await fetchOperationsPageData(searchParams);
-
+  } = await fetchOperationsPageData(filteredSearchParams);
   if (!operations || "error" in operations)
     throw new Error("Failed to retrieve operations");
 
@@ -30,6 +34,7 @@ export default async function OperationDataGridPage({
         <OperationDataGrid
           initialData={operations}
           isInternalUser={isInternalUser}
+          filteredSearchParams={filteredSearchParams}
         />
       </div>
     </Suspense>
