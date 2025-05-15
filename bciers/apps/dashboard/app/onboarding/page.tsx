@@ -1,6 +1,7 @@
 "use client";
 
 // 🏷 import {named} can be significantly slower than import default
+import { useEffect } from "react";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
 import events from "@/dashboard/app/data/home/events.json";
@@ -14,6 +15,8 @@ import {
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { getToken } from "@bciers/actions";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 /*
 📚
@@ -25,12 +28,48 @@ e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
 
 export default function Page() {
   const { data: session } = useSession();
-  if (session) {
-    // If we are here, then we need a
-    // browser‑driven navigation to carry the sameSite: strict cookie
-    const router = useRouter();
-    return router.push("/dashboard");
-  }
+  const router = useRouter();
+
+  const paths = {
+    profile: "profile",
+    dashboard: "dashboard",
+    onboarding: "onboarding",
+    administration: "administration",
+  };
+
+  useEffect(() => {
+    const handleAuthorization = async () => {
+      const token = await getToken();
+
+      if (token) {
+        // Handle authenticated user without a role
+        if (!token.app_role || token.app_role === "") {
+          router.push(`/administration/${paths.profile}`);
+          return;
+        }
+
+        // Handle user with token.user.app_role = cas_pending
+        if (token.app_role === FrontEndRoles.CAS_PENDING) {
+          router.push(`/${paths.dashboard}`);
+          return;
+        }
+
+        // Redirect to dashboard if the user is authenticated and has a role
+        router.push(`/${paths.dashboard}`);
+        window.location.reload();
+        return;
+      } else {
+        // Handle unauthenticated user
+        router.push(`/${paths.onboarding}`);
+        return;
+      }
+    };
+
+    if (session) {
+      handleAuthorization();
+    }
+  }, [session, router]);
+
   const headerStyle = "text-bc-bg-blue text-2xl";
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
 
