@@ -7,6 +7,7 @@ import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
+import { debug } from "console";
 
 export const ACTIVITY_THROTTLE_SECONDS = 15; // Throttle user activity checks (4 minutes)
 export const MODAL_DISPLAY_SECONDS = 20; // Seconds before timeout to show logout warning modal (5 minutes)
@@ -74,11 +75,10 @@ const SessionTimeoutHandler: React.FC = () => {
         await refreshSession();
       }
     };
-    createThrottledEventHandler(
-      refreshIfNotExpired,
-      [],
-      ACTIVITY_THROTTLE_SECONDS,
-    );
+
+    const interval = setInterval(() => {
+      refreshIfNotExpired();
+    }, ACTIVITY_THROTTLE_SECONDS * 1000);
 
     let cleanup: (() => void) | undefined;
 
@@ -118,6 +118,7 @@ const SessionTimeoutHandler: React.FC = () => {
 
     return () => {
       if (cleanup) cleanup(); // Cleanup function to remove event listeners when showModal changes or component unmounts
+      clearInterval(interval);
       document.removeEventListener(
         "visibilitychange",
         preventDefaultVisibilityChange,
