@@ -8,8 +8,8 @@ import createThrottledEventHandler from "@bciers/components/auth/throttleEventsE
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 
-export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Throttle user activity checks (4 minutes)
-export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes)
+export const ACTIVITY_THROTTLE_SECONDS = 15; // Throttle user activity checks (4 minutes)
+export const MODAL_DISPLAY_SECONDS = 20; // Seconds before timeout to show logout warning modal (5 minutes)
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
@@ -69,7 +69,8 @@ const SessionTimeoutHandler: React.FC = () => {
 
     const refreshIfNotExpired = async () => {
       const session = await getSession();
-      if (session && new Date(session.expires).getTime() < Date.now()) {
+      if (session && new Date(session.expires).getTime() > Date.now()) {
+        console.log("do i get called");
         await refreshSession();
       }
     };
