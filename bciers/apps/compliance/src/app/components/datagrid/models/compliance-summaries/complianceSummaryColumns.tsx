@@ -5,53 +5,45 @@ const complianceSummaryColumns = (): GridColDef[] => {
   return [
     {
       field: "reporting_year",
-      headerName: "Reporting Year",
+      headerName: "Compliance Period",
       width: 150,
-      type: "string",
     },
     {
       field: "operation_name",
       headerName: "Operation Name",
       width: 200,
-      type: "string",
     },
     {
       field: "excess_emissions",
       headerName: "Excess Emission",
       width: 200,
-      type: "number",
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
       field: "outstanding_balance",
       headerName: "Outstanding Balance",
       width: 200,
-      type: "number",
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
       field: "status",
       headerName: "Compliance Status",
       width: 200,
-      type: "string",
     },
     {
       field: "penalty_status",
       headerName: "Penalty Status",
       width: 150,
-      type: "string",
     },
     {
       field: "obligation_id",
       headerName: "Obligation ID",
       width: 150,
-      type: "string",
     },
     {
       field: "actions",
       headerName: "Actions",
-      width: 150,
-      type: "actions",
+      flex: 1,
       renderCell: ActionCell,
     },
   ];
