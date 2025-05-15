@@ -15,7 +15,6 @@ import {
 import {
   fillRequiredFormFields,
   clickWithRetry,
-  clickButton,
 } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -125,20 +124,12 @@ export class ContactsPOM {
   async clickAddButton() {
     const addButton = ContactButtonText.ADD_CONTACT;
     await this.page.waitForTimeout(5000);
-
-    try {
-      await expect(
-        this.page.getByRole("button", { name: addButton }),
-      ).toBeVisible();
-      // Click the button
-      await clickButton(this.page, addButton);
-      await this.assertFootnoteIsVisible(true);
-    } catch (error) {
-      // Re-clicking the button here if it fails the first time, putting max retries to 3
-      console.warn("Button click failed, retrying");
-      await clickWithRetry(this.page, ContactButtonText.ADD_CONTACT, 2);
-      await this.assertFootnoteIsVisible(true);
-    }
+    await expect(
+      this.page.getByRole("button", { name: addButton }),
+    ).toBeVisible();
+    // Click the button
+    await clickWithRetry(this.page, addButton, 3);
+    await this.assertFootnoteIsVisible(true);
   }
 
   // ###  Assertions ###
