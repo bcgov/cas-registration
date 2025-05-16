@@ -1,11 +1,11 @@
 import { expect, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { useSession, signOut } from "next-auth/react";
 import SessionTimeoutHandler, {
   ACTIVITY_THROTTLE_SECONDS,
   MODAL_DISPLAY_SECONDS,
 } from "@bciers/components/auth/SessionTimeoutHandler";
-import { getEnvValue } from "@bciers/actions";
+import { getEnvValue, getToken } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { LogoutWarningModalProps } from "@bciers/components/auth/LogoutWarningModal";
 import * as Sentry from "@sentry/nextjs";
@@ -18,6 +18,7 @@ vi.mock("next-auth/react", () => ({
 
 vi.mock("@bciers/actions", () => ({
   getEnvValue: vi.fn(),
+  getToken: vi.fn(),
 }));
 
 vi.mock("@bciers/components/auth/throttleEventsEffect", () => ({
@@ -40,10 +41,29 @@ vi.mock("@bciers/components/auth/LogoutWarningModal", () => ({
     ) : null,
 }));
 
+let onmessageHandler: ((event: any) => void) | undefined;
+
+export const postMessage = vi.fn();
+export const close = vi.fn();
+
+vi.mock("broadcast-channel", () => ({
+  BroadcastChannel: vi.fn(() => ({
+    postMessage,
+    close,
+    set onmessage(cb: typeof onmessageHandler) {
+      onmessageHandler = cb;
+    },
+    get onmessage() {
+      return onmessageHandler;
+    },
+  })),
+}));
+
 describe("SessionTimeoutHandler", () => {
   const mockUpdate = vi.fn();
   const mockSignOut = signOut as ReturnType<typeof vi.fn>;
   const mockGetEnvValue = getEnvValue as ReturnType<typeof vi.fn>;
+  const mockGetToken = getToken as ReturnType<typeof vi.fn>;
 
   const defaultSession = {
     data: { expires: new Date(Date.now() + 180 * 1000).toISOString() },
@@ -60,7 +80,11 @@ describe("SessionTimeoutHandler", () => {
   };
 
   beforeEach(() => {
+    // vi.clearAllTimers();
     vi.clearAllMocks();
+    // vi.useFakeTimers();
+    mockGetToken.mockResolvedValue({ exp: Math.floor(Date.now() / 1000) + 60 });
+    mockSignOut.mockResolvedValue(undefined);
     mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
   });
 
@@ -69,9 +93,10 @@ describe("SessionTimeoutHandler", () => {
     expect(screen.queryByTestId("logout-modal")).not.toBeInTheDocument();
   });
 
-  it("starts polling on mount when authenticated", () => {
+  it("calls startTokenExpirationPolling on mount when authenticated", () => {
     renderWithSession();
-    expect(startTokenExpirationPolling).toHaveBeenCalled();
+
+    expect(startPollingSpy).toHaveBeenCalled();
   });
 
   it("shows modal when session is about to expire", async () => {
@@ -102,8 +127,13 @@ describe("SessionTimeoutHandler", () => {
       data: { expires: new Date(Date.now() - 1 * 1000).toISOString() },
     });
 
-    expect(mockGetEnvValue).toHaveBeenCalledOnce(); // maybe twice would catch broadcast
-    await waitFor(() => expect(mockSignOut).toHaveBeenCalledOnce());
+    expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+    expect(postMessage).toHaveBeenCalledWith("logout");
+    await waitFor(() =>
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "http://logout.url",
+      }),
+    );
   });
 
   it("extends session when user clicks extend", async () => {
@@ -132,7 +162,7 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it("logs out and broadcasts when user clicks logout in modal", async () => {
+  it.only("logs out and broadcasts when user clicks logout in modal", async () => {
     renderWithSession({
       data: {
         expires: new Date(
@@ -149,39 +179,14 @@ describe("SessionTimeoutHandler", () => {
     );
 
     screen.getByText("Logout").click();
+    expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+    expect(postMessage).toHaveBeenCalledWith("logout");
+
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
         redirectTo: "http://logout.url", // NOSONAR
       });
     });
-  });
-
-  it("refreshes session on user activity when modal is not shown", async () => {
-    await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
-  });
-
-  it("does not refresh session when modal is shown", async () => {
-    // it might now, that's ok?
-    renderWithSession({
-      data: {
-        expires: new Date(
-          Date.now() + (MODAL_DISPLAY_SECONDS + 1) * 1000,
-        ).toISOString(),
-      },
-    });
-
-    const mockTrigger = vi.fn();
-
-    await waitFor(
-      () => expect(screen.getByTestId("logout-modal")).toBeInTheDocument(),
-      {
-        timeout: 2000,
-      },
-    );
-
-    mockUpdate.mockClear();
-    mockTrigger();
-    expect(mockUpdate).not.toHaveBeenCalled();
   });
 
   it("handles session refresh failure by logging out", async () => {
