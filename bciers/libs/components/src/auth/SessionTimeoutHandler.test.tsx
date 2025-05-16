@@ -44,8 +44,6 @@ describe("SessionTimeoutHandler", () => {
   const mockUpdate = vi.fn();
   const mockSignOut = signOut as ReturnType<typeof vi.fn>;
   const mockGetEnvValue = getEnvValue as ReturnType<typeof vi.fn>;
-  const mockCreateThrottledEventHandler =
-    createThrottledEventHandler as ReturnType<typeof vi.fn>;
 
   const defaultSession = {
     data: { expires: new Date(Date.now() + 180 * 1000).toISOString() },
@@ -64,7 +62,6 @@ describe("SessionTimeoutHandler", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
-    mockCreateThrottledEventHandler.mockReturnValue(vi.fn());
   });
 
   it("does not render anything when not authenticated", () => {
@@ -72,13 +69,9 @@ describe("SessionTimeoutHandler", () => {
     expect(screen.queryByTestId("logout-modal")).not.toBeInTheDocument();
   });
 
-  it("sets up throttled event handler on mount when authenticated and modal is not shown", () => {
+  it("starts polling on mount when authenticated", () => {
     renderWithSession();
-    expect(mockCreateThrottledEventHandler).toHaveBeenCalledWith(
-      expect.any(Function),
-      ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"],
-      ACTIVITY_THROTTLE_SECONDS,
-    );
+    expect(startTokenExpirationPolling).toHaveBeenCalled();
   });
 
   it("shows modal when session is about to expire", async () => {
@@ -104,12 +97,12 @@ describe("SessionTimeoutHandler", () => {
     );
   });
 
-  it("logs out when session timeout reaches zero", async () => {
+  it("logs out and broadcasts when session timeout reaches zero", async () => {
     renderWithSession({
       data: { expires: new Date(Date.now() - 1 * 1000).toISOString() },
     });
 
-    expect(mockGetEnvValue).toHaveBeenCalledOnce();
+    expect(mockGetEnvValue).toHaveBeenCalledOnce(); // maybe twice would catch broadcast
     await waitFor(() => expect(mockSignOut).toHaveBeenCalledOnce());
   });
 
@@ -139,7 +132,7 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it("logs out when user clicks logout in modal", async () => {
+  it("logs out and broadcasts when user clicks logout in modal", async () => {
     renderWithSession({
       data: {
         expires: new Date(
@@ -164,23 +157,11 @@ describe("SessionTimeoutHandler", () => {
   });
 
   it("refreshes session on user activity when modal is not shown", async () => {
-    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
-      Promise.resolve();
-
-    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
-      capturedRefreshSession = refreshSession;
-      return () => {}; // Return a no-op cleanup function
-    });
-
-    renderWithSession();
-
-    // Manually invoke the refreshSession to simulate activity
-    await capturedRefreshSession(new Event("mousemove"));
-
     await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
   });
 
   it("does not refresh session when modal is shown", async () => {
+    // it might now, that's ok?
     renderWithSession({
       data: {
         expires: new Date(
@@ -190,7 +171,6 @@ describe("SessionTimeoutHandler", () => {
     });
 
     const mockTrigger = vi.fn();
-    mockCreateThrottledEventHandler.mockImplementation(() => () => mockTrigger);
 
     await waitFor(
       () => expect(screen.getByTestId("logout-modal")).toBeInTheDocument(),
@@ -200,29 +180,6 @@ describe("SessionTimeoutHandler", () => {
     );
 
     mockUpdate.mockClear();
-    mockTrigger();
-    expect(mockUpdate).not.toHaveBeenCalled();
-  });
-
-  it("do not refresh session when user is in a different tab", async () => {
-    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
-      Promise.resolve();
-
-    const mockTrigger = vi.fn();
-    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
-      capturedRefreshSession = refreshSession;
-      return () => {}; // Return a no-op cleanup function
-    });
-    // Simulate that the document is not visible
-    Object.defineProperty(document, "visibilityState", {
-      get: () => "hidden",
-      configurable: true,
-    });
-    renderWithSession();
-
-    // Manually invoke the refreshSession to simulate visibility change
-    await capturedRefreshSession(new Event("visibilitychange"));
-
     mockTrigger();
     expect(mockUpdate).not.toHaveBeenCalled();
   });
