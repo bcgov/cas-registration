@@ -8,10 +8,7 @@ const AttachmentDownloadCell = (params: GridRenderCellParams) => {
     e.preventDefault();
     e.stopPropagation();
 
-    await downloadAttachment(
-      params.row.report_version_id,
-      params.row.attachment_id,
-    );
+    await downloadAttachment(params.row.report_version_id, params.row.id);
   };
 
   return (
