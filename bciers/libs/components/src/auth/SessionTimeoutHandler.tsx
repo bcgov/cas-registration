@@ -6,7 +6,7 @@ import { getEnvValue, getToken } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 import { signOut, useSession } from "next-auth/react";
-// import { BroadcastChannel } from "broadcast-channel";
+import { BroadcastChannel } from "broadcast-channel";
 
 export const ACTIVITY_THROTTLE_SECONDS = 15;
 export const MODAL_DISPLAY_SECONDS = 20;
@@ -23,33 +23,37 @@ const SessionTimeoutHandler: React.FC = () => {
     getExpirationTimeInSeconds(session?.expires),
   );
 
-  // const logoutChannelRef = useRef<BroadcastChannel | null>(null);
+  const logoutChannelRef = useRef<BroadcastChannel | null>(null);
 
-  // useEffect(() => {
-  //   const channel = new BroadcastChannel("logout");
-  //   logoutChannelRef.current = channel;
-
-  //   channel.onmessage = (event) => {
-  //     if (event === "logout") {
-  //       window.location.href = "/your-logout-page"; // or `logoutUrl`
-  //     }
-  //   };
-
-  //   return () => {
-  //     channel.close();
-  //   };
-  // }, []);
-
-  const handleLogout = async () => {
+  const getLogoutUrl = async () => {
     const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
     if (!logoutUrl) {
       Sentry.captureException("Failed to fetch logout URL");
       console.error("Failed to fetch logout URL");
     }
+    return logoutUrl;
+  };
 
+  useEffect(() => {
+    const channel = new BroadcastChannel("logout");
+    logoutChannelRef.current = channel;
+
+    channel.onmessage = async (event) => {
+      if (event === "logout") {
+        const logoutUrl = await getLogoutUrl();
+        window.location.href = logoutUrl || "/"; // or `logoutUrl`
+      }
+    };
+
+    return () => {
+      channel.close();
+    };
+  }, []);
+
+  const handleLogout = async () => {
     // Use ref to send message only if channel is still open
-    // logoutChannelRef.current?.postMessage("logout");
-
+    logoutChannelRef.current?.postMessage("logout");
+    const logoutUrl = await getLogoutUrl();
     await signOut({ redirectTo: logoutUrl || "/" });
   };
 
