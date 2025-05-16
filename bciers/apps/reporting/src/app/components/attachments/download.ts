@@ -1,4 +1,4 @@
-import getAttachmentFileUrl from "../../utils/getAttachmentFileUrl";
+import getAttachmentFileUrl from "@reporting/src/app/utils/getAttachmentFileUrl";
 
 export default async function downloadAttachment(
   versionId: number,
