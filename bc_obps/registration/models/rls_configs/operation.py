@@ -1,9 +1,10 @@
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants, generate_m2m_rls
+from rls.utils.helpers import generate_rls_grants, generate_m2m_rls, generate_rls_policies
 
 
 class Rls:
+    # brianna you might need to add the using statements here--do we ever have a different statement depending on operation?
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         # To issue BORO ID and BCGHG ID
@@ -14,6 +15,21 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.OPERATION)
+    policies = generate_rls_policies(role_grants_mapping, RegistrationTableNames.OPERATION, 
+                                     """
+                    operation_id IN (
+                        SELECT operation.id
+                        FROM erc.operation
+                        JOIN erc.user_operator uo
+                        ON operation.operator_id = uo.operator_id
+                        AND uo.user_id = current_setting('my.guid', true)::uuid
+                        AND uo.status = 'Approved'
+                    )
+                    """)
+
+           
+
+
     # M2M relationships
     m2m_models_grants_mapping = {
         RegistrationTableNames.OPERATION_CONTACTS: {
