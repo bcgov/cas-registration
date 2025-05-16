@@ -12,7 +12,7 @@ const AttachmentDownloadCell = (params: GridRenderCellParams) => {
   };
 
   return (
-    <a onClick={handleDownload} style={{ cursor: "pointer" }}>
+    <a href="#" onClick={handleDownload} style={{ cursor: "pointer" }}>
       <Stack alignItems="center" direction="row" spacing={1}>
         <span>{params.row.attachment_name}</span>
         <CloudDownload />
