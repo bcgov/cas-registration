@@ -6,9 +6,12 @@ import { getEnvValue, getToken } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 import { signOut, useSession } from "next-auth/react";
+import { BroadcastChannel } from "broadcast-channel";
 
 export const ACTIVITY_THROTTLE_SECONDS = 15; // Throttle user activity checks (4 minutes)
 export const MODAL_DISPLAY_SECONDS = 20; // Seconds before timeout to show logout warning modal (5 minutes)
+
+const logoutChannel = new BroadcastChannel("logout");
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
@@ -28,6 +31,10 @@ const SessionTimeoutHandler: React.FC = () => {
       Sentry.captureException("Failed to fetch logout URL");
       console.error("Failed to fetch logout URL");
     }
+
+    // Broadcast logout event to all tabs
+    logoutChannel.postMessage("logout");
+
     await signOut({ redirectTo: logoutUrl || "/" });
   };
 
@@ -114,6 +121,13 @@ const SessionTimeoutHandler: React.FC = () => {
 
   // --- Session Timeout Logic ---
   useEffect(() => {
+    // Listen for logout events from other tabs
+    logoutChannel.onmessage = (event) => {
+      if (event === "logout") {
+        // handleLogout(); might be better
+        signOut({ redirect: false }); // Ensure all tabs sign out
+      }
+    };
     if (status !== "authenticated") return;
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
@@ -134,6 +148,20 @@ const SessionTimeoutHandler: React.FC = () => {
     // Cleanup function to clear the timeout when effect re-runs or component unmounts
     return () => clearTimeout(modalTimeoutId);
   }, [status, sessionTimeout]);
+
+  useEffect(() => {
+    // Listen for logout events from other tabs
+    logoutChannel.onmessage = (event) => {
+      if (event === "logout") {
+        // handleLogout(); might be better
+        signOut({ redirect: false }); // Ensure all tabs sign out
+      }
+    };
+
+    return () => {
+      logoutChannel.close();
+    };
+  }, []);
 
   if (status !== "authenticated") return null; // Don't render anything if not authenticated
 
