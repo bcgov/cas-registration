@@ -160,11 +160,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_report_attachment_url",
-            "kwargs": {"version_id": MOCK_INT, "file_id": MOCK_INT},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_emission_allocations",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
@@ -380,6 +375,7 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "list_transfer_events"},
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "get", "endpoint_name": "get_internal_users"},
+        {"method": "get", "endpoint_name": "get_all_attachments"},
     ],
     "approved_authorized_roles": [
         {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},
@@ -462,6 +458,11 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_update_report",
             "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_attachment_url",
+            "kwargs": {"version_id": MOCK_INT, "file_id": MOCK_INT},
         },
         {
             "method": "delete",
