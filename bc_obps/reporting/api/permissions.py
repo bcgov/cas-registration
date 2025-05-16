@@ -65,6 +65,10 @@ def check_version_ownership_in_url(
     version_id_param: str,
 ) -> Callable[[HttpRequest], bool]:
     def validate_func(request: HttpRequest) -> bool:
+        # Internal users can access all report versions
+        if request.current_user.is_irc_user():  # type: ignore
+            return True
+
         return _validate_version_ownership_in_url(request, version_id_param)
 
     return validate_func

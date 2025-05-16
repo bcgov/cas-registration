@@ -17,6 +17,12 @@
             "icon": "File",
             "content": "Submit, view and edit your annual reports.",
             "href": "/reporting/reports"
+          },
+          {
+            "title": "Report Attachments",
+            "icon": "Download",
+            "content": "Submit, view and edit your annual reports.",
+            "href": "/reporting/reports/attachments"
           }
         ]
       }
