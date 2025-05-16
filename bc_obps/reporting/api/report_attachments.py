@@ -21,6 +21,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from .router import router
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
+    approved_authorized_roles_report_version_composite_auth,
 )
 
 
@@ -88,7 +89,7 @@ def get_report_attachments(
     response={200: str, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the cloud download URL for a file attachment.""",
-    auth=[approved_industry_user_report_version_composite_auth, authorize("authorized_irc_user")],
+    auth=approved_authorized_roles_report_version_composite_auth,
 )
 def get_report_attachment_url(request: HttpRequest, version_id: int, file_id: int) -> Tuple[Literal[200], str]:
     return 200, ReportAttachmentService.get_attachment(version_id, file_id).get_file_url()
