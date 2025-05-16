@@ -8,6 +8,7 @@ import SessionTimeoutHandler, {
 import { getEnvValue } from "@bciers/actions";
 import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { LogoutWarningModalProps } from "@bciers/components/auth/LogoutWarningModal";
+import * as Sentry from "@sentry/nextjs";
 
 // Mock dependencies
 vi.mock("next-auth/react", () => ({
@@ -71,18 +72,11 @@ describe("SessionTimeoutHandler", () => {
     expect(screen.queryByTestId("logout-modal")).not.toBeInTheDocument();
   });
 
-  it("fetches logout URL on mount", () => {
-    renderWithSession();
-    expect(mockGetEnvValue).toHaveBeenCalledWith(
-      "SITEMINDER_KEYCLOAK_LOGOUT_URL",
-    );
-  });
-
   it("sets up throttled event handler on mount when authenticated and modal is not shown", () => {
     renderWithSession();
     expect(mockCreateThrottledEventHandler).toHaveBeenCalledWith(
       expect.any(Function),
-      ["mousemove", "keydown", "mousedown", "scroll"],
+      ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"],
       ACTIVITY_THROTTLE_SECONDS,
     );
   });
@@ -164,22 +158,24 @@ describe("SessionTimeoutHandler", () => {
     screen.getByText("Logout").click();
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
-        callbackUrl: "http://logout.url", // NOSONAR
+        redirectTo: "http://logout.url", // NOSONAR
       });
     });
   });
 
   it("refreshes session on user activity when modal is not shown", async () => {
-    let capturedRefreshSession: () => void;
-    const mockTrigger = vi.fn();
+    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
+      Promise.resolve();
+
     mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
       capturedRefreshSession = refreshSession;
-      return () =>
-        mockTrigger.mockImplementation(() => capturedRefreshSession());
+      return () => {}; // Return a no-op cleanup function
     });
 
     renderWithSession();
-    mockTrigger();
+
+    // Manually invoke the refreshSession to simulate activity
+    await capturedRefreshSession(new Event("mousemove"));
 
     await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
   });
@@ -208,20 +204,76 @@ describe("SessionTimeoutHandler", () => {
     expect(mockUpdate).not.toHaveBeenCalled();
   });
 
-  it("handles session refresh failure by logging out", async () => {
-    mockUpdate.mockRejectedValue(new Error("Refresh failed"));
+  it("do not refresh session when user is in a different tab", async () => {
+    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
+      Promise.resolve();
 
-    let capturedRefreshSession: () => void;
     const mockTrigger = vi.fn();
     mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
       capturedRefreshSession = refreshSession;
-      return () =>
-        mockTrigger.mockImplementation(() => capturedRefreshSession());
+      return () => {}; // Return a no-op cleanup function
+    });
+    // Simulate that the document is not visible
+    Object.defineProperty(document, "visibilityState", {
+      get: () => "hidden",
+      configurable: true,
+    });
+    renderWithSession();
+
+    // Manually invoke the refreshSession to simulate visibility change
+    await capturedRefreshSession(new Event("visibilitychange"));
+
+    mockTrigger();
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
+
+  it("handles session refresh failure by logging out", async () => {
+    mockUpdate.mockRejectedValue(new Error("Refresh failed"));
+
+    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
+      Promise.resolve();
+
+    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
+      capturedRefreshSession = refreshSession;
+      return () => {}; // Return a no-op cleanup function
     });
 
     renderWithSession();
-    mockTrigger();
 
-    await waitFor(() => expect(mockSignOut).toHaveBeenCalled());
+    // Manually invoke the refreshSession to simulate activity
+    await capturedRefreshSession(new Event("mousemove"));
+
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "http://logout.url", // NOSONAR
+      });
+    });
+  });
+
+  it("handles session refresh failure with no logoutUrl by logging out, alerting Sentry, and redirecting to fallback logoutUrl", async () => {
+    const sentrySpy = vi.spyOn(Sentry, "captureException");
+
+    mockGetEnvValue.mockReturnValue(undefined); // Simulate no logout URL
+
+    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
+      Promise.resolve();
+
+    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
+      capturedRefreshSession = refreshSession;
+      return () => {}; // Return a no-op cleanup function
+    });
+
+    renderWithSession();
+
+    // Simulate activity with a mock event
+    await capturedRefreshSession(new Event("mousemove"));
+
+    await waitFor(() =>
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "/",
+      }),
+    );
+
+    expect(sentrySpy).toHaveBeenCalledWith("Failed to fetch logout URL");
   });
 });
