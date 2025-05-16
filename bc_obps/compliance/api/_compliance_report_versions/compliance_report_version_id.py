@@ -11,7 +11,7 @@ from ..router import router
 
 
 @router.get(
-    "/compliance-report-version/{compliance_report_version_id}",
+    "/compliance-report-versions/{compliance_report_version_id}",
     response={200: Optional[ComplianceReportVersionOut], custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get a compliance report version by ID",

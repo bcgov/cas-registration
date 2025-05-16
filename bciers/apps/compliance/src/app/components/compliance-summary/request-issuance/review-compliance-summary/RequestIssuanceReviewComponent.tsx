@@ -1,5 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
+import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { RequestIssuanceReviewContent } from "./RequestIssuanceReviewContent";
 
 interface Props {
@@ -13,9 +13,6 @@ export default function RequestIssuanceReviewComponent({
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  const backUrl = `/compliance-summaries`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`;
-
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
@@ -23,8 +20,7 @@ export default function RequestIssuanceReviewComponent({
     >
       <RequestIssuanceReviewContent
         data={formData}
-        backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
+        complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>
   );
