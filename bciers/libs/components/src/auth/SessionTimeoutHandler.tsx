@@ -9,7 +9,7 @@ import { signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 
 export const ACTIVITY_THROTTLE_SECONDS = 15;
-export const MODAL_DISPLAY_SECONDS = 20;
+export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity;
@@ -134,6 +134,7 @@ const SessionTimeoutHandler: React.FC = () => {
     if (sessionTimeout === Infinity) return;
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
+      console.log("---------------------in first else if---------------------");
       setShowModal(false);
       modalTimeoutId = setTimeout(
         () => {
@@ -142,6 +143,7 @@ const SessionTimeoutHandler: React.FC = () => {
         (sessionTimeout - MODAL_DISPLAY_SECONDS) * 1000,
       );
     } else {
+      console.log("---------------------in else");
       setShowModal(true);
     }
 

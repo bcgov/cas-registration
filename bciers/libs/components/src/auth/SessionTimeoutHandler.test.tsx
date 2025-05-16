@@ -162,13 +162,16 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it.only("logs out and broadcasts when user clicks logout in modal", async () => {
+  it("logs out and broadcasts when user clicks logout in modal", async () => {
     renderWithSession({
       data: {
         expires: new Date(
           Date.now() + (MODAL_DISPLAY_SECONDS + 1) * 1000,
         ).toISOString(),
       },
+      update: mockUpdate.mockResolvedValue({
+        expires: new Date(Date.now() + 180 * 1000).toISOString(),
+      }),
     });
 
     await waitFor(
@@ -177,7 +180,6 @@ describe("SessionTimeoutHandler", () => {
         timeout: 2000,
       },
     );
-
     screen.getByText("Logout").click();
     expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
     expect(postMessage).toHaveBeenCalledWith("logout");
@@ -189,21 +191,10 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it("handles session refresh failure by logging out", async () => {
+  it.only("handles session refresh failure by logging out", async () => {
     mockUpdate.mockRejectedValue(new Error("Refresh failed"));
 
-    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
-      Promise.resolve();
-
-    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
-      capturedRefreshSession = refreshSession;
-      return () => {}; // Return a no-op cleanup function
-    });
-
     renderWithSession();
-
-    // Manually invoke the refreshSession to simulate activity
-    await capturedRefreshSession(new Event("mousemove"));
 
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
@@ -217,18 +208,7 @@ describe("SessionTimeoutHandler", () => {
 
     mockGetEnvValue.mockReturnValue(undefined); // Simulate no logout URL
 
-    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
-      Promise.resolve();
-
-    mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
-      capturedRefreshSession = refreshSession;
-      return () => {}; // Return a no-op cleanup function
-    });
-
     renderWithSession();
-
-    // Simulate activity with a mock event
-    await capturedRefreshSession(new Event("mousemove"));
 
     await waitFor(() =>
       expect(mockSignOut).toHaveBeenCalledWith({
