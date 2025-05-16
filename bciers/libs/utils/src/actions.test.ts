@@ -157,7 +157,7 @@ describe("actionHandler function", () => {
     expect(result).toEqual({ test_data: "test" });
   });
 
-  it("should return an error if fetching token fails and the endpoint is not allowed", async () => {
+  it("should return an error if fetching token fails and unauthorized user", async () => {
     // getToken fetch
     fetch.mockResponseOnce(JSON.stringify({ message: "Error message" }), {
       status: 400,
@@ -171,8 +171,7 @@ describe("actionHandler function", () => {
     );
 
     expect(result).toEqual({
-      error:
-        "An error occurred while fetching /endpoint: Endpoint is not allowed",
+      error: "An error occurred while fetching /endpoint: Unauthorized user",
     });
   });
 

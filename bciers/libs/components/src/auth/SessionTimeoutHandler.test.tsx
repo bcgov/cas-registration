@@ -164,7 +164,7 @@ describe("SessionTimeoutHandler", () => {
     screen.getByText("Logout").click();
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
-        callbackUrl: "http://logout.url", // NOSONAR
+        redirectTo: "http://logout.url", // NOSONAR
       });
     });
   });
