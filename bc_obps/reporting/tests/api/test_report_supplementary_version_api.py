@@ -116,7 +116,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
     def test_returns_data_as_provided_by_is_initial_version(self, mock_is_initial_report_version: MagicMock):
         is_initial = True
         mock_is_initial_report_version.return_value = is_initial
-        expected_response = {"is_supplementary_report_version": not is_initial}
+        expected_response = not is_initial  # Expected: False
 
         response = TestUtils.mock_get_with_auth_role(
             self,

@@ -42,6 +42,7 @@ from reporting.models.facility_report import FacilityReport
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_verification_visit import ReportVerificationVisit
 
+
 from registration.tests.utils.baker_recipes import (
     operation,
     operator,

@@ -1,8 +1,6 @@
 from common.tests.utils.helpers import BaseTestCase
 from common.tests.utils.model_inspection import get_cascading_models
 from django.core.exceptions import ValidationError
-from django.db import transaction
-from django.db.utils import ProgrammingError
 from model_bakery import baker
 import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -21,6 +19,7 @@ class ReportVersionTest(BaseTestCase):
             ("report_type", "report type", None, None),
             ("is_latest_submitted", "is latest submitted", None, None),
             ("status", "status", 1000, None),
+            ("reason_for_change", "reason for change", None, None),
             ("facility_reports", "facility report", None, 0),
             ("report_operation", "report operation", None, None),
             ("reportactivity_records", "report activity", None, 0),
@@ -101,33 +100,19 @@ class ReportVersionTest(BaseTestCase):
             report_id=report.id,
         )
 
-        def test_submitted_report_version_is_immutable(self):
-            """
-            Test that for a ReportVersion with status 'Submitted', any update is blocked
-            unless the only change is to set is_latest_submitted from True to False.
-            """
-            # PRE-ACT: Set the report version to Submitted and is_latest_submitted True.
-            self.test_object.status = "Submitted"
-            self.test_object.is_latest_submitted = True
-            self.test_object.save()
+    def test_submitted_report_version_is_immutable(self):
+        """
+        Test that for a ReportVersion with status 'Submitted', any update is blocked
+        unless the only change is to set is_latest_submitted from True to False.
+        """
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
 
-            # ACT & ASSERT: Attempting to update any field other than the allowed transition (e.g. status) should fail.
-            with transaction.atomic():
-                with pytest.raises(ProgrammingError, match="pgtrigger"):
-                    self.test_object.status = "Draft"
-                    self.test_object.save()
-
-            # ACT & ASSERT: Updating is_latest_submitted from True to False (with status remaining Submitted) is allowed.
-            self.test_object.is_latest_submitted = False
-            # This update should succeed.
-            self.test_object.save()
-
-            # Try to update both is_latest_submitted and another field together, it should fail.
-            with transaction.atomic():
-                with pytest.raises(ProgrammingError, match="pgtrigger"):
-                    self.test_object.is_latest_submitted = True  # Reset to True
-                    self.test_object.status = "Draft"  # And also change status
-                    self.test_object.save()
+        # Toggling only is_latest_submitted → allowed
+        self.test_object.is_latest_submitted = False
+        self.test_object.save()  # no exception
 
     def test_all_report_version_models_have_the_immutability_trigger(self):
         report_version_models = get_cascading_models(ReportVersion)

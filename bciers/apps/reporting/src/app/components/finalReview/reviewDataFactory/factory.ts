@@ -11,7 +11,8 @@ import {
   ReportingPage,
   ReportingFlowDescription,
 } from "@reporting/src/app/components/taskList/types";
-import electricityImportDataFactoryItem from "@reporting/src/app/components/finalReview/reviewDataFactory/electricityImportData";
+import electricityImportDataFactoryItem from "@reporting/src/app/components/finalReview/reviewDataFactory/electricityImportDataFactoryItem";
+import changeReviewFactoryItem from "@reporting/src/app/components/finalReview/reviewDataFactory/changeReviewFactoryItem";
 
 export type ReviewData = {
   schema: RJSFSchema;
@@ -38,8 +39,8 @@ export default async function reviewDataFactory(
   const factoryMapping: Partial<
     Record<ReportingPage, (...args: any[]) => Promise<ReviewData[]>>
   > = {
-    [ReportingPage.ReviewOperationInfo]: operationReviewFactoryItem,
     [ReportingPage.PersonResponsible]: personResponsibleFactoryItem,
+    [ReportingPage.ReviewOperationInfo]: operationReviewFactoryItem,
     [ReportingPage.Activities]: facilityActivitiesFactoryItem,
     [ReportingPage.ElectricityImportData]: electricityImportDataFactoryItem,
     [ReportingPage.AdditionalReportingData]: additionalReportingDataFactoryItem,
@@ -47,6 +48,7 @@ export default async function reviewDataFactory(
     [ReportingPage.OperationEmissionSummary]:
       operationEmissionSummaryFactoryItem,
     [ReportingPage.ComplianceSummary]: complianceSummaryFactoryItem,
+    [ReportingPage.ChangeReview]: changeReviewFactoryItem,
   };
 
   let reviewData: ReviewData[] = [];
@@ -59,10 +61,16 @@ export default async function reviewDataFactory(
         let pageData: ReviewData[] = [];
         // Determine parameters based on the ReportingPage
         pageData = await factoryFn(versionId, currentFacilities, flow);
-        reviewData.push(...pageData);
+        // Only push if there's actually something there
+        if (pageData.length > 0) {
+          reviewData.push(...pageData);
+        }
       }
     }
   }
-
-  return reviewData;
+  const reorderedReviewData = [
+    ...reviewData.filter((sec) => sec.schema.title === "Reason for Edits"),
+    ...reviewData.filter((sec) => sec.schema.title !== "Reason for Edits"),
+  ];
+  return reorderedReviewData;
 }

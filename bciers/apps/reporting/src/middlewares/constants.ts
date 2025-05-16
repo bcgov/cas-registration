@@ -54,17 +54,12 @@ export const getUserRole = (token: JWT | null): IDP | null => {
   return (token.identity_provider as IDP) || null;
 };
 
-// App API endpoints
-export enum ApiEndpoints {
-  REGISTRATION_PURPOSE = "/registration_purpose",
-  REPORT_OPERATION = "/report-operation",
-}
-
 // App routing routes
 export enum AppRoutes {
   ONBOARDING = "/onboarding",
   OPERATION = "/review-operation-information",
   REPORTS = "/reports",
+  REVIEW = "/final-review",
   SUBMITTED = "/submitted",
   VERIFICATION = "/verification",
 }
@@ -87,6 +82,9 @@ export const restrictedRoutesEIO = ["electricity-import-data"];
 // App routes restricted to Submitted
 export const restrictedRoutesSubmitted = ["submitted", "submission"];
 
+// App routes restricted to Supplementary Report
+export const restrictedSupplementaryReport = ["change-review"];
+
 // App routes for submitted report
 export const reportRoutesSubmitted = ["submitted", "submission"];
 
@@ -98,10 +96,24 @@ export const reportRoutesReportingOperation = [
   "non-attributable",
   "emission-summary",
   "additional-reporting-data",
+  "change-review",
   "final-review",
   "verification",
   "attachments",
   "sign-off",
   ...reportRoutesLFO,
+  ...reportRoutesSubmitted,
+];
+
+// App routes for EIO report
+export const reportRoutesEIO = [
+  "review-operation-information",
+  "person-responsible",
+  "electricity-import-data",
+  "change-review",
+  "final-review",
+  "verification",
+  "attachments",
+  "sign-off",
   ...reportRoutesSubmitted,
 ];

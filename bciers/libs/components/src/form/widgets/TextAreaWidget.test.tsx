@@ -3,6 +3,7 @@ import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { checkNoValidationErrorIsTriggered } from "@bciers/testConfig/helpers/form";
+import TextAreaWidget from "@bciers/components/form/widgets/TextAreaWidget";
 
 const textAreaFieldLabel = "Text Area Test Field";
 const textAreaLabelRequired = `${textAreaFieldLabel}*`;
@@ -15,6 +16,13 @@ export const textAreaFieldSchema = {
   },
 } as RJSFSchema;
 
+const placeholder = "Enter your text here";
+const textAreaUiSchema = {
+  textAreaTestField: {
+    "ui:placeholder": placeholder,
+    "ui:widget": TextAreaWidget,
+  },
+};
 describe("RJSF TextAreaWidget", () => {
   beforeEach(() => {
     vi.resetAllMocks();
@@ -62,7 +70,9 @@ describe("RJSF TextAreaWidget", () => {
   });
 
   it("should display the error message when the field is required and empty", async () => {
-    render(<FormBase schema={textAreaFieldSchema} />);
+    render(
+      <FormBase schema={textAreaFieldSchema} uiSchema={textAreaUiSchema} />,
+    );
     const submitButton = screen.getByRole("button", { name: "Submit" });
 
     await userEvent.click(submitButton);
@@ -71,13 +81,6 @@ describe("RJSF TextAreaWidget", () => {
   });
 
   it("should render a placeholder if provided in the uiSchema", () => {
-    const placeholder = "Enter your text here";
-    const textAreaUiSchema = {
-      textAreaTestField: {
-        "ui:placeholder": placeholder,
-      },
-    };
-
     render(
       <FormBase schema={textAreaFieldSchema} uiSchema={textAreaUiSchema} />,
     );

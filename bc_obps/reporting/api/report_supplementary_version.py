@@ -1,5 +1,4 @@
 from typing import Literal, Tuple
-from typing import Dict
 from django.http import HttpRequest
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
@@ -13,14 +12,14 @@ from ..models import ReportVersion, ReportOperation
 
 @router.get(
     "/report-version/{version_id}/is-supplementary-report-version",
-    response={200: dict, custom_codes_4xx: Message},
+    response={200: bool, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Checks if this is a supplementary report version or, not the initial version.""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], Dict[str, bool]]:
+def is_supplementary_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], bool]:
     is_initial = ReportVersionService.is_initial_report_version(version_id)
-    return 200, {"is_supplementary_report_version": not is_initial}
+    return 200, not is_initial
 
 
 @router.post(
