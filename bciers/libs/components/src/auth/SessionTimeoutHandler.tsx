@@ -5,7 +5,7 @@ import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue, getToken } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export const ACTIVITY_THROTTLE_SECONDS = 15; // Throttle user activity checks (4 minutes)
 export const MODAL_DISPLAY_SECONDS = 20; // Seconds before timeout to show logout warning modal (5 minutes)
@@ -70,16 +70,13 @@ const SessionTimeoutHandler: React.FC = () => {
 
     async function fetchAndCompare() {
       try {
-        const token = await getToken();
         // 1. Get the JWT exp claim (in seconds since epoch)
+        const token = await getToken();
         const expiration = token.exp;
-
-        console.log("Token expiration:", expiration);
 
         // 2. Compute how many seconds are left
         const nowSec = Math.floor(Date.now() / 1000);
         const secondsRemain = Math.max(0, expiration - nowSec);
-        console.log("Seconds remaining:", secondsRemain);
 
         // 3. Update countdown state directly from token.exp
         setSessionTimeout(secondsRemain);
