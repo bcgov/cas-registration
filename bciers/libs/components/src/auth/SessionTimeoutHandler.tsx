@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getSession, signOut, useSession } from "next-auth/react";
 import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
-import { getEnvValue } from "@bciers/actions";
-import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
+import { getEnvValue, getToken } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
-import { debug } from "console";
+import { useSession } from "next-auth/react";
 
 export const ACTIVITY_THROTTLE_SECONDS = 15; // Throttle user activity checks (4 minutes)
 export const MODAL_DISPLAY_SECONDS = 20; // Seconds before timeout to show logout warning modal (5 minutes)
@@ -64,68 +62,58 @@ const SessionTimeoutHandler: React.FC = () => {
     }
   };
 
-  // --- Event Listener Setup ---
-  useEffect(() => {
-    if (status !== "authenticated") return;
+  /**
+   * Starts polling your server action for the token expiration.
+   */
+  function startTokenExpirationPolling(intervalMs: number = 60_000) {
+    let timerId: ReturnType<typeof setInterval>;
 
-    const refreshIfNotExpired = async () => {
-      const session = await getSession();
-      if (session && new Date(session.expires).getTime() > Date.now()) {
-        console.log("do i get called");
-        await refreshSession();
-      }
-    };
+    async function fetchAndCompare() {
+      try {
+        const token = await getToken();
+        // 1. Get the JWT exp claim (in seconds since epoch)
+        const expiration = token.exp;
 
-    const interval = setInterval(() => {
-      refreshIfNotExpired();
-    }, ACTIVITY_THROTTLE_SECONDS * 1000);
+        console.log("Token expiration:", expiration);
 
-    let cleanup: (() => void) | undefined;
+        // 2. Compute how many seconds are left
+        const nowSec = Math.floor(Date.now() / 1000);
+        const secondsRemain = Math.max(0, expiration - nowSec);
+        console.log("Seconds remaining:", secondsRemain);
 
-    // Only set up event listeners if the modal is not open
-    if (!showModal) {
-      // Custom handler to filter visibilitychange events
-      const handleActivity = async (event: Event) => {
-        // Only trigger refreshSession for visibilitychange when document is visible
-        if (
-          event.type === "visibilitychange" &&
-          document.visibilityState !== "visible"
-        ) {
-          return; // Ignore when tab is hidden
+        // 3. Update countdown state directly from token.exp
+        setSessionTimeout(secondsRemain);
+
+        // brianna they don't match, I think that's Shon's point
+        // (TEMP) compare with session.expires:
+        const tokenIso = new Date(expiration * 1000).toISOString();
+        const sessionIso = session?.expires
+          ? new Date(session.expires).toISOString()
+          : "undefined";
+
+        if (tokenIso !== sessionIso) {
+          console.warn("⚠️ Expiry mismatch:", { tokenIso, sessionIso });
         }
-        await refreshSession();
-      };
 
-      // Create a throttled handler to monitor user activity without overloading the system
-      const setupHandler = createThrottledEventHandler(
-        handleActivity,
-        ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"], // Events indicating user activity
-        ACTIVITY_THROTTLE_SECONDS,
-      );
-      cleanup = setupHandler(); // Start listening for events
+        setSessionTimeout(getExpirationTimeInSeconds(tokenIso));
+      } catch (err) {
+        console.error("Error fetching token expiration:", err);
+      }
     }
 
-    // Prevent next-auth's default visibilitychange handling when modal is open
-    const preventDefaultVisibilityChange = (event: Event) => {
-      if (showModal) event.stopImmediatePropagation();
-    };
+    // run immediately, then every interval
+    fetchAndCompare();
+    timerId = setInterval(fetchAndCompare, intervalMs);
 
-    document.addEventListener(
-      "visibilitychange",
-      preventDefaultVisibilityChange,
-      { capture: true },
-    ); // Capture phase to prevent default behavior
+    return () => clearInterval(timerId);
+  }
 
-    return () => {
-      if (cleanup) cleanup(); // Cleanup function to remove event listeners when showModal changes or component unmounts
-      clearInterval(interval);
-      document.removeEventListener(
-        "visibilitychange",
-        preventDefaultVisibilityChange,
-        { capture: true },
-      );
-    };
-  }, [showModal, status]);
+  useEffect(() => {
+    if (status === "authenticated") {
+      const stop = startTokenExpirationPolling();
+      return () => stop();
+    }
+  }, [status, session?.expires]);
 
   // --- Session Timeout Logic ---
   useEffect(() => {
