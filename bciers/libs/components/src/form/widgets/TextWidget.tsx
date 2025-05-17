@@ -74,6 +74,7 @@ const TextWidget: React.FC<WidgetProps> = ({
         onValueChange={handleNumberChange}
         max={maxNum}
         style={widthStyle}
+        format={{ maximumFractionDigits: 4 }}
       >
         <NumberField.Group>
           <NumberField.Input
