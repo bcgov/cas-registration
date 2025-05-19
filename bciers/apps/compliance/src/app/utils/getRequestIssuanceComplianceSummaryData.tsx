@@ -1,4 +1,13 @@
-import { actionHandler } from "@bciers/actions";
+export interface RequestIssuanceComplianceSummaryData {
+  id: number;
+  operation_name: string;
+  reporting_year: number;
+  earned_credits: number;
+  issuance_status: string;
+  emissions_attributable_for_compliance: number;
+  emission_limit: number;
+  excess_emissions: number;
+}
 
 /**
  * Fetches compliance report version data for the Request Issuance workflow
@@ -16,15 +25,17 @@ export const getRequestIssuanceComplianceSummaryData = async (
         "",
       );
 
-      if (data?.error) {
-        console.error(
-          `Failed to fetch issuance compliance summary: ${data.error}`,
-        );
-      } else if (data && typeof data === "object") {
-        return data;
-      }
-    } catch (error) {
-      console.error("Error fetching issuance compliance summary:", error);
-    }
-  }
+  //     if (data?.error) {
+  //       console.error(
+  //         `Failed to fetch issuance compliance summary: ${data.error}`,
+  //       );
+  //     } else if (data && typeof data === "object") {
+  //       return data;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching issuance compliance summary:", error);
+  //   }
+  // }
+
+  return data;
 };

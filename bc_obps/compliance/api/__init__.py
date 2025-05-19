@@ -8,6 +8,7 @@ from ._compliance_report_versions.compliance_report_version_id import get_compli
 from ._compliance_report_versions._compliance_report_version_id import operation
 
 # from ._summaries._summary_id.issuance import get_compliance_summary_issuance
+from ._compliance_report_version._compliance_report_version_id.issuance import get_request_issuance_track_status
 
 # Other imports
 from .invoice import generate_invoice
