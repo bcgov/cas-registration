@@ -7,16 +7,17 @@ interface Props {
   readonly continueUrl: string;
   readonly backUrl?: string;
   readonly data: any;
+  readonly isCasStaff: boolean;
 }
 
 export function RequestIssuanceReviewContent(props: Props) {
-  const { backUrl, continueUrl, data } = props;
+  const { backUrl, continueUrl, data, isCasStaff } = props;
 
   return (
     <div className="w-full">
       <ComplianceHeading title="Review 2024 Compliance Summary" />
       <FormReport data={data} />
-      <EarnedCredits data={data} />
+      <EarnedCredits data={data} isCasStaff={isCasStaff} />
 
       <ComplianceStepButtons
         key="form-buttons"

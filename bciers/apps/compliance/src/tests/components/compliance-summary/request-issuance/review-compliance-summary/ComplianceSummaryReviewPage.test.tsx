@@ -55,6 +55,10 @@ vi.mock(
   }),
 );
 
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  getSessionRole: vi.fn().mockResolvedValue("industry_user"),
+}));
+
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewComponent",
   () => ({
@@ -68,6 +72,9 @@ vi.mock(
         </div>
         <div data-testid="task-list-elements">
           {props.taskListElements ? "task-list-present" : "no-task-list"}
+        </div>
+        <div data-testid="is-cas-staff">
+          {props.isCasStaff ? "is-cas-staff" : "not-cas-staff"}
         </div>
       </div>
     ),
@@ -94,4 +101,5 @@ setupComplianceSummaryReviewTest({
     emissions_attributable_for_compliance: "85.0",
     earned_credits: 15,
   },
+  testIsCasStaffProp: true,
 })();
