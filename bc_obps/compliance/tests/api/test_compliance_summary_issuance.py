@@ -78,3 +78,43 @@
 
 #         assert response.status_code == 404
 #         assert response_json["message"] == "Not Found"
+
+
+#   @patch('compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_issuance_data')
+#   def test_get_compliance_summary_issuance_as_cas_staff(self, mock_get_issuance_data: MagicMock):
+#       """Test the GET endpoint for retrieving compliance summary issuance data as CAS staff."""
+
+#       self.compliance_summary.earned_credits = 100
+#       self.compliance_summary.earned_credits_issued = False
+#       self.compliance_summary.issuance_status = "Issuance requested, awaiting approval"
+#       self.compliance_summary.excess_emissions_percentage = 87.5
+
+#       mock_get_issuance_data.return_value = self.compliance_summary
+
+#       # Make the API request
+#       url = custom_reverse_lazy("get_compliance_summary_issuance", kwargs={"summary_id": self.compliance_summary.id})
+
+#       # Test with CAS admin role
+#       response = TestUtils.mock_get_with_auth_role(self, "cas_admin", url)
+
+#       # Verify response status code
+#       assert response.status_code == 200
+
+#       # Verify response content
+#       response_data = response.json()
+
+#       # Verify the fields from the compliance summary are present
+#       assert response_data["id"] == self.compliance_summary.id
+#       assert (
+#           Decimal(response_data["emissions_attributable_for_compliance"])
+#           == self.compliance_summary.emissions_attributable_for_compliance
+#       )
+#       assert Decimal(response_data["emission_limit"]) == self.compliance_summary.emission_limit
+#       assert Decimal(response_data["excess_emissions"]) == self.compliance_summary.excess_emissions
+
+#       # Verify related objects
+#       assert response_data["operation_name"] == self.compliance_summary.report.operation.name
+#       assert response_data["reporting_year"] == self.compliance_summary.compliance_period.end_date.year
+
+#       # Verify the service method was called with the correct parameters
+#       mock_get_issuance_data.assert_called_once()
