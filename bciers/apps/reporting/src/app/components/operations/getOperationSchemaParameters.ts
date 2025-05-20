@@ -2,7 +2,6 @@ import { getAllActivities } from "@reporting/src/app/utils/getAllReportingActivi
 import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getRegulatedProducts } from "@bciers/actions/api";
-import { formatDate } from "@reporting/src/app/utils/formatDate";
 import {
   ELECTRICITY_IMPORT_OPERATION,
   POTENTIAL_REPORTING_OPERATION,
@@ -49,9 +48,6 @@ export async function getOperationSchemaParameters(version_id: number) {
     ),
     showBoroId: showBoroId(reportOperation.registration_purpose),
     showActivities: showActivities(reportOperation.registration_purpose),
-    reportingWindowEnd: formatDate(
-      reportingYear.reporting_window_end,
-      "MMM DD YYYY",
-    ),
+    reportingYear: reportingYear.reporting_year,
   };
 }
