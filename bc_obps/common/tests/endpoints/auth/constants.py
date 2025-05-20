@@ -69,6 +69,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_request_issuance_track_status",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "generate_invoice",
             "kwargs": {"summary_id": MOCK_INT},
         },
