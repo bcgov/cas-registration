@@ -31,7 +31,7 @@ interface Props {
   schema: RJSFSchema;
   navigationInformation: NavigationInformation;
   reportType: string;
-  reportingWindowEnd: string;
+  reportingYear: number;
   allActivities: any[];
   allRegulatedProducts: any[];
   facilityId: string;
@@ -42,7 +42,7 @@ export default function OperationReviewForm({
   schema,
   navigationInformation,
   reportType,
-  reportingWindowEnd,
+  reportingYear,
   allActivities,
   allRegulatedProducts,
   facilityId,
@@ -98,7 +98,7 @@ export default function OperationReviewForm({
     setPageSchema(
       buildOperationReviewSchema(
         newData,
-        reportingWindowEnd,
+        reportingYear,
         allActivities,
         allRegulatedProducts,
         newData.report_operation_representatives,

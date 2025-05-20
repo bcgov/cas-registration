@@ -15,7 +15,7 @@ const commonUiOptions = { style: { width: "100%", textAlign: "left" } };
 
 export const buildOperationReviewSchema = (
   formDataState: any,
-  reportingWindowEnd: string,
+  reportingYear: number,
   allActivities: any[],
   allRegulatedProducts: any[],
   allRepresentatives: any[],
@@ -64,7 +64,7 @@ export const buildOperationReviewSchema = (
       date_info: {
         type: "object",
         readOnly: true,
-        title: `Please ensure this information was accurate for ${reportingWindowEnd}`,
+        title: `Please ensure this information was accurate for Dec 31st, ${reportingYear}`,
       },
 
       operator_legal_name: { type: "string", title: "Operator legal name" },
