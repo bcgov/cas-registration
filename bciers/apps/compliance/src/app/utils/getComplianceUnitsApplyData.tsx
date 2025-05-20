@@ -1,28 +1,39 @@
-import { actionHandler } from "@bciers/actions";
+// import { actionHandler } from "@bciers/actions";
 
-export interface RequestIssuanceData {
-  bccrTradingName: string;
-  bccrHoldingAccountId: string;
-  reportingYear: number;
-  operation_name: string;
-}
-
-export async function getRequestIssuanceData(
-  complianceSummaryId?: number,
-): Promise<RequestIssuanceData> {
-  const endpoint = `compliance/summaries/${complianceSummaryId}/issuance-request`;
-  const response = await actionHandler(endpoint, "GET", "");
-
-  if (response.error) {
-    throw new Error(
-      `Failed to fetch request issuance data for compliance summary ${complianceSummaryId}`,
+/**
+ * Fetches compliance units apply data from the backend
+ * This is a temporary mock implementation until the backend is ready
+ */
+export const getComplianceUnitsApplyData = async () => {
+  // TODO: Uncomment this code after the backend is implemented
+  /*
+    const data = await actionHandler(
+        `compliance/summaries/${complianceSummaryId}/apply-units`,
+        "GET",
+        "",
     );
-  }
 
-  return {
-    reportingYear: response.reporting_year,
-    operation_name: response.operation_name,
-    bccrTradingName: response.bccr_trading_name,
-    bccrHoldingAccountId: response.bccr_holding_account_id,
+    if (data?.error) {
+        throw new Error(`Failed to fetch compliance units data: ${data.error}`);
+    }
+
+    if (!data || typeof data !== "object") {
+        throw new Error(
+            "Invalid response format from compliance units endpoint",
+        );
+    }
+
+    return data;
+    */
+
+  const mock = {
+    bccrTradingName: "Colour Co.",
+    obpsComplianceAccountId: "273563474850372",
+    bccrHoldingAccountId: "123456789012345",
+    operation_name: "Operation 2",
+
+    reporting_year: 2024,
   };
-}
+
+  return mock;
+};

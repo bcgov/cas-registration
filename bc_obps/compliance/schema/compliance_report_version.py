@@ -46,9 +46,9 @@ class ComplianceReportVersionOut(ModelSchema):
     """Schema for compliance summary output"""
 
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
-    operation_bcghg_id: str = Field(..., alias="report_version.report.operation.bcghg_id.id")
+    operation_bcghg_id: str = Field(..., alias="compliance_report.report.operation.bcghg_id.id")
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    status: str = Field(..., alias="compliance_status")
+    status: str
     obligation: ComplianceObligationOut
     excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
     credited_emissions: Decimal = Field(..., alias="report_compliance_summary.credited_emissions")
