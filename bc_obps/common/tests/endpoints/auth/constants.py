@@ -145,6 +145,11 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_VERSION},
         },
         {
+            "method": "post",
+            "endpoint_name": "save_report_version",
+            "kwargs": {"version_id": MOCK_VERSION},
+        },
+        {
             "method": "get",
             "endpoint_name": "get_report_attachments",
             "kwargs": {"version_id": MOCK_INT},

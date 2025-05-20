@@ -25,24 +25,23 @@ const AttachmentsPage: React.FC<HasReportVersion> = async ({ version_id }) => {
   const initialSupplementaryConfirmation = getAttachmentsResponse.confirmation;
 
   //🔍 Check if is a supplementary report
-  const isSupplementaryReportResponse =
-    await getIsSupplementaryReport(version_id);
-  const isSupplementaryReport =
-    isSupplementaryReportResponse.is_supplementary_report_version;
+  const isSupplementaryReport = await getIsSupplementaryReport(version_id);
 
+  //🔍 Check if reports need verification
   const {
     show_verification_page: showVerificationPage,
     verification_required: verificationRequired,
   } = await getReportVerificationStatus(version_id);
-
-  //🔍 Check if reports need verification
 
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.Attachments,
     version_id,
     "",
-    { skipVerification: !showVerificationPage },
+    {
+      skipVerification: !showVerificationPage,
+      skipChangeReview: !isSupplementaryReport,
+    },
   );
 
   return (

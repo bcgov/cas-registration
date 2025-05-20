@@ -10,14 +10,14 @@ from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from reporting.schema.report import StartReportIn, CreateReportVersionIn
 from service.report_service import ReportService
-from service.report_version_service import ReportVersionService
+from service.report_version_service import ReportVersionService, ReportVersionData
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut, ReportOperationOut
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
-from ..schema.report_version import ReportVersionTypeIn, ReportingVersionOut
+from ..schema.report_version import ReportVersionTypeIn, ReportVersionIn, ReportingVersionOut
 from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
     approved_authorized_roles_report_version_composite_auth,
@@ -111,9 +111,27 @@ def get_regulated_products_by_version_id(
     tags=EMISSIONS_REPORT_TAGS,
     description="Retrieve report version details",
     auth=approved_industry_user_report_version_composite_auth,
+    exclude_none=True,
 )
 def get_report_version(request: HttpRequest, version_id: int) -> Tuple[Literal[200], ReportVersion]:
     report_version = ReportVersion.objects.get(id=version_id)
+    return 200, report_version
+
+
+@router.post(
+    "/report-version/{version_id}",
+    response={200: ReportingVersionOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="Saves report version details: reason_for_change",
+    auth=approved_industry_user_report_version_composite_auth,
+)
+def save_report_version(
+    request: HttpRequest, version_id: int, payload: ReportVersionIn
+) -> Tuple[Literal[200], ReportVersion]:
+    data = ReportVersionData(
+        reason_for_change=payload.reason_for_change,
+    )
+    report_version = ReportVersionService.save_report_version(version_id, data)
     return 200, report_version
 
 

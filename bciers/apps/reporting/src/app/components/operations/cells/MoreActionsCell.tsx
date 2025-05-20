@@ -161,9 +161,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
               startTransition(async () => {
                 const response =
                   await getIsSupplementaryReport(reportVersionId);
-                setIsSupplementaryReport(
-                  response.is_supplementary_report_version,
-                );
+                setIsSupplementaryReport(response);
                 openConfirmation("delete");
               });
             }}
