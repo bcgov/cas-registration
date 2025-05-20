@@ -6,6 +6,12 @@ from reporting.models.report_version import ReportVersion
 from service.data_access_service.facility_service import FacilityDataAccessService
 from reporting.models import ReportOperationRepresentative
 from django.db.models import Min, F
+from dataclasses import dataclass
+
+
+@dataclass
+class ReportVersionData:
+    reason_for_change: str
 
 
 class ReportVersionService:
@@ -55,6 +61,28 @@ class ReportVersionService:
                 is_completed=False,
             )
             facility_report.activities.add(*list(operation.activities.all()))
+
+        return report_version
+
+    @staticmethod
+    @transaction.atomic
+    def save_report_version(report_version_id: int, data: ReportVersionData) -> ReportVersion:
+        """
+        Updates the given ReportVersion reason_for_change
+
+        Args:
+            report_version_id: the ID of the ReportVersion to update
+            data:  a ReportVersionData instance carrying the reason
+
+        Returns:
+            The updated ReportVersion instance.
+        """
+        # Load the version
+        report_version = ReportVersion.objects.select_for_update().get(id=report_version_id)
+
+        # Set and save the reason for change
+        report_version.reason_for_change = data.reason_for_change
+        report_version.save(update_fields=["reason_for_change"])
 
         return report_version
 

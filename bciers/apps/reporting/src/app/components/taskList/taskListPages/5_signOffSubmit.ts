@@ -3,6 +3,19 @@ import { ReportingPage, TaskListPageFactory } from "../types";
 export const signOffSubmitPageFactories: {
   [Page in ReportingPage]?: TaskListPageFactory;
 } = {
+  [ReportingPage.ChangeReview]: (activePage, reportVersionId, _, context) => {
+    return {
+      extraOptions: {
+        skip: !!context?.skipChangeReview,
+      },
+      element: {
+        type: "Page",
+        title: "Change review",
+        link: `/reports/${reportVersionId}/change-review`,
+        isActive: activePage === ReportingPage.ChangeReview,
+      },
+    };
+  },
   [ReportingPage.FinalReview]: (activePage, reportVersionId) => ({
     element: {
       type: "Page", // Set the type to "Page"
