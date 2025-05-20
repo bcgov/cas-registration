@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('compliance', '0003_seed_compliance_charge_rates'),
         ('registration', '0113_V3_2_0'),
+        ('reporting', '0103_remove_facilityreport_immutable_report_version_and_more'),
     ]
 
     operations = [
