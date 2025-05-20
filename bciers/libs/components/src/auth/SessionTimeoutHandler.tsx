@@ -1,17 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { signOut, useSession } from "next-auth/react";
+import React, { useEffect, useRef, useState } from "react";
 import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
-import { getEnvValue } from "@bciers/actions";
-import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
+import { getEnvValue, getToken } from "@bciers/actions";
 import { Session } from "next-auth";
+import * as Sentry from "@sentry/nextjs";
+import { signOut, useSession } from "next-auth/react";
+import { BroadcastChannel } from "broadcast-channel";
+import createThrottledEventHandler from "./throttleEventsEffect";
 
-export const ACTIVITY_THROTTLE_SECONDS = 4 * 60; // Throttle user activity checks (4 minutes)
-export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes)
+export const ACTIVITY_THROTTLE_SECONDS = 15; // Seconds to throttle user activity events
+export const MODAL_DISPLAY_SECONDS = 30; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
-  if (!expires) return Infinity; // No expiration set, return infinite timeout
+  if (!expires) return Infinity;
   return Math.max(0, (new Date(expires).getTime() - Date.now()) / 1000);
 };
 
@@ -21,20 +23,64 @@ const SessionTimeoutHandler: React.FC = () => {
   const [sessionTimeout, setSessionTimeout] = useState<number>(
     getExpirationTimeInSeconds(session?.expires),
   );
-  const [logoutUrl, setLogoutUrl] = useState<string | undefined>(undefined);
+  console.log("sessionTimeout", sessionTimeout);
+  const logoutChannelRef = useRef<BroadcastChannel | null>(null);
+  const extendSessionChannelRef = useRef<BroadcastChannel | null>(null);
 
+  const getLogoutUrl = async () => {
+    const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
+    if (!logoutUrl) {
+      Sentry.captureException("Failed to fetch logout URL");
+      console.error("Failed to fetch logout URL");
+    }
+    return logoutUrl;
+  };
+
+  // logout broadcast channel (Redirect the user from all tabs if they click the modal logout button. Nextauth handles the actual logging out)
   useEffect(() => {
-    // Fetch the logout URL from environment variables when component mounts
-    getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL")
-      .then(setLogoutUrl)
-      .catch((error) => console.error("Failed to fetch logout URL:", error));
+    const logoutChannel = new BroadcastChannel("logout");
+    logoutChannelRef.current = logoutChannel;
+
+    logoutChannel.onmessage = async (event) => {
+      if (event === "logout") {
+        const logoutUrl = await getLogoutUrl();
+        window.location.href = logoutUrl || "/";
+      }
+    };
+
+    return () => {
+      logoutChannel.close();
+    };
   }, []);
 
-  const handleLogout = () => signOut({ callbackUrl: logoutUrl });
+  // extend session broadcast channel (extend the session in all tabs if a user clicks the modal extend session button)
+  useEffect(() => {
+    const extendSessionChannel = new BroadcastChannel("extend-session");
+    extendSessionChannelRef.current = extendSessionChannel;
 
-  // Refreshes the session and updates the timeout based on new expiration
+    extendSessionChannel.onmessage = async (event) => {
+      if (event === "extend-session") {
+        await refreshSession();
+      }
+    };
+
+    return () => {
+      extendSessionChannel.close();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    // broadcast logout to other browser tabs
+    logoutChannelRef.current?.postMessage("logout");
+    const logoutUrl = await getLogoutUrl();
+    await signOut({ redirectTo: logoutUrl || "/" });
+  };
+
   const refreshSession = async (): Promise<void> => {
-    if (status !== "authenticated") return;
+    if (status !== "authenticated") {
+      await handleLogout();
+      return;
+    }
     try {
       const newSession: Session | null = await update();
       if (!newSession?.expires) {
@@ -49,18 +95,19 @@ const SessionTimeoutHandler: React.FC = () => {
     }
   };
 
-  // Extends the session when the user chooses to stay logged in
   const handleExtendSession = async () => {
     try {
       setShowModal(false);
       await refreshSession();
+      // broadcast extension to other browser tabs
+      extendSessionChannelRef.current?.postMessage("extend-session");
     } catch (error) {
       console.error("Failed to extend session:", error);
       await handleLogout();
     }
   };
 
-  // --- Event Listener Setup ---
+  // / --- Event Listener Setup ---
   useEffect(() => {
     if (status !== "authenticated") return;
 
@@ -79,13 +126,12 @@ const SessionTimeoutHandler: React.FC = () => {
     };
   }, [showModal, status]);
 
-  // --- Session Timeout Logic ---
   useEffect(() => {
     if (status !== "authenticated") return;
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === Infinity) return; // No timeout set, exit early
+    if (sessionTimeout === Infinity) return;
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
       setShowModal(false);
@@ -94,14 +140,17 @@ const SessionTimeoutHandler: React.FC = () => {
           setShowModal(true);
         },
         (sessionTimeout - MODAL_DISPLAY_SECONDS) * 1000,
-      ); // Schedule modal display
-    } else setShowModal(true);
+      );
+    } else {
+      setShowModal(true);
+    }
 
-    // Cleanup function to clear the timeout when effect re-runs or component unmounts
-    return () => clearTimeout(modalTimeoutId);
+    return () => {
+      clearTimeout(modalTimeoutId);
+    };
   }, [status, sessionTimeout]);
 
-  if (status !== "authenticated") return null; // Don't render anything if not authenticated
+  if (status !== "authenticated") return null;
 
   return (
     <>
