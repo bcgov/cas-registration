@@ -57,11 +57,12 @@ const allRepresentatives = [
 const reportType = "Simple Report";
 const schema = buildOperationReviewSchema(
   formData,
-  "Dec 31 2025",
+  2024,
   activities,
   regulatedProducts,
   allRepresentatives,
   reportType,
+  true,
   true,
   true,
 );
@@ -82,7 +83,7 @@ describe("OperationReviewForm Component", () => {
         allActivities={[]}
         allRegulatedProducts={[]}
         reportType={reportType}
-        reportingWindowEnd={``}
+        reportingYear={2024}
         facilityId={`1234`}
       />,
     );
@@ -94,6 +95,11 @@ describe("OperationReviewForm Component", () => {
     await waitFor(() => {
       expect(
         screen.getByText("Review Operation Information"),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          "Please ensure this information was accurate for Dec 31st, 2024",
+        ),
       ).toBeInTheDocument();
     });
 

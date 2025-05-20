@@ -12,7 +12,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   const schemaData = await getOperationSchemaParameters(versionId);
   const schema: any = buildOperationReviewSchema(
     schemaData.reportOperation,
-    schemaData.reportingWindowEnd,
+    schemaData.reportingYear,
     schemaData.allActivities,
     schemaData.allRegulatedProducts,
     schemaData.allRepresentatives,
