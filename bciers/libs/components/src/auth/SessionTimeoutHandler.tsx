@@ -7,7 +7,9 @@ import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 import { signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
+import createThrottledEventHandler from "./throttleEventsEffect";
 
+export const ACTIVITY_THROTTLE_SECONDS = 15; // Seconds to throttle user activity events
 export const MODAL_DISPLAY_SECONDS = 30; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
@@ -34,7 +36,7 @@ const SessionTimeoutHandler: React.FC = () => {
     return logoutUrl;
   };
 
-  // logout broadcast channel (logout the user from all tabs if they click the modal logout button)
+  // logout broadcast channel (Redirect the user from all tabs if they click the modal logout button. Nextauth handles the actual logging out)
   useEffect(() => {
     const logoutChannel = new BroadcastChannel("logout");
     logoutChannelRef.current = logoutChannel;
@@ -42,7 +44,7 @@ const SessionTimeoutHandler: React.FC = () => {
     logoutChannel.onmessage = async (event) => {
       if (event === "logout") {
         const logoutUrl = await getLogoutUrl();
-        window.location.href = logoutUrl || "/"; // or `logoutUrl`
+        window.location.href = logoutUrl || "/";
       }
     };
 
@@ -68,6 +70,7 @@ const SessionTimeoutHandler: React.FC = () => {
   }, []);
 
   const handleLogout = async () => {
+    // broadcast logout to other browser tabs
     logoutChannelRef.current?.postMessage("logout");
     const logoutUrl = await getLogoutUrl();
     await signOut({ redirectTo: logoutUrl || "/" });
@@ -95,54 +98,33 @@ const SessionTimeoutHandler: React.FC = () => {
   const handleExtendSession = async () => {
     try {
       setShowModal(false);
-      extendSessionChannelRef.current?.postMessage("extend-session");
       await refreshSession();
+      // broadcast extension to other browser tabs
+      extendSessionChannelRef.current?.postMessage("extend-session");
     } catch (error) {
       console.error("Failed to extend session:", error);
       await handleLogout();
     }
   };
 
-  function startTokenExpirationPolling(intervalMs: number = 60_000) {
-    let timerId: ReturnType<typeof setInterval>;
-
-    async function fetchAndCompare() {
-      try {
-        const token = await getToken();
-        const expiration = token.exp;
-        console.log("token expiration", expiration);
-        const nowSec = Math.floor(Date.now() / 1000);
-        const secondsRemain = Math.max(0, expiration - nowSec);
-
-        setSessionTimeout(secondsRemain);
-
-        const tokenIso = new Date(expiration * 1000).toISOString();
-        const sessionIso = session?.expires
-          ? new Date(session.expires).toISOString()
-          : "undefined";
-
-        if (tokenIso !== sessionIso) {
-          console.warn("⚠️ Expiry mismatch:", { tokenIso, sessionIso });
-        }
-
-        setSessionTimeout(getExpirationTimeInSeconds(tokenIso));
-      } catch (err) {
-        console.error("Error fetching token expiration:", err);
-      }
-    }
-
-    fetchAndCompare();
-    timerId = setInterval(fetchAndCompare, intervalMs);
-
-    return () => clearInterval(timerId);
-  }
-
+  // / --- Event Listener Setup ---
   useEffect(() => {
-    if (status === "authenticated") {
-      const stop = startTokenExpirationPolling(5_000);
-      return () => stop();
-    }
-  }, [status, session?.expires]);
+    if (status !== "authenticated") return;
+
+    // Create a throttled handler to monitor user activity without overloading the system
+    const setupHandler = createThrottledEventHandler(
+      refreshSession,
+      ["mousemove", "keydown", "mousedown", "scroll"], // Events indicating user activity
+      ACTIVITY_THROTTLE_SECONDS,
+    );
+
+    let cleanup: (() => void) | undefined;
+    if (!showModal) cleanup = setupHandler(); // Start listening for events and get cleanup function
+
+    return () => {
+      if (cleanup) cleanup(); // Cleanup function to remove event listeners when showModal changes or component unmounts
+    };
+  }, [showModal, status]);
 
   useEffect(() => {
     if (status !== "authenticated") return;
