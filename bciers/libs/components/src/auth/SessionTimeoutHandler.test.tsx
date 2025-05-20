@@ -80,9 +80,7 @@ describe("SessionTimeoutHandler", () => {
   };
 
   beforeEach(() => {
-    // vi.clearAllTimers();
     vi.clearAllMocks();
-    // vi.useFakeTimers();
     mockGetToken.mockResolvedValue({ exp: Math.floor(Date.now() / 1000) + 60 });
     mockSignOut.mockResolvedValue(undefined);
     mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
@@ -93,10 +91,33 @@ describe("SessionTimeoutHandler", () => {
     expect(screen.queryByTestId("logout-modal")).not.toBeInTheDocument();
   });
 
-  it("calls startTokenExpirationPolling on mount when authenticated", () => {
-    renderWithSession();
+  it("logs out, broadcasts, and redirects when session timeout reaches zero", async () => {
+    renderWithSession({
+      data: { expires: new Date(Date.now() - 1 * 1000).toISOString() },
+    });
 
-    expect(startPollingSpy).toHaveBeenCalled();
+    expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+    expect(postMessage).toHaveBeenCalledWith("logout");
+    await waitFor(() =>
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "http://logout.url",
+      }),
+    );
+  });
+
+  it("logs out, broadcasts, and redirects to fallback url when session timeout reaches zero", async () => {
+    mockGetEnvValue.mockClear();
+    mockGetEnvValue.mockResolvedValue(undefined); // Simulate no logout URL
+    renderWithSession({
+      data: { expires: new Date(Date.now() - 1 * 1000).toISOString() },
+    });
+
+    expect(postMessage).toHaveBeenCalledWith("logout");
+    await waitFor(() =>
+      expect(mockSignOut).toHaveBeenCalledWith({
+        redirectTo: "/",
+      }),
+    );
   });
 
   it("shows modal when session is about to expire", async () => {
@@ -119,20 +140,6 @@ describe("SessionTimeoutHandler", () => {
         ).toBeInTheDocument();
       },
       { timeout: 2000 },
-    );
-  });
-
-  it("logs out and broadcasts when session timeout reaches zero", async () => {
-    renderWithSession({
-      data: { expires: new Date(Date.now() - 1 * 1000).toISOString() },
-    });
-
-    expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
-    expect(postMessage).toHaveBeenCalledWith("logout");
-    await waitFor(() =>
-      expect(mockSignOut).toHaveBeenCalledWith({
-        redirectTo: "http://logout.url",
-      }),
     );
   });
 
@@ -159,6 +166,7 @@ describe("SessionTimeoutHandler", () => {
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalled();
       expect(screen.queryByTestId("logout-modal")).not.toBeInTheDocument();
+      expect(mockSignOut).not.toHaveBeenCalled();
     });
   });
 
@@ -191,10 +199,24 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it.only("handles session refresh failure by logging out", async () => {
-    mockUpdate.mockRejectedValue(new Error("Refresh failed"));
+  it("handles session refresh failure by logging out", async () => {
+    renderWithSession({
+      data: {
+        expires: new Date(
+          Date.now() + (MODAL_DISPLAY_SECONDS + 1) * 1000,
+        ).toISOString(),
+      },
+      update: mockUpdate.mockRejectedValue(new Error("Refresh failed")),
+    });
 
-    renderWithSession();
+    await waitFor(
+      () => expect(screen.getByTestId("logout-modal")).toBeInTheDocument(),
+      {
+        timeout: 2000,
+      },
+    );
+
+    screen.getByText("Extend").click();
 
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
@@ -208,7 +230,23 @@ describe("SessionTimeoutHandler", () => {
 
     mockGetEnvValue.mockReturnValue(undefined); // Simulate no logout URL
 
-    renderWithSession();
+    renderWithSession({
+      data: {
+        expires: new Date(
+          Date.now() + (MODAL_DISPLAY_SECONDS + 1) * 1000,
+        ).toISOString(),
+      },
+      update: mockUpdate.mockRejectedValue(new Error("Refresh failed")),
+    });
+
+    await waitFor(
+      () => expect(screen.getByTestId("logout-modal")).toBeInTheDocument(),
+      {
+        timeout: 2000,
+      },
+    );
+
+    screen.getByText("Extend").click();
 
     await waitFor(() =>
       expect(mockSignOut).toHaveBeenCalledWith({

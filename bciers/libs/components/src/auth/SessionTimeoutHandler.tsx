@@ -134,7 +134,6 @@ const SessionTimeoutHandler: React.FC = () => {
     if (sessionTimeout === Infinity) return;
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
-      console.log("---------------------in first else if---------------------");
       setShowModal(false);
       modalTimeoutId = setTimeout(
         () => {
@@ -143,7 +142,6 @@ const SessionTimeoutHandler: React.FC = () => {
         (sessionTimeout - MODAL_DISPLAY_SECONDS) * 1000,
       );
     } else {
-      console.log("---------------------in else");
       setShowModal(true);
     }
 
