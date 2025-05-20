@@ -640,6 +640,7 @@ class OperationService:
         return operation.bc_obps_regulated_operation
 
     @classmethod
+    @transaction.atomic()
     def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_director():
@@ -650,6 +651,14 @@ class OperationService:
         operation.save(update_fields=['bcghg_id'])
         if operation.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the operation.')
+
+        # For SFOs, facility should also have the BCGHG ID
+        if operation.type == Operation.Types.SFO:
+            sfo_facility = Facility.objects.get(operation=operation)
+            sfo_facility.bcghg_id = operation.bcghg_id
+            sfo_facility.save(update_fields=['bcghg_id'])
+            if sfo_facility.bcghg_id is None:
+                raise Exception('Failed to add the BCGHG ID to the facility.')
         return operation.bcghg_id
 
     @classmethod
