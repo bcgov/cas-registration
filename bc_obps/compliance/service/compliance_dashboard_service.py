@@ -5,7 +5,26 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional
+from typing import Optional, List
+from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from dataclasses import dataclass
+from decimal import Decimal
+
+
+@dataclass
+class Payment:
+    id: str
+    paymentReceivedDate: str
+    paymentAmountApplied: Decimal
+    paymentMethod: str
+    transactionType: str
+    receiptNumber: str
+
+
+@dataclass
+class PaymentsList:
+    rows: List[Payment]
+    row_count: int
 
 
 class ComplianceDashboardService:
@@ -115,3 +134,35 @@ class ComplianceDashboardService:
     #     setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
 
     #     return summary
+        return summary
+
+    @classmethod
+    def get_compliance_summary_payments(cls, user_guid: UUID, summary_id: int) -> PaymentsList:
+        """
+        Get payments for a compliance summary's obligation invoice.
+
+        Args:
+            user_guid: The GUID of the user requesting the payments
+            summary_id: The ID of the compliance summary
+
+        Returns:
+            PaymentsList object containing the payment records
+        """
+        summary = cls.get_compliance_summary_by_id(user_guid, summary_id)
+        if not summary or not summary.obligation:
+            return PaymentsList(rows=[], row_count=0)
+
+        payment_records = ObligationELicensingService.get_obligation_invoice_payments(summary.obligation.id)
+        payment_objects = [
+            Payment(
+                id=record.id,
+                paymentReceivedDate=record.paymentReceivedDate,
+                paymentAmountApplied=record.paymentAmountApplied,
+                paymentMethod=record.paymentMethod,
+                transactionType=record.transactionType,
+                receiptNumber=record.receiptNumber,
+            )
+            for record in payment_records
+        ]
+
+        return PaymentsList(rows=payment_objects, row_count=len(payment_objects))

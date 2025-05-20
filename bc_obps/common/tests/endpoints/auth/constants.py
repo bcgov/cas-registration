@@ -70,6 +70,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_compliance_summary_payments",
+            "kwargs": {"summary_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "generate_invoice",
             "kwargs": {"summary_id": MOCK_INT},
         },

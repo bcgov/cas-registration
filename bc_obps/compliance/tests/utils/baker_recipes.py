@@ -31,3 +31,15 @@ compliance_obligation = Recipe(
     obligation_deadline="2025-11-30",
     obligation_id="21-0001-1-1",  # Default test obligation ID in format YY-OOOO-R-V
 )
+
+# ELicensingLink recipe
+elicensing_link = Recipe(
+    ELicensingLink,
+    elicensing_guid=uuid.uuid4(),
+    elicensing_object_id="test-client-id",
+    elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT,
+    content_type=foreign_key(Recipe(ContentType, model=Operator)),
+    object_id=str(uuid.uuid4()),
+    sync_status="SUCCESS",
+    last_sync_at=None,
+)

@@ -5,7 +5,7 @@ from django.test import SimpleTestCase
 from compliance.models.compliance_report_version import ComplianceReportVersion
 
 
-class TestComplianceDashboardService(SimpleTestCase):
+class TestComplianceDashboardService(TestCase):
     """Tests for the ComplianceDashboardService class"""
 
     def setUp(self):
