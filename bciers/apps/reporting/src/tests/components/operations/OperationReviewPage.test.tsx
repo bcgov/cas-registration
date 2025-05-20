@@ -45,7 +45,7 @@ describe("OperationReviewPage", () => {
     const fakeNavigationInformation = { nav: "info" };
     const fakeParams = {
       reportOperation: { op: "op" },
-      reportingWindowEnd: "Dec 31 2025",
+      reportingYear: "2024",
       allActivities: [{ id: 1, name: "Activity 1" }],
       allRegulatedProducts: [{ id: 10, name: "Product 1" }],
       allRepresentatives: [{ id: 100, representative_name: "Rep 1" }],
@@ -94,7 +94,7 @@ describe("OperationReviewPage", () => {
     );
     expect(buildOperationReviewSchema).toHaveBeenCalledWith(
       fakeParams.reportOperation,
-      fakeParams.reportingWindowEnd,
+      fakeParams.reportingYear,
       fakeParams.allActivities,
       fakeParams.allRegulatedProducts,
       fakeParams.allRepresentatives,
