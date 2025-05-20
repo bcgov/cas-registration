@@ -18,6 +18,10 @@ export const withAuthorization: MiddlewareFactory = (next: NextMiddleware) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
+    console.log(
+      "token in middleware!!!!!!!!!!!!!!!!!--------------------",
+      token,
+    );
 
     if (token) {
       const response = await actionHandler(

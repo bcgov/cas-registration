@@ -2,11 +2,9 @@ import { expect, beforeEach } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { useSession, signOut } from "next-auth/react";
 import SessionTimeoutHandler, {
-  ACTIVITY_THROTTLE_SECONDS,
   MODAL_DISPLAY_SECONDS,
 } from "@bciers/components/auth/SessionTimeoutHandler";
 import { getEnvValue, getToken } from "@bciers/actions";
-import createThrottledEventHandler from "@bciers/components/auth/throttleEventsEffect";
 import { LogoutWarningModalProps } from "@bciers/components/auth/LogoutWarningModal";
 import * as Sentry from "@sentry/nextjs";
 
@@ -163,6 +161,7 @@ describe("SessionTimeoutHandler", () => {
     );
 
     screen.getByText("Extend").click();
+    expect(postMessage).toHaveBeenCalledWith("extend-session");
     await waitFor(() => {
       expect(mockUpdate).toHaveBeenCalled();
       expect(screen.queryByTestId("logout-modal")).not.toBeInTheDocument();
@@ -217,6 +216,7 @@ describe("SessionTimeoutHandler", () => {
     );
 
     screen.getByText("Extend").click();
+    expect(postMessage).toHaveBeenCalledWith("logout");
 
     await waitFor(() => {
       expect(mockSignOut).toHaveBeenCalledWith({
