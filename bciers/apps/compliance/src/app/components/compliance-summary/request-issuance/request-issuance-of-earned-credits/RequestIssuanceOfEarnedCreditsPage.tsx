@@ -16,7 +16,7 @@ export default async function RequestIssuanceOfEarnedCreditsPage({
 }: Props) {
   const complianceSummaryId = parseInt(compliance_summary_id, 10);
 
-  const data = await getRequestIssuanceData(complianceSummaryId);
+  const data = await getRequestIssuanceData();
 
   const taskListElements = getRequestIssuanceTaskList(
     complianceSummaryId,
