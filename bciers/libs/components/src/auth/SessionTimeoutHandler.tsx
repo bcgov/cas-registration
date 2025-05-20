@@ -9,8 +9,8 @@ import { signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 
-export const ACTIVITY_THROTTLE_SECONDS = 15; // Seconds to throttle user activity events
-export const MODAL_DISPLAY_SECONDS = 30; // Seconds before timeout to show logout warning modal (5 minutes);
+export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Seconds to throttle user activity events (2 minutes)
+export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
@@ -23,7 +23,6 @@ const SessionTimeoutHandler: React.FC = () => {
   const [sessionTimeout, setSessionTimeout] = useState<number>(
     getExpirationTimeInSeconds(session?.expires),
   );
-  console.log("sessionTimeout", sessionTimeout);
   const logoutChannelRef = useRef<BroadcastChannel | null>(null);
   const extendSessionChannelRef = useRef<BroadcastChannel | null>(null);
 
@@ -95,7 +94,6 @@ const SessionTimeoutHandler: React.FC = () => {
       await handleLogout();
     }
   };
-
   // Extends the session when the user chooses to stay logged in
   const handleExtendSession = async () => {
     try {
@@ -166,7 +164,8 @@ const SessionTimeoutHandler: React.FC = () => {
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === Infinity) return; // No timeout set, exit early
+    if (sessionTimeout === Infinity)
+      return; // No timeout set, exit early
     else if (sessionTimeout <= 0) handleLogout();
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
       setShowModal(false);
