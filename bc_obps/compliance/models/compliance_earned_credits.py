@@ -54,7 +54,7 @@ class ComplianceEarnedCredits(TimeStampedModel):
         on_delete=models.DO_NOTHING,
         blank=True,
         null=True,
-        related_name="compliance_earned_credits",
+        related_name="compliance_earned_credits_issued_by",
         db_comment="The user who issed the earned credits",
     )
 
