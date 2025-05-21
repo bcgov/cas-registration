@@ -1,6 +1,5 @@
-import { vi } from "vitest";
 import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
-import { setupComplianceSummaryReviewTest } from "../../../../utils/complianceSummaryReviewTestUtils";
+import { setupComplianceSummaryReviewTest } from "@/compliance/src/tests/utils/complianceSummaryReviewTestUtils";
 
 vi.mock(
   "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
