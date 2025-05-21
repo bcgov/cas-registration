@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import cast, Optional
 from ninja import ModelSchema, Field
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from compliance.schema.compliance_obligation import ComplianceObligationOut
+from registration.models import Operation
 
 # Constants for field aliases
 OPERATION_NAME_ALIAS = "compliance_report.report.operation.name"
@@ -79,3 +79,9 @@ class ComplianceReportVersionOut(ModelSchema):
 #             # 'emission_limit',
 #             # 'excess_emissions',
 #         ]
+
+
+class OperationByComplianceSummaryOut(ModelSchema):
+    class Meta:
+        model = Operation
+        fields = ['name']
