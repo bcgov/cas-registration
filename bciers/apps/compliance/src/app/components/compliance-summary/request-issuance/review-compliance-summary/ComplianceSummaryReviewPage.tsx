@@ -40,19 +40,19 @@ export default async function ComplianceSummaryReviewPage({
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
   return (
-      <CompliancePageLayout
-        complianceSummaryId={complianceSummaryId}
-        taskListElements={taskListElements}
-      >
-        {/*TODO: Remove hardcoded year*/}
-        <ComplianceFormHeading title="Review 2024 Compliance Summary" />
-        <FormReport data={complianceSummary} />
-        <EarnedCredits data={complianceSummary} />
-        <ComplianceStepButtons
-          backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
-          className="mt-44"
-        />
-      </CompliancePageLayout>
+    <CompliancePageLayout
+      complianceSummaryId={complianceSummaryId}
+      taskListElements={taskListElements}
+    >
+      {/*TODO: Remove hardcoded year*/}
+      <ComplianceFormHeading title="Review 2024 Compliance Summary" />
+      <FormReport data={complianceSummary} />
+      <EarnedCredits data={complianceSummary} />
+      <ComplianceStepButtons
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+        className="mt-44"
+      />
+    </CompliancePageLayout>
   );
 }

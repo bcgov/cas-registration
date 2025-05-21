@@ -78,14 +78,20 @@ export default function Bread({
    */
   function transformPathSegment(segment: string, index: number): string | null {
     const lowerSegment = segment.toLowerCase();
-    const hasReports = pathNames.some((path) => path.toLowerCase() === "reports");
+    const hasReports = pathNames.some(
+      (path) => path.toLowerCase() === "reports",
+    );
     const hasSelectOperator = pathNames.includes("select-operator");
 
     // Omit "facilities" if "reports" exists in the path.
     if (hasReports && lowerSegment === "facilities") return null;
 
     // Omit select operator related segments
-    if (hasSelectOperator && ["received", "request access", "confirm"].includes(lowerSegment)) return null;
+    if (
+      hasSelectOperator &&
+      ["received", "request access", "confirm"].includes(lowerSegment)
+    )
+      return null;
 
     // Check if the current segment is a valid UUID or numeric.
     if (isValidUUID(segment) || isNumeric(segment)) {

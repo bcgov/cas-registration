@@ -6,6 +6,7 @@ from registration.schema.generic import Message
 from .router import router
 from compliance.constants import COMPLIANCE
 
+
 @router.get(
     "/invoice/generate/{summary_id}",
     response={200: None, custom_codes_4xx: Message},

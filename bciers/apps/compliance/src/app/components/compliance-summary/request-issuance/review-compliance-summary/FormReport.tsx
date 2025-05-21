@@ -13,10 +13,7 @@ export const FormReport = ({ data }: Props) => {
         label="Emissions Attributable for Compliance:"
         value={`${data.emissionsAttributableForCompliance} tCO2e`}
       />
-      <InfoRow
-        label="Emissions Limit:"
-        value={`${data.emissionLimit} tCO2e`}
-      />
+      <InfoRow label="Emissions Limit:" value={`${data.emissionLimit} tCO2e`} />
       <InfoRow
         label="Excess Emissions:"
         value={`${data.excessEmissions} tCO2e`}
