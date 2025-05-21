@@ -654,6 +654,7 @@ class OperationService:
 
         # For SFOs, facility should also have the BCGHG ID
         if operation.type == Operation.Types.SFO:
+            # an operation muse be registered before it can be issued a BCGHG ID, so there will always be a facility
             sfo_facility = Facility.objects.get(operation=operation)
             sfo_facility.bcghg_id = operation.bcghg_id
             sfo_facility.save(update_fields=['bcghg_id'])
