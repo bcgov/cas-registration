@@ -137,3 +137,5 @@ export const FacilityReview: React.FC<Props> = ({
     </>
   );
 };
+
+export default FacilityReview;
