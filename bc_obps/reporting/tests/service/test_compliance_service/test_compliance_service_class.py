@@ -56,6 +56,18 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.excess_emissions == Decimal('49507.5246')
         assert result.credited_emissions == 0
 
+    def test_compliance_summary_with_unregulated_product(self):
+        # Assertion values from compliance_class_manual_calcs.xlsx sheet 5
+        build_data = ComplianceTestInfrastructure.unregulated_product()
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert result.emissions_attributable_for_reporting == Decimal('123001.0577')
+        assert result.reporting_only_emissions == Decimal('5200.05')
+        assert result.emissions_attributable_for_compliance == Decimal('70000.2564')
+        assert result.emissions_limit == Decimal('20767.5000')
+        assert result.excess_emissions == Decimal('49232.7564')
+        assert result.credited_emissions == 0
+
     def test_new_entrant(self):
         build_data = ComplianceTestInfrastructure.new_entrant()
         ## TESTS ##

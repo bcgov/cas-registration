@@ -1,3 +1,4 @@
+from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from decimal import Decimal
 from reporting.models.report_product import ReportProduct
@@ -263,15 +264,11 @@ class TestComplianceSummaryService(TestCase):
         ReportProduct.objects.filter(pk=fog_product_allocation.report_product_id).update(product_id=fog_product_id)
 
         # Correctly aggregates reporting-only emissions when there is a fog product
+        # (doesn't take it into account at the product level)
         reporting_only_with_fog_for_test = ComplianceService.get_reporting_only_allocated(
             allocation_1.report_version, allocation_1.report_product.product_id
         )
-        assert (
-            reporting_only_with_fog_for_test
-            == allocation_2.allocated_quantity
-            + allocation_4.allocated_quantity
-            + fog_product_allocation.allocated_quantity
-        )
+        assert reporting_only_with_fog_for_test == allocation_2.allocated_quantity + allocation_4.allocated_quantity
 
         refineries_line_tracing_id = RegulatedProduct.objects.get(name='Refineries line tracing', is_regulated=False).id
 
@@ -288,17 +285,55 @@ class TestComplianceSummaryService(TestCase):
         )
 
         # Correctly aggregates reporting-only emissions when there are multiple unregulated products
+        # (doesn't take them into account at the product level)
         reporting_only_with_unregulated_for_test = ComplianceService.get_reporting_only_allocated(
             allocation_1.report_version, allocation_1.report_product.product_id
         )
 
         assert (
             reporting_only_with_unregulated_for_test
-            == allocation_2.allocated_quantity
-            + allocation_4.allocated_quantity
-            + fog_product_allocation.allocated_quantity
-            + unregulated_product_allocation.allocated_quantity
+            == allocation_2.allocated_quantity + allocation_4.allocated_quantity
         )
+
+    @patch(
+        "reporting.service.compliance_service.ComplianceService.get_allocated_emissions_by_report_product_emission_category"
+    )
+    def test_get_reporting_only_allocated_return_the_total_for_reporting_only_categories(
+        self, mock_get_allocated_emissions: MagicMock
+    ):
+        ComplianceService.get_reporting_only_allocated(1234, 5678)
+        mock_get_allocated_emissions.assert_called_once_with(1234, 5678, [10, 11, 12, 2, 7])
+
+    def test_get_unregulated_products_allocated(self):
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            emission_category=EmissionCategory.objects.get(pk=1),
+            allocated_quantity=Decimal('1000.0001'),
+            report_product__product__is_regulated=False,
+            report_version=report_version,
+            report_product__report_version=report_version,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            emission_category=EmissionCategory.objects.get(pk=7),
+            allocated_quantity=Decimal('2000.0002'),
+            report_product__product__is_regulated=False,
+            report_version=report_version,
+            report_product__report_version=report_version,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            emission_category=EmissionCategory.objects.get(pk=12),
+            allocated_quantity=Decimal('5000.0005'),
+            report_product__product__is_regulated=True,
+            report_version=report_version,
+            report_product__report_version=report_version,
+        )
+        allocated_emissions_to_unregulated_products = ComplianceService.get_unregulated_products_allocated(
+            report_version.id
+        )
+        assert allocated_emissions_to_unregulated_products == Decimal('3000.0003')
 
     def test_get_emission_limit(self):
         emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
