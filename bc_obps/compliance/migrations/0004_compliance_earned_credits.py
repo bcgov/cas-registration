@@ -9,10 +9,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('compliance', '0003_seed_compliance_charge_rates'),
-        ('registration', '0113_V3_2_0'),
-    ]
+    dependencies = [('compliance', '0003_seed_compliance_charge_rates')]
 
     operations = [
         migrations.CreateModel(
