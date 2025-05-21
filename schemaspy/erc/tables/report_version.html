@@ -131,11 +131,6 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="compliance_summary.current_report_version_id references report_version.id via compliance_summary_current_report_versi_96cdf604_fk_report_ve"><a href='compliance_summary.html'>compliance_summary</a><span class='relatedKey'>.current_report_version_id</span></td>
-                                                <td class="constraint detail">compliance_summary_current_report_versi_96cdf604_fk_report_ve</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                            <tr>
                                                 <td title="facility_report.report_version_id references report_version.id via facility_report_report_version_id_df06fd00_fk_report_version_id"><a href='facility_report.html'>facility_report</a><span class='relatedKey'>.report_version_id</span></td>
                                                 <td class="constraint detail">facility_report_report_version_id_df06fd00_fk_report_version_id</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
@@ -448,6 +443,23 @@
                                     </td>
                                     <td><p>Report type</p></td>
                                 </tr>
+                                <tr>
+                                    <td><span id="reason_for_change">reason_for_change</span></td>
+                                    <td>text</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Reason explaining why a supplementary report change was made.</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -539,218 +551,216 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_summary.html" target="_top" title="compliance_summary" alt="" coords="958,5,1318,299">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,2137,224,2489">
-<area shape="rect" id="node3" href="report_version.html" target="_top" title="report_version" alt="" coords="500,2289,841,2681">
-<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="268,1628,456,1921">
-<area shape="rect" id="node5" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1042,1340,1234,1633">
-<area shape="rect" id="node6" href="report_activity.html" target="_top" title="report_activity" alt="" coords="1508,676,1749,999">
-<area shape="rect" id="node7" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="983,2436,1293,2671">
-<area shape="rect" id="node8" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1022,2688,1254,2981">
-<area shape="rect" id="node9" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="885,2999,1391,3233">
-<area shape="rect" id="node10" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="958,3287,1318,3521">
-<area shape="rect" id="node11" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="1439,3152,1819,3445">
-<area shape="rect" id="node12" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="977,3575,1299,3809">
-<area shape="rect" id="node13" href="report_emission.html" target="_top" title="report_emission" alt="" coords="2808,388,3031,740">
-<area shape="rect" id="node14" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="2541,496,2764,819">
-<area shape="rect" id="node15" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="1877,695,2221,1017">
-<area shape="rect" id="node16" href="report_unit.html" target="_top" title="report_unit" alt="" coords="2275,983,2497,1247">
-<area shape="rect" id="node17" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="1435,1889,1823,2153">
-<area shape="rect" id="node18" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3075,300,3317,593">
-<area shape="rect" id="node19" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1011,3827,1265,4061">
-<area shape="rect" id="node20" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="1450,1543,1807,1836">
-<area shape="rect" id="node21" href="report_operation.html" target="_top" title="report_operation" alt="" coords="987,4079,1289,4401">
-<area shape="rect" id="node22" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="968,4419,1308,4683">
-<area shape="rect" id="node23" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="993,4700,1283,4993">
-<area shape="rect" id="node24" href="report_product.html" target="_top" title="report_product" alt="" coords="1455,1232,1802,1525">
-<area shape="rect" id="node25" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="1867,1399,2231,1721">
-<area shape="rect" id="node26" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="969,5011,1307,5245">
-<area shape="rect" id="node27" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1013,5263,1263,5527">
+<area shape="rect" id="node1" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1042,2933,1234,3226">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,2184,224,2536">
+<area shape="rect" id="node3" href="report_version.html" target="_top" title="report_version" alt="" coords="500,2314,841,2736">
+<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="268,2354,456,2648">
+<area shape="rect" id="node5" href="report_activity.html" target="_top" title="report_activity" alt="" coords="1508,397,1749,720">
+<area shape="rect" id="node6" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="983,894,1293,1129">
+<area shape="rect" id="node7" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1022,1146,1254,1440">
+<area shape="rect" id="node8" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="885,1457,1391,1692">
+<area shape="rect" id="node9" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="958,1781,1318,2016">
+<area shape="rect" id="node10" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="1439,1664,1819,1957">
+<area shape="rect" id="node11" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="977,2105,1299,2340">
+<area shape="rect" id="node12" href="report_emission.html" target="_top" title="report_emission" alt="" coords="2808,109,3031,461">
+<area shape="rect" id="node13" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="2541,217,2764,540">
+<area shape="rect" id="node14" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="1877,398,2221,721">
+<area shape="rect" id="node15" href="report_unit.html" target="_top" title="report_unit" alt="" coords="2275,600,2497,864">
+<area shape="rect" id="node16" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="1435,3098,1823,3362">
+<area shape="rect" id="node17" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3075,21,3317,314">
+<area shape="rect" id="node18" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1011,3352,1265,3586">
+<area shape="rect" id="node19" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="1450,3460,1807,3753">
+<area shape="rect" id="node20" href="report_operation.html" target="_top" title="report_operation" alt="" coords="987,3712,1289,4034">
+<area shape="rect" id="node21" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="968,4052,1308,4316">
+<area shape="rect" id="node22" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="993,4333,1283,4626">
+<area shape="rect" id="node23" href="report_product.html" target="_top" title="report_product" alt="" coords="1455,2724,1802,3017">
+<area shape="rect" id="node24" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="1867,2645,2231,2968">
+<area shape="rect" id="node25" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="969,4644,1307,4878">
+<area shape="rect" id="node26" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1013,4896,1263,5160">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/report_version.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
-<area shape="rect" id="node1" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="1983,2889,2229,2977">
-<area shape="rect" id="node2" href="activity.html" target="_top" title="activity" alt="" coords="1627,3049,1766,3137">
-<area shape="rect" id="node3" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="2337,3030,2686,3118">
-<area shape="rect" id="node4" href="source_type.html" target="_top" title="source_type" alt="" coords="2019,3030,2193,3118">
-<area shape="rect" id="node5" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="468,1755,721,1843">
-<area shape="rect" id="node6" href="user.html" target="_top" title="user" alt="" coords="239,2186,353,2274">
-<area shape="rect" id="node69" href="app_role.html" target="_top" title="app_role" alt="" coords="5,2183,153,2271">
-<area shape="rect" id="node7" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="439,1031,751,1119">
-<area shape="rect" id="node8" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1163,450,1352,538">
-<area shape="rect" id="node9" href="operation.html" target="_top" title="operation" alt="" coords="825,1129,982,1217">
-<area shape="rect" id="node20" href="operator.html" target="_top" title="operator" alt="" coords="520,1997,669,2085">
-<area shape="rect" id="node28" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="452,1205,737,1293">
-<area shape="rect" id="node10" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="459,178,731,266">
-<area shape="rect" id="node11" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="197,73,395,161">
-<area shape="rect" id="node12" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2382,534,2641,622">
-<area shape="rect" id="node13" href="compliance_summary.html" target="_top" title="compliance_summary" alt="" coords="1979,363,2233,451">
-<area shape="rect" id="node14" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="480,73,709,161">
-<area shape="rect" id="node17" href="report_version.html" target="_top" title="report_version" alt="" coords="1526,2571,1867,2963">
-<area shape="rect" id="node18" href="report.html" target="_top" title="report" alt="" coords="1192,2181,1323,2269">
-<area shape="rect" id="node15" href="compliance_product.html" target="_top" title="compliance_product" alt="" coords="2842,187,3082,275">
-<area shape="rect" id="node16" href="report_product.html" target="_top" title="report_product" alt="" coords="2411,655,2611,743">
-<area shape="rect" id="node25" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2010,1686,2202,1774">
-<area shape="rect" id="node38" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="1993,2109,2219,2197">
-<area shape="rect" id="node19" href="contact.html" target="_top" title="contact" alt="" coords="833,1425,973,1513">
-<area shape="rect" id="node21" href="document.html" target="_top" title="document" alt="" coords="1177,1001,1338,1089">
-<area shape="rect" id="node22" href="elicensing_link.html" target="_top" title="elicensing_link" alt="" coords="497,1582,693,1670">
-<area shape="rect" id="node23" href="facility.html" target="_top" title="facility" alt="" coords="1190,1891,1325,1979">
-<area shape="rect" id="node24" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1503,933,1891,1021">
-<area shape="rect" id="node26" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="2376,2177,2647,2265">
-<area shape="rect" id="node27" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1145,1335,1369,1423">
-<area shape="rect" id="node29" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1056,1509,1459,1597">
-<area shape="rect" id="node30" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="798,1817,1009,1905">
-<area shape="rect" id="node31" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="795,2182,1012,2270">
-<area shape="rect" id="node32" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2413,2909,2609,2997">
-<area shape="rect" id="node33" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1975,1475,2237,1563">
-<area shape="rect" id="node34" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1990,1581,2222,1669">
-<area shape="rect" id="node35" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="1935,2675,2277,2763">
-<area shape="rect" id="node36" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1951,1302,2261,1390">
-<area shape="rect" id="node37" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2321,1389,2701,1477">
-<area shape="rect" id="node39" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="1945,3135,2267,3223">
-<area shape="rect" id="node40" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3648,2389,3856,2477">
-<area shape="rect" id="node41" href="gas_type.html" target="_top" title="gas_type" alt="" coords="2437,2318,2585,2406">
-<area shape="rect" id="node42" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3436,3862,3604,3950">
-<area shape="rect" id="node43" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2846,3531,3078,3619">
-<area shape="rect" id="node44" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3223,3983,3392,4071">
-<area shape="rect" id="node48" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3231,3774,3383,3862">
-<area shape="rect" id="node45" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2364,773,2659,861">
-<area shape="rect" id="node46" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="3900,2298,4276,2386">
-<area shape="rect" id="node47" href="emission_category.html" target="_top" title="emission_category" alt="" coords="1993,2354,2219,2442">
-<area shape="rect" id="node49" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3967,4123,4209,4211">
-<area shape="rect" id="node50" href="methodology.html" target="_top" title="methodology" alt="" coords="3659,4079,3845,4167">
-<area shape="rect" id="node51" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1987,3309,2225,3397">
-<area shape="rect" id="node52" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2353,3393,2669,3481">
-<area shape="rect" id="node53" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2345,3566,2678,3654">
-<area shape="rect" id="node54" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2333,2035,2690,2123">
-<area shape="rect" id="node55" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="2745,2158,3179,2246">
-<area shape="rect" id="node56" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1998,1859,2214,1947">
-<area shape="rect" id="node57" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2364,2567,2659,2655">
-<area shape="rect" id="node58" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2323,1911,2700,1999">
-<area shape="rect" id="node59" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="1936,3482,2276,3570">
-<area shape="rect" id="node60" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1961,3655,2251,3743">
-<area shape="rect" id="node61" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2780,859,3144,947">
-<area shape="rect" id="node62" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2373,1213,2650,1301">
-<area shape="rect" id="node63" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2007,3829,2205,3917">
-<area shape="rect" id="node64" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1991,4079,2221,4167">
-<area shape="rect" id="node65" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="460,3911,729,3999">
-<area shape="rect" id="node66" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1164,277,1351,365">
-<area shape="rect" id="node67" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1105,691,1409,779">
-<area shape="rect" id="node68" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1159,1997,1355,2085">
-<area shape="rect" id="node70" href="user_operator.html" target="_top" title="user_operator" alt="" coords="807,4011,999,4099">
-<area shape="rect" id="node71" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="445,2306,744,2394">
+<area shape="rect" id="node1" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="1983,1717,2229,1805">
+<area shape="rect" id="node2" href="activity.html" target="_top" title="activity" alt="" coords="1627,2070,1766,2158">
+<area shape="rect" id="node3" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="2337,2065,2686,2153">
+<area shape="rect" id="node4" href="source_type.html" target="_top" title="source_type" alt="" coords="2019,2177,2193,2265">
+<area shape="rect" id="node5" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="468,1614,721,1702">
+<area shape="rect" id="node6" href="user.html" target="_top" title="user" alt="" coords="239,2180,353,2268">
+<area shape="rect" id="node69" href="app_role.html" target="_top" title="app_role" alt="" coords="5,2177,153,2265">
+<area shape="rect" id="node7" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="439,1268,751,1356">
+<area shape="rect" id="node8" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1163,445,1352,533">
+<area shape="rect" id="node9" href="operation.html" target="_top" title="operation" alt="" coords="825,1417,982,1505">
+<area shape="rect" id="node19" href="operator.html" target="_top" title="operator" alt="" coords="520,1788,669,1876">
+<area shape="rect" id="node28" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="452,1162,737,1250">
+<area shape="rect" id="node10" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="459,68,731,156">
+<area shape="rect" id="node11" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="197,68,395,156">
+<area shape="rect" id="node12" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2833,146,3091,234">
+<area shape="rect" id="node13" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2364,356,2659,444">
+<area shape="rect" id="node15" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1583,513,1811,601">
+<area shape="rect" id="node17" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1951,600,2261,688">
+<area shape="rect" id="node14" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="480,173,709,261">
+<area shape="rect" id="node16" href="report.html" target="_top" title="report" alt="" coords="1192,1917,1323,2005">
+<area shape="rect" id="node25" href="report_version.html" target="_top" title="report_version" alt="" coords="1526,2552,1867,2973">
+<area shape="rect" id="node18" href="contact.html" target="_top" title="contact" alt="" coords="833,1026,973,1114">
+<area shape="rect" id="node20" href="document.html" target="_top" title="document" alt="" coords="1177,928,1338,1016">
+<area shape="rect" id="node21" href="elicensing_link.html" target="_top" title="elicensing_link" alt="" coords="497,1373,693,1461">
+<area shape="rect" id="node22" href="facility.html" target="_top" title="facility" alt="" coords="1190,2301,1325,2389">
+<area shape="rect" id="node23" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1503,1761,1891,1849">
+<area shape="rect" id="node24" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2010,2418,2202,2506">
+<area shape="rect" id="node26" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="2376,2380,2647,2468">
+<area shape="rect" id="node27" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1145,1110,1369,1198">
+<area shape="rect" id="node29" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1056,1501,1459,1589">
+<area shape="rect" id="node30" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="798,1626,1009,1714">
+<area shape="rect" id="node31" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="795,1856,1012,1944">
+<area shape="rect" id="node32" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2413,2274,2609,2362">
+<area shape="rect" id="node33" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="1975,1293,2237,1381">
+<area shape="rect" id="node34" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1990,1398,2222,1486">
+<area shape="rect" id="node35" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="1935,1894,2277,1982">
+<area shape="rect" id="node36" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2321,841,2701,929">
+<area shape="rect" id="node37" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="1993,2668,2219,2756">
+<area shape="rect" id="node38" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="1945,2953,2267,3041">
+<area shape="rect" id="node39" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3648,1770,3856,1858">
+<area shape="rect" id="node40" href="gas_type.html" target="_top" title="gas_type" alt="" coords="2437,1437,2585,1525">
+<area shape="rect" id="node41" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3436,2830,3604,2918">
+<area shape="rect" id="node42" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2846,2188,3078,2276">
+<area shape="rect" id="node43" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3223,3053,3392,3141">
+<area shape="rect" id="node47" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3231,2698,3383,2786">
+<area shape="rect" id="node44" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2364,2809,2659,2897">
+<area shape="rect" id="node45" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="3900,1230,4276,1318">
+<area shape="rect" id="node46" href="emission_category.html" target="_top" title="emission_category" alt="" coords="1993,1540,2219,1628">
+<area shape="rect" id="node48" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3967,4018,4209,4106">
+<area shape="rect" id="node49" href="methodology.html" target="_top" title="methodology" alt="" coords="3659,3974,3845,4062">
+<area shape="rect" id="node50" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1987,3405,2225,3493">
+<area shape="rect" id="node51" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2353,3557,2669,3645">
+<area shape="rect" id="node52" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2345,3714,2678,3802">
+<area shape="rect" id="node53" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2333,1542,2690,1630">
+<area shape="rect" id="node54" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="2745,1525,3179,1613">
+<area shape="rect" id="node55" href="report_operation.html" target="_top" title="report_operation" alt="" coords="1998,2000,2214,2088">
+<area shape="rect" id="node56" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2364,1890,2659,1978">
+<area shape="rect" id="node57" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2323,2485,2700,2573">
+<area shape="rect" id="node58" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="1936,3194,2276,3282">
+<area shape="rect" id="node59" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1961,3300,2251,3388">
+<area shape="rect" id="node60" href="report_product.html" target="_top" title="report_product" alt="" coords="2411,2914,2611,3002">
+<area shape="rect" id="node61" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2780,2914,3144,3002">
+<area shape="rect" id="node62" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2373,1012,2650,1100">
+<area shape="rect" id="node63" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2007,3646,2205,3734">
+<area shape="rect" id="node64" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1991,3974,2221,4062">
+<area shape="rect" id="node65" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="460,3806,729,3894">
+<area shape="rect" id="node66" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1164,272,1351,360">
+<area shape="rect" id="node67" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1105,754,1409,842">
+<area shape="rect" id="node68" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1159,1738,1355,1826">
+<area shape="rect" id="node70" href="user_operator.html" target="_top" title="user_operator" alt="" coords="807,3906,999,3994">
+<area shape="rect" id="node71" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="445,2301,744,2389">
 </map>
                                         <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/report_version.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="compliance_summary.html" target="_top" title="compliance_summary" alt="" coords="958,5,1318,299">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,2137,224,2489">
-<area shape="rect" id="node3" href="report_version.html" target="_top" title="report_version" alt="" coords="500,2289,841,2681">
-<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="268,1628,456,1921">
-<area shape="rect" id="node5" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1042,1340,1234,1633">
-<area shape="rect" id="node6" href="report_activity.html" target="_top" title="report_activity" alt="" coords="1508,676,1749,999">
-<area shape="rect" id="node7" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="983,2436,1293,2671">
-<area shape="rect" id="node8" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1022,2688,1254,2981">
-<area shape="rect" id="node9" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="885,2999,1391,3233">
-<area shape="rect" id="node10" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="958,3287,1318,3521">
-<area shape="rect" id="node11" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="1439,3152,1819,3445">
-<area shape="rect" id="node12" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="977,3575,1299,3809">
-<area shape="rect" id="node13" href="report_emission.html" target="_top" title="report_emission" alt="" coords="2808,388,3031,740">
-<area shape="rect" id="node14" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="2541,496,2764,819">
-<area shape="rect" id="node15" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="1877,695,2221,1017">
-<area shape="rect" id="node16" href="report_unit.html" target="_top" title="report_unit" alt="" coords="2275,983,2497,1247">
-<area shape="rect" id="node17" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="1435,1889,1823,2153">
-<area shape="rect" id="node18" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3075,300,3317,593">
-<area shape="rect" id="node19" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1011,3827,1265,4061">
-<area shape="rect" id="node20" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="1450,1543,1807,1836">
-<area shape="rect" id="node21" href="report_operation.html" target="_top" title="report_operation" alt="" coords="987,4079,1289,4401">
-<area shape="rect" id="node22" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="968,4419,1308,4683">
-<area shape="rect" id="node23" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="993,4700,1283,4993">
-<area shape="rect" id="node24" href="report_product.html" target="_top" title="report_product" alt="" coords="1455,1232,1802,1525">
-<area shape="rect" id="node25" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="1867,1399,2231,1721">
-<area shape="rect" id="node26" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="969,5011,1307,5245">
-<area shape="rect" id="node27" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1013,5263,1263,5527">
+<area shape="rect" id="node1" href="facility_report.html" target="_top" title="facility_report" alt="" coords="1042,2933,1234,3226">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,2184,224,2536">
+<area shape="rect" id="node3" href="report_version.html" target="_top" title="report_version" alt="" coords="500,2314,841,2736">
+<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="268,2354,456,2648">
+<area shape="rect" id="node5" href="report_activity.html" target="_top" title="report_activity" alt="" coords="1508,397,1749,720">
+<area shape="rect" id="node6" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="983,894,1293,1129">
+<area shape="rect" id="node7" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="1022,1146,1254,1440">
+<area shape="rect" id="node8" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="885,1457,1391,1692">
+<area shape="rect" id="node9" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="958,1781,1318,2016">
+<area shape="rect" id="node10" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="1439,1664,1819,1957">
+<area shape="rect" id="node11" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="977,2105,1299,2340">
+<area shape="rect" id="node12" href="report_emission.html" target="_top" title="report_emission" alt="" coords="2808,109,3031,461">
+<area shape="rect" id="node13" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="2541,217,2764,540">
+<area shape="rect" id="node14" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="1877,398,2221,721">
+<area shape="rect" id="node15" href="report_unit.html" target="_top" title="report_unit" alt="" coords="2275,600,2497,864">
+<area shape="rect" id="node16" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="1435,3098,1823,3362">
+<area shape="rect" id="node17" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="3075,21,3317,314">
+<area shape="rect" id="node18" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="1011,3352,1265,3586">
+<area shape="rect" id="node19" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="1450,3460,1807,3753">
+<area shape="rect" id="node20" href="report_operation.html" target="_top" title="report_operation" alt="" coords="987,3712,1289,4034">
+<area shape="rect" id="node21" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="968,4052,1308,4316">
+<area shape="rect" id="node22" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="993,4333,1283,4626">
+<area shape="rect" id="node23" href="report_product.html" target="_top" title="report_product" alt="" coords="1455,2724,1802,3017">
+<area shape="rect" id="node24" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="1867,2645,2231,2968">
+<area shape="rect" id="node25" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="969,4644,1307,4878">
+<area shape="rect" id="node26" href="report_verification.html" target="_top" title="report_verification" alt="" coords="1013,4896,1263,5160">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/report_version.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="2047,4517,2197,4605">
-<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,4016,236,4104">
-<area shape="rect" id="node3" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="2408,4500,2655,4588">
-<area shape="rect" id="node4" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="2762,4623,3111,4711">
-<area shape="rect" id="node5" href="source_type.html" target="_top" title="source_type" alt="" coords="2444,4745,2619,4833">
-<area shape="rect" id="node6" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="893,2956,1147,3044">
-<area shape="rect" id="node7" href="user.html" target="_top" title="user" alt="" coords="321,2183,436,2271">
-<area shape="rect" id="node70" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2180,195,2268">
-<area shape="rect" id="node8" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="864,2815,1176,2903">
-<area shape="rect" id="node9" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1588,2317,1777,2405">
-<area shape="rect" id="node10" href="operation.html" target="_top" title="operation" alt="" coords="1250,2815,1407,2903">
-<area shape="rect" id="node21" href="operator.html" target="_top" title="operator" alt="" coords="945,3457,1095,3545">
-<area shape="rect" id="node23" href="elicensing_link.html" target="_top" title="elicensing_link" alt="" coords="573,3028,769,3116">
-<area shape="rect" id="node33" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="528,2677,813,2765">
-<area shape="rect" id="node11" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="535,249,807,337">
-<area shape="rect" id="node12" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="280,249,477,337">
-<area shape="rect" id="node13" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2807,2605,3066,2693">
-<area shape="rect" id="node14" href="compliance_summary.html" target="_top" title="compliance_summary" alt="" coords="2405,2153,2658,2241">
-<area shape="rect" id="node15" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="556,455,785,543">
-<area shape="rect" id="node18" href="report_version.html" target="_top" title="report_version" alt="" coords="1951,1728,2293,2120">
-<area shape="rect" id="node19" href="report.html" target="_top" title="report" alt="" coords="1617,1872,1748,1960">
-<area shape="rect" id="node16" href="compliance_product.html" target="_top" title="compliance_product" alt="" coords="3267,753,3507,841">
-<area shape="rect" id="node17" href="report_product.html" target="_top" title="report_product" alt="" coords="2837,967,3037,1055">
-<area shape="rect" id="node27" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2435,3161,2627,3249">
-<area shape="rect" id="node37" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="2418,889,2645,977">
-<area shape="rect" id="node20" href="contact.html" target="_top" title="contact" alt="" coords="1259,3316,1399,3404">
-<area shape="rect" id="node22" href="document.html" target="_top" title="document" alt="" coords="1602,2695,1763,2783">
-<area shape="rect" id="node24" href="emission_category.html" target="_top" title="emission_category" alt="" coords="2418,3904,2645,3992">
-<area shape="rect" id="node25" href="facility.html" target="_top" title="facility" alt="" coords="1615,3075,1750,3163">
-<area shape="rect" id="node26" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1928,2685,2316,2773">
-<area shape="rect" id="node28" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="2801,4307,3072,4395">
-<area shape="rect" id="node29" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3657,3997,3809,4085">
-<area shape="rect" id="node30" href="gas_type.html" target="_top" title="gas_type" alt="" coords="2863,4764,3011,4852">
-<area shape="rect" id="node31" href="methodology.html" target="_top" title="methodology" alt="" coords="3861,280,4047,368">
-<area shape="rect" id="node32" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1571,3839,1795,3927">
-<area shape="rect" id="node34" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1481,3248,1884,3336">
-<area shape="rect" id="node35" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="1223,3719,1434,3807">
-<area shape="rect" id="node36" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="1220,3545,1437,3633">
-<area shape="rect" id="node38" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2839,4517,3035,4605">
-<area shape="rect" id="node39" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2401,1372,2662,1460">
-<area shape="rect" id="node40" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2415,1583,2647,1671">
-<area shape="rect" id="node41" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2360,1688,2703,1776">
-<area shape="rect" id="node42" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2376,1131,2687,1219">
-<area shape="rect" id="node43" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2747,1183,3127,1271">
-<area shape="rect" id="node44" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2371,2364,2692,2452">
-<area shape="rect" id="node45" href="report_emission.html" target="_top" title="report_emission" alt="" coords="4091,1956,4299,2044">
-<area shape="rect" id="node46" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3870,2519,4038,2607">
-<area shape="rect" id="node47" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="3271,4220,3503,4308">
-<area shape="rect" id="node48" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3648,2432,3817,2520">
-<area shape="rect" id="node49" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2789,1393,3084,1481">
-<area shape="rect" id="node50" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="4343,3393,4719,3481">
-<area shape="rect" id="node51" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4409,667,4652,755">
-<area shape="rect" id="node52" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="2412,2259,2651,2347">
-<area shape="rect" id="node53" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2779,4133,3095,4221">
-<area shape="rect" id="node54" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2770,460,3103,548">
-<area shape="rect" id="node55" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2758,2772,3115,2860">
-<area shape="rect" id="node56" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="3171,4417,3604,4505">
-<area shape="rect" id="node57" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2423,4151,2639,4239">
-<area shape="rect" id="node58" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2789,4412,3084,4500">
-<area shape="rect" id="node59" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2748,1288,3125,1376">
-<area shape="rect" id="node60" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2361,343,2701,431">
-<area shape="rect" id="node61" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2386,1477,2677,1565">
-<area shape="rect" id="node62" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="3205,1053,3569,1141">
-<area shape="rect" id="node63" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2798,3815,3075,3903">
-<area shape="rect" id="node64" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2432,2673,2631,2761">
-<area shape="rect" id="node65" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2417,4045,2646,4133">
-<area shape="rect" id="node66" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="536,1444,805,1532">
-<area shape="rect" id="node67" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1589,585,1776,673">
-<area shape="rect" id="node68" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1531,691,1835,779">
-<area shape="rect" id="node69" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1585,3464,1781,3552">
-<area shape="rect" id="node71" href="user_operator.html" target="_top" title="user_operator" alt="" coords="1233,349,1425,437">
-<area shape="rect" id="node72" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="521,2819,820,2907">
+<area shape="rect" id="node1" href="activity.html" target="_top" title="activity" alt="" coords="2047,732,2197,820">
+<area shape="rect" id="node2" href="business_structure.html" target="_top" title="business_structure" alt="" coords="5,1163,236,1251">
+<area shape="rect" id="node3" href="activity_json_schema.html" target="_top" title="activity_json_schema" alt="" coords="2408,732,2655,820">
+<area shape="rect" id="node4" href="activity_source_type_json_schema.html" target="_top" title="activity_source_type_json_schema" alt="" coords="2762,608,3111,696">
+<area shape="rect" id="node5" href="source_type.html" target="_top" title="source_type" alt="" coords="2444,485,2619,573">
+<area shape="rect" id="node6" href="bc_greenhouse_gas_id.html" target="_top" title="bc_greenhouse_gas_id" alt="" coords="893,2765,1147,2853">
+<area shape="rect" id="node7" href="user.html" target="_top" title="user" alt="" coords="321,2763,436,2851">
+<area shape="rect" id="node70" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2760,195,2848">
+<area shape="rect" id="node8" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="864,3420,1176,3508">
+<area shape="rect" id="node9" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1588,3740,1777,3828">
+<area shape="rect" id="node10" href="operation.html" target="_top" title="operation" alt="" coords="1250,3488,1407,3576">
+<area shape="rect" id="node20" href="operator.html" target="_top" title="operator" alt="" coords="945,3007,1095,3095">
+<area shape="rect" id="node22" href="elicensing_link.html" target="_top" title="elicensing_link" alt="" coords="573,2865,769,2953">
+<area shape="rect" id="node33" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="528,3347,813,3435">
+<area shape="rect" id="node11" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="535,4720,807,4808">
+<area shape="rect" id="node12" href="reporting_year.html" target="_top" title="reporting_year" alt="" coords="280,4720,477,4808">
+<area shape="rect" id="node13" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="3258,4872,3517,4960">
+<area shape="rect" id="node14" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2789,4652,3084,4740">
+<area shape="rect" id="node16" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="2008,4433,2236,4521">
+<area shape="rect" id="node18" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2376,4260,2687,4348">
+<area shape="rect" id="node15" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="556,4615,785,4703">
+<area shape="rect" id="node17" href="report.html" target="_top" title="report" alt="" coords="1617,3247,1748,3335">
+<area shape="rect" id="node27" href="report_version.html" target="_top" title="report_version" alt="" coords="1951,1805,2293,2227">
+<area shape="rect" id="node19" href="contact.html" target="_top" title="contact" alt="" coords="1259,3111,1399,3199">
+<area shape="rect" id="node21" href="document.html" target="_top" title="document" alt="" coords="1602,3845,1763,3933">
+<area shape="rect" id="node23" href="emission_category.html" target="_top" title="emission_category" alt="" coords="2418,591,2645,679">
+<area shape="rect" id="node24" href="facility.html" target="_top" title="facility" alt="" coords="1615,1960,1750,2048">
+<area shape="rect" id="node25" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1928,4192,2316,4280">
+<area shape="rect" id="node26" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2435,1149,2627,1237">
+<area shape="rect" id="node28" href="facility_report_activities.html" target="_top" title="facility_report_activities" alt="" coords="2801,1065,3072,1153">
+<area shape="rect" id="node29" href="fuel_type.html" target="_top" title="fuel_type" alt="" coords="3657,136,3809,224">
+<area shape="rect" id="node30" href="gas_type.html" target="_top" title="gas_type" alt="" coords="2863,136,3011,224">
+<area shape="rect" id="node31" href="methodology.html" target="_top" title="methodology" alt="" coords="3861,2321,4047,2409">
+<area shape="rect" id="node32" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1571,3567,1795,3655">
+<area shape="rect" id="node34" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1481,2337,1884,2425">
+<area shape="rect" id="node35" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="1223,2467,1434,2555">
+<area shape="rect" id="node36" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="1220,2572,1437,2660">
+<area shape="rect" id="node37" href="regulated_product.html" target="_top" title="regulated_product" alt="" coords="2418,1291,2645,1379">
+<area shape="rect" id="node38" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2839,855,3035,943">
+<area shape="rect" id="node39" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2401,1847,2662,1935">
+<area shape="rect" id="node40" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2415,3653,2647,3741">
+<area shape="rect" id="node41" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2360,2519,2703,2607">
+<area shape="rect" id="node42" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2747,3932,3127,4020">
+<area shape="rect" id="node43" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2371,2731,2692,2819">
+<area shape="rect" id="node44" href="report_emission.html" target="_top" title="report_emission" alt="" coords="4091,1221,4299,1309">
+<area shape="rect" id="node45" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3870,232,4038,320">
+<area shape="rect" id="node46" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="3271,1037,3503,1125">
+<area shape="rect" id="node47" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3648,381,3817,469">
+<area shape="rect" id="node48" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2789,2432,3084,2520">
+<area shape="rect" id="node49" href="report_emission_emission_categories.html" target="_top" title="report_emission_emission_categories" alt="" coords="4343,459,4719,547">
+<area shape="rect" id="node50" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4409,3576,4652,3664">
+<area shape="rect" id="node51" href="report_new_entrant.html" target="_top" title="report_new_entrant" alt="" coords="2412,1500,2651,1588">
+<area shape="rect" id="node52" href="report_new_entrant_emission.html" target="_top" title="report_new_entrant_emission" alt="" coords="2779,1673,3095,1761">
+<area shape="rect" id="node53" href="report_new_entrant_production.html" target="_top" title="report_new_entrant_production" alt="" coords="2770,1171,3103,1259">
+<area shape="rect" id="node54" href="report_non_attributable_emissions.html" target="_top" title="report_non_attributable_emissions" alt="" coords="2758,309,3115,397">
+<area shape="rect" id="node55" href="report_non_attributable_emissio_24f9faf2.html" target="_top" title="report_non_attributable_emissions_gas_type" alt="" coords="3171,309,3604,397">
+<area shape="rect" id="node56" href="report_operation.html" target="_top" title="report_operation" alt="" coords="2423,272,2639,360">
+<area shape="rect" id="node57" href="report_operation_activities.html" target="_top" title="report_operation_activities" alt="" coords="2789,415,3084,503">
+<area shape="rect" id="node58" href="report_operation_regulated_products.html" target="_top" title="report_operation_regulated_products" alt="" coords="2748,749,3125,837">
+<area shape="rect" id="node59" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="2361,1741,2701,1829">
+<area shape="rect" id="node60" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="2386,2345,2677,2433">
+<area shape="rect" id="node61" href="report_product.html" target="_top" title="report_product" alt="" coords="2837,2571,3037,2659">
+<area shape="rect" id="node62" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="3205,2571,3569,2659">
+<area shape="rect" id="node63" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2798,960,3075,1048">
+<area shape="rect" id="node64" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2432,2240,2631,2328">
+<area shape="rect" id="node65" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2417,4551,2646,4639">
+<area shape="rect" id="node66" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="536,3588,805,3676">
+<area shape="rect" id="node67" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1589,4019,1776,4107">
+<area shape="rect" id="node68" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1531,4124,1835,4212">
+<area shape="rect" id="node69" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1585,3141,1781,3229">
+<area shape="rect" id="node71" href="user_operator.html" target="_top" title="user_operator" alt="" coords="1233,2865,1425,2953">
+<area shape="rect" id="node72" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="521,3693,820,3781">
 </map>
                                         <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/report_version.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

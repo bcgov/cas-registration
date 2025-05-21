@@ -8,27 +8,24 @@ digraph "twoDegreesRelationshipsDiagram" {
   "closure_event":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_charge_rate":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_charge_rate":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_charge_rate":"elipses":w -> "reporting_year":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_charge_rate":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_obligation":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_obligation":"compliance_summary_id":w -> "compliance_summary":"id.type":e [arrowhead=none dir=back arrowtail=teeodot];
+  "compliance_obligation":"compliance_report_version_id":w -> "compliance_report_version":"id.type":e [arrowhead=none dir=back arrowtail=teeodot];
   "compliance_obligation":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_obligation":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_period":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_period":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_period":"reporting_year_id":w -> "reporting_year":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_period":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_product":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_product":"compliance_summary_id":w -> "compliance_summary":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_product":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_product":"report_product_id":w -> "report_product":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_product":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_summary":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_summary":"compliance_period_id":w -> "compliance_period":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_summary":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_summary":"current_report_version_id":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_summary":"report_id":w -> "report":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_summary":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_period":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_period":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_period":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report":"compliance_period_id":w -> "compliance_period":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report":"report_id":w -> "report":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
+  "compliance_report":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report_version":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report_version":"compliance_report_id":w -> "compliance_report":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report_version":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report_version":"report_compliance_summary_id":w -> "report_compliance_summary":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "compliance_report_version":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "operator":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -53,7 +50,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "facility_report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "facility":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "facility_report":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "facility_report":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "facility_report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "multiple_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "multiple_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -85,68 +82,67 @@ digraph "twoDegreesRelationshipsDiagram" {
   "partner_operator":"elipses":w -> "operator":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "partner_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "partner_operator":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report":"operation_id":w -> "operation":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report":"operator_id":w -> "operator":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report":"reporting_year_id":w -> "reporting_year":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report":"elipses":w -> "operation":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report":"elipses":w -> "operator":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_activity":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_activity":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_activity":"elipses":w -> "facility_report":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_activity":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_activity":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_activity":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_additional_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_additional_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_additional_data":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_additional_data":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_additional_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_attachment":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_attachment":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment_confirmation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_attachment_confirmation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_attachment_confirmation":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_attachment_confirmation":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_attachment_confirmation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_compliance_summary":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_compliance_summary":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_compliance_summary":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_compliance_summary":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"report_version_id":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_compliance_summary_product":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_compliance_summary_product":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_compliance_summary_product":"elipses":w -> "report_compliance_summary":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_compliance_summary_product":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"elipses":w -> "report_compliance_summary":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_compliance_summary_product":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_compliance_summary_product":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_electricity_import_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_electricity_import_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_electricity_import_data":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_electricity_import_data":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_electricity_import_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"elipses":w -> "report_fuel":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"elipses":w -> "report_source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"elipses":w -> "report_unit":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_emission":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_allocation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_allocation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_allocation":"elipses":w -> "facility_report":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_emission_allocation":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_emission_allocation":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_emission_allocation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "report_source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "report_unit":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_fuel":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_fuel":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_fuel":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_methodology":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_methodology":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_methodology":"elipses":w -> "report_emission":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
-  "report_methodology":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_methodology":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_methodology":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_new_entrant":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_new_entrant":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_new_entrant":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_new_entrant":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_new_entrant":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_new_entrant_emission":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_new_entrant_emission":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -159,30 +155,30 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_non_attributable_emissions":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_non_attributable_emissions":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_non_attributable_emissions":"elipses":w -> "facility_report":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_non_attributable_emissions":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_non_attributable_emissions":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_non_attributable_emissions":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_operation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_operation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_operation":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_operation":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_operation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_operation_representative":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_operation_representative":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_operation_representative":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_operation_representative":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_operation_representative":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_person_responsible":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_person_responsible":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_person_responsible":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_person_responsible":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_person_responsible":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product":"elipses":w -> "facility_report":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_product":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_product":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"elipses":w -> "report_emission_allocation":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"elipses":w -> "report_product":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_product_emission_allocation":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_product_emission_allocation":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_product_emission_allocation":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_raw_activity_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_raw_activity_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -190,29 +186,29 @@ digraph "twoDegreesRelationshipsDiagram" {
   "report_raw_activity_data":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_sign_off":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_sign_off":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_sign_off":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_sign_off":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_sign_off":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_source_type":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_source_type":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_source_type":"elipses":w -> "report_activity":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_source_type":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_source_type":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_source_type":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_unit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_unit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_unit":"elipses":w -> "report_source_type":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_unit":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_unit":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_unit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_verification":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_verification":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_verification":"elipses":w -> "report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_verification":"elipses":w -> "report_version":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
   "report_verification":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "report_verification_visit":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_version":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_version":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
-  "report_version":"report_id":w -> "report":"id":e [arrowhead=none dir=back arrowtail=teeodot];
-  "report_version":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_version":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_version":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "report_version":"elipses":w -> "report":"elipses":e [arrowhead=none dir=back arrowtail=teeodot];
+  "report_version":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "restart_event":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "restart_event":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "restart_event":"elipses":w -> "operation":"elipses":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -316,44 +312,38 @@ digraph "twoDegreesRelationshipsDiagram" {
     target="_top"
     tooltip="compliance_period"
   ];
-  "compliance_product" [
+  "compliance_report" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="120" HEIGHT="16"><B>compliance_product</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="111" HEIGHT="16"><B>compliance_report</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
-    URL="compliance_product.html"
+    URL="compliance_report.html"
     target="_top"
-    tooltip="compliance_product"
+    tooltip="compliance_report"
   ];
-  "compliance_summary" [
+  "compliance_report_version" [
    label=<
     <TABLE BORDER="2" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="4"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="130" HEIGHT="16"><B>compliance_summary</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="id" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">id</TD></TR></TABLE></TD><TD PORT="id.type" ALIGN="LEFT">int8[19]</TD></TR>
-      <TR><TD PORT="created_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">created_at</TD></TR></TABLE></TD><TD PORT="created_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
-      <TR><TD PORT="updated_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">updated_at</TD></TR></TABLE></TD><TD PORT="updated_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
-      <TR><TD PORT="archived_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">archived_at</TD></TR></TABLE></TD><TD PORT="archived_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
-      <TR><TD PORT="emissions_attributable_for_reporting" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">emissions_attributable_for_reporting</TD></TR></TABLE></TD><TD PORT="emissions_attributable_for_reporting.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
-      <TR><TD PORT="reporting_only_emissions" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">reporting_only_emissions</TD></TR></TABLE></TD><TD PORT="reporting_only_emissions.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
-      <TR><TD PORT="emissions_attributable_for_compliance" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">emissions_attributable_for_compliance</TD></TR></TABLE></TD><TD PORT="emissions_attributable_for_compliance.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
-      <TR><TD PORT="emission_limit" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">emission_limit</TD></TR></TABLE></TD><TD PORT="emission_limit.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
-      <TR><TD PORT="excess_emissions" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">excess_emissions</TD></TR></TABLE></TD><TD PORT="excess_emissions.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
-      <TR><TD PORT="credited_emissions" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">credited_emissions</TD></TR></TABLE></TD><TD PORT="credited_emissions.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
-      <TR><TD PORT="reduction_factor" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">reduction_factor</TD></TR></TABLE></TD><TD PORT="reduction_factor.type" ALIGN="LEFT">numeric[10,4]</TD></TR>
-      <TR><TD PORT="tightening_rate" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">tightening_rate</TD></TR></TABLE></TD><TD PORT="tightening_rate.type" ALIGN="LEFT">numeric[10,4]</TD></TR>
-      <TR><TD PORT="archived_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">archived_by_id</TD></TR></TABLE></TD><TD PORT="archived_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
-      <TR><TD PORT="compliance_period_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">compliance_period_id</TD></TR></TABLE></TD><TD PORT="compliance_period_id.type" ALIGN="LEFT">int8[19]</TD></TR>
-      <TR><TD PORT="created_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">created_by_id</TD></TR></TABLE></TD><TD PORT="created_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
-      <TR><TD PORT="current_report_version_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">current_report_version_id</TD></TR></TABLE></TD><TD PORT="current_report_version_id.type" ALIGN="LEFT">int8[19]</TD></TR>
-      <TR><TD PORT="report_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">report_id</TD></TR></TABLE></TD><TD PORT="report_id.type" ALIGN="LEFT">int8[19]</TD></TR>
-      <TR><TD PORT="updated_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="233" HEIGHT="16">updated_by_id</TD></TR></TABLE></TD><TD PORT="updated_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
+      <TR><TD COLSPAN="4"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="161" HEIGHT="16"><B>compliance_report_version</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD PORT="id" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">id</TD></TR></TABLE></TD><TD PORT="id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD PORT="created_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">created_at</TD></TR></TABLE></TD><TD PORT="created_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
+      <TR><TD PORT="updated_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">updated_at</TD></TR></TABLE></TD><TD PORT="updated_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
+      <TR><TD PORT="archived_at" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">archived_at</TD></TR></TABLE></TD><TD PORT="archived_at.type" ALIGN="LEFT">timestamptz[35,6]</TD></TR>
+      <TR><TD PORT="excess_emissions_delta_from_previous" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">excess_emissions_delta_from_previous</TD></TR></TABLE></TD><TD PORT="excess_emissions_delta_from_previous.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
+      <TR><TD PORT="credited_emissions_delta_from_previous" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">credited_emissions_delta_from_previous</TD></TR></TABLE></TD><TD PORT="credited_emissions_delta_from_previous.type" ALIGN="LEFT">numeric[20,4]</TD></TR>
+      <TR><TD PORT="status" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">status</TD></TR></TABLE></TD><TD PORT="status.type" ALIGN="LEFT">varchar[100]</TD></TR>
+      <TR><TD PORT="archived_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">archived_by_id</TD></TR></TABLE></TD><TD PORT="archived_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
+      <TR><TD PORT="compliance_report_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">compliance_report_id</TD></TR></TABLE></TD><TD PORT="compliance_report_id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD PORT="created_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">created_by_id</TD></TR></TABLE></TD><TD PORT="created_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
+      <TR><TD PORT="report_compliance_summary_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">report_compliance_summary_id</TD></TR></TABLE></TD><TD PORT="report_compliance_summary_id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD PORT="updated_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">updated_by_id</TD></TR></TABLE></TD><TD PORT="updated_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
-    URL="compliance_summary.html"
+    URL="compliance_report_version.html"
     target="_top"
-    tooltip="compliance_summary"
+    tooltip="compliance_report_version"
   ];
   "contact" [
    label=<
@@ -558,7 +548,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="173" HEIGHT="16"><B>report_compliance_summary</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
     </TABLE>>
     URL="report_compliance_summary.html"
     target="_top"
@@ -712,7 +702,7 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="90" HEIGHT="16"><B>report_product</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">2 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">1 &gt;</TD></TR>
     </TABLE>>
     URL="report_product.html"
     target="_top"
@@ -800,22 +790,11 @@ digraph "twoDegreesRelationshipsDiagram" {
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
       <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="87" HEIGHT="16"><B>report_version</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">24 &gt;</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 4</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">23 &gt;</TD></TR>
     </TABLE>>
     URL="report_version.html"
     target="_top"
     tooltip="report_version"
-  ];
-  "reporting_year" [
-   label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="88" HEIGHT="16"><B>reporting_year</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
-      <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
-    </TABLE>>
-    URL="reporting_year.html"
-    target="_top"
-    tooltip="reporting_year"
   ];
   "restart_event" [
    label=<

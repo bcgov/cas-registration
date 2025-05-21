@@ -177,26 +177,9 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td><span id="emissions_amount_tco2e">emissions_amount_tco2e</span></td>
-                                    <td>numeric</td>
-                                    <td>20,4</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The amount of excess emissions in tCO2e</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="status">status</span></td>
+                                    <td><span id="obligation_id">obligation_id</span></td>
                                     <td>varchar</td>
-                                    <td>50</td>
+                                    <td>30</td>
                                     <td title=''></td>
                                     <td title=''></td>
                                     <td>null</td>
@@ -208,24 +191,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The status of the obligation (e.g., OBLIGATION_NOT_MET, OBLIGATION_MET)</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="penalty_status">penalty_status</span></td>
-                                    <td>varchar</td>
-                                    <td>50</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The status of the penalty (e.g., NONE, ACCRUING, PAID)</p></td>
+                                    <td><p>A human-readable identifier for the obligation in format YY-OOOO-R-V</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="obligation_deadline">obligation_deadline</span></td>
@@ -243,6 +209,57 @@
                                         </table>
                                     </td>
                                     <td><p>Deadline date for meeting excess emissions obligations (November 30 of the following year), UTC-based</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="fee_amount_dollars">fee_amount_dollars</span></td>
+                                    <td>numeric</td>
+                                    <td>20,2</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The fee amount in CAD dollars</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="fee_date">fee_date</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date the fee was created</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="penalty_status">penalty_status</span></td>
+                                    <td>varchar</td>
+                                    <td>50</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The status of the penalty (e.g., NONE, ACCRUING, PAID)</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="history_user_id">history_user_id</span></td>
@@ -347,7 +364,7 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="compliance_summary_id">compliance_summary_id</span></td>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="compliance_report_version_id">compliance_report_version_id</span></td>
                                     <td>int8</td>
                                     <td>19</td>
                                     <td title='nullable'>√</td>
@@ -361,7 +378,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>The compliance summary this obligation belongs to</p></td>
+                                    <td><p>The compliance report version this obligation belongs to</p></td>
                                 </tr>
                                 <tr>
                                     <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="created_by_id">created_by_id</span></td>
@@ -396,74 +413,6 @@
                                         </table>
                                     </td>
                                     <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="obligation_id">obligation_id</span></td>
-                                    <td>varchar</td>
-                                    <td>30</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>A human-readable identifier for the obligation in format YY-OOOO-R-V</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="fee_amount_dollars">fee_amount_dollars</span></td>
-                                    <td>numeric</td>
-                                    <td>20,2</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The fee amount in CAD dollars</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="fee_date">fee_date</span></td>
-                                    <td>date</td>
-                                    <td>13</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The date the fee was created</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="fee_rate_dollars">fee_rate_dollars</span></td>
-                                    <td>numeric</td>
-                                    <td>10,2</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The fee rate used to calculate the fee amount in CAD dollars per tCO2e</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -502,16 +451,16 @@
                                     <td>history_id</td>
                                 </tr>
                                 <tr>
+                                    <td title='Indexed'>compliance_obligation_hist_compliance_report_version__58d3e0a4</td>
+                                    <td>Performance</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>compliance_report_version_id</td>
+                                </tr>
+                                <tr>
                                     <td title='Indexed'>compliance_obligation_history_archived_by_id_53c62261</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>archived_by_id</td>
-                                </tr>
-                                <tr>
-                                    <td title='Indexed'>compliance_obligation_history_compliance_summary_id_e96f9a3d</td>
-                                    <td>Performance</td>
-                                    <td><span title='Ascending'>Asc</span></td>
-                                    <td>compliance_summary_id</td>
                                 </tr>
                                 <tr>
                                     <td title='Indexed'>compliance_obligation_history_created_by_id_8ea8950d</td>
@@ -559,7 +508,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_obligation_history.html" target="_top" title="compliance_obligation_history" alt="" coords="5,5,435,691">
+<area shape="rect" id="node1" href="compliance_obligation_history.html" target="_top" title="compliance_obligation_history" alt="" coords="5,5,435,603">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/compliance_obligation_history.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

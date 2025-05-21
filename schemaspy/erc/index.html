@@ -78,7 +78,7 @@
                         <div class="col-md-12">
                             <div class="callout callout-info">
                                 <h4>SchemaSpy Analysis of default.erc</h4>
-                                <p>Generated on Thu May 15 02:33 GMT 2025</p>
+                                <p>Generated on Wed May 21 17:34 GMT 2025</p>
                             </div>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                                 <span class="info-box-icon bg-green"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">COLUMNS</span>
-                                    <span class="info-box-number">851</span>
+                                    <span class="info-box-number">838</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -130,7 +130,7 @@
                                 <span class="info-box-icon bg-yellow"><i class="ion ion-key"></i></span>
                                 <div class="info-box-content">
                                     <span class="info-box-text">Constraints</span>
-                                    <span class="info-box-number">326</span>
+                                    <span class="info-box-number">325</span>
                                 </div>
                                 <!-- /.info-box-content -->
                             </div>
@@ -297,16 +297,16 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_version.html">report_version</a></td>
-                                        <td class="detail" align="right">24</td>
+                                        <td class="detail" align="right">23</td>
                                         <td class="detail" align="right">4</td>
-                                        <td class="detail" align="right">11</td>
+                                        <td class="detail" align="right">12</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>A table representing the multiple versions that a single report can have.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_product.html">report_product</a></td>
-                                        <td class="detail" align="right">2</td>
+                                        <td class="detail" align="right">1</td>
                                         <td class="detail" align="right">6</td>
                                         <td class="detail" align="right">18</td>
                                         <td class="detail" align="right">-1</td>
@@ -378,7 +378,7 @@
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_compliance_summary.html">report_compliance_summary</a></td>
-                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">2</td>
                                         <td class="detail" align="right">4</td>
                                         <td class="detail" align="right">18</td>
                                         <td class="detail" align="right">-1</td>
@@ -584,24 +584,6 @@
                                         <td class="comment detail" style="display: table-cell;"><p>Table containing address data. Only Canadian addresses are supported.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/compliance_product.html">compliance_product</a></td>
-                                        <td class="detail" align="right">0</td>
-                                        <td class="detail" align="right">5</td>
-                                        <td class="detail" align="right">14</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"><p>A table to store per-product compliance data</p></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
-                                        <td class="detail"><a href="tables/compliance_summary.html">compliance_summary</a></td>
-                                        <td class="detail" align="right">2</td>
-                                        <td class="detail" align="right">6</td>
-                                        <td class="detail" align="right">18</td>
-                                        <td class="detail" align="right">-1</td>
-                                        <td class="detail" align="right">Table</td>
-                                        <td class="comment detail" style="display: table-cell;"><p>A table to store compliance summaries for reports</p></td>
-                                    </tr>
-                                    <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_attachment_confirmation.html">report_attachment_confirmation</a></td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">4</td>
@@ -753,6 +735,15 @@
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/compliance_report_version.html">compliance_report_version</a></td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">12</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>The compliance_report_version table records are generated from the compliance summary data when an emission report is submitted</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/report_operation_activities.html">report_operation_activities</a></td>
@@ -980,6 +971,15 @@
                                         <td class="comment detail" style="display: table-cell;"><p>This table contains the definitions for roles within the BCIERs apps. These roles are used to define the permissions a user has within BCIERs apps.</p></td>
                                     </tr>
                                     <tr class="tbl even" valign="top">
+                                        <td class="detail"><a href="tables/compliance_report.html">compliance_report</a></td>
+                                        <td class="detail" align="right">1</td>
+                                        <td class="detail" align="right">5</td>
+                                        <td class="detail" align="right">9</td>
+                                        <td class="detail" align="right">-1</td>
+                                        <td class="detail" align="right">Table</td>
+                                        <td class="comment detail" style="display: table-cell;"><p>This table is the parent anchor table of all compliance data for an operation and compliance period</p></td>
+                                    </tr>
+                                    <tr class="tbl even" valign="top">
                                         <td class="detail"><a href="tables/closure_event_facilities.html">closure_event_facilities</a></td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">2</td>
@@ -992,7 +992,7 @@
                                         <td class="detail"><a href="tables/compliance_obligation.html">compliance_obligation</a></td>
                                         <td class="detail" align="right">0</td>
                                         <td class="detail" align="right">4</td>
-                                        <td class="detail" align="right">16</td>
+                                        <td class="detail" align="right">13</td>
                                         <td class="detail" align="right">-1</td>
                                         <td class="detail" align="right">Table</td>
                                         <td class="comment detail" style="display: table-cell;"><p>A table to store compliance obligations</p></td>
