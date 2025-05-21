@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 
 class ComplianceReportVersionService:
-
     @classmethod
     @transaction.atomic
     def create_compliance_report_version(
