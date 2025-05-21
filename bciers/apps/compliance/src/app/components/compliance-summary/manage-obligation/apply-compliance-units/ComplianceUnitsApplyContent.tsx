@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box } from "@mui/material";
-import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import ComplianceFormHeading from "@/compliance/src/app/components/layout/ComplianceFormHeading";
 import AccountInformation from "./AccountInformation";
 
