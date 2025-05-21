@@ -1,3 +1,5 @@
+"use client";
+
 import { List } from "@mui/material";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import taskListItemFactory from "@bciers/components/navigation/reportingTaskList/items/taskListItemFactory";
