@@ -70,13 +70,11 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-12T15:27:00.000Z",
-      "name": "Alien SFO - Registered - no facility",
+      "name": "Alien SFO - Draft - no facility",
       "type": "Single Facility Operation",
       "naics_code": 21,
-      "bcghg_id": "23219990002",
       "regulated_products": [1],
-      "status": "Registered",
-      "bc_obps_regulated_operation": "23-0002",
+      "status": "Draft",
       "activities": [1, 5],
       "registration_purpose": "OBPS Regulated Operation",
       "contacts": [1]

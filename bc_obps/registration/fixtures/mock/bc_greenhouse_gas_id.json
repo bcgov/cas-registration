@@ -26,14 +26,6 @@
   {
     "model": "registration.bcgreenhousegasid",
     "fields": {
-      "id": "23219990002",
-      "issued_at": "2023-10-13T15:27:00.000Z",
-      "comments": "For Operation 4"
-    }
-  },
-  {
-    "model": "registration.bcgreenhousegasid",
-    "fields": {
       "id": "23219990001",
       "issued_at": "2023-10-13T15:27:00.000Z",
       "comments": "For Operation 5"
@@ -328,13 +320,6 @@
     "model": "registration.bcgreenhousegasid",
     "fields": {
       "id": "13219990025",
-      "issued_at": "2024-10-31T15:27:00.000Z"
-    }
-  },
-  {
-    "model": "registration.bcgreenhousegasid",
-    "fields": {
-      "id": "13219990026",
       "issued_at": "2024-10-31T15:27:00.000Z"
     }
   },
