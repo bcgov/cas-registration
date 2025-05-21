@@ -1,3 +1,16 @@
+## [3.2.1](https://github.com/bcgov/cas-registration/compare/v3.2.0...v3.2.1) (2025-05-21)
+
+### Bug Fixes
+
+- Allow zeroes for numberfields ([5c4a700](https://github.com/bcgov/cas-registration/commit/5c4a7003cd406b81e968df1beebdeae15d2c6b75))
+- automatic display of 4 decimal places ([b1d32e4](https://github.com/bcgov/cas-registration/commit/b1d32e4ec3cedad63d07308d5f2b2cf832881580))
+- inject 'require' into for emission field in reporting activity forms ([2e30fea](https://github.com/bcgov/cas-registration/commit/2e30feadf5ca14014ad7328f94a14f6d03fc9d38))
+- operation review page displays the last day of the reporting year ([06c7969](https://github.com/bcgov/cas-registration/commit/06c7969d95f93057f6e73de29bdb5821b1442519))
+
+### Reverts
+
+- Revert "chore: spec work on adding op rep error" ([e3dd6af](https://github.com/bcgov/cas-registration/commit/e3dd6af2fbbd342d3114899b335d4bb3061fb5a3))
+
 # [3.2.0](https://github.com/bcgov/cas-registration/compare/v3.1.0...v3.2.0) (2025-05-14)
 
 ### Bug Fixes
