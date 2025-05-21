@@ -2,7 +2,10 @@ import { render, act, waitFor } from "@testing-library/react";
 import { actionHandler } from "@bciers/actions";
 import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
 import { vi } from "vitest";
-import FacilityReview from "@reporting/src/app/components/facility/FacilityReviewForm";
+import {
+  FacilityReview,
+  FacilityReviewFormData,
+} from "@reporting/src/app/components/facility/FacilityReviewForm";
 import { dummyNavigationInformation } from "../taskList/utils";
 
 // Mocks for external dependencies
@@ -12,11 +15,6 @@ vi.mock("@bciers/actions", () => ({
 vi.mock("@bciers/utils/src/serializeSearchParams", () => ({
   default: vi.fn(),
 }));
-// Mocking MultiStepFormWithTaskList
-vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => ({
-  default: vi.fn(),
-}));
-
 // Mocking MultiStepFormWithTaskList
 vi.mock("@bciers/components/form/MultiStepFormWithTaskList", () => {
   return {
@@ -45,9 +43,41 @@ const mockActivitiesData: {
   applicable_to: string;
 }[] = [{ name: "Activity 1", id: 1, applicable_to: "abc" }];
 const mockSchema = { testSchema: true };
-const mockFormData = { activities: ["Activity 1"] };
 
-const renderFacilityReview = (formData = mockFormData) => (
+const mockFormData: FacilityReviewFormData = {
+  operation_id: "1234",
+  facility_name: "Test Facility",
+  facility_type: "Test Type",
+  facility_bcghgid: null,
+  activities: ["Activity 1"],
+  facility: "abcd",
+};
+
+const renderFacilityReview = (
+  formData: FacilityReviewFormData = mockFormData,
+) => (
+  <FacilityReview
+    version_id={1000}
+    facility_id="abcd"
+    activitiesData={mockActivitiesData}
+    navigationInformation={dummyNavigationInformation}
+    formsData={formData}
+    schema={mockSchema}
+    operationId="1234"
+  />
+);
+
+const mockFormDataWithoutActivities: FacilityReviewFormData = {
+  operation_id: "1234",
+  facility_name: "Test Facility",
+  facility_type: "Test Type",
+  facility_bcghgid: null,
+  activities: [],
+  facility: "abcd",
+};
+const renderFacilityReviewWithoutActivities = (
+  formData: FacilityReviewFormData = mockFormDataWithoutActivities,
+) => (
   <FacilityReview
     version_id={1000}
     facility_id="abcd"
@@ -76,7 +106,9 @@ describe("The FacilityReview component", () => {
       "reporting/report-version/1000/facility-report/abcd",
       "POST",
       "reporting/report-version/1000/facility-report/abcd",
-      { body: '{"activities":[1]}' },
+      {
+        body: '{"operation_id":"1234","facility_name":"Test Facility","facility_type":"Test Type","facility_bcghgid":null,"activities":[1],"facility":"abcd"}',
+      },
     );
   });
 
@@ -88,7 +120,14 @@ describe("The FacilityReview component", () => {
 
     await act(() =>
       changeHandlerUnderTest({
-        formData: { activities: ["Activity 1"] },
+        formData: {
+          operation_id: "1234",
+          facility_name: "Test Facility",
+          facility_type: "Test Type",
+          facility_bcghgid: null,
+          activities: ["Activity 1"],
+          facility: "abcd",
+        },
       }),
     );
 
@@ -96,7 +135,12 @@ describe("The FacilityReview component", () => {
     expect(
       mockMultiStepFormWithTaskList.mock.calls[1][0].formData,
     ).toStrictEqual({
+      operation_id: "1234",
+      facility_name: "Test Facility",
+      facility_type: "Test Type",
+      facility_bcghgid: null,
       activities: ["Activity 1"],
+      facility: "abcd",
     });
   });
 
@@ -113,5 +157,19 @@ describe("The FacilityReview component", () => {
     await waitFor(() => {
       expect(getByText("Some error occurred")).toBeInTheDocument();
     });
+  });
+
+  it("shows error on submit when there are no activities", async () => {
+    const { getByText } = render(renderFacilityReviewWithoutActivities());
+
+    const calledProps = mockMultiStepFormWithTaskList.mock.calls[0][0];
+    await act(() => calledProps.onSubmit());
+
+    await waitFor(() => {
+      expect(
+        getByText("You must select at least one activity"),
+      ).toBeInTheDocument();
+    });
+    expect(mockActionHandler).not.toHaveBeenCalled();
   });
 });
