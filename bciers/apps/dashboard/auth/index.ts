@@ -7,7 +7,7 @@ import authConfig from "./auth.config";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: 30 * 60, // 30 minutes matching Keycloak token expiration time
+    maxAge: 60 * 30, // 30 minutes matching Keycloak token expiration time
   },
   ...authConfig,
 });
