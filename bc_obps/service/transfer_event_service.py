@@ -257,12 +257,11 @@ class TransferEventService:
             # update the facility's operation
             FacilityService.update_operation_for_facility(user_guid=user_guid, facility=facility, operation_id=event.to_operation.id)  # type: ignore # we are sure that operation is not None
 
-    # @transaction.atomic()
     @classmethod
     @transaction.atomic()
     def _process_operation_transfer(cls, event: TransferEvent, user_guid: UUID) -> None:
         """
-        Process an operation transfer event. Updates the timelines for the associated operation. Deletes operation_contacts that belong to the original operator.
+        Process an operation transfer event. Updates the timelines for the associated operation. Deletes the link between the contacts and the  original operator (ie, deletes the record in the operation_contacts through table). Does not delete the contact record in the contact table.
         """
 
         # get the current timeline for the operation and operator
