@@ -92,6 +92,7 @@ class TestReportVersionService(TestCase):
             'ComplianceObligation',
             'ReportComplianceSummary',
             'ReportComplianceSummaryProduct',
+            'ComplianceEarnedCredits',
         }
 
     def test_is_initial_report_version_returns_true_for_first_version(self):
