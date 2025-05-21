@@ -11,12 +11,12 @@
 # from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 # from registration.schema.generic import Message
 # from ...router import router
-
+# from compliance.constants import COMPLIANCE
 
 # @router.get(
 #     "/compliance-report-versions/{compliance_report_version_id}/issuance",
 #     response={200: ComplianceReportVersionIssuanceOut, 404: Message, custom_codes_4xx: Message},
-#     tags=["Compliance"],
+#     tags=COMPLIANCE,
 #     description="Get issuance data for a compliance report version",
 #     auth=authorize("approved_industry_user"),
 # )
