@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Box } from "@mui/material";
 import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
-import ComplianceHeading from "../../ComplianceHeading";
+import ComplianceFormHeading from "@/compliance/src/app/components/layout/ComplianceFormHeading";
 import AccountInformation from "./AccountInformation";
 
 interface ComplianceUnitsApplyContentProps {
@@ -36,7 +36,7 @@ export function ComplianceUnitsApplyContent(
   return (
     <Box className="w-full flex flex-col min-h-screen">
       <Box className="flex-1">
-        <ComplianceHeading title="Apply Compliance Units" />
+        <ComplianceFormHeading title="Apply Compliance Units" />
 
         <AccountInformation data={data} onValidationChange={setIsFormValid} />
       </Box>
@@ -46,7 +46,6 @@ export function ComplianceUnitsApplyContent(
         continueButtonText="Apply"
         onBackClick={handleCancel}
         onContinueClick={handleApply}
-        backButtonDisabled={false}
         middleButtonDisabled={false}
         submitButtonDisabled={!isFormValid}
       />
