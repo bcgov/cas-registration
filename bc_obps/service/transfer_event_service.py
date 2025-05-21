@@ -277,11 +277,10 @@ class TransferEventService:
             )
 
         # remove contacts that belong to the original operator
-        operation_contacts = event.operation.contacts.all()  # type: ignore # we are sure that operation is not None
+        operation_contacts = event.operation.contacts.filter(operator=event.from_operator)  # type: ignore # we are sure that operation is not None
         for contact in operation_contacts:
-            if contact.operator == event.from_operator:
-                # remove the contact from the operation (without deleting the contact - it might be used elsewhere)
-                event.operation.contacts.remove(contact)  # type: ignore # we are sure that operation is not None
+            # remove the contact from the operation (without deleting the contact - it might be used elsewhere)
+            event.operation.contacts.remove(contact)  # type: ignore # we are sure that operation is not None
 
         # Create a new timeline
         OperationDesignatedOperatorTimelineDataAccessService.create_operation_designated_operator_timeline(
