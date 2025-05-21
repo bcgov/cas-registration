@@ -63,7 +63,7 @@ class ReportVersion(TimeStampedModel):
             # Protect a submitted report version from any update
             # except when the only change is to set `is_latest_submitted` from True to False
             pgtrigger.Protect(
-                name="immutable_report_version",
+                name="immutable_report_version",  # Keep original name for compatibility
                 operation=pgtrigger.Update | pgtrigger.Insert | pgtrigger.Delete,
                 condition=(
                     pgtrigger.Q(old__status="Submitted")
