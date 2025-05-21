@@ -12,6 +12,7 @@ from registration.schema.generic import Message
 from .router import router
 from compliance.constants import COMPLIANCE
 
+
 @router.get(
     "/compliance-report-versions",
     response={200: List[ComplianceReportVersionListOut], custom_codes_4xx: Message},
