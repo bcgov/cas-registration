@@ -14,7 +14,7 @@ def convert_uuid_to_string(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0008_remove_compliancechargerate_set_created_audit_columns_and_more'),
+        ('compliance', '0003_seed_compliance_charge_rates'),
     ]
 
     operations = [

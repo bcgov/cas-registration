@@ -1,7 +1,6 @@
 from decimal import Decimal
 from uuid import UUID
 from unittest.mock import MagicMock
-from django.test import SimpleTestCase
 from compliance.models.compliance_report_version import ComplianceReportVersion
 
 

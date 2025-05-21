@@ -5,8 +5,9 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.schema.compliance_obligation import ComplianceObligationOut
 
 # Constants for field aliases
-OPERATION_NAME_ALIAS = "report_version.report.operation.name"
-REPORTING_YEAR_ALIAS = "compliance_period.end_date.year"
+OPERATION_NAME_ALIAS = "compliance_report.report.operation.name"
+REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.end_date.year"
+OBLIGATION_ID_ALIAS = "obligation.obligation_id"
 
 
 class ComplianceReportVersionListOut(ModelSchema):
@@ -15,7 +16,7 @@ class ComplianceReportVersionListOut(ModelSchema):
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     status: str
-    obligation_id: Optional[str] = Field(None, alias="obligation.obligation_id")
+    obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance: Optional[Decimal] = None
 
     class Meta:
@@ -24,19 +25,35 @@ class ComplianceReportVersionListOut(ModelSchema):
             'id',
         ]
 
+    @staticmethod
+    def resolve_operation_name(obj: ComplianceReportVersion) -> str:
+        """Get the operation name from the nested relationship"""
+        try:
+            return obj.compliance_report.report.operation.name
+        except AttributeError:
+            return ""
+
+    @staticmethod
+    def resolve_reporting_year(obj: ComplianceReportVersion) -> int:
+        """Get the reporting year from the compliance period"""
+        try:
+            return obj.compliance_report.compliance_period.end_date.year
+        except AttributeError:
+            return 0
+
 
 class ComplianceReportVersionOut(ModelSchema):
     """Schema for compliance summary output"""
 
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
-    operation_bcghg_id: str = Field(..., alias="report_version.report.operation.bcghg_id.id")
+    operation_bcghg_id: str = Field(..., alias="compliance_report.report.operation.bcghg_id.id")
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    status: str = Field(..., alias="compliance_status")
+    status: str
     obligation: ComplianceObligationOut
     excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
     credited_emissions: Decimal = Field(..., alias="report_compliance_summary.credited_emissions")
     outstanding_balance: Optional[Decimal] = None
-    obligation_id: Optional[str] = Field(None, alias="obligation.obligation_id")
+    obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
 
     class Meta:
         model = ComplianceReportVersion

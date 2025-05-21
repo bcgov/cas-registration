@@ -62,7 +62,6 @@ ENDPOINTS = {
             "endpoint_name": "get_electricity_import_data",
             "kwargs": {"version_id": MOCK_INT},
         },
-        {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},
         {
             "method": "get",
             "endpoint_name": "get_compliance_report_version",
@@ -70,8 +69,8 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_compliance_summary_payments",
-            "kwargs": {"summary_id": MOCK_INT},
+            "endpoint_name": "get_compliance_report_version_payments",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
         {
             "method": "get",
@@ -383,6 +382,7 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_internal_users"},
     ],
     "approved_authorized_roles": [
+        {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},
         {
             "method": "get",
             "endpoint_name": "get_operator",
