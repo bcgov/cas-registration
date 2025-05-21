@@ -7,11 +7,7 @@ export const ComplianceFormHeading: React.FC<ComplianceHeadingProps> = ({
   title,
   className = "",
 }) => {
-  return (
-      <div className={`form-heading border-y-2 ${className}`}>
-        {title}
-      </div>
-  );
+  return <div className={`form-heading border-y-2 ${className}`}>{title}</div>;
 };
 
 export default ComplianceFormHeading;
