@@ -8,12 +8,13 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from ..router import router
+from compliance.constants import COMPLIANCE
 
 
 @router.get(
     "/compliance-report-versions/{compliance_report_version_id}",
     response={200: Optional[ComplianceReportVersionOut], custom_codes_4xx: Message},
-    tags=["Compliance"],
+    tags=COMPLIANCE,
     description="Get a compliance report version by ID",
     auth=authorize("approved_authorized_roles"),
 )
