@@ -10,14 +10,6 @@
   {
     "model": "registration.bcobpsregulatedoperation",
     "fields": {
-      "id": "23-0002",
-      "issued_at": "2023-10-13T15:27:00.000Z",
-      "comments": "Test comment"
-    }
-  },
-  {
-    "model": "registration.bcobpsregulatedoperation",
-    "fields": {
       "id": "24-0003",
       "issued_at": "2024-10-13T15:27:00.000Z",
       "comments": "Test comment"
