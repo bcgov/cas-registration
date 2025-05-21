@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import ComplianceStepButtons from "./ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({

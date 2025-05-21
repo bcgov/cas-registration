@@ -6,7 +6,7 @@ import { ComplianceUnitsGrid } from "./ComplianceUnitsGrid";
 import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
 import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
-import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { useState } from "react";
 
 interface Props {

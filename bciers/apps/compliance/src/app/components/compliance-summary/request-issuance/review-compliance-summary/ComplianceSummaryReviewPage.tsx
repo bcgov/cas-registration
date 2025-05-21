@@ -6,7 +6,7 @@ import {
 import ComplianceFormHeading from "@/compliance/src/app/components/layout/ComplianceFormHeading";
 import { FormReport } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/FormReport";
 import { EarnedCredits } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCredits";
-import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 
 interface Props {
