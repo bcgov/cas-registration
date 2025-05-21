@@ -15,25 +15,18 @@ interface ComplianceStepButtonsProps {
   continueUrl?: string;
   onBackClick?: () => void;
   onContinueClick?: () => void;
-
   backButtonDisabled?: boolean;
   middleButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
-
   backButtonText?: string;
   continueButtonText?: string;
-
   middleButtonText?: string;
   onMiddleButtonClick?: () => void;
   middleButtonActive?: boolean;
-
-  saveButtonDisabled?: boolean;
   saveAndContinue?: () => void;
-  noFormSave?: () => void;
-  noSaveButton?: boolean;
   customButtons?: React.ReactNode;
   children?: React.ReactNode;
-  style?: React.CSSProperties; // Optional additional styles
+  className?: string;
 }
 
 const ComplianceStepButtons: React.FunctionComponent<
@@ -43,21 +36,17 @@ const ComplianceStepButtons: React.FunctionComponent<
   continueUrl,
   onBackClick,
   onContinueClick,
-
-  backButtonDisabled,
+  backButtonDisabled = false,
   middleButtonDisabled,
-  submitButtonDisabled,
-
+  submitButtonDisabled = false,
   backButtonText = "Back",
   continueButtonText = "Continue",
-
   middleButtonText,
   onMiddleButtonClick,
   middleButtonActive = true,
-
   customButtons,
   children,
-  style,
+  className,
 }) => {
   const router = useRouter();
 
@@ -67,16 +56,9 @@ const ComplianceStepButtons: React.FunctionComponent<
       router.push(url);
     }
   };
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "space-between",
-        mt: 2,
-        mb: 2,
-      }}
-      style={style}
-    >
+    <Box className={`flex justify-between ${className}`}>
       <div>
         {(backUrl || onBackClick) && (
           <Button
