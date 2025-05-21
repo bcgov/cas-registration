@@ -1,5 +1,7 @@
 from reporting.models.report_emission import ReportEmission
-from reporting.models.report_product_emission_allocation import ReportProductEmissionAllocation
+from reporting.models.report_product_emission_allocation import (
+    ReportProductEmissionAllocation,
+)
 from reporting.models.report_product import ReportProduct
 from reporting.models import NaicsRegulatoryValue, ReportVersion
 from reporting.models.product_emission_intensity import ProductEmissionIntensity
@@ -125,16 +127,17 @@ class ComplianceService:
         reporting_only_allocated = ComplianceService.get_allocated_emissions_by_report_product_emission_category(
             report_version_id, product_id, reporting_only_category_ids
         )
+        return reporting_only_allocated
+
+    @staticmethod
+    def get_unregulated_products_allocated(report_version_id: int) -> Decimal:
         unregulated_product_allocation_records = ReportProductEmissionAllocation.objects.filter(
             report_version_id=report_version_id,
             report_product__product__is_regulated=False,
-        ).exclude(
-            emission_category_id__in=reporting_only_category_ids
-        )  # Exclude emissions allocated to unregulated products from excluded categories (otherwise we're double counting the excluded emissions)
-        unregulated_allocated_amount = unregulated_product_allocation_records.aggregate(
-            allocated_sum=Sum('allocated_quantity')
         )
-        return reporting_only_allocated + (unregulated_allocated_amount['allocated_sum'] or Decimal('0'))
+        return unregulated_product_allocation_records.aggregate(allocated_sum=Sum("allocated_quantity"))[
+            "allocated_sum"
+        ] or Decimal("0")
 
     @staticmethod
     def calculate_product_emission_limit(
@@ -242,6 +245,11 @@ class ComplianceService:
                     allocated_compliance_emissions=round(allocated_for_compliance_2024, 4),
                 )
             )
+
+        # Emissions allocated to unregulated products
+        total_allocated_unregulated_products = ComplianceService.get_unregulated_products_allocated(report_version_id)
+        total_allocated_reporting_only += total_allocated_unregulated_products
+
         # Get attributable emission total
         attributable_for_reporting_total = ComplianceService.get_emissions_attributable_for_reporting(report_version_id)
         # Calculated Excess/credited emissions
