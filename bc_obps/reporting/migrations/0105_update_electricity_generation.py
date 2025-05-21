@@ -86,7 +86,7 @@ def assign_reporting_fields_to_configuration_elements(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0103_remove_facilityreport_immutable_report_version_and_more"),
+        ("reporting", "0104_reportversion_reason_for_change"),
     ]
 
     operations = [
