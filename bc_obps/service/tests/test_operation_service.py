@@ -1931,3 +1931,62 @@ class TestChangeOperationType:
 
         # assert handle_change_of_registration_purpose isn't modifying parts of the payload that should be untouched
         assert returned_payload.name == "Updated Operation"
+
+
+class TestGenerateBCGHGId:
+    @staticmethod
+    def test_raise_exception_if_user_not_cas_director():
+        cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+        )
+        with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
+            OperationService.generate_bcghg_id(cas_analyst.user_guid, operation.id)
+
+    @staticmethod
+    def test_generate_bcghg_id_for_sfo():
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=operator,
+            status=Operation.Statuses.REGISTERED,
+            type=Operation.Types.SFO,
+        )
+        facility = baker.make_recipe(
+            'registration.tests.utils.facility',
+            operation=operation,
+        )
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+
+        OperationService.generate_bcghg_id(cas_director.user_guid, operation.id)
+        operation.refresh_from_db()
+        facility.refresh_from_db()
+
+        assert operation.bcghg_id is not None
+        assert operation.bcghg_id.issued_by == cas_director
+        assert facility.bcghg_id == operation.bcghg_id
+        assert facility.bcghg_id.issued_by == cas_director
+
+    @staticmethod
+    def test_generate_bcghg_id_for_lfo():
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=operator,
+            status=Operation.Statuses.REGISTERED,
+            type=Operation.Types.LFO,
+        )
+        facility = baker.make_recipe(
+            'registration.tests.utils.facility',
+            operation=operation,
+        )
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
+
+        OperationService.generate_bcghg_id(cas_director.user_guid, operation.id)
+        operation.refresh_from_db()
+        facility.refresh_from_db()
+
+        assert operation.bcghg_id is not None
+        assert operation.bcghg_id.issued_by == cas_director
+        assert facility.bcghg_id is None
