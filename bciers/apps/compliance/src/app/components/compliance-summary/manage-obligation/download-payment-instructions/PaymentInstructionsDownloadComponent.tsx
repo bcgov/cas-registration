@@ -10,7 +10,7 @@ export default function PaymentInstructionsDownloadComponent({
 }: Props) {
   return (
     <div>
-      <div className="container mx-auto p-4" data-testid="compliance-review">
+      <div className="container mx-auto p-4">
         <h2 className="text-2xl font-bold mb-4 text-bc-bg-blue">
           Pink Operation
         </h2>
