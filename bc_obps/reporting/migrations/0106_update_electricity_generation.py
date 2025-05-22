@@ -26,7 +26,7 @@ def create_configuration_elements(apps, schema_editor):
         'Measured HHV/Default EF',
         'Measured Steam/Default EF',
         'Measured CC',
-        'Heat Input/Default EF',
+        'Measured Steam/Measured EF',
     ]
 
     ConfigurationElement.objects.bulk_create(
@@ -75,7 +75,7 @@ def assign_reporting_fields_to_configuration_elements(apps, schema_editor):
             'Unit-Fuel-CO2 Default EF',
         ],
         'Measured CC': ['Fuel Annual Weighted Average Carbon Content (weight fraction)'],
-        'Heat Input/Default EF': [
+        'Measured Steam/Measured EF': [
             'Unit-Fuel Annual Steam Generated',
             'Unit-Fuel-CO2 Measured Steam-Measured EF',
         ],
