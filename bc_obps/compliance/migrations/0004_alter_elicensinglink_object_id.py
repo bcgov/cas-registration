@@ -3,14 +3,6 @@
 from django.db import migrations, models
 
 
-def convert_uuid_to_string(apps, schema_editor):
-    ELicensingLink = apps.get_model('compliance', 'ELicensingLink')
-    for link in ELicensingLink.objects.all():
-        if link.object_id:
-            link.object_id = str(link.object_id)
-            link.save()
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -18,9 +10,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # First convert the data
-        migrations.RunPython(convert_uuid_to_string),
-        # Then alter the field
         migrations.AlterField(
             model_name='elicensinglink',
             name='object_id',
