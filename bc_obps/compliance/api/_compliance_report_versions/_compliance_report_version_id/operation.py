@@ -26,6 +26,3 @@ def get_operation_by_compliance_report_version_id(
     """
     compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
     return 200, compliance_report_version.compliance_report.report.operation
-
-
-# Note: PUT and PATCH endpoints would be added here when needed
