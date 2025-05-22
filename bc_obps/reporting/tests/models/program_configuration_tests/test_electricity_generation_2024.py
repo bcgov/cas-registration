@@ -20,7 +20,7 @@ class ElectricityGeneration2024Test(BaseProgramConfigurationTest, TestCase):
                     'Measured HHV/Default EF': 2,
                     'Measured Steam/Default EF': 3,
                     'Measured CC': 1,
-                    'Heat Input/Default EF': 2,
+                    'Measured Steam/Measured EF': 2,
                 },
                 'CH4': {
                     'Default HHV/Default EF': 2,
