@@ -1,15 +1,16 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
-export enum ActivePage {
+export enum InternalActivePage {
   "ReviewComplianceSummary" = 0,
-  "RequestIssuanceOfEarnedCredits",
+  "AnalystReview",
+  "DirectorReview",
   "TrackStatusOfIssuance",
 }
 
-export const getRequestIssuanceTaskList: (
+export const getInternalRequestIssuanceTaskList: (
   complianceSummaryId: number,
   reporting_year?: number,
-  activeIndex?: ActivePage,
+  activeIndex?: InternalActivePage,
 ) => TaskListElement[] = (
   complianceSummaryId,
   reporting_year,
@@ -20,26 +21,32 @@ export const getRequestIssuanceTaskList: (
       type: "Page" as const,
       title: `Review ${reporting_year} Compliance Summary`,
       link: `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`,
-      isActive: activeIndex === ActivePage.ReviewComplianceSummary,
+      isActive: activeIndex === InternalActivePage.ReviewComplianceSummary,
     },
     {
       type: "Page" as const,
-      title: "Request Issuance of Earned Credits",
-      link: `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`,
-      isActive: activeIndex === ActivePage.RequestIssuanceOfEarnedCredits,
+      title: "Review Credits Issuance Request",
+      link: `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`,
+      isActive: activeIndex === InternalActivePage.AnalystReview,
+    },
+    {
+      type: "Page" as const,
+      title: "Review by Director",
+      link: `/compliance-summaries/${complianceSummaryId}/director-review`,
+      isActive: activeIndex === InternalActivePage.DirectorReview,
     },
     {
       type: "Page" as const,
       title: "Track Status of Issuance",
       link: `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
-      isActive: activeIndex === ActivePage.TrackStatusOfIssuance,
+      isActive: activeIndex === InternalActivePage.TrackStatusOfIssuance,
     },
   ];
 
   return [
     {
       type: "Section",
-      title: `${reporting_year} Compliance Summary`,
+      title: `${reporting_year} Compliance Summary Review`,
       isExpanded: true,
       elements: taskItems,
     },

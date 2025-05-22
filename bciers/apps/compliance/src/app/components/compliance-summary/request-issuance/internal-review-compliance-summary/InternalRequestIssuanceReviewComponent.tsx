@@ -1,6 +1,6 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
-import { RequestIssuanceReviewContent } from "./RequestIssuanceReviewContent";
+import { InternalRequestIssuanceReviewContent } from "./InternalRequestIssuanceReviewContent";
 
 interface Props {
   readonly formData: any;
@@ -8,20 +8,20 @@ interface Props {
   readonly taskListElements: TaskListElement[];
 }
 
-export default function RequestIssuanceReviewComponent({
+export function InternalRequestIssuanceReviewComponent({
   formData,
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  const backUrl = `/compliance-summaries`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  const backUrl = `/idir/cas_analyst/compliance-summaries`;
+  const saveAndContinueUrl = `/idir/cas_analyst/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
 
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
       title={formData.operation_name}
     >
-      <RequestIssuanceReviewContent
+      <InternalRequestIssuanceReviewContent
         data={formData}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}

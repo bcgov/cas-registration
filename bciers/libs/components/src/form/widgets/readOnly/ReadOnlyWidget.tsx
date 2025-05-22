@@ -7,7 +7,7 @@ const ReadOnlyWidget: React.FC<WidgetProps> = ({ id, value, uiSchema }) => {
   return (
     <div
       id={id}
-      className={`read-only-widget whitespace-pre-line ${customClassName}`}
+      className={`read-only-widget whitespace-pre-line${customClassName}`}
     >
       {formatValue}
     </div>

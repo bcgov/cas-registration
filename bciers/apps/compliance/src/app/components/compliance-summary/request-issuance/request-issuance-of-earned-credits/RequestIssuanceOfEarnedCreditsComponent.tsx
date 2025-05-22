@@ -14,8 +14,8 @@ export default function RequestIssuanceOfEarnedCreditsComponent({
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/track-status-of-issuance`;
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
 
   return (
     <CompliancePageLayout
@@ -23,7 +23,6 @@ export default function RequestIssuanceOfEarnedCreditsComponent({
       title={data.operation_name}
     >
       <RequestIssuanceOfEarnedCreditsContent
-        data={data}
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
       />

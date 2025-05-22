@@ -34,19 +34,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: `/compliance-summaries/${id}/request-issuance/review-compliance-summary`,
+            link: `/compliance-summaries/${id}/review-compliance-summary`,
             isActive: true,
           },
           {
             type: "Page",
             title: "Request Issuance of Earned Credits",
-            link: `/compliance-summaries/${id}/request-issuance/request-issuance-of-earned-credits`,
+            link: `/compliance-summaries/${id}/request-issuance-of-earned-credits`,
             isActive: false,
           },
           {
             type: "Page",
             title: "Track Status of Issuance",
-            link: `/compliance-summaries/${id}/request-issuance/track-status-of-issuance`,
+            link: `/compliance-summaries/${id}//track-status-of-issuance`,
             isActive: false,
           },
         ],

@@ -15,3 +15,8 @@ export interface ComplianceSummary {
   penalty_status?: string;
   obligation_id?: string;
 }
+
+export interface BccrAccountDetailsResponse {
+  tradingName: string | null;
+  error?: string;
+}

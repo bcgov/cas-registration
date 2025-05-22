@@ -30,7 +30,7 @@ describe("ActionCell", () => {
     render(ActionCell(createMockParams(123, undefined, "Earned credits")));
     expectLink(
       "Request Issuance of Credits",
-      "/compliance-summaries/123/request-issuance/review-compliance-summary",
+      "/compliance-summaries/123/review-compliance-summary",
     );
   });
 

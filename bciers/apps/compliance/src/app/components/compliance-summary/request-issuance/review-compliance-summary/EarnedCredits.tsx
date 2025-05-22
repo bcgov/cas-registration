@@ -4,10 +4,13 @@ import { EarnedCreditsAlertNote } from "./EarnedCreditsAlertNote";
 
 interface EarnedCreditsProps {
   data: any;
-  isCasStaff: boolean;
+  isCasStaff?: boolean;
 }
 
-export const EarnedCredits = ({ data, isCasStaff }: EarnedCreditsProps) => {
+export const EarnedCredits = ({
+  data,
+  isCasStaff = false,
+}: EarnedCreditsProps) => {
   return (
     <div className={`w-full mb-2.5`}>
       <TitleRow label={`Earned Credits`} />

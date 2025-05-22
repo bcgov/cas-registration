@@ -18,17 +18,11 @@ vi.mock("@bciers/components/layout/CompliancePageLayout", () => ({
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent",
   () => ({
-    RequestIssuanceOfEarnedCreditsContent: ({
-      data,
-      backUrl,
-      continueUrl,
-      complianceSummaryId,
-    }: any) => (
+    RequestIssuanceOfEarnedCreditsContent: ({ backUrl, continueUrl }: any) => (
       <div data-testid="request-issuance-content">
-        <div data-testid="operation-name">{data.operation_name}</div>
+        <div data-testid="operation-name">Test Operation</div>
         <div data-testid="back-url">{backUrl}</div>
         <div data-testid="continue-url">{continueUrl}</div>
-        <div data-testid="compliance-summary-id">{complianceSummaryId}</div>
       </div>
     ),
   }),
@@ -98,7 +92,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
       />,
     );
 
-    const expectedBackUrl = `/compliance-summaries/456/request-issuance/review-compliance-summary`;
+    const expectedBackUrl = `/compliance-summaries/456/review-compliance-summary`;
     const backUrlElement = screen.getByTestId("back-url");
     expect(backUrlElement).toBeInTheDocument();
     expect(backUrlElement).toHaveTextContent(expectedBackUrl);
@@ -115,7 +109,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
       />,
     );
 
-    const expectedContinueUrl = `/compliance-summaries/456/request-issuance/track-status-of-issuance`;
+    const expectedContinueUrl = `/compliance-summaries/456/track-status-of-issuance`;
     const continueUrlElement = screen.getByTestId("continue-url");
     expect(continueUrlElement).toBeInTheDocument();
     expect(continueUrlElement).toHaveTextContent(expectedContinueUrl);

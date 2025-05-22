@@ -57,7 +57,7 @@ describe("The FormBase component", () => {
     // can't getByLabel because there's no <input> element in the readonly theme
     expect(screen.getByText(/test field/i)).toHaveAttribute(
       "class",
-      "read-only-widget whitespace-pre-line ",
+      "read-only-widget whitespace-pre-line",
     );
   });
 

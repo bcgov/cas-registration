@@ -1,31 +1,33 @@
 import {
-  ActivePage,
-  getRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
+  InternalActivePage,
+  getInternalRequestIssuanceTaskList,
+} from "@/compliance/src/app/components/taskLists/internal/2_internalRequestIssuanceSchema";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import RequestIssuanceReviewComponent from "./RequestIssuanceReviewComponent";
 import { Suspense } from "react";
 import Loading from "@bciers/components/loading/SkeletonForm";
+import { InternalRequestIssuanceReviewComponent } from "./InternalRequestIssuanceReviewComponent";
 
 interface Props {
   readonly compliance_summary_id: string;
 }
 
-export default async function ComplianceSummaryReviewPage(props: Props) {
+export async function InternalComplianceSummaryReviewPage(props: Props) {
   const complianceSummaryId = parseInt(props.compliance_summary_id, 10);
 
+  // Fetch compliance summary data
   const complianceSummary =
     await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
 
-  const taskListElements = getRequestIssuanceTaskList(
+  // Generate task list elements
+  const taskListElements = getInternalRequestIssuanceTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
-    ActivePage.ReviewComplianceSummary,
+    InternalActivePage.ReviewComplianceSummary,
   );
 
   return (
     <Suspense fallback={<Loading />}>
-      <RequestIssuanceReviewComponent
+      <InternalRequestIssuanceReviewComponent
         formData={complianceSummary}
         complianceSummaryId={complianceSummaryId}
         taskListElements={taskListElements}
