@@ -162,7 +162,7 @@ class ReportVersionTest(BaseTestCase):
         ):
             baker.make_recipe(
                 "reporting.tests.utils.report_version",
-                report=self.test_object.report,
+                report=self.test_object.report, status=ReportVersion.ReportVersionStatus.Submitted
             )
 
 
@@ -188,7 +188,7 @@ class ReportVersionTest(BaseTestCase):
         self.test_object.is_latest_submitted = True
         self.test_object.save()
         self.test_object.refresh_from_db()
-
+        breakpoint()
         with pytest.raises(
             ProgrammingError,
             match="pgtrigger: zz",
