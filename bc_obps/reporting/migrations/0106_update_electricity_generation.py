@@ -48,8 +48,19 @@ def assign_reporting_fields_to_configuration_elements(apps, schema_editor):
     """
     Assign reporting fields to ConfigurationElements based on their methodologies.
     """
+    Methodology = apps.get_model('reporting', 'Methodology')
     ConfigurationElement = apps.get_model('reporting', 'ConfigurationElement')
     ReportingField = apps.get_model('reporting', 'ReportingField')
+    Activity = apps.get_model('registration', 'Activity')
+    SourceType = apps.get_model('reporting', 'SourceType')
+    GasType = apps.get_model('reporting', 'GasType')
+    Configuration = apps.get_model('reporting', 'Configuration')
+
+    activity_id = Activity.objects.get(name='Electricity generation').id
+    source_type_id = SourceType.objects.get(name='Fuel combustion for electricity generation').id
+    gas_type_id = GasType.objects.get(chemical_formula='CO2').id
+    valid_from_id = Configuration.objects.get(valid_from='2023-01-01').id
+    valid_to_id = Configuration.objects.get(valid_to='2099-12-31').id
 
     reporting_fields_mapping = {
         'Default HHV/Default EF': ['Fuel Default High Heating Value', 'Unit-Fuel-CO2 Default EF'],
@@ -73,11 +84,17 @@ def assign_reporting_fields_to_configuration_elements(apps, schema_editor):
     }
 
     for methodology, fields in reporting_fields_mapping.items():
+        methodology_id = Methodology.objects.get(name=methodology).id
+
         configuration_elements = ConfigurationElement.objects.filter(
-            methodology__name=methodology,
-            valid_from__valid_from='2023-01-01',
-            valid_to__valid_to='2099-12-31',
+            activity_id=activity_id,
+            source_type_id=source_type_id,
+            gas_type_id=gas_type_id,
+            methodology_id=methodology_id,
+            valid_from_id=valid_from_id,
+            valid_to_id=valid_to_id,
         )
+
         for element in configuration_elements:
             for field_name in fields:
                 reporting_field = ReportingField.objects.get(field_name=field_name)
@@ -86,7 +103,7 @@ def assign_reporting_fields_to_configuration_elements(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0104_reportversion_reason_for_change"),
+        ("reporting", "0105_V3_2_1"),
     ]
 
     operations = [

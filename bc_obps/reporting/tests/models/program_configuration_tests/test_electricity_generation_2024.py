@@ -7,14 +7,20 @@ class ElectricityGeneration2024Test(BaseProgramConfigurationTest, TestCase):
     def setUpTestData(cls):
         cls.activity_name = "Electricity generation"
         cls.year = 2024
-        cls.config_element_count = 69
+        cls.config_element_count = 75
         cls.config = {
             "Fuel combustion for electricity generation": {
                 "CO2": {
-                    "Alternative Parameter Measurement Methodology": 0,
-                    "Replacement Methodology": 0,
+                    "Alternative Parameter Measurement Methodology": 1,
+                    "Replacement Methodology": 1,
                     "CEMS": 0,
                     "Measured CC and MW": 3,
+                    'Default HHV/Default EF': 2,
+                    'Default EF': 1,
+                    'Measured HHV/Default EF': 2,
+                    'Measured Steam/Default EF': 3,
+                    'Measured CC': 1,
+                    'Heat Input/Default EF': 2,
                 },
                 'CH4': {
                     'Default HHV/Default EF': 2,
