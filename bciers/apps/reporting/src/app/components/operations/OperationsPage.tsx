@@ -19,7 +19,7 @@ export default async function OperationsPage({
           Reporting year {reportingYearObj.reporting_year}
         </h2>
         <h3 className="text-bc-text text-right">
-          Reports due May 31,{yearOnly}
+          Reports due May 31, {yearOnly}
         </h3>
       </div>
       <Operations searchParams={searchParams} />
