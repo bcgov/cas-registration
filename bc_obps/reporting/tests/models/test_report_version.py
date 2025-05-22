@@ -1,6 +1,7 @@
 from common.tests.utils.helpers import BaseTestCase
 from common.tests.utils.model_inspection import get_cascading_models
 from django.core.exceptions import ValidationError
+from django.db import ProgrammingError
 from model_bakery import baker
 import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -114,6 +115,104 @@ class ReportVersionTest(BaseTestCase):
         self.test_object.is_latest_submitted = False
         self.test_object.save()  # no exception
 
+
+    def test_submitted_report_version_is_immutable_update(self):
+         # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: Cannot update rows from report_version table",
+        ):
+            self.test_object.report_type = ReportVersion.ReportType.SIMPLE_REPORT
+            self.test_object.save()
+
+    def test_submitted_report_version_is_immutable_update_related(self):
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        # update field in related table
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: Cannot update rows from report_version table",
+        ):
+            # brianna this doesn't count as an insert?
+            report_verification = baker.make_recipe(
+                "reporting.tests.utils.report_verification",
+                report_version=self.test_object,
+            )
+            
+            report_verification.verification_body_name = "Count Dracula"
+            self.test_object.save()
+
+# brianna how does insert work
+    def test_submitted_report_version_is_immutable_insert(self):
+         # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: ff",
+        ):
+            baker.make_recipe(
+                "reporting.tests.utils.report_version",
+                report=self.test_object.report,
+            )
+
+
+    def test_submitted_report_version_is_immutable_insert_related(self):
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+        # insert field in related table
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: cc",
+        ):
+            baker.make_recipe(
+                "reporting.tests.utils.report_activity",
+                report_version=self.test_object
+            )
+
+
+    def test_submitted_report_version_is_immutable_delete(self):
+         # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: zz",
+        ):
+            self.test_object.delete()
+
+    def test_submitted_report_version_is_immutable_delete_related(self):
+        eio_data = baker.make_recipe(
+            "reporting.tests.utils.electricity_import_data",
+            report_version=self.test_object,
+        )
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        # delete record in related table
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: xx",
+        ):
+            eio_data.delete()
+
+
+
     def test_all_report_version_models_have_the_immutability_trigger(self):
         report_version_models = get_cascading_models(ReportVersion)
 
@@ -132,3 +231,4 @@ class ReportVersionTest(BaseTestCase):
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
+
