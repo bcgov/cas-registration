@@ -17,11 +17,20 @@ interface Props {
   facility_id: string;
   activitiesData: ActivityData[];
   navigationInformation: NavigationInformation;
-  formsData: object;
+  formsData: FacilityReviewFormData;
   schema: RJSFSchema;
 }
 
-const FacilityReview: React.FC<Props> = ({
+export interface FacilityReviewFormData {
+  operation_id: string;
+  facility_name: string;
+  facility_type: string;
+  facility_bcghgid: string | null;
+  activities: string[];
+  facility: string;
+}
+
+export const FacilityReview: React.FC<Props> = ({
   version_id,
   operationId,
   facility_id,
@@ -30,13 +39,18 @@ const FacilityReview: React.FC<Props> = ({
   formsData,
   schema,
 }) => {
-  const [formData, setFormData] = useState<object>(formsData);
+  const [formData, setFormData] = useState<FacilityReviewFormData>(formsData);
   const [errors, setErrors] = useState<string[] | undefined>();
   const uiSchema = buildFacilityReviewUiSchema(operationId, facility_id);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const handleSubmit = async () => {
     const method = "POST";
     const endpoint = `reporting/report-version/${version_id}/facility-report/${facility_id}`;
+
+    if (formData.activities.length === 0) {
+      setErrors(["You must select at least one activity"]);
+      return false;
+    }
 
     const activityNameToIdMap = new Map(
       activitiesData.map((activity: ActivityData) => [
@@ -46,13 +60,14 @@ const FacilityReview: React.FC<Props> = ({
     );
     const updatedFormData = {
       ...formData,
-      activities: (formData as any).activities
+      activities: formData.activities
         .map((activityName: string) => {
           return activityNameToIdMap.get(activityName);
         })
         .filter((id: number | undefined) => id !== undefined) // Filter out undefined IDs
         .map(Number), // Ensure all IDs are numbers
     };
+
     const response = await actionHandler(endpoint, method, endpoint, {
       body: JSON.stringify(updatedFormData),
     });
@@ -75,7 +90,7 @@ const FacilityReview: React.FC<Props> = ({
       return;
     }
 
-    setFormData((prevFormData: object) => ({
+    setFormData((prevFormData: FacilityReviewFormData) => ({
       ...prevFormData,
       facility_name: getUpdatedFacilityData.facility_name,
       facility_type: getUpdatedFacilityData.facility_type,
@@ -100,8 +115,8 @@ const FacilityReview: React.FC<Props> = ({
         }}
         formData={formData}
         onSubmit={handleSubmit}
-        onChange={(data: { formData: object }) => {
-          setFormData((prevFormData: object) => ({
+        onChange={(data: { formData: FacilityReviewFormData }) => {
+          setFormData((prevFormData: FacilityReviewFormData) => ({
             ...prevFormData,
             ...data.formData,
           }));
