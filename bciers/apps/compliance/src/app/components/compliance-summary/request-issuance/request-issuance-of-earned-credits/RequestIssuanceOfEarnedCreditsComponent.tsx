@@ -5,7 +5,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   requestIssuanceOfEarnedCreditsSchema,
   requestIssuanceOfEarnedCreditsUiSchema,
-} from "@/compliance/src/app/utils/requestIssuanceOfEarnedCreditsSchema";
+} from "@/compliance/src/app/data/jsonSchema/requestIssuanceOfEarnedCreditsSchema";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { BccrAccountDetailsResponse } from "@/compliance/src/app/components/compliance-summaries/types";
 
