@@ -105,7 +105,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
       />,
     );
 
-    const expectedBackUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`;
+    const expectedBackUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
     const backUrlElement = screen.getByLabelText("back link");
     expect(backUrlElement).toBeVisible();
     expect(backUrlElement).toHaveTextContent(expectedBackUrl);
