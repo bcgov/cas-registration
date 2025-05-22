@@ -2,6 +2,7 @@ from compliance.api.router import router
 from typing import Literal, Tuple, Optional, Dict
 from django.http import HttpRequest
 from common.permissions import authorize
+from compliance.service.bc_carbon_registry.schema import FifteenDigitString
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import BCCR
@@ -17,7 +18,9 @@ bccr_client = BCCarbonRegistryAPIClient()
     description="Get BCCR account details",
     auth=authorize("approved_industry_user"),
 )
-def get_bccr_account_details(request: HttpRequest, account_id: int) -> Tuple[Literal[200], Dict[str, Optional[str]]]:
+def get_bccr_account_details(
+    request: HttpRequest, account_id: FifteenDigitString
+) -> Tuple[Literal[200], Dict[str, Optional[str]]]:
     # At the time of writing, we only care about the account name.
     account_details = bccr_client.get_account_details(account_id=account_id)
 
