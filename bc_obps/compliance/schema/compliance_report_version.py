@@ -18,6 +18,7 @@ class ComplianceReportVersionListOut(ModelSchema):
     status: str
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance: Optional[Decimal] = None
+    excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
 
     class Meta:
         model = ComplianceReportVersion
