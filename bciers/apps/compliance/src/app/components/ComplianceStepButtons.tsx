@@ -46,7 +46,7 @@ const ComplianceStepButtons: React.FunctionComponent<
   middleButtonActive = true,
   customButtons,
   children,
-  className,
+  className = "",
 }) => {
   const router = useRouter();
 
