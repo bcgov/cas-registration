@@ -8,6 +8,7 @@ from django.db.utils import InternalError, ProgrammingError, DatabaseError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from ninja.responses import Response
 from sentry_sdk import set_tag, capture_exception
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
@@ -24,6 +25,7 @@ class ExceptionResponse:
 
 class ExceptionHandler:
     EXCEPTION_MAP: dict[tuple[type[BaseException], ...], ExceptionResponse] = {
+        (BCCarbonRegistryError,): ExceptionResponse("BC Carbon Registry features not available at this time", 400),
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),
