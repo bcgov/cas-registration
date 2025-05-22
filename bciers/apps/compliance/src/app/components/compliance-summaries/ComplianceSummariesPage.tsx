@@ -1,8 +1,8 @@
 import { ComplianceSummariesSearchParams } from "./types";
-import ComplianceSummaries from "./ComplianceSummaries";
 import { fetchComplianceSummariesPageData } from "./fetchComplianceSummariesPageData";
 import { Alert } from "@mui/material";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
+import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
 
 export default async function ComplianceSummariesPage({
   searchParams,
@@ -28,7 +28,7 @@ export default async function ComplianceSummariesPage({
           the compliance obligation is paid.
         </Alert>
       </div>
-      <ComplianceSummaries initialData={initialData} />
+      <ComplianceSummariesDataGrid initialData={initialData} />;
     </div>
   );
 }
