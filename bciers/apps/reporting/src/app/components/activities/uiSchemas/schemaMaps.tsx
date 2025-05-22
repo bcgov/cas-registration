@@ -23,6 +23,7 @@ import coalStorageUiSchema from "./coalStorageUiSchema";
 import zincProductionUiSchema from "./zincProductionUiSchema";
 import petroleumRefiningUiSchema from "./petroleumRefiningUiSchema";
 import leadProductionUiSchema from "./leadProductionUiSchema";
+import fallbackUiSchema from "./fallbackUiSchema";
 
 type UiSchemaMap = {
   [key: string]: any;
@@ -56,6 +57,17 @@ export const uiSchemaMap: UiSchemaMap = {
   zinc_production: zincProductionUiSchema,
   petroleum_refining: petroleumRefiningUiSchema,
   lead_production: leadProductionUiSchema,
+  electronics_manufacturing: fallbackUiSchema,
+  ammonia_production: fallbackUiSchema,
+  underground_coal_mining: fallbackUiSchema,
+  copper_nickel_refining: fallbackUiSchema,
+  ferroalloy_production: fallbackUiSchema,
+  glass_manufacturing: fallbackUiSchema,
+  magnesium_production: fallbackUiSchema,
+  nitric_acid_manufacturing: fallbackUiSchema,
+  petrochemical_production: fallbackUiSchema,
+  phos_acid_production: fallbackUiSchema,
+  electricity_transmission: fallbackUiSchema,
 };
 
 export const getUiSchema = (slug: string) => {
