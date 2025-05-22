@@ -14,7 +14,7 @@ export default function TrackStatusOfIssuanceComponent({
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`;
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
   return (
     <CompliancePageLayout
