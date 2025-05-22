@@ -185,7 +185,7 @@ describe("the OperationInformationForm component", () => {
     expect(screen.getByText(/Operation Name/i)).toBeVisible();
     expect(screen.getByText(/Single Facility Operation/i)).toHaveAttribute(
       "class",
-      "read-only-widget whitespace-pre-line ",
+      "read-only-widget whitespace-pre-line",
     );
 
     expect(screen.getByRole("button", { name: "Edit" })).toBeVisible();
