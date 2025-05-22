@@ -4,6 +4,7 @@ from .compliance_period import CompliancePeriod
 from .compliance_report import ComplianceReport
 from .compliance_report_version import ComplianceReportVersion
 from .elicensing_link import ELicensingLink
+from .issuance_request import IssuanceRequest
 
 __all__ = [
     'ComplianceChargeRate',
@@ -12,4 +13,5 @@ __all__ = [
     'ComplianceReport',
     'ComplianceReportVersion',
     'ELicensingLink',
+    'IssuanceRequest',
 ]

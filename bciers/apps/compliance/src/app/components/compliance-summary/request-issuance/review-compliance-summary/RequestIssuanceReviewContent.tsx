@@ -16,7 +16,7 @@ export function RequestIssuanceReviewContent(props: Props) {
     <div className="w-full">
       <ComplianceHeading title="Review 2024 Compliance Summary" />
       <FormReport data={data} />
-      <EarnedCredits data={data} />
+      <EarnedCredits data={data} isCasStaff={false} />
 
       <ComplianceStepButtons
         key="form-buttons"

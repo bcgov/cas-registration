@@ -32,13 +32,13 @@ describe("getRequestIssuanceTaskList", () => {
     expect(taskItems[2].title).toBe("Track Status of Issuance");
 
     expect(taskItems[0].link).toBe(
-      `/compliance-summaries/${complianceSummaryId}/request-issuance/review-compliance-summary`,
+      `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`,
     );
     expect(taskItems[1].link).toBe(
-      `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`,
+      `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`,
     );
     expect(taskItems[2].link).toBe(
-      `/compliance-summaries/${complianceSummaryId}/request-issuance/track-status-of-issuance`,
+      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
     );
 
     expect(taskItems[0].type).toBe("Page");

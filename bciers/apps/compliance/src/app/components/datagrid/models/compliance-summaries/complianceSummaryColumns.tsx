@@ -30,7 +30,7 @@ const complianceSummaryColumns = (): GridColDef[] => {
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
-      field: "compliance_status",
+      field: "status",
       headerName: "Compliance Status",
       width: 200,
       type: "string",

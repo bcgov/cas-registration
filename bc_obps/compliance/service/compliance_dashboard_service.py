@@ -29,6 +29,9 @@ class ComplianceDashboardService:
         # Get all compliance report versions for the filtered operations
         compliance_report_versions = ComplianceReportVersion.objects.filter(
             compliance_report__report__operation_id__in=operations
+        ).select_related(
+            'compliance_report__report__operation',
+            'compliance_report__compliance_period',
         )
 
         # Calculate and attach the outstanding balance to each compliance_report_version
@@ -115,3 +118,16 @@ class ComplianceDashboardService:
     #     setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
 
     #     return summary
+
+    @classmethod
+    def get_request_issuance_track_status(cls, report_version_id: int) -> Optional[ComplianceReportVersion]:
+        """Returns a ComplianceReportVersion instance with request issuance track status data"""
+        try:
+            report_version = ComplianceReportVersion.objects.select_related(
+                'report_compliance_summary__report_version__report__operation', 'issuance_request'
+            ).get(id=report_version_id)
+
+            return report_version
+
+        except ComplianceReportVersion.DoesNotExist:
+            return None

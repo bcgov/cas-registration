@@ -34,19 +34,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: `/compliance-summaries/${id}/request-issuance/review-compliance-summary`,
+            link: `/compliance-summaries/${id}/review-compliance-summary`,
             isActive: true,
           },
           {
             type: "Page",
             title: "Request Issuance of Earned Credits",
-            link: `/compliance-summaries/${id}/request-issuance/request-issuance-of-earned-credits`,
+            link: `/compliance-summaries/${id}/request-issuance-of-earned-credits`,
             isActive: false,
           },
           {
             type: "Page",
             title: "Track Status of Issuance",
-            link: `/compliance-summaries/${id}/request-issuance/track-status-of-issuance`,
+            link: `/compliance-summaries/${id}//track-status-of-issuance`,
             isActive: false,
           },
         ],
@@ -54,6 +54,10 @@ vi.mock(
     ]),
   }),
 );
+
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  getSessionRole: vi.fn().mockResolvedValue("industry_user"),
+}));
 
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/RequestIssuanceReviewComponent",
@@ -68,6 +72,9 @@ vi.mock(
         </div>
         <div data-testid="task-list-elements">
           {props.taskListElements ? "task-list-present" : "no-task-list"}
+        </div>
+        <div data-testid="is-cas-staff">
+          {props.isCasStaff ? "is-cas-staff" : "not-cas-staff"}
         </div>
       </div>
     ),
@@ -94,4 +101,5 @@ setupComplianceSummaryReviewTest({
     emissions_attributable_for_compliance: "85.0",
     earned_credits: 15,
   },
+  testIsCasStaffProp: true,
 })();

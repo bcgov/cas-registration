@@ -39,11 +39,10 @@ export const getComplianceSummary = async (
   complianceSummaryId: number,
 ): Promise<ComplianceSummary> => {
   const data = await actionHandler(
-    `compliance/summaries/${complianceSummaryId}`,
+    `compliance/compliance-report-version/${complianceSummaryId}`,
     "GET",
     "",
   );
-
   if (data?.error) {
     throw new Error(`Failed to fetch compliance summary: ${data.error}`);
   }

@@ -4,7 +4,7 @@ import RequestIssuanceOfEarnedCreditsPage from "@/compliance/src/app/components/
 vi.mock("@/compliance/src/app/utils/getRequestIssuanceData", () => ({
   getRequestIssuanceData: vi.fn().mockResolvedValue({
     bccrTradingName: "Test Trading Name",
-    validBccrHoldingAccountId: "123456789012345",
+    bccrHoldingAccountId: "123456789012345",
     reportingYear: 2023,
     operation_name: "Test Operation",
   }),
@@ -27,19 +27,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: "/compliance-summaries/123/request-issuance/review-compliance-summary",
+            link: "/compliance-summaries/123//review-compliance-summary",
             isActive: false,
           },
           {
             type: "Page",
             title: "Request Issuance of Earned Credits",
-            link: "/compliance-summaries/123/request-issuance/request-issuance-of-earned-credits",
+            link: "/compliance-summaries/123/request-issuance-of-earned-credits",
             isActive: true,
           },
           {
             type: "Page",
             title: "Track Status of Issuance",
-            link: "/compliance-summaries/123/request-issuance/track-status-of-issuance",
+            link: "/compliance-summaries/123/track-status-of-issuance",
             isActive: false,
           },
         ],

@@ -14,7 +14,7 @@ export default function RequestIssuanceReviewComponent({
   taskListElements,
 }: Props) {
   const backUrl = `/compliance-summaries`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
   return (
     <CompliancePageLayout

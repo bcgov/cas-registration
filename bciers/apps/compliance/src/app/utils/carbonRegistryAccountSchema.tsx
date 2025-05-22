@@ -1,74 +1,61 @@
-import { RJSFSchema } from "@rjsf/utils";
-import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import { Typography, Link, Box } from "@mui/material";
-import CustomTextField from "../widgets/CustomTextField";
+import { Link } from "@mui/material";
+import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
+import HiddenFieldTemplate from "@bciers/components/form/fields/HiddenFieldTemplate";
+import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
+import BCCRHoldingAccountWidget from "@/compliance/src/app/widgets/BCCRHoldingAccountWidget";
 
-export const buildCarbonRegistryAccountSchema = (): RJSFSchema => ({
+export const requestIssuanceOfEarnedCreditsSchema: RJSFSchema = {
   type: "object",
+  title: "B.C. Carbon Registry (BCCR) Account Information",
+  required: ["bccrHoldingAccountId"],
   properties: {
-    bccrTradingName: {
-      type: "string",
-      title: "BCCR Trading Name:",
-    },
     bccrHoldingAccountId: {
       type: "string",
       title: "BCCR Holding Account ID:",
       pattern: "^\\d{15}$",
+      maxLength: 15,
+      minLength: 15,
+    },
+    bccrTradingName: {
+      type: "string",
+      title: "BCCR Trading Name:",
+      readOnly: true,
     },
   },
-});
+};
 
-export const buildCarbonRegistryAccountUiSchema = (
-  data: RequestIssuanceData,
-) => ({
+export const requestIssuanceOfEarnedCreditsUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
-  "ui:submitButtonOptions": {
-    norender: true,
+  "ui:submitButtonOptions": { norender: true },
+  "ui:options": {
+    labelOverrideStyle: "text-bc-bg-blue my-4",
   },
-  "ui:order": ["bccrHoldingAccountId", "bccrTradingName"],
-  bccrTradingName: {
-    "ui:widget": CustomTextField,
-    "ui:title": (
-      <Typography className="mr-[30px] font-normal w-[240px]">
-        BCCR Trading Name:
-      </Typography>
-    ),
-    "ui:options": {
-      validation: {
-        expectedValue: data.bccrTradingName,
-        nonEmpty: true,
-      },
-    },
-  },
-
   bccrHoldingAccountId: {
-    "ui:widget": CustomTextField,
-    "ui:title": (
-      <Typography className="mr-[30px] font-normal w-[240px]">
-        BCCR Holding Account ID:
-      </Typography>
+    "ui:widget": BCCRHoldingAccountWidget,
+    "ui:classNames": "[&>div:first-child]:w-1/3", // modify the width of the label
+    "ui:help": (
+      <small>
+        No account?{" "}
+        <Link
+          href={bcCarbonRegistryLink}
+          underline="hover"
+          className="text-bc-link-blue font-medium"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Create account
+        </Link>{" "}
+        in BCCR.
+      </small>
     ),
     "ui:options": {
-      validation: {
-        expectedValue: data.validBccrHoldingAccountId,
-        nonEmpty: true,
-      },
+      inline: true,
     },
-    "ui:help": (
-      <Box className="ml-[52px] mt-[5px]">
-        <Typography variant="body2" className="text-bc-text">
-          No account?{" "}
-          <Link
-            href="#"
-            underline="hover"
-            className="text-bc-link-blue font-medium"
-          >
-            Create account
-          </Link>{" "}
-          in BCCR.
-        </Typography>
-      </Box>
-    ),
   },
-});
+  bccrTradingName: {
+    "ui:FieldTemplate": HiddenFieldTemplate,
+    "ui:widget": ReadOnlyWidget,
+  },
+};

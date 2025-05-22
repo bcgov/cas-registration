@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
 import { RequestIssuanceOfEarnedCreditsContent } from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent";
-import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
 
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/ComplianceHeading",
@@ -14,9 +13,9 @@ vi.mock(
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/CarbonRegistryAccountInfo",
   () => ({
-    default: ({ data }: { data: RequestIssuanceData }) => (
+    default: () => (
       <div data-testid="carbon-registry-account-info">
-        {data.bccrTradingName}
+        Carbon Registry Account Info
       </div>
     ),
   }),
@@ -33,18 +32,9 @@ vi.mock("@bciers/components/form/components/ComplianceStepButtons", () => ({
 }));
 
 describe("RequestIssuanceOfEarnedCreditsContent", () => {
-  const mockData: RequestIssuanceData = {
-    bccrTradingName: "Test Trading Name",
-    validBccrHoldingAccountId: "123456789012345",
-    reportingYear: 2023,
-    operation_name: "Test Operation",
-  };
-
   const mockProps = {
     continueUrl: "/test-continue-url",
     backUrl: "/test-back-url",
-    data: mockData,
-    complianceSummaryId: 123,
   };
 
   beforeEach(() => {
@@ -59,12 +49,12 @@ describe("RequestIssuanceOfEarnedCreditsContent", () => {
     );
   });
 
-  it("passes the correct data to CarbonRegistryAccountInfo", () => {
+  it("renders CarbonRegistryAccountInfo", () => {
     render(<RequestIssuanceOfEarnedCreditsContent {...mockProps} />);
 
     expect(
       screen.getByTestId("carbon-registry-account-info"),
-    ).toHaveTextContent(mockData.bccrTradingName);
+    ).toBeInTheDocument();
   });
 
   it("renders ComplianceStepButtons with correct props", () => {
