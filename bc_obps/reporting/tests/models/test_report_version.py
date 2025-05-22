@@ -187,6 +187,7 @@ class ReportVersionTest(BaseTestCase):
         self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
         self.test_object.is_latest_submitted = True
         self.test_object.save()
+        self.test_object.refresh_from_db()
 
         with pytest.raises(
             ProgrammingError,
@@ -203,6 +204,7 @@ class ReportVersionTest(BaseTestCase):
         self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
         self.test_object.is_latest_submitted = True
         self.test_object.save()
+        self.test_object.refresh_from_db()
 
         # delete record in related table
         with pytest.raises(
