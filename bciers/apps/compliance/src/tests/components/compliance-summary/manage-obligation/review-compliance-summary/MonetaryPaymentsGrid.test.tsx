@@ -27,22 +27,22 @@ describe("MonetaryPaymentsGrid", () => {
     render(<MonetaryPaymentsGrid />);
     expect(
       screen.getByText("You have not made any monetary payment yet."),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("renders the alert note when data has no rows", () => {
     render(<MonetaryPaymentsGrid data={{ rows: [], row_count: 0 }} />);
     expect(
       screen.getByText("You have not made any monetary payment yet."),
-    ).toBeInTheDocument();
+    ).toBeVisible();
   });
 
   it("renders payment data when available", () => {
     render(<MonetaryPaymentsGrid data={mockPaymentsData} />);
-    expect(screen.getByText("2024-03-20")).toBeInTheDocument();
-    expect(screen.getByText("$1,000.00")).toBeInTheDocument();
-    expect(screen.getByText("Wire")).toBeInTheDocument();
-    expect(screen.getByText("Payment")).toBeInTheDocument();
-    expect(screen.getByText("REC-123")).toBeInTheDocument();
+    expect(screen.getByText("2024-03-20")).toBeVisible();
+    expect(screen.getByText("$1,000.00")).toBeVisible();
+    expect(screen.getByText("Wire")).toBeVisible();
+    expect(screen.getByText("Payment")).toBeVisible();
+    expect(screen.getByText("REC-123")).toBeVisible();
   });
 });
