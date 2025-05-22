@@ -1,5 +1,9 @@
 from model_bakery.recipe import Recipe, foreign_key
+import uuid
+from django.contrib.contenttypes.models import ContentType
 from compliance.models import CompliancePeriod, ComplianceReportVersion, ComplianceObligation, ComplianceReport
+from compliance.models.elicensing_link import ELicensingLink
+from registration.models.operation import Operator
 from reporting.tests.utils.baker_recipes import report, report_compliance_summary, reporting_year
 
 # CompliancePeriod recipe
