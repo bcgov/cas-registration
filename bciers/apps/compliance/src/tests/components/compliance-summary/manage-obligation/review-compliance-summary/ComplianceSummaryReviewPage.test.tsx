@@ -17,14 +17,14 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
 }));
 
 vi.mock(
-  "@/compliance/src/app/components/taskLists/1_manageObligationSchema",
+  "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
   () => ({
     ActivePage: {
       ReviewComplianceSummary: 0,
       DownloadPaymentInstructions: 1,
       PayObligationTrackPayments: 2,
     },
-    getComplianceSummaryTaskList: vi.fn().mockImplementation((id) => [
+    generateManageObligationTaskList: vi.fn().mockImplementation((id) => [
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -79,7 +79,7 @@ setupComplianceSummaryReviewTest({
   dataUtilName: "getComplianceSummary",
   taskListSchemaPath:
     "@/compliance/src/app/components/taskLists/1_manageObligationSchema",
-  taskListFunctionName: "getComplianceSummaryTaskList",
+  taskListFunctionName: "generateManageObligationTaskList",
   testDescription: "ComplianceSummaryReviewPage (Manage Obligation)",
   mockData: {
     operation_name: "Test Operation",

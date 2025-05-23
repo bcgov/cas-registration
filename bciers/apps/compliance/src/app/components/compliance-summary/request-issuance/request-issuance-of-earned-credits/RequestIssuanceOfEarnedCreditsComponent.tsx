@@ -5,7 +5,7 @@ import FormBase from "@bciers/components/form/FormBase";
 import {
   requestIssuanceOfEarnedCreditsSchema,
   requestIssuanceOfEarnedCreditsUiSchema,
-} from "@/compliance/src/app/data/jsonSchema/requestIssuanceOfEarnedCreditsSchema";
+} from "@/compliance/src/app/data/jsonSchema/requestIssuance/requestIssuanceOfEarnedCreditsSchema";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { BccrAccountDetailsResponse } from "@/compliance/src/app/components/compliance-summaries/types";
 
@@ -16,7 +16,7 @@ interface Props {
 const RequestIssuanceOfEarnedCreditsComponent = ({
   complianceSummaryId,
 }: Props) => {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`;
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
 
   const [formData, setFormData] = useState<any>({});
