@@ -3,6 +3,10 @@ from typing import Dict, List, Any
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.grant import RlsGrant
 from rls.utils.m2m import M2mRls
+from rls.utils.policy import RlsPolicy
+
+
+
 
 
 def generate_rls_grants(
@@ -15,6 +19,30 @@ def generate_rls_grants(
     """
     return [
         RlsGrant(role=role, grants=grants, table=table, schema=schema) for role, grants in role_grants_mapping.items()
+    ]
+
+def generate_rls_policies(
+    role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
+    table: Any,
+    using_statement: str = "FALSE",
+    schema: Schemas = Schemas.ERC,
+) -> List[RlsGrant]:
+    """
+    Generate a list of RlsPolicy objects for a given table based on role-to-grants mapping.
+    Each policy is defined for a specific role and operation. Using statement defaults to FALSE so that if forgotten, policies won't allow access.
+    """
+    return [
+        RlsPolicy(
+            role=role,
+            policy_name=f"{table.value.lower()}_{role.name.lower()}_{operation.name.lower()}",
+            operation=operation,
+            # CAS roles are all or nothing, but industry users need more granularity. In addition to role they have an app_role, and they should only be able to access records belonging to their organization
+            using_statement=using_statement if role.name not in [RlsRoles.CAS_ADMIN, RlsRoles.CAS_ANALYST, RlsRoles.CAS_DIRECTOR, RlsRoles.CAS_VIEW_ONLY] else "TRUE",
+            table=table,
+            schema=schema,
+        )
+        for role, operations in role_grants_mapping.items()
+        for operation in operations
     ]
 
 
