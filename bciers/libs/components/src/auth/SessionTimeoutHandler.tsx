@@ -10,8 +10,8 @@ import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 import { useRouter } from "next/navigation";
 
-export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Seconds to throttle user activity events (2 minutes)
-export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
+export const ACTIVITY_THROTTLE_SECONDS = 15; // Seconds to throttle user activity events (2 minutes)
+export const MODAL_DISPLAY_SECONDS = 30; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
@@ -40,12 +40,11 @@ const SessionTimeoutHandler: React.FC = () => {
   const handleLogout = async () => {
     // broadcast logout to other browser tabs
     logoutChannelRef.current?.postMessage("logout");
+    const logoutUrl = await getLogoutUrl();
     try {
-      const logoutUrl = await getLogoutUrl();
       await signOut({ redirect: true, redirectTo: logoutUrl || "/" });
     } finally {
       // signOut's redirectTo doesn't work in some cases, so we manually redirect as well https://github.com/nextauthjs/next-auth/issues/10944
-      const logoutUrl = await getLogoutUrl();
       router.push(logoutUrl || "/");
     }
   };
