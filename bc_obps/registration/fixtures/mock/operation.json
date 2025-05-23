@@ -579,5 +579,59 @@
       "activities": [1, 5],
       "contacts": [19]
     }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f",
+    "fields": {
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "submission_date": null,
+      "name": "Compliance SFO - Obligation not met",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "bcghg_id": "13219990046",
+      "regulated_products": [1, 2],
+      "registration_purpose": "OBPS Regulated Operation",
+      "status": "Registered",
+      "bc_obps_regulated_operation": "24-0019",
+      "activities": [1],
+      "contacts": [3]
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "a12bc34d-56ef-78ab-90cd-12ef3456ab78",
+    "fields": {
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "submission_date": null,
+      "name": "Compliance SFO - Earned credits",
+      "type": "Single Facility Operation",
+      "naics_code": 22,
+      "bcghg_id": "13219990047",
+      "regulated_products": [11, 13],
+      "registration_purpose": "OBPS Regulated Operation",
+      "status": "Registered",
+      "bc_obps_regulated_operation": "24-0020",
+      "activities": [1],
+      "contacts": [4]
+    }
+  },
+  {
+    "model": "registration.operation",
+    "pk": "3f47b2e1-9a4c-4d3f-8b21-7e9a0c5d2f6b",
+    "fields": {
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "submission_date": null,
+      "name": "Compliance SFO - Obligation fully met",
+      "type": "Single Facility Operation",
+      "naics_code": 21,
+      "bcghg_id": "13219990048",
+      "regulated_products": [21],
+      "registration_purpose": "OBPS Regulated Operation",
+      "status": "Registered",
+      "bc_obps_regulated_operation": "24-0021",
+      "activities": [1],
+      "contacts": [4]
+    }
   }
 ]

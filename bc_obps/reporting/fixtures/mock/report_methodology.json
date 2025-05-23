@@ -1,0 +1,53 @@
+[
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "unitFuelCo2DefaultEf": 1,
+        "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 1,
+      "updated_by_id": null,
+      "report_version_id": 3,
+      "methodology_id": 2
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 2,
+      "updated_by_id": null,
+      "report_version_id": 4,
+      "methodology_id": 18
+    }
+  },
+  {
+    "model": "reporting.reportmethodology",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {},
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "report_emission_id": 3,
+      "updated_by_id": null,
+      "report_version_id": 5,
+      "methodology_id": 18
+    }
+  }
+]
