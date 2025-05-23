@@ -1,5 +1,6 @@
 import { InfoRow } from "../../InfoRow";
 import { TitleRow } from "../../TitleRow";
+import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 
 interface Prop {
   data: any;
@@ -19,7 +20,7 @@ export const OutstandingComplianceObligation = ({ data }: Prop) => {
       />
       <InfoRow
         label="Equivalent Value:"
-        value={`$${data.equivalent_value.toLocaleString(undefined)}`}
+        value={formatMonetaryValue(data.equivalent_value)}
         style={{ marginBottom: "50px" }}
       />
     </div>

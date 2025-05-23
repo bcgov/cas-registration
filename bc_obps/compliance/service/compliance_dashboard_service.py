@@ -5,7 +5,26 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional
+from typing import Optional, List
+from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from dataclasses import dataclass
+from decimal import Decimal
+
+
+@dataclass
+class Payment:
+    id: str
+    paymentReceivedDate: str
+    paymentAmountApplied: Decimal
+    paymentMethod: str
+    transactionType: str
+    receiptNumber: str
+
+
+@dataclass
+class PaymentsList:
+    rows: List[Payment]
+    row_count: int
 
 
 class ComplianceDashboardService:
@@ -29,6 +48,9 @@ class ComplianceDashboardService:
         # Get all compliance report versions for the filtered operations
         compliance_report_versions = ComplianceReportVersion.objects.filter(
             compliance_report__report__operation_id__in=operations
+        ).select_related(
+            'compliance_report__report__operation',
+            'compliance_report__compliance_period',
         )
 
         # Calculate and attach the outstanding balance to each compliance_report_version
@@ -74,44 +96,77 @@ class ComplianceDashboardService:
 
         return compliance_report_version
 
-    # Issuance to be handled in #117
+        # Issuance to be handled in #117
 
-    # @classmethod
-    # def get_compliance_compliance_report_version_issuance_data(cls, user_guid: UUID, compliance_report_version_id: int) -> Optional[ComplianceReportVersion]:
-    #     """
-    #     Fetches issuance data for a specific compliance compliance_report_version
+        # @classmethod
+        # def get_compliance_compliance_report_version_issuance_data(cls, user_guid: UUID, compliance_report_version_id: int) -> Optional[ComplianceReportVersion]:
+        #     """
+        #     Fetches issuance data for a specific compliance compliance_report_version
 
-    #     Args:
-    #         user_guid: The GUID of the user requesting the issuance data
-    #         compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve issuance data for
+        #     Args:
+        #         user_guid: The GUID of the user requesting the issuance data
+        #         compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve issuance data for
 
-    #     Returns:
-    #         The ComplianceReportVersion object augmented with issuance data or None if not found
-    #     """
-    #     compliance_report_version = cls.get_compliance_compliance_report_version_by_id(user_guid, compliance_report_version_id)
+        #     Returns:
+        #         The ComplianceReportVersion object augmented with issuance data or None if not found
+        #     """
+        #     compliance_report_version = cls.get_compliance_compliance_report_version_by_id(user_guid, compliance_report_version_id)
 
-    #     if not compliance_report_version:
-    #         return None
+        #     if not compliance_report_version:
+        #         return None
 
-    #     earned_credits: int = 100
-    #     earned_credits_issued = False
-    #     issuance_status = "Issuance not requested"
+        #     earned_credits: int = 100
+        #     earned_credits_issued = False
+        #     issuance_status = "Issuance not requested"
 
-    #     if compliance_report_version.report_compliance_summary.excess_emissions < 0:
-    #         # Convert Decimal to int
-    #         earned_credits = int(abs(compliance_report_version.report_compliance_summary.excess_emissions))
+        #     if compliance_report_version.report_compliance_summary.excess_emissions < 0:
+        #         # Convert Decimal to int
+        #         earned_credits = int(abs(compliance_report_version.report_compliance_summary.excess_emissions))
 
-    #         earned_credits_issued = False
+        #         earned_credits_issued = False
 
-    #     excess_emissions_percentage = None
-    #     if compliance_report_version.report_compliance_summary.emission_limit and compliance_report_version.report_compliance_summary.emission_limit > 0:
-    #         excess_emissions_percentage = round(
-    #             (compliance_report_version.emissions_attributable_for_compliance / compliance_report_version.report_compliance_summary.emission_limit) * 100, 2
-    #         )
+        #     excess_emissions_percentage = None
+        #     if compliance_report_version.report_compliance_summary.emission_limit and compliance_report_version.report_compliance_summary.emission_limit > 0:
+        #         excess_emissions_percentage = round(
+        #             (compliance_report_version.emissions_attributable_for_compliance / compliance_report_version.report_compliance_summary.emission_limit) * 100, 2
+        #         )
 
-    #     setattr(summary, "earned_credits", earned_credits)
-    #     setattr(summary, "earned_credits_issued", earned_credits_issued)
-    #     setattr(summary, "issuance_status", issuance_status)
-    #     setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
+        #     setattr(summary, "earned_credits", earned_credits)
+        #     setattr(summary, "earned_credits_issued", earned_credits_issued)
+        #     setattr(summary, "issuance_status", issuance_status)
+        #     setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
 
-    #     return summary
+        #     return summary
+
+    @classmethod
+    def get_compliance_report_version_payments(cls, user_guid: UUID, compliance_report_version_id: int) -> PaymentsList:
+        """
+        Get payments for a compliance report version.
+
+        Args:
+            user_guid: The GUID of the user requesting the payments
+            compliance_report_version_id: The ID of the compliance report version
+
+        Returns:
+            PaymentsList object containing the payment records
+        """
+        compliance_report_version = cls.get_compliance_report_version_by_id(user_guid, compliance_report_version_id)
+        if not compliance_report_version:
+            return PaymentsList(rows=[], row_count=0)
+
+        payment_records = ObligationELicensingService.get_obligation_invoice_payments(
+            compliance_report_version.obligation.id
+        )
+        payment_objects = [
+            Payment(
+                id=record.id,
+                paymentReceivedDate=record.paymentReceivedDate,
+                paymentAmountApplied=record.paymentAmountApplied,
+                paymentMethod=record.paymentMethod,
+                transactionType=record.transactionType,
+                receiptNumber=record.receiptNumber,
+            )
+            for record in payment_records
+        ]
+
+        return PaymentsList(rows=payment_objects, row_count=len(payment_objects))

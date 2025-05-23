@@ -20,7 +20,7 @@ const monetaryPaymentsGroupColumns = (
     ),
     createColumnGroup("paymentMethod", "Payment Method", SearchCell),
     createColumnGroup("transactionType", "Transaction Type", SearchCell),
-    createColumnGroup("referenceNumber", "Reference Number", SearchCell),
+    createColumnGroup("receiptNumber", "Receipt Number", SearchCell),
   ] as GridColumnGroupingModel;
 
   return columnGroupModel;

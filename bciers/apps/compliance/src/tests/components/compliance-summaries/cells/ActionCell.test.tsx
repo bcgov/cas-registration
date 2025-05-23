@@ -6,10 +6,10 @@ describe("ActionCell", () => {
   const createMockParams = (
     id = 123,
     obligation_id?: number,
-    compliance_status?: string,
+    status?: string,
   ): GridRenderCellParams =>
     ({
-      row: { id, obligation_id, compliance_status },
+      row: { id, obligation_id, status },
     }) as GridRenderCellParams;
 
   const expectLink = (name: string, href: string) => {
@@ -26,7 +26,7 @@ describe("ActionCell", () => {
     );
   });
 
-  it("displays 'Request Issuance of Credits' when compliance_status is 'Earned credits'", () => {
+  it("displays 'Request Issuance of Credits' when status is 'Earned credits'", () => {
     render(ActionCell(createMockParams(123, undefined, "Earned credits")));
     expectLink(
       "Request Issuance of Credits",
