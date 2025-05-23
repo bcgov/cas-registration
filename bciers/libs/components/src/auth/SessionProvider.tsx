@@ -1,3 +1,4 @@
+// client/SessionProvider.tsx
 "use client";
 
 import { ReactNode, useEffect, useState, useRef } from "react";
@@ -8,6 +9,8 @@ import {
   signOut,
   useSession,
 } from "next-auth/react";
+import * as Sentry from "@sentry/nextjs";
+import { getEnvValue } from "@bciers/actions";
 import {
   Dialog,
   DialogTitle,
@@ -17,19 +20,60 @@ import {
   Button,
 } from "@mui/material";
 
-/*
-📚 NextAuth provider:
-Import NextAuth.js SessionProvider as a client component because it uses context.
-Then export this client SessionProvider to be used in your server component
-(e.g. in app/layout.tsx). 
-This enables sharing session state as context throughout the application, 
-plus our expiry warning dialog.
-*/
+/**
+ * Client-side SessionProvider wrapper that:
+ * - Uses NextAuth’s SessionProvider for auth context
+ * - Injects a synchronized “session expiring soon” dialog
+ * - Broadcasts and listens for token-refresh events across tabs
+ */
+export default function SessionProvider({
+  children,
+  session,
+  basePath,
+}: {
+  children: ReactNode;
+  session?: any;
+  basePath?: string;
+}) {
+  return (
+    <NextAuthProvider basePath={basePath} session={session}>
+      {children}
+      <ExpiryWarning />
+    </NextAuthProvider>
+  );
+}
 
+/** Key for cross-tab session-refresh broadcasts */
 const REFRESH_KEY = "nextauth:session-refreshed";
+/** Return the current timestamp in milliseconds */
 const NOW = () => Date.now();
-const SIGN_OUT_OPTS = { callbackUrl: "/onboarding" };
 
+/**
+ * Fetch the logout redirect URL from environment; report errors to Sentry.
+ */
+const getLogoutUrl = async () => {
+  const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
+  if (!logoutUrl) {
+    Sentry.captureException("Failed to fetch logout URL");
+    console.error("Failed to fetch logout URL");
+  }
+  return logoutUrl;
+};
+
+/**
+ * Handle logout by retrieving the SSO logout URL and calling NextAuth’s signOut.
+ */
+const handleLogout = async () => {
+  const logoutUrl = await getLogoutUrl();
+  await signOut({ redirectTo: logoutUrl || "/" });
+};
+
+/**
+ * Displays a “Session Expiring Soon” modal 5 minutes before token expiry.
+ * - Overrides __NEXTAUTH._getSession to cache and broadcast new expires
+ * - Schedules warning & logout timers based on session.expires
+ * - Syncs timer resets across tabs via localStorage
+ */
 function ExpiryWarning() {
   const { status } = useSession();
   const [session, setSession] = useState(__NEXTAUTH._session);
@@ -39,25 +83,40 @@ function ExpiryWarning() {
   const warnTimer = useRef<number>();
   const logoutTimer = useRef<number>();
   const tickTimer = useRef<number>();
+  // Track the last seen expires so we only broadcast on real changes
+  const prevExpires = useRef<string | undefined>(__NEXTAUTH._session?.expires);
 
-  // 1) Override internal fetcher & listen for cross-tab broadcasts
+  // 1) Override internal session fetcher & listen for cross-tab broadcasts
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === REFRESH_KEY) {
-        console.log(
-          "[ExpiryWarning] Received refresh broadcast → hiding dialog",
-        );
+        console.log("[ExpiryWarning] Refresh broadcast → reset timers");
         setShow(false);
         clearTimeout(warnTimer.current);
         clearTimeout(logoutTimer.current);
         clearInterval(tickTimer.current);
-        __NEXTAUTH._getSession({ event: "storage" });
+
+        // re-sync session, then compute & log next warning time
+        __NEXTAUTH._getSession({ event: "storage" }).then(() => {
+          const newExpires = __NEXTAUTH._session?.expires;
+          if (!newExpires) return;
+          const expiresMs = new Date(newExpires).getTime();
+          const msLeft = expiresMs - NOW();
+          const warnMs = 5 * 60 * 1000;
+          if (msLeft > warnMs) {
+            const warnAt = new Date(NOW() + msLeft - warnMs).toISOString();
+            console.log(`[ExpiryWarning] Next dialog will show at ${warnAt}`);
+          } else {
+            console.log("[ExpiryWarning] Next dialog will show immediately");
+          }
+        });
       }
     };
 
     __NEXTAUTH._getSession = async ({ event } = {}) => {
-      console.log(`[ExpiryWarning] _getSession called, event=${event}`);
+      console.log(`[ExpiryWarning] _getSession called (event=${event})`);
       const isStorage = event === "storage";
+
       if (isStorage || __NEXTAUTH._session === undefined) {
         __NEXTAUTH._lastSync = NOW();
         __NEXTAUTH._session = await getSession({ broadcast: !isStorage });
@@ -69,10 +128,18 @@ function ExpiryWarning() {
         __NEXTAUTH._lastSync = NOW();
         __NEXTAUTH._session = await getSession();
       }
-      console.log(
-        "[ExpiryWarning] New expires =",
-        __NEXTAUTH._session?.expires,
-      );
+
+      const newExpires = __NEXTAUTH._session?.expires;
+      console.log("[ExpiryWarning] New expires =", newExpires);
+
+      // Broadcast if expires truly changed (not from storage sync)
+      if (!isStorage && newExpires && newExpires !== prevExpires.current) {
+        prevExpires.current = newExpires;
+        console.log("[ExpiryWarning] Broadcasting new expires:", newExpires);
+        localStorage.setItem(REFRESH_KEY, NOW().toString());
+        localStorage.removeItem(REFRESH_KEY);
+      }
+
       setSession(__NEXTAUTH._session);
     };
 
@@ -87,31 +154,27 @@ function ExpiryWarning() {
     };
   }, []);
 
-  // 2) Schedule warning & logout whenever session.expires changes
+  // 2) Schedule warning & actual logout whenever session.expires changes
   useEffect(() => {
-    console.log(
-      "[ExpiryWarning] scheduling with new expires:",
-      session?.expires,
-    );
+    console.log("[ExpiryWarning] scheduling for expires:", session?.expires);
 
-    // Hide and clear old timers on any expiration update
+    // Hide any existing dialog & clear timers
     setShow(false);
     clearTimeout(warnTimer.current);
     clearTimeout(logoutTimer.current);
     clearInterval(tickTimer.current);
 
     if (status !== "authenticated" || !session?.expires) {
-      console.log("[ExpiryWarning] not authenticated or no expiry → skipping");
+      console.log("[ExpiryWarning] skipping – not authenticated or no expiry");
       return;
     }
 
-    const msLeft = new Date(session.expires).getTime() - NOW();
-    const warnMs = 5 * 60 * 1000;
-    console.log(`[ExpiryWarning] msLeft=${msLeft}, warnMs=${warnMs}`);
-
+    const expiresMs = new Date(session.expires).getTime();
+    const msLeft = expiresMs - NOW();
+    const warnMs = 5 * 60 * 1000; // 5 minutes
     if (msLeft <= 0) {
-      console.log("[ExpiryWarning] already expired → signing out");
-      signOut(SIGN_OUT_OPTS);
+      console.log("[ExpiryWarning] session expired → logging out");
+      handleLogout();
       return;
     }
 
@@ -120,17 +183,20 @@ function ExpiryWarning() {
       setShow(true);
       setSeconds(Math.ceil(msLeft / 1000));
     } else {
-      console.log(`[ExpiryWarning] will show dialog in ${msLeft - warnMs}ms`);
+      const delay = msLeft - warnMs;
+      const warnAt = new Date(NOW() + delay).toISOString();
+      console.log(`[ExpiryWarning] will show dialog at ${warnAt}`);
       warnTimer.current = window.setTimeout(() => {
         console.log("[ExpiryWarning] warning timeout fired → show dialog");
         setShow(true);
         setSeconds(Math.ceil(warnMs / 1000));
-      }, msLeft - warnMs);
+      }, delay);
     }
 
+    // Schedule the actual logout at expiry
     logoutTimer.current = window.setTimeout(() => {
-      console.log("[ExpiryWarning] logout timeout fired → signing out");
-      signOut(SIGN_OUT_OPTS);
+      console.log("[ExpiryWarning] logout timeout fired → logging out");
+      handleLogout();
     }, msLeft);
 
     return () => {
@@ -139,16 +205,16 @@ function ExpiryWarning() {
     };
   }, [status, session?.expires]);
 
-  // 3) Once shown, tick down and auto-logout at zero
+  // 3) Once dialog is shown, tick down every second and auto-logout at zero
   useEffect(() => {
     if (!show) return;
     console.log("[ExpiryWarning] starting countdown");
     tickTimer.current = window.setInterval(() => {
       setSeconds((s) => {
         if (s <= 1) {
-          console.log("[ExpiryWarning] countdown ended → signing out");
+          console.log("[ExpiryWarning] countdown ended → logging out");
           clearInterval(tickTimer.current);
-          signOut(SIGN_OUT_OPTS);
+          handleLogout();
           return 0;
         }
         return s - 1;
@@ -160,13 +226,14 @@ function ExpiryWarning() {
     };
   }, [show]);
 
+  // Helper to format seconds as MM:SS
   const formatMMSS = (s: number) => {
     const m = String(Math.floor(s / 60)).padStart(2, "0");
     const sec = String(s % 60).padStart(2, "0");
     return `${m}:${sec}`;
   };
 
-  // Stay signed in → refresh + broadcast
+  // Extend session: hide dialog, refresh session, broadcast to other tabs
   const extend = async () => {
     console.log("[ExpiryWarning] Stay Signed In clicked");
     setShow(false);
@@ -189,29 +256,12 @@ function ExpiryWarning() {
           </Typography>
         </Typography>
         <Box mt={2} display="flex" gap={1}>
-          <Button onClick={() => signOut(SIGN_OUT_OPTS)}>Log Out</Button>
+          <Button onClick={() => handleLogout()}>Log Out</Button>
           <Button variant="contained" onClick={extend}>
-            Stay Logged In
+            Stay Signed In
           </Button>
         </Box>
       </DialogContent>
     </Dialog>
-  );
-}
-
-export default function SessionProvider({
-  children,
-  session,
-  basePath,
-}: {
-  children: ReactNode;
-  session?: any;
-  basePath?: string;
-}) {
-  return (
-    <NextAuthProvider basePath={basePath} session={session}>
-      {children}
-      <ExpiryWarning />
-    </NextAuthProvider>
   );
 }

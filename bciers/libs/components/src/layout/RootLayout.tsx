@@ -16,12 +16,6 @@ import {
 } from "@bciers/components";
 import { Main } from "@bciers/components/server";
 
-// Dynamically import SessionTimeoutHandler with SSR disabled
-const SessionTimeoutHandler = dynamic(
-  () => import("@bciers/components/auth/SessionTimeoutHandler"),
-  { ssr: false },
-);
-
 const rootMetadata: Metadata = {
   title: "CAS OBPS",
   description:
@@ -88,7 +82,6 @@ export default async function RootLayout({
                 zone={zone}
               />
               <Main>
-                <SessionTimeoutHandler />
                 {children}
               </Main>
               <Footer />
