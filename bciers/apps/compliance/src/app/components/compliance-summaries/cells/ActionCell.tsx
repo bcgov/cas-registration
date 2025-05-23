@@ -16,9 +16,9 @@ const ActionCell = (params: GridRenderCellParams) => {
       let basePath = `/compliance-summaries/${p.row.id}`;
 
       if (p.row.obligation_id) {
-        basePath += "/review-compliance-summary";
+        basePath += "/manage-obligation-review-summary";
       } else if (p.row.compliance_status === "Earned credits") {
-        basePath += "/review-compliance-summary";
+        basePath += "/request-issuance-review-summary";
       }
       return basePath;
     },

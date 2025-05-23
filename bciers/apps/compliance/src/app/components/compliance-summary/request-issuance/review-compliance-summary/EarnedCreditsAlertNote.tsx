@@ -1,4 +1,5 @@
 import { AlertIcon } from "@bciers/components/icons";
+import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import { Link, Paper } from "@mui/material";
 
 export const EarnedCreditsAlertNote = () => {
@@ -13,7 +14,7 @@ export const EarnedCreditsAlertNote = () => {
           The earned credits have not been issued yet. You may request issuance
           of them as long as you have an active trading account in the{" "}
           <Link
-            href="https://www.bc-ctr.ca/"
+            href={bcCarbonRegistryLink}
             target="_blank"
             rel="noopener noreferrer"
             underline="hover"
