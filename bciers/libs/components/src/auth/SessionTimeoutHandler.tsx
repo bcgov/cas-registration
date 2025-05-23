@@ -10,8 +10,8 @@ import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 import { useRouter } from "next/navigation";
 
-export const ACTIVITY_THROTTLE_SECONDS = 15; // Seconds to throttle user activity events (2 minutes)
-export const MODAL_DISPLAY_SECONDS = 30; // Seconds before timeout to show logout warning modal (5 minutes);
+export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Seconds to throttle user activity events (2 minutes)
+export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (expires: string | undefined): number => {
   if (!expires) return Infinity; // No expiration set, return infinite timeout
