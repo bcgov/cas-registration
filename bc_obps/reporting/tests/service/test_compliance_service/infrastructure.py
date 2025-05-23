@@ -188,7 +188,7 @@ class ComplianceTestInfrastructure:
         return t
 
     @classmethod
-    def unregulated_product(cls):
+    def unregulated_product_and_funny_category_13(cls):
         t = cls.build()
         t.report_emission_5 = make_recipe(
             "reporting.tests.utils.report_emission",
@@ -196,6 +196,15 @@ class ComplianceTestInfrastructure:
             gas_type_id=3,
             json_data={"equivalentEmission": 2200.00},
         )
+        t.report_emission_6 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_1,
+            gas_type_id=3,
+            json_data={"equivalentEmission": 55.55},
+        )
+        t.report_emission_5.emission_categories.set([5])
+        t.report_emission_6.emission_categories.set([5, 13])
+
         t.report_product_4 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=t.report_version_1,
@@ -210,5 +219,13 @@ class ComplianceTestInfrastructure:
             report_product=t.report_product_4,
             emission_category=EmissionCategory.objects.get(pk=5),  # Shouldn't matter
             allocated_quantity=Decimal('2200.00'),
+        )
+        t.allocation_8 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            report_product=t.report_product_4,
+            emission_category=EmissionCategory.objects.get(pk=2),  # Shouldn't matter
+            allocated_quantity=Decimal('55.55'),
         )
         return t
