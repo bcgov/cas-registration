@@ -166,6 +166,7 @@ function ExpiryWarning() {
 
     if (status !== "authenticated" || !session?.expires) {
       console.log("[ExpiryWarning] skipping – not authenticated or no expiry");
+      handleLogout();
       return;
     }
 
