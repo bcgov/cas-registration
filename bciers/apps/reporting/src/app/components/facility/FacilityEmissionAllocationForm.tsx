@@ -48,13 +48,17 @@ const validateEmissions = (formData: FormData): boolean => {
   return combinedEmissionAllocationData.every((allocation) => {
     const sum = allocation.products.reduce(
       (total, product) =>
-        total + (parseFloat(product.allocated_quantity.toString()) || 0),
+        total +
+        (parseFloat(product.allocated_quantity.toString()) * 10000 || 0),
       0,
     );
 
     const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
 
-    return parseFloat(sum.toFixed(4)) === parseFloat(emissionTotal.toFixed(4));
+    return (
+      parseFloat((sum / 10000).toFixed(4)) ===
+      parseFloat(emissionTotal.toFixed(4))
+    );
   });
 };
 
