@@ -1,0 +1,152 @@
+[
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelUnit": "kilolitres",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 11000,
+                        "methodology": {
+                          "methodology": "Default EF",
+                          "unitFuelCo2DefaultEf": 1,
+                          "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+                        },
+                        "equivalentEmission": "Value will be computed upon saving"
+                      }
+                    ],
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 12000
+                  }
+                ],
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 22,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-05-25T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelUnit": "kilolitres",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 2000,
+                        "methodology": {
+                          "methodology": "Default EF",
+                          "unitFuelCo2DefaultEf": 1,
+                          "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+                        },
+                        "equivalentEmission": "Value will be computed upon saving"
+                      }
+                    ],
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 1000000
+                  }
+                ],
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 23,
+      "updated_by_id": null
+    }
+  },
+  {
+    "model": "reporting.reportrawactivitydata",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-05-25T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "sourceTypes": {
+          "gscWithProductionOfUsefulEnergy": {
+            "units": [
+              {
+                "fuels": [
+                  {
+                    "fuelType": {
+                      "fuelName": "Diesel",
+                      "fuelUnit": "kilolitres",
+                      "fuelClassification": "Non-biomass"
+                    },
+                    "emissions": [
+                      {
+                        "gasType": "CO2",
+                        "emission": 0.0,
+                        "methodology": {
+                          "methodology": "Default EF",
+                          "unitFuelCo2DefaultEf": 1,
+                          "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
+                        },
+                        "equivalentEmission": "Value will be computed upon saving"
+                      }
+                    ],
+                    "fuelDescription": "Diesel fuel",
+                    "annualFuelAmount": 0
+                  }
+                ],
+                "gscUnitName": "GSC Unit Name 1",
+                "gscUnitType": "Kiln"
+              }
+            ]
+          }
+        },
+        "gscWithProductionOfUsefulEnergy": true
+      },
+      "activity_id": 1,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "facility_report_id": 24,
+      "updated_by_id": null
+    }
+  }
+]
