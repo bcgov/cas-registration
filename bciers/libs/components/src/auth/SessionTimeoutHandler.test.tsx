@@ -1,6 +1,6 @@
 import { expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { useSession, signOut, getSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import SessionTimeoutHandler, {
   ACTIVITY_THROTTLE_SECONDS,
   MODAL_DISPLAY_SECONDS,
@@ -67,7 +67,6 @@ describe("SessionTimeoutHandler", () => {
   const mockCreateThrottledEventHandler =
     createThrottledEventHandler as ReturnType<typeof vi.fn>;
   const mockGetToken = getToken as ReturnType<typeof vi.fn>;
-  const mockGetSession = getSession as ReturnType<typeof vi.fn>;
 
   const defaultSession = {
     data: { expires: new Date(Date.now() + 180 * 1000).toISOString() },
@@ -112,21 +111,21 @@ describe("SessionTimeoutHandler", () => {
     );
   });
 
-  it("updates session expiry on user activity when modal is not shown", async () => {
-    let capturedSession: (event: Event) => Promise<void> = () =>
+  it("refreshes session on user activity when modal is not shown", async () => {
+    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
       Promise.resolve();
 
     mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
-      capturedSession = refreshSession;
+      capturedRefreshSession = refreshSession;
       return () => {}; // Return a no-op cleanup function
     });
 
     renderWithSession();
 
     // Manually invoke the refreshSession to simulate activity
-    await capturedSession(new Event("mousemove"));
+    await capturedRefreshSession(new Event("mousemove"));
 
-    await waitFor(() => expect(mockGetSession).toHaveBeenCalled());
+    await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
   });
 
   it("logs out, broadcasts, and redirects when session timeout reaches zero", async () => {
