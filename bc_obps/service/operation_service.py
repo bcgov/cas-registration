@@ -41,6 +41,7 @@ from registration.schema import (
     OptedInOperationDetailIn,
     OperationNewEntrantApplicationIn,
     OperationRepresentativeIn,
+    OperationFilterSchema,
     FacilityIn,
     OperationTimelineFilterSchema,
     MultipleOperatorIn,
@@ -93,6 +94,20 @@ class OperationService:
         return OperationDataAccessService.get_all_operations_for_user(user).filter(
             ~Q(status=Operation.Statuses.REGISTERED)
         )
+
+    @classmethod
+    def list_operations(
+        cls,
+        user_guid: UUID,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: OperationFilterSchema = Query(...),
+    ) -> QuerySet[Operation]:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        sort_direction = "-" if sort_order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}"
+        base_qs = OperationDataAccessService.get_all_operations_for_user(user, include_all_statuses=True)
+        return filters.filter(base_qs).order_by(sort_by)
 
     @classmethod
     @transaction.atomic()
