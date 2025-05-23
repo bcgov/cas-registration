@@ -5,7 +5,7 @@ import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
-import { signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 
@@ -66,6 +66,7 @@ const SessionTimeoutHandler: React.FC = () => {
       }
       setSessionTimeout(getExpirationTimeInSeconds(newSession.expires));
     } catch (error) {
+      Sentry.captureException(error);
       console.error("Session refresh error:", error);
       await handleLogout();
     }
@@ -87,14 +88,15 @@ const SessionTimeoutHandler: React.FC = () => {
     };
   }, []);
 
-  // extend session broadcast channel (extend the session in all tabs if a user clicks the modal extend session button)
+  // extend session broadcast channel (get the new expiry in all tabs if a user clicks the modal extend session button)
   useEffect(() => {
     const extendSessionChannel = new BroadcastChannel("extend-session");
     extendSessionChannelRef.current = extendSessionChannel;
 
     extendSessionChannel.onmessage = async (event) => {
       if (event === "extend-session") {
-        await refreshSession();
+        const extendedSession = await getSession();
+        setSessionTimeout(getExpirationTimeInSeconds(extendedSession?.expires));
       }
     };
 
@@ -121,27 +123,30 @@ const SessionTimeoutHandler: React.FC = () => {
     if (status !== "authenticated") return;
 
     let cleanup: (() => void) | undefined;
+    // Only set up event listeners if the modal is not open
+    if (!showModal) {
+      // Custom handler to filter visibilitychange events
+      const handleActivity = async (event: Event) => {
+        // Only reset the session timeout for visibilitychange when document is visible
+        if (
+          event.type === "visibilitychange" &&
+          document.visibilityState !== "visible"
+        ) {
+          return; // Ignore when tab is hidden
+        }
 
-    // Custom handler to filter visibilitychange events
-    const handleActivity = async (event: Event) => {
-      // Only trigger refreshSession for visibilitychange when document is visible
-      if (
-        event.type === "visibilitychange" &&
-        document.visibilityState !== "visible"
-      ) {
-        return; // Ignore when tab is hidden
-      }
-      extendSessionChannelRef.current?.postMessage("extend-session");
-      await refreshSession();
-    };
+        extendSessionChannelRef.current?.postMessage("extend-session");
+        await refreshSession();
+      };
 
-    // Create a throttled handler to monitor user activity without overloading the system
-    const setupHandler = createThrottledEventHandler(
-      handleActivity,
-      ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"], // Events indicating user activity
-      ACTIVITY_THROTTLE_SECONDS,
-    );
-    cleanup = setupHandler(); // Start listening for events
+      // Create a throttled handler to monitor user activity without overloading the system
+      const setupHandler = createThrottledEventHandler(
+        handleActivity,
+        ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"], // Events indicating user activity
+        ACTIVITY_THROTTLE_SECONDS,
+      );
+      cleanup = setupHandler(); // Start listening for events
+    }
 
     // Prevent next-auth's default visibilitychange handling when modal is open
     const preventDefaultVisibilityChange = (event: Event) => {
