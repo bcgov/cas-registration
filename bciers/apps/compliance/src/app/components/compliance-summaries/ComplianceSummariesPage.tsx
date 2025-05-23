@@ -1,14 +1,14 @@
 import { ComplianceSummariesSearchParams } from "./types";
-import { fetchComplianceSummariesPageData } from "./fetchComplianceSummariesPageData";
+import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
 import { Alert } from "@mui/material";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
 
 export default async function ComplianceSummariesPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: ComplianceSummariesSearchParams;
-}) {
+}>) {
   const initialData = await fetchComplianceSummariesPageData(searchParams);
 
   return (
@@ -28,7 +28,7 @@ export default async function ComplianceSummariesPage({
           the compliance obligation is paid.
         </Alert>
       </div>
-      <ComplianceSummariesDataGrid initialData={initialData} />;
+      <ComplianceSummariesDataGrid initialData={initialData} />
     </div>
   );
 }

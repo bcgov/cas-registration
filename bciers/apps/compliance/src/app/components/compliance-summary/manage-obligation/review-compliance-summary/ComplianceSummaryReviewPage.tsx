@@ -1,7 +1,7 @@
 import {
   ActivePage,
-  getComplianceSummaryTaskList,
-} from "@/compliance/src/app/components/taskLists/1_manageObligationSchema";
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
 import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
 import { Suspense } from "react";
@@ -16,7 +16,7 @@ export default async function ComplianceSummaryReviewPage(props: Props) {
   const complianceSummaryId = parseInt(props.compliance_summary_id, 10);
 
   const complianceSummary = await getComplianceSummary(complianceSummaryId);
-  const taskListElements = getComplianceSummaryTaskList(
+  const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,

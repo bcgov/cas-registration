@@ -1,4 +1,4 @@
-import { ComplianceSummary } from "./types";
+import { ComplianceSummary } from "../components/compliance-summaries/types";
 import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 
@@ -22,6 +22,6 @@ export const fetchComplianceSummariesPageData = async (params: {
 
   return {
     rows: data.items,
-    row_count: data.count || 0,
+    row_count: data.count ?? 0,
   };
 };

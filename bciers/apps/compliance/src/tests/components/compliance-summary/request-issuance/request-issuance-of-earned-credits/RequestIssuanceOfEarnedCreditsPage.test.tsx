@@ -18,7 +18,7 @@ vi.mock(
       RequestIssuanceOfEarnedCredits: 1,
       TrackStatusOfIssuance: 2,
     },
-    getRequestIssuanceTaskList: vi.fn().mockReturnValue([
+    generateRequestIssuanceTaskList: vi.fn().mockReturnValue([
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -87,13 +87,13 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     const { getRequestIssuanceData } = await import(
       "@/compliance/src/app/utils/getRequestIssuanceData"
     );
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
+    const { generateRequestIssuanceTaskList } = await import(
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList"
     );
 
     expect(getRequestIssuanceData).toHaveBeenCalled();
 
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
+    expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
       123,
       2024,
       mockActivePageEnum.RequestIssuanceOfEarnedCredits,
@@ -121,11 +121,11 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     });
     render(component);
 
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
+    const { generateRequestIssuanceTaskList } = await import(
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList"
     );
 
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
+    expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
       456,
       2024,
       mockActivePageEnum.RequestIssuanceOfEarnedCredits,

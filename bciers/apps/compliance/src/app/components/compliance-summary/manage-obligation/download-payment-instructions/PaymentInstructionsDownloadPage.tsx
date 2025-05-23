@@ -1,7 +1,7 @@
 import {
   ActivePage,
-  getComplianceSummaryTaskList,
-} from "@/compliance/src/app/components/taskLists/1_manageObligationSchema";
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import PaymentInstructionsDownloadComponent from "./PaymentInstructionsDownloadComponent";
 import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
 
@@ -14,7 +14,7 @@ export default async function PaymentInstructionsDownloadPage(props: Props) {
 
   const complianceSummary = await getComplianceSummary(complianceSummaryId);
 
-  const taskListElements = getComplianceSummaryTaskList(
+  const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
     ActivePage.DownloadPaymentInstructions,
