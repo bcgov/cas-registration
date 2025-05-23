@@ -13,8 +13,8 @@ export default function ComplianceUnitsApplyComponent({
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   return (
     <CompliancePageLayout

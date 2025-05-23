@@ -33,7 +33,7 @@ export const ComplianceUnitsGrid = ({
   const handleApplyComplianceUnits = () => {
     if (complianceSummaryId) {
       router.push(
-        `/compliance-summaries/${complianceSummaryId}/manage-obligation/apply-compliance-units`,
+        `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
       );
     }
   };
