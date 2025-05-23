@@ -1,11 +1,11 @@
 from decimal import Decimal
 from uuid import UUID
 from unittest.mock import MagicMock
-from django.test import SimpleTestCase
+from django.test import TestCase
 from compliance.models.compliance_report_version import ComplianceReportVersion
 
 
-class TestComplianceDashboardService(SimpleTestCase):
+class TestComplianceDashboardService(TestCase):
     """Tests for the ComplianceDashboardService class"""
 
     def setUp(self):

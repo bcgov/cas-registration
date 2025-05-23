@@ -11,7 +11,7 @@ export const fetchComplianceSummariesPageData = async (params: {
   const queryParams = buildQueryParams(params);
 
   const data = await actionHandler(
-    `compliance/summaries${queryParams}`,
+    `compliance/compliance-report-versions${queryParams}`,
     "GET",
     "",
   );
