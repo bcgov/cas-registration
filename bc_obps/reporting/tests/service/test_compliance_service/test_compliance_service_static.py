@@ -1,3 +1,4 @@
+from unittest.mock import patch, MagicMock
 from django.test import TestCase
 from decimal import Decimal
 from reporting.models.report_product import ReportProduct
@@ -25,10 +26,10 @@ class TestComplianceSummaryService(TestCase):
         regulatory_values_1 = ComplianceService.get_regulatory_values_by_naics_code(report_version_1.id)
         regulatory_values_2 = ComplianceService.get_regulatory_values_by_naics_code(report_version_2.id)
 
-        assert regulatory_values_1.reduction_factor == Decimal('0.6500')
-        assert regulatory_values_1.tightening_rate == Decimal('0.0100')
-        assert regulatory_values_2.reduction_factor == Decimal('0.9000')
-        assert regulatory_values_2.tightening_rate == Decimal('0.0100')
+        assert regulatory_values_1.reduction_factor == Decimal("0.6500")
+        assert regulatory_values_1.tightening_rate == Decimal("0.0100")
+        assert regulatory_values_2.reduction_factor == Decimal("0.9000")
+        assert regulatory_values_2.tightening_rate == Decimal("0.0100")
 
     def test_get_emissions_attributable_for_reporting(self):
         ## SETUP ##
@@ -60,9 +61,9 @@ class TestComplianceSummaryService(TestCase):
             report_emission_1.report_version_id
         )
         emission_sum = (
-            Decimal(str(report_emission_1.json_data['equivalentEmission']))
-            + Decimal(str(report_emission_2.json_data['equivalentEmission']))
-            + Decimal(str(report_emission_3.json_data['equivalentEmission']))
+            Decimal(str(report_emission_1.json_data["equivalentEmission"]))
+            + Decimal(str(report_emission_2.json_data["equivalentEmission"]))
+            + Decimal(str(report_emission_3.json_data["equivalentEmission"]))
         )
         assert sum_for_testing == emission_sum
 
@@ -70,20 +71,20 @@ class TestComplianceSummaryService(TestCase):
         ## SETUP ##
         report_product_1 = make_recipe(
             "reporting.tests.utils.report_product",
-            annual_production=Decimal('10000'),
-            production_data_apr_dec=Decimal('5000'),
+            annual_production=Decimal("10000"),
+            production_data_apr_dec=Decimal("5000"),
         )
         report_product_2 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=report_product_1.report_version,
-            annual_production=Decimal('100000'),
-            production_data_apr_dec=Decimal('25000'),
+            annual_production=Decimal("100000"),
+            production_data_apr_dec=Decimal("25000"),
         )
         report_product_3 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=report_product_1.report_version,
-            annual_production=Decimal('200000'),
-            production_data_apr_dec=Decimal('150000'),
+            annual_production=Decimal("200000"),
+            production_data_apr_dec=Decimal("150000"),
         )
 
         ## TESTS ##
@@ -97,8 +98,8 @@ class TestComplianceSummaryService(TestCase):
             + report_product_3.production_data_apr_dec
         )
 
-        assert sums_for_testing['annual_amount'] == annual_sum
-        assert sums_for_testing['apr_dec'] == apr_dec_sum
+        assert sums_for_testing["annual_amount"] == annual_sum
+        assert sums_for_testing["apr_dec"] == apr_dec_sum
 
     def test_get_allocated_emissions_by_report_product_emission_category(self):
         ## SETUP ##
@@ -109,27 +110,27 @@ class TestComplianceSummaryService(TestCase):
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
-            allocated_quantity=Decimal('1000.0001'),
+            allocated_quantity=Decimal("1000.0001"),
         )
         allocation_2 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
             report_product=allocation_1.report_product,
-            allocated_quantity=Decimal('2000.0002'),
+            allocated_quantity=Decimal("2000.0002"),
         )
         allocation_3 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=3),
-            allocated_quantity=Decimal('6000.0006'),
+            allocated_quantity=Decimal("6000.0006"),
         )
         allocation_4 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             report_version=emission_allocation.report_version,
             emission_category=EmissionCategory.objects.get(pk=12),
             report_product=allocation_3.report_product,
-            allocated_quantity=Decimal('500.0005'),
+            allocated_quantity=Decimal("500.0005"),
         )
 
         ## TESTS ##
@@ -154,28 +155,28 @@ class TestComplianceSummaryService(TestCase):
         ## SETUP ##
         report_product_1 = make_recipe(
             "reporting.tests.utils.report_product",
-            annual_production=Decimal('10000.0001'),
-            production_data_apr_dec=Decimal('5000.05'),
+            annual_production=Decimal("10000.0001"),
+            production_data_apr_dec=Decimal("5000.05"),
         )
         report_product_2 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=report_product_1.report_version,
             product=report_product_1.product,
-            annual_production=Decimal('100000.003'),
-            production_data_apr_dec=Decimal('25000.0002'),
+            annual_production=Decimal("100000.003"),
+            production_data_apr_dec=Decimal("25000.0002"),
         )
         report_product_3 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=report_product_1.report_version,
-            annual_production=Decimal('200000.0091'),
-            production_data_apr_dec=Decimal('150000.1234'),
+            annual_production=Decimal("200000.0091"),
+            production_data_apr_dec=Decimal("150000.1234"),
         )
         report_product_4 = make_recipe(
             "reporting.tests.utils.report_product",
             report_version=report_product_1.report_version,
             product=report_product_3.product,
-            annual_production=Decimal('400000.002'),
-            production_data_apr_dec=Decimal('50000.321'),
+            annual_production=Decimal("400000.002"),
+            production_data_apr_dec=Decimal("50000.321"),
         )
 
         ## TESTS ##
@@ -187,20 +188,20 @@ class TestComplianceSummaryService(TestCase):
         )
 
         assert (
-            product_1_2_aggregate_for_test['annual_amount']
+            product_1_2_aggregate_for_test["annual_amount"]
             == report_product_1.annual_production + report_product_2.annual_production
         )
         assert (
-            product_1_2_aggregate_for_test['apr_dec']
+            product_1_2_aggregate_for_test["apr_dec"]
             == report_product_1.production_data_apr_dec + report_product_2.production_data_apr_dec
         )
 
         assert (
-            product_3_4_aggregate_for_test['annual_amount']
+            product_3_4_aggregate_for_test["annual_amount"]
             == report_product_3.annual_production + report_product_4.annual_production
         )
         assert (
-            product_3_4_aggregate_for_test['apr_dec']
+            product_3_4_aggregate_for_test["apr_dec"]
             == report_product_3.production_data_apr_dec + report_product_4.production_data_apr_dec
         )
 
@@ -209,7 +210,7 @@ class TestComplianceSummaryService(TestCase):
         allocation_1 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
             emission_category=EmissionCategory.objects.get(pk=1),
-            allocated_quantity=Decimal('1000.0001'),
+            allocated_quantity=Decimal("1000.0001"),
             report_product__product__is_regulated=True,
         )
         emission_allocation = make_recipe(
@@ -222,7 +223,7 @@ class TestComplianceSummaryService(TestCase):
             report_version=allocation_1.report_version,
             report_product=allocation_1.report_product,
             emission_category=EmissionCategory.objects.get(pk=2),
-            allocated_quantity=Decimal('2000.0002'),
+            allocated_quantity=Decimal("2000.0002"),
         )
         make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
@@ -230,7 +231,7 @@ class TestComplianceSummaryService(TestCase):
             report_version=allocation_1.report_version,
             report_product=allocation_1.report_product,
             emission_category=EmissionCategory.objects.get(pk=3),
-            allocated_quantity=Decimal('6000.0006'),
+            allocated_quantity=Decimal("6000.0006"),
         )
         allocation_4 = make_recipe(
             "reporting.tests.utils.report_product_emission_allocation",
@@ -238,7 +239,7 @@ class TestComplianceSummaryService(TestCase):
             report_version=allocation_1.report_version,
             report_product=allocation_1.report_product,
             emission_category=EmissionCategory.objects.get(pk=12),
-            allocated_quantity=Decimal('500.0005'),
+            allocated_quantity=Decimal("500.0005"),
         )
 
         ## TESTS ##
@@ -249,7 +250,8 @@ class TestComplianceSummaryService(TestCase):
         assert reporting_only_for_test == allocation_2.allocated_quantity + allocation_4.allocated_quantity
 
         fog_product_id = RegulatedProduct.objects.get(
-            name='Fat, oil and grease collection, refining and storage', is_regulated=False
+            name="Fat, oil and grease collection, refining and storage",
+            is_regulated=False,
         ).id
 
         # Add a fog product
@@ -258,22 +260,18 @@ class TestComplianceSummaryService(TestCase):
             report_emission_allocation=emission_allocation,
             report_version=allocation_1.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
-            allocated_quantity=Decimal('12.0'),
+            allocated_quantity=Decimal("12.0"),
         )
         ReportProduct.objects.filter(pk=fog_product_allocation.report_product_id).update(product_id=fog_product_id)
 
         # Correctly aggregates reporting-only emissions when there is a fog product
+        # (doesn't take it into account at the product level)
         reporting_only_with_fog_for_test = ComplianceService.get_reporting_only_allocated(
             allocation_1.report_version, allocation_1.report_product.product_id
         )
-        assert (
-            reporting_only_with_fog_for_test
-            == allocation_2.allocated_quantity
-            + allocation_4.allocated_quantity
-            + fog_product_allocation.allocated_quantity
-        )
+        assert reporting_only_with_fog_for_test == allocation_2.allocated_quantity + allocation_4.allocated_quantity
 
-        refineries_line_tracing_id = RegulatedProduct.objects.get(name='Refineries line tracing', is_regulated=False).id
+        refineries_line_tracing_id = RegulatedProduct.objects.get(name="Refineries line tracing", is_regulated=False).id
 
         # Add another unregulated product
         unregulated_product_allocation = make_recipe(
@@ -281,33 +279,121 @@ class TestComplianceSummaryService(TestCase):
             report_emission_allocation=emission_allocation,
             report_version=allocation_1.report_version,
             emission_category=EmissionCategory.objects.get(pk=1),
-            allocated_quantity=Decimal('12.0'),
+            allocated_quantity=Decimal("12.0"),
         )
         ReportProduct.objects.filter(pk=unregulated_product_allocation.report_product_id).update(
             product_id=refineries_line_tracing_id
         )
 
         # Correctly aggregates reporting-only emissions when there are multiple unregulated products
+        # (doesn't take them into account at the product level)
         reporting_only_with_unregulated_for_test = ComplianceService.get_reporting_only_allocated(
             allocation_1.report_version, allocation_1.report_product.product_id
         )
 
         assert (
             reporting_only_with_unregulated_for_test
-            == allocation_2.allocated_quantity
-            + allocation_4.allocated_quantity
-            + fog_product_allocation.allocated_quantity
-            + unregulated_product_allocation.allocated_quantity
+            == allocation_2.allocated_quantity + allocation_4.allocated_quantity
         )
+
+    @patch(
+        "reporting.service.compliance_service.ComplianceService.get_allocated_emissions_by_report_product_emission_category"
+    )
+    def test_get_reporting_only_allocated_return_the_total_for_reporting_only_categories(
+        self, mock_get_allocated_emissions: MagicMock
+    ):
+        ComplianceService.get_reporting_only_allocated(1234, 5678)
+        mock_get_allocated_emissions.assert_called_once_with(1234, 5678, [10, 11, 12, 2, 7])
+
+    def test_get_from_funny_category_only_counts_the_non_overlapping_ones(self):
+        report_version = make_recipe("reporting.tests.utils.report_version")
+        # Regulated emission
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            emission_categories={EmissionCategory.objects.get(pk=1)},
+            json_data={"equivalentEmission": 1000.0001},
+        ),
+
+        # Funny emission to not double-count
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            emission_categories={
+                EmissionCategory.objects.get(pk=1),
+                EmissionCategory.objects.get(pk=10),
+                EmissionCategory.objects.get(pk=13),
+            },
+            json_data={"equivalentEmission": 2000.0002},
+        ),
+
+        # Funny emission to be added at the end of the compliance calculation
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            emission_categories={EmissionCategory.objects.get(pk=1), EmissionCategory.objects.get(pk=13)},
+            json_data={"equivalentEmission": 3000.0003},
+        )
+        make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=report_version,
+            emission_categories={EmissionCategory.objects.get(pk=4), EmissionCategory.objects.get(pk=13)},
+            json_data={"equivalentEmission": 3},
+        )
+
+        allocated_emissions_to_unregulated_products = ComplianceService.get_emissions_from_only_funny_category_13(
+            report_version.id
+        )
+        assert allocated_emissions_to_unregulated_products == Decimal("3003.0003")
+
+    def test_get_fog(self):
+        report_version = make_recipe("reporting.tests.utils.report_version")
+
+        # With reporting only category, ignored by the fog adjustment
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            emission_category=EmissionCategory.objects.get(pk=7),
+            allocated_quantity=Decimal('10'),
+            report_product__product=RegulatedProduct.objects.get(
+                name="Fat, oil and grease collection, refining and storage"
+            ),
+            report_version=report_version,
+            report_product__report_version=report_version,
+        )
+
+        # To be added the fog adjustment at the end of the compliance calculation
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            emission_category=EmissionCategory.objects.get(pk=1),
+            allocated_quantity=Decimal('20'),
+            report_product__product=RegulatedProduct.objects.get(
+                name="Fat, oil and grease collection, refining and storage"
+            ),
+            report_version=report_version,
+            report_product__report_version=report_version,
+        )
+        make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            emission_category=EmissionCategory.objects.get(pk=6),
+            allocated_quantity=Decimal('2'),
+            report_product__product=RegulatedProduct.objects.get(
+                name="Fat, oil and grease collection, refining and storage"
+            ),
+            report_version=report_version,
+            report_product__report_version=report_version,
+        )
+
+        fog_allocated_emissions = ComplianceService.get_fog_emissions(report_version.id)
+        assert fog_allocated_emissions == Decimal("22")
 
     def test_get_emission_limit(self):
         emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
-            pwaei=Decimal('0.5'),
-            apr_dec_production=Decimal('20000'),
-            allocated_industrial_process=Decimal('5000'),
-            allocated_for_compliance=Decimal('20000'),
-            tightening_rate=Decimal('0.1'),
-            reduction_factor=Decimal('0.65'),
+            pwaei=Decimal("0.5"),
+            apr_dec_production=Decimal("20000"),
+            allocated_industrial_process=Decimal("5000"),
+            allocated_for_compliance=Decimal("20000"),
+            tightening_rate=Decimal("0.1"),
+            reduction_factor=Decimal("0.65"),
             compliance_period=2025,
             initial_compliance_period=2024,
         )
@@ -326,16 +412,16 @@ class TestComplianceSummaryService(TestCase):
         #  = 10000 * (0.65 - 0.075)
         #  = 10000 * 0.575
         #  = 5750
-        assert emission_limit_for_test == Decimal('5750')
+        assert emission_limit_for_test == Decimal("5750")
 
     def test_get_emission_limit_handles_divide_by_zero(self):
         emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
-            pwaei=Decimal('0.5'),
-            apr_dec_production=Decimal('20000'),
-            allocated_industrial_process=Decimal('5000'),
-            allocated_for_compliance=Decimal('0'),
-            tightening_rate=Decimal('0.1'),
-            reduction_factor=Decimal('0.65'),
+            pwaei=Decimal("0.5"),
+            apr_dec_production=Decimal("20000"),
+            allocated_industrial_process=Decimal("5000"),
+            allocated_for_compliance=Decimal("0"),
+            tightening_rate=Decimal("0.1"),
+            reduction_factor=Decimal("0.65"),
             compliance_period=2025,
             initial_compliance_period=2024,
         )
@@ -354,4 +440,4 @@ class TestComplianceSummaryService(TestCase):
         #  = 10000 * (0.65 - 0.1)
         #  = 10000 * 0.55
         #  = 5500
-        assert emission_limit_for_test == Decimal('5500')
+        assert emission_limit_for_test == Decimal("5500")
