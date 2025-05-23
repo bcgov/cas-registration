@@ -602,5 +602,19 @@
       "name": "Blight EIO - Draft",
       "type": "Electricity Import"
     }
+  },
+  {
+    "model": "registration.facility",
+    "pk": "9f7b0848-021e-4d08-9852-10524c4e5457",
+    "fields": {
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:18:07.664Z",
+      "name": "Compliance - Earned Credits",
+      "type": "Single Facility",
+      "swrs_facility_id": 1043,
+      "latitude_of_largest_emissions": 43.5,
+      "longitude_of_largest_emissions": -123.5
+    }
   }
 ]

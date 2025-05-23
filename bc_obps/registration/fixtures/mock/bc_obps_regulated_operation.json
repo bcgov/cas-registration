@@ -142,5 +142,13 @@
       "issued_at": "2024-10-13T15:27:00.000Z",
       "comments": "Test comment"
     }
+  },
+  {
+    "model": "registration.bcobpsregulatedoperation",
+    "fields": {
+      "id": "24-0019",
+      "issued_at": "2024-10-13T15:27:00.000Z",
+      "comments": "Test comment"
+    }
   }
 ]
