@@ -5,7 +5,7 @@ import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
 import { getEnvValue } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
-import { signOut, useSession } from "next-auth/react";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 
@@ -66,6 +66,7 @@ const SessionTimeoutHandler: React.FC = () => {
       }
       setSessionTimeout(getExpirationTimeInSeconds(newSession.expires));
     } catch (error) {
+      Sentry.captureException(error);
       console.error("Session refresh error:", error);
       await handleLogout();
     }
@@ -124,15 +125,16 @@ const SessionTimeoutHandler: React.FC = () => {
 
     // Custom handler to filter visibilitychange events
     const handleActivity = async (event: Event) => {
-      // Only trigger refreshSession for visibilitychange when document is visible
+      // Only reset the session timeout for visibilitychange when document is visible
       if (
         event.type === "visibilitychange" &&
         document.visibilityState !== "visible"
       ) {
         return; // Ignore when tab is hidden
       }
-      extendSessionChannelRef.current?.postMessage("extend-session");
-      await refreshSession();
+      // The session is refreshed every time `getSession` is called.
+      const updatedSession = await getSession();
+      setSessionTimeout(getExpirationTimeInSeconds(updatedSession?.expires));
     };
 
     // Create a throttled handler to monitor user activity without overloading the system
