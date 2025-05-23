@@ -4,7 +4,6 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
-
     @staticmethod
     def _get_endpoint_url(compliance_report_version_id):
         return custom_reverse_lazy(

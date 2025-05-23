@@ -1,9 +1,9 @@
 from typing import Literal, Tuple
 from django.http import HttpRequest
 from common.permissions import authorize
-from compliance.api import router
+from compliance.api.router import router
 from compliance.constants import COMPLIANCE
-from compliance.models import ComplianceReportVersion
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.schema.compliance_report_version import OperationByComplianceSummaryOut
 from registration.models import Operation
 from service.error_service.custom_codes_4xx import custom_codes_4xx
