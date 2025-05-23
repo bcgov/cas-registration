@@ -1,0 +1,87 @@
+[
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 10000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 1,
+      "report_version": 3,
+      "updated_by_id": null,
+      "report_emission_allocation": 1
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 1000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 2,
+      "report_version": 3,
+      "updated_by_id": null,
+      "report_emission_allocation": 1
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 1000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 3,
+      "report_version": 4,
+      "updated_by_id": null,
+      "report_emission_allocation": 2
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 4,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 1000.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 4,
+      "report_version": 4,
+      "updated_by_id": null,
+      "report_emission_allocation": 2
+    }
+  },
+  {
+    "model": "reporting.reportproductemissionallocation",
+    "pk": 5,
+    "fields": {
+      "created_at": "2025-05-26T11:38:25.743731-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "allocated_quantity": 0.0,
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "emission_category": 5,
+      "report_product": 5,
+      "report_version": 5,
+      "updated_by_id": null,
+      "report_emission_allocation": 3
+    }
+  }
+]

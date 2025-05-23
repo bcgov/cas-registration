@@ -1,0 +1,68 @@
+[
+  {
+    "model": "reporting.reportemission",
+    "pk": 1,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "emission": 11000,
+        "equivalentEmission": "11000.0000"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "gas_type_id": 1,
+      "updated_by_id": null,
+      "report_fuel_id": 1,
+      "report_source_type_id": 1,
+      "report_version_id": 3,
+      "report_unit_id": null,
+      "emission_categories": [5]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 2,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "emission": 2000,
+        "equivalentEmission": "2000.0000"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "gas_type_id": 1,
+      "updated_by_id": null,
+      "report_fuel_id": 2,
+      "report_source_type_id": 2,
+      "report_version_id": 4,
+      "report_unit_id": null,
+      "emission_categories": [5]
+    }
+  },
+  {
+    "model": "reporting.reportemission",
+    "pk": 3,
+    "fields": {
+      "created_at": "2025-05-26T09:33:48.711832-04:00",
+      "updated_at": null,
+      "archived_at": null,
+      "json_data": {
+        "emission": 0,
+        "equivalentEmission": "0.0000"
+      },
+      "archived_by_id": null,
+      "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
+      "gas_type_id": 1,
+      "updated_by_id": null,
+      "report_fuel_id": 3,
+      "report_source_type_id": 3,
+      "report_version_id": 5,
+      "report_unit_id": null,
+      "emission_categories": [5]
+    }
+  }
+]
