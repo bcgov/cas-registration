@@ -1,12 +1,14 @@
+import json
+import uuid
 from unittest.mock import MagicMock
 from django.core.cache import caches
 from model_bakery.baker import prepare_recipe
 import pytest
 from registration.models.activity import Activity
+from reporting.models import ActivityJsonSchema
 from reporting.models.configuration import Configuration
 from reporting.models.source_type import SourceType
-from service.form_builder_service import build_source_type_schema, handle_source_type_schema
-
+from service.form_builder_service import build_source_type_schema, handle_source_type_schema, build_schema
 
 pytestmark = pytest.mark.django_db
 
@@ -179,7 +181,6 @@ class TestHandleSourceTypeMethod:
         assert returned_schema["properties"]["emissions"]["items"]["dependencies"] == self.gas_type_one_of
 
     def test_form_builder_uses_cache(self):
-
         mock_cache = MagicMock()
         caches["form_builder"] = mock_cache
 
@@ -204,3 +205,28 @@ class TestHandleSourceTypeMethod:
         assert return_value == "cached"
         assert len(mock_cache.get.mock_calls) == 1
         assert len(mock_cache.set.mock_calls) == 0
+
+    def test_build_schema_fallback_no_activityjsonschema(self):
+        mock_cache = MagicMock()
+        caches["form_builder"] = mock_cache
+
+        config_id = 1
+        activity_id = 1
+        source_types = []
+        facility_id = str(uuid.uuid4())
+        report_version_id = 1
+
+        activity, _ = Activity.objects.update_or_create(id=activity_id, defaults={"name": "Test Activity"})
+
+        ActivityJsonSchema.objects.filter(activity_id=activity_id).delete()
+
+        mock_cache.get.return_value = None
+        result = build_schema(config_id, activity_id, source_types, facility_id, report_version_id)
+        result_schema = json.loads(result)
+
+        # Assertions for fallback schema
+        assert result_schema["schema"]["isFallbackSchema"] is True
+        assert result_schema["schema"]["title"] == "Test Activity"
+        assert "description" in result_schema["schema"]["properties"]
+        assert result_schema["schema"]["properties"]["description"]["type"] == "string"
+        assert result_schema["schema"]["properties"]["description"]["readOnly"] is True

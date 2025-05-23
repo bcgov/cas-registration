@@ -1,5 +1,7 @@
 import json
 from django.core.cache import caches
+
+from registration.models import Activity
 from service.utils.get_report_valid_date_from_version_id import (
     get_report_valid_date_from_version_id,
 )
@@ -248,7 +250,6 @@ def build_source_type_schema(
     source_type_id: int,
     add_not_applicable_methodology: bool,
 ) -> Dict:
-
     form_builder_cache = caches["form_builder"]
     cache_key = f"{config_id}-{activity_id}-{source_type_id}"
     cache_hit: Dict = form_builder_cache.get(cache_key)
@@ -310,6 +311,28 @@ def build_source_type_schema(
 def build_schema(
     config_id: int, activity: int, source_types: List[str] | List[int], facility_id: str, report_version_id: int
 ) -> str:
+    activity_obj = Activity.objects.filter(id=activity).only("name").first()
+    activity_name = activity_obj.name if activity_obj else f"Activity {activity}"
+
+    # Check if the activity schema exists
+    activity_schema_exists = ActivityJsonSchema.objects.filter(
+        activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
+    ).exists()
+
+    if not activity_schema_exists:
+        # Return a fallback schema if no activity schema is found
+        fallback_schema = {
+            "type": "object",
+            "title": activity_name,
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "readOnly": True,
+                },
+            },
+            "isFallbackSchema": True,
+        }
+        return json.dumps({"schema": fallback_schema})
     # Get activity schema
     activity_schema = ActivityJsonSchema.objects.only("json_schema").get(
         activity_id=activity, valid_from__lte=config_id, valid_to__gte=config_id
