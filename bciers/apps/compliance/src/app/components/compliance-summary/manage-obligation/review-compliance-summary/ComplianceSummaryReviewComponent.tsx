@@ -14,7 +14,7 @@ export default function ComplianceSummaryReviewComponent({
   taskListElements,
 }: Props) {
   const backUrl = `/compliance-summaries`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   return (
     <CompliancePageLayout
