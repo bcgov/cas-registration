@@ -33,19 +33,19 @@ vi.mock(
           {
             type: "Page",
             title: "Review 2024 Compliance Summary",
-            link: `/compliance-summaries/${id}/manage-obligation/review-compliance-summary`,
+            link: `/compliance-summaries/${id}/review-compliance-summary`,
             isActive: true,
           },
           {
             type: "Page",
             title: "Download Payment Instructions",
-            link: `/compliance-summaries/${id}/manage-obligation/download-payment-instructions`,
+            link: `/compliance-summaries/${id}/download-payment-instructions`,
             isActive: false,
           },
           {
             type: "Page",
             title: "Pay Obligation and Track Payment(s)",
-            link: `/compliance-summaries/${id}/manage-obligation/pay-obligation-track-payments`,
+            link: `/compliance-summaries/${id}/pay-obligation-track-payments`,
             isActive: false,
           },
         ],

@@ -22,7 +22,7 @@ describe("ActionCell", () => {
     render(ActionCell(createMockParams(123, 456)));
     expectLink(
       "Manage Obligation",
-      "/compliance-summaries/123/manage-obligation/review-compliance-summary",
+      "/compliance-summaries/123/review-compliance-summary",
     );
   });
 
@@ -43,7 +43,7 @@ describe("ActionCell", () => {
     render(ActionCell(createMockParams(123, 456, "Earned credits")));
     expectLink(
       "Manage Obligation",
-      "/compliance-summaries/123/manage-obligation/review-compliance-summary",
+      "/compliance-summaries/123/review-compliance-summary",
     );
   });
 });
