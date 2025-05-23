@@ -8,6 +8,7 @@ import * as Sentry from "@sentry/nextjs";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
+import { useRouter } from "next/navigation";
 
 export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Seconds to throttle user activity events (2 minutes)
 export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
@@ -23,6 +24,7 @@ const SessionTimeoutHandler: React.FC = () => {
   const [sessionTimeout, setSessionTimeout] = useState<number>(
     getExpirationTimeInSeconds(session?.expires),
   );
+  const router = useRouter();
   const logoutChannelRef = useRef<BroadcastChannel | null>(null);
   const extendSessionChannelRef = useRef<BroadcastChannel | null>(null);
 
@@ -35,19 +37,16 @@ const SessionTimeoutHandler: React.FC = () => {
     return logoutUrl;
   };
 
-  const redirect = async () => {
-    const logoutUrl = await getLogoutUrl();
-    window.location.href = logoutUrl || "/";
-  };
-
   const handleLogout = async () => {
     // broadcast logout to other browser tabs
     logoutChannelRef.current?.postMessage("logout");
     try {
-      await signOut();
+      const logoutUrl = await getLogoutUrl();
+      await signOut({ redirect: true, redirectTo: logoutUrl || "/" });
     } finally {
-      // signOut's redirectTo doesn't work in some cases, so we manually redirect
-      await redirect();
+      // signOut's redirectTo doesn't work in some cases, so we manually redirect as well https://github.com/nextauthjs/next-auth/issues/10944
+      const logoutUrl = await getLogoutUrl();
+      router.push(logoutUrl || "/");
     }
   };
 
@@ -79,7 +78,8 @@ const SessionTimeoutHandler: React.FC = () => {
 
     logoutChannel.onmessage = async (event) => {
       if (event === "logout") {
-        redirect();
+        const logoutUrl = await getLogoutUrl();
+        router.push(logoutUrl || "/");
       }
     };
 
