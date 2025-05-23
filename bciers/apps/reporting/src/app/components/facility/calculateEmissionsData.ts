@@ -16,15 +16,15 @@ const handlePercentageNearHundred = (value: number) => {
 
 // 🛠️ Function to calculate category products allocation sum and set total sum in products_emission_allocation_sum
 export const calculateEmissionData = (category: EmissionAllocationData) => {
-  const sum = category.products.reduce(
+  let sum = category.products.reduce(
     (total, product) =>
-      total + (parseFloat(product.allocated_quantity.toString()) || 0),
+      total + (parseFloat(product.allocated_quantity.toString()) * 10000 || 0),
     0,
   );
 
   const emissionTotal = Number(category.emission_total);
   let percentage;
-
+  sum = parseFloat((sum / 10000).toFixed(4));
   if (emissionTotal) {
     percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
   } else {
@@ -35,7 +35,9 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
     ...category,
     products_emission_allocation_sum:
       percentage < 0 || percentage > 100
-        ? `This category is over-allocated by ${sum - emissionTotal}`
+        ? `This category is over-allocated by ${(sum - emissionTotal).toFixed(
+            4,
+          )}`
         : `${percentage.toFixed(2)}%`,
     emission_total: category.emission_total.toString(),
   };
