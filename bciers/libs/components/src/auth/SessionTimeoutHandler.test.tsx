@@ -87,6 +87,13 @@ describe("SessionTimeoutHandler", () => {
     mockSignOut.mockResolvedValue(undefined);
     mockGetEnvValue.mockResolvedValue("http://logout.url"); // NOSONAR
     mockCreateThrottledEventHandler.mockReturnValue(vi.fn());
+    window = Object.create(window);
+    Object.defineProperty(window, "location", {
+      value: {
+        href: "whatever",
+        origin: "also whatever",
+      },
+    });
   });
 
   it("does not render anything when not authenticated", () => {
@@ -125,13 +132,12 @@ describe("SessionTimeoutHandler", () => {
       data: { expires: new Date(Date.now() - 1 * 1000).toISOString() },
     });
 
-    expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
     expect(postMessage).toHaveBeenCalledWith("logout");
-    await waitFor(() =>
-      expect(mockSignOut).toHaveBeenCalledWith({
-        redirectTo: "http://logout.url",
-      }),
-    );
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalled();
+      expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+      expect(window.location.href).toBe("http://logout.url");
+    });
   });
 
   it("logs out, broadcasts, and redirects to fallback url when session timeout reaches zero", async () => {
@@ -142,11 +148,11 @@ describe("SessionTimeoutHandler", () => {
     });
 
     expect(postMessage).toHaveBeenCalledWith("logout");
-    await waitFor(() =>
-      expect(mockSignOut).toHaveBeenCalledWith({
-        redirectTo: "/",
-      }),
-    );
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalled();
+      expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+      expect(window.location.href).toBe("/");
+    });
   });
 
   it("shows modal when session is about to expire", async () => {
@@ -200,7 +206,7 @@ describe("SessionTimeoutHandler", () => {
     });
   });
 
-  it("logs out and broadcasts when user clicks logout in modal", async () => {
+  it("logs out, broadcasts, and redirects when user clicks logout in modal", async () => {
     renderWithSession({
       data: {
         expires: new Date(
@@ -219,13 +225,12 @@ describe("SessionTimeoutHandler", () => {
       },
     );
     screen.getByText("Logout").click();
-    expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
 
     await waitFor(() => {
       expect(postMessage).toHaveBeenCalledWith("logout");
-      expect(mockSignOut).toHaveBeenCalledWith({
-        redirectTo: "http://logout.url", // NOSONAR
-      });
+      expect(mockSignOut).toHaveBeenCalled();
+      expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+      expect(window.location.href).toBe("http://logout.url");
     });
   });
 
@@ -249,10 +254,9 @@ describe("SessionTimeoutHandler", () => {
     screen.getByText("Extend").click();
 
     await waitFor(() => {
-      expect(postMessage).toHaveBeenCalledWith("logout");
-      expect(mockSignOut).toHaveBeenCalledWith({
-        redirectTo: "http://logout.url", // NOSONAR
-      });
+      expect(mockSignOut).toHaveBeenCalled();
+      expect(mockGetEnvValue).toHaveBeenCalledTimes(1);
+      expect(window.location.href).toBe("http://logout.url");
     });
   });
 
@@ -279,11 +283,10 @@ describe("SessionTimeoutHandler", () => {
 
     screen.getByText("Extend").click();
 
-    await waitFor(() =>
-      expect(mockSignOut).toHaveBeenCalledWith({
-        redirectTo: "/",
-      }),
-    );
+    await waitFor(() => {
+      expect(mockSignOut).toHaveBeenCalled();
+      expect(window.location.href).toBe("/");
+    });
 
     expect(sentrySpy).toHaveBeenCalledWith("Failed to fetch logout URL");
   });

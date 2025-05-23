@@ -35,11 +35,20 @@ const SessionTimeoutHandler: React.FC = () => {
     return logoutUrl;
   };
 
+  const redirect = async () => {
+    const logoutUrl = await getLogoutUrl();
+    window.location.href = logoutUrl || "/";
+  };
+
   const handleLogout = async () => {
     // broadcast logout to other browser tabs
     logoutChannelRef.current?.postMessage("logout");
-    const logoutUrl = await getLogoutUrl();
-    await signOut({ redirectTo: logoutUrl || "/" });
+    try {
+      await signOut();
+    } finally {
+      // signOut's redirectTo doesn't work in some cases, so we manually redirect
+      await redirect();
+    }
   };
 
   // Refreshes the session and updates the timeout based on new expiration
@@ -62,15 +71,14 @@ const SessionTimeoutHandler: React.FC = () => {
     }
   };
 
-  // logout broadcast channel (Redirect the user from all tabs if they click the modal logout button. Nextauth handles the actual logging out)
+  // logout broadcast channel (Redirect the user from all tabs if they click the modal logout button. Nextauth already handles the actual logging out)
   useEffect(() => {
     const logoutChannel = new BroadcastChannel("logout");
     logoutChannelRef.current = logoutChannel;
 
     logoutChannel.onmessage = async (event) => {
       if (event === "logout") {
-        const logoutUrl = await getLogoutUrl();
-        window.location.href = logoutUrl || "/";
+        redirect();
       }
     };
 
