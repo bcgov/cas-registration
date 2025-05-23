@@ -1,7 +1,7 @@
 import {
   ActivePage,
-  getComplianceSummaryTaskList,
-} from "@/compliance/src/app/components/taskLists/1_manageObligationSchema";
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import { getComplianceUnitsApplyData } from "@/compliance/src/app/utils/getComplianceUnitsApplyData";
 import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
 
@@ -13,7 +13,7 @@ export default async function ComplianceUnitsApplyPage(props: Props) {
 
   const complianceUnitsData = await getComplianceUnitsApplyData();
 
-  const taskListElements = getComplianceSummaryTaskList(
+  const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
     complianceUnitsData.reporting_year,
     ActivePage.ApplyComplianceUnits,

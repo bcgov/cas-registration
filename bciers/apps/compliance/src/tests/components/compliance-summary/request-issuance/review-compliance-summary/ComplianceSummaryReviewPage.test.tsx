@@ -24,7 +24,7 @@ vi.mock(
       RequestIssuanceOfEarnedCredits: 1,
       TrackStatusOfIssuance: 2,
     },
-    getRequestIssuanceTaskList: vi.fn().mockImplementation((id) => [
+    generateRequestIssuanceTaskList: vi.fn().mockImplementation((id) => [
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -82,7 +82,7 @@ setupComplianceSummaryReviewTest({
   dataUtilName: "getRequestIssuanceComplianceSummaryData",
   taskListSchemaPath:
     "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema",
-  taskListFunctionName: "getRequestIssuanceTaskList",
+  taskListFunctionName: "generateRequestIssuanceTaskList",
   testDescription: "ComplianceSummaryReviewPage",
   mockData: {
     operation_name: "Test Operation",

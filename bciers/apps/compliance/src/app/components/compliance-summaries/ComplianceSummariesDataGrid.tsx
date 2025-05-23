@@ -6,7 +6,7 @@ import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell
 import { ComplianceSummary } from "./types";
 import complianceSummaryColumns from "../datagrid/models/compliance-summaries/complianceSummaryColumns";
 import complianceSummaryGroupColumns from "../datagrid/models/compliance-summaries/complianceSummaryGroupColumns";
-import { fetchComplianceSummariesPageData } from "./fetchComplianceSummariesPageData";
+import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
 
 const ComplianceSummariesDataGrid = ({
   initialData,
