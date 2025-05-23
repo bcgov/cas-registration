@@ -49,12 +49,12 @@ const mockInitialData = {
       emission_total: 50,
       products: [
         {
-          allocated_quantity: 25,
+          allocated_quantity: 24.0005,
           report_product_id: 1,
           product_name: "Product 1",
         },
         {
-          allocated_quantity: 25,
+          allocated_quantity: 25.9995,
           report_product_id: 2,
           product_name: "Product 2",
         },
