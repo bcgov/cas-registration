@@ -5,6 +5,7 @@ from django.db.utils import InternalError, ProgrammingError, DatabaseError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from ninja.responses import Response
 from unittest.mock import patch
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
 from service.error_service.handle_exception import ExceptionHandler, ExceptionResponse, handle_exception
@@ -119,6 +120,12 @@ class TestExceptionHandler:
         response = ExceptionHandler.handle(mock_request, exc)
         assert response.status_code == 403
         assert json.loads(response.content) == {"message": "Permission denied."}
+
+    def test_handle_bc_carbon_registry_error(self, mock_request):
+        exc = BCCarbonRegistryError("BC Carbon Registry error")
+        response = ExceptionHandler.handle(mock_request, exc)
+        assert response.status_code == 400
+        assert json.loads(response.content) == {"message": "BC Carbon Registry features not available at this time"}
 
 
 def test_global_handle_exception(mock_request):

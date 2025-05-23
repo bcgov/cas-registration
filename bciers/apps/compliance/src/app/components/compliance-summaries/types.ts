@@ -11,7 +11,11 @@ export interface ComplianceSummary {
   reporting_year: number;
   excess_emissions: string;
   outstanding_balance?: number;
-  compliance_status?: string;
-  penalty_status?: string;
+  compliance_status: string;
   obligation_id?: string;
+}
+
+export interface BccrAccountDetailsResponse {
+  tradingName: string | null;
+  error?: string;
 }

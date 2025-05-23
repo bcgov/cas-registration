@@ -6,12 +6,12 @@ import { actionHandler } from "@bciers/actions";
  * @returns The compliance summary data with issuance information
  */
 export const getRequestIssuanceComplianceSummaryData = async (
-  complianceSummaryId?: number,
+  complianceSummaryId?: string,
 ) => {
   if (complianceSummaryId) {
     try {
       const data = await actionHandler(
-        `compliance/summaries/${complianceSummaryId}/issuance`,
+        `compliance/compliance-report-versions/${complianceSummaryId}/issuance`,
         "GET",
         "",
       );

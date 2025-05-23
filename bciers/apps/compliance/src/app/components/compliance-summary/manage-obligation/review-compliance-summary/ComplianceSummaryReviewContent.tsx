@@ -1,12 +1,12 @@
 "use client";
 import { FormReport } from "./FormReport";
-import { ComplianceHeading } from "../../ComplianceHeading";
+import ComplianceFormHeading from "@/compliance/src/app/components/layout/ComplianceFormHeading";
 import { ComplianceObligation } from "./ComplianceObligation";
 import { ComplianceUnitsGrid } from "./ComplianceUnitsGrid";
 import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
 import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
 import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
-import ComplianceStepButtons from "@bciers/components/form/components/ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { useState } from "react";
 
 interface Props {
@@ -41,7 +41,7 @@ export function ComplianceSummaryReviewContent(props: Props) {
 
   return (
     <div className="w-full">
-      <ComplianceHeading title="Report Information" />
+      <ComplianceFormHeading title="Report Information" />
       <FormReport data={data} />
       <ComplianceObligation data={data} />
       <ComplianceUnitsGrid
@@ -56,9 +56,7 @@ export function ComplianceSummaryReviewContent(props: Props) {
         key="form-buttons"
         backUrl={backUrl}
         continueUrl={continueUrl}
-        backButtonDisabled={false}
         middleButtonDisabled={isGeneratingInvoice}
-        submitButtonDisabled={false}
         middleButtonText={
           isGeneratingInvoice
             ? "Generating Invoice..."

@@ -1,5 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
+import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { ComplianceUnitsApplyContent } from "./ComplianceUnitsApplyContent";
 
 interface Props {
@@ -13,8 +13,8 @@ export default function ComplianceUnitsApplyComponent({
   complianceSummaryId,
   taskListElements,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   return (
     <CompliancePageLayout
