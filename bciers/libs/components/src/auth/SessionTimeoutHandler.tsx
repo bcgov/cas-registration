@@ -88,14 +88,14 @@ const SessionTimeoutHandler: React.FC = () => {
     };
   }, []);
 
-  // extend session broadcast channel (extend the session in all tabs if a user clicks the modal extend session button)
+  // extend session broadcast channel (get the new expiry in all tabs if a user clicks the modal extend session button)
   useEffect(() => {
     const extendSessionChannel = new BroadcastChannel("extend-session");
     extendSessionChannelRef.current = extendSessionChannel;
 
     extendSessionChannel.onmessage = async (event) => {
       if (event === "extend-session") {
-        await refreshSession();
+        await getSession();
       }
     };
 
@@ -132,9 +132,8 @@ const SessionTimeoutHandler: React.FC = () => {
       ) {
         return; // Ignore when tab is hidden
       }
-      // The session is refreshed every time `getSession` is called.
-      const updatedSession = await getSession();
-      setSessionTimeout(getExpirationTimeInSeconds(updatedSession?.expires));
+      extendSessionChannelRef.current?.postMessage("extend-session");
+      await refreshSession();
     };
 
     // Create a throttled handler to monitor user activity without overloading the system
