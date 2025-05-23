@@ -1,4 +1,5 @@
 import { GridColDef } from "@mui/x-data-grid";
+import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 
 const monetaryPaymentsColumns = (): GridColDef[] => {
   return [
@@ -12,7 +13,8 @@ const monetaryPaymentsColumns = (): GridColDef[] => {
       field: "paymentAmountApplied",
       headerName: "Payment Amount Applied",
       width: 201.2,
-      type: "string",
+      type: "number",
+      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
     },
     {
       field: "paymentMethod",
@@ -27,8 +29,8 @@ const monetaryPaymentsColumns = (): GridColDef[] => {
       type: "string",
     },
     {
-      field: "referenceNumber",
-      headerName: "Reference Number",
+      field: "receiptNumber",
+      headerName: "Receipt Number",
       width: 201.2,
       type: "string",
     },

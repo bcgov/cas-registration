@@ -7,7 +7,7 @@ const ActionCell = (params: GridRenderCellParams) => {
 
   if (params.row.obligation_id) {
     cellText = "Manage Obligation";
-  } else if (params.row.compliance_status === "Earned credits") {
+  } else if (params.row.status === "Earned credits") {
     cellText = "Request Issuance of Credits";
   }
 
@@ -15,7 +15,7 @@ const ActionCell = (params: GridRenderCellParams) => {
     generateHref: (p: { row: ComplianceSummary }) => {
       if (p.row.obligation_id) {
         return `/compliance-summaries/${p.row.id}/manage-obligation/review-compliance-summary`;
-      } else if (p.row.compliance_status === "Earned credits") {
+      } else if (p.row.status === "Earned credits") {
         return `/compliance-summaries/${p.row.id}/request-issuance/review-compliance-summary`;
       } else {
         return `/compliance-summaries/${p.row.id}`;
