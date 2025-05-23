@@ -1,6 +1,6 @@
 import { expect, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { useSession, signOut } from "next-auth/react";
+import { useSession, signOut, getSession } from "next-auth/react";
 import SessionTimeoutHandler, {
   ACTIVITY_THROTTLE_SECONDS,
   MODAL_DISPLAY_SECONDS,
@@ -14,6 +14,7 @@ import createThrottledEventHandler from "./throttleEventsEffect";
 vi.mock("next-auth/react", () => ({
   useSession: vi.fn(),
   signOut: vi.fn(),
+  getSession: vi.fn(),
 }));
 
 vi.mock("@bciers/actions", () => ({
@@ -66,6 +67,7 @@ describe("SessionTimeoutHandler", () => {
   const mockCreateThrottledEventHandler =
     createThrottledEventHandler as ReturnType<typeof vi.fn>;
   const mockGetToken = getToken as ReturnType<typeof vi.fn>;
+  const mockGetSession = getSession as ReturnType<typeof vi.fn>;
 
   const defaultSession = {
     data: { expires: new Date(Date.now() + 180 * 1000).toISOString() },
@@ -110,21 +112,21 @@ describe("SessionTimeoutHandler", () => {
     );
   });
 
-  it("refreshes session on user activity when modal is not shown", async () => {
-    let capturedRefreshSession: (event: Event) => Promise<void> = () =>
+  it("updates session expiry on user activity when modal is not shown", async () => {
+    let capturedSession: (event: Event) => Promise<void> = () =>
       Promise.resolve();
 
     mockCreateThrottledEventHandler.mockImplementation((refreshSession) => {
-      capturedRefreshSession = refreshSession;
+      capturedSession = refreshSession;
       return () => {}; // Return a no-op cleanup function
     });
 
     renderWithSession();
 
     // Manually invoke the refreshSession to simulate activity
-    await capturedRefreshSession(new Event("mousemove"));
+    await capturedSession(new Event("mousemove"));
 
-    await waitFor(() => expect(mockUpdate).toHaveBeenCalled());
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled());
   });
 
   it("logs out, broadcasts, and redirects when session timeout reaches zero", async () => {
