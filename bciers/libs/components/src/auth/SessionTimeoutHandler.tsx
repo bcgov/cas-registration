@@ -9,21 +9,24 @@ import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 
-export const ACTIVITY_THROTTLE_SECONDS = 2 * 60; // Seconds to throttle user activity events (2 minutes)
+export const ACTIVITY_THROTTLE_SECONDS = 30; // Seconds to throttle user activity
 export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
 
-const getExpirationTimeInSeconds = (expires: string | undefined): number => {
-  if (!expires) return Infinity; // No expiration set, return infinite timeout
+const getExpirationTimeInSeconds = (
+  expires: string | undefined,
+): number | null => {
+  if (!expires) return null;
   return Math.max(0, (new Date(expires).getTime() - Date.now()) / 1000);
 };
 
 const SessionTimeoutHandler: React.FC = () => {
   const { data: session, status, update } = useSession();
   const [showModal, setShowModal] = useState(false);
-  const [sessionTimeout, setSessionTimeout] = useState<number>(
+  const [sessionTimeout, setSessionTimeout] = useState<number | null>(
     getExpirationTimeInSeconds(session?.expires),
   );
 
+  const isRefreshingRef = useRef(false); // Lock for preventing concurrent updates
   const logoutChannelRef = useRef<BroadcastChannel | null>(null);
   const extendSessionChannelRef = useRef<BroadcastChannel | null>(null);
 
@@ -44,16 +47,16 @@ const SessionTimeoutHandler: React.FC = () => {
       await signOut({ redirect: true, redirectTo: logoutUrl || "/" });
     } finally {
       // signOut's redirectTo doesn't work in some cases, so we manually redirect as well https://github.com/nextauthjs/next-auth/issues/10944
-      window.location.href = logoutUrl || "/";
+      setTimeout(() => {
+        window.location.href = logoutUrl || "/";
+      }, 500); // Let `signOut` try to redirect first
     }
   };
 
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
-    if (status !== "authenticated") {
-      await handleLogout();
-      return;
-    }
+    if (isRefreshingRef.current || status !== "authenticated") return;
+    isRefreshingRef.current = true;
     try {
       const newSession: Session | null = await update();
       if (!newSession?.expires) {
@@ -66,6 +69,8 @@ const SessionTimeoutHandler: React.FC = () => {
       Sentry.captureException(error);
       console.error("Session refresh error:", error);
       await handleLogout();
+    } finally {
+      isRefreshingRef.current = false;
     }
   };
 
@@ -93,8 +98,15 @@ const SessionTimeoutHandler: React.FC = () => {
 
     extendSessionChannel.onmessage = async (event) => {
       if (event === "extend-session") {
+        // getSession might return null if the session is expired
         const extendedSession = await getSession();
-        setSessionTimeout(getExpirationTimeInSeconds(extendedSession?.expires));
+        if (extendedSession?.expires) {
+          setSessionTimeout(
+            getExpirationTimeInSeconds(extendedSession.expires),
+          );
+        } else {
+          await handleLogout(); // fallback
+        }
       }
     };
 
@@ -118,33 +130,28 @@ const SessionTimeoutHandler: React.FC = () => {
 
   // --- Event Listener Setup ---
   useEffect(() => {
-    if (status !== "authenticated") return;
+    if (status !== "authenticated" || showModal) return;
 
-    let cleanup: (() => void) | undefined;
     // Only set up event listeners if the modal is not open
-    if (!showModal) {
-      // Custom handler to filter visibilitychange events
-      const handleActivity = async (event: Event) => {
-        // Only reset the session timeout for visibilitychange when document is visible
-        if (
-          event.type === "visibilitychange" &&
-          document.visibilityState !== "visible"
-        ) {
-          return; // Ignore when tab is hidden
-        }
+    const handleActivity = async (event: Event) => {
+      // Only reset the session timeout for visibilitychange when document is visible
+      if (
+        event.type === "visibilitychange" &&
+        document.visibilityState !== "visible"
+      )
+        return; // Ignore when tab is hidden
 
-        extendSessionChannelRef.current?.postMessage("extend-session");
-        await refreshSession();
-      };
+      extendSessionChannelRef.current?.postMessage("extend-session");
+      await refreshSession();
+    };
 
-      // Create a throttled handler to monitor user activity without overloading the system
-      const setupHandler = createThrottledEventHandler(
-        handleActivity,
-        ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"], // Events indicating user activity
-        ACTIVITY_THROTTLE_SECONDS,
-      );
-      cleanup = setupHandler(); // Start listening for events
-    }
+    // Create a throttled handler to monitor user activity without overloading the system
+    const setupHandler = createThrottledEventHandler(
+      handleActivity,
+      ["mousemove", "keydown", "mousedown", "scroll", "visibilitychange"], // Events indicating user activity
+      ACTIVITY_THROTTLE_SECONDS,
+    );
+    const cleanup = setupHandler(); // Start listening for events
 
     // Prevent next-auth's default visibilitychange handling when modal is open
     const preventDefaultVisibilityChange = (event: Event) => {
@@ -173,8 +180,11 @@ const SessionTimeoutHandler: React.FC = () => {
 
     let modalTimeoutId: NodeJS.Timeout | undefined;
 
-    if (sessionTimeout === Infinity) return; // No timeout set, exit early
-    else if (sessionTimeout <= 0) handleLogout();
+    if (sessionTimeout === null) return; // No timeout set, exit early
+    else if (sessionTimeout <= 0)
+      handleLogout()
+        .then()
+        .catch((e) => console.error("Error logging out:", e));
     else if (sessionTimeout > MODAL_DISPLAY_SECONDS) {
       setShowModal(false);
       modalTimeoutId = setTimeout(
