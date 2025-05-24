@@ -14,6 +14,7 @@ import createThrottledEventHandler from "./throttleEventsEffect";
 vi.mock("next-auth/react", () => ({
   useSession: vi.fn(),
   signOut: vi.fn(),
+  getSession: vi.fn(),
 }));
 
 vi.mock("@bciers/actions", () => ({
