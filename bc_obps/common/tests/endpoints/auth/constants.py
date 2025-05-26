@@ -64,11 +64,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_compliance_report_version",
-            "kwargs": {"compliance_report_version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_compliance_report_version_payments",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
@@ -483,6 +478,11 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_overlapping_industrial_process_emissions",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_compliance_report_version",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
