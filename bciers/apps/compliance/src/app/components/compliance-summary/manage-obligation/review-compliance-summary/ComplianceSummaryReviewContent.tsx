@@ -1,32 +1,29 @@
 "use client";
-import { FormReport } from "./FormReport";
-import ComplianceFormHeading from "@/compliance/src/app/components/layout/ComplianceFormHeading";
-import { ComplianceObligation } from "./ComplianceObligation";
-import { ComplianceUnitsGrid } from "./ComplianceUnitsGrid";
-import { MonetaryPaymentsGrid } from "./MonetaryPaymentsGrid";
-import { OutstandingComplianceObligation } from "./OutstandingComplianceObligation";
-import { AutomaticOverduePenalty } from "./AutomaticOverduePenalty";
+
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { useState } from "react";
-import { PaymentsData } from "@/compliance/src/app/types/payments";
+import {
+  complianceSummaryReviewUiSchema,
+  createComplianceSummaryReviewSchema,
+} from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceSummaryReviewSchema";
+import { FormBase } from "@bciers/components/form";
 
 interface Props {
-  readonly continueUrl: string;
-  readonly backUrl?: string;
-  readonly data: any;
-  readonly complianceSummaryId?: number;
-  readonly paymentsData?: PaymentsData;
+  data: any; // TODO: Define a proper type for the data
+  complianceSummaryId: string;
 }
 
-export function ComplianceSummaryReviewContent(props: Props) {
-  const { backUrl, continueUrl, data, complianceSummaryId, paymentsData } =
-    props;
+export function ComplianceSummaryReviewContent({
+  data,
+  complianceSummaryId,
+}: Readonly<Props>) {
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
+  const backUrl = `/compliance-summaries`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
+
   const handleGenerateInvoice = async () => {
-    if (!complianceSummaryId) {
-      return;
-    }
+    if (!complianceSummaryId) return;
 
     try {
       setIsGeneratingInvoice(true);
@@ -43,22 +40,15 @@ export function ComplianceSummaryReviewContent(props: Props) {
   };
 
   return (
-    <div className="w-full">
-      <ComplianceFormHeading title="Report Information" />
-      <FormReport data={data} />
-      <ComplianceObligation data={data} />
-      <ComplianceUnitsGrid
-        data={""}
-        complianceSummaryId={complianceSummaryId}
-      />
-      <MonetaryPaymentsGrid data={paymentsData} />
-      <OutstandingComplianceObligation data={data} />
-      <AutomaticOverduePenalty data={data} />
-
+    <FormBase
+      schema={createComplianceSummaryReviewSchema(data.reportingYear)}
+      uiSchema={complianceSummaryReviewUiSchema}
+      formData={data}
+      className="w-full"
+    >
       <ComplianceStepButtons
-        key="form-buttons"
         backUrl={backUrl}
-        continueUrl={continueUrl}
+        continueUrl={saveAndContinueUrl}
         middleButtonDisabled={isGeneratingInvoice}
         middleButtonText={
           isGeneratingInvoice
@@ -67,6 +57,6 @@ export function ComplianceSummaryReviewContent(props: Props) {
         }
         onMiddleButtonClick={handleGenerateInvoice}
       />
-    </div>
+    </FormBase>
   );
 }

@@ -11,7 +11,7 @@ const complianceUnitsColumns = (): GridColDef[] => {
     {
       field: "serialNumber",
       headerName: "Serial Number",
-      width: 150,
+      width: 200,
       type: "string",
     },
     {
@@ -41,8 +41,8 @@ const complianceUnitsColumns = (): GridColDef[] => {
     {
       field: "status",
       headerName: "Status",
-      width: 136,
       type: "string",
+      flex:1,
     },
   ];
 };

@@ -8,19 +8,19 @@ export enum ActivePage {
 }
 
 export const generateManageObligationTaskList: (
-  complianceSummaryId: number,
-  reporting_year?: number,
+  complianceSummaryId: string,
+  reportingYear: string,
   activeIndex?: ActivePage,
 ) => TaskListElement[] = (
   complianceSummaryId,
-  reporting_year,
+  reportingYear,
   activeIndex = 0,
 ) => {
   const taskItems = [
     activeIndex === ActivePage.ApplyComplianceUnits
       ? {
           type: "Subsection" as const,
-          title: `Review ${reporting_year} Compliance Summary`,
+          title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isExpanded: true,
           elements: [
@@ -34,7 +34,7 @@ export const generateManageObligationTaskList: (
         }
       : {
           type: "Page" as const,
-          title: `Review ${reporting_year} Compliance Summary`,
+          title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isActive: activeIndex === ActivePage.ReviewComplianceSummary,
         },
@@ -55,7 +55,7 @@ export const generateManageObligationTaskList: (
   return [
     {
       type: "Section",
-      title: `${reporting_year} Compliance Summary`,
+      title: `${reportingYear} Compliance Summary`,
       isExpanded: true,
       elements: taskItems,
     },
