@@ -61,16 +61,19 @@ class ComplianceEarnedCredits(TimeStampedModel):
     bccr_trading_name = models.CharField(
         max_length=255,
         blank=True,
+        null=True,
         db_comment="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry",
     )
 
     analyst_comment = models.TextField(
         blank=True,
+        null=True,
         db_comment="Comments from an analyst. Made when deciding whether or not to reccomend issuance from the director",
     )
 
     director_comment = models.TextField(
         blank=True,
+        null=True,
         db_comment="Comments from the director. Made when deciding whether or not to issue the credits",
     )
 
