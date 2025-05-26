@@ -9,13 +9,15 @@ import {
   BC_GOV_TEXT,
   BC_GOV_LINKS_COLOR,
   BC_GOV_YELLOW,
+  BC_GOV_SEMANTICS_RED,
+  BC_GOV_SEMANTICS_GREEN,
   DARK_GREY_BG_COLOR,
   LIGHT_GREY_BG_COLOR,
   LIGHT_GREY_COLOR_200,
   LIGHT_GREY_COLOR_300,
-  BC_GOV_SEMANTICS_RED,
-  BC_GOV_SEMANTICS_GREEN,
-} from "./libs/styles/src/index.ts";
+  LIGHT_BLUE_BG_COLOR,
+  WHITE,
+} from "./libs/styles/src";
 
 module.exports = {
   corePlugins: {
@@ -42,6 +44,8 @@ module.exports = {
         "bc-component-grey": BC_GOV_COMPONENTS_GREY,
         "bc-success-green": BC_GOV_SEMANTICS_GREEN,
         "bc-error-red": BC_GOV_SEMANTICS_RED,
+        "bc-light-blue": LIGHT_BLUE_BG_COLOR,
+        "bc-white": WHITE,
       },
       lineHeight: {
         12: "48px",
