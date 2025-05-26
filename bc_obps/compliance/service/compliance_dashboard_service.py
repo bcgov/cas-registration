@@ -96,48 +96,6 @@ class ComplianceDashboardService:
 
         return compliance_report_version
 
-        # Issuance to be handled in #117
-
-        # @classmethod
-        # def get_compliance_compliance_report_version_issuance_data(cls, user_guid: UUID, compliance_report_version_id: int) -> Optional[ComplianceReportVersion]:
-        #     """
-        #     Fetches issuance data for a specific compliance compliance_report_version
-
-        #     Args:
-        #         user_guid: The GUID of the user requesting the issuance data
-        #         compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve issuance data for
-
-        #     Returns:
-        #         The ComplianceReportVersion object augmented with issuance data or None if not found
-        #     """
-        #     compliance_report_version = cls.get_compliance_compliance_report_version_by_id(user_guid, compliance_report_version_id)
-
-        #     if not compliance_report_version:
-        #         return None
-
-        #     earned_credits: int = 100
-        #     earned_credits_issued = False
-        #     issuance_status = "Issuance not requested"
-
-        #     if compliance_report_version.report_compliance_summary.excess_emissions < 0:
-        #         # Convert Decimal to int
-        #         earned_credits = int(abs(compliance_report_version.report_compliance_summary.excess_emissions))
-
-        #         earned_credits_issued = False
-
-        #     excess_emissions_percentage = None
-        #     if compliance_report_version.report_compliance_summary.emission_limit and compliance_report_version.report_compliance_summary.emission_limit > 0:
-        #         excess_emissions_percentage = round(
-        #             (compliance_report_version.emissions_attributable_for_compliance / compliance_report_version.report_compliance_summary.emission_limit) * 100, 2
-        #         )
-
-        #     setattr(summary, "earned_credits", earned_credits)
-        #     setattr(summary, "earned_credits_issued", earned_credits_issued)
-        #     setattr(summary, "issuance_status", issuance_status)
-        #     setattr(summary, "excess_emissions_percentage", excess_emissions_percentage)
-
-        #     return summary
-
     @classmethod
     def get_compliance_report_version_payments(cls, user_guid: UUID, compliance_report_version_id: int) -> PaymentsList:
         """
