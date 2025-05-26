@@ -19,7 +19,7 @@ export function ComplianceSummaryReviewContent({
 }: Readonly<Props>) {
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
-  const backUrl = `/compliance-summaries`;
+  const backUrl = "/compliance-summaries";
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   const handleGenerateInvoice = async () => {
