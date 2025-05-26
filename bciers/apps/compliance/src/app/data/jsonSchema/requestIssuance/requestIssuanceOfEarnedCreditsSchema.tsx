@@ -6,17 +6,14 @@ import HiddenFieldTemplate from "@bciers/components/form/fields/HiddenFieldTempl
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import BCCRHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
+import { readOnlyObjectField, readOnlyStringField } from "@/compliance/src/app/data/jsonSchema/helpers";
 
 export const requestIssuanceOfEarnedCreditsSchema: RJSFSchema = {
   type: "object",
   title: "Request Issuance of Earned Credits",
   required: ["bccrHoldingAccountId"],
   properties: {
-    preface: {
-      type: "object",
-      title: "B.C. Carbon Registry (BCCR) Account Information",
-      readOnly: true,
-    },
+    bccrAccountHeader: readOnlyObjectField("B.C. Carbon Registry (BCCR) Account Information"),
     bccrHoldingAccountId: {
       type: "string",
       title: "BCCR Holding Account ID:",
@@ -24,18 +21,14 @@ export const requestIssuanceOfEarnedCreditsSchema: RJSFSchema = {
       maxLength: 15,
       minLength: 15,
     },
-    bccrTradingName: {
-      type: "string",
-      title: "BCCR Trading Name:",
-      readOnly: true,
-    },
+    bccrTradingName: readOnlyStringField("BCCR Trading Name:"),
   },
 };
 
 export const requestIssuanceOfEarnedCreditsUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  preface: {
+  bccrAccountHeader: {
     "ui:classNames": "text-bc-bg-blue mt-1",
     "ui:FieldTemplate": TitleOnlyFieldTemplate,
   },
