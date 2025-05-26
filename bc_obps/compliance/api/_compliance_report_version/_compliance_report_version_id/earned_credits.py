@@ -16,7 +16,7 @@ from typing import Optional
     description="Get earned credits data for a compliance report version",
     auth=authorize("approved_industry_user"),
 )
-def get_compliance_report_version_issuance(
+def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
 ) -> Tuple[int, Optional[ComplianceEarnedCredits]]:
     """Get earned credits data for a compliance report version"""
