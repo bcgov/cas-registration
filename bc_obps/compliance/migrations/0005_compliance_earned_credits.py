@@ -9,7 +9,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [('compliance', '0003_seed_compliance_charge_rates')]
+    dependencies = [('compliance', '0004_alter_elicensinglink_object_id')]
 
     operations = [
         migrations.CreateModel(
