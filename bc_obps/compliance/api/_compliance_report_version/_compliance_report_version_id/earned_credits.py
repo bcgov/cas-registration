@@ -14,7 +14,7 @@ from typing import Optional
     response={200: ComplianceEarnedCredits, 404: Message, custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get earned credits data for a compliance report version",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
