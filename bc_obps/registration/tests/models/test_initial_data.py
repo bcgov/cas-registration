@@ -132,7 +132,7 @@ class TestInitialData(TestCase):
                 'Cement equivalent',
                 'Chemicals: pure hydrogen peroxide',
                 'Compression, centrifugal - consumed energy',
-                'Compression, positve displacement - consumed energy',
+                'Compression, positive displacement - consumed energy',
                 'Gypsum wallboard',
                 'Lime at 94.5% CaO and lime kiln dust',
                 'Limestone for sale',
