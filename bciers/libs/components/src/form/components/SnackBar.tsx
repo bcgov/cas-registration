@@ -1,5 +1,5 @@
 import Snackbar from "@mui/material/Snackbar";
-import { GREEN_SNACKBAR_COLOR } from "@bciers/styles";
+import { BC_GOV_SEMANTICS_GREEN } from "@bciers/styles";
 
 interface SnackBarProps {
   isSnackbarOpen: boolean;
@@ -22,7 +22,7 @@ const SnackBar: React.FC<SnackBarProps> = ({
       onClose={() => setIsSnackbarOpen(false)}
       sx={{
         "& .MuiSnackbarContent-root": {
-          backgroundColor: GREEN_SNACKBAR_COLOR,
+          backgroundColor: BC_GOV_SEMANTICS_GREEN,
         },
       }}
     />
