@@ -771,7 +771,7 @@
             <child column="user_friendly_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="user_operator"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="elicensing_guid" nullable="false" remarks="Unique identifier for the eLicensing system integration" size="2147483647" type="uuid" typeCode="1111"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="object_id" nullable="false" remarks="The ID of the CAS object this link relates to" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="object_id" nullable="false" remarks="The ID of the CAS object this link relates to (can be UUID or integer)" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="elicensing_object_kind" nullable="false" remarks="The type of eLicensing object (client, invoice, fee, etc.)" size="20" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="elicensing_object_id" nullable="true" remarks="The object ID in the eLicensing system" size="50" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="8" name="last_sync_at" nullable="true" remarks="The timestamp when this object was last synced with eLicensing" size="35" type="timestamptz" typeCode="93"/>
