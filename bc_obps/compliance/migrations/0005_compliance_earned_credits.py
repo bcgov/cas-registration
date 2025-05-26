@@ -11,7 +11,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('compliance', '0004_alter_elicensinglink_object_id'),
-        ('registration', '0114_V3_2_1'),
     ]
 
     operations = [
