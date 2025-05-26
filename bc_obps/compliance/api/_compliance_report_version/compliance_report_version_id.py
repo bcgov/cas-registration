@@ -15,7 +15,7 @@ from ..router import router
     response={200: Optional[ComplianceReportVersionOut], custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get a compliance report version by ID",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 def get_compliance_report_version(
     request: HttpRequest, compliance_report_version_id: int
