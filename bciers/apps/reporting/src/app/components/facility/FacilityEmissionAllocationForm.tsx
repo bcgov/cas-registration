@@ -46,17 +46,19 @@ const validateEmissions = (formData: FormData): boolean => {
   ];
 
   return combinedEmissionAllocationData.every((allocation) => {
+    const FLOATING_POINT_PRECISION_FACTOR = 10000; // used to avoid floating point precision issues
     const sum = allocation.products.reduce(
       (total, product) =>
         total +
-        (parseFloat(product.allocated_quantity.toString()) * 10000 || 0),
+        (parseFloat(product.allocated_quantity.toString()) *
+          FLOATING_POINT_PRECISION_FACTOR || 0), // we multiply by the factor when adding
       0,
     );
 
     const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
 
     return (
-      parseFloat((sum / 10000).toFixed(4)) ===
+      parseFloat((sum / FLOATING_POINT_PRECISION_FACTOR).toFixed(4)) === // and then divide the factor away when comparing the result
       parseFloat(emissionTotal.toFixed(4))
     );
   });
