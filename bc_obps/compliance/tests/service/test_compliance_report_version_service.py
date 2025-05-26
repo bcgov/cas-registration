@@ -1,7 +1,7 @@
 from decimal import Decimal
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from compliance.models import ComplianceReportVersion, ComplianceEarnedCredits
 from model_bakery import baker
 
@@ -9,20 +9,6 @@ pytestmark = pytest.mark.django_db  # This is used to mark a test function as re
 
 
 class TestComplianceReportVersionService:
-    @pytest.fixture
-    def mock_compliance_data(self):
-        compliance_data = MagicMock()
-        compliance_data.emissions_attributable_for_reporting = Decimal('100.0')
-        compliance_data.reporting_only_emissions = Decimal('10.0')
-        compliance_data.emissions_attributable_for_compliance = Decimal('90.0')
-        compliance_data.emissions_limit = Decimal('80.0')
-        compliance_data.excess_emissions = Decimal('10.0')
-        compliance_data.credited_emissions = Decimal('0.0')
-        compliance_data.regulatory_values.reduction_factor = Decimal('0.95')
-        compliance_data.regulatory_values.tightening_rate = Decimal('0.01')
-
-        return compliance_data
-
     @patch(
         'compliance.service.compliance_report_version_service.ComplianceObligationService.create_compliance_obligation'
     )
