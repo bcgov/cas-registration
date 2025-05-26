@@ -27,7 +27,7 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
 
   const emissionTotal = Number(category.emission_total);
   let percentage;
-  sum = parseFloat((sum / FLOATING_POINT_PRECISION_FACTOR).toFixed(4)); // and we divide by the factor when getting the final sum
+  sum = parseFloat((sum / FLOATING_POINT_PRECISION_FACTOR).toFixed(4)); // and we divide away the factor to get the final sum
   if (emissionTotal) {
     percentage = handlePercentageNearHundred((sum / emissionTotal) * 100);
   } else {
