@@ -20,6 +20,7 @@ export const createAdministrationOperationInformationSchema = async (
   registrationPurposeValue: RegistrationPurposes | undefined,
   status: OperationStatus,
 ): Promise<RJSFSchema> => {
+  // triggering happo
   const administrationOperationInformationSchema: RJSFSchema = {
     type: "object",
     properties: {
