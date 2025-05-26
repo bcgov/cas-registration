@@ -6,33 +6,33 @@ const monetaryPaymentsColumns = (): GridColDef[] => {
     {
       field: "paymentReceivedDate",
       headerName: "Payment Received Date",
-      width: 201.2,
+      width: 200,
       type: "string",
     },
     {
       field: "paymentAmountApplied",
       headerName: "Payment Amount Applied",
-      width: 201.2,
-      type: "number",
+      type: "string",
+      width: 200,
       valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
     },
     {
       field: "paymentMethod",
       headerName: "Payment Method",
-      width: 201.2,
+      width: 200,
       type: "string",
     },
     {
       field: "transactionType",
       headerName: "Transaction Type",
-      width: 201.2,
+      width: 200,
       type: "string",
     },
     {
       field: "receiptNumber",
       headerName: "Receipt Number",
-      width: 201.2,
       type: "string",
+      flex:1,
     },
   ];
 };

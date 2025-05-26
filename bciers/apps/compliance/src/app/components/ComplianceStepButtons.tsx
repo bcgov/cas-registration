@@ -58,7 +58,7 @@ const ComplianceStepButtons: React.FunctionComponent<
   };
 
   return (
-    <Box className={`flex justify-between ${className}`}>
+    <Box className={`flex justify-between mt-20 ${className}`}>
       <div>
         {(backUrl || onBackClick) && (
           <Button
