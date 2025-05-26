@@ -1,3 +1,4 @@
+from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from compliance.models.compliance_report import ComplianceReport
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
@@ -58,7 +59,9 @@ class ComplianceReportVersionService:
                 # This is done outside of the main transaction to prevent rollback if integration fails
                 transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
 
-            # TODO: Create earned credits object if there are credited emissions (issue #117)
+            # Else, create ComplianceEarnedCredits record if there are credited emissions
+            elif credited_emissions > Decimal('0'):
+                ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
             return compliance_report_version
 
