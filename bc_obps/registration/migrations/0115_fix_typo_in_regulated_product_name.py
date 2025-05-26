@@ -16,5 +16,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(fix_typo),
+        migrations.RunPython(
+            code=fix_typo,
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
+        ),
     ]
