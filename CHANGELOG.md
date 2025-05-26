@@ -1,3 +1,17 @@
+# [3.3.0](https://github.com/bcgov/cas-registration/compare/v3.2.1...v3.3.0) (2025-05-26)
+
+### Bug Fixes
+
+- allocated emissions to unregulated products are added only once to the reporting emissions total ([4708b17](https://github.com/bcgov/cas-registration/commit/4708b17c2bd7fd2aa84db7cb41a4bee3a0ce93da))
+- getSession instead of refreshSession to avoid update() session failures ([5179655](https://github.com/bcgov/cas-registration/commit/5179655947322327331dc53ffb1b15976fe0209d))
+- manually redirect after signout ([c47f951](https://github.com/bcgov/cas-registration/commit/c47f951b5acc6e69db7091994d1f28b66c033beb))
+- user is not redirected to the logout screen after inactivity logout ([351131c](https://github.com/bcgov/cas-registration/commit/351131caa103040d024fed0457e120249790a4fb))
+
+### Features
+
+- 98 add monetary payments grid to compliance obligation ([#3272](https://github.com/bcgov/cas-registration/issues/3272)) ([2c16469](https://github.com/bcgov/cas-registration/commit/2c16469ad4b7064f3feaafa1e4936d3b08a8793e))
+- internal page to list all attachments ([91f47b4](https://github.com/bcgov/cas-registration/commit/91f47b4789a157d5a4b195bdd6e5ddd526a78aca))
+
 ## [3.2.1](https://github.com/bcgov/cas-registration/compare/v3.2.0...v3.2.1) (2025-05-21)
 
 ### Bug Fixes
