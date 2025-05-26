@@ -23,7 +23,7 @@ class ComplianceEarnedCredits(TimeStampedModel):
         CREDITS_ISSUED = ('Credits Issued in BCCR',)
         DECLINED = ('Declined',)
         CREDITS_NOT_ISSUED = ('Credits Not Issued in BCCR',)
-        CHANGES_REQUESTED = 'Changes Required'
+        CHANGES_REQUIRED = 'Changes Required'
 
     compliance_report_version = models.ForeignKey(
         ComplianceReportVersion,
@@ -56,6 +56,22 @@ class ComplianceEarnedCredits(TimeStampedModel):
         null=True,
         related_name="compliance_earned_credits_issued_by",
         db_comment="The user who issed the earned credits",
+    )
+
+    bccr_trading_name = models.CharField(
+        max_length=255,
+        blank=True,
+        db_comment="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry",
+    )
+
+    analyst_comment = models.TextField(
+        blank=True,
+        db_comment="Comments from an analyst. Made when deciding whether or not to reccomend issuance from the director",
+    )
+
+    director_comment = models.TextField(
+        blank=True,
+        db_comment="Comments from the director. Made when deciding whether or not to issue the credits",
     )
 
     history = HistoricalRecords(
