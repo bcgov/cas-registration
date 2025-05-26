@@ -21,4 +21,7 @@ class ComplianceEarnedCreditTest(BaseTestCase):
             ("issuance_status", "issuance status", None, None),
             ("issued_date", "issued date", None, None),
             ("issued_by", "issued by", None, None),
+            ("bccr_trading_name", "bccr trading name", None, None),
+            ("analyst_comment", "analyst comment", None, None),
+            ("director_comment", "director comment", None, None),
         ]
