@@ -236,8 +236,13 @@ class ComplianceService:
             allocated_reporting_only = ComplianceService.get_reporting_only_allocated(report_version_id, rp.product_id)
             allocated_for_compliance = allocated - allocated_reporting_only
             allocated_for_compliance_2024 = (
-                allocated_for_compliance / Decimal(production_totals["annual_amount"])
-            ) * Decimal(production_totals["apr_dec"])
+                Decimal(0)
+                if Decimal(production_totals["annual_amount"]) == 0
+                else (
+                    (allocated_for_compliance / Decimal(production_totals["annual_amount"]))
+                    * Decimal(production_totals["apr_dec"])
+                )
+            )
             product_emission_limit = ComplianceService.calculate_product_emission_limit(
                 pwaei=ei,
                 apr_dec_production=Decimal(production_totals["apr_dec"]),
