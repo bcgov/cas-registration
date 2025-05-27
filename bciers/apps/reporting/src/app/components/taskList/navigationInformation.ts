@@ -11,6 +11,7 @@ import { headerElementFactory } from "./headerElementFactory";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   getFlow,
+  getFlowData,
   reportingFlows,
 } from "@reporting/src/app/components/taskList/reportingFlows";
 
@@ -67,10 +68,12 @@ export async function getNavigationInformation(
   // get flow
   const flow = await getFlow(reportVersionId);
 
+  console.log("from page ", page);
   console.log("[getNavigationInformation] flow:", flow);
 
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
+
   console.log("[getNavigationInformation] flowData:", flowData);
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
@@ -80,13 +83,18 @@ export async function getNavigationInformation(
   console.log("[getNavigationInformation] original pages:", flowData[step]);
 
   // Original pages array from flowData
-  const pages = flowData[step] as ReportingPage[];
+  const pages = [...(flowData[step] as ReportingPage[])]; // make a shallow copy
 
   // Build tasklistPages from the factories
   const tasklistPagesTemp = await Promise.all(
     pages.map(async (p) =>
       pageElementFactory(p, page, reportVersionId, facilityId, context),
     ),
+  );
+
+  console.log(
+    "[getNavigationInformation] tasklistPagesTemp after factory calls:",
+    tasklistPagesTemp,
   );
 
   // Remove corresponding pages where tasklistPagesTemp has extraOptions.skip === true

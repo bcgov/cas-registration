@@ -361,7 +361,6 @@ const checkHasPathAccess = async (request: NextRequest) => {
     if (!reportVersionId) return null;
     // Create a caching context for this request
     const context = createRuleContext();
-    console.log("context", context);
     // Iterate over each rule and validate if it applies
     for (const rule of permissionRules) {
       if (await rule.isApplicable(request, reportVersionId, context)) {
@@ -392,7 +391,6 @@ export const withRuleHasReportRouteAccess: MiddlewareFactory = (
     if (role === IDP.BCEIDBUSINESS) {
       try {
         const response = await checkHasPathAccess(request);
-        console.log("Response from checkHasPathAccess:", response);
         if (response) {
           return response;
         }
