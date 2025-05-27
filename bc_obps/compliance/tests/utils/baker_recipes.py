@@ -1,7 +1,13 @@
 from model_bakery.recipe import Recipe, foreign_key
 import uuid
 from django.contrib.contenttypes.models import ContentType
-from compliance.models import CompliancePeriod, ComplianceReportVersion, ComplianceObligation, ComplianceReport
+from compliance.models import (
+    CompliancePeriod,
+    ComplianceReportVersion,
+    ComplianceObligation,
+    ComplianceReport,
+    ComplianceEarnedCredits,
+)
 from compliance.models.elicensing_link import ELicensingLink
 from registration.models.operation import Operator
 from reporting.tests.utils.baker_recipes import report, report_compliance_summary, reporting_year
@@ -30,7 +36,7 @@ compliance_report_version = Recipe(
 # ComplianceObligation recipe
 compliance_obligation = Recipe(
     ComplianceObligation,
-    compliance_summary=foreign_key(compliance_report_version),
+    compliance_report_version=foreign_key(compliance_report_version),
     penalty_status=ComplianceObligation.PenaltyStatus.NONE,
     obligation_deadline="2025-11-30",
     obligation_id="21-0001-1-1",  # Default test obligation ID in format YY-OOOO-R-V
@@ -46,4 +52,10 @@ elicensing_link = Recipe(
     object_id=str(uuid.uuid4()),
     sync_status="SUCCESS",
     last_sync_at=None,
+)
+
+# ComplianceEarnedCredits recipe
+compliance_earned_credits = Recipe(
+    ComplianceEarnedCredits,
+    compliance_report_version=foreign_key(compliance_report_version),
 )

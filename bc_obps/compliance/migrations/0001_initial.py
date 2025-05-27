@@ -14,8 +14,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
-        ('registration', '0112_prod_fix_contacts_post_transfer'),
-        ('reporting', '0101_alter_reportverification_accredited_by_and_more'),
+        ('registration', '0113_V3_2_0'),
+        ('reporting', '0102_V3_2_0'),
     ]
 
     operations = [
