@@ -44,16 +44,17 @@ def immutable_report_version_trigger(
             #
             # https://django-pgtrigger.readthedocs.io/en/4.13.3/cookbook/#model-properties-in-the-func
 
+            # We  coalesce new.id and old.id because on insert we don't have old.id, and on delete we don't have new.id. They will be the same value because the report_version has a trigger that prevents changing the id.
             sql += f"""
                 join "{{meta.db_table}}" {rel_id} on {rel_id}.{prev_table}_id={prev_rel_id}.id
-                where {rel_id}.id=new.id"""
+                where {rel_id}.id=coalesce(new.id, old.id)"""
         else:
             sql += f"""
                 join "erc"."{table}" {rel_id} on {rel_id}.{prev_table}_id={prev_rel_id}.id"""
 
     return pgtrigger.Trigger(
         name="immutable_report_version",
-        operation=pgtrigger.Update | pgtrigger.Insert,
+        operation=pgtrigger.Operations(pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete),
         when=pgtrigger.Before,
         func=pgtrigger.Func(
             """
@@ -68,7 +69,7 @@ def immutable_report_version_trigger(
                     raise exception '{meta.model_name} record is immutable after a report version has been submitted';
                 end if;
 
-                return new;
+                return coalesce(new,old);
             end;
             """
         ),
