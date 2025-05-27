@@ -166,3 +166,6 @@ docker-compose.yml
 
 # VS Code
 .vscode/launch.json
+
+# Local db files
+bc_obps/db.sql
