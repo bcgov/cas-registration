@@ -50,7 +50,7 @@ export default function ComplianceUnitsApplyComponent({
         middleButtonDisabled={false}
         className="mt-44"
         // TODO: implement validation logic
-        // submitButtonDisabled={!isFormValid}
+        submitButtonDisabled={true}
       />
     </FormBase>
   );
