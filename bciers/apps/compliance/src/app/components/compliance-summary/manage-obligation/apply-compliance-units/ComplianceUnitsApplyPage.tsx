@@ -1,29 +1,35 @@
+import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import {
   ActivePage,
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
-import { getComplianceUnitsApplyData } from "@/compliance/src/app/utils/getComplianceUnitsApplyData";
 import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
 
 interface Props {
-  readonly compliance_summary_id: number;
+  readonly compliance_summary_id: string;
 }
-export default async function ComplianceUnitsApplyPage(props: Props) {
-  const complianceSummaryId = props.compliance_summary_id;
-
-  const complianceUnitsData = await getComplianceUnitsApplyData();
+export default async function ComplianceUnitsApplyPage({compliance_summary_id:complianceSummaryId}: Props) {
+  // const complianceUnitsData = await getComplianceUnitsApplyData();
+  const complianceUnitsData = {
+    operationName: "Test Operation",
+    reportingYear: "2025",
+  };
 
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-    complianceUnitsData.reporting_year,
+    complianceUnitsData.reportingYear,
     ActivePage.ApplyComplianceUnits,
   );
 
   return (
+    <CompliancePageLayout
+      complianceSummaryId={complianceSummaryId}
+      taskListElements={taskListElements}
+    >
     <ComplianceUnitsApplyComponent
-      formData={complianceUnitsData}
       complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     />
+    </CompliancePageLayout>
   );
 }
