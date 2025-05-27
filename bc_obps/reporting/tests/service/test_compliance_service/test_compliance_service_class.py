@@ -17,6 +17,18 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.excess_emissions == Decimal('4840.75')
         assert result.credited_emissions == 0
 
+    def test_compliance_summary_zero_production_single_product(self):
+        # Data from compliance_class_manual_calcs.xlsx sheet 1
+        build_data = ComplianceTestInfrastructure.zero_production_single_product()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert result.emissions_attributable_for_reporting == Decimal('10000.0001')
+        assert result.emissions_attributable_for_compliance == Decimal('0.0000')
+        assert result.emissions_limit == Decimal('159.2500')
+        assert result.credited_emissions == Decimal('159.2500')
+        assert result.excess_emissions == Decimal('0.0000')
+
     def test_with_industrial_process_emissions(self):
         # Assertion values from compliance_class_manual_calcs.xlsx sheet 2
         build_data = ComplianceTestInfrastructure.pare_data_remove_reporting_only()
@@ -57,7 +69,6 @@ class TestComplianceSummaryServiceClass(TestCase):
         assert result.credited_emissions == 0
 
     def test_compliance_summary_with_unregulated_product(self):
-        # Assertion values from compliance_class_manual_calcs.xlsx sheet 5
         build_data = ComplianceTestInfrastructure.unregulated_product_and_funny_category_13()
         result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
 

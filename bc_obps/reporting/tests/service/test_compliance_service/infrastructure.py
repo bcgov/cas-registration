@@ -31,6 +31,21 @@ class ComplianceTestInfrastructure:
     allocation_5: ReportProductEmissionAllocation
     allocation_6: ReportProductEmissionAllocation
 
+    @staticmethod
+    def _delete_allocations(t, allocation_ids):
+        for allocation_id in allocation_ids:
+            getattr(t, f"allocation_{allocation_id}").delete()
+
+    @staticmethod
+    def _delete_products(t, product_ids):
+        for product_id in product_ids:
+            getattr(t, f"report_product_{product_id}").delete()
+
+    @staticmethod
+    def _delete_emissions(t, emission_ids):
+        for emission_id in emission_ids:
+            getattr(t, f"report_emission_{emission_id}").delete()
+
     @classmethod
     def build(cls):
         t = ComplianceTestInfrastructure()
@@ -164,6 +179,19 @@ class ComplianceTestInfrastructure:
         t.report_emission_2.delete()
         t.report_emission_3.delete()
         t.report_emission_4.delete()
+        return t
+
+    @classmethod
+    def zero_production_single_product(cls):
+        t = cls.build()
+
+        cls._delete_allocations(t, [2, 3, 4, 5, 6])
+        cls._delete_products(t, [2, 3])
+        cls._delete_emissions(t, [2, 3, 4])
+
+        t.report_product_1.annual_production = Decimal('0')
+        t.report_product_1.save()
+
         return t
 
     @classmethod
