@@ -9,7 +9,7 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
         trigger = immutable_report_version_trigger()
 
         assert trigger.name == "immutable_report_version"
-        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert)
+        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete)
         assert trigger.when == pgtrigger.Before
         assert (
             trigger.func.func
@@ -20,14 +20,14 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
                 select rel1.status into status
                 from "erc"."report_version" rel1
                 join "{meta.db_table}" rel2 on rel2.report_version_id=rel1.id
-                where rel2.id=new.id
+                where rel2.id=coalesce(new.id, old.id)
                 limit 1;
 
                 if status='Submitted' then
                     raise exception '{meta.model_name} record is immutable after a report version has been submitted';
                 end if;
 
-                return new;
+                return coalesce(new, old);
             end;
             """
         )
@@ -36,7 +36,7 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
         trigger = immutable_report_version_trigger("some_intermediate_model__report_version")
 
         assert trigger.name == "immutable_report_version"
-        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert)
+        assert trigger.operation.operations == (pgtrigger.Update, pgtrigger.Insert, pgtrigger.Delete)
         assert trigger.when == pgtrigger.Before
         assert (
             trigger.func.func
@@ -48,14 +48,14 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
                 from "erc"."report_version" rel1
                 join "erc"."some_intermediate_model" rel2 on rel2.report_version_id=rel1.id
                 join "{meta.db_table}" rel3 on rel3.some_intermediate_model_id=rel2.id
-                where rel3.id=new.id
+                where rel3.id=coalesce(new.id, old.id)
                 limit 1;
 
                 if status='Submitted' then
                     raise exception '{meta.model_name} record is immutable after a report version has been submitted';
                 end if;
 
-                return new;
+                return coalesce(new, old);
             end;
             """
         )

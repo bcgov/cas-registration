@@ -69,7 +69,7 @@ def immutable_report_version_trigger(
                     raise exception '{meta.model_name} record is immutable after a report version has been submitted';
                 end if;
 
-                return coalesce(new,old);
+                return coalesce(new, old);
             end;
             """
         ),
