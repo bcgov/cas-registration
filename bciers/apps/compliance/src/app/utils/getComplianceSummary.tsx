@@ -38,7 +38,7 @@ const parseDecimal = (value: string | number | null | undefined): number => {
 };
 
 export const getComplianceSummary = async (
-  complianceReportVersionId: number,
+  complianceReportVersionId: string,
 ): Promise<ComplianceSummary> => {
   const data = await actionHandler(
     `compliance/compliance-report-version/${complianceReportVersionId}`,
