@@ -2,24 +2,38 @@ import {
   ActivePage,
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
-import ObligationTrackPaymentsPayComponent from "./ObligationTrackPaymentsPayComponent";
-import { getComplianceSummary } from "../../../../utils/getComplianceSummary";
+import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 
 interface Props {
-  readonly compliance_summary_id: number;
+  readonly compliance_summary_id: string;
 }
 
-export default async function ObligationTrackPaymentsPayPage(props: Props) {
-  const complianceSummaryId = props.compliance_summary_id;
-  const complianceSummary = await getComplianceSummary(complianceSummaryId);
+export default async function ObligationTrackPaymentsPayPage({compliance_summary_id:complianceSummaryId}: Props) {
+  // const complianceSummary = await getComplianceSummary(complianceSummaryId);
+  const complianceSummary = {
+    reportingYear: "2025",
+  };
 
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-    complianceSummary.reporting_year,
+    complianceSummary.reportingYear,
     ActivePage.PayObligationTrackPayments,
   );
 
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
+  const saveAndContinueUrl = "#";
+
   return (
-    <ObligationTrackPaymentsPayComponent taskListElements={taskListElements} />
+    <CompliancePageLayout
+      taskListElements={taskListElements}
+      complianceSummaryId={complianceSummaryId}
+    >
+      ObligationTrackPaymentsPay ...TBD
+      <ComplianceStepButtons
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+      />
+    </CompliancePageLayout>
   );
 }
