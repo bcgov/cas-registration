@@ -1,5 +1,5 @@
 import { actionHandler } from "@bciers/actions";
-import { PaymentsData } from "../types/payments";
+import { PaymentsData } from "@/compliance/src/app/types";
 
 export async function getComplianceSummaryPayments(
   complianceReportVersionId: number,

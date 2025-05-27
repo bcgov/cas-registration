@@ -1,4 +1,4 @@
-import { ComplianceSummariesSearchParams } from "./types";
+import { ComplianceSummariesSearchParams } from "@/compliance/src/app/types";
 import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
 import { Alert } from "@mui/material";
 import AlertIcon from "@bciers/components/icons/AlertIcon";

@@ -1,4 +1,4 @@
-import { ComplianceSummary } from "../components/compliance-summaries/types";
+import { ComplianceSummary } from "@/compliance/src/app/types";
 import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 

@@ -1,7 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { MonetaryPaymentsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid";
-import { PaymentsData } from "@/compliance/src/app/types/payments";
-import { vi } from "vitest";
+import { PaymentsData } from "@/compliance/src/app/types";
 
 // Mock useSearchParams
 vi.mock("next/navigation", () => ({

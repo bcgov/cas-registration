@@ -5,7 +5,7 @@ import debounce from "lodash/debounce";
 import ErrorCircle from "@bciers/components/icons/ErrorCircle";
 import { actionHandler } from "@bciers/actions";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { BccrAccountDetailsResponse } from "@/compliance/src/app/components/compliance-summaries/types";
+import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
 // Helper functions
 const isValidAccountIdFormat = (accountId: string): boolean =>
