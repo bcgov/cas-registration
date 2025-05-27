@@ -7,7 +7,7 @@ import {
   requestIssuanceOfEarnedCreditsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/requestIssuanceOfEarnedCreditsSchema";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
-import { BccrAccountDetailsResponse } from "@/compliance/src/app/components/compliance-summaries/types";
+import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
 interface Props {
   complianceSummaryId: string;
