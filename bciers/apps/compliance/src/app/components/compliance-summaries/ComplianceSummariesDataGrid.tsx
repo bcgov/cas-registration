@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import { ComplianceSummary } from "./types";
+import { ComplianceSummary } from "@/compliance/src/app/types";
 import complianceSummaryColumns from "../datagrid/models/compliance-summaries/complianceSummaryColumns";
 import complianceSummaryGroupColumns from "../datagrid/models/compliance-summaries/complianceSummaryGroupColumns";
 import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
