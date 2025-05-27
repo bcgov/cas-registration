@@ -42,7 +42,7 @@ const complianceUnitsColumns = (): GridColDef[] => {
       field: "status",
       headerName: "Status",
       type: "string",
-      flex:1,
+      flex: 1,
     },
   ];
 };

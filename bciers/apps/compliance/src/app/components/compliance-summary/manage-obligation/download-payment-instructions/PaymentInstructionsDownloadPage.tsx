@@ -9,7 +9,9 @@ interface Props {
   readonly compliance_summary_id: string;
 }
 
-export default async function PaymentInstructionsDownloadPage({compliance_summary_id:complianceSummaryId} : Props) {
+export default async function PaymentInstructionsDownloadPage({
+  compliance_summary_id: complianceSummaryId,
+}: Props) {
   // const complianceSummary = await getComplianceSummary(complianceSummaryId);
   const complianceSummary = {
     reportingYear: "2025",
@@ -22,7 +24,7 @@ export default async function PaymentInstructionsDownloadPage({compliance_summar
   );
 
   const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`;
 
   return (
     <CompliancePageLayout

@@ -5,13 +5,18 @@ import {
   readOnlyStringField,
   readOnlyObjectField,
   commonReadOnlyOptions,
-  tco2eUiConfig, headerUiConfig
+  tco2eUiConfig,
+  headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 
 // Section creators
-const createSummarySection = (reportingYear: number): RJSFSchema["properties"] => ({
+const createSummarySection = (
+  reportingYear: number,
+): RJSFSchema["properties"] => ({
   summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
-  emissionsAttributableForCompliance: readOnlyStringField("Emissions Attributable for Compliance:"),
+  emissionsAttributableForCompliance: readOnlyStringField(
+    "Emissions Attributable for Compliance:",
+  ),
   emissionLimit: readOnlyStringField("Emissions Limit:"),
   excessEmissions: readOnlyStringField("Excess Emissions:"),
 });
@@ -24,7 +29,9 @@ const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
 });
 
 // Main schema creator
-export const createComplianceSummaryReviewSchema = (reportingYear: number): RJSFSchema => ({
+export const createComplianceSummaryReviewSchema = (
+  reportingYear: number,
+): RJSFSchema => ({
   type: "object",
   title: `Review ${reportingYear} Compliance Summary`,
   properties: {
@@ -50,7 +57,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
     "ui:options": {
       label: false,
       inline: true,
-  },
+    },
   },
   earnedCredits: commonReadOnlyOptions,
   issuanceStatus: commonReadOnlyOptions,
