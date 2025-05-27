@@ -8,7 +8,7 @@ interface ComplianceSummaryReviewPageData {
 }
 
 export async function fetchComplianceSummaryReviewPageData(
-  complianceSummaryId: number,
+  complianceSummaryId: string,
 ): Promise<ComplianceSummaryReviewPageData> {
   const [complianceSummary, paymentsData] = await Promise.all([
     getComplianceSummary(complianceSummaryId),
