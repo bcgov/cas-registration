@@ -227,7 +227,7 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: async (reportVersionId, _request, context) => {
       const verificationStatus =
-        await await context!.getReportVerificationStatus(reportVersionId);
+        await context!.getReportVerificationStatus(reportVersionId);
       return verificationStatus.show_verification_page;
     },
     redirect: (reportVersionId, request) =>
