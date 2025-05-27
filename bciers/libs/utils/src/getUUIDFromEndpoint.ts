@@ -3,6 +3,7 @@ export const endpointAllowList = [
   "registration/user-operators/current/is-current-user-approved-admin",
   "registration/user/user-profile",
 ];
+export const ENDPOINT_NOT_ALLOWED_ERROR = "Endpoint is not allowed";
 
 // 🛠️ Function to get the last non-empty segment as a UUID from an endpoint URL
 function getUUIDFromEndpoint(endpoint: string): string | null {
@@ -11,7 +12,7 @@ function getUUIDFromEndpoint(endpoint: string): string | null {
   );
 
   if (!isEndpointAllowed) {
-    throw new Error("Endpoint is not allowed");
+    throw new Error(ENDPOINT_NOT_ALLOWED_ERROR);
   }
   // Split the endpoint URL by '/'
   const segments = endpoint.split("/");
