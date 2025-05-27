@@ -172,7 +172,7 @@ describe("actionHandler function", () => {
 
     expect(result).toEqual({
       error:
-        "An error occurred while fetching /endpoint: Endpoint is not allowed",
+        "Your session has timed out. Please log in again at https://industrialemissions.gov.bc.ca/onboarding to continue.",
     });
   });
 
