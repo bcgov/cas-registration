@@ -9,7 +9,9 @@ interface Props {
   readonly compliance_summary_id: string;
 }
 
-export default async function ObligationTrackPaymentsPayPage({compliance_summary_id:complianceSummaryId}: Props) {
+export default async function ObligationTrackPaymentsPayPage({
+  compliance_summary_id: complianceSummaryId,
+}: Props) {
   // const complianceSummary = await getComplianceSummary(complianceSummaryId);
   const complianceSummary = {
     reportingYear: "2025",
