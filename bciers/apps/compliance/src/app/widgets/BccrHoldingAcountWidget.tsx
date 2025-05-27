@@ -51,6 +51,8 @@ const BCCRHoldingAccountWidget = (props: WidgetProps) => {
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    if (newValue.length > 15) return; // Prevent input longer than 15 characters
+
     if (/^\d*$/.test(newValue) && newValue.length <= 15) {
       onChange(newValue === "" ? undefined : newValue);
       await validateAccountId(newValue);
@@ -72,8 +74,6 @@ const BCCRHoldingAccountWidget = (props: WidgetProps) => {
         className="w-full"
         placeholder={placeholder}
         InputProps={{
-          maxLength: 15,
-          pattern: "\\d*",
           endAdornment: (
             <InputAdornment position="end">
               <div className="flex items-center justify-center">
