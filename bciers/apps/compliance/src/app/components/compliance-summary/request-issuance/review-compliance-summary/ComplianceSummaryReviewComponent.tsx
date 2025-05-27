@@ -2,7 +2,10 @@
 
 import FormBase from "@bciers/components/form/FormBase";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
-import { complianceSummaryReviewUiSchema, createComplianceSummaryReviewSchema } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
+import {
+  complianceSummaryReviewUiSchema,
+  createComplianceSummaryReviewSchema,
+} from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
 
 interface Props {
   data: any; //TODO: Define the type for the data
