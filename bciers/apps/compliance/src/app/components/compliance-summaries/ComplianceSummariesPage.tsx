@@ -3,6 +3,8 @@ import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fet
 import { Alert } from "@mui/material";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
 import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
+import Loading from "@bciers/components/loading/SkeletonForm";
+import { Suspense } from "react";
 
 export default async function ComplianceSummariesPage({
   searchParams,
@@ -28,7 +30,9 @@ export default async function ComplianceSummariesPage({
           the compliance obligation is paid.
         </Alert>
       </div>
-      <ComplianceSummariesDataGrid initialData={initialData} />
+      <Suspense fallback={<Loading />}>
+        <ComplianceSummariesDataGrid initialData={initialData} />
+      </Suspense>
     </div>
   );
 }
