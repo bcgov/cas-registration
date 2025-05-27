@@ -228,6 +228,7 @@ export const permissionRules: PermissionRule[] = [
     validate: async (reportVersionId, _request, context) => {
       const verificationStatus =
         await await context!.getReportVerificationStatus(reportVersionId);
+      console.log("Verification Status:", verificationStatus);
       return verificationStatus.show_verification_page;
     },
     redirect: (reportVersionId, request) =>
@@ -250,6 +251,7 @@ export const permissionRules: PermissionRule[] = [
     validate: async (reportVersionId, _request, context) => {
       const isSupplementaryReport =
         await context!.getIsSupplementaryReport(reportVersionId);
+      console.log("isSupplementaryReport:", isSupplementaryReport);
 
       return isSupplementaryReport === true;
     },
@@ -359,10 +361,14 @@ const checkHasPathAccess = async (request: NextRequest) => {
     if (!reportVersionId) return null;
     // Create a caching context for this request
     const context = createRuleContext();
+    console.log("context", context);
     // Iterate over each rule and validate if it applies
     for (const rule of permissionRules) {
       if (await rule.isApplicable(request, reportVersionId, context)) {
         const isValid = await rule.validate(reportVersionId, request, context);
+        console.log(
+          `Rule: ${rule.name}, isValid: ${isValid}, reportVersionId: ${reportVersionId}`,
+        );
         if (!isValid) {
           return rule.redirect(reportVersionId, request);
         }
