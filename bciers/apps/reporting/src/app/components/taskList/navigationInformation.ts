@@ -11,7 +11,6 @@ import { headerElementFactory } from "./headerElementFactory";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import {
   getFlow,
-  getFlowData,
   reportingFlows,
 } from "@reporting/src/app/components/taskList/reportingFlows";
 
@@ -68,19 +67,12 @@ export async function getNavigationInformation(
   // get flow
   const flow = await getFlow(reportVersionId);
 
-  console.log("from page ", page);
-  console.log("[getNavigationInformation] flow:", flow);
-
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
 
-  console.log("[getNavigationInformation] flowData:", flowData);
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
   const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
-
-  console.log("[getNavigationInformation] context", context);
-  console.log("[getNavigationInformation] original pages:", flowData[step]);
 
   // Original pages array from flowData
   const pages = [...(flowData[step] as ReportingPage[])]; // make a shallow copy
@@ -92,40 +84,19 @@ export async function getNavigationInformation(
     ),
   );
 
-  console.log(
-    "[getNavigationInformation] tasklistPagesTemp after factory calls:",
-    tasklistPagesTemp,
-  );
-
   // Remove corresponding pages where tasklistPagesTemp has extraOptions.skip === true
   for (let i = tasklistPagesTemp.length - 1; i >= 0; i--) {
     if (tasklistPagesTemp[i].extraOptions?.skip) {
-      console.log(
-        `[getNavigationInformation] removing page at index ${i} (${pages[i]}) due to skip flag`,
-      );
       pages.splice(i, 1);
     }
   }
-  console.log("[getNavigationInformation] filtered pages:", pages);
 
   // Filter tasklistPages when element has extraOptions.skip === true
   const tasklistPages = tasklistPagesTemp.filter((p) => {
     const keep = !p.extraOptions?.skip;
-    if (!keep) {
-      console.log(
-        `[getNavigationInformation] filtering out tasklist page (${JSON.stringify(
-          p.element,
-          null,
-          2,
-        )})`,
-      );
-    }
+
     return keep;
   });
-  console.log(
-    "[getNavigationInformation] tasklistPages after filtering:",
-    tasklistPages,
-  );
 
   const [taskListHeaderPages, taskListNonHeaderPages] =
     splitHeaderElements(tasklistPages);

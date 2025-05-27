@@ -19,9 +19,6 @@ export default async function SignOffPage({ version_id }: HasReportVersion) {
   //🔍 Check if reports need verification
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
-  console.log("checking to see if verification page should be shown", {
-    showVerificationPage,
-  });
 
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
@@ -33,7 +30,6 @@ export default async function SignOffPage({ version_id }: HasReportVersion) {
       skipChangeReview: !isSupplementaryReport,
     },
   );
-  console.log("navigation info", navInfo);
   const flow = await getFlow(version_id);
 
   const schema = buildSignOffSchema(
