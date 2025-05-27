@@ -10,7 +10,7 @@ from ...router import router
 
 
 @router.get(
-    "/compliance-report-version/{compliance_report_version_id}/payments",
+    "/compliance-report-versions/{compliance_report_version_id}/payments",
     response={200: PaymentsListOut, custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Get payments for a compliance report version",
@@ -19,7 +19,6 @@ from ...router import router
 def get_compliance_report_version_payments(
     request: HttpRequest, compliance_report_version_id: int
 ) -> Tuple[Literal[200], PaymentsList]:
-    """Get payments for a compliance report version"""
     user_guid = get_current_user_guid(request)
     return 200, ComplianceDashboardService.get_compliance_report_version_payments(
         user_guid, compliance_report_version_id
