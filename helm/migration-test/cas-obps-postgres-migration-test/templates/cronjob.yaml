@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-job
+  labels: {{- include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: postgres-migration-test
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - |
+                set -euo pipefail;
+                until pg_isready -h {{ include "cas-obps-postgres-migration-test.fullname" . }}-pgha1; do
+                  echo "⏱️ Waiting for Postgres to be ready...";
+                  sleep 5;
+                done;
+
+                DBCHECK=$(psql -h {{ include "cas-obps-postgres-migration-test.fullname" . }}-pgha1 -U postgres -d obps -t -c "SELECT COUNT(*) FROM django_migrations;" | xargs)
+
+                if [ "$DBCHECK" -gt 0 ]; then
+                  echo "✅ Django migrations exist, database successfully restored."
+                  exit 0
+                else
+                  echo "❌ No migrations found, database restore failed or empty database."
+                  exit 1
+                fi
