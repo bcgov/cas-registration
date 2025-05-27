@@ -9,7 +9,7 @@ import {
   complianceUnitsApplySchema,
   complianceUnitsApplyUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceUnitsApplySchema";
-import { BccrAccountDetailsResponse } from "@/compliance/src/app/components/compliance-summaries/types";
+import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
 interface Props {
   complianceSummaryId: any;

@@ -1,7 +1,7 @@
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
 import ComplianceNavigationPage from "@/compliance/src/app/components/compliance-navigation/ComplianceNavigationPage";
 import { generateMetadata } from "@bciers/components/layout/RootLayout";
-import { ComplianceSummariesSearchParams } from "@/compliance/src/app/components/compliance-summaries/types";
+import { ComplianceSummariesSearchParams } from "@/compliance/src/app/types";
 import ComplianceSummariesPage from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesPage";
 
 const title = "Compliance Summaries";
