@@ -323,12 +323,16 @@ class ComplianceService:
             id=compliance_summary_record_id,
             report_version=report_version_record,
             defaults={
-                "emissions_attributable_for_reporting": compliance_data_to_save.emissions_attributable_for_reporting,
-                "reporting_only_emissions": compliance_data_to_save.reporting_only_emissions,
-                "emissions_attributable_for_compliance": compliance_data_to_save.emissions_attributable_for_compliance,
-                "emissions_limit": compliance_data_to_save.emissions_limit,
-                "excess_emissions": compliance_data_to_save.excess_emissions,
-                "credited_emissions": compliance_data_to_save.credited_emissions,
+                "emissions_attributable_for_reporting": ComplianceService.round(
+                    compliance_data_to_save.emissions_attributable_for_reporting
+                ),
+                "reporting_only_emissions": ComplianceService.round(compliance_data_to_save.reporting_only_emissions),
+                "emissions_attributable_for_compliance": ComplianceService.round(
+                    compliance_data_to_save.emissions_attributable_for_compliance
+                ),
+                "emissions_limit": ComplianceService.round(compliance_data_to_save.emissions_limit),
+                "excess_emissions": ComplianceService.round(compliance_data_to_save.excess_emissions),
+                "credited_emissions": ComplianceService.round(compliance_data_to_save.credited_emissions),
                 "reduction_factor": compliance_data_to_save.regulatory_values.reduction_factor,
                 "tightening_rate": compliance_data_to_save.regulatory_values.tightening_rate,
                 "initial_compliance_period": compliance_data_to_save.regulatory_values.initial_compliance_period,
@@ -351,10 +355,21 @@ class ComplianceService:
                 report_compliance_summary=compliance_summary_record,
                 product=RegulatedProduct.objects.get(id=product_data_to_save.product_id),
                 defaults={
-                    "annual_production": product_data_to_save.annual_production,
-                    "apr_dec_production": product_data_to_save.apr_dec_production,
-                    "emission_intensity": product_data_to_save.emission_intensity,
-                    "allocated_industrial_process_emissions": product_data_to_save.allocated_industrial_process_emissions,
-                    "allocated_compliance_emissions": product_data_to_save.allocated_compliance_emissions,
+                    "annual_production": ComplianceService.round(product_data_to_save.annual_production),
+                    "apr_dec_production": ComplianceService.round(product_data_to_save.apr_dec_production),
+                    "emission_intensity": ComplianceService.round(product_data_to_save.emission_intensity),
+                    "allocated_industrial_process_emissions": ComplianceService.round(
+                        product_data_to_save.allocated_industrial_process_emissions
+                    ),
+                    "allocated_compliance_emissions": ComplianceService.round(
+                        product_data_to_save.allocated_compliance_emissions
+                    ),
                 },
             )
+
+    @staticmethod
+    def round(value: Decimal) -> Decimal:
+        """
+        Round the value to 4 decimal places for compliance calculations.
+        """
+        return value.quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
