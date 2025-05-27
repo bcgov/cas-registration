@@ -15,7 +15,7 @@ export default async function ComplianceSummaryReviewPage({
   const complianceSummary = {
     complianceUnits: {
       complianceSummaryId,
-      gridData:{
+      gridData: {
         rows: [
           {
             id: 1,
@@ -29,9 +29,9 @@ export default async function ComplianceSummaryReviewPage({
           },
         ],
         row_count: 1,
-      }
+      },
     },
-    monetaryPayments:{
+    monetaryPayments: {
       gridData: {
         rows: [
           {
@@ -44,7 +44,7 @@ export default async function ComplianceSummaryReviewPage({
           },
         ],
         row_count: 1,
-      }
+      },
     },
     reportingYear: "2025",
     emissionsAttributableForCompliance: "1200.0000",

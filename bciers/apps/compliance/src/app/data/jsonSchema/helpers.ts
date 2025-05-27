@@ -27,13 +27,14 @@ export const readOnlyObjectField = (
   readOnly: true,
 });
 
-export const commonReadOnlyOptions:{
-   "ui:widget": FC<WidgetProps>,
+export const commonReadOnlyOptions: {
+  "ui:widget": FC<WidgetProps>;
   "ui:classNames": string;
 } = {
   "ui:widget": ReadOnlyWidget,
   // Override the default class names for the read-only widget
-  "ui:classNames": "[&>div:nth-child(2)]:w-fit [&_.read-only-widget]:p-0 [&_.read-only-widget]:min-h-0"
+  "ui:classNames":
+    "[&>div:nth-child(2)]:w-fit [&_.read-only-widget]:p-0 [&_.read-only-widget]:min-h-0",
 };
 
 export const headerUiConfig = {

@@ -32,7 +32,7 @@ const monetaryPaymentsColumns = (): GridColDef[] => {
       field: "receiptNumber",
       headerName: "Receipt Number",
       type: "string",
-      flex:1,
+      flex: 1,
     },
   ];
 };

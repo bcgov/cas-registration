@@ -6,7 +6,8 @@ import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
-  complianceUnitsApplySchema, complianceUnitsApplyUiSchema
+  complianceUnitsApplySchema,
+  complianceUnitsApplyUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceUnitsApplySchema";
 import { BccrAccountDetailsResponse } from "@/compliance/src/app/components/compliance-summaries/types";
 
@@ -45,7 +46,7 @@ export default function ComplianceUnitsApplyComponent({
         backButtonText="Cancel"
         continueButtonText="Apply"
         onBackClick={() => router.push(backUrl)}
-        onContinueClick={()=> router.push(saveAndContinueUrl)}
+        onContinueClick={() => router.push(saveAndContinueUrl)}
         middleButtonDisabled={false}
         className="mt-44"
         // TODO: implement validation logic
@@ -54,7 +55,6 @@ export default function ComplianceUnitsApplyComponent({
     </FormBase>
   );
 }
-
 
 /*
 

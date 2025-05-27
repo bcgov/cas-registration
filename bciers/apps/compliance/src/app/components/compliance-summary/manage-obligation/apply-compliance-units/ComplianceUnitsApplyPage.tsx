@@ -8,7 +8,9 @@ import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
 interface Props {
   readonly compliance_summary_id: string;
 }
-export default async function ComplianceUnitsApplyPage({compliance_summary_id:complianceSummaryId}: Props) {
+export default async function ComplianceUnitsApplyPage({
+  compliance_summary_id: complianceSummaryId,
+}: Props) {
   // const complianceUnitsData = await getComplianceUnitsApplyData();
   const complianceUnitsData = {
     operationName: "Test Operation",
@@ -26,10 +28,10 @@ export default async function ComplianceUnitsApplyPage({compliance_summary_id:co
       complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     >
-    <ComplianceUnitsApplyComponent
-      complianceSummaryId={complianceSummaryId}
-      taskListElements={taskListElements}
-    />
+      <ComplianceUnitsApplyComponent
+        complianceSummaryId={complianceSummaryId}
+        taskListElements={taskListElements}
+      />
     </CompliancePageLayout>
   );
 }
