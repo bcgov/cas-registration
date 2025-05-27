@@ -392,6 +392,7 @@ export const withRuleHasReportRouteAccess: MiddlewareFactory = (
     if (role === IDP.BCEIDBUSINESS) {
       try {
         const response = await checkHasPathAccess(request);
+        console.log("Response from checkHasPathAccess:", response);
         if (response) {
           return response;
         }
