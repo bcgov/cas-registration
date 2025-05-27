@@ -1,7 +1,7 @@
 import { WidgetProps } from "@rjsf/utils";
 import { useState, useCallback } from "react";
 import { TextField, InputAdornment, CircularProgress } from "@mui/material";
-import debounce from "lodash/debounce";
+import debounce from "lodash.debounce";
 import ErrorCircle from "@bciers/components/icons/ErrorCircle";
 import { actionHandler } from "@bciers/actions";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
