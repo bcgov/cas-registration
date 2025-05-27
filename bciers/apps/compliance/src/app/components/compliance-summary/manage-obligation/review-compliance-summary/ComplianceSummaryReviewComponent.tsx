@@ -13,7 +13,7 @@ interface Props {
   complianceSummaryId: string;
 }
 
-export function ComplianceSummaryReviewContent({
+export function ComplianceSummaryReviewComponent({
   data,
   complianceSummaryId,
 }: Readonly<Props>) {
