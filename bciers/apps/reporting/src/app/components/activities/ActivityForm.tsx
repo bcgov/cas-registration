@@ -126,8 +126,8 @@ export default function ActivityForm({
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (e: IChangeEvent) => {
     if (isFallbackSchema) {
-      console.log("Fallback schema, skipping submit");
-      return true; // Exit early
+      //if the schema is a fallback schema, we just return true
+      return true;
     }
 
     setErrorList([]);
@@ -187,9 +187,6 @@ export default function ActivityForm({
 
     return false;
   };
-  console.log("initialJsonSchema", initialJsonSchema);
-  console.log("uischema", getUiSchema(currentActivity.slug));
-
   return (
     <MultiStepFormWithTaskList
       steps={navigationInformation.headerSteps}

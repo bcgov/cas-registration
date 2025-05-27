@@ -34,7 +34,7 @@ class TestBuildFormSchema(CommonTestSetup):
         assert response.status_code == 422
 
     # SCHEMAS
-    def test_error_if_no_valid_activity_schema(self):
+    def test_returns_fallback_schema_if_no_valid_activity_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
         facility_report = baker.make_recipe("reporting.tests.utils.facility_report", report_version=report_version)
         operator = report_version.report.operator
@@ -45,8 +45,9 @@ class TestBuildFormSchema(CommonTestSetup):
             "industry_user",
             f'{self.endpoint}?activity=0&report_version_id={report_version.id}&facility_id={facility_report.facility.id}',
         )
-        assert response.status_code == 404
-        assert response.json().get('message') == "Not Found"
+        assert response.status_code == 200
+        response_object = json.loads(response.json())
+        assert response_object["schema"]["isFallbackSchema"] is True
 
     def test_error_if_no_valid_source_type_schema(self):
         report_version = baker.make_recipe("reporting.tests.utils.report_version", report__reporting_year_id=2024)
