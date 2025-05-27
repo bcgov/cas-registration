@@ -2,9 +2,8 @@ import {
   ActivePage,
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
-import { ComplianceSummaryReviewContent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewContent";
+import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-
 interface Props {
   compliance_summary_id: string;
 }
@@ -12,6 +11,8 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
+  // TODO: Replace with actual data fetching logic post-refactoring
+  // const { complianceSummary, paymentsData } = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   const complianceSummary = {
     complianceUnits: {
       complianceSummaryId,
@@ -66,8 +67,6 @@ export default async function ComplianceSummaryReviewPage({
     totalAmount: "91.55",
   };
 
-  // const { complianceSummary, paymentsData } =
-  //   await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
     complianceSummary.reportingYear,
@@ -79,7 +78,7 @@ export default async function ComplianceSummaryReviewPage({
       taskListElements={taskListElements}
       complianceSummaryId={complianceSummaryId}
     >
-      <ComplianceSummaryReviewContent
+      <ComplianceSummaryReviewComponent
         data={complianceSummary}
         complianceSummaryId={complianceSummaryId}
       />
