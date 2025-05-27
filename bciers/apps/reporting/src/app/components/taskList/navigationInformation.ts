@@ -67,8 +67,11 @@ export async function getNavigationInformation(
   // get flow
   const flow = await getFlow(reportVersionId);
 
+  console.log("[getNavigationInformation] flow:", flow);
+
   // build tasklist from factories
   const flowData = reportingFlows[flow] as ReportingFlowDescription;
+  console.log("[getNavigationInformation] flowData:", flowData);
   if (!flowData) throw Error(`No reporting flow found for ${flow}`);
 
   const headerSteps: HeaderStep[] = Object.keys(flowData) as HeaderStep[];
