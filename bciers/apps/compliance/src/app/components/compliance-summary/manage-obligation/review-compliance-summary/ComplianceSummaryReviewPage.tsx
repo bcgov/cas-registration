@@ -2,7 +2,6 @@ import {
   ActivePage,
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
-import { fetchComplianceSummaryReviewPageData } from "./fetchComplianceSummaryReviewPageData";
 import { ComplianceSummaryReviewContent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewContent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 
@@ -13,7 +12,6 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  // const complianceSummary = await getComplianceSummary(complianceSummaryId);
   const complianceSummary = {
     complianceUnits: {
       complianceSummaryId,
