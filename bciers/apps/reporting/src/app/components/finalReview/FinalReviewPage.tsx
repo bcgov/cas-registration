@@ -31,6 +31,8 @@ export default async function FinalReviewPage({
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
 
+  console.log("skipVerificationPage:", !showVerificationPage);
+  console.log("skipChangeReview:", !isSupplementaryReport);
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.FinalReview,
