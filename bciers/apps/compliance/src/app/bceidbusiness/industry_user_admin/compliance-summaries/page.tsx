@@ -14,7 +14,7 @@ function ComplianceSummariesWithNavigation({
 }) {
   return (
     <ComplianceNavigationPage activeTab={0}>
-        <ComplianceSummariesPage searchParams={searchParams || {}} />
+      <ComplianceSummariesPage searchParams={searchParams || {}} />
     </ComplianceNavigationPage>
   );
 }

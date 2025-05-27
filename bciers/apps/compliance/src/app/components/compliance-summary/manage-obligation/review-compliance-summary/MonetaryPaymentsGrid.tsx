@@ -12,8 +12,11 @@ interface MonetaryPaymentsProps {
   gridData: PaymentsData;
 }
 
-
-export const MonetaryPaymentsGrid = ({ value }: {value: MonetaryPaymentsProps}) => {
+export const MonetaryPaymentsGrid = ({
+  value,
+}: {
+  value: MonetaryPaymentsProps;
+}) => {
   const { gridData } = value;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
@@ -33,7 +36,9 @@ export const MonetaryPaymentsGrid = ({ value }: {value: MonetaryPaymentsProps}) 
 
   return (
     <>
-      {showAlert && <AlertNote>You have not made any monetary payment yet.</AlertNote>}
+      {showAlert && (
+        <AlertNote>You have not made any monetary payment yet.</AlertNote>
+      )}
       <DataGrid
         columns={columns}
         initialData={gridData}
