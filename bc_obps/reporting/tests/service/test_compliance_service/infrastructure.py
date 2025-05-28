@@ -242,3 +242,45 @@ class ComplianceTestInfrastructure:
             allocated_quantity=Decimal('55.55'),
         )
         return t
+
+    @classmethod
+    def decimal_places(cls):
+        t = ComplianceTestInfrastructure()
+        t.operation_1 = make_recipe(
+            'registration.tests.utils.operation',
+            name='test sfo',
+            naics_code=NaicsCode.objects.get(pk=1),
+            type='Single Facility Operation',
+        )
+        t.report_1 = make_recipe(
+            "reporting.tests.utils.report", operation=t.operation_1, reporting_year=ReportingYear.objects.get(pk=2024)
+        )
+        t.report_version_1 = make_recipe("reporting.tests.utils.report_version", report=t.report_1)
+        t.report_emission_1 = make_recipe(
+            "reporting.tests.utils.report_emission",
+            report_version=t.report_version_1,
+            gas_type_id=1,
+            json_data={"equivalentEmission": 10000.555555555555},
+        )
+        t.report_emission_1.emission_categories.set([1])
+
+        t.report_product_1 = make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=t.report_version_1,
+            product_id=1,
+            annual_production=Decimal('100000'),
+            production_data_apr_dec=Decimal('50000'),
+        )
+        t.report_emission_allocation = make_recipe(
+            "reporting.tests.utils.report_emission_allocation", report_version=t.report_version_1
+        )
+        t.allocation_1 = make_recipe(
+            "reporting.tests.utils.report_product_emission_allocation",
+            report_emission_allocation=t.report_emission_allocation,
+            report_version=t.report_version_1,
+            report_product=t.report_product_1,
+            emission_category=EmissionCategory.objects.get(pk=1),  # Flaring Product 1
+            allocated_quantity=Decimal('10000.5555'),
+        )
+
+        return t
