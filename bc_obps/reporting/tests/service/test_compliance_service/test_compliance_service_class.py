@@ -137,3 +137,11 @@ class TestComplianceSummaryServiceClass(TestCase):
         )
         for idx, p in enumerate(report_compliance_product_records):
             assert p.annual_production == updated_result.products[idx].annual_production
+
+    def test_compliance_summary_rounding(self):
+        build_data = ComplianceTestInfrastructure.decimal_places()
+
+        result = ComplianceService.get_calculated_compliance_data(build_data.report_version_1.id)
+
+        assert result.emissions_attributable_for_reporting == Decimal('10000.5556')
+        assert result.emissions_attributable_for_compliance == Decimal('5000.2778')
