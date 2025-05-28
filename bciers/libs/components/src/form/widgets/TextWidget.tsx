@@ -6,7 +6,6 @@ import { WidgetProps } from "@rjsf/utils/lib/types";
 import {
   DARK_GREY_BG_COLOR,
   BC_GOV_SEMANTICS_RED,
-  BC_GOV_LINKS_COLOR,
 } from "@bciers/styles/colors";
 
 const TextWidget: React.FC<WidgetProps> = ({
@@ -49,7 +48,7 @@ const TextWidget: React.FC<WidgetProps> = ({
     },
     font: "inherit",
   };
-
+  // check activity forms in reporting
   const numberStyles = {
     border: "1px solid",
     borderColor: borderColor,
@@ -63,7 +62,6 @@ const TextWidget: React.FC<WidgetProps> = ({
     width: "100%",
   };
 
-  // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     return (
       <NumberField.Root
@@ -77,17 +75,7 @@ const TextWidget: React.FC<WidgetProps> = ({
         format={{ maximumFractionDigits: 4 }}
       >
         <NumberField.Group>
-          <NumberField.Input
-            aria-label={name}
-            style={numberStyles}
-            // sx doesn't like numberInput and tailwind doesn't like dynamic colors
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = borderColor;
-            }}
-          />
+          <NumberField.Input aria-label={name} style={numberStyles} />
         </NumberField.Group>
       </NumberField.Root>
     );
