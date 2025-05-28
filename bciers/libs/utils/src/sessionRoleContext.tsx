@@ -1,9 +1,29 @@
 "use client";
-import { createContext } from "react";
+import {
+  AwaitedReactNode,
+  createContext,
+  JSXElementConstructor,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+} from "react";
 
 export const SessionRoleContext = createContext(undefined);
 
-const SessionRoleContextProvider = (props) => {
+const SessionRoleContextProvider = (props: {
+  value: undefined;
+  children:
+    | string
+    | number
+    | bigint
+    | boolean
+    | ReactElement<any, string | JSXElementConstructor<any>>
+    | Iterable<ReactNode>
+    | ReactPortal
+    | Promise<AwaitedReactNode>
+    | null
+    | undefined;
+}) => {
   return (
     <SessionRoleContext.Provider value={props.value}>
       {props.children}
@@ -12,8 +32,3 @@ const SessionRoleContextProvider = (props) => {
 };
 
 export default SessionRoleContextProvider;
-
-// import { useState, createContext } from "react";
-// import ReactDOM from "react-dom/client";
-
-// const UserContext = createContext()
