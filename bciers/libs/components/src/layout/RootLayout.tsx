@@ -15,6 +15,7 @@ import {
   Bread,
 } from "@bciers/components";
 import { Main } from "@bciers/components/server";
+import SessionRoleContextProvider from "@bciers/utils/src/sessionRoleContext";
 
 // Dynamically import SessionTimeoutHandler with SSR disabled
 const SessionTimeoutHandler = dynamic(
@@ -73,27 +74,29 @@ export default async function RootLayout({
           basePath={`${process.env.NEXTAUTH_URL}/api/auth`}
           session={session}
         >
-          {
-            //👇️ provide MUI custom theme to the components within the layout
-            // ThemeRegistry component does not properly import, so we import the individual pieces separately.
-          }
-          <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
-            <ThemeProvider theme={theme}>
-              <CssBaseline />
-              <Header />
-              <Bread
-                separator={<span aria-hidden="true"> &gt; </span>}
-                capitalizeLinks
-                defaultLinks={defaultLinks}
-                zone={zone}
-              />
-              <Main>
-                <SessionTimeoutHandler />
-                {children}
-              </Main>
-              <Footer />
-            </ThemeProvider>
-          </NextAppDirEmotionCacheProvider>
+          <SessionRoleContextProvider value={session?.user?.app_role}>
+            {
+              //👇️ provide MUI custom theme to the components within the layout
+              // ThemeRegistry component does not properly import, so we import the individual pieces separately.
+            }
+            <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Header />
+                <Bread
+                  separator={<span aria-hidden="true"> &gt; </span>}
+                  capitalizeLinks
+                  defaultLinks={defaultLinks}
+                  zone={zone}
+                />
+                <Main>
+                  <SessionTimeoutHandler />
+                  {children}
+                </Main>
+                <Footer />
+              </ThemeProvider>
+            </NextAppDirEmotionCacheProvider>
+          </SessionRoleContextProvider>
         </SessionProvider>
       </body>
     </html>
