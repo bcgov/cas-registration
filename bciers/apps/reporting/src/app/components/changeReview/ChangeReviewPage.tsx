@@ -32,8 +32,6 @@ export default async function ChangeReviewPage({
       skipChangeReview: !isSupplementaryReport,
     },
   );
-  console.log("skipVerificationPage:", !showVerificationPage);
-  console.log("skipChangeReview:", !isSupplementaryReport);
   return (
     <ChangeReviewForm
       versionId={version_id}
