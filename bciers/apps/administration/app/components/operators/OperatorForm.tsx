@@ -35,7 +35,7 @@ export default function OperatorForm({
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
-  const { update } = useSession();
+
   return (
     <SingleStepTaskListForm
       showCancelOrBackButton={showCancelOrBackButton}
@@ -70,6 +70,7 @@ export default function OperatorForm({
         }
         if (isCreatingState) {
           setIsCreatingState(false);
+          const { update } = useSession();
           // With Auth strategy: "jwt" , update() method will trigger a jwt callback
           // where app_role will be augmented to "industry_user_admin" in the jwt and session objects
           await update({ trigger: "update" }); // Indicate this is an update call to update the session token

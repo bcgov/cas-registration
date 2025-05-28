@@ -57,11 +57,11 @@ export default function ProfileForm({ formData, isCreate }: Props) {
 
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
-  const { data: session, update } = useSession();
-  const idp = session?.identity_provider || "";
+
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
+    const { update } = useSession();
     await update({ trigger: "update" });
     // ✅ Set success state to true
     setIsSuccess(true);
@@ -77,6 +77,8 @@ export default function ProfileForm({ formData, isCreate }: Props) {
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserProfileFormData }) => {
+    const { data: session } = useSession();
+    const idp = session?.identity_provider || "";
     //Set states
     setErrorList([]);
     setIsLoading(true);
