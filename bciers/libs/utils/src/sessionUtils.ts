@@ -14,7 +14,7 @@ const getSessionRole = async () => {
 };
 
 // useSessionRole is for client components
-const useSessionRole = (): string => {
+const useSessionRole = (): FrontEndRoles => {
   const sessionRole = useContext(SessionRoleContext);
   if (!sessionRole) {
     throw new Error("Session role is not available in the context");
