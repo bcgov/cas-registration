@@ -2,7 +2,9 @@ import { render, screen, waitFor } from "@testing-library/react";
 import UserOperatorReview from "@/administration/app/components/userOperators/UserOperatorReview";
 import userEvent from "@testing-library/user-event";
 import { UserOperatorStatus } from "@bciers/utils/src/enums";
-import { actionHandler } from "@bciers/testConfig/mocks";
+import { actionHandler, useSessionRole } from "@bciers/testConfig/mocks";
+
+useSessionRole.mockReturnValue("industry_user");
 
 describe("UserOperatorReview component", () => {
   beforeEach(async () => {
