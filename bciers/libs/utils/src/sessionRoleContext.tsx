@@ -10,20 +10,7 @@ import {
 
 export const SessionRoleContext = createContext(undefined);
 
-const SessionRoleContextProvider = (props: {
-  value: undefined;
-  children:
-    | string
-    | number
-    | bigint
-    | boolean
-    | ReactElement<any, string | JSXElementConstructor<any>>
-    | Iterable<ReactNode>
-    | ReactPortal
-    | Promise<AwaitedReactNode>
-    | null
-    | undefined;
-}) => {
+const SessionRoleContextProvider = (props: any) => {
   return (
     <SessionRoleContext.Provider value={props.value}>
       {props.children}
