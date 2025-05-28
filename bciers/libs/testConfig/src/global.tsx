@@ -25,6 +25,8 @@ import {
   getFacility,
   getCurrentUsersOperations,
   handleInternalAccessRequest,
+  useSessionRole,
+  getSessionRole,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -57,6 +59,11 @@ vi.mock("next-auth", () => ({
 
 vi.mock("@/dashboard/auth", () => ({
   auth,
+}));
+
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  useSessionRole,
+  getSessionRole,
 }));
 
 vi.mock("@bciers/actions", () => ({

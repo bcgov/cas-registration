@@ -55,6 +55,7 @@ const SessionTimeoutHandler: React.FC = () => {
 
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
+    console.log("Refreshing session...");
     if (isRefreshingRef.current || status !== "authenticated") return;
     isRefreshingRef.current = true;
     try {
