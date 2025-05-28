@@ -1,32 +1,50 @@
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
-import { RequestIssuanceOfEarnedCreditsContent } from "./RequestIssuanceOfEarnedCreditsContent";
-import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
+"use client";
+
+import { useState } from "react";
+import FormBase from "@bciers/components/form/FormBase";
+import {
+  requestIssuanceOfEarnedCreditsSchema,
+  requestIssuanceOfEarnedCreditsUiSchema,
+} from "@/compliance/src/app/data/jsonSchema/requestIssuance/requestIssuanceOfEarnedCreditsSchema";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
+import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
 interface Props {
-  readonly data: RequestIssuanceData;
-  readonly complianceSummaryId: any;
-  readonly taskListElements: TaskListElement[];
+  complianceSummaryId: string;
 }
 
-export default function RequestIssuanceOfEarnedCreditsComponent({
-  data,
+const RequestIssuanceOfEarnedCreditsComponent = ({
   complianceSummaryId,
-  taskListElements,
-}: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance/track-status-of-issuance`;
+}: Props) => {
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
+
+  const [formData, setFormData] = useState<any>({});
 
   return (
-    <CompliancePageLayout
-      taskListElements={taskListElements}
-      title={data.operation_name}
+    <FormBase
+      schema={requestIssuanceOfEarnedCreditsSchema}
+      uiSchema={requestIssuanceOfEarnedCreditsUiSchema}
+      formData={formData}
+      onChange={(e) => setFormData(e.formData)}
+      formContext={{
+        onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            bccrTradingName: response?.tradingName ?? undefined,
+          })),
+      }}
+      className="w-full"
     >
-      <RequestIssuanceOfEarnedCreditsContent
-        data={data}
+      <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
+        submitButtonDisabled={!formData.bccrTradingName}
+        continueButtonText="Requests Issuance of Earned Credits"
+        className="mt-44"
       />
-    </CompliancePageLayout>
+    </FormBase>
   );
-}
+};
+
+export default RequestIssuanceOfEarnedCreditsComponent;

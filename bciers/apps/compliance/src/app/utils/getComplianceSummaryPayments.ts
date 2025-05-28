@@ -1,12 +1,12 @@
 import { actionHandler } from "@bciers/actions";
-import { PaymentsData } from "../types/payments";
+import { PaymentsData } from "@/compliance/src/app/types";
 
 export async function getComplianceSummaryPayments(
-  complianceReportVersionId: number,
+  complianceReportVersionId: string,
 ): Promise<PaymentsData> {
   try {
     const data = await actionHandler(
-      `compliance/compliance-report-version/${complianceReportVersionId}/payments`,
+      `compliance/compliance-report-versions/${complianceReportVersionId}/payments`,
       "GET",
       "",
     );

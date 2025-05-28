@@ -1,36 +1,31 @@
 import {
   ActivePage,
-  getRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
-import { getRequestIssuanceData } from "../../../../utils/getRequestIssuanceData";
-import RequestIssuanceOfEarnedCreditsComponent from "./RequestIssuanceOfEarnedCreditsComponent";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+  generateRequestIssuanceTaskList,
+} from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
+import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
+import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
 
 interface Props {
-  readonly compliance_summary_id: string;
+  compliance_summary_id: string;
 }
 
 export default async function RequestIssuanceOfEarnedCreditsPage({
-  compliance_summary_id,
-}: Props) {
-  const complianceSummaryId = parseInt(compliance_summary_id, 10);
-
-  const data = await getRequestIssuanceData();
-
-  const taskListElements = getRequestIssuanceTaskList(
+  compliance_summary_id: complianceSummaryId,
+}: Readonly<Props>) {
+  const taskListElements = generateRequestIssuanceTaskList(
     complianceSummaryId,
     2024,
     ActivePage.RequestIssuanceOfEarnedCredits,
   );
 
   return (
-    <Suspense fallback={<Loading />}>
+    <CompliancePageLayout
+      complianceSummaryId={complianceSummaryId}
+      taskListElements={taskListElements}
+    >
       <RequestIssuanceOfEarnedCreditsComponent
-        data={data}
         complianceSummaryId={complianceSummaryId}
-        taskListElements={taskListElements}
       />
-    </Suspense>
+    </CompliancePageLayout>
   );
 }

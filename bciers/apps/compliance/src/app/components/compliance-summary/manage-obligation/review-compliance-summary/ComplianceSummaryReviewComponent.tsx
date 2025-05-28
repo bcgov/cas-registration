@@ -1,36 +1,62 @@
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
-import { ComplianceSummaryReviewContent } from "./ComplianceSummaryReviewContent";
-import { PaymentsData } from "@/compliance/src/app/types/payments";
+"use client";
+
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
+import { useState } from "react";
+import {
+  complianceSummaryReviewUiSchema,
+  createComplianceSummaryReviewSchema,
+} from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceSummaryReviewSchema";
+import { FormBase } from "@bciers/components/form";
 
 interface Props {
-  readonly formData: any;
-  readonly complianceSummaryId: any;
-  readonly taskListElements: TaskListElement[];
-  readonly paymentsData: PaymentsData;
+  data: any; // TODO: Define a proper type for the data
+  complianceSummaryId: string;
 }
 
-export default function ComplianceSummaryReviewComponent({
-  formData,
+export function ComplianceSummaryReviewComponent({
+  data,
   complianceSummaryId,
-  taskListElements,
-  paymentsData,
-}: Props) {
-  const backUrl = `/compliance-summaries`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
+}: Readonly<Props>) {
+  const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
+
+  const backUrl = "/compliance-summaries";
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
+
+  const handleGenerateInvoice = async () => {
+    if (!complianceSummaryId) return;
+
+    try {
+      setIsGeneratingInvoice(true);
+
+      const invoiceUrl = `/compliance/api/invoice/${complianceSummaryId}`;
+
+      window.open(invoiceUrl, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      console.error("Error generating invoice:", error);
+      throw new Error(error instanceof Error ? error.message : String(error));
+    } finally {
+      setIsGeneratingInvoice(false);
+    }
+  };
 
   return (
-    <CompliancePageLayout
-      taskListElements={taskListElements}
-      title={formData.operation_name}
+    <FormBase
+      schema={createComplianceSummaryReviewSchema(data.reportingYear)}
+      uiSchema={complianceSummaryReviewUiSchema}
+      formData={data}
+      className="w-full"
     >
-      <ComplianceSummaryReviewContent
-        data={formData}
+      <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}
-        complianceSummaryId={complianceSummaryId}
-        paymentsData={paymentsData}
+        middleButtonDisabled={isGeneratingInvoice}
+        middleButtonText={
+          isGeneratingInvoice
+            ? "Generating Invoice..."
+            : "Generate Compliance Invoice"
+        }
+        onMiddleButtonClick={handleGenerateInvoice}
       />
-    </CompliancePageLayout>
+    </FormBase>
   );
 }

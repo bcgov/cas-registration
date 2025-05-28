@@ -10,12 +10,13 @@ from ninja.pagination import paginate, PageNumberPagination
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from .router import router
+from compliance.constants import COMPLIANCE
 
 
 @router.get(
     "/compliance-report-versions",
     response={200: List[ComplianceReportVersionListOut], custom_codes_4xx: Message},
-    tags=["Compliance"],
+    tags=COMPLIANCE,
     description="Get all compliance report versions for the current user's operations",
     auth=authorize("approved_authorized_roles"),
 )

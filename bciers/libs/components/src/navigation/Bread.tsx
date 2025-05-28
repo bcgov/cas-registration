@@ -77,17 +77,19 @@ export default function Bread({
    * @returns The transformed segment as a string or null if the segment should be omitted.
    */
   function transformPathSegment(segment: string, index: number): string | null {
+    const lowerSegment = segment.toLowerCase();
+    const hasReports = pathNames.some(
+      (path) => path.toLowerCase() === "reports",
+    );
+    const hasSelectOperator = pathNames.includes("select-operator");
+
     // Omit "facilities" if "reports" exists in the path.
-    if (
-      pathNames.some((path) => path.toLowerCase() === "reports") &&
-      segment.toLowerCase() === "facilities"
-    ) {
-      return null;
-    }
+    if (hasReports && lowerSegment === "facilities") return null;
+
     // Omit select operator related segments
     if (
-      pathNames.includes("select-operator") &&
-      ["received", "request access", "confirm"].includes(segment.toLowerCase())
+      hasSelectOperator &&
+      ["received", "request access", "confirm"].includes(lowerSegment)
     )
       return null;
 

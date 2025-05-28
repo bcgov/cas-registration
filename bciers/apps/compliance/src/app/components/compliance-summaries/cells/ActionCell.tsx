@@ -1,6 +1,6 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
-import { ComplianceSummary } from "../../compliance-summaries/types";
+import { ComplianceSummary } from "@/compliance/src/app/types";
 
 const ActionCell = (params: GridRenderCellParams) => {
   let cellText = "View Details";
@@ -13,13 +13,14 @@ const ActionCell = (params: GridRenderCellParams) => {
 
   const cell = ActionCellFactory({
     generateHref: (p: { row: ComplianceSummary }) => {
+      let basePath = `/compliance-summaries/${p.row.id}`;
+
       if (p.row.obligation_id) {
-        return `/compliance-summaries/${p.row.id}/manage-obligation/review-compliance-summary`;
+        basePath += "/manage-obligation-review-summary";
       } else if (p.row.status === "Earned credits") {
-        return `/compliance-summaries/${p.row.id}/request-issuance/review-compliance-summary`;
-      } else {
-        return `/compliance-summaries/${p.row.id}`;
+        basePath += "/request-issuance-review-summary";
       }
+      return basePath;
     },
     cellText: cellText,
   });

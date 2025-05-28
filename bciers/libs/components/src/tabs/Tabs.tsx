@@ -1,11 +1,13 @@
 import {
   Tabs as MuiTabs,
   Tab as MuiTab,
-  Box,
   TabsProps as MuiTabsProps,
 } from "@mui/material";
 import Link from "next/link";
-import { BC_GOV_LINKS_COLOR } from "@bciers/styles/colors";
+import {
+  BC_GOV_COMPONENTS_GREY,
+  BC_GOV_LINKS_COLOR,
+} from "@bciers/styles/colors";
 
 export interface TabItem {
   label: string;
@@ -17,9 +19,9 @@ export interface TabsProps extends Omit<MuiTabsProps, "children"> {
   activeTab: number;
 }
 
-export function Tabs({ tabs, activeTab, ...props }: TabsProps) {
+export function Tabs({ tabs, activeTab, ...props }: Readonly<TabsProps>) {
   return (
-    <Box sx={{ mt: "1rem" }}>
+    <div className="mt-4">
       <MuiTabs
         value={activeTab}
         {...props}
@@ -28,27 +30,21 @@ export function Tabs({ tabs, activeTab, ...props }: TabsProps) {
             display: "none",
           },
           "& .MuiTab-root": {
-            color: "#6B7280",
+            color: BC_GOV_COMPONENTS_GREY,
             textTransform: "none",
             fontSize: "20px",
-            lineHeight: "24.2px",
-            letterSpacing: "0%",
             padding: "0 1.5rem 0 0",
-            minWidth: "auto",
             fontFamily: "Inter, sans-serif",
-            fontWeight: 400,
             "&.Mui-selected": {
               color: BC_GOV_LINKS_COLOR,
               fontWeight: 400,
               textDecoration: "underline",
-              textDecorationStyle: "solid",
               textUnderlineOffset: "4px",
-              textDecorationThickness: "1px",
-              textDecorationColor: "rgba(26, 90, 150, 0.8)",
             },
           },
           ...props.sx,
         }}
+        aria-label="compliance navigation tabs"
       >
         {tabs.map((tab) => (
           <MuiTab
@@ -59,6 +55,6 @@ export function Tabs({ tabs, activeTab, ...props }: TabsProps) {
           />
         ))}
       </MuiTabs>
-    </Box>
+    </div>
   );
 }

@@ -1,32 +1,61 @@
+"use client";
+
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
-import { ComplianceUnitsApplyContent } from "./ComplianceUnitsApplyContent";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
+import { FormBase } from "@bciers/components/form";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import {
+  complianceUnitsApplySchema,
+  complianceUnitsApplyUiSchema,
+} from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceUnitsApplySchema";
+import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
 interface Props {
-  readonly formData: any;
-  readonly complianceSummaryId: any;
-  readonly taskListElements: TaskListElement[];
+  complianceSummaryId: any;
+  taskListElements: TaskListElement[];
 }
 
 export default function ComplianceUnitsApplyComponent({
-  formData,
   complianceSummaryId,
-  taskListElements,
-}: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/download-payment-instructions`;
+}: Readonly<Props>) {
+  const router = useRouter();
+  const [formData, setFormData] = useState<any>({});
+
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   return (
-    <CompliancePageLayout
-      taskListElements={taskListElements}
-      title={formData.operation_name}
+    <FormBase
+      schema={complianceUnitsApplySchema}
+      uiSchema={complianceUnitsApplyUiSchema}
+      formData={formData}
+      onChange={(e) => setFormData(e.formData)}
+      formContext={{
+        onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>
+          setFormData((prev: any) => ({
+            ...prev,
+            bccrTradingName: response?.tradingName ?? undefined,
+            // TODO: Implement logic to handle complianceAccountId
+            // bccrComplianceAccountId: response?.complianceAccountId ?? undefined,
+          })),
+      }}
+      className="w-full"
     >
-      <ComplianceUnitsApplyContent
-        data={formData}
-        backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
-        complianceSummaryId={complianceSummaryId}
+      <ComplianceStepButtons
+        backButtonText="Cancel"
+        continueButtonText="Apply"
+        onBackClick={() => router.push(backUrl)}
+        onContinueClick={() => router.push(saveAndContinueUrl)}
+        middleButtonDisabled={false}
+        className="mt-44"
+        // TODO: implement validation logic
+        submitButtonDisabled={true}
       />
-    </CompliancePageLayout>
+    </FormBase>
   );
 }
+
+/*
+
+ */

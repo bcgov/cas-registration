@@ -1,27 +1,39 @@
 "use client";
+
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { TitleRow } from "../../TitleRow";
-import { ComplianceUnitsAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsAlertNote";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import { Box, Button } from "@mui/material";
+import { Button, Link } from "@mui/material";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import complianceUnitsColumns from "@/compliance/src/app/components/datagrid/models/compliance-units/complianceUnitsColumns";
 import complianceUnitsGroupColumns from "@/compliance/src/app/components/datagrid/models/compliance-units/complianceUnitsGroupColumns";
-import {
-  BC_GOV_BACKGROUND_COLOR_BLUE,
-  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-} from "@bciers/styles";
+import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
+import AlertNote from "@bciers/components/form/components/AlertNote";
 
-interface ComplianceUnitsGridProps {
-  data: any;
-  complianceSummaryId?: number;
+interface ComplianceUnitsProps {
+  complianceSummaryId: string;
+  gridData: {
+    rows: Array<{
+      id: number;
+      type: string;
+      serialNumber: string;
+      vintageYear: string;
+      quantityApplied: string;
+      equivalentEmissionReduced: string;
+      equivalentValue: string;
+      status: string;
+    }>;
+    row_count: number;
+  };
 }
 
 export const ComplianceUnitsGrid = ({
-  data,
-  complianceSummaryId,
-}: ComplianceUnitsGridProps) => {
+  value,
+}: {
+  value: ComplianceUnitsProps;
+}) => {
+  const { complianceSummaryId, gridData } = value;
+
   const router = useRouter();
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
@@ -30,13 +42,10 @@ export const ComplianceUnitsGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const handleApplyComplianceUnits = () => {
-    if (complianceSummaryId) {
-      router.push(
-        `/compliance-summaries/${complianceSummaryId}/manage-obligation/apply-compliance-units`,
-      );
-    }
-  };
+  const handleApplyComplianceUnits = () =>
+    router.push(
+      `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
+    );
 
   const columns = complianceUnitsColumns();
 
@@ -45,57 +54,36 @@ export const ComplianceUnitsGrid = ({
     [SearchCell],
   );
 
-  const initialData = {
-    rows: [
-      {
-        id: 1,
-        type: "-",
-        serialNumber: "-",
-        vintageYear: "-",
-        quantityApplied: "-",
-        equivalentEmissionReduced: "-",
-        equivalentValue: "-",
-        status: "-",
-      },
-    ],
-    row_count: 1, // The total number of rows (should match rows.length)
-  };
-  const gridData = data == "" ? initialData : data;
-
   return (
-    <div style={{ width: "100%", marginBottom: "50px" }}>
-      <TitleRow label="Compliance Units Applied" />
-      <ComplianceUnitsAlertNote />
-
+    <>
+      <AlertNote>
+        You may use compliance units (earned credits, offset units) you hold in
+        the{" "}
+        <Link
+          href={bcCarbonRegistryLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          B.C. Carbon Registry (BCCR)
+        </Link>{" "}
+        to meet up to 50% of the compliance obligation below. The remaining
+        balance must be met with monetary payment(s).
+      </AlertNote>
       <DataGrid
         columns={columns}
         initialData={gridData}
         columnGroupModel={columnGroup}
-        hideFooter={true}
-        sx={{
-          "& .MuiDataGrid-virtualScroller, & .mui-qvtrhg-MuiDataGrid-virtualScroller":
-            {
-              minHeight: "auto",
-            },
-        }}
       />
-
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+      <div className="flex justify-end mt-4">
         <Button
           variant="contained"
           color="primary"
           onClick={handleApplyComplianceUnits}
-          sx={{
-            backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-            "&:hover": {
-              backgroundColor: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-            },
-            padding: "16px 41px",
-          }}
+          className="p-3"
         >
           Apply Compliance Units
         </Button>
-      </Box>
-    </div>
+      </div>
+    </>
   );
 };

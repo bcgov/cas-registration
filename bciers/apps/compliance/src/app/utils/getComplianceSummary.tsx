@@ -11,6 +11,7 @@ const COMPLIANCE_CHARGE_RATES: Record<number, number> = {
 };
 
 export interface ComplianceSummary {
+  id: number;
   operation_name: string;
   reporting_year: number;
   emissions_attributable_for_compliance: number;
@@ -28,6 +29,7 @@ export interface ComplianceSummary {
   penalty_today?: number;
   faa_interest?: number;
   total_amount?: number;
+  compliance_status: string;
 }
 
 const parseDecimal = (value: string | number | null | undefined): number => {
@@ -36,10 +38,10 @@ const parseDecimal = (value: string | number | null | undefined): number => {
 };
 
 export const getComplianceSummary = async (
-  complianceReportVersionId: number,
+  complianceReportVersionId: string,
 ): Promise<ComplianceSummary> => {
   const data = await actionHandler(
-    `compliance/compliance-report-version/${complianceReportVersionId}`,
+    `compliance/compliance-report-versions/${complianceReportVersionId}`,
     "GET",
     "",
   );

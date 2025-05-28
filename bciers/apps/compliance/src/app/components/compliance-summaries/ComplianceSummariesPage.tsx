@@ -1,19 +1,17 @@
-import { ComplianceSummariesSearchParams } from "./types";
-import ComplianceSummaries from "./ComplianceSummaries";
-import { fetchComplianceSummariesPageData } from "./fetchComplianceSummariesPageData";
+import { ComplianceSummariesSearchParams } from "@/compliance/src/app/types";
+import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
 import { Alert } from "@mui/material";
 import AlertIcon from "@bciers/components/icons/AlertIcon";
+import ComplianceSummariesDataGrid from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid";
+import Loading from "@bciers/components/loading/SkeletonForm";
+import { Suspense } from "react";
 
 export default async function ComplianceSummariesPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: ComplianceSummariesSearchParams;
-}) {
+}>) {
   const initialData = await fetchComplianceSummariesPageData(searchParams);
-  const transformedData = {
-    rows: initialData.items,
-    row_count: initialData.count,
-  };
 
   return (
     <div className="flex flex-col">
@@ -32,7 +30,9 @@ export default async function ComplianceSummariesPage({
           the compliance obligation is paid.
         </Alert>
       </div>
-      <ComplianceSummaries initialData={transformedData} />
+      <Suspense fallback={<Loading />}>
+        <ComplianceSummariesDataGrid initialData={initialData} />
+      </Suspense>
     </div>
   );
 }
