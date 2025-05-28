@@ -59,9 +59,8 @@ export default function ActivityForm({
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
   );
-
   const { activityId, sourceTypeMap } = activityData;
-
+  const isFallbackSchema = initialJsonSchema?.isFallbackSchema;
   const arrayEquals = (x: string[], y: string[]) => {
     x = x.sort((a, b) => a.localeCompare(b));
     y = y.sort((a, b) => a.localeCompare(b));
@@ -126,8 +125,14 @@ export default function ActivityForm({
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (e: IChangeEvent) => {
+    if (isFallbackSchema) {
+      //if the schema is a fallback schema, we just return true
+      return true;
+    }
+
     setErrorList([]);
     const sourceTypeCount = Object.keys(sourceTypeMap).length;
+
     // Ensure we use the filtered formData with omitted extra data
     const filteredData = e.formData;
 
@@ -182,7 +187,6 @@ export default function ActivityForm({
 
     return false;
   };
-
   return (
     <MultiStepFormWithTaskList
       steps={navigationInformation.headerSteps}
@@ -191,6 +195,7 @@ export default function ActivityForm({
       onSubmit={submitHandler}
       schema={jsonSchema}
       fields={CUSTOM_FIELDS}
+      noSaveButton={isFallbackSchema}
       formData={formState}
       uiSchema={getUiSchema(currentActivity.slug)}
       onChange={debounce(handleFormChange, 200)}
@@ -202,6 +207,7 @@ export default function ActivityForm({
       formContext={{
         gasTypes,
       }}
+      buttonText={isFallbackSchema ? "Continue" : "Save and Continue"}
     />
   );
 }
