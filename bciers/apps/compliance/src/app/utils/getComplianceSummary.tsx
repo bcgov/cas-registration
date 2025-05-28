@@ -41,7 +41,7 @@ export const getComplianceSummary = async (
   complianceReportVersionId: string,
 ): Promise<ComplianceSummary> => {
   const data = await actionHandler(
-    `compliance/compliance-report-version/${complianceReportVersionId}`,
+    `compliance/compliance-report-versions/${complianceReportVersionId}`,
     "GET",
     "",
   );
