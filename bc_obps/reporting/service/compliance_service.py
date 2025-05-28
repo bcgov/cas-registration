@@ -368,8 +368,8 @@ class ComplianceService:
             )
 
     @staticmethod
-    def round(value: Decimal) -> Decimal:
+    def round(value: Decimal | float) -> Decimal:
         """
         Round the value to 4 decimal places for compliance calculations.
         """
-        return value.quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
+        return Decimal(value).quantize(Decimal("0.0001"), rounding="ROUND_HALF_UP")
