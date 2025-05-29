@@ -1,3 +1,15 @@
+# [3.4.0](https://github.com/bcgov/cas-registration/compare/v3.3.0...v3.4.0) (2025-05-29)
+
+### Bug Fixes
+
+- adjust allocation validation for precision and consistency ([db4f05b](https://github.com/bcgov/cas-registration/commit/db4f05bec4c160ee6a37923822885618555fdbdc))
+- do not reapply rls operations unnecessarily on container startup ([6d2888e](https://github.com/bcgov/cas-registration/commit/6d2888ee27f63897a7a503032fd969d49b3e1453))
+- rounding compliance numbers before saving ([3e5a4a5](https://github.com/bcgov/cas-registration/commit/3e5a4a52eba5647c005147dc49ccf74c9743fcf9))
+
+### Features
+
+- add endpoint to get bccr account details ([b98c794](https://github.com/bcgov/cas-registration/commit/b98c794b5383bb8a7aa185f865f7f1171319e55f))
+
 # [3.3.0](https://github.com/bcgov/cas-registration/compare/v3.2.1...v3.3.0) (2025-05-26)
 
 ### Bug Fixes
