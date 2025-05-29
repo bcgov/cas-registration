@@ -21,6 +21,11 @@ spec:
           serviceAccountName: deployer
           containers:
           - name: postgres-migration-test
+            image: postgres:16
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
             command:
               - /usr/bin/env
               - bash
