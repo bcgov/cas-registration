@@ -59,7 +59,11 @@ describe("Access Requests DataGrid", () => {
   });
 
   it("renders Internal Access Requests component with NO DATA", async () => {
-    render(<InternalAccessRequestDataGrid initialData={{ rows: [] }} />);
+    render(
+      <InternalAccessRequestDataGrid
+        initialData={{ rows: [], row_count: 0 }}
+      />,
+    );
     expect(screen.getByRole("grid")).toBeVisible();
     expect(screen.getByText(/No records found/i)).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Name" })).toBeVisible();

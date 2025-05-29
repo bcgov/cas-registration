@@ -1,9 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import {
-  auth,
   fetchTransferEventsPageData,
   useRouter,
   useSearchParams,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import TransfersDataGridPage from "@/registration/app/components/transfers/TransfersDataGridPage";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
@@ -24,9 +24,7 @@ vi.mock(
   }),
 );
 
-auth.mockReturnValueOnce({
-  user: { app_role: FrontEndRoles.CAS_DIRECTOR },
-});
+useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
 
 const mockResponse = {
   rows: [
@@ -98,9 +96,7 @@ describe("TransfersDataGrid page", () => {
     expect(screen.queryByText(/Make a Transfer/i)).not.toBeInTheDocument();
   });
   it("only shows the 'Make a Transfer' button to CAS_ANALYST users", async () => {
-    auth.mockReturnValueOnce({
-      user: { app_role: FrontEndRoles.CAS_ANALYST },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
     fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
     render(await TransfersDataGridPage({ searchParams: {} }));
     expect(screen.getByText(/make a transfer/i)).toBeVisible();
