@@ -309,6 +309,10 @@ class ComplianceService:
             products=compliance_product_list,
         )
 
+        print("\n\n\n\n")
+        print("Compliance Data:" + str(return_object))
+        print("\n\n\n\n")
+
         return return_object
 
     @classmethod

@@ -107,4 +107,5 @@ class ReportVerificationService:
             if totals.get("attributable_for_threshold", Decimal("0")) >= EMISSION_THRESHOLD:
                 show_page = required = True
 
+        print(f"Report Version ID: {report_version_id}, Show Page: {show_page}, Verification Required: {required}")
         return {"show_verification_page": show_page, "verification_required": required}

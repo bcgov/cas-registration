@@ -18,10 +18,17 @@ export default async function FinalReviewPage({
   // Get the report version flow data definitions
   const flowData = await getFlowData(version_id);
 
+  const startTime = performance.now();
+
   // Build final review data based on the report version flow type
   const finalReviewData: ReviewData[] = await reviewDataFactory(
     version_id,
     flowData,
+  );
+
+  const endTime = performance.now();
+  console.log(
+    `Final review data factory took ${endTime - startTime} milliseconds`,
   );
 
   //🔍 Check if is a supplementary report
@@ -41,6 +48,8 @@ export default async function FinalReviewPage({
       skipChangeReview: !isSupplementaryReport,
     },
   );
+
+  console.log("finalReviewData", finalReviewData);
 
   return (
     <FinalReviewForm navigationInformation={navInfo} data={finalReviewData} />
