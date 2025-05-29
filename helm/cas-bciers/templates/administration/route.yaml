@@ -20,7 +20,7 @@ metadata:
     haproxy.router.openshift.io/rewrite-target: {{ .Values.administrationFrontend.route.path }}
     haproxy.router.openshift.io/disable_cookies: 'true'
     "helm.sh/hook": "pre-install,pre-upgrade"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 
 spec:
   host: {{ .Values.administrationFrontend.route.host }}
