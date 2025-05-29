@@ -1,15 +1,9 @@
 import { render, screen } from "@testing-library/react";
-import { useSession } from "@bciers/testConfig/mocks";
+import { useSessionRole } from "@bciers/testConfig/mocks";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import OptedInOperationPage from "@/registration/app/components/operations/registration/OptedInOperationPage";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 describe("the OptedInOperationPage component", () => {
   beforeEach(() => {

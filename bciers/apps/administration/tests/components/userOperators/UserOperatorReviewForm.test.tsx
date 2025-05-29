@@ -1,5 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { getBusinessStructures, useSession } from "@bciers/testConfig/mocks";
+import {
+  getBusinessStructures,
+  useSessionRole,
+} from "@bciers/testConfig/mocks";
 import UserOperatorReviewForm from "@/administration/app/components/userOperators/UserOperatorReviewForm";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
@@ -11,10 +14,7 @@ describe("UserOperatorReview component", () => {
     getBusinessStructures.mockReturnValue([{ name: "BC Corporation" }]);
   });
   it("renders the component", async () => {
-    useSession.mockReturnValue({
-      get: vi.fn(),
-      data: { user: { app_role: "cas_analyst" } },
-    });
+    useSessionRole.mockReturnValue("cas_analyst");
     render(
       <UserOperatorReviewForm
         operatorSchema={await createOperatorSchema()}
@@ -56,10 +56,7 @@ describe("UserOperatorReview component", () => {
 
   it("does not render the approve/decline buttons when user is cas_view_only or cas_admin", async () => {
     for (const role of [FrontEndRoles.CAS_ADMIN, FrontEndRoles.CAS_VIEW_ONLY]) {
-      useSession.mockReturnValue({
-        get: vi.fn(),
-        data: { user: { app_role: role } },
-      });
+      useSessionRole.mockReturnValue(role);
       render(
         <UserOperatorReviewForm
           operatorSchema={await createOperatorSchema()}
@@ -81,10 +78,7 @@ describe("UserOperatorReview component", () => {
       FrontEndRoles.CAS_ANALYST,
       FrontEndRoles.CAS_DIRECTOR,
     ]) {
-      useSession.mockReturnValue({
-        get: vi.fn(),
-        data: { user: { app_role: role } },
-      });
+      useSessionRole.mockReturnValue(role);
       render(
         <UserOperatorReviewForm
           operatorSchema={await createOperatorSchema()}

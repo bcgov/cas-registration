@@ -1,19 +1,13 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { actionHandler, useSession } from "@bciers/testConfig/mocks";
+import { actionHandler, useSessionRole } from "@bciers/testConfig/mocks";
 import { submissionSchema } from "@/registration/app/data/jsonSchema/operationRegistration/submission";
 import RegistrationSubmissionForm from "apps/registration/app/components/operations/registration/RegistrationSubmissionForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { UUID } from "crypto";
 import { OperationStatus } from "@bciers/utils/src/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user");
 
 const acknowledgementOfReviewRegex =
   /i certify that i have reviewed the registration, and that i have exercised due diligence to ensure that the information included in the registration is true and complete\./i;

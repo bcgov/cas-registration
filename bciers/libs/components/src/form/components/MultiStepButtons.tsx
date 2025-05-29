@@ -2,8 +2,8 @@
 
 import { Button } from "@mui/material";
 import SubmitButton from "@bciers/components/button/SubmitButton";
-import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface SubmitButtonProps {
   cancelUrl: string;
@@ -32,9 +32,9 @@ const MultiStepButtons: React.FunctionComponent<SubmitButtonProps> = ({
 }) => {
   const isFinalStep = stepIndex === steps.length - 1;
   const isDisabled = disabled || isSubmitting;
-  const { data: session } = useSession();
+  const role = useSessionRole();
 
-  const isIndustryUser = session?.user?.app_role?.includes("industry");
+  const isIndustryUser = role?.includes("industry");
 
   // If the submit button text is not provided, default to "Save and Continue" for all steps except the final step
   let submitBtnText = submitButtonText

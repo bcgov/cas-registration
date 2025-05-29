@@ -5,7 +5,7 @@ import {
   actionHandler,
   useRouter,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import { UUID } from "crypto";
 import FacilitySfoForm from "apps/registration/app/components/operations/registration/FacilitySfoForm";
@@ -16,13 +16,7 @@ import {
   toggleAndFillStartDate,
 } from "./utils";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 useSearchParams.mockReturnValue({
   searchParams: {

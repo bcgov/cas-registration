@@ -1,17 +1,11 @@
 import { render, screen } from "@testing-library/react";
-import { useSession, actionHandler } from "@bciers/testConfig/mocks";
+import { useSessionRole, actionHandler } from "@bciers/testConfig/mocks";
 import { OperationRepresentativePage } from "@/registration/app/components/operations/registration";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import userEvent from "@testing-library/user-event";
 import { expect } from "vitest";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 const contactsMockResponse = {
   items: [

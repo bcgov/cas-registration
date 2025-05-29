@@ -17,8 +17,8 @@ import {
   TranslatableString,
   WidgetProps,
 } from "@rjsf/utils";
-import { useSession } from "next-auth/react";
 import { AlertIcon } from "@bciers/components/icons";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 const addNameToDataURL = (dataURL: string, name: string) => {
   if (dataURL === null) {
@@ -212,10 +212,8 @@ const FileWidget = ({
     }
   }, [localValue, onChange, value]);
 
-  const { data: session } = useSession();
-  const isCasInternal =
-    session?.user?.app_role?.includes("cas") &&
-    !session?.user?.app_role?.includes("pending");
+  const role = useSessionRole();
+  const isCasInternal = role?.includes("cas") && !role?.includes("pending");
 
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 

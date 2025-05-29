@@ -1,6 +1,10 @@
 import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useRouter,
+  useSessionRole,
+} from "@bciers/testConfig/mocks";
 import {
   contactsSchema,
   contactsUiSchema,
@@ -116,13 +120,7 @@ const checkInlineMessage = (shouldExist = true) => {
 describe("ContactForm component", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("industry_user_admin");
   });
 
   it("renders the empty contact form when creating a new contact", async () => {
@@ -144,13 +142,7 @@ describe("ContactForm component", () => {
     expect(screen.getByRole("button", { name: /back/i })).toBeEnabled();
   });
   it("loads existing readonly contact form data for an internal user", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("industry_user_admin");
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     const { container } = render(
       <ContactForm

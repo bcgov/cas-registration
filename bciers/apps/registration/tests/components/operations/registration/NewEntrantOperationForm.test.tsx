@@ -11,15 +11,13 @@ import React from "react";
 import { newEntrantOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/newEntrantOperation";
 import NewEntrantOperationForm from "@/registration/app/components/operations/registration/NewEntrantOperationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
-import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useRouter,
+  useSessionRole,
+} from "@bciers/testConfig/mocks";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 const mockPush = vi.fn();
 useRouter.mockReturnValue({

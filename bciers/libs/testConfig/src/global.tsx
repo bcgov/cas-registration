@@ -25,6 +25,9 @@ import {
   getFacility,
   getCurrentUsersOperations,
   handleInternalAccessRequest,
+  useSessionRole,
+  getSessionRole,
+  getSession,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -48,6 +51,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("next-auth/react", async () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
   useSession,
+  getSession,
 }));
 
 vi.mock("next-auth", () => ({
@@ -57,6 +61,11 @@ vi.mock("next-auth", () => ({
 
 vi.mock("@/dashboard/auth", () => ({
   auth,
+}));
+
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  useSessionRole,
+  getSessionRole,
 }));
 
 vi.mock("@bciers/actions", () => ({
