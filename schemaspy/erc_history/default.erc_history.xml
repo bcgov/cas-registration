@@ -204,6 +204,53 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="compliance_earned_credit_history" remarks="" schema="erc_history" type="TABLE">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="earned_credits_amount" nullable="false" remarks="The amount of earned credits. Whole numbers only." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="issuance_status" nullable="false" remarks="The status of this of the earned credits in this record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="issued_date" nullable="true" remarks="The date on which the earned credits were issued" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="bccr_trading_name" nullable="true" remarks="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="analyst_comment" nullable="true" remarks="Comments from an analyst. Made when deciding whether or not to reccomend issuance from the director" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="director_comment" nullable="true" remarks="Comments from the director. Made when deciding whether or not to issue the credits" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="11" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="12" name="history_date" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="history_change_reason" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="history_type" nullable="false" remarks="" size="1" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="compliance_report_version_id" nullable="true" remarks="The compliance report version this earned_credit record belongs to" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="issued_by_id" nullable="true" remarks="The user who issed the earned credits" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <primaryKey column="history_id" sequenceNumberInPK="1"/>
+         <index name="compliance_earned_credit_history_pkey" unique="true">
+            <column ascending="true" name="history_id"/>
+         </index>
+         <index name="compliance_earned_credit_h_compliance_report_version__071ef9bb" unique="false">
+            <column ascending="true" name="compliance_report_version_id"/>
+         </index>
+         <index name="compliance_earned_credit_history_archived_by_id_600b2c11" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_earned_credit_history_created_by_id_0a00b6ee" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_earned_credit_history_history_date_90ea77aa" unique="false">
+            <column ascending="true" name="history_date"/>
+         </index>
+         <index name="compliance_earned_credit_history_id_c4210fdc" unique="false">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_earned_credit_history_issued_by_id_a37bb795" unique="false">
+            <column ascending="true" name="issued_by_id"/>
+         </index>
+         <index name="compliance_earned_credit_history_updated_by_id_89cf21cb" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="compliance_obligation_history" remarks="" schema="erc_history" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>

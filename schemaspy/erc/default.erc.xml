@@ -320,6 +320,52 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="compliance_earned_credits" remarks="A table to store BC earned credit compliance data. Earned credits are described in GGIRCA (https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#division_d0e1496) Division 4" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="earned_credits_amount" nullable="false" remarks="The amount of earned credits. Whole numbers only." size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="issuance_status" nullable="false" remarks="The status of this of the earned credits in this record." size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="issued_date" nullable="true" remarks="The date on which the earned credits were issued" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="bccr_trading_name" nullable="true" remarks="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry" size="255" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="analyst_comment" nullable="true" remarks="Comments from an analyst. Made when deciding whether or not to reccomend issuance from the director" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="director_comment" nullable="true" remarks="Comments from the director. Made when deciding whether or not to issue the credits" size="2147483647" type="text" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_earned_cr_archived_by_id_8e2715e4_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="compliance_report_version_id" nullable="false" remarks="The compliance report version this earned_credit record belongs to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="compliance_earned_cr_compliance_report_ve_d235d77d_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_report_version"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_earned_cr_created_by_id_56740054_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="issued_by_id" nullable="true" remarks="The user who issed the earned credits" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_earned_cr_issued_by_id_bb9a8981_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_earned_cr_updated_by_id_fd6dc9ce_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="compliance_earned_credits_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_earned_credits_archived_by_id_8e2715e4" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_earned_credits_compliance_report_version_id_d235d77d" unique="false">
+            <column ascending="true" name="compliance_report_version_id"/>
+         </index>
+         <index name="compliance_earned_credits_created_by_id_56740054" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_earned_credits_issued_by_id_bb9a8981" unique="false">
+            <column ascending="true" name="issued_by_id"/>
+         </index>
+         <index name="compliance_earned_credits_updated_by_id_fd6dc9ce" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="compliance_obligation" remarks="A table to store compliance obligations" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -446,6 +492,7 @@
       </table>
       <table name="compliance_report_version" remarks="The compliance_report_version table records are generated from the compliance summary data when an emission report is submitted" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="compliance_report_version_id" foreignKey="compliance_earned_cr_compliance_report_ve_d235d77d_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credits"/>
             <child column="compliance_report_version_id" foreignKey="compliance_obligatio_compliance_report_ve_4a01c295_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -3502,6 +3549,10 @@
             <child column="archived_by_id" foreignKey="compliance_charge_ra_archived_by_id_682fc47c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
             <child column="created_by_id" foreignKey="compliance_charge_rate_created_by_id_0d4d0951_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
             <child column="updated_by_id" foreignKey="compliance_charge_rate_updated_by_id_365b2139_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
+            <child column="archived_by_id" foreignKey="compliance_earned_cr_archived_by_id_8e2715e4_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credits"/>
+            <child column="created_by_id" foreignKey="compliance_earned_cr_created_by_id_56740054_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credits"/>
+            <child column="issued_by_id" foreignKey="compliance_earned_cr_issued_by_id_bb9a8981_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credits"/>
+            <child column="updated_by_id" foreignKey="compliance_earned_cr_updated_by_id_fd6dc9ce_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credits"/>
             <child column="archived_by_id" foreignKey="compliance_obligation_archived_by_id_80f75b00_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
             <child column="created_by_id" foreignKey="compliance_obligation_created_by_id_e2485278_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
             <child column="updated_by_id" foreignKey="compliance_obligation_updated_by_id_05a4c582_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>

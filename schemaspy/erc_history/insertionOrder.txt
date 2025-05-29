@@ -6,6 +6,7 @@ bc_obps_regulated_operation_history
 business_role_history
 business_structure_history
 closure_event_history
+compliance_earned_credit_history
 compliance_obligation_history
 contact_history
 document_history

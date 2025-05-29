@@ -15,6 +15,7 @@ report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
 document
+compliance_earned_credits
 report_sign_off
 report_electricity_import_data
 report_attachment_confirmation
@@ -45,7 +46,6 @@ configuration_element
 report_product
 report_non_attributable_emissions
 report_emission_allocation
-compliance_report_version
 temporary_shutdown_event
 restart_event
 closure_event
@@ -54,6 +54,7 @@ reporting_field
 document_type
 report_emission
 report_operation
+compliance_report_version
 report_new_entrant
 report_fuel
 custom_methodology_schema

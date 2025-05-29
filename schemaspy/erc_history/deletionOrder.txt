@@ -19,6 +19,7 @@ document_type_history
 document_history
 contact_history
 compliance_obligation_history
+compliance_earned_credit_history
 closure_event_history
 business_structure_history
 business_role_history
