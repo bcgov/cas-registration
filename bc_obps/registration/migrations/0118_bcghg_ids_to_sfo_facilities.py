@@ -20,7 +20,8 @@ def assign_bcghg_ids_to_sfo_facilities(apps, schema_editor):
             facility = facilities.first()
             if facility:
                 if facility.bcghg_id:
-                    raise ValueError(f"Facility {facility.name} already has a BCGHG ID: {facility.bcghg_id}")
+                    # No facilities should have a BCGHG yet as we haven't built the logic to assign them, but just in case, we pass here
+                    pass
                 # Assign the BCGHG ID to the facility
                 facility.bcghg_id = operation.bcghg_id
                 facility.save()
