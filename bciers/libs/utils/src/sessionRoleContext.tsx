@@ -15,7 +15,9 @@ interface SessionRoleContextProviderProps {
   children: React.ReactNode;
 }
 
-const SessionRoleContextProvider: React.FC<SessionRoleContextProviderProps> = (props) => {
+const SessionRoleContextProvider: React.FC<SessionRoleContextProviderProps> = (
+  props,
+) => {
   return (
     <SessionRoleContext.Provider value={props.value}>
       {props.children}
