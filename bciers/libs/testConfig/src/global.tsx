@@ -27,6 +27,7 @@ import {
   handleInternalAccessRequest,
   useSessionRole,
   getSessionRole,
+  getSession,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -50,6 +51,7 @@ vi.mock("next/navigation", () => ({
 vi.mock("next-auth/react", async () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
   useSession,
+  getSession,
 }));
 
 vi.mock("next-auth", () => ({
