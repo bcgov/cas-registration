@@ -5,6 +5,7 @@ import {
   useRouter,
   getBusinessStructures,
   useSessionRole,
+  getSession,
 } from "@bciers/testConfig/mocks";
 
 import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
@@ -12,11 +13,11 @@ import OperatorForm from "apps/administration/app/components/operators/OperatorF
 import expectButton from "@bciers/testConfig/helpers/expectButton";
 import expectField from "@bciers/testConfig/helpers/expectField";
 import expectHeader from "@bciers/testConfig/helpers/expectHeader";
-import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
 
+getSession.mockReturnValue("industry_user");
 const mockReplace = vi.fn();
 const mockRouterBack = vi.fn();
 const mockRouterPush = vi.fn();
@@ -325,6 +326,7 @@ describe("OperatorForm component", () => {
     expectButton("Save");
     expectButton("Back");
   });
+
   it("does not allow new operator form submission if there are validation errors", async () => {
     render(
       <OperatorForm
@@ -346,7 +348,6 @@ describe("OperatorForm component", () => {
   });
   it("fills the mandatory form fields, creates a new operator, updates the session, and shows a success message", async () => {
     // Mock the session and get access to the update function
-    const { update } = mockUseSession();
 
     render(
       <OperatorForm
@@ -382,7 +383,7 @@ describe("OperatorForm component", () => {
 
     // Ensure the session is updated by calling the update function
     await waitFor(() => {
-      expect(update).toHaveBeenCalledWith({ trigger: "update" });
+      expect(getSession).toHaveBeenCalled();
     });
 
     // Check for the success message after submission
