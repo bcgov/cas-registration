@@ -4,7 +4,7 @@ import { Alert } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
 import { Button } from "@mui/material";
-import { useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
@@ -57,12 +57,13 @@ export default function ProfileForm({ formData, isCreate }: Props) {
 
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
-  const { data: session, update } = useSession();
-  const idp = session?.identity_provider || "";
+  //
   // 🛠️ Function to update the session, without reloading the page
   const handleUpdate = async () => {
     // With NextAuth strategy: "jwt" , update() method will trigger a jwt callback where app_role will be augmented to the jwt and session objects
-    await update({ trigger: "update" });
+    await getSession();
+    // const { update } = useSession();
+    // await update({ trigger: "update" });
     // ✅ Set success state to true
     setIsSuccess(true);
     // 🕐 Wait for 3 second and then reset success state
@@ -77,6 +78,8 @@ export default function ProfileForm({ formData, isCreate }: Props) {
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserProfileFormData }) => {
+    const session = await getSession();
+    const idp = session?.identity_provider || "";
     //Set states
     setErrorList([]);
     setIsLoading(true);

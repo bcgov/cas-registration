@@ -7,7 +7,7 @@ import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
 import { FormMode } from "@bciers/utils/src/enums";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 export interface OperatorFormData {
   [key: string]: any;
@@ -35,7 +35,7 @@ export default function OperatorForm({
   const [formState, setFormState] = useState(formData ?? {});
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const router = useRouter();
-  const { update } = useSession();
+
   return (
     <SingleStepTaskListForm
       showCancelOrBackButton={showCancelOrBackButton}
@@ -70,9 +70,8 @@ export default function OperatorForm({
         }
         if (isCreatingState) {
           setIsCreatingState(false);
-          // With Auth strategy: "jwt" , update() method will trigger a jwt callback
-          // where app_role will be augmented to "industry_user_admin" in the jwt and session objects
-          await update({ trigger: "update" }); // Indicate this is an update call to update the session token
+          // calling getSession updates the session, which will augment app_role to "industry_user_admin"
+          await getSession();
         }
       }}
       onCancel={() =>

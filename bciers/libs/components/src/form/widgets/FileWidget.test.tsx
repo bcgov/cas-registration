@@ -2,8 +2,7 @@ import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
-import { useSession } from "@bciers/testConfig/mocks";
-import { Session } from "@bciers/testConfig/types";
+import { useSessionRole } from "@bciers/testConfig/mocks";
 import { checkNoValidationErrorIsTriggered } from "@bciers/testConfig/helpers/form";
 
 const fileFieldLabel = "FileWidget test field";
@@ -50,13 +49,7 @@ export const fileFieldUiSchema = {
 describe("RJSF FileWidget", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue("industry_user_admin");
   });
 
   it("should render a file field", async () => {
@@ -312,13 +305,7 @@ describe("RJSF FileWidget", () => {
   });
 
   it("should not render the upload button for internal users", () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue("cas_admin");
 
     render(<FormBase schema={fileFieldSchema} uiSchema={fileFieldUiSchema} />);
 

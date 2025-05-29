@@ -31,6 +31,9 @@ const usePathname = vi.fn();
 const useSearchParams = vi.fn();
 const notFound = vi.fn();
 const useSession = vi.fn();
+const getSessionRole = vi.fn();
+const getSession = vi.fn();
+const useSessionRole = vi.fn();
 const auth = vi.fn();
 const fetchTransferEventsPageData = vi.fn();
 const getUserOperatorsPageData = vi.fn();
@@ -72,4 +75,7 @@ export {
   getFacility,
   getCurrentUsersOperations,
   handleInternalAccessRequest,
+  getSessionRole,
+  useSessionRole,
+  getSession,
 };

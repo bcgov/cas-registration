@@ -9,11 +9,12 @@ import {
   handleInternalAccessRequest,
   useSearchParams,
   useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import InternalAccessRequestDataGrid from "@/administration/app/components/users/InternalAccessRequestDataGrid";
-import { InternalFrontEndRoles } from "@bciers/utils/src/enums";
+import { FrontEndRoles, InternalFrontEndRoles } from "@bciers/utils/src/enums";
 
 const mockInitialData = {
   rows: [
@@ -55,6 +56,8 @@ describe("Access Requests DataGrid", () => {
     useSearchParams.mockReturnValue({
       get: vi.fn(),
     });
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
+    // we need to mock useSession because it's used in the child component ActionColumnCell
     useSession.mockReturnValue({
       data: {
         user: {
@@ -66,7 +69,11 @@ describe("Access Requests DataGrid", () => {
   });
 
   it("renders Internal Access Requests component with NO DATA", async () => {
-    render(<InternalAccessRequestDataGrid initialData={{ rows: [] }} />);
+    render(
+      <InternalAccessRequestDataGrid
+        initialData={{ rows: [], row_count: 0 }}
+      />,
+    );
     expect(screen.getByRole("grid")).toBeVisible();
     expect(screen.getByText(/No records found/i)).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Name" })).toBeVisible();
@@ -81,14 +88,8 @@ describe("Access Requests DataGrid", () => {
   });
 
   it("renders Access Requests component with DATA for readonly roles (cas_analyst, cas_view_only, cas_director)", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_analyst",
-          email: "myemail@email.com",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
+
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
     expect(
       screen.queryByRole("columnheader", { name: "Approve Access?" }),

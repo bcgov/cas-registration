@@ -4,9 +4,8 @@ import {
   getBusinessStructures,
   useRouter,
   useSearchParams,
-  useSession,
+  getSessionRole,
 } from "@bciers/testConfig/mocks";
-import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 import { getCurrentOperator } from "./mocks";
 import OperatorPage from "apps/administration/app/components/operators/OperatorPage";
 
@@ -19,13 +18,10 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-useSession.mockReturnValue({
-  get: vi.fn(),
-});
-
 describe("Operator component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
+    getSessionRole.mockReturnValue("industry_user_admin");
   });
   it("renders the appropriate error component when getCurrentOperator fails", async () => {
     auth.mockReturnValueOnce({
@@ -53,12 +49,9 @@ describe("Operator component", () => {
     }).rejects.toThrow("Failed to retrieve business structure information");
   });
   it("renders the operator form with form data", async () => {
-    // Mock auth (which is different from session data)
     auth.mockReturnValueOnce({
       user: { app_role: "industry_user_admin" },
     });
-    // Mock the session data
-    mockUseSession();
     getCurrentOperator.mockReturnValueOnce({
       street_address: "123 Main St",
       municipality: "City",
@@ -119,8 +112,6 @@ describe("Operator component", () => {
     auth.mockReturnValueOnce({
       user: { app_role: "industry_user_admin" },
     });
-    // Mock the session data
-    mockUseSession();
     // Mock getBusinessStructures for create mode
     getBusinessStructures.mockReturnValue([
       { name: "General Partnership" },

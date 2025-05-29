@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import {
-  useSession,
+  useSessionRole,
   useRouter,
   getRegulatedProducts,
   getRegistrationPurposes,
@@ -30,13 +30,7 @@ const mockFile = new File(["test"], "test.pdf", { type: "application/pdf" });
 describe("the OperationInformationForm component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("industry_user_admin");
 
     useRouter.mockReturnValue({
       query: {},

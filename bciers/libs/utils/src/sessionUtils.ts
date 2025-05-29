@@ -1,6 +1,7 @@
 import { auth } from "@/dashboard/auth";
-import { useSession } from "next-auth/react";
 import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { useContext } from "react";
+import { SessionRoleContext } from "./sessionRoleContext";
 
 // use getSessionRole in server components
 const getSessionRole = async () => {
@@ -13,12 +14,12 @@ const getSessionRole = async () => {
 };
 
 // useSessionRole is for client components
-const useSessionRole = () => {
-  const session = useSession();
-  if (!session?.data?.user?.app_role) {
-    throw new Error("Failed to retrieve session role");
+const useSessionRole = (): FrontEndRoles => {
+  const sessionRole = useContext(SessionRoleContext);
+  if (!sessionRole) {
+    throw new Error("Session role is not available in the context");
   }
-  return session.data.user.app_role as FrontEndRoles;
+  return sessionRole as FrontEndRoles;
 };
 
-export { getSessionRole, useSessionRole };
+export { getSessionRole, useSessionRole, SessionRoleContext };

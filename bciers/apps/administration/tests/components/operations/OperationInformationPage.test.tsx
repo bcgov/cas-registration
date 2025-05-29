@@ -3,7 +3,7 @@ import OperationInformationPage from "@/administration/app/components/operations
 import {
   getOperationWithDocuments,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import { beforeAll } from "vitest";
 import { Apps, OperationStatus } from "@bciers/utils/src/enums";
@@ -41,13 +41,7 @@ describe("the OperationInformationPage component", () => {
   });
   beforeAll(() => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("industry_user_admin");
     useSearchParams.mockReturnValue({
       get: vi.fn(),
     });

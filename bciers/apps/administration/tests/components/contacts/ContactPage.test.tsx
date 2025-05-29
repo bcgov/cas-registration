@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { useSession, useRouter } from "@bciers/testConfig/mocks";
+import { useRouter, useSessionRole } from "@bciers/testConfig/mocks";
 import { getContact, getUserOperatorUsers } from "./mocks";
 import ContactPage from "apps/administration/app/components/contacts/ContactPage";
 
@@ -25,14 +25,7 @@ const contactFormData = {
 describe("Contact component", () => {
   beforeEach(async () => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      get: vi.fn(),
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("industry_user_admin");
   });
 
   it("renders the appropriate error component when getContact fails", async () => {

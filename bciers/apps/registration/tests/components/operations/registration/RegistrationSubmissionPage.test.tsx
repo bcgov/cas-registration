@@ -1,15 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import RegistrationSubmissionPage from "apps/registration/app/components/operations/registration/RegistrationSubmissionPage";
-import { useSession } from "@bciers/testConfig/mocks";
+import { useSessionRole } from "@bciers/testConfig/mocks";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 describe("the RegistrationSubmissionPage component", () => {
   beforeEach(() => {
