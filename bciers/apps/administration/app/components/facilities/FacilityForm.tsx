@@ -46,6 +46,7 @@ export default function FacilityForm({
       formContext={{
         facilityId: formData.id,
         isCasDirector: role === FrontEndRoles.CAS_DIRECTOR,
+        isSfo,
       }}
       allowEdit={!role.includes("cas_")}
       mode={isCreatingState ? FormMode.CREATE : FormMode.READ_ONLY}
