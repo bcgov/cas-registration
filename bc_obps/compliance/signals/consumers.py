@@ -1,4 +1,5 @@
 from django.dispatch import receiver
+from django.conf import settings
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceReport, CompliancePeriod
 from reporting.models import ReportVersion
@@ -18,6 +19,10 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
         sender: The class that sent the signal
         **kwargs: Signal arguments including version_id and user_guid
     """
+    if settings.ENVIRONMENT == "prod":
+        logger.info("Ignoring report submission signal in production environment")
+        return
+
     version_id = kwargs.get('version_id')
 
     if version_id:
