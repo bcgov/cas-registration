@@ -1,16 +1,10 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
-import { actionHandler, useSession } from "@bciers/testConfig/mocks";
+import { actionHandler, useSessionRole } from "@bciers/testConfig/mocks";
 import userEvent from "@testing-library/user-event";
 import NewOperationRepresentativeForm from "@/registration/app/components/operations/registration/NewOperationRepresentativeForm";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 const existingOperationRepresentativesMock = [
   {

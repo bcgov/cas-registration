@@ -5,10 +5,9 @@ import {
   fetchFacilitiesPageData,
   fetchOperationsPageData,
   useRouter,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import TransferDetailForm from "@/registration/app/components/transfers/TransferDetailForm";
-import { Session } from "@bciers/testConfig/types";
 import { randomUUID, UUID } from "crypto";
 import {
   facilityEntitySchema,
@@ -26,13 +25,7 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
 });
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "cas_analyst",
-    },
-  },
-} as Session);
+useSessionRole.mockReturnValue("cas_analyst");
 
 const transferId = randomUUID();
 
@@ -400,13 +393,7 @@ describe("The TransferDetailForm component", () => {
 
   it("should not render the edit details and cancel transfer buttons for a user with a role other than CAS_ANALYST", async () => {
     const userAppRole = FrontEndRoles.CAS_ADMIN;
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: userAppRole,
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue(userAppRole);
     await renderOperationEntityTransferDetailForm();
     checkButtons(false);
   });

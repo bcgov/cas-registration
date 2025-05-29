@@ -8,7 +8,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import {
   actionHandler,
-  useSession,
+  useSessionRole,
   useParams,
   useRouter,
 } from "@bciers/testConfig/mocks";
@@ -35,13 +35,7 @@ useParams.mockReturnValue({
   operationId: operationId,
 });
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 const mockReplace = vi.fn();
 
@@ -852,13 +846,7 @@ describe("FacilityForm component", () => {
   });
 
   it("should use formContext to correctly render BCGHG ID widgets for cas directors", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: FrontEndRoles.CAS_DIRECTOR,
-        },
-      },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
 
     render(
       <FacilityForm
@@ -887,13 +875,7 @@ describe("FacilityForm component", () => {
     ).toBeVisible();
   });
   it("should not show buttons for non-director users", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("cas_admin");
 
     render(
       <FacilityForm
@@ -922,13 +904,7 @@ describe("FacilityForm component", () => {
     ).not.toBeInTheDocument();
   });
   it("should not render the edit button for internal users", () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("cas_admin");
 
     render(
       <FacilityForm

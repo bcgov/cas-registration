@@ -5,7 +5,7 @@ import {
   actionHandler,
   getOperationWithDocuments,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 
 import { createAdministrationOperationInformationSchema } from "apps/administration/app/data/jsonSchema/operationInformation/administrationOperationInformation";
@@ -15,13 +15,8 @@ import userEvent from "@testing-library/user-event";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
+
 useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
@@ -432,13 +427,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should render the form in read-only mode and not show Edit/Save button if the user is not an industry_user_admin", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("cas_admin");
 
     render(
       <OperationInformationForm
@@ -585,13 +574,7 @@ describe("the OperationInformationForm component", () => {
     );
   });
   it("should use formContext to correctly render BORO ID and BCGHG ID widgets", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: FrontEndRoles.CAS_DIRECTOR,
-        },
-      },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
 
     render(
       <OperationInformationForm
@@ -653,13 +636,7 @@ describe("the OperationInformationForm component", () => {
 
   it("should not allow non-directors to issue BORO and BCGHG IDs", async () => {
     for (const appRole of ["cas_admin", "cas_analyst", "cas_view_only"]) {
-      useSession.mockReturnValue({
-        data: {
-          user: {
-            app_role: appRole,
-          },
-        },
-      });
+      useSessionRole.mockReturnValue(appRole);
 
       render(
         <OperationInformationForm
@@ -765,13 +742,8 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should edit and save the new entrant application form", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
+
     const testSchemaWithNewEntrant: RJSFSchema = {
       type: "object",
       properties: {
@@ -880,13 +852,7 @@ describe("the OperationInformationForm component", () => {
   });
 
   it("should not allow external users to remove their operation rep", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
     fetchFormEnums(Apps.ADMINISTRATION);
     const createdFormSchema =
@@ -933,13 +899,7 @@ describe("the OperationInformationForm component", () => {
         boundary_map: mockDataUri,
         process_flow_diagram: mockDataUri,
       };
-      useSession.mockReturnValue({
-        data: {
-          user: {
-            app_role: "industry_user_admin",
-          },
-        },
-      });
+      useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
       fetchFormEnums(Apps.ADMINISTRATION);
       const createdFormSchema =
@@ -1003,13 +963,7 @@ describe("the OperationInformationForm component", () => {
   );
 
   it("should show a note if user navigated to operation from the contacts form", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
     const mockGet = vi.fn();
     useSearchParams.mockReturnValue({
       get: mockGet,

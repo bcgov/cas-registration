@@ -4,17 +4,11 @@ import { allOperationRegistrationSteps } from "@/registration/app/components/ope
 import {
   fetchFacilitiesPageData,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import { OperationTypes } from "@bciers/utils/src/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 useSearchParams.mockReturnValue({
   searchParams: {

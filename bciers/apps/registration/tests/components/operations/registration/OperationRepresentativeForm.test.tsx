@@ -1,17 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
-import { useSession } from "@bciers/testConfig/mocks";
+import { useSessionRole } from "@bciers/testConfig/mocks";
 import OperationRepresentativeForm from "apps/registration/app/components/operations/registration/OperationRepresentativeForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 describe("the OperationRepresentativeForm component", () => {
   beforeEach(() => {

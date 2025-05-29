@@ -1,8 +1,7 @@
 import MultiStepButtons from "@bciers/components/form/components/MultiStepButtons";
 import { render, screen } from "@testing-library/react";
 import { describe, expect } from "vitest";
-import { useSession } from "@bciers/testConfig/mocks";
-import { Session } from "@bciers/testConfig/types";
+import { useSessionRole } from "@bciers/testConfig/mocks";
 
 const defaultProps = {
   allowBackNavigation: true,
@@ -18,13 +17,7 @@ const defaultProps = {
 describe("The MultiStepButtons component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue("industry_user_admin");
   });
 
   it("renders correct buttons for industry users on first step when view-only", () => {
@@ -121,13 +114,7 @@ describe("The MultiStepButtons component", () => {
 
   it("shows CAS users correct buttons on first step", () => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue("cas_admin");
     render(<MultiStepButtons {...defaultProps} />);
     expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
@@ -139,13 +126,7 @@ describe("The MultiStepButtons component", () => {
 
   it("shows CAS users correct buttons on middle steps", () => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue("cas_admin");
     render(<MultiStepButtons {...defaultProps} stepIndex={1} />);
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();
@@ -157,13 +138,7 @@ describe("The MultiStepButtons component", () => {
 
   it("shows CAS users correct buttons on final step", () => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue("cas_admin");
     render(<MultiStepButtons {...defaultProps} stepIndex={2} />);
     expect(screen.getByRole("button", { name: "Back" })).not.toBeDisabled();
     expect(screen.getByRole("button", { name: "Cancel" })).not.toBeDisabled();

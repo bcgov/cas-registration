@@ -8,7 +8,7 @@ import {
 import {
   handleInternalAccessRequest,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import { expect } from "vitest";
 import userEvent from "@testing-library/user-event";
@@ -55,14 +55,7 @@ describe("Access Requests DataGrid", () => {
     useSearchParams.mockReturnValue({
       get: vi.fn(),
     });
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_admin",
-          email: "myemail@email.com",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("cas_admin");
   });
 
   it("renders Internal Access Requests component with NO DATA", async () => {
@@ -81,14 +74,8 @@ describe("Access Requests DataGrid", () => {
   });
 
   it("renders Access Requests component with DATA for readonly roles (cas_analyst, cas_view_only, cas_director)", async () => {
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "cas_analyst",
-          email: "myemail@email.com",
-        },
-      },
-    });
+    useSessionRole.mockReturnValue("cas_analyst");
+
     render(<InternalAccessRequestDataGrid initialData={mockInitialData} />);
     expect(
       screen.queryByRole("columnheader", { name: "Approve Access?" }),

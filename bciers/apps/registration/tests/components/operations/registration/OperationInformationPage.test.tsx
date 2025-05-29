@@ -1,17 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import OperationInformationPage from "apps/registration/app/components/operations/registration/OperationInformationPage";
-import { useSession } from "@bciers/testConfig/mocks";
+import { useSessionRole } from "@bciers/testConfig/mocks";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 describe("the OperationInformationPage component", () => {
   beforeEach(() => {
