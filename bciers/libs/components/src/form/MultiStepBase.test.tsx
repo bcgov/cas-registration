@@ -2,9 +2,10 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect } from "vitest";
 import MultiStepBase from "./MultiStepBase";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
-import { useParams, useRouter, useSession } from "@bciers/testConfig/mocks";
-import { QueryParams, Session } from "@bciers/testConfig/types";
+import { useParams, useRouter, useSessionRole } from "@bciers/testConfig/mocks";
+import { QueryParams } from "@bciers/testConfig/types";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 const mockOnSubmit = vi.fn();
 const mockPush = vi.fn();
@@ -49,13 +50,7 @@ const defaultProps = {
 describe("The MultiStepBase component", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    useSession.mockReturnValue({
-      data: {
-        user: {
-          app_role: "industry_user_admin",
-        },
-      },
-    } as Session);
+    useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
 
     useRouter.mockReturnValue({
       query: {},

@@ -3,7 +3,7 @@ import InternalAccessRequests from "apps/administration/app/components/users/Int
 import {
   actionHandler,
   useSearchParams,
-  useSessionRole,
+  useSession,
 } from "@bciers/testConfig/mocks";
 
 const mockResponse = [
@@ -41,7 +41,13 @@ describe("Access Requests component", () => {
   });
 
   it("renders Internal Access Requests component", async () => {
-    useSessionRole.mockReturnValue("cas_admin");
+    useSession.mockReturnValue({
+      data: {
+        user: {
+          app_role: "cas_admin",
+        },
+      },
+    });
     actionHandler.mockResolvedValue(mockResponse);
 
     render(await InternalAccessRequests());
