@@ -18,6 +18,9 @@ metadata:
   annotations:
     haproxy.router.openshift.io/balance: roundrobin
     haproxy.router.openshift.io/rewrite-target: {{ .Values.reportingFrontend.route.path }}
+    haproxy.router.openshift.io/disable_cookies: 'true'
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": before-hook-creation
 
 spec:
   host: {{ .Values.reportingFrontend.route.host }}
