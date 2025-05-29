@@ -90,6 +90,9 @@ describe("the FacilitySfoForm component", () => {
 
     const facilityType = container.querySelector("#root_section1_type");
     expect(facilityType).toHaveTextContent("Single Facility");
+
+    const bcGhgId = container.querySelector("#root_section1_bcghg_id");
+    expect(bcGhgId).toHaveTextContent("Pending");
   });
 
   it(

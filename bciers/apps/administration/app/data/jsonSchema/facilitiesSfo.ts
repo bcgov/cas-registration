@@ -33,6 +33,7 @@ const section1: RJSFSchema = {
       } or ${currentYear}?`,
       default: false,
     },
+    bcghg_id: { type: "string", title: "BCGHGID" },
   },
   allOf: [
     {
