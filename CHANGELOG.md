@@ -1,3 +1,17 @@
+## [3.4.1](https://github.com/bcgov/cas-registration/compare/v3.3.0...v3.4.1) (2025-05-29)
+
+### Bug Fixes
+
+- add SessionProvider Co-authored-by: Pierre Bastianelli Pierre.Bastianelli@gov.bc.ca ([ca2b054](https://github.com/bcgov/cas-registration/commit/ca2b054ae9fcfedcf30dc562408472ad53627bfc))
+- adjust allocation validation for precision and consistency ([4db6db8](https://github.com/bcgov/cas-registration/commit/4db6db8aff4ae54e76fe29744013b4cd51871ae5))
+- disable sticky sessions in k8s routes to even out load among pods ([edb3a0d](https://github.com/bcgov/cas-registration/commit/edb3a0de01f224b30072a0e893754dd0a25d106e))
+- do not reapply rls operations unnecessarily on container startup ([6d2888e](https://github.com/bcgov/cas-registration/commit/6d2888ee27f63897a7a503032fd969d49b3e1453))
+- rounding compliance numbers before saving ([72faee5](https://github.com/bcgov/cas-registration/commit/72faee5e308d098e36c7d876b8976d1d36bd0db6))
+
+### Features
+
+- add endpoint to get bccr account details ([99a80c4](https://github.com/bcgov/cas-registration/commit/99a80c4a8a587634dbd2ef16e7f505d488b2d950))
+
 # [3.3.0](https://github.com/bcgov/cas-registration/compare/v3.2.1...v3.3.0) (2025-05-26)
 
 ### Bug Fixes
