@@ -314,7 +314,6 @@
       "name": "Facility 22",
       "type": "Single Facility",
       "swrs_facility_id": 1022,
-      "bcghg_id": "23219990003",
       "latitude_of_largest_emissions": 43.5,
       "longitude_of_largest_emissions": -123.5
     }
