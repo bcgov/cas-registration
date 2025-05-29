@@ -5,7 +5,7 @@ import {
   useSearchParams,
 } from "@bciers/testConfig/mocks";
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
-import { useSessionRole } from "@bciers/testConfig/mocks";
+import { getSessionRole } from "@bciers/testConfig/mocks";
 import { OperationTypes } from "@bciers/utils/src/enums";
 
 useRouter.mockReturnValue({
@@ -55,7 +55,7 @@ describe("Operations component", () => {
   });
 
   it("throws an error when there's a problem fetching data", async () => {
-    useSessionRole.mockReturnValue("cas_director");
+    getSessionRole.mockReturnValue("cas_director");
     fetchOperationsPageData.mockReturnValueOnce(undefined);
     await expect(async () => {
       render(await Operations({ searchParams: {} }));
@@ -64,7 +64,7 @@ describe("Operations component", () => {
   });
 
   it("renders the OperationDataGrid component  when there are operations in the database", async () => {
-    useSessionRole.mockReturnValue("industry_user");
+    getSessionRole.mockReturnValue("industry_user");
     fetchOperationsPageData.mockReturnValueOnce(mockResponse);
     render(await Operations({ searchParams: {} }));
     expect(screen.getByRole("grid")).toBeVisible();

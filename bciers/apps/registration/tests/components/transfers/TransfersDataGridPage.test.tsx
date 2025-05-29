@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import {
   fetchTransferEventsPageData,
+  getSessionRole,
   useRouter,
   useSearchParams,
   useSessionRole,
@@ -75,6 +76,7 @@ const mockResponse = {
 describe("TransfersDataGrid page", () => {
   beforeEach(async () => {
     vi.clearAllMocks();
+    getSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
   });
 
   it("throws an error when there's a problem fetching data", async () => {
@@ -96,7 +98,8 @@ describe("TransfersDataGrid page", () => {
     expect(screen.queryByText(/Make a Transfer/i)).not.toBeInTheDocument();
   });
   it("only shows the 'Make a Transfer' button to CAS_ANALYST users", async () => {
-    useSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
+    getSessionRole.mockClear();
+    getSessionRole.mockReturnValue(FrontEndRoles.CAS_ANALYST);
     fetchTransferEventsPageData.mockReturnValueOnce(mockResponse);
     render(await TransfersDataGridPage({ searchParams: {} }));
     expect(screen.getByText(/make a transfer/i)).toBeVisible();
