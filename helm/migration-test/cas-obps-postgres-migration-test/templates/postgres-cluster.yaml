@@ -19,7 +19,6 @@ spec:
         name: repo1
         gcs:
           bucket: {{ .Values.sourceNamespace }}-obps-backups
-  image: artifacts.developer.gov.bc.ca/bcgov-docker-local/crunchy-postgres:ubi8-14.7-0
   metadata:
     labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 6 }}
   postgresVersion: 16
@@ -66,7 +65,6 @@ spec:
 
   backups:
     pgbackrest:
-      image: artifacts.developer.gov.bc.ca/bcgov-docker-local/crunchy-pgbackrest:ubi8-2.41-4
       repos:
         - name: repo2
           volume:
