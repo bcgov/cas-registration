@@ -8,9 +8,14 @@ import {
   ReactPortal,
 } from "react";
 
-export const SessionRoleContext = createContext(undefined);
+export const SessionRoleContext = createContext<string | undefined>(undefined);
 
-const SessionRoleContextProvider = (props: any) => {
+interface SessionRoleContextProviderProps {
+  value: string | undefined;
+  children: React.ReactNode;
+}
+
+const SessionRoleContextProvider: React.FC<SessionRoleContextProviderProps> = (props) => {
   return (
     <SessionRoleContext.Provider value={props.value}>
       {props.children}
