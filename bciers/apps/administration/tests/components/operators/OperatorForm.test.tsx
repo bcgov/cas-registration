@@ -2,9 +2,9 @@ import { render, screen, act, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   actionHandler,
-  useSession,
   useRouter,
   getBusinessStructures,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 
 import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
@@ -17,10 +17,6 @@ import { mockUseSession } from "@bciers/testConfig/helpers/mockUseSession";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
 
-useSession.mockReturnValue({
-  get: vi.fn(),
-});
-
 const mockReplace = vi.fn();
 const mockRouterBack = vi.fn();
 const mockRouterPush = vi.fn();
@@ -30,6 +26,8 @@ useRouter.mockReturnValue({
   back: mockRouterBack,
   push: mockRouterPush,
 });
+
+useSessionRole.mockReturnValue("industry_user");
 
 const operatorFormData = {
   street_address: "123 Main St",

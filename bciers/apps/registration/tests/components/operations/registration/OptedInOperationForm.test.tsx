@@ -1,19 +1,17 @@
 import { act, render, screen, within } from "@testing-library/react";
 import { describe, expect, vi } from "vitest";
 import React from "react";
-import { actionHandler, useRouter, useSession } from "@bciers/testConfig/mocks";
+import {
+  actionHandler,
+  useRouter,
+  useSessionRole,
+} from "@bciers/testConfig/mocks";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 import { UUID } from "crypto";
 import OptedInOperationForm from "@/registration/app/components/operations/registration/OptedInOperationForm";
 import { optedInOperationSchema } from "@/registration/app/data/jsonSchema/operationRegistration/optedInOperation";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user");
 
 const mockPush = vi.fn();
 useRouter.mockReturnValue({

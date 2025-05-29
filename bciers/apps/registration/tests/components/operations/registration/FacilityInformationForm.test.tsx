@@ -4,19 +4,13 @@ import React from "react";
 import {
   useRouter,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import { UUID } from "crypto";
 import FacilityInformationForm from "apps/registration/app/components/operations/registration/FacilityInformationForm";
 import { allOperationRegistrationSteps } from "@/registration/app/components/operations/registration/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 useSearchParams.mockReturnValue({
   searchParams: {

@@ -3,18 +3,12 @@ import OperationRegistrationPage from "apps/registration/app/components/operatio
 import {
   actionHandler,
   useSearchParams,
-  useSession,
+  useSessionRole,
 } from "@bciers/testConfig/mocks";
 import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
 
-useSession.mockReturnValue({
-  data: {
-    user: {
-      app_role: "industry_user_admin",
-    },
-  },
-});
+useSessionRole.mockReturnValue("industry_user_admin");
 
 describe("the OperationRegistrationPage component", () => {
   beforeEach(() => {
