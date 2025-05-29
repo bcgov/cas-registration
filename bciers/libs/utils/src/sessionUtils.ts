@@ -19,7 +19,7 @@ const useSessionRole = (): FrontEndRoles => {
   if (!sessionRole) {
     throw new Error("Session role is not available in the context");
   }
-  return sessionRole;
+  return sessionRole as FrontEndRoles;
 };
 
 export { getSessionRole, useSessionRole, SessionRoleContext };
