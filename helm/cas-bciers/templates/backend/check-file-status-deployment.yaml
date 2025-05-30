@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: check-document-file-status
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+{{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: backend
+  template:
+    metadata:
+      labels:
+{{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: backend
+    spec:
+      restartPolicy: Always
+      serviceAccountName: deployer
+      containers:
+        - name: check-document-file-status
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          env:
+            {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/attachment-credentials/attachment-credentials.json"
+          command:
+            - /usr/bin/env
+            - bash
+            - -c
+            - |
+              set -euo pipefail;
+              .venv/bin/python manage.py check_document_file_status --run-forever -d 30
+          volumeMounts:
+            - mountPath: "/attachment-credentials"
+              name: gcs-attachment-credentials
+              readOnly: true
+      volumes:
+        - name: gcs-attachment-credentials
+          secret:
+            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+            items:
+            - key: credentials.json
+              path: attachment-credentials.json
