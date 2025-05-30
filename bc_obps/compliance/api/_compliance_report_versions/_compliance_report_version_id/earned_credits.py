@@ -18,6 +18,10 @@ from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsO
     description="Get earned credits data for a compliance report version",
     auth=authorize("approved_authorized_roles"),
 )
-def get_compliance_report_version_earned_credits(request: HttpRequest, compliance_report_version_id: int) -> Tuple[int, Optional[ComplianceEarnedCredits]]:
-    compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version(compliance_report_version_id)
+def get_compliance_report_version_earned_credits(
+    request: HttpRequest, compliance_report_version_id: int
+) -> Tuple[int, Optional[ComplianceEarnedCredits]]:
+    compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version(
+        compliance_report_version_id
+    )
     return 200, compliance_earned_credits

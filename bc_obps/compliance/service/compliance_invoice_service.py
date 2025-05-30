@@ -25,7 +25,9 @@ class ComplianceInvoiceService:
         context = ComplianceInvoiceService._prepare_invoice_context()
         filename = f"invoice_{context['invoice_number']}_{datetime.now().strftime('%Y%m%d')}.pdf"
 
-        return PDFGeneratorService.generate_pdf(template_name='invoice.html', context=context, filename=filename, logo_file_name='logo.png')
+        return PDFGeneratorService.generate_pdf(
+            template_name='invoice.html', context=context, filename=filename, logo_file_name='logo.png'
+        )
 
     @staticmethod
     def _prepare_invoice_context() -> Dict[str, Any]:

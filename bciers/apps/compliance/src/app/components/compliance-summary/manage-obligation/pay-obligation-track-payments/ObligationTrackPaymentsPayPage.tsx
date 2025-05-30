@@ -31,9 +31,7 @@ export default async function ObligationTrackPaymentsPayPage({
       taskListElements={taskListElements}
       complianceSummaryId={complianceSummaryId}
     >
-      <p>
-        ObligationTrackPaymentsPay ...TBD
-      </p>
+      <p>ObligationTrackPaymentsPay ...TBD</p>
       <ComplianceStepButtons
         backUrl={backUrl}
         continueUrl={saveAndContinueUrl}

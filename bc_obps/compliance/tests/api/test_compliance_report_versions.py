@@ -6,7 +6,9 @@ from unittest.mock import patch
 
 
 class TestComplianceReportVersionsEndpoint(CommonTestSetup):
-    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_versions_for_dashboard")
+    @patch(
+        "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_versions_for_dashboard"
+    )
     def test_get_compliance_report_versions_list_success(self, mock_get_versions):
         # Arrange
         version1 = make_recipe('compliance.tests.utils.compliance_report_version')
