@@ -13,7 +13,6 @@ export default async function ComplianceUnitsApplyPage({
 }: Props) {
   // const complianceUnitsData = await getComplianceUnitsApplyData();
   const complianceUnitsData = {
-    operationName: "Test Operation",
     reportingYear: "2025",
   };
 
@@ -30,7 +29,6 @@ export default async function ComplianceUnitsApplyPage({
     >
       <ComplianceUnitsApplyComponent
         complianceSummaryId={complianceSummaryId}
-        taskListElements={taskListElements}
       />
     </CompliancePageLayout>
   );
