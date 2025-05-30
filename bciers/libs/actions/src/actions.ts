@@ -9,7 +9,9 @@ and can be called from server components or from client components.
 
 import { cookies } from "next/headers";
 import { ContentItem } from "@bciers/types/tiles";
-import getUUIDFromEndpoint from "@bciers/utils/src/getUUIDFromEndpoint";
+import getUUIDFromEndpoint, {
+  ENDPOINT_NOT_ALLOWED_ERROR,
+} from "@bciers/utils/src/getUUIDFromEndpoint";
 import { revalidatePath } from "next/cache";
 import * as Sentry from "@sentry/nextjs";
 import safeJsonParse from "@bciers/utils/src/safeJsonParse";
@@ -112,12 +114,15 @@ export async function actionHandler(
         return data;
       } catch (error: unknown) {
         Sentry.captureException(error as Error);
-        // Handle any errors, including network issues
         if (error instanceof Error) {
           // eslint-disable-next-line no-console
           console.error(`An error occurred while fetching ${endpoint}:`, error);
+          if (error.message === ENDPOINT_NOT_ALLOWED_ERROR) {
+            return {
+              error: `Your session has timed out. Please log in again at https://industrialemissions.gov.bc.ca/onboarding to continue.`,
+            };
+          }
           return {
-            // eslint-disable-next-line no-console
             error: `An error occurred while fetching ${endpoint}: ${error.message}`,
           };
         } else {
