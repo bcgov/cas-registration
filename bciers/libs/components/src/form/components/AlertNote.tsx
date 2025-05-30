@@ -12,7 +12,7 @@ const AlertNote: FC<AlertNoteProps> = ({
   icon = <AlertIcon width="25" height="25" />,
 }) => {
   return (
-    <Alert className="bg-bc-light-blue text-bc-text" icon={icon}>
+    <Alert className="bg-bc-light-blue text-bc-text mb-2" icon={icon}>
       {children}
     </Alert>
   );
