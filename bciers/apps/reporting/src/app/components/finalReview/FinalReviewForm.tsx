@@ -35,7 +35,18 @@ const FinalReviewForm: React.FC<Props> = ({ navigationInformation, data }) => {
       submittingButtonText="Continue"
       noSaveButton
     >
-      <FinalReviewForms data={data} />
+      {data.length === 0 ? (
+        <div className="form-heading-label w-full">
+          <label className="inline-block">Final Review</label>
+          <p>
+            The system is unable to display a large amount of facility reports
+            at this time, this issue will be fixed in a future version of the
+            system.
+          </p>
+        </div>
+      ) : (
+        <FinalReviewForms data={data} />
+      )}
     </MultiStepWrapperWithTaskList>
   );
 };
