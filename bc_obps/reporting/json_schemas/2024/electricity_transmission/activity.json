@@ -1,0 +1,10 @@
+{
+  "title": "Electricity transmission",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "number",
+      "description": "The unique identifier for this activity"
+    }
+  }
+}
