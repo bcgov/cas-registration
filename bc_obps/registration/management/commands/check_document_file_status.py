@@ -23,25 +23,40 @@ class Command(BaseCommand):
             "--repeat-delay",
             type=int,
             help="Delay between scans in seconds",
-            default=1,
+            default=30,
+        )
+        parser.add_argument(
+            "--run-forever",
+            action="store_true",
+            help="Run the check indefinitely. Overrides repetitions.",
+            default=False,
         )
 
     def handle(self, *args, **options):
-        if options["repetitions"] < 1:
+        RUN_FOREVER = options["run_forever"]
+
+        if not RUN_FOREVER and options["repetitions"] < 1:
             raise ValueError("repetitions must be greater than 0")
         if options["repeat_delay"] < 1:
             raise ValueError("repeat-delay must be greater than 0")
 
         REPETITIONS = options["repetitions"]
         REPEAT_DELAY = options["repeat_delay"]
-        self.stdout.write(
-            f"Starting check_document_file_status, checking every {REPEAT_DELAY} second(s) for {REPETITIONS} times"
-        )
+
+        self.stdout.write("Starting check_document_file_status")
+        if RUN_FOREVER:
+            self.stdout.write("Running indefinitely with a delay of {REPEAT_DELAY} seconds between checks")
+        else:
+            self.stdout.write(f"Will run {REPETITIONS} times with a delay of {REPEAT_DELAY} seconds between checks")
+
         start_time = int(time.time())
         iteration = 0
 
-        while iteration < REPETITIONS:
-            self.stdout.write(f"Iteration {iteration + 1} of {REPETITIONS}")
+        while RUN_FOREVER or iteration < REPETITIONS:
+            if RUN_FOREVER:
+                self.stdout.write(f"Iteration {iteration + 1} (running indefinitely)")
+            else:
+                self.stdout.write(f"Iteration {iteration + 1} of {REPETITIONS}")
             # compute sleep duration (first iteration happens at start_time)
             next_attempt_time = start_time + iteration * REPEAT_DELAY
             sleep_duration = next_attempt_time - int(time.time())
