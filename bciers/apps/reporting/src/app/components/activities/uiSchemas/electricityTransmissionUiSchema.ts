@@ -1,5 +1,4 @@
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
 import { emissionsOnlyUiSchema } from "./common";
 const uiSchema = {
   "ui:FieldTemplate": FieldTemplate,
@@ -8,7 +7,7 @@ const uiSchema = {
     "ui:widget": "hidden",
   },
   sourceTypes: {
-    "ui:FieldTemplate": SourceTypeBoxTemplate,
+    "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       label: false,
     },
