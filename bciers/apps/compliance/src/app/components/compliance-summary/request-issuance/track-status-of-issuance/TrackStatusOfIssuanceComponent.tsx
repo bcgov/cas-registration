@@ -1,31 +1,40 @@
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import CompliancePageLayout from "@bciers/components/layout/CompliancePageLayout";
-import { TrackStatusOfIssuanceContent } from "./TrackStatusOfIssuanceContent";
+"use client";
+
 import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
+import ComplianceStepButtons from "../../../ComplianceStepButtons";
+import FormBase from "@bciers/components/form/FormBase";
+import {
+  trackStatusOfIssuanceSchema,
+  trackStatusOfIssuanceUiSchema,
+} from "@/compliance/src/app/data/jsonSchema/requestIssuance/trackStatusOfIssuanceSchema";
 
 interface Props {
   data: RequestIssuanceTrackStatusData;
   complianceSummaryId: any;
-  taskListElements: TaskListElement[];
 }
 
 export default function TrackStatusOfIssuanceComponent({
   data,
   complianceSummaryId,
-  taskListElements,
 }: Props) {
   const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
   return (
-    <CompliancePageLayout
-      taskListElements={taskListElements}
-      title={data.operation_name}
+    <FormBase
+      schema={trackStatusOfIssuanceSchema}
+      uiSchema={trackStatusOfIssuanceUiSchema}
+      formData={{
+        ...data,
+        statusNote: data.issuanceStatus,
+      }}
+      className="w-full"
     >
-      <TrackStatusOfIssuanceContent
-        data={data}
+      <ComplianceStepButtons
+        key="form-buttons"
         backUrl={backUrl}
-        complianceSummaryId={complianceSummaryId}
+        backButtonDisabled={false}
+        submitButtonDisabled={false}
       />
-    </CompliancePageLayout>
+    </FormBase>
   );
 }

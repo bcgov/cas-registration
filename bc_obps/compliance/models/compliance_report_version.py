@@ -27,15 +27,6 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="The compliance summary data from the reporting module that this compliance report version relates to",
     )
 
-    issuance_request = models.OneToOneField(
-        'IssuanceRequest',
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name='compliance_report_version',
-        db_comment="The issuance request associated with this compliance report version",
-    )
-
     excess_emissions_delta_from_previous = models.DecimalField(
         db_comment="The delta of the excess emissions reported in the compliance_summary for this version and the previous one",
         decimal_places=4,

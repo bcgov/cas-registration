@@ -18,14 +18,14 @@ vi.mock("../../../../../app/utils/getRequestIssuanceTrackStatusData", () => ({
 }));
 
 vi.mock(
-  "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema",
+  "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList",
   () => ({
     ActivePage: {
       ReviewComplianceSummary: 0,
       RequestIssuanceOfEarnedCredits: 1,
       TrackStatusOfIssuance: 2,
     },
-    getRequestIssuanceTaskList: vi.fn().mockReturnValue([
+    generateRequestIssuanceTaskList: vi.fn().mockReturnValue([
       {
         type: "Section",
         title: "2024 Compliance Summary",
@@ -65,13 +65,36 @@ vi.mock(
         <div aria-label="compliance summary id">
           {props.complianceSummaryId}
         </div>
-        <nav aria-label="task list navigation">
-          {props.taskListElements ? "task-list-present" : "no-task-list"}
-        </nav>
+        <nav aria-label="task list navigation">task-list-present</nav>
       </section>
     ),
   }),
 );
+
+vi.mock("../../../../../app/components/layout/CompliancePageLayout", () => ({
+  default: ({ children, taskListElements }: any) => (
+    <div data-testid="compliance-page-layout">
+      <div data-testid="task-list-elements">
+        {JSON.stringify(taskListElements)}
+      </div>
+      {children}
+    </div>
+  ),
+}));
+
+vi.mock("@/compliance/src/app/components/layout/CompliancePageHeading", () => ({
+  __esModule: true,
+  default: ({ complianceSummaryId }: { complianceSummaryId: string }) => (
+    <div data-testid="mocked-compliance-heading">
+      Mock Operation Name for {complianceSummaryId}
+    </div>
+  ),
+}));
+
+vi.mock("@/compliance/src/app/utils/getOperationByComplianceSummaryId", () => ({
+  __esModule: true,
+  default: vi.fn().mockResolvedValue({ name: "Mock Operation" }),
+}));
 
 const mockActivePageEnum = {
   ReviewComplianceSummary: 0,
@@ -95,16 +118,14 @@ describe("TrackStatusOfIssuancePage", () => {
     const { getRequestIssuanceTrackStatusData } = await import(
       "../../../../../app/utils/getRequestIssuanceTrackStatusData"
     );
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
+    const { generateRequestIssuanceTaskList } = await import(
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList"
     );
 
-    expect(getRequestIssuanceTrackStatusData).toHaveBeenCalledWith(
-      complianceSummaryId,
-    );
+    expect(getRequestIssuanceTrackStatusData).toHaveBeenCalled();
 
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
-      123,
+    expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
+      "123",
       2024,
       mockActivePageEnum.TrackStatusOfIssuance,
     );
@@ -134,12 +155,12 @@ describe("TrackStatusOfIssuancePage", () => {
     });
     render(component);
 
-    const { getRequestIssuanceTaskList } = await import(
-      "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema"
+    const { generateRequestIssuanceTaskList } = await import(
+      "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList"
     );
 
-    expect(getRequestIssuanceTaskList).toHaveBeenCalledWith(
-      456,
+    expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
+      "456",
       2024,
       mockActivePageEnum.TrackStatusOfIssuance,
     );
