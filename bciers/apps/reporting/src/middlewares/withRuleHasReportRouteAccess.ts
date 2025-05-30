@@ -361,26 +361,10 @@ const checkHasPathAccess = async (request: NextRequest) => {
     const context = createRuleContext();
     // Iterate over each rule and validate if it applies
     for (const rule of permissionRules) {
-      console.log(
-        `Checking rule: ${
-          rule.name
-        } for reportVersionId: ${reportVersionId} - applicable: ${await rule.isApplicable(
-          request,
-          reportVersionId,
-          context,
-        )}`,
-      );
       if (await rule.isApplicable(request, reportVersionId, context)) {
         const isValid = await rule.validate(reportVersionId, request, context);
-        console.log(
-          `Rule: ${rule.name} validation result for reportVersionId ${reportVersionId}: ${isValid}`,
-        );
 
         if (!isValid) {
-          console.log(
-            "redirect to:",
-            rule.redirect(reportVersionId, request).url,
-          );
           return rule.redirect(reportVersionId, request);
         }
       }
