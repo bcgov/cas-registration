@@ -7,7 +7,7 @@ from compliance.schema.payments import PaymentsListOut
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService, PaymentsList
 from registration.schema.generic import Message
-from ...router import router
+from compliance.api.router import router
 
 
 @router.get(

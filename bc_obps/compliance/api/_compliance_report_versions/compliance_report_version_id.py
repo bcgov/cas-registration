@@ -27,6 +27,3 @@ def get_compliance_report_version(
         user_guid, compliance_report_version_id
     )
     return 200, compliance_report_version
-
-
-# Note: PUT and PATCH endpoints would be added here when needed
