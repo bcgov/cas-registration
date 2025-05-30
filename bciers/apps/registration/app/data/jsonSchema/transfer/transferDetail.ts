@@ -51,7 +51,6 @@ export const operationEntitySchema = async (
     paginate_results: false,
     operator_id: fromOperatorId,
     end_date: true, // this indicates that the end_date is not null,
-    status: "Active", // only fetch active facilities
   });
   if (
     !operationsByOperator ||
