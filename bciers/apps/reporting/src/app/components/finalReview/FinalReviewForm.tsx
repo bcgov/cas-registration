@@ -39,9 +39,9 @@ const FinalReviewForm: React.FC<Props> = ({ navigationInformation, data }) => {
         <div className="form-heading-label w-full">
           <label className="inline-block">Final Review</label>
           <p>
-            The system is unable to display a large amount of facility reports
-            at this time, this issue will be fixed in a future version of the
-            system.
+            The system is unable to display a large amount of facility reports.
+            This issue will be fixed in a future version of the system. To
+            review your facility reports, please return to report information.
           </p>
         </div>
       ) : (
