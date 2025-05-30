@@ -7,7 +7,7 @@ import CompliancePageLayout from "../../../layout/CompliancePageLayout";
 import TrackStatusOfIssuanceContent from "./TrackStatusOfIssuanceComponent";
 
 interface Props {
-  compliance_summary_id: string;
+  readonly compliance_summary_id: string;
 }
 
 export default async function TrackStatusOfIssuancePage(props: Props) {
