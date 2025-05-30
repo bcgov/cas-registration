@@ -1,11 +1,10 @@
 import {
   ActivePage,
-  getRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/2_requestIssuanceSchema";
+  generateRequestIssuanceTaskList,
+} from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
 import { getRequestIssuanceTrackStatusData } from "../../../../utils/getRequestIssuanceTrackStatusData";
-import TrackStatusOfIssuanceComponent from "./TrackStatusOfIssuanceComponent";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
+import CompliancePageLayout from "../../../layout/CompliancePageLayout";
+import TrackStatusOfIssuanceContent from "./TrackStatusOfIssuanceComponent";
 
 interface Props {
   compliance_summary_id: string;
@@ -14,23 +13,24 @@ interface Props {
 export default async function TrackStatusOfIssuancePage(props: Props) {
   const complianceSummaryId = parseInt(props.compliance_summary_id, 10);
 
-  const complianceSummary = await getRequestIssuanceTrackStatusData(
-    props.compliance_summary_id,
-  );
+  const data = await getRequestIssuanceTrackStatusData();
+  // props.compliance_summary_id,
 
-  const taskListElements = getRequestIssuanceTaskList(
-    complianceSummaryId,
+  const taskListElements = generateRequestIssuanceTaskList(
+    complianceSummaryId.toString(),
     2024,
     ActivePage.TrackStatusOfIssuance,
   );
 
   return (
-    <Suspense fallback={<Loading />}>
-      <TrackStatusOfIssuanceComponent
-        data={complianceSummary}
+    <CompliancePageLayout
+      complianceSummaryId={props.compliance_summary_id}
+      taskListElements={taskListElements}
+    >
+      <TrackStatusOfIssuanceContent
+        data={data}
         complianceSummaryId={complianceSummaryId}
-        taskListElements={taskListElements}
       />
-    </Suspense>
+    </CompliancePageLayout>
   );
 }
