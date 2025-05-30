@@ -1,0 +1,23 @@
+{{- if (.Values.backend.deployRoute)}}
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "cas-bciers.fullname" . }}-backend
+  labels:
+{{ include "cas-bciers.labels" . | indent 4 }}
+  annotations:
+    haproxy.router.openshift.io/balance: roundrobin
+
+spec:
+  host: {{ .Values.backend.route.host }}
+  port:
+    targetPort: {{ include "cas-bciers.fullname" . }}-backend
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name:  {{ include "cas-bciers.fullname" . }}-backend
+    weight: 100
+{{ end }}
