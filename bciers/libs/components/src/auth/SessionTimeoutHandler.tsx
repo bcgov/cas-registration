@@ -9,7 +9,7 @@ import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
 
-export const ACTIVITY_THROTTLE_SECONDS = 10 * 30; // Seconds to throttle user activity
+export const ACTIVITY_THROTTLE_SECONDS = 30; // Seconds to throttle user activity
 export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
 
 const getExpirationTimeInSeconds = (
@@ -55,7 +55,6 @@ const SessionTimeoutHandler: React.FC = () => {
 
   // Refreshes the session and updates the timeout based on new expiration
   const refreshSession = async (): Promise<void> => {
-    console.log("Refreshing session...");
     if (isRefreshingRef.current || status !== "authenticated") return;
     isRefreshingRef.current = true;
     try {
