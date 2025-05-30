@@ -19,7 +19,9 @@ class TestPDFGeneratorService:
         mock_html.return_value.write_pdf.return_value = mock_pdf
 
         # Act
-        generator, output_filename, size = PDFGeneratorService.generate_pdf(template_name=template_name, context=context, filename=filename)
+        generator, output_filename, size = PDFGeneratorService.generate_pdf(
+            template_name=template_name, context=context, filename=filename
+        )
 
         # Assert
         mock_get_template.assert_called_once_with(template_name)
@@ -55,7 +57,9 @@ class TestPDFGeneratorService:
 
         # Act
         with patch.object(PDFGeneratorService, '_get_logo_base64', return_value="base64_logo") as mock_get_logo:
-            generator, output_filename, size = PDFGeneratorService.generate_pdf(template_name=template_name, context=context, filename=filename, logo_file_name=logo_file_name)
+            generator, output_filename, size = PDFGeneratorService.generate_pdf(
+                template_name=template_name, context=context, filename=filename, logo_file_name=logo_file_name
+            )
 
         # Assert
         mock_get_logo.assert_called_once_with(logo_file_name)

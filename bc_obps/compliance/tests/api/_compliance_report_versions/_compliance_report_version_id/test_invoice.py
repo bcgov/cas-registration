@@ -9,10 +9,18 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
     def test_get_invoice_success(self, mock_generate_invoice_pdf):
         # Arrange
         mock_generate_invoice_pdf.return_value = (b"PDF content", "invoice.pdf", 100)
-        TestUtils.authorize_current_user_as_operator_user(self, operator=make_recipe('registration.tests.utils.operator'))
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=make_recipe('registration.tests.utils.operator')
+        )
 
         # Act
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", custom_reverse_lazy("generate_compliance_report_version_invoice", kwargs={"compliance_report_version_id": 123}))
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "generate_compliance_report_version_invoice", kwargs={"compliance_report_version_id": 123}
+            ),
+        )
 
         # Assert
         assert response.status_code == 200

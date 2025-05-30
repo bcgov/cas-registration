@@ -7,19 +7,39 @@ from compliance.service.compliance_dashboard_service import Payment, PaymentsLis
 
 
 class TestComplianceReportVersionPaymentsEndpoint(CommonTestSetup):
-    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_version_payments")
+    @patch(
+        "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_version_payments"
+    )
     def test_get_payments_success(self, mock_get_payments):
         # Arrange
         payments = [
-            Payment(id="1", paymentReceivedDate="2024-03-20", paymentAmountApplied=Decimal("100.00"), paymentMethod="Credit Card", transactionType="Payment", receiptNumber="REC-001"),
-            Payment(id="2", paymentReceivedDate="2024-03-21", paymentAmountApplied=Decimal("50.00"), paymentMethod="Bank Transfer", transactionType="Payment", receiptNumber="REC-002"),
+            Payment(
+                id="1",
+                paymentReceivedDate="2024-03-20",
+                paymentAmountApplied=Decimal("100.00"),
+                paymentMethod="Credit Card",
+                transactionType="Payment",
+                receiptNumber="REC-001",
+            ),
+            Payment(
+                id="2",
+                paymentReceivedDate="2024-03-21",
+                paymentAmountApplied=Decimal("50.00"),
+                paymentMethod="Bank Transfer",
+                transactionType="Payment",
+                receiptNumber="REC-002",
+            ),
         ]
         mock_get_payments.return_value = PaymentsList(rows=payments, row_count=2)
 
         # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", custom_reverse_lazy("get_compliance_report_version_payments", kwargs={"compliance_report_version_id": 123}))
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy("get_compliance_report_version_payments", kwargs={"compliance_report_version_id": 123}),
+        )
 
         # Assert
         assert response.status_code == 200

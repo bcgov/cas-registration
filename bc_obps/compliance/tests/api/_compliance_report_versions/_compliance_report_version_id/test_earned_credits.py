@@ -6,7 +6,9 @@ from compliance.models import ComplianceEarnedCredits
 
 
 class TestComplianceReportVersionEarnedCreditsEndpoint(CommonTestSetup):
-    @patch("compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version")
+    @patch(
+        "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version"
+    )
     def test_get_earned_credits_success(self, mock_get_earned_credits):
         # Arrange
         earned_credits = make_recipe(
@@ -22,7 +24,13 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(CommonTestSetup):
         # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", custom_reverse_lazy("get_compliance_report_version_earned_credits", kwargs={"compliance_report_version_id": 123}))
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "get_compliance_report_version_earned_credits", kwargs={"compliance_report_version_id": 123}
+            ),
+        )
 
         # Assert
         assert response.status_code == 200

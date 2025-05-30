@@ -14,7 +14,9 @@ from compliance.constants import COMPLIANCE
     description="Generate a PDF invoice for a compliance report version and stream it to the client",
     auth=authorize("approved_industry_user"),
 )
-def generate_compliance_report_version_invoice(request: HttpRequest, compliance_report_version_id: int) -> StreamingHttpResponse:
+def generate_compliance_report_version_invoice(
+    request: HttpRequest, compliance_report_version_id: int
+) -> StreamingHttpResponse:
     """
     Generate a PDF invoice for a compliance report version and stream it to the client.
 
