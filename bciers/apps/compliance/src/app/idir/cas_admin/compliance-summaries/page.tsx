@@ -6,7 +6,9 @@ import ComplianceSummariesPage from "../../../components/compliance-summaries/Co
 function CasAdminComplianceSummariesPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined };
+  readonly searchParams: {
+    readonly [key: string]: string | string[] | undefined;
+  };
 }) {
   return (
     <div className="flex flex-col">
