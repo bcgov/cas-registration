@@ -13,6 +13,52 @@ describe("The FinalReviewForm component", () => {
     vi.clearAllMocks();
   });
 
+  it("displays a message when no data is provided", () => {
+    render(
+      <FinalReviewForm
+        navigationInformation={
+          {
+            headerSteps: [],
+            taskList: [],
+            backUrl: "back",
+            continueUrl: "continue",
+          } as any
+        }
+        data={[]}
+      />,
+    );
+    expect(
+      screen.getByText(
+        "The system is unable to display a large amount of facility reports at this time, this issue will be fixed in a future version of the system.",
+      ),
+    ).toBeInTheDocument();
+  });
+  it("doesn't display a message when data is provided", () => {
+    render(
+      <FinalReviewForm
+        navigationInformation={
+          {
+            headerSteps: [],
+            taskList: [],
+            backUrl: "back",
+            continueUrl: "continue",
+          } as any
+        }
+        data={[
+          {
+            schema: {},
+            uiSchema: {},
+            data: {},
+          },
+        ]}
+      />,
+    );
+    expect(
+      screen.queryByText(
+        "The system is unable to display a large amount of facility reports at this time, this issue will be fixed in a future version of the system.",
+      ),
+    ).not.toBeInTheDocument();
+  });
   it("routes back when the back button is clicked", () => {
     const expectedRoute = "back";
 
