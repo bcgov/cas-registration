@@ -845,7 +845,36 @@ describe("FacilityForm component", () => {
     expect(mockReplace).toHaveBeenCalledWith(urlOperationFacilities);
   });
 
-  it("should use formContext to correctly render BCGHG ID widgets for cas directors", async () => {
+  it("should use formContext to correctly render BCGHG ID widgets for cas directors for LFOs", async () => {
+    useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
+
+    render(
+      <FacilityForm
+        formData={lfoFormData}
+        schema={{
+          type: "object",
+          properties: {
+            section1: {
+              title: "Section 1",
+              type: "object",
+              properties: {
+                bcghg_id: {
+                  type: "string",
+                  title: "BCGHGID",
+                },
+              },
+            },
+          },
+        }}
+        uiSchema={facilitiesSfoUiSchema}
+      />,
+    );
+
+    expect(
+      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).toBeVisible();
+  });
+  it("should use formContext to correctly render BCGHG ID widgets for cas directors for SFOs", async () => {
     useSessionRole.mockReturnValue(FrontEndRoles.CAS_DIRECTOR);
 
     render(
@@ -871,9 +900,11 @@ describe("FacilityForm component", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
-    ).toBeVisible();
+      screen.queryByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Pending")).toBeVisible();
   });
+
   it("should not show buttons for non-director users", async () => {
     useSessionRole.mockReturnValue("cas_admin");
 

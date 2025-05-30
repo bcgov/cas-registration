@@ -76,6 +76,7 @@ describe("the FacilitySfoForm component", () => {
           section1: {
             name: "Test Operation",
             type: "Single Facility",
+            bcghg_id: 23219999999,
           },
         }}
       />,
@@ -90,6 +91,9 @@ describe("the FacilitySfoForm component", () => {
 
     const facilityType = container.querySelector("#root_section1_type");
     expect(facilityType).toHaveTextContent("Single Facility");
+
+    const bcGhgId = container.querySelector("#root_section1_bcghg_id");
+    expect(bcGhgId).toHaveTextContent("23219999999 BCGHG ID issued");
   });
 
   it(
