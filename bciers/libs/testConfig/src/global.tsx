@@ -28,6 +28,7 @@ import {
   useSessionRole,
   getSessionRole,
   getSession,
+  useContext,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -39,6 +40,14 @@ declare module "vitest" {
 
 // Extend the global expect object with the custom matchers from jest-dom
 expect.extend(matchers);
+
+vi.mock("react", async () => {
+  const actualReact = await vi.importActual<typeof import("react")>("react");
+  return {
+    ...actualReact,
+    useContext: useContext,
+  };
+});
 
 vi.mock("next/navigation", () => ({
   useRouter,
