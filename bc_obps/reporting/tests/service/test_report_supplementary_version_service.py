@@ -19,6 +19,7 @@ from reporting.models import (
     ReportVerificationVisit,
     ReportVersion,
 )
+import common.lib.pgtrigger as pgtrigger
 
 
 class ReportSupplementaryVersionServiceTests(TestCase):
@@ -26,7 +27,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         # Create old and new ReportVersion instances
         self.old_report_version = make_recipe(
             'reporting.tests.utils.report_version',
-            status=ReportVersion.ReportVersionStatus.Submitted,
+            status=ReportVersion.ReportVersionStatus.Draft,
             is_latest_submitted=True,
         )
         self.new_report_version = make_recipe('reporting.tests.utils.report_version')
@@ -121,6 +122,9 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             report_version=self.old_report_version,
             facility_report=self.old_facility_report,
         )
+
+        self.old_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.old_report_version.save()
 
     def test_create_report_supplementary_version(self):
         # ACT: Call the method to create a supplementary version.
@@ -339,23 +343,25 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         from the old report version to the new report version.
         """
         # PRE-ACT: Create a ReportVerification and an associated Visit for the old report version.
-        verification = make_recipe(
-            'reporting.tests.utils.report_verification',
-            report_version=self.old_report_version,
-            verification_body_name="Test Verification Body",
-            accredited_by=ReportVerification.AccreditedBy.ANAB,
-            scope_of_verification=ReportVerification.ScopeOfVerification.BC_OBPS,
-            threats_to_independence=True,
-            verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
-        )
-        make_recipe(
-            'reporting.tests.utils.report_verification_visit',
-            report_verification=verification,
-            visit_name="Test Visit",
-            visit_type=ReportVerificationVisit.VisitType.IN_PERSON,
-            visit_coordinates="(10.0, 20.0)",
-            is_other_visit=False,
-        )
+        with pgtrigger.ignore('reporting.ReportVerification:immutable_report_version'):
+            verification = make_recipe(
+                'reporting.tests.utils.report_verification',
+                report_version=self.old_report_version,
+                verification_body_name="Test Verification Body",
+                accredited_by=ReportVerification.AccreditedBy.ANAB,
+                scope_of_verification=ReportVerification.ScopeOfVerification.BC_OBPS,
+                threats_to_independence=True,
+                verification_conclusion=ReportVerification.VerificationConclusion.POSITIVE,
+            )
+        with pgtrigger.ignore('reporting.ReportVerificationVisit:immutable_report_version'):
+            make_recipe(
+                'reporting.tests.utils.report_verification_visit',
+                report_verification=verification,
+                visit_name="Test Visit",
+                visit_type=ReportVerificationVisit.VisitType.IN_PERSON,
+                visit_coordinates="(10.0, 20.0)",
+                is_other_visit=False,
+            )
 
         # ACT: Clone the ReportVerification from old to new report version.
         ReportSupplementaryVersionService.clone_report_version_verification(
@@ -386,8 +392,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         Test that clone_report_version_verification does nothing if no ReportVerification exists for the old report version.
         """
         # PRE-ACT: Ensure there are no ReportVerification records for the old report version.
-        ReportVerification.objects.filter(report_version=self.old_report_version).delete()
 
+        ReportVerification.objects.filter(report_version=self.old_report_version).delete()
         # ACT: Attempt to clone ReportVerification.
         ReportSupplementaryVersionService.clone_report_version_verification(
             self.old_report_version, self.new_report_version
@@ -403,20 +409,22 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         from the old report version to the new report version.
         """
         # PRE-ACT: Create two ReportAttachment instances for the old report version.
-        make_recipe(
-            'reporting.tests.utils.report_attachment',
-            report_version=self.old_report_version,
-            attachment=ContentFile(b"dummy file content", "file1.pdf"),
-            attachment_type="verification_statement",
-            attachment_name="Attachment 1",
-        )
-        make_recipe(
-            'reporting.tests.utils.report_attachment',
-            report_version=self.old_report_version,
-            attachment=ContentFile(b"dummy file content", "file2.doc"),
-            attachment_type="wci_352_362",
-            attachment_name="Attachment 2",
-        )
+        with pgtrigger.ignore('reporting.ReportAttachment:immutable_report_version'):
+            make_recipe(
+                'reporting.tests.utils.report_attachment',
+                report_version=self.old_report_version,
+                attachment=ContentFile(b"dummy file content", "file1.pdf"),
+                attachment_type="verification_statement",
+                attachment_name="Attachment 1",
+            )
+        with pgtrigger.ignore('reporting.ReportAttachment:immutable_report_version'):
+            make_recipe(
+                'reporting.tests.utils.report_attachment',
+                report_version=self.old_report_version,
+                attachment=ContentFile(b"dummy file content", "file2.doc"),
+                attachment_type="wci_352_362",
+                attachment_name="Attachment 2",
+            )
 
         # ACT: Clone the ReportAttachment instances.
         ReportSupplementaryVersionService.clone_report_version_attachments(
