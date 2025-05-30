@@ -69,7 +69,7 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_request_issuance_track_status",
+            "endpoint_name": "get_compliance_report_version_earned_credits",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
         {

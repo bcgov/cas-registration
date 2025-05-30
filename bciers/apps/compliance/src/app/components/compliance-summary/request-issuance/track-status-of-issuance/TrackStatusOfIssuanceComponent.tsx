@@ -9,8 +9,8 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/trackStatusOfIssuanceSchema";
 
 interface Props {
-  data: RequestIssuanceTrackStatusData;
-  complianceSummaryId: any;
+  readonly data: RequestIssuanceTrackStatusData;
+  readonly complianceSummaryId: any;
 }
 
 export default function TrackStatusOfIssuanceComponent({
