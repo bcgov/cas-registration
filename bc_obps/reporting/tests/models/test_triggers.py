@@ -19,8 +19,7 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
             begin
                 select rel1.status into status
                 from "erc"."report_version" rel1
-                join "{meta.db_table}" rel2 on rel2.report_version_id=rel1.id
-                where rel2.id=coalesce(new.id, old.id)
+                where rel1.id=coalesce(new.report_version_id, old.report_version_id)
                 limit 1;
 
                 if status='Submitted' then
@@ -47,8 +46,7 @@ class ImmutableReportVersionTriggerTest(SimpleTestCase):
                 select rel1.status into status
                 from "erc"."report_version" rel1
                 join "erc"."some_intermediate_model" rel2 on rel2.report_version_id=rel1.id
-                join "{meta.db_table}" rel3 on rel3.some_intermediate_model_id=rel2.id
-                where rel3.id=coalesce(new.id, old.id)
+                where rel2.id=coalesce(new.some_intermediate_model_id, old.some_intermediate_model_id)
                 limit 1;
 
                 if status='Submitted' then
