@@ -6,7 +6,9 @@ from registration.utils import custom_reverse_lazy
 
 
 class TestComplianceReportVersionEndpoint(CommonTestSetup):
-    @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_version_by_id")
+    @patch(
+        "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_version_by_id"
+    )
     def test_get_compliance_report_version_success(self, mock_get_version):
         # Arrange
         compliance_report_version = make_recipe(
@@ -37,7 +39,10 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
         assert response_data["id"] == compliance_report_version.id
         assert response_data["status"] == compliance_report_version.status
         assert response_data["operation_name"] == compliance_report_version.compliance_report.report.operation.name
-        assert response_data["reporting_year"] == compliance_report_version.compliance_report.compliance_period.end_date.year
+        assert (
+            response_data["reporting_year"]
+            == compliance_report_version.compliance_report.compliance_period.end_date.year
+        )
         assert Decimal(response_data["excess_emissions"]) == Decimal("50.0000")
         assert Decimal(response_data["credited_emissions"]) == Decimal("25.0000")
         assert Decimal(response_data["outstanding_balance"]) == Decimal("100.0000")

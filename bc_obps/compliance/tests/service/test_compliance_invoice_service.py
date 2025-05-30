@@ -4,7 +4,6 @@ from compliance.service.compliance_invoice_service import ComplianceInvoiceServi
 
 
 class TestComplianceInvoiceService:
-
     def test_prepare_invoice_context(self):
         # TODO: Replace this test with a test that uses the real data from the database
         # Act
@@ -43,5 +42,10 @@ class TestComplianceInvoiceService:
         result = ComplianceInvoiceService.generate_invoice_pdf(compliance_report_version_id)
 
         # Assert
-        mock_generate_pdf.assert_called_once_with(template_name='invoice.html', context=expected_context, filename=expected_filename, logo_file_name='logo.png')
+        mock_generate_pdf.assert_called_once_with(
+            template_name='invoice.html',
+            context=expected_context,
+            filename=expected_filename,
+            logo_file_name='logo.png',
+        )
         assert result == mock_pdf_data
