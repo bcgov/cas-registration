@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  BC_GOV_BACKGROUND_COLOR_BLUE,
-  BC_GOV_LINKS_COLOR,
-  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-  BC_GOV_COMPONENTS_GREY,
-  BC_GOV_BACKGROUND_COLOR_GREY,
-} from "@bciers/styles";
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 interface ComplianceStepButtonsProps {
@@ -24,7 +17,6 @@ interface ComplianceStepButtonsProps {
   onMiddleButtonClick?: () => void;
   middleButtonActive?: boolean;
   saveAndContinue?: () => void;
-  customButtons?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
 }
@@ -44,7 +36,6 @@ const ComplianceStepButtons: React.FunctionComponent<
   middleButtonText,
   onMiddleButtonClick,
   middleButtonActive = true,
-  customButtons,
   children,
   className = "",
 }) => {
@@ -58,83 +49,45 @@ const ComplianceStepButtons: React.FunctionComponent<
   };
 
   return (
-    <Box className={`flex justify-between mt-20 ${className}`}>
+    <div className={`flex justify-between mt-20 ${className}`}>
       <div>
         {(backUrl || onBackClick) && (
           <Button
             variant="outlined"
             onClick={onBackClick ?? (() => navigate(backUrl))}
             disabled={backButtonDisabled}
-            data-testid="back-button"
-            sx={{
-              padding: "10px",
-              minWidth: "120px",
-              borderColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-              color: BC_GOV_LINKS_COLOR,
-              "&:hover": {
-                borderColor: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-              },
-              "&.Mui-disabled": {
-                borderColor: `${BC_GOV_COMPONENTS_GREY} !important`,
-                color: `${BC_GOV_BACKGROUND_COLOR_GREY} !important`,
-              },
-            }}
+            className="py-2.5 min-w-[120px] border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"
           >
             {backButtonText}
           </Button>
         )}
       </div>
-      <div style={{ display: "flex", gap: "10px" }}>
+      <div className="flex gap-2">
         {middleButtonText && onMiddleButtonClick && middleButtonActive && (
           <Button
             variant="outlined"
             onClick={onMiddleButtonClick}
             disabled={middleButtonDisabled}
-            data-testid="middle-button"
-            sx={{
-              padding: "10px",
-              minWidth: "120px",
-              borderColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-              color: BC_GOV_LINKS_COLOR,
-              "&:hover": {
-                borderColor: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-              },
-              "&.Mui-disabled": {
-                borderColor: `${BC_GOV_COMPONENTS_GREY} !important`,
-                color: `${BC_GOV_BACKGROUND_COLOR_GREY} !important`,
-              },
-            }}
+            className="py-2.5 min-w-[120px] border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"
           >
             {middleButtonText}
           </Button>
         )}
 
-        {children || customButtons}
+        {children}
 
         {(continueUrl || onContinueClick) && (
           <Button
             variant="contained"
             onClick={onContinueClick ?? (() => navigate(continueUrl))}
             disabled={submitButtonDisabled}
-            data-testid="continue-button"
-            sx={{
-              padding: "10px",
-              minWidth: "120px",
-              backgroundColor: BC_GOV_BACKGROUND_COLOR_BLUE,
-              "&:hover": {
-                backgroundColor: BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
-              },
-              "&.Mui-disabled": {
-                backgroundColor: `${BC_GOV_COMPONENTS_GREY} !important`,
-                color: `${BC_GOV_BACKGROUND_COLOR_GREY} !important`,
-              },
-            }}
+            className="py-2.5 min-w-[120px] bg-bc-blue hover:bg-bc-primary-blue disabled:bg-bc-grey disabled:text-bc-grey-bg"
           >
             {continueButtonText}
           </Button>
         )}
       </div>
-    </Box>
+    </div>
   );
 };
 
