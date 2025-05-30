@@ -16,27 +16,10 @@ class ComplianceReportVersionListOut(ModelSchema):
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance: Optional[Decimal] = None
     excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
-    compliance_status: str = Field(..., alias="status")
 
     class Meta:
         model = ComplianceReportVersion
         fields = ['id', 'status']
-
-    @staticmethod
-    def resolve_operation_name(obj: ComplianceReportVersion) -> str:
-        """Get the operation name from the nested relationship"""
-        try:
-            return obj.compliance_report.report.operation.name
-        except AttributeError:
-            return ""
-
-    @staticmethod
-    def resolve_reporting_year(obj: ComplianceReportVersion) -> int:
-        """Get the reporting year from the compliance period"""
-        try:
-            return obj.compliance_report.compliance_period.end_date.year
-        except AttributeError:
-            return 0
 
 
 class ComplianceReportVersionOut(ModelSchema):

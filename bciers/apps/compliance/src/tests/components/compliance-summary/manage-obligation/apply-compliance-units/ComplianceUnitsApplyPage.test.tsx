@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewPage";
+import ComplianceUnitsApplyPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyPage";
 import {
   generateManageObligationTaskList,
   ActivePage,
@@ -10,7 +10,7 @@ vi.mock(
   "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
   () => ({
     generateManageObligationTaskList: vi.fn(),
-    ActivePage: { ReviewComplianceSummary: 3 },
+    ActivePage: { ApplyComplianceUnits: 0 },
   }),
 );
 
@@ -21,31 +21,31 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   ),
 }));
 
-// Mock the review component
+// Mock the main component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent",
+  "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyComponent",
   () => ({
-    ComplianceSummaryReviewComponent: () => <div>Mock Review Component</div>,
+    default: () => <div>Mock Apply Component</div>,
   }),
 );
 
-describe("ComplianceSummaryReviewPage", () => {
+describe("ComplianceUnitsApplyPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders with correct content and generates task list", async () => {
-    render(await ComplianceSummaryReviewPage({ compliance_summary_id: "123" }));
+  it("renders with correct components and generates task list", async () => {
+    render(await ComplianceUnitsApplyPage({ compliance_summary_id: "123" }));
 
-    // Check content is rendered
+    // Check components are rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(screen.getByText("Mock Review Component")).toBeVisible();
+    expect(screen.getByText("Mock Apply Component")).toBeVisible();
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       "123",
       "2025",
-      ActivePage.ReviewComplianceSummary,
+      ActivePage.ApplyComplianceUnits,
     );
   });
 });

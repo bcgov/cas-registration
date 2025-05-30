@@ -23,16 +23,12 @@ export function ComplianceSummaryReviewComponent({
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
 
   const handleGenerateInvoice = async () => {
-    if (!complianceSummaryId) return;
-
     try {
       setIsGeneratingInvoice(true);
-
       const invoiceUrl = `/compliance/api/invoice/${complianceSummaryId}`;
 
       window.open(invoiceUrl, "_blank", "noopener,noreferrer");
     } catch (error) {
-      console.error("Error generating invoice:", error);
       throw new Error(error instanceof Error ? error.message : String(error));
     } finally {
       setIsGeneratingInvoice(false);

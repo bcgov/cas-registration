@@ -1,89 +1,87 @@
-// import {
-//   ActivePage,
-//   generateRequestIssuanceTaskList,
-// } from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
+import {
+  ActivePage,
+  generateRequestIssuanceTaskList,
+} from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
 
-describe.skip("generateRequestIssuanceTaskList", () => {
-  // const complianceSummaryId = 123;
-  // const reportingYear = 2024;
-  //
-  // it("returns the correct task list structure with a section containing task items", () => {
-  //   const taskList = generateRequestIssuanceTaskList(
-  //     complianceSummaryId,
-  //     reportingYear,
-  //   );
-  //
-  //   expect(taskList).toHaveLength(1);
-  //   expect(taskList[0].type).toBe("Section");
-  //   expect(taskList[0].title).toBe(`${reportingYear} Compliance Summary`);
-  //   expect(taskList[0].isExpanded).toBe(true);
-  //
-  //   const taskItems = taskList[0].elements!;
-  //   expect(taskItems).toHaveLength(3);
-  //
-  //   expect(taskItems[0].isActive).toBe(true);
-  //   expect(taskItems[1].isActive).toBe(false);
-  //   expect(taskItems[2].isActive).toBe(false);
-  //
-  //   expect(taskItems[0].title).toBe(
-  //     `Review ${reportingYear} Compliance Summary`,
-  //   );
-  //   expect(taskItems[1].title).toBe("Request Issuance of Earned Credits");
-  //   expect(taskItems[2].title).toBe("Track Status of Issuance");
-  //
-  //   expect(taskItems[0].link).toBe(
-  //     `/compliance-summaries/${complianceSummaryId}/request-issuance/review-compliance-summary`,
-  //   );
-  //   expect(taskItems[1].link).toBe(
-  //     `/compliance-summaries/${complianceSummaryId}/request-issuance/request-issuance-of-earned-credits`,
-  //   );
-  //   expect(taskItems[2].link).toBe(
-  //     `/compliance-summaries/${complianceSummaryId}/request-issuance/track-status-of-issuance`,
-  //   );
-  //
-  //   expect(taskItems[0].type).toBe("Page");
-  //   expect(taskItems[1].type).toBe("Page");
-  //   expect(taskItems[2].type).toBe("Page");
-  // });
-  //
-  // it("sets the active page based on the activeIndex parameter", () => {
-  //   const taskList1 = generateRequestIssuanceTaskList(
-  //     complianceSummaryId,
-  //     reportingYear,
-  //     ActivePage.ReviewComplianceSummary,
-  //   );
-  //   const taskItems1 = taskList1[0].elements!;
-  //   expect(taskItems1[0].isActive).toBe(true);
-  //   expect(taskItems1[1].isActive).toBe(false);
-  //   expect(taskItems1[2].isActive).toBe(false);
-  //
-  //   const taskList2 = generateRequestIssuanceTaskList(
-  //     complianceSummaryId,
-  //     reportingYear,
-  //     ActivePage.RequestIssuanceOfEarnedCredits,
-  //   );
-  //   const taskItems2 = taskList2[0].elements!;
-  //   expect(taskItems2[0].isActive).toBe(false);
-  //   expect(taskItems2[1].isActive).toBe(true);
-  //   expect(taskItems2[2].isActive).toBe(false);
-  //
-  //   const taskList3 = generateRequestIssuanceTaskList(
-  //     complianceSummaryId,
-  //     reportingYear,
-  //     ActivePage.TrackStatusOfIssuance,
-  //   );
-  //   const taskItems3 = taskList3[0].elements!;
-  //   expect(taskItems3[0].isActive).toBe(false);
-  //   expect(taskItems3[1].isActive).toBe(false);
-  //   expect(taskItems3[2].isActive).toBe(true);
-  // });
-  //
-  // it("handles missing reporting year gracefully", () => {
-  //   const taskList = generateRequestIssuanceTaskList(complianceSummaryId);
-  //
-  //   expect(taskList[0].title).toBe("undefined Compliance Summary");
-  //
-  //   const taskItems = taskList[0].elements!;
-  //   expect(taskItems[0].title).toBe("Review undefined Compliance Summary");
-  // });
+describe("generateRequestIssuanceTaskList", () => {
+  const mockComplianceSummaryId = "123";
+  const mockReportingYear = 2024;
+
+  it("generates task list with correct structure", () => {
+    const taskList = generateRequestIssuanceTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+    );
+
+    // Check the outer section
+    expect(taskList).toHaveLength(1);
+    expect(taskList[0].type).toBe("Section");
+    expect(taskList[0].title).toBe("2024 Compliance Summary");
+    expect(taskList[0].isExpanded).toBe(true);
+
+    // Check task items
+    const taskItems = taskList[0].elements;
+    expect(taskItems).toHaveLength(3);
+
+    // Check Review Summary task
+    expect(taskItems?.[0]).toEqual({
+      type: "Page",
+      title: "Review 2024 Compliance Summary",
+      link: "/compliance-summaries/123/request-issuance-review-summary",
+      isActive: true, // Default activeIndex is 0
+    });
+
+    // Check Request Issuance task
+    expect(taskItems?.[1]).toEqual({
+      type: "Page",
+      title: "Request Issuance of Earned Credits",
+      link: "/compliance-summaries/123/request-issuance-of-earned-credits",
+      isActive: false,
+    });
+
+    // Check Track Status task
+    expect(taskItems?.[2]).toEqual({
+      type: "Page",
+      title: "Track Status of Issuance",
+      link: "/compliance-summaries/123/track-status-of-issuance",
+      isActive: false,
+    });
+  });
+
+  it("sets active page correctly for each page type", () => {
+    // Test Review Summary page
+    const reviewList = generateRequestIssuanceTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+      ActivePage.ReviewComplianceSummary,
+    );
+    expect(reviewList[0].elements?.[0].isActive).toBe(true);
+    expect(reviewList[0].elements?.[1].isActive).toBe(false);
+    expect(reviewList[0].elements?.[2].isActive).toBe(false);
+
+    // Test Request Issuance page
+    const requestList = generateRequestIssuanceTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+      ActivePage.RequestIssuanceOfEarnedCredits,
+    );
+    expect(requestList[0].elements?.[0].isActive).toBe(false);
+    expect(requestList[0].elements?.[1].isActive).toBe(true);
+    expect(requestList[0].elements?.[2].isActive).toBe(false);
+
+    // Test Track Status page
+    const trackList = generateRequestIssuanceTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+      ActivePage.TrackStatusOfIssuance,
+    );
+    expect(trackList[0].elements?.[0].isActive).toBe(false);
+    expect(trackList[0].elements?.[1].isActive).toBe(false);
+    expect(trackList[0].elements?.[2].isActive).toBe(true);
+  });
+
+  it("handles undefined reporting year", () => {
+    const taskList = generateRequestIssuanceTaskList(mockComplianceSummaryId);
+    expect(taskList[0].title).toBe("undefined Compliance Summary");
+  });
 });

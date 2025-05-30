@@ -22,9 +22,5 @@ from compliance.constants import COMPLIANCE
 )
 @paginate(PageNumberPagination)
 def get_compliance_report_versions_list(request: HttpRequest) -> QuerySet[ComplianceReportVersion]:
-    """Get all compliance report versions for the current user's operations"""
     user_guid = get_current_user_guid(request)
     return ComplianceDashboardService.get_compliance_report_versions_for_dashboard(user_guid)
-
-
-# Note: POST endpoint for creating a new version would be added here when needed
