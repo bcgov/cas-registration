@@ -26,6 +26,11 @@ class TestInitialData(TestCase):
                 'HFC-227ea (C3HF7)',
                 'HFC-236fa (C3H2F6)',
                 'HFC-245ca (C3H3F5)',
+                'C3F8',
+                'C4F10',
+                'c-C4F8',
+                'C5F12',
+                'C6F14',
             ]
         )
         existing_gas_type_formulae = sorted(list(GasType.objects.values_list('chemical_formula', flat=True)))
