@@ -1,5 +1,6 @@
 from itertools import chain
 from typing import Iterable
+from common.management.commands.custom_migrate import has_unapplied_migrations
 from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
 from django.core.management.base import BaseCommand
 from registration.models import Document
@@ -33,6 +34,20 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        # Check to see if migrations have been applied before running the command
+        if has_unapplied_migrations():
+            self.stdout.write("Waiting for migrations to be applied...")
+            wait_start = time.time()
+            timeout = 900
+
+            while has_unapplied_migrations():
+                if time.time() - wait_start > timeout:
+                    raise Exception("Timed out waiting for migrations to be applied.")
+                time.sleep(60)
+                self.stdout.write(".")
+
+            self.stdout.write("Migrations have been applied.")
+
         RUN_FOREVER = options["run_forever"]
 
         if not RUN_FOREVER and options["repetitions"] < 1:
