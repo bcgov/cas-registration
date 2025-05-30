@@ -61,9 +61,16 @@ def assert_immutable_report_version(
 
     # Insert
     with transaction.atomic():
+        report_version_insert = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            status="Submitted",
+        )
+
         with pytest.raises(
             ProgrammingError,
             match=r".* record is immutable after a report version has been submitted",
         ):
-            model_under_test.pk = None
-            model_under_test.save()
+            baker.make_recipe(
+                recipe_path,
+                **{path_to_report_version: report_version_insert},
+            )
