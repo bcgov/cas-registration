@@ -1,142 +1,116 @@
-// import { render, screen } from "@testing-library/react";
-// import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
-// import { RequestIssuanceData } from "@/compliance/src/app/utils/getRequestIssuanceData";
-// import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-//
-// vi.mock("@bciers/components/layout/CompliancePageLayout", () => ({
-//   default: ({ children, title, taskListElements }: any) => (
-//     <div data-testid="compliance-page-layout">
-//       <h1 data-testid="page-title">{title}</h1>
-//       <div data-testid="task-list-elements">
-//         {JSON.stringify(taskListElements)}
-//       </div>
-//       <div data-testid="page-content">{children}</div>
-//     </div>
-//   ),
-// }));
-//
-// vi.mock(
-//   "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsContent",
-//   () => ({
-//     RequestIssuanceOfEarnedCreditsContent: ({
-//       data,
-//       backUrl,
-//       continueUrl,
-//       complianceSummaryId,
-//     }: any) => (
-//       <div data-testid="request-issuance-content">
-//         <div data-testid="operation-name">{data.operation_name}</div>
-//         <div data-testid="back-url">{backUrl}</div>
-//         <div data-testid="continue-url">{continueUrl}</div>
-//         <div data-testid="compliance-summary-id">{complianceSummaryId}</div>
-//       </div>
-//     ),
-//   }),
-// );
-//
-// const mockData: RequestIssuanceData = {
-//   bccrTradingName: "Test Trading Name",
-//   validBccrHoldingAccountId: "123456789012345",
-//   reportingYear: 2023,
-//   operation_name: "Test Operation",
-// };
-//
-// const mockTaskListElements: TaskListElement[] = [
-//   {
-//     type: "Page",
-//     title: "Test Task",
-//     link: "/test-link",
-//     isActive: true,
-//   },
-// ];
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
+import { useRouter } from "@bciers/testConfig/mocks";
 
-describe.skip("RequestIssuanceOfEarnedCreditsComponent", () => {
-  // beforeEach(() => {
-  //   vi.clearAllMocks();
-  // });
-  //
-  // it("renders with the correct page title from operation name", () => {
-  //   const complianceSummaryId = 123;
-  //
-  //   render(
-  //     <RequestIssuanceOfEarnedCreditsComponent
-  //       data={mockData}
-  //       complianceSummaryId={complianceSummaryId}
-  //       taskListElements={mockTaskListElements}
-  //     />,
-  //   );
-  //
-  //   const pageTitle = screen.getByTestId("page-title");
-  //   expect(pageTitle).toBeInTheDocument();
-  //   expect(pageTitle).toHaveTextContent(mockData.operation_name);
-  // });
-  //
-  // it("passes the task list elements to the page layout", () => {
-  //   render(
-  //     <RequestIssuanceOfEarnedCreditsComponent
-  //       data={mockData}
-  //       complianceSummaryId={123}
-  //       taskListElements={mockTaskListElements}
-  //     />,
-  //   );
-  //
-  //   const taskListElementsContainer = screen.getByTestId("task-list-elements");
-  //   expect(taskListElementsContainer).toBeInTheDocument();
-  //   expect(taskListElementsContainer).toHaveTextContent(
-  //     JSON.stringify(mockTaskListElements),
-  //   );
-  // });
-  //
-  // it("constructs the correct back URL based on complianceSummaryId", () => {
-  //   const complianceSummaryId = 456;
-  //
-  //   render(
-  //     <RequestIssuanceOfEarnedCreditsComponent
-  //       data={mockData}
-  //       complianceSummaryId={complianceSummaryId}
-  //       taskListElements={mockTaskListElements}
-  //     />,
-  //   );
-  //
-  //   const expectedBackUrl = `/compliance-summaries/456/request-issuance/review-compliance-summary`;
-  //   const backUrlElement = screen.getByTestId("back-url");
-  //   expect(backUrlElement).toBeInTheDocument();
-  //   expect(backUrlElement).toHaveTextContent(expectedBackUrl);
-  // });
-  //
-  // it("constructs the correct continue URL based on complianceSummaryId", () => {
-  //   const complianceSummaryId = 456;
-  //
-  //   render(
-  //     <RequestIssuanceOfEarnedCreditsComponent
-  //       data={mockData}
-  //       complianceSummaryId={complianceSummaryId}
-  //       taskListElements={mockTaskListElements}
-  //     />,
-  //   );
-  //
-  //   const expectedContinueUrl = `/compliance-summaries/456/request-issuance/track-status-of-issuance`;
-  //   const continueUrlElement = screen.getByTestId("continue-url");
-  //   expect(continueUrlElement).toBeInTheDocument();
-  //   expect(continueUrlElement).toHaveTextContent(expectedContinueUrl);
-  // });
-  //
-  // it("passes all required props to RequestIssuanceOfEarnedCreditsContent", () => {
-  //   const complianceSummaryId = 123;
-  //
-  //   render(
-  //     <RequestIssuanceOfEarnedCreditsComponent
-  //       data={mockData}
-  //       complianceSummaryId={complianceSummaryId}
-  //       taskListElements={mockTaskListElements}
-  //     />,
-  //   );
-  //
-  //   expect(screen.getByTestId("request-issuance-content")).toBeInTheDocument();
-  //   expect(screen.getByTestId("operation-name")).toHaveTextContent(
-  //     mockData.operation_name,
-  //   );
-  //   expect(screen.getByTestId("back-url")).toBeInTheDocument();
-  //   expect(screen.getByTestId("continue-url")).toBeInTheDocument();
-  // });
+const mockRouterPush = vi.fn();
+useRouter.mockReturnValue({
+  query: {},
+  push: mockRouterPush,
+});
+
+// Mock the actionHandler
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn().mockResolvedValue({
+    tradingName: "Test Trading Co",
+    error: null,
+  }),
+}));
+
+describe("RequestIssuanceOfEarnedCreditsComponent", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders the form with correct schema fields and headers", () => {
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent complianceSummaryId="123" />,
+    );
+
+    // Check form title
+    expect(
+      screen.getByText("Request Issuance of Earned Credits"),
+    ).toBeVisible();
+
+    // Check BCCR account section header
+    expect(
+      screen.getByText("B.C. Carbon Registry (BCCR) Account Information"),
+    ).toBeVisible();
+
+    // Check BCCR Holding Account ID field
+    const accountIdField = screen.getByLabelText("BCCR Holding Account ID:*");
+    expect(accountIdField).toBeVisible();
+
+    // Check help text
+    const helpText = screen.getByText(/No account\?/);
+    expect(helpText).toBeVisible();
+    const createAccountLink = screen.getByRole("link", {
+      name: "Create account",
+    });
+    expect(createAccountLink).toBeVisible();
+    expect(createAccountLink).toHaveAttribute("target", "_blank");
+    expect(createAccountLink).toHaveAttribute("rel", "noopener noreferrer");
+
+    // BCCR Trading Name field should not be visible initially
+    expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
+  });
+
+  it("updates form data when onValidAccountResolved is called", async () => {
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent complianceSummaryId="123" />,
+    );
+
+    // Get the BCCR Holding Account ID input
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+
+    // Enter a valid 15-digit account number
+    fireEvent.change(accountInput, { target: { value: "123456789012345" } });
+
+    // Wait for the trading name to appear (account details fetched and resolved)
+    const tradingNameLabel = await screen.findByText("BCCR Trading Name:");
+    expect(tradingNameLabel).toBeVisible();
+
+    const tradingNameValue = await screen.findByText("Test Trading Co");
+    expect(tradingNameValue).toBeVisible();
+  });
+
+  it("renders navigation buttons with correct states", () => {
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent complianceSummaryId="123" />,
+    );
+
+    // Check button text and states
+    const backButton = screen.getByRole("button", { name: "Back" });
+    expect(backButton).toBeVisible();
+    expect(backButton).not.toBeDisabled();
+
+    const requestButton = screen.getByRole("button", {
+      name: "Requests Issuance of Earned Credits",
+    });
+    expect(requestButton).toBeVisible();
+    expect(requestButton).toBeDisabled(); // Disabled initially since bccrTradingName is not set
+
+    // Verify router push is called with correct URLs when buttons are clicked
+    fireEvent.click(backButton);
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/compliance-summaries/123/request-issuance-review-summary",
+    );
+
+    // Enter valid account details to enable the continue button
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: "123456789012345" } });
+
+    // Wait for the trading name to appear and button to be enabled
+    return waitFor(() => {
+      const enabledRequestButton = screen.getByRole("button", {
+        name: "Requests Issuance of Earned Credits",
+      });
+      expect(enabledRequestButton).not.toBeDisabled();
+
+      // Click the enabled button and verify navigation
+      fireEvent.click(enabledRequestButton);
+      expect(mockRouterPush).toHaveBeenCalledWith(
+        "/compliance-summaries/123/track-status-of-issuance",
+      );
+    });
+  });
 });
