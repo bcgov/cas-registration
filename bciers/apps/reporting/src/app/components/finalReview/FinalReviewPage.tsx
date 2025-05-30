@@ -1,10 +1,9 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
-import reviewDataFactory, {
-  ReviewData,
-} from "@reporting/src/app/components/finalReview/reviewDataFactory/factory";
+import reviewDataFactory from "@reporting/src/app/components/finalReview/reviewDataFactory/factory";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import {
   HeaderStep,
   ReportingPage,
@@ -15,22 +14,23 @@ import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSuppleme
 export default async function FinalReviewPage({
   version_id,
 }: HasReportVersion) {
-  // Get the report version flow data definitions
-  const flowData = await getFlowData(version_id);
+  const facilities: {
+    current_facilities: { is_selected: boolean }[];
+    past_facilities: { is_selected: boolean }[];
+  } = await getOperationFacilitiesList(version_id);
 
-  // Build final review data based on the report version flow type
-  const finalReviewData: ReviewData[] = await reviewDataFactory(
-    version_id,
-    flowData,
-  );
+  // count the number of current_facilities that are selected
+  const selectedFacilitiesCount =
+    facilities.current_facilities.filter((facility) => facility.is_selected)
+      .length +
+    facilities.past_facilities.filter((facility) => facility.is_selected)
+      .length;
 
   //🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
-
   //🔍 Check if reports need verification
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
-
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
     ReportingPage.FinalReview,
@@ -41,6 +41,14 @@ export default async function FinalReviewPage({
       skipChangeReview: !isSupplementaryReport,
     },
   );
+
+  // If number of facilities is >40, we don't fetch the report data
+  if (selectedFacilitiesCount > 40) {
+    return <FinalReviewForm navigationInformation={navInfo} data={[]} />;
+  }
+
+  const flowData = await getFlowData(version_id);
+  const finalReviewData = await reviewDataFactory(version_id, flowData);
 
   return (
     <FinalReviewForm navigationInformation={navInfo} data={finalReviewData} />
