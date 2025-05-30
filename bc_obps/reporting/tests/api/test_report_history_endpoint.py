@@ -20,8 +20,11 @@ class TestReportHistoryEndpoint(CommonTestSetup):
 
         report = report_baker()
 
+        submitted_version = report_version_baker(report=report, status="Draft")
+        submitted_version.status = "Submitted"
+        submitted_version.save()
+
         draft_version = report_version_baker(report=report, status="Draft")
-        submitted_version = report_version_baker(report=report, status="Submitted")
 
         mock_get_report_versions.return_value = [
             ReportHistoryResponse(

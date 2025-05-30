@@ -65,8 +65,20 @@ class ReportVersion(TimeStampedModel):
             pgtrigger.Protect(
                 name="immutable_report_version",  # Keep original name for compatibility
                 operation=pgtrigger.Update,
-                condition=pgtrigger.Q(old__status="Submitted")
-                & ~pgtrigger.Q(new__is_latest_submitted=False, old__is_latest_submitted=True, new__status="Submitted"),
+                condition=(
+                    pgtrigger.Q(old__status="Submitted")
+                    & ~pgtrigger.Q(
+                        new__is_latest_submitted=False,
+                        old__is_latest_submitted=True,
+                        new__status="Submitted",
+                    )
+                ),
+            ),
+            # Prevent delete of Submitted report
+            pgtrigger.Protect(
+                name="no_delete_submitted_report_version",
+                operation=pgtrigger.Delete,
+                condition=pgtrigger.Q(old__status="Submitted"),
             ),
         ]
 

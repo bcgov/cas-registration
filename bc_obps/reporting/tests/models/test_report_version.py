@@ -1,9 +1,11 @@
 from common.tests.utils.helpers import BaseTestCase
 from common.tests.utils.model_inspection import get_cascading_models
 from django.core.exceptions import ValidationError
+from django.db import ProgrammingError
 from model_bakery import baker
 import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models.report_verification import ReportVerification
 from reporting.models.report_version import ReportVersion
 from reporting.tests.utils.bakers import report_version_baker
 
@@ -100,7 +102,7 @@ class ReportVersionTest(BaseTestCase):
             report_id=report.id,
         )
 
-    def test_submitted_report_version_is_immutable(self):
+    def test_submitted_report_version_is_immutable_except_is_latest_submitted(self):
         """
         Test that for a ReportVersion with status 'Submitted', any update is blocked
         unless the only change is to set is_latest_submitted from True to False.
@@ -113,6 +115,87 @@ class ReportVersionTest(BaseTestCase):
         # Toggling only is_latest_submitted → allowed
         self.test_object.is_latest_submitted = False
         self.test_object.save()  # no exception
+
+    def test_submitted_report_version_is_immutable_update(self):
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        with pytest.raises(
+            ProgrammingError,
+            match="pgtrigger: Cannot update rows from report_version table",
+        ):
+            self.test_object.report_type = ReportVersion.ReportType.SIMPLE_REPORT
+            self.test_object.save()
+
+    def test_submitted_report_version_is_immutable_update_related(self):
+
+        report_additional_data = baker.make_recipe(
+            "reporting.tests.utils.report_additional_data",
+            report_version=self.test_object,
+            capture_emissions=True,
+        )
+
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+
+        # update field in related table
+        with pytest.raises(
+            ProgrammingError,
+            match="reportadditionaldata record is immutable after a report version has been submitted",
+        ):
+            report_additional_data.capture_emissions = False
+            report_additional_data.save()
+
+    # we only test insert on related tables, not report_version itself, because inserting a new report version doesn't affect the immutability of existing ones
+    def test_submitted_report_version_is_immutable_insert_related(self):
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+        self.test_object.refresh_from_db()
+
+        with pytest.raises(
+            ProgrammingError,
+            match="reportverification record is immutable after a report version has been submitted",
+        ):
+            report_verification = ReportVerification.objects.create(report_version=self.test_object)
+            report_verification.save()
+
+    def test_submitted_report_version_is_immutable_delete(self):
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+        self.test_object.refresh_from_db()
+        with pytest.raises(
+            ProgrammingError,
+            # we hit the related table trigger first, so we get this error instead of the one from the report_version trigger
+            # match="pgtrigger: Cannot delete rows from report_version table",
+            match="reportoperation record is immutable after a report version has been submitted",
+        ):
+            self.test_object.delete()
+
+    def test_submitted_report_version_is_immutable_delete_related(self):
+        eio_data = baker.make_recipe(
+            "reporting.tests.utils.electricity_import_data",
+            report_version=self.test_object,
+        )
+        # PRE‑ACT: mark this version as Submitted & latest
+        self.test_object.status = ReportVersion.ReportVersionStatus.Submitted
+        self.test_object.is_latest_submitted = True
+        self.test_object.save()
+        self.test_object.refresh_from_db()
+
+        # delete record in related table
+        with pytest.raises(
+            ProgrammingError,
+            match="reportelectricityimportdata record is immutable after a report version has been submitted",
+        ):
+            eio_data.delete()
 
     def test_all_report_version_models_have_the_immutability_trigger(self):
         report_version_models = get_cascading_models(ReportVersion)

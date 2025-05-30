@@ -1,6 +1,6 @@
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
-from reporting.models.report_attachment import ReportAttachment
+from reporting.models import ReportAttachment, ReportVersion
 
 
 class TestReportAttachmentInternalEndpoints(CommonTestSetup):
@@ -15,7 +15,7 @@ class TestReportAttachmentInternalEndpoints(CommonTestSetup):
         # Create a report version with attachments
         report_version = make_recipe(
             "reporting.tests.utils.report_version",
-            status="Submitted",
+            status="Draft",
             report__operation__name="test operation",
             report__operator__legal_name="test operator",
         )
@@ -45,6 +45,8 @@ class TestReportAttachmentInternalEndpoints(CommonTestSetup):
             attachment_type=ReportAttachment.ReportAttachmentType.CONFIDENTIALITY_REQUEST,
             attachment_name="test_conf_req2.txt",
         )
+
+        ReportVersion.objects.filter(id=report_version.id).update(status="Submitted")
 
         # Call the endpoint
         response = TestUtils.client.get(self.endpoint_under_test, HTTP_AUTHORIZATION=self.auth_header_dumps)
