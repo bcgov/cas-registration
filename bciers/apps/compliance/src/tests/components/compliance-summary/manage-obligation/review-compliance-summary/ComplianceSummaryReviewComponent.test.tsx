@@ -1,34 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
+import userEvent from "@testing-library/user-event";
 
-// Mock window.open with a delayed promise
-const mockWindowOpen = vi.fn(() => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(undefined);
-    }, 0);
-  });
-});
-window.open = mockWindowOpen as unknown as typeof window.open;
-
-// Mock Next.js API route
-vi.mock("next/server", () => ({
-  NextResponse: {
-    json: vi.fn(),
-  },
-}));
-
-// Mock the API route handler
-vi.mock("@/compliance/src/app/api/invoice/[id]/route", () => ({
-  GET: vi.fn(
-    () =>
-      new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(new Response(new Blob(), { status: 200 }));
-        }, 1000);
-      }),
-  ),
-}));
+// Mock window.open to behave synchronously
+const mockWindowOpen = vi.fn();
+window.open = mockWindowOpen;
 
 // Mock the grid components
 vi.mock(
@@ -170,62 +146,34 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(generateInvoiceButton).not.toBeDisabled();
   });
 
-  // TODO: Sepehr - Fix this test
-  // it("handles invoice generation correctly", async () => {
-  //   const user = userEvent.setup();
+  it("handles invoice generation correctly", async () => {
+    const user = userEvent.setup();
 
-  //   // Render the component
-  //   const { rerender } = render(
-  //     <ComplianceSummaryReviewComponent
-  //       data={mockData}
-  //       complianceSummaryId="123"
-  //     />,
-  //   );
+    // Render the component
+    render(
+      <ComplianceSummaryReviewComponent
+        data={mockData}
+        complianceSummaryId="123"
+      />,
+    );
 
-  //   // Initial state check
-  //   const generateInvoiceButton = screen.getByRole("button", {
-  //     name: "Generate Compliance Invoice",
-  //   });
-  //   expect(generateInvoiceButton).toBeEnabled();
+    const generateInvoiceButton = screen.getByRole("button", {
+      name: "Generate Compliance Invoice",
+    });
+    expect(generateInvoiceButton).toBeEnabled();
 
-  //   // Start clicking the button but don't wait for it to complete
-  //   const clickPromise = user.click(generateInvoiceButton);
+    await user.click(generateInvoiceButton);
 
-  //   // Force a rerender to capture the loading state
-  //   rerender(
-  //     <ComplianceSummaryReviewComponent
-  //       data={mockData}
-  //       complianceSummaryId="123"
-  //     />,
-  //   );
+    // Verify window.open was called with correct arguments
+    expect(mockWindowOpen).toHaveBeenCalledWith(
+      "/compliance/api/invoice/123",
+      "_blank",
+      "noopener,noreferrer",
+    );
 
-  //   // Verify loading state
-  //   expect(
-  //     screen.getByRole("button", { name: "Generating Invoice..." }),
-  //   ).toBeDisabled();
-
-  //   // Verify window.open was called
-  //   expect(mockWindowOpen).toHaveBeenCalledWith(
-  //     "/compliance/api/invoice/123",
-  //     "_blank",
-  //     "noopener,noreferrer",
-  //   );
-
-  //   // Wait for the click operation to complete
-  //   await clickPromise;
-
-  //   // Force another rerender to capture the final state
-  //   rerender(
-  //     <ComplianceSummaryReviewComponent
-  //       data={mockData}
-  //       complianceSummaryId="123"
-  //     />,
-  //   );
-
-  //   // Verify button returns to normal state
-  //   const finalButton = screen.getByRole("button", {
-  //     name: "Generate Compliance Invoice",
-  //   });
-  //   expect(finalButton).toBeEnabled();
-  // });
+    // Wait for the button to return to its normal state
+    expect(
+      screen.getByRole("button", { name: "Generate Compliance Invoice" }),
+    ).toBeEnabled();
+  });
 });
