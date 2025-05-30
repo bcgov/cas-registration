@@ -29,7 +29,7 @@ describe("The FinalReviewForm component", () => {
     );
     expect(
       screen.getByText(
-        "The system is unable to display a large amount of facility reports at this time, this issue will be fixed in a future version of the system.",
+        "The system is unable to display a large amount of facility reports. This issue will be fixed in a future version of the system. To review your facility reports, please return to report information.",
       ),
     ).toBeInTheDocument();
   });
@@ -55,7 +55,7 @@ describe("The FinalReviewForm component", () => {
     );
     expect(
       screen.queryByText(
-        "The system is unable to display a large amount of facility reports at this time, this issue will be fixed in a future version of the system.",
+        "The system is unable to display a large amount of facility reports. This issue will be fixed in a future version of the system. To review your facility reports, please return to report information.",
       ),
     ).not.toBeInTheDocument();
   });
