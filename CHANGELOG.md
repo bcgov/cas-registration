@@ -1,3 +1,14 @@
+# [3.5.0](https://github.com/bcgov/cas-registration/compare/v3.4.1...v3.5.0) (2025-05-30)
+
+### Bug Fixes
+
+- reports with over 50 facilities won't see a final review page ([7d3fc09](https://github.com/bcgov/cas-registration/commit/7d3fc097536b17e416d2a873683d5d06f7b37727))
+- triggers on more operations for report_versions ([ab96c88](https://github.com/bcgov/cas-registration/commit/ab96c880f56fc46ad50eb8f249f3ddeff8646ee0))
+
+### Features
+
+- add electricity transmission activity configs ([daef01f](https://github.com/bcgov/cas-registration/commit/daef01fe1d555a64edab303164b1e60cd50c4386))
+
 ## [3.4.1](https://github.com/bcgov/cas-registration/compare/v3.3.0...v3.4.1) (2025-05-29)
 
 ### Bug Fixes
