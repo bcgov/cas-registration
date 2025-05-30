@@ -1,6 +1,5 @@
 "use client";
 
-import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
@@ -13,7 +12,6 @@ import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
 
 interface Props {
   complianceSummaryId: any;
-  taskListElements: TaskListElement[];
 }
 
 export default function ComplianceUnitsApplyComponent({
@@ -55,7 +53,3 @@ export default function ComplianceUnitsApplyComponent({
     </FormBase>
   );
 }
-
-/*
-
- */
