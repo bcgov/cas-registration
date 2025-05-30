@@ -504,6 +504,11 @@ ENDPOINTS = {
             "endpoint_name": "get_compliance_report_version_earned_credits",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_compliance_report_version_earned_credits",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
     "cas_director": [
