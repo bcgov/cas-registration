@@ -31,13 +31,11 @@ export default async function PaymentInstructionsDownloadPage({
       taskListElements={taskListElements}
       complianceSummaryId={complianceSummaryId}
     >
-      <>
-        PaymentInstructionsDownload ...TBD
-        <ComplianceStepButtons
-          backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
-        />
-      </>
+      <p>PaymentInstructionsDownload ...TBD</p>
+      <ComplianceStepButtons
+        backUrl={backUrl}
+        continueUrl={saveAndContinueUrl}
+      />
     </CompliancePageLayout>
   );
 }
