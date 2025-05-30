@@ -42,8 +42,8 @@ export default async function FinalReviewPage({
     },
   );
 
-  // If number of facilities is >50, we don't fetch the report data
-  if (selectedFacilitiesCount > 50) {
+  // If number of facilities is >40, we don't fetch the report data
+  if (selectedFacilitiesCount > 40) {
     return <FinalReviewForm navigationInformation={navInfo} data={[]} />;
   }
 
