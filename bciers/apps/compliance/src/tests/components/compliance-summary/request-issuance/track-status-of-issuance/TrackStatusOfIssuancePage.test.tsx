@@ -6,10 +6,10 @@ import TrackStatusOfIssuancePage from "../../../../../app/components/compliance-
 vi.mock("../../../../../app/utils/getRequestIssuanceTrackStatusData", () => ({
   getRequestIssuanceTrackStatusData: vi.fn().mockResolvedValue({
     operation_name: "Test Operation",
-    earnedCredits: 100,
-    issuanceStatus: "approved",
-    bccrTradingName: "Test Trading Name",
-    directorsComments: "Director's test comments",
+    earned_credits: 100,
+    issuance_status: "approved",
+    bccr_trading_name: "Test Trading Name",
+    directors_comments: "Director's test comments",
   }),
   IssuanceStatus: {
     APPROVED: "approved",
@@ -61,7 +61,7 @@ vi.mock(
     default: (props: any) => (
       <section aria-label="track status of issuance component">
         <h1>{props.data.operation_name}</h1>
-        <div aria-label="issuance status">{props.data.issuanceStatus}</div>
+        <div aria-label="issuance status">{props.data.issuance_status}</div>
         <div aria-label="compliance summary id">
           {props.complianceSummaryId}
         </div>
@@ -94,6 +94,15 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageHeading", () => ({
 vi.mock("@/compliance/src/app/utils/getOperationByComplianceSummaryId", () => ({
   __esModule: true,
   default: vi.fn().mockResolvedValue({ name: "Mock Operation" }),
+}));
+
+vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+  __esModule: true,
+  getReportingYear: vi.fn().mockResolvedValue({
+    reporting_year: 2024,
+    report_due_date: "2025-03-31",
+    reporting_window_end: "2025-03-31",
+  }),
 }));
 
 const mockActivePageEnum = {
