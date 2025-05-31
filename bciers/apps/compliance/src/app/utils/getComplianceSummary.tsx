@@ -45,7 +45,6 @@ export const getComplianceSummary = async (
     "GET",
     "",
   );
-
   if (data?.error) {
     throw new Error(`Failed to fetch compliance summary: ${data.error}`);
   }

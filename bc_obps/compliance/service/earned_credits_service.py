@@ -12,18 +12,24 @@ class ComplianceEarnedCreditsService:
         cls, compliance_report_version_id: int
     ) -> Optional[ComplianceEarnedCredits]:
         """
-        Fetches earned credits data for a specific compliance compliance_report_version
+        Fetches earned credits data for a specific compliance report version
 
         Args:
-            compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve earned credits data for
+            compliance_report_version_id: The ID of the compliance report version to retrieve earned credits data for
 
         Returns:
             The EarnedCredits object if it exists
         """
-        earned_credits_record = ComplianceEarnedCredits.objects.filter(
-            compliance_report_version_id=compliance_report_version_id
-        ).first()
-        return earned_credits_record
+        # Get the earned credits record with related data
+        return (
+            ComplianceEarnedCredits.objects.filter(compliance_report_version_id=compliance_report_version_id)
+            .select_related(
+                'compliance_report_version__compliance_report__report__operation',
+                'compliance_report_version__compliance_report__compliance_period',
+                'compliance_report_version__report_compliance_summary',
+            )
+            .first()
+        )
 
     @classmethod
     def create_earned_credits_record(

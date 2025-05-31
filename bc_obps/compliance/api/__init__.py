@@ -6,6 +6,9 @@ from .compliance_report_versions import get_compliance_report_versions_list
 from ._compliance_report_versions._compliance_report_version_id.payments import get_compliance_report_version_payments
 from ._compliance_report_versions.compliance_report_version_id import get_compliance_report_version
 from ._compliance_report_versions._compliance_report_version_id import operation
+from ._compliance_report_versions._compliance_report_version_id.earned_credits import (
+    get_compliance_report_version_earned_credits,
+)
 
 # from ._summaries._summary_id.issuance import get_compliance_summary_issuance
 
