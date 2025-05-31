@@ -5,10 +5,10 @@ import {
   readOnlyObjectField,
   readOnlyStringField,
   commonReadOnlyOptions,
-} from "../helpers";
-import { IssuanceStatusAwaitingNote } from "../../../components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
-import { IssuanceStatusApprovedNote } from "../../../components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
-import { IssuanceStatus } from "../../../utils/getRequestIssuanceTrackStatusData";
+} from "@/compliance/src/app/data/jsonSchema/helpers";
+import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
+import { IssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
+import { IssuanceStatus } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
 import React from "react";
 
 export const StatusNoteWidget = (props: any) => {
@@ -40,12 +40,21 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
   title: "Track Status of Issuance",
   properties: {
-    statusHeader: readOnlyObjectField("Status of Issuance"),
-    statusNote: readOnlyStringField(""),
-    earnedCredits: readOnlyStringField("Earned Credits:"),
-    issuanceStatus: readOnlyStringField("Status of Issuance:"),
-    bccrTradingName: readOnlyStringField("BCCR Trading Name:"),
-    directorsComments: readOnlyStringField("Director's Comments:"),
+    status_header: readOnlyObjectField("Status of Issuance"),
+    status_note: readOnlyStringField(""),
+    earned_credits: readOnlyStringField("Earned Credits:"),
+    issuance_status: readOnlyStringField("Status of Issuance:"),
+    bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
+  },
+  if: {
+    properties: {
+      issuance_status: { enum: [IssuanceStatus.APPROVED] },
+    },
+  },
+  then: {
+    properties: {
+      directors_comments: readOnlyStringField("Director's Comments:"),
+    },
   },
 };
 
@@ -53,24 +62,22 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
-  statusHeader: {
+  status_header: {
     ...headerUiConfig,
     "ui:classNames": "text-bc-bg-blue mt-0 mb-2",
   },
-  statusNote: {
+  status_note: {
     "ui:widget": StatusNoteWidget,
     "ui:options": {
       label: false,
       inline: true,
     },
   },
-  earnedCredits: commonReadOnlyOptions,
-  issuanceStatus: {
+  earned_credits: commonReadOnlyOptions,
+  issuance_status: {
     ...commonReadOnlyOptions,
     "ui:widget": StatusTextWidget,
   },
-  bccrTradingName: commonReadOnlyOptions,
-  directorsComments: {
-    ...commonReadOnlyOptions,
-  },
+  bccr_trading_name: commonReadOnlyOptions,
+  directors_comments: commonReadOnlyOptions,
 };
