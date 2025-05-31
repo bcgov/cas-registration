@@ -1,7 +1,7 @@
 "use client";
 
 import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
-import ComplianceStepButtons from "../../../ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import FormBase from "@bciers/components/form/FormBase";
 import {
   trackStatusOfIssuanceSchema,
@@ -25,7 +25,7 @@ export default function TrackStatusOfIssuanceComponent({
       uiSchema={trackStatusOfIssuanceUiSchema}
       formData={{
         ...data,
-        statusNote: data.issuanceStatus,
+        status_note: data.issuance_status,
       }}
       className="w-full"
     >

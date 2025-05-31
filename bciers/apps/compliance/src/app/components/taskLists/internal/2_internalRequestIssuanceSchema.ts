@@ -9,7 +9,7 @@ export enum InternalActivePage {
 
 export const getInternalRequestIssuanceTaskList: (
   complianceSummaryId: string,
-  reportingYear?: string,
+  reportingYear?: number,
   activeIndex?: InternalActivePage,
 ) => TaskListElement[] = (
   complianceSummaryId,
@@ -20,7 +20,7 @@ export const getInternalRequestIssuanceTaskList: (
     {
       type: "Page" as const,
       title: `Review ${reportingYear} Compliance Summary`,
-      link: `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`,
+      link: `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`,
       isActive: activeIndex === InternalActivePage.ReviewComplianceSummary,
     },
     {
