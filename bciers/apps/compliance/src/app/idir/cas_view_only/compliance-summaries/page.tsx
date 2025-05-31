@@ -1,20 +1,4 @@
+import Page from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesPage";
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import { Suspense } from "react";
-import Loading from "@bciers/components/loading/SkeletonForm";
-import ComplianceSummariesPage from "../../../components/compliance-summaries/ComplianceSummariesPage";
 
-function CasAdminComplianceSummariesPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  return (
-    <div className="flex flex-col">
-      <Suspense fallback={<Loading />}>
-        <ComplianceSummariesPage searchParams={searchParams} />
-      </Suspense>
-    </div>
-  );
-}
-
-export default defaultPageFactory(CasAdminComplianceSummariesPage);
+export default defaultPageFactory(Page);

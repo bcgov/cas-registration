@@ -12,18 +12,18 @@ import {
 const createSummarySection = (
   reportingYear: number,
 ): RJSFSchema["properties"] => ({
-  summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
-  emissionsAttributableForCompliance: readOnlyStringField(
+  summary_header: readOnlyObjectField(`From ${reportingYear} Report`),
+  emissions_attributable_for_compliance: readOnlyStringField(
     "Emissions Attributable for Compliance:",
   ),
-  emissionLimit: readOnlyStringField("Emissions Limit:"),
-  excessEmissions: readOnlyStringField("Excess Emissions:"),
+  emission_limit: readOnlyStringField("Emissions Limit:"),
+  excess_emissions: readOnlyStringField("Excess Emissions:"),
 });
 
 const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
-  earnedCreditsHeader: readOnlyObjectField("Earned Credits"),
-  earnedCredits: readOnlyStringField("Earned Credits:"),
-  issuanceStatus: readOnlyStringField("Status of Issuance:"),
+  earned_credits_header: readOnlyObjectField("Earned Credits"),
+  earned_credits: readOnlyStringField("Earned Credits:"),
+  issuance_status: readOnlyStringField("Status of Issuance:"),
 });
 
 export const createInternalComplianceSummaryReviewSchema = (
@@ -41,14 +41,14 @@ export const internalComplianceSummaryReviewUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
-  summaryHeader: {
+  summary_header: {
     ...headerUiConfig,
     "ui:classNames": "text-bc-bg-blue mt-0 mb-2",
   },
-  emissionsAttributableForCompliance: tco2eUiConfig,
-  emissionLimit: tco2eUiConfig,
-  excessEmissions: tco2eUiConfig,
-  earnedCreditsHeader: headerUiConfig,
-  earnedCredits: commonReadOnlyOptions,
-  issuanceStatus: commonReadOnlyOptions,
+  emissions_attributable_for_compliance: tco2eUiConfig,
+  emission_limit: tco2eUiConfig,
+  excess_emissions: tco2eUiConfig,
+  earned_credits_header: headerUiConfig,
+  earned_credits: commonReadOnlyOptions,
+  issuance_status: commonReadOnlyOptions,
 };

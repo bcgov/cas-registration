@@ -1,6 +1,6 @@
 "use client";
 
-import ComplianceStepButtons from "../../../ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import FormBase from "@bciers/components/form/FormBase";
 import {
   createInternalComplianceSummaryReviewSchema,
@@ -10,18 +10,20 @@ import {
 interface Props {
   readonly data: any;
   readonly complianceSummaryId: string;
+  readonly reportingYear: number;
 }
 
 const InternalComplianceSummaryReviewComponent = ({
   data,
   complianceSummaryId,
+  reportingYear,
 }: Props) => {
   const backUrl = `/compliance-summaries`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
 
   return (
     <FormBase
-      schema={createInternalComplianceSummaryReviewSchema(data.reportingYear)}
+      schema={createInternalComplianceSummaryReviewSchema(reportingYear)}
       uiSchema={internalComplianceSummaryReviewUiSchema}
       formData={data}
       className="w-full"

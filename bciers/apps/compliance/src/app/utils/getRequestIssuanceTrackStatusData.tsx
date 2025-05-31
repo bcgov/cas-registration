@@ -5,10 +5,10 @@ export enum IssuanceStatus {
 
 export interface RequestIssuanceTrackStatusData {
   operation_name: string;
-  earnedCredits: number;
-  issuanceStatus: string;
-  bccrTradingName: string;
-  directorsComments: string;
+  earned_credits: number;
+  issuance_status: string;
+  bccr_trading_name: string;
+  directors_comments: string;
 }
 
 export const mockRequestIssuanceTrackStatusData: {
@@ -16,17 +16,17 @@ export const mockRequestIssuanceTrackStatusData: {
 } = {
   awaiting: {
     operation_name: "Colour Co.",
-    earnedCredits: 100,
-    issuanceStatus: IssuanceStatus.AWAITING,
-    bccrTradingName: "Colour Co.",
-    directorsComments: "",
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.AWAITING,
+    bccr_trading_name: "Colour Co.",
+    directors_comments: "",
   },
   approved: {
     operation_name: "Colour Co.",
-    earnedCredits: 100,
-    issuanceStatus: IssuanceStatus.APPROVED,
-    bccrTradingName: "Colour Co.",
-    directorsComments: "Lorem ipsum",
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.APPROVED,
+    bccr_trading_name: "Colour Co.",
+    directors_comments: "Lorem ipsum",
   },
 };
 
@@ -42,11 +42,11 @@ export async function getRequestIssuanceTrackStatusData(): Promise<RequestIssuan
   // }
   // return {
   //   operation_name: response.operation_name,
-  //   earnedCredits: response.earned_credits,
-  //   issuanceStatus: response.issuance_status,
-  //   bccrTradingName: response.bccr_trading_name,
-  //   directorsComments: response.directors_comments,
+  //   earned_credits: response.earned_credits,
+  //   issuance_status: response.issuance_status,
+  //   bccr_trading_name: response.bccr_trading_name,
+  //   directors_comments: response.directors_comments,
   // };
 
-  return mockRequestIssuanceTrackStatusData.approved;
+  return mockRequestIssuanceTrackStatusData.awaiting;
 }
