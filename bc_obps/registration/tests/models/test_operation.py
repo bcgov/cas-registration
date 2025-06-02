@@ -26,6 +26,9 @@ from registration.tests.constants import (
 from registration.tests.utils.bakers import operation_baker
 from itertools import cycle
 
+from rls.enums import RlsOperations, RlsRoles
+from rls.models import Rls
+
 
 class OperationModelTest(BaseTestCase):
     fixtures = [
@@ -287,3 +290,30 @@ class OperationTriggerTests(BaseTestCase):
             "Cannot assign bcghg_id to Operation unless status is Registered",
             str(cm.exception),
         )
+
+
+# RLS tests
+class TestOperationRls(BaseTestCase):
+    def test_operation_rls_select(self):
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator', user=self.user
+        )
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
+        random_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=baker.make_recipe('registration.tests.utils.operator')
+        )
+
+        for role, operations in operation.Rls.role_grants_mapping.items():
+            self.user.role = role
+            self.user.save()
+            if RlsOperations.SELECT in operations:
+                retrieved_operations = Operation.objects.all()
+                if role == RlsRoles.INDUSTRY_USER:
+                    assert retrieved_operations.count() == 1 # Industry user should see only their operation
+                else:
+                    assert retrieved_operations.count() == 2 # cas roles should see everything
+
+
+       
