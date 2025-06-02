@@ -1,4 +1,3 @@
-import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import OperationReviewForm from "./OperationReviewForm";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
@@ -7,46 +6,43 @@ import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
-import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
-import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
+import { getReportingOperationData } from "@reporting/src/app/utils/getReportOperationData";
 
 export default async function OperationReviewPage({
   version_id,
 }: HasReportVersion) {
-  const reportOperation = await getReportingOperation(version_id);
-  const facilityReport = await getFacilityReport(version_id);
+  const data = await getReportingOperationData(version_id);
 
   const navigationInformation = await getNavigationInformation(
     HeaderStep.OperationInformation,
     ReportingPage.ReviewOperationInfo,
     version_id,
-    facilityReport.facility_id,
+    data.facilityId,
   );
 
-  const params = await getOperationSchemaParameters(version_id);
   const schema = buildOperationReviewSchema(
-    params.reportOperation,
-    params.reportingYear,
-    params.allActivities,
-    params.allRegulatedProducts,
-    params.allRepresentatives,
-    params.reportType,
-    params.showRegulatedProducts,
-    params.showBoroId,
-    params.showActivities,
+    data.reportOperation,
+    data.reportingYear,
+    data.allActivities,
+    data.allRegulatedProducts,
+    data.allRepresentatives,
+    data.reportType,
+    data.showRegulatedProducts,
+    data.showBoroId,
+    data.showActivities,
   );
 
   return (
     <OperationReviewForm
-      formData={reportOperation}
+      formData={data.reportOperation}
       version_id={version_id}
       schema={schema}
       navigationInformation={navigationInformation}
-      reportType={params.reportType}
-      reportingYear={params.reportingYear}
-      allActivities={params.allActivities}
-      allRegulatedProducts={params.allRegulatedProducts}
-      facilityId={facilityReport.facility_id}
+      reportType={data.reportType}
+      reportingYear={data.reportingYear}
+      allActivities={data.allActivities}
+      allRegulatedProducts={data.allRegulatedProducts}
+      facilityId={data.facilityId}
     />
   );
 }

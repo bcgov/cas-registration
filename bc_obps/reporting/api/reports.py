@@ -13,7 +13,10 @@ from service.report_service import ReportService
 from service.report_version_service import ReportVersionService, ReportVersionData
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from reporting.schema.report_operation import ReportOperationIn, ReportOperationSchemaOut, ReportOperationOut
+from reporting.schema.report_operation import (
+    ReportOperationIn,
+    ReportOperationOut,
+)
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
@@ -36,18 +39,6 @@ from reporting.models import ReportingYear, ReportVersion, ReportOperation
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report_version_id
-
-
-@router.get(
-    "/report-version/{version_id}/report-operation",
-    response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=approved_authorized_roles_report_version_composite_auth,
-)
-def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
-    report_service = ReportService.get_report_operation_by_version_id(version_id)
-    return report_service
 
 
 @router.post(
@@ -145,18 +136,6 @@ def save_report_version(
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportService.get_registration_purpose_by_version_id(version_id)
     return 200, response_data
-
-
-@router.get(
-    "/report-version/{version_id}/report-operation/update",
-    response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="Updates the facility report details by version_id and facility_id.",
-    auth=approved_authorized_roles_report_version_composite_auth,
-)
-def get_update_report(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
-    report_operation = ReportService.update_report_operation(version_id)
-    return 200, report_operation
 
 
 @router.delete(
