@@ -25,6 +25,7 @@ def generate_rls_policies(
     role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
     table: Any,
     using_statement: str = "FALSE",
+    check_statement: str = "",
     schema: Schemas = Schemas.ERC,
 ) -> List[RlsGrant]:
     """
@@ -37,7 +38,16 @@ def generate_rls_policies(
             policy_name=f"{table.value.lower()}_{role.name.lower()}_{operation.name.lower()}",
             operation=operation,
             # CAS roles are all or nothing, but industry users need more granularity. In addition to role they have an app_role, and they should only be able to access records belonging to their organization
-            using_statement=using_statement if role.name not in [RlsRoles.CAS_ADMIN, RlsRoles.CAS_ANALYST, RlsRoles.CAS_DIRECTOR, RlsRoles.CAS_VIEW_ONLY] else "TRUE",
+            **(
+                {"using_statement": using_statement if role.name in [RlsRoles.CAS_ADMIN, RlsRoles.CAS_ANALYST, RlsRoles.CAS_DIRECTOR, RlsRoles.CAS_VIEW_ONLY] else "TRUE"}
+                if operation in [RlsOperations.SELECT, RlsOperations.UPDATE]
+                else {}
+            ),
+            **(
+                {"check_statement": check_statement}
+                if operation in [RlsOperations.INSERT, RlsOperations.UPDATE]
+                else {}
+            ),
             table=table,
             schema=schema,
         )
