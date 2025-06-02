@@ -28,6 +28,11 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_current_operator_and_user_operator",
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_operation_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
         {"method": "get", "endpoint_name": "is_current_user_approved_admin"},
         {"method": "get", "endpoint_name": "get_operator_users"},
         {

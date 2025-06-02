@@ -2,10 +2,11 @@ from uuid import UUID
 
 from ninja import ModelSchema, Schema
 
+from registration.schema import RegulatedProductSchema
 from reporting.models import ReportOperationRepresentative
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
-
+from pydantic import BaseModel
 from typing import List, Optional
 
 
@@ -52,6 +53,11 @@ class ReportOperationSchemaOut(ReportOperationOut):
     operation_id: UUID
 
 
+class FacilityReportSchema(BaseModel):
+    facility_id: UUID
+    operation_type: str
+
+
 class ReportOperationIn(Schema):
     """
     Schema for the save report operation endpoint request input
@@ -68,3 +74,22 @@ class ReportOperationIn(Schema):
     regulated_products: List[int]
     operation_report_type: str
     operation_representative_name: List[int]
+
+
+class ActivitySchema(BaseModel):
+    id: int
+    name: str
+    applicable_to: str
+
+
+class ReportOperationDataSchema(Schema):
+    reportOperation: ReportOperationSchemaOut
+    facilityId: Optional[UUID] = None
+    allActivities: List[ActivitySchema]
+    allRegulatedProducts: List[RegulatedProductSchema]
+    allRepresentatives: List[ReportOperationRepresentativeSchema]
+    reportType: str
+    showRegulatedProducts: bool
+    showBoroId: bool
+    showActivities: bool
+    reportingYear: int

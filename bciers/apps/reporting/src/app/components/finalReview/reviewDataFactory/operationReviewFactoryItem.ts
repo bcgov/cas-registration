@@ -3,13 +3,10 @@ import {
   buildOperationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { ReviewDataFactoryItem } from "./factory";
-import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
-import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
+import { getReportingOperationData } from "@reporting/src/app/utils/getReportOperationData";
 
 const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
-  const reportingOperationData = await getReportingOperation(versionId);
-
-  const schemaData = await getOperationSchemaParameters(versionId);
+  const schemaData = await getReportingOperationData(versionId);
   const schema: any = buildOperationReviewSchema(
     schemaData.reportOperation,
     schemaData.reportingYear,
@@ -29,7 +26,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   return [
     {
       schema: schema,
-      data: reportingOperationData,
+      data: schemaData.reportOperation,
       uiSchema: buildOperationReviewUiSchema(),
     },
   ];

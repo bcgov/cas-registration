@@ -5,11 +5,11 @@ import { getReportingOperation } from "@reporting/src/app/utils/getReportingOper
 import { getFacilityReport } from "@reporting/src/app/utils/getFacilityReport";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { buildOperationReviewSchema } from "@reporting/src/data/jsonSchema/operations";
-import { getOperationSchemaParameters } from "@reporting/src/app/components/operations/getOperationSchemaParameters";
 import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
+import { getReportingOperationData } from "@reporting/src/app/utils/getReportOperationData";
 
 // ✨ Mock the utility functions
 vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
@@ -28,12 +28,9 @@ vi.mock("@reporting/src/data/jsonSchema/operations", () => ({
   buildOperationReviewSchema: vi.fn(),
 }));
 
-vi.mock(
-  "@reporting/src/app/components/operations/getOperationSchemaParameters",
-  () => ({
-    getOperationSchemaParameters: vi.fn(),
-  }),
-);
+vi.mock("@reporting/src/app/utils/getReportOperationData", () => ({
+  getReportingOperationData: vi.fn(),
+}));
 
 describe("OperationReviewPage", () => {
   it("renders OperationReviewForm with correct props", async () => {
@@ -62,7 +59,7 @@ describe("OperationReviewPage", () => {
     (getNavigationInformation as any).mockResolvedValue(
       fakeNavigationInformation,
     );
-    (getOperationSchemaParameters as any).mockResolvedValue(fakeParams);
+    (getReportingOperationData as any).mockResolvedValue(fakeParams);
     (buildOperationReviewSchema as any).mockReturnValue(fakeSchema);
 
     // Call the page
@@ -89,7 +86,7 @@ describe("OperationReviewPage", () => {
       reportVersion.version_id,
       fakeFacilityReport.facility_id,
     );
-    expect(getOperationSchemaParameters).toHaveBeenCalledWith(
+    expect(getReportingOperationData).toHaveBeenCalledWith(
       reportVersion.version_id,
     );
     expect(buildOperationReviewSchema).toHaveBeenCalledWith(
