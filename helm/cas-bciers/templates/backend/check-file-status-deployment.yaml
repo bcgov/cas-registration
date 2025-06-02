@@ -37,7 +37,12 @@ spec:
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials
               readOnly: true
+        {{- include "cas-logging-sidecar.containers" (dict
+            "containerToSidecar" "check-document-file-status"
+            "logName" "cas-bciers-dev-logs"
+            "host" (index .Values "cas-logging-sidecar" "host")  ) | nindent 8 }}
       volumes:
+        {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
         - name: gcs-attachment-credentials
           secret:
             secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
