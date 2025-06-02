@@ -28,7 +28,7 @@
       "archived_at": null,
       "json_data": {
         "fuelDescription": "Diesel fuel",
-        "annualFuelAmount": 5000
+        "annualFuelAmount": 500000
       },
       "archived_by_id": null,
       "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",

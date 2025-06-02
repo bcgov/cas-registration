@@ -71,7 +71,7 @@
                     "emissions": [
                       {
                         "gasType": "CO2",
-                        "emission": 2000,
+                        "emission": 250000,
                         "methodology": {
                           "methodology": "Default EF",
                           "unitFuelCo2DefaultEf": 1,
@@ -81,7 +81,7 @@
                       }
                     ],
                     "fuelDescription": "Diesel fuel",
-                    "annualFuelAmount": 1000000
+                    "annualFuelAmount": 500000
                   }
                 ],
                 "gscUnitName": "GSC Unit Name 1",
