@@ -13,7 +13,7 @@ export const IssuanceStatusAwaitingNote = () => {
           approved, the earned credits will be issued to your holding account as
           identified below in the{" "}
           <Link
-            href="#"
+            href="https://carbonregistry.gov.bc.ca/bccarbonregistry"
             target="_blank"
             rel="noopener noreferrer"
             className="text-bc-link-blue underline decoration-[1.2px] font-bold"
