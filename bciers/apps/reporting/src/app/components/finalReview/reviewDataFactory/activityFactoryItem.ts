@@ -4,6 +4,7 @@ import safeJsonParse from "@bciers/utils/src/safeJsonParse";
 import { getActivityInitData } from "@reporting/src/app/utils/getActivityInitData";
 import { getActivityFormData } from "@reporting/src/app/utils/getActivityFormData";
 import { getActivitySchema } from "@reporting/src/app/utils/getActivitySchema";
+import { getAllGasTypes } from "@reporting/src/app/utils/getAllGasTypes";
 
 const activityFactoryItem: ReviewDataFactoryItem = async (
   versionId: number,
@@ -26,6 +27,7 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       facilityId,
       activity.id,
     );
+    const gasTypes = await getAllGasTypes();
 
     const sourceTypeQueryString = formData?.sourceTypes
       ? Object.entries(initData.sourceTypeMap)
@@ -46,6 +48,7 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       schema: schema,
       uiSchema: activity.slug,
       data: formData,
+      context: { gasTypes, isFinalReview: true },
     });
   }
 
