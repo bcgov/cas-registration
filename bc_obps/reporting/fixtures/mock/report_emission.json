@@ -29,8 +29,8 @@
       "updated_at": null,
       "archived_at": null,
       "json_data": {
-        "emission": 2000,
-        "equivalentEmission": "2000.0000"
+        "emission": 250000,
+        "equivalentEmission": "250000.0000"
       },
       "archived_by_id": null,
       "created_by_id": "ba2ba62a-1218-42e0-942a-ab9e92ce8822",
