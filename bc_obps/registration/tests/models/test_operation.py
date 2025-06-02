@@ -10,6 +10,7 @@ from registration.models import (
 from model_bakery import baker
 from django.core.exceptions import ValidationError
 from django.db import ProgrammingError, transaction
+from registration.models.app_role import AppRole
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.tests.constants import (
@@ -26,6 +27,7 @@ from registration.tests.constants import (
 from registration.tests.utils.bakers import operation_baker
 from itertools import cycle
 
+from registration.tests.utils.helpers import CommonTestSetup
 from rls.enums import RlsOperations, RlsRoles
 from rls.models import Rls
 
@@ -293,7 +295,7 @@ class OperationTriggerTests(BaseTestCase):
 
 
 # RLS tests
-class TestOperationRls(BaseTestCase):
+class TestOperationRls(CommonTestSetup):
     def test_operation_rls_select(self):
         approved_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator', user=self.user
@@ -306,7 +308,7 @@ class TestOperationRls(BaseTestCase):
         )
 
         for role, operations in operation.Rls.role_grants_mapping.items():
-            self.user.role = role
+            self.user.app_role = AppRole.objects.get(role_name=role.value)
             self.user.save()
             if RlsOperations.SELECT in operations:
                 retrieved_operations = Operation.objects.all()
