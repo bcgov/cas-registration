@@ -30,7 +30,7 @@ def assign_bcghg_ids_to_sfo_facilities(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0117_V3_4_1'),
+        ('registration', '0118_V3_5_0'),
     ]
 
     operations = [
