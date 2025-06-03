@@ -2,11 +2,11 @@ from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from .rls_configs.compliance_earned_credits import Rls as ComplianceEarnedCreditsRls
+from .rls_configs.compliance_earned_credit import Rls as ComplianceEarnedCreditRls
 from registration.models.user import User
 
 
-class ComplianceEarnedCredits(TimeStampedModel):
+class ComplianceEarnedCredit(TimeStampedModel):
     """
     Model to store compliance earned credits records
 
@@ -32,7 +32,7 @@ class ComplianceEarnedCredits(TimeStampedModel):
         db_comment="The compliance report version this earned_credit record belongs to",
     )
 
-    earned_credits_amount = models.IntegerField(
+    earned_credits_amount = models.PositiveIntegerField(
         db_comment="The amount of earned credits. Whole numbers only.",
     )
 
@@ -55,7 +55,7 @@ class ComplianceEarnedCredits(TimeStampedModel):
         blank=True,
         null=True,
         related_name="compliance_earned_credits_issued_by",
-        db_comment="The user who issed the earned credits",
+        db_comment="The user who issued the earned credits",
     )
 
     bccr_trading_name = models.CharField(
@@ -68,7 +68,7 @@ class ComplianceEarnedCredits(TimeStampedModel):
     analyst_comment = models.TextField(
         blank=True,
         null=True,
-        db_comment="Comments from an analyst. Made when deciding whether or not to reccomend issuance from the director",
+        db_comment="Comments from an analyst. Made when deciding whether or not to recommend issuance from the director",
     )
 
     director_comment = models.TextField(
@@ -85,6 +85,6 @@ class ComplianceEarnedCredits(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "A table to store BC earned credit compliance data. Earned credits are described in GGIRCA (https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#division_d0e1496) Division 4"
-        db_table = 'erc"."compliance_earned_credits'
+        db_table = 'erc"."compliance_earned_credit'
 
-    Rls = ComplianceEarnedCreditsRls
+    Rls = ComplianceEarnedCreditRls

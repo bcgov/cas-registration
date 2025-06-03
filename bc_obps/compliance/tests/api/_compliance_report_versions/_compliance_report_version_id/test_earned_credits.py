@@ -2,7 +2,7 @@ from unittest.mock import patch
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from compliance.models import ComplianceEarnedCredits
+from compliance.models import ComplianceEarnedCredit
 
 
 class TestComplianceReportVersionEarnedCreditsEndpoint(CommonTestSetup):
@@ -12,9 +12,9 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(CommonTestSetup):
     def test_get_earned_credits_success(self, mock_get_earned_credits):
         # Arrange
         earned_credits = make_recipe(
-            'compliance.tests.utils.compliance_earned_credits',
+            'compliance.tests.utils.compliance_earned_credit',
             earned_credits_amount=100,
-            issuance_status=ComplianceEarnedCredits.IssuanceStatus.CREDITS_NOT_ISSUED,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             bccr_trading_name="Test Trading Name",
             analyst_comment="Test analyst comment",
             director_comment="Test director comment",
@@ -39,7 +39,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(CommonTestSetup):
         # Verify the response structure and data matches ComplianceEarnedCreditsOut schema
         assert "id" in response_data
         assert response_data["earned_credits_amount"] == 100
-        assert response_data["issuance_status"] == ComplianceEarnedCredits.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert response_data["issuance_status"] == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
         assert response_data["bccr_trading_name"] == "Test Trading Name"
         assert response_data["analyst_comment"] == "Test analyst comment"
         assert response_data["director_comment"] == "Test director comment"
