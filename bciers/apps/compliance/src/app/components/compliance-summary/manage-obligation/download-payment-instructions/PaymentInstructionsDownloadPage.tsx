@@ -4,6 +4,7 @@ import {
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import PaymentInstructionsDownloadComponent from "./PaymentInstructionsDownloadComponent";
+import getInvoiceByComplianceSummaryId from "@/compliance/src/app/utils/getInvoiceByComplianceSummaryId";
 
 interface Props {
   readonly compliance_summary_id: string;
@@ -22,6 +23,8 @@ export default async function PaymentInstructionsDownloadPage({
     ActivePage.DownloadPaymentInstructions,
   );
 
+  const invoice = await getInvoiceByComplianceSummaryId(complianceSummaryId);
+
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
@@ -29,6 +32,7 @@ export default async function PaymentInstructionsDownloadPage({
     >
       <PaymentInstructionsDownloadComponent
         complianceSummaryId={complianceSummaryId}
+        invoiceID={invoice.invoiceNumber}
       />
     </CompliancePageLayout>
   );

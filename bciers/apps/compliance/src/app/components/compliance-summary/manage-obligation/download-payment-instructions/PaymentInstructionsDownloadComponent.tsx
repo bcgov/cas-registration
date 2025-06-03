@@ -10,17 +10,19 @@ import {
 
 interface Props {
   readonly complianceSummaryId: any;
+  readonly invoiceID: string;
 }
 
 export default function PaymentInstructionsDownloadComponent({
   complianceSummaryId,
+  invoiceID,
 }: Props) {
   const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/review-compliance-summary`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/pay-obligation-track-payments`;
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {
     complianceSummaryId,
-    invoiceNumber: "TBD",
+    invoiceNumber: invoiceID,
     bankName: "Canadian Imperial Bank of Commerce",
     bankTransitNumber: "00090",
     institutionNumber: "010",

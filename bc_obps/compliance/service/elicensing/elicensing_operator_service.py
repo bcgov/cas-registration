@@ -104,7 +104,6 @@ class ElicensingOperatorService:
             Exception: For any other unexpected errors
         """
         operator = Operator.objects.get(id=operator_id)
-
         # Check if a client already exists for this operator
         # existing_record = ElicensingClientOperator.managed_objects.get_one_or_none(operator_id=operator_id)
         try:
