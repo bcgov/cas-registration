@@ -69,7 +69,6 @@ userRoles.forEach((role) => {
               DashboardTiles.REPORT_A_PROBLEM,
               true,
             );
-            // await expect(page.getByRole('link', { name: DashboardTiles.REPORT_A_PROBLEM })).toBeVisible();
             await dashboardPage.assertMailToLinkIsVisible(
               LinkSrc.TILE_REPORT_PROBLEM,
             );
