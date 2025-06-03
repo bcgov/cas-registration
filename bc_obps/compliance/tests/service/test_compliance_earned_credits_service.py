@@ -1,6 +1,6 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 import pytest
-from compliance.models import ComplianceEarnedCredits
+from compliance.models import ComplianceEarnedCredit
 from model_bakery.baker import make_recipe
 from decimal import Decimal
 
@@ -13,14 +13,14 @@ class TestComplianceEarnedCreditsService:
 
     def test_get_earned_credits_by_report_version(self):
         # Arrange
-        earned_credits = make_recipe('compliance.tests.utils.compliance_earned_credits', earned_credits_amount=100)
+        earned_credits = make_recipe('compliance.tests.utils.compliance_earned_credit', earned_credits_amount=100)
 
         # Assert
         result = ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version(
             earned_credits.compliance_report_version_id
         )
         assert result.earned_credits_amount == 100
-        assert result.issuance_status == ComplianceEarnedCredits.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert result.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
 
     def test_create_earned_credits_record(self):
         report_compliance_summary = make_recipe(

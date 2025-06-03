@@ -193,10 +193,10 @@ class UserModelTest(BaseTestCase):
             ("reportcompliancesummaryproduct_created", "report compliance summary product", None, None),
             ("reportcompliancesummaryproduct_updated", "report compliance summary product", None, None),
             ("reportcompliancesummaryproduct_archived", "report compliance summary product", None, None),
-            ("complianceearnedcredits_created", "compliance earned credits", None, None),
-            ("complianceearnedcredits_updated", "compliance earned credits", None, None),
-            ("complianceearnedcredits_archived", "compliance earned credits", None, None),
-            ("compliance_earned_credits_issued_by", "compliance earned credits", None, None),
+            ("complianceearnedcredit_created", "compliance earned credit", None, None),
+            ("complianceearnedcredit_updated", "compliance earned credit", None, None),
+            ("complianceearnedcredit_archived", "compliance earned credit", None, None),
+            ("compliance_earned_credits_issued_by", "compliance earned credit", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
