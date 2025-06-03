@@ -6,6 +6,7 @@ from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
 from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
 from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
+from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord, TempInvoiceQueryResponseJustNumber
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
@@ -14,7 +15,6 @@ from compliance.service.elicensing.elicensing_api_client import (
     InvoiceFee,
 )
 from registration.models.operator import Operator
-from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -102,6 +102,64 @@ class ObligationELicensingService:
             error_msg = f"Failed to query invoice for obligation {obligation.id}: {str(e)}"
             logger.error(error_msg)
             raise
+
+    @classmethod
+    def get_invoice_from_summary_id(cls, summary_id: str) -> TempInvoiceQueryResponseJustNumber:
+        """
+        Get the invoice with summary id from eLicensing.
+
+        Args:
+            summary_id: The id of compliance summary object
+
+        Returns:
+            InvoiceQueryResponse if found, None if no payments exist
+
+        Raises:
+            ValueError: If client or invoice links are missing
+            requests.RequestException: If there's an API error
+        """
+        # # Get report version
+        # compliance_report_version = ComplianceReportVersion.objects.get(report_compliance_summary_id=summary_id)
+
+        # # Get obligation object
+        # obligation = ComplianceObligation.objects.get(compliance_report_version=compliance_report_version)
+
+        # # Get client link from operator
+        # client_link = ELicensingLinkService.get_link_for_model(
+        #     Operator,
+        #     obligation.compliance_report_version.compliance_report.report.operation.operator.id,
+        #     ELicensingLink.ObjectKind.CLIENT,
+        # )
+        # invoice_link = ELicensingLinkService.get_link_for_model(
+        #     ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE
+        # )
+
+        # if not client_link or not invoice_link:
+        #     error_msg = (
+        #         f"No client or invoice link found for obligation {obligation.id}. "
+        #         f"Client link: {client_link}, Invoice link: {invoice_link}"
+        #     )
+        #     logger.error(error_msg)
+        #     raise ValueError(error_msg)
+
+        # client_id = client_link.elicensing_object_id
+        # invoice_number = invoice_link.elicensing_object_id
+
+        # if not client_id or not invoice_number:
+        #     error_msg = (
+        #         f"Missing client_id or invoice_number for obligation {obligation.id}. "
+        #         f"Client ID: {client_id}, Invoice number: {invoice_number}"
+        #     )
+        #     logger.error(error_msg)
+        #     raise ValueError(error_msg)
+
+        # try:
+        #     return elicensing_api_client.query_invoice(client_id, invoice_number)
+        # except Exception as e:
+        #     error_msg = f"Failed to query invoice for obligation {obligation.id}: {str(e)}"
+        #     logger.error(error_msg)
+        #     raise
+        return TempInvoiceQueryResponseJustNumber(invoiceNumber="OBI000003temp")
 
     @classmethod
     def _parse_invoice_payments(cls, invoice: InvoiceQueryResponse) -> List[PaymentRecord]:
