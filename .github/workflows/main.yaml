@@ -88,10 +88,10 @@ jobs:
     secrets: inherit
   test-dashboard-e2e:
     needs:
-      [build-backend, build-dashboard, build-dashboard-e2e, check-nx-affected]
+      [build-backend, build-dashboard-e2e, build-dashboard, check-nx-affected]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
-      image_url: "ghcr.io/bcgov/cas-dashboard-frontend"
+      image_url: "ghcr.io/bcgov/cas-dash-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
       nx_app_port: 3000
       nx_project: dashboard
