@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Literal
+from typing import Tuple
 from django.http import HttpRequest
 from common.permissions import authorize
 from compliance.constants import COMPLIANCE
@@ -7,6 +7,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from registration.schema.generic import Message
 from compliance.api.router import router
+from typing import Optional
 from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsOut
 
 

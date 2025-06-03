@@ -4,7 +4,6 @@ import {
 } from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
-import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 interface Props {
   compliance_summary_id: string;
@@ -13,8 +12,18 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const complianceSummary =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+  // FIXME: Replace with actual API data when backend implementation is complete
+  const complianceSummary = {
+    operation_name: "Compliance SFO - Obligation not met",
+    reporting_year: 2023,
+    emissions_attributable_for_compliance: "900.0000",
+    emission_limit: "1000.0000",
+    excess_emissions: "-100.0000",
+    earned_credits: 100,
+    issuance_status: "Awaiting Approval",
+    earned_credits_issued: false,
+    id: 1,
+  };
 
   const taskListElements = generateRequestIssuanceTaskList(
     complianceSummaryId,
