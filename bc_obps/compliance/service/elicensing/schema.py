@@ -200,6 +200,11 @@ class InvoiceQueryResponse:
 
 
 @dataclass
+class TempInvoiceQueryResponseJustNumber:
+    invoiceNumber: str
+
+
+@dataclass
 class PaymentRecord:
     """Internal schema for payment records from eLicensing"""
 
