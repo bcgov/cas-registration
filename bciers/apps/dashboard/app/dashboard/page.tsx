@@ -35,7 +35,8 @@ export default async function Page() {
             <AccessTimeFilledIcon sx={{ color: "#FFCC00", fontSize: 50 }} />
           </span>
           <div style={{ fontSize: "16px" }}>
-            <p>By logging in, you have automatically requested access.</p>
+            {/* Chesca test */}
+            <p>Test By logging in, you have automatically requested access.</p>
             <p>
               Once approved, you will receive a confirmation email. You can then
               log back in using your IDIR.
