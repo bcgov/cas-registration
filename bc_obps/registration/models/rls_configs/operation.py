@@ -4,6 +4,8 @@ from rls.utils.helpers import generate_rls_grants, generate_m2m_rls, generate_rl
 
 
 class Rls:
+    enable_rls = True
+    schema = "erc"
     # brianna you might need to add the using statements here--do we ever have a different statement depending on operation? insert and update need with check
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
@@ -17,23 +19,19 @@ class Rls:
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.OPERATION)
     policies = generate_rls_policies(role_grants_mapping=role_grants_mapping, table=RegistrationTableNames.OPERATION, 
                                      using_statement="""
-                    id IN (
-                        SELECT operation.id
-                        FROM erc.operation
-                        JOIN erc.user_operator uo
-                        ON operation.operator_id = uo.operator_id
-                        AND uo.user_id = current_setting('my.guid', true)::uuid
-                        AND uo.status = 'Approved'
-                    )
+                    operator_id IN (
+        SELECT uo.operator_id
+        FROM erc.user_operator uo
+        WHERE uo.user_id = current_setting('my.guid', true)::uuid
+          AND uo.status = 'Approved'
+    )
                     """, check_statement="""
-                    id IN (
-                        SELECT operation.id
-                        FROM erc.operation
-                        JOIN erc.user_operator uo
-                        ON operation.operator_id = uo.operator_id
-                        AND uo.user_id = current_setting('my.guid', true)::uuid
-                        AND uo.status = 'Approved'
-                    )
+                    operator_id IN (
+        SELECT uo.operator_id
+        FROM erc.user_operator uo
+        WHERE uo.user_id = current_setting('my.guid', true)::uuid
+          AND uo.status = 'Approved'
+    )
                     """)
 
            

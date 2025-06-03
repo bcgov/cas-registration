@@ -46,15 +46,15 @@ class RlsPolicy:
         """
         try:
             # brianna check if the policy already exists, for pytests, figure out if there's a better way
-            check_query = """
-            SELECT 1
-            FROM pg_policies
-            WHERE policyname = %s
-        """
-            cursor.execute(check_query, [self.policy_name])
-            if cursor.fetchone():
-                # Policy already exists, skip creation
-                return
+        #     check_query = """
+        #     SELECT 1
+        #     FROM pg_policies
+        #     WHERE policyname = %s
+        # """
+        #     cursor.execute(check_query, [self.policy_name])
+        #     if cursor.fetchone():
+        #         # Policy already exists, skip creation
+        #         return
 
             # Safely create the SQL query
             base_query = SQL("CREATE POLICY {policy} ON {schema}.{table} FOR {operation} TO {role}").format(

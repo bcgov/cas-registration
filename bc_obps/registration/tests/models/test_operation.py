@@ -14,6 +14,7 @@ from django.db import ProgrammingError, transaction
 from registration.models.app_role import AppRole
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
+from registration.models.utils.generate_unique_bcghg_id_for_operation_or_facility import generate_unique_bcghg_id_for_operation_or_facility
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
     BC_OBPS_REGULATED_OPERATION_FIXTURE,
@@ -298,10 +299,8 @@ class OperationTriggerTests(BaseTestCase):
 # RLS tests
 class TestOperationRls(BaseTestCase):
 
-    def test_operation_rls_select(self):
+    def test_operation_rls_industry_user(self):
 
-        user = baker.make_recipe('registration.tests.utils.cas_admin')
-        
         approved_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator'
         )
@@ -311,22 +310,45 @@ class TestOperationRls(BaseTestCase):
         random_operation = baker.make_recipe(
             'registration.tests.utils.operation', operator=baker.make_recipe('registration.tests.utils.operator')
         )
+        breakpoint()
+        with connection.cursor() as cursor:
+            RlsMiddleware._set_user_guid_and_role(cursor, approved_user_operator.user)
+            breakpoint()
+            cursor.execute("select count(*) from erc.operation")
+            assert cursor.fetchone()[0] == 1 # Industry user should see only their operation
+                    
+    
+    def test_operation_rls_cas_users(self):
+
+        user = baker.make_recipe('registration.tests.utils.cas_admin')
+        
+        mock_operations = baker.make_recipe(
+            'registration.tests.utils.operation', _quantity=5, operator=baker.make_recipe('registration.tests.utils.operator'), status=Operation.Statuses.REGISTERED
+        )
+
+        mock_bc_greenhouse_gas_ids = baker.make(BcObpsRegulatedOperation, _quantity=5, id=generate_unique_bcghg_id_for_operation_or_facility())
 
         with connection.cursor() as cursor:
-            # cursor.execute("SET my.guid = %s", [str(approved_user_operator.user.user_guid)])
-            for role, operations in Operation.Rls.role_grants_mapping.items():
+            for i, (role, operations) in enumerate(Operation.Rls.role_grants_mapping.items()):
                 user.app_role = AppRole.objects.get(role_name=role.value)
                 user.save()
                 
+                if role == RlsRoles.INDUSTRY_USER:
+                    continue
+
+                RlsMiddleware._set_user_guid_and_role(cursor, user)
+
                 if RlsOperations.SELECT in operations:
-                    if role == RlsRoles.INDUSTRY_USER:
-                        RlsMiddleware._set_user_guid_and_role(cursor, approved_user_operator.user)
-                        cursor.execute("select count(*) from erc.operation")
-                        assert cursor.fetchone()[0] == 1 # Industry user should see only their operation
-                    else:
-                        RlsMiddleware._set_user_guid_and_role(cursor, user)
-                        cursor.execute("select count(*) from erc.operation")
-                        assert cursor.fetchone()[0] == 2 # cas roles should see everything
+                    cursor.execute("select count(*) from erc.operation")
+                    assert cursor.fetchone()[0] == 5  # CAS roles with SELECT grants should see everything
+
+                if RlsOperations.UPDATE in operations:
+                    cursor.execute(
+                        "UPDATE erc.operation SET bcghg_id_id = %s WHERE id = %s",
+                        [mock_bc_greenhouse_gas_ids[i], mock_operations[i].id]
+                    )
+
+
 
 
        
