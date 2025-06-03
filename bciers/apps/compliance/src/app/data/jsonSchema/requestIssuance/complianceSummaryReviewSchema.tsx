@@ -14,18 +14,18 @@ const createSummarySection = (
   reportingYear: number,
 ): RJSFSchema["properties"] => ({
   summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
-  emissionsAttributableForCompliance: readOnlyStringField(
+  emissions_attributable_for_compliance: readOnlyStringField(
     "Emissions Attributable for Compliance:",
   ),
-  emissionLimit: readOnlyStringField("Emissions Limit:"),
-  excessEmissions: readOnlyStringField("Excess Emissions:"),
+  emission_limit: readOnlyStringField("Emissions Limit:"),
+  excess_emissions: readOnlyStringField("Excess Emissions:"),
 });
 
 const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
   earnedCreditsHeader: readOnlyObjectField("Earned Credits"),
   earnedCreditsAlert: readOnlyStringField(),
-  earnedCredits: readOnlyStringField("Earned Credits:"),
-  issuanceStatus: readOnlyStringField("Status of Issuance:"),
+  earned_credits: readOnlyStringField("Earned Credits:"),
+  issuance_status: readOnlyStringField("Status of Issuance:"),
 });
 
 // Main schema creator
@@ -46,9 +46,9 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
 
   // Summary Section
   summaryHeader: headerUiConfig,
-  emissionsAttributableForCompliance: tco2eUiConfig,
-  emissionLimit: tco2eUiConfig,
-  excessEmissions: tco2eUiConfig,
+  emissions_attributable_for_compliance: tco2eUiConfig,
+  emission_limit: tco2eUiConfig,
+  excess_emissions: tco2eUiConfig,
 
   // Earned Credits Section
   earnedCreditsHeader: headerUiConfig,
@@ -59,6 +59,6 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
       inline: true,
     },
   },
-  earnedCredits: commonReadOnlyOptions,
-  issuanceStatus: commonReadOnlyOptions,
+  earned_credits: commonReadOnlyOptions,
+  issuance_status: commonReadOnlyOptions,
 };
