@@ -30,7 +30,7 @@ export async function GET(
       }),
     });
 
-    const url = `${apiUrl}compliance/invoice/generate/${id}`;
+    const url = `${apiUrl}compliance/compliance-report-versions/${id}/invoice`;
 
     const response = await fetch(url, {
       method: "GET",

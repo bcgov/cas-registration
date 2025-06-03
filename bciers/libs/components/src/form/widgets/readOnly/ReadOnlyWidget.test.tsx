@@ -73,4 +73,77 @@ describe("RJSF ReadOnlyWidget", () => {
     expect(readOnlyWidget).toBeVisible();
     expect(readOnlyWidget).toHaveTextContent("test1, test2");
   });
+
+  it("should render with prefix", () => {
+    const { container } = render(
+      <FormBase
+        disabled
+        formData={{
+          stringTestField: "100",
+        }}
+        schema={stringFieldSchema}
+        uiSchema={{
+          stringTestField: {
+            "ui:widget": "ReadOnlyWidget",
+            "ui:options": {
+              prefix: "$",
+            },
+          },
+        }}
+      />,
+    );
+
+    const readOnlyWidget = container.querySelector("#root_stringTestField");
+    expect(readOnlyWidget).toBeVisible();
+    expect(readOnlyWidget).toHaveTextContent("$100");
+  });
+
+  it("should render with suffix", () => {
+    const { container } = render(
+      <FormBase
+        disabled
+        formData={{
+          numberTestField: 42,
+        }}
+        schema={numberFieldSchema}
+        uiSchema={{
+          numberTestField: {
+            "ui:widget": "ReadOnlyWidget",
+            "ui:options": {
+              suffix: "kg",
+            },
+          },
+        }}
+      />,
+    );
+
+    const readOnlyWidget = container.querySelector("#root_numberTestField");
+    expect(readOnlyWidget).toBeVisible();
+    expect(readOnlyWidget).toHaveTextContent("42kg");
+  });
+
+  it("should render with both prefix and suffix", () => {
+    const { container } = render(
+      <FormBase
+        disabled
+        formData={{
+          numberTestField: 99.9,
+        }}
+        schema={numberFieldSchema}
+        uiSchema={{
+          numberTestField: {
+            "ui:widget": "ReadOnlyWidget",
+            "ui:options": {
+              prefix: "~",
+              suffix: "%",
+            },
+          },
+        }}
+      />,
+    );
+
+    const readOnlyWidget = container.querySelector("#root_numberTestField");
+    expect(readOnlyWidget).toBeVisible();
+    expect(readOnlyWidget).toHaveTextContent("~99.9%");
+  });
 });
