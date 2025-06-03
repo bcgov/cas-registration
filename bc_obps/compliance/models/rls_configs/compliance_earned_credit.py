@@ -16,4 +16,4 @@ class Rls:
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
-    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_EARNED_CREDITS)
+    grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.COMPLIANCE_EARNED_CREDIT)

@@ -2,7 +2,7 @@ from typing import Tuple
 from django.http import HttpRequest
 from common.permissions import authorize
 from compliance.constants import COMPLIANCE
-from compliance.models import ComplianceEarnedCredits
+from compliance.models import ComplianceEarnedCredit
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from registration.schema.generic import Message
@@ -20,7 +20,7 @@ from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsO
 )
 def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[int, Optional[ComplianceEarnedCredits]]:
+) -> Tuple[int, Optional[ComplianceEarnedCredit]]:
     compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version(
         compliance_report_version_id
     )
