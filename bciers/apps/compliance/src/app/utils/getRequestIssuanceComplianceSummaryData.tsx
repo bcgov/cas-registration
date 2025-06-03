@@ -10,12 +10,10 @@ export const getRequestIssuanceComplianceSummaryData = async (
 ) => {
   const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
   const data = await actionHandler(endpoint, "GET", "");
-
   if (data?.error) {
     throw new Error(
       `Failed to fetch issuance compliance summary for compliance report version ${complianceReportVersionId}.`,
     );
   }
-
   return data;
 };
