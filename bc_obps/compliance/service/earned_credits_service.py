@@ -26,9 +26,7 @@ class ComplianceEarnedCreditsService:
         return earned_credits_record
 
     @classmethod
-    def create_earned_credits_record(
-        cls, compliance_report_version: ComplianceReportVersion
-    ) -> ComplianceEarnedCredit:
+    def create_earned_credits_record(cls, compliance_report_version: ComplianceReportVersion) -> ComplianceEarnedCredit:
         """
         Creates an earned credits record for the specific compliance compliance_report_version
 
