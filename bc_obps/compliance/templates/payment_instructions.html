@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" xml:lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Compliance Payment Instructions</title>
+    {# 0-400 = Regular, 0-700 = Bold, 1-400 = Italic #}
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @page {
+        size: A4 portrait; /* Sets A4 page size with portrait orientation */
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        color: #313132;
+      }
+
+      .instructions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 50px;
+      }
+
+      .instructions-header p {
+        margin: 0;
+      }
+
+      .header-section {
+        position: relative;
+        margin-bottom: 40px;
+      }
+
+      .company-logo {
+        height: 25px;
+        position: absolute;
+        left: 0;
+      }
+
+      .instructions-title {
+        font-size: 16px;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .footer p {
+        margin: 0;
+      }
+
+      .title-row {
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 0.625rem;
+        color: #38598a;
+        font-weight: 400;
+        font-size: 0.875rem;
+        line-height: 1.43;
+        letter-spacing: 0.01071em;
+      }
+
+      .info-section {
+        width: 100%;
+        margin-bottom: 2rem;
+      }
+
+      .info-row {
+        width: 100%;
+        display: flex;
+        margin-bottom: 0.625rem;
+      }
+
+      .info-label {
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        width: 15rem;
+      }
+
+      .info-value {
+        display: flex;
+        align-items: center;
+        font-size: 0.875rem;
+        text-align: right;
+        margin-left: 0.625rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="instructions-header">
+        <p>Invoice #: {{ invoice_number }}</p>
+        <p>Clean Growth Branch</p>
+      </header>
+
+      <div class="header-section">
+        <img
+          src="data:image/png;base64,{{ logo_base64 }}"
+          alt="CleanBC Logo"
+          class="company-logo"
+        />
+        <h3 class="instructions-title">Payment Instructions</h3>
+      </div>
+
+      <!-- payee info -->
+      <div class="info-section">
+        <div class="title-row">Payee Information</div>
+        <div class="info-row">
+          <div class="info-label">Name of Bank:</div>
+          <div class="info-value">Canadian Imperial Bank of Commerce</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Bank Transit Number:</div>
+          <div class="info-value">00090</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Institution Number:</div>
+          <div class="info-value">010</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Swift Code:</div>
+          <div class="info-value">CIBCCATT</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Account Number:</div>
+          <div class="info-value">09-70301</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Account Name:</div>
+          <div class="info-value">Province of British Columbia-OBPS-BCIERS</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Bank Address:</div>
+          <div class="info-value">1175 DOUGLAS STREET, VICTORIA, BC V8W2E1</div>
+        </div>
+      </div>
+
+      <!-- payment instruction info -->
+      <div class="info-section">
+        <div class="title-row">Payment Instructions</div>
+        <h3>Before making a payment</h3>
+        <p>
+          Send an email notification to
+          <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a>
+          before sending payment
+        </p>
+        <p>Include:</p>
+        <ul>
+          <li>Operator Name</li>
+          <li>Exact payment date</li>
+          <li>Payment amount</li>
+          <li>Invoice number</li>
+        </ul>
+        <h3>Pay by electronic fund transfer (EFT)</h3>
+        <ul>
+          <li>Include the invoice number as a reference</li>
+          <li>
+            Pay at least five business days before the due date to allow for
+            processing time
+          </li>
+        </ul>
+        <h3>Pay by wire transfer</h3>
+        <p>Include the invoice number as a reference</p>
+        <h3>Provide correct information for timely processing</h3>
+        <p>
+          Failure to provide accurate payment information will result in delays
+          in payment processing and possible interest and/or penalty charges.
+        </p>
+        <p>
+          Contact
+          <a href="mailto:OBPSPayments@gov.bc.ca">OBPSPayments@gov.bc.ca</a> for
+          any questions.
+        </p>
+      </div>
+
+      <!-- payment remarks -->
+      <div class="info-section">
+        <div class="title-row">Remarks</div>
+        <ul>
+          <li>
+            Pay by the due date to avoid <a>penalties</a> and/or
+            <a>interests</a>
+          </li>
+          <li>
+            Do not include other charges with your payment for this invoice
+          </li>
+          <li>Do not mail cash</li>
+        </ul>
+      </div>
+
+      <footer class="footer">
+        <p>Invoice #: {{ invoice_number }}</p>
+        <p>Clean Growth Branch</p>
+      </footer>
+    </div>
+  </body>
+</html>
