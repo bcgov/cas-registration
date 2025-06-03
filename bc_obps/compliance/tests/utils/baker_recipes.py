@@ -6,7 +6,7 @@ from compliance.models import (
     ComplianceReportVersion,
     ComplianceObligation,
     ComplianceReport,
-    ComplianceEarnedCredits,
+    ComplianceEarnedCredit,
 )
 from compliance.models.elicensing_link import ELicensingLink
 from registration.models.operation import Operator
@@ -54,8 +54,8 @@ elicensing_link = Recipe(
     last_sync_at=None,
 )
 
-# ComplianceEarnedCredits recipe
-compliance_earned_credits = Recipe(
-    ComplianceEarnedCredits,
+# ComplianceEarnedCredit recipe
+compliance_earned_credit = Recipe(
+    ComplianceEarnedCredit,
     compliance_report_version=foreign_key(compliance_report_version),
 )

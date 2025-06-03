@@ -2,7 +2,7 @@ from decimal import Decimal
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 import pytest
 from unittest.mock import patch
-from compliance.models import ComplianceReportVersion, ComplianceEarnedCredits
+from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
 from model_bakery import baker
 
 pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
@@ -59,7 +59,7 @@ class TestComplianceReportVersionService:
         result = ComplianceReportVersionService.create_compliance_report_version(
             compliance_report, report_compliance_summary.report_version.id
         )
-        earned_credits_record = ComplianceEarnedCredits.objects.get(compliance_report_version_id=result.id)
+        earned_credits_record = ComplianceEarnedCredit.objects.get(compliance_report_version_id=result.id)
 
         # Assert
         assert result.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS

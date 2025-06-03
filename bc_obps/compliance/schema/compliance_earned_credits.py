@@ -1,10 +1,10 @@
-from compliance.models.compliance_earned_credits import ComplianceEarnedCredits
+from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from ninja import ModelSchema
 
 
 class ComplianceEarnedCreditsOut(ModelSchema):
     class Meta:
-        model = ComplianceEarnedCredits
+        model = ComplianceEarnedCredit
         fields = [
             "id",
             "earned_credits_amount",

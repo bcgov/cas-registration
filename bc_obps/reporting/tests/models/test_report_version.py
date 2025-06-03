@@ -213,8 +213,8 @@ class ReportVersionTest(BaseTestCase):
             'ComplianceObligation'
         )  # Created compliance_obligation record should not be immutable after report submission
         missing_triggers.remove(
-            'ComplianceEarnedCredits'
-        )  # Created compliance_earned_credits record should not be immutable after report submission
+            'ComplianceEarnedCredit'
+        )  # Created compliance_earned_credit record should not be immutable after report submission
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
