@@ -1,177 +1,156 @@
-// import React from "react";
-// import { render, screen, fireEvent } from "@testing-library/react";
-// import { describe, expect, it, vi, beforeEach } from "vitest";
-// import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
-//
-// vi.mock("next/navigation", () => ({
-//   useRouter: () => ({
-//     push: vi.fn(),
-//   }),
-// }));
+import { render, screen, fireEvent } from "@testing-library/react";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
+import { useRouter } from "@bciers/testConfig/mocks";
 
-describe.skip("ComplianceStepButtons", () => {
-  // beforeEach(() => {
-  //   vi.clearAllMocks();
-  // });
-  //
-  // it("renders back and continue buttons when URLs are provided", () => {
-  //   render(<ComplianceStepButtons backUrl="/back" continueUrl="/continue" />);
-  //
-  //   const backButton = screen.getByRole("button", { name: /back/i });
-  //   const continueButton = screen.getByRole("button", { name: /continue/i });
-  //
-  //   expect(backButton).toBeVisible();
-  //   expect(continueButton).toBeVisible();
-  //
-  //   expect(backButton).toHaveTextContent("Back");
-  //   expect(continueButton).toHaveTextContent("Continue");
-  // });
-  //
-  // it("renders custom button text when provided", () => {
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       backButtonText="Go Back"
-  //       continueButtonText="Save and Continue"
-  //     />,
-  //   );
-  //
-  //   const backButton = screen.getByRole("button", { name: /go back/i });
-  //   const continueButton = screen.getByRole("button", {
-  //     name: /save and continue/i,
-  //   });
-  //
-  //   expect(backButton).toHaveTextContent("Go Back");
-  //   expect(continueButton).toHaveTextContent("Save and Continue");
-  // });
-  //
-  // it("disables buttons when disabled props are true", () => {
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       backButtonDisabled={true}
-  //       submitButtonDisabled={true}
-  //     />,
-  //   );
-  //
-  //   const backButton = screen.getByRole("button", { name: /back/i });
-  //   const continueButton = screen.getByRole("button", { name: /continue/i });
-  //
-  //   expect(backButton).toBeDisabled();
-  //   expect(continueButton).toBeDisabled();
-  // });
-  //
-  // it("renders middle button when text and click handler are provided", () => {
-  //   const mockMiddleClick = vi.fn();
-  //
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       middleButtonText="Save Draft"
-  //       onMiddleButtonClick={mockMiddleClick}
-  //     />,
-  //   );
-  //
-  //   const middleButton = screen.getByRole("button", { name: /save draft/i });
-  //   expect(middleButton).toBeVisible();
-  //   expect(middleButton).toHaveTextContent("Save Draft");
-  //
-  //   fireEvent.click(middleButton);
-  //   expect(mockMiddleClick).toHaveBeenCalledTimes(1);
-  // });
-  //
-  // it("does not render middle button when middleButtonActive is false", () => {
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       middleButtonText="Save Draft"
-  //       onMiddleButtonClick={vi.fn()}
-  //       middleButtonActive={false}
-  //     />,
-  //   );
-  //
-  //   expect(screen.queryByTestId("middle-button")).not.toBeInTheDocument();
-  // });
-  //
-  // it("calls onBackClick when back button is clicked", () => {
-  //   const mockBackClick = vi.fn();
-  //
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       onBackClick={mockBackClick}
-  //     />,
-  //   );
-  //
-  //   const backButton = screen.getByRole("button", { name: /back/i });
-  //   fireEvent.click(backButton);
-  //   expect(mockBackClick).toHaveBeenCalledTimes(1);
-  // });
-  //
-  // it("calls onContinueClick when continue button is clicked", () => {
-  //   const mockContinueClick = vi.fn();
-  //
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       onContinueClick={mockContinueClick}
-  //     />,
-  //   );
-  //
-  //   const continueButton = screen.getByRole("button", { name: /continue/i });
-  //   fireEvent.click(continueButton);
-  //   expect(mockContinueClick).toHaveBeenCalledTimes(1);
-  // });
-  //
-  // it("applies custom styles when style prop is provided", () => {
-  //   const customStyle = {
-  //     marginTop: "50px",
-  //     backgroundColor: "rgb(255, 0, 0)",
-  //   };
-  //
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       style={customStyle}
-  //     />,
-  //   );
-  //
-  //   const backButton = screen.getByRole("button", { name: /back/i });
-  //   const container = backButton.closest("div")?.parentElement;
-  //   expect(container).toHaveStyle("margin-top: 50px");
-  //   expect(container).toHaveStyle("background-color: rgb(255, 0, 0)");
-  // });
-  //
-  // it("renders custom buttons when provided", () => {
-  //   render(
-  //     <ComplianceStepButtons
-  //       backUrl="/back"
-  //       continueUrl="/continue"
-  //       customButtons={<button data-testid="custom-button">Custom</button>}
-  //     />,
-  //   );
-  //
-  //   const customButton = screen.getByRole("button", { name: /custom/i });
-  //   expect(customButton).toBeVisible();
-  //   expect(customButton).toHaveTextContent("Custom");
-  // });
-  //
-  // it("renders children when provided", () => {
-  //   render(
-  //     <ComplianceStepButtons backUrl="/back" continueUrl="/continue">
-  //       <button data-testid="child-button">Child</button>
-  //     </ComplianceStepButtons>,
-  //   );
-  //
-  //   const childButton = screen.getByRole("button", { name: /child/i });
-  //   expect(childButton).toBeVisible();
-  //   expect(childButton).toHaveTextContent("Child");
-  // });
+// Mock the router
+const mockPush = vi.fn();
+useRouter.mockReturnValue({
+  push: mockPush,
+});
+
+describe("ComplianceStepButtons", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("renders back and continue buttons with default text", () => {
+    render(<ComplianceStepButtons backUrl="/back" continueUrl="/continue" />);
+
+    const backButton = screen.getByRole("button", { name: "Back" });
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+
+    expect(backButton).toBeVisible();
+    expect(continueButton).toBeVisible();
+    expect(backButton).toHaveClass("border-bc-blue", "text-bc-links");
+    expect(continueButton).toHaveClass("bg-bc-blue");
+  });
+
+  it("navigates to correct URLs when buttons are clicked", () => {
+    render(<ComplianceStepButtons backUrl="/back" continueUrl="/continue" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(mockPush).toHaveBeenCalledWith("/back");
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(mockPush).toHaveBeenCalledWith("/continue");
+  });
+
+  it("uses custom button text when provided", () => {
+    render(
+      <ComplianceStepButtons
+        backUrl="/back"
+        continueUrl="/continue"
+        backButtonText="Previous"
+        continueButtonText="Next"
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Previous" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Next" })).toBeVisible();
+  });
+
+  it("disables buttons when specified", () => {
+    render(
+      <ComplianceStepButtons
+        backUrl="/back"
+        continueUrl="/continue"
+        backButtonDisabled
+        submitButtonDisabled
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Back" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Continue" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Back" })).toHaveClass(
+      "disabled:border-bc-grey",
+      "disabled:text-bc-grey-bg",
+    );
+    expect(screen.getByRole("button", { name: "Continue" })).toHaveClass(
+      "disabled:bg-bc-grey",
+      "disabled:text-bc-grey-bg",
+    );
+  });
+
+  it("calls custom click handlers when provided", () => {
+    const onBackClick = vi.fn();
+    const onContinueClick = vi.fn();
+
+    render(
+      <ComplianceStepButtons
+        backUrl="/back"
+        continueUrl="/continue"
+        onBackClick={onBackClick}
+        onContinueClick={onContinueClick}
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+    expect(onBackClick).toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+    expect(onContinueClick).toHaveBeenCalled();
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("renders middle button when text and handler are provided", () => {
+    const onMiddleButtonClick = vi.fn();
+
+    render(
+      <ComplianceStepButtons
+        backUrl="/back"
+        continueUrl="/continue"
+        middleButtonText="Save Draft"
+        onMiddleButtonClick={onMiddleButtonClick}
+      />,
+    );
+
+    const middleButton = screen.getByRole("button", { name: "Save Draft" });
+    expect(middleButton).toBeVisible();
+    expect(middleButton).toHaveClass("border-bc-blue", "text-bc-links");
+
+    fireEvent.click(middleButton);
+    expect(onMiddleButtonClick).toHaveBeenCalled();
+  });
+
+  it("does not render middle button when middleButtonActive is false", () => {
+    render(
+      <ComplianceStepButtons
+        backUrl="/back"
+        continueUrl="/continue"
+        middleButtonText="Save Draft"
+        onMiddleButtonClick={vi.fn()}
+        middleButtonActive={false}
+      />,
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Save Draft" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders children", () => {
+    render(
+      <ComplianceStepButtons backUrl="/back" continueUrl="/continue">
+        <button>Child Button</button>
+      </ComplianceStepButtons>,
+    );
+
+    expect(screen.getByRole("button", { name: "Child Button" })).toBeVisible();
+  });
+
+  it("applies custom className", () => {
+    render(
+      <ComplianceStepButtons
+        backUrl="/back"
+        continueUrl="/continue"
+        className="custom-class"
+      />,
+    );
+
+    const container = screen
+      .getByRole("button", { name: "Back" })
+      .closest(".flex");
+    expect(container).toHaveClass("custom-class");
+  });
 });

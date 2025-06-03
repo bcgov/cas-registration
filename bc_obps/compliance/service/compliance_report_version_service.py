@@ -1,5 +1,6 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 from compliance.models.compliance_report import ComplianceReport
+from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
@@ -143,3 +144,7 @@ class ComplianceReportVersionService:
         # outstanding_balance = calculate_with_compliance_credits(outstanding_balance, compliance_credits)
 
         return outstanding_balance
+
+    @staticmethod
+    def get_operation_by_compliance_report_version(compliance_report_version_id: int) -> Operation:
+        return ComplianceReportVersion.objects.get(id=compliance_report_version_id).compliance_report.report.operation
