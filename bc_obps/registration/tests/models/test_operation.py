@@ -7,6 +7,7 @@ from registration.models import (
     Operation,
     User,
 )
+from django.db import connection
 from model_bakery import baker
 from django.core.exceptions import ValidationError
 from django.db import ProgrammingError, transaction
@@ -29,7 +30,7 @@ from itertools import cycle
 
 from registration.tests.utils.helpers import CommonTestSetup
 from rls.enums import RlsOperations, RlsRoles
-from rls.models import Rls
+from rls.middleware.rls import RlsMiddleware
 
 
 class OperationModelTest(BaseTestCase):
@@ -295,10 +296,14 @@ class OperationTriggerTests(BaseTestCase):
 
 
 # RLS tests
-class TestOperationRls(CommonTestSetup):
+class TestOperationRls(BaseTestCase):
+
     def test_operation_rls_select(self):
+
+        user = baker.make_recipe('registration.tests.utils.cas_admin')
+        
         approved_user_operator = baker.make_recipe(
-            'registration.tests.utils.approved_user_operator', user=self.user
+            'registration.tests.utils.approved_user_operator'
         )
         operation = baker.make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator
@@ -307,15 +312,21 @@ class TestOperationRls(CommonTestSetup):
             'registration.tests.utils.operation', operator=baker.make_recipe('registration.tests.utils.operator')
         )
 
-        for role, operations in operation.Rls.role_grants_mapping.items():
-            self.user.app_role = AppRole.objects.get(role_name=role.value)
-            self.user.save()
-            if RlsOperations.SELECT in operations:
-                retrieved_operations = Operation.objects.all()
-                if role == RlsRoles.INDUSTRY_USER:
-                    assert retrieved_operations.count() == 1 # Industry user should see only their operation
-                else:
-                    assert retrieved_operations.count() == 2 # cas roles should see everything
+        with connection.cursor() as cursor:
+            # cursor.execute("SET my.guid = %s", [str(approved_user_operator.user.user_guid)])
+            for role, operations in Operation.Rls.role_grants_mapping.items():
+                user.app_role = AppRole.objects.get(role_name=role.value)
+                user.save()
+                
+                if RlsOperations.SELECT in operations:
+                    if role == RlsRoles.INDUSTRY_USER:
+                        RlsMiddleware._set_user_guid_and_role(cursor, approved_user_operator.user)
+                        cursor.execute("select count(*) from erc.operation")
+                        assert cursor.fetchone()[0] == 1 # Industry user should see only their operation
+                    else:
+                        RlsMiddleware._set_user_guid_and_role(cursor, user)
+                        cursor.execute("select count(*) from erc.operation")
+                        assert cursor.fetchone()[0] == 2 # cas roles should see everything
 
 
        

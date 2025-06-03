@@ -1,5 +1,6 @@
 from common.enums import Schemas
 from typing import Dict, List, Any
+from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.grant import RlsGrant
 from rls.utils.m2m import M2mRls
@@ -78,5 +79,37 @@ def generate_m2m_rls(
     """
     return [
         M2mRls(grants=generate_rls_grants(role_grants_mapping, table, schema))
+        for table, role_grants_mapping in m2m_models_grants_mapping.items()
+    ]
+
+def generate_m2m_rls_policies(
+    m2m_models_grants_mapping: Dict[Any, Dict[RlsRoles, List[RlsOperations]]],
+    schema: Schemas = Schemas.ERC,
+) -> List[M2mRls]:
+    """
+    Generate a list of M2mRls objects based on the M2M table role-to-grants mapping.
+    """
+    # brianna this probably doesn't work
+    return [
+        M2mRls(policies=generate_rls_policies(role_grants_mapping=role_grants_mapping, table=RegistrationTableNames.OPERATION, 
+                                     using_statement="""
+                    id IN (
+                        SELECT operation.id
+                        FROM erc.operation
+                        JOIN erc.user_operator uo
+                        ON operation.operator_id = uo.operator_id
+                        AND uo.user_id = current_setting('my.guid', true)::uuid
+                        AND uo.status = 'Approved'
+                    )
+                    """, check_statement="""
+                    id IN (
+                        SELECT operation.id
+                        FROM erc.operation
+                        JOIN erc.user_operator uo
+                        ON operation.operator_id = uo.operator_id
+                        AND uo.user_id = current_setting('my.guid', true)::uuid
+                        AND uo.status = 'Approved'
+                    )
+                    """))
         for table, role_grants_mapping in m2m_models_grants_mapping.items()
     ]

@@ -1,6 +1,6 @@
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants
+from rls.utils.helpers import generate_rls_grants, generate_rls_policies
 
 
 class Rls:
@@ -12,3 +12,4 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.BC_GREENHOUSE_GAS_ID)
+    
