@@ -33,6 +33,7 @@ from itertools import cycle
 from registration.tests.utils.helpers import CommonTestSetup
 from rls.enums import RlsOperations, RlsRoles
 from rls.middleware.rls import RlsMiddleware
+from rls.tests.helpers import test_policies_for_cas_roles
 
 
 class OperationModelTest(BaseTestCase):
@@ -351,8 +352,6 @@ class TestOperationRls(BaseTestCase):
                     
     
     def test_operation_rls_cas_users(self):
-
-        user = baker.make_recipe('registration.tests.utils.cas_admin')
         
         mock_operations = baker.make_recipe(
             'registration.tests.utils.operation', _quantity=5, operator=baker.make_recipe('registration.tests.utils.operator'), status=Operation.Statuses.REGISTERED
@@ -360,27 +359,21 @@ class TestOperationRls(BaseTestCase):
         for i in range(5):
             baker.make(BcGreenhouseGasId, id = f"2321999000{i}")
 
-        with connection.cursor() as cursor:
-            for i, (role, operations) in enumerate(Operation.Rls.role_grants_mapping.items()):
-                user.app_role = AppRole.objects.get(role_name=role.value)
-                user.save()
-                
-                if role == RlsRoles.INDUSTRY_USER:
-                    continue
+        def select_function(cursor, i):
+            cursor.execute("select count(*) from erc.operation")
+            cursor.rowcount == 5
 
-                RlsMiddleware._set_user_guid_and_role(cursor, user)
-
-                if RlsOperations.SELECT in operations:
-                    cursor.execute("select count(*) from erc.operation")
-                    cursor.rowcount == 5
-                    # assert cursor.fetchone()[0] == 5  # CAS roles with SELECT grants should see everything
-
-                if RlsOperations.UPDATE in operations:
-                    cursor.execute(
+        def update_function(cursor, i):
+            cursor.execute(
                         "UPDATE erc.operation SET bcghg_id_id = %s WHERE id = %s",
                         [BcGreenhouseGasId.objects.all()[i].id, mock_operations[i].id]
                     )
 
+        test_policies_for_cas_roles(Operation, select_function=select_function, update_function=update_function)
+
+    
+
+               
 
 
 
