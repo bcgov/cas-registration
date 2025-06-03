@@ -5,6 +5,23 @@ import {
   generateRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
 
+// Mock the compliance summary data function
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    getRequestIssuanceComplianceSummaryData: vi.fn().mockResolvedValue({
+      id: 1,
+      reporting_year: 2024,
+      earned_credits: 15,
+      issuance_status: "Issuance not requested",
+      operation_name: "Test Operation",
+      emissions_attributable_for_compliance: "85.0",
+      emission_limit: "100.0",
+      excess_emissions: "-15.0",
+    }),
+  }),
+);
+
 // Mock the task list generator
 vi.mock(
   "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList",
