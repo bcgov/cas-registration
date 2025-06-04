@@ -14,18 +14,18 @@ const createSummarySection = (
   reportingYear: number,
 ): RJSFSchema["properties"] => ({
   summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
-  emissionsAttributableForCompliance: readOnlyStringField(
+  emissions_attributable_for_compliance: readOnlyStringField(
     "Emissions Attributable for Compliance:",
   ),
-  emissionLimit: readOnlyStringField("Emissions Limit:"),
-  excessEmissions: readOnlyStringField("Excess Emissions:"),
+  emission_limit: readOnlyStringField("Emissions Limit:"),
+  excess_emissions: readOnlyStringField("Excess Emissions:"),
 });
 
 const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
   earnedCreditsHeader: readOnlyObjectField("Earned Credits"),
   earnedCreditsAlert: readOnlyStringField(),
-  earnedCredits: readOnlyStringField("Earned Credits:"),
-  issuanceStatus: readOnlyStringField("Status of Issuance:"),
+  earned_credits_amount: readOnlyStringField("Earned Credits:"),
+  issuance_status: readOnlyStringField("Status of Issuance:"),
 });
 
 // Main schema creator
@@ -40,25 +40,27 @@ export const createComplianceSummaryReviewSchema = (
   },
 });
 
-export const complianceSummaryReviewUiSchema: UiSchema = {
+export const complianceSummaryReviewUiSchema = (
+  isCasStaff: boolean,
+): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
   // Summary Section
   summaryHeader: headerUiConfig,
-  emissionsAttributableForCompliance: tco2eUiConfig,
-  emissionLimit: tco2eUiConfig,
-  excessEmissions: tco2eUiConfig,
+  emissions_attributable_for_compliance: tco2eUiConfig,
+  emission_limit: tco2eUiConfig,
+  excess_emissions: tco2eUiConfig,
 
   // Earned Credits Section
   earnedCreditsHeader: headerUiConfig,
   earnedCreditsAlert: {
-    "ui:widget": EarnedCreditsAlertNote,
+    "ui:widget": isCasStaff ? () => null : EarnedCreditsAlertNote,
     "ui:options": {
       label: false,
       inline: true,
     },
   },
-  earnedCredits: commonReadOnlyOptions,
-  issuanceStatus: commonReadOnlyOptions,
-};
+  earned_credits_amount: commonReadOnlyOptions,
+  issuance_status: commonReadOnlyOptions,
+});

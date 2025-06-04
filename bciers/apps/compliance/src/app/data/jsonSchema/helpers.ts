@@ -45,7 +45,7 @@ export const headerUiConfig = {
 export const tco2eUiConfig = {
   ...commonReadOnlyOptions,
   "ui:options": {
-    displayUnit: "tCO2e",
+    suffix: "\u00A0tCO2e",
   },
 };
 

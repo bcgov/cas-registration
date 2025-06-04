@@ -6,23 +6,26 @@ import {
   complianceSummaryReviewUiSchema,
   createComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
+import { ComplianceSummaryReviewData } from "@/compliance/src/app/types";
 
 interface Props {
-  data: any; //TODO: Define the type for the data
+  data: ComplianceSummaryReviewData;
   complianceSummaryId: string;
+  isCasStaff: boolean;
 }
 
 const ComplianceSummaryReviewComponent = ({
   data,
   complianceSummaryId,
+  isCasStaff,
 }: Props) => {
   const backUrl = "/compliance-summaries";
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
   return (
     <FormBase
-      schema={createComplianceSummaryReviewSchema(data.reportingYear)}
-      uiSchema={complianceSummaryReviewUiSchema}
+      schema={createComplianceSummaryReviewSchema(data.reporting_year)}
+      uiSchema={complianceSummaryReviewUiSchema(isCasStaff)}
       formData={data}
       className="w-full"
     >

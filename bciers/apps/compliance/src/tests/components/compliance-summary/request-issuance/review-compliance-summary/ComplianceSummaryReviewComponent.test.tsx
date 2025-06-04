@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
-import { useRouter } from "@bciers/testConfig/mocks";
+import { useRouter, useSessionRole } from "@bciers/testConfig/mocks";
 
 // Mock the router
 const mockRouterPush = vi.fn();
@@ -11,18 +11,21 @@ useRouter.mockReturnValue({
 
 const mockComplianceSummaryId = "123";
 const mockData = {
-  operationId: 123,
-  reportingYear: 2024,
-  excessEmissions: "-15.0",
-  emissionLimit: "100.0",
-  emissionsAttributableForCompliance: "85.0",
-  earnedCredits: 15,
-  issuanceStatus: "Issuance not requested",
+  operation_name: "Test Operation",
+  reporting_year: 2024,
+  excess_emissions: -15.0,
+  emission_limit: "100.0",
+  emissions_attributable_for_compliance: "85.0",
+  earned_credits_amount: 15,
+  issuance_status: "Issuance not requested",
+  earned_credits_issued: false,
+  id: 123,
 };
 
 describe("ComplianceSummaryReviewComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useSessionRole.mockReturnValue("industry_user");
   });
 
   it("renders the form with correct schema fields and headers", () => {
@@ -30,6 +33,7 @@ describe("ComplianceSummaryReviewComponent", () => {
       <ComplianceSummaryReviewComponent
         complianceSummaryId={mockComplianceSummaryId}
         data={mockData}
+        isCasStaff={false}
       />,
     );
 
@@ -47,7 +51,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(screen.getByText("100.0")).toBeVisible();
     expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
     expect(screen.getByText("Excess Emissions:")).toBeVisible();
-    expect(screen.getByText("-15.0")).toBeVisible();
+    expect(screen.getByText(-15.0)).toBeVisible();
     expect(screen.getAllByText("tCO2e")[2]).toBeVisible();
 
     // Check Earned Credits section
@@ -80,6 +84,7 @@ describe("ComplianceSummaryReviewComponent", () => {
       <ComplianceSummaryReviewComponent
         complianceSummaryId={mockComplianceSummaryId}
         data={mockData}
+        isCasStaff={false}
       />,
     );
 

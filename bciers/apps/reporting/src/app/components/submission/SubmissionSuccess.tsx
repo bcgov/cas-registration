@@ -28,7 +28,7 @@ export default function SubmissionSuccess({
         height="20vh"
       >
         <Box display="flex" flexDirection="column" alignItems="center">
-          {Check}
+          <Check />
         </Box>
         <Box mt={3} textAlign="center">
           <Typography
