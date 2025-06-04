@@ -1,6 +1,5 @@
 from common.enums import Schemas
 from typing import Dict, List, Any
-from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.grant import RlsGrant
 from rls.utils.m2m import M2mRls

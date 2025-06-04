@@ -1,6 +1,6 @@
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants, generate_rls_policies
+from rls.utils.helpers import generate_rls_grants
 
 
 class Rls:
