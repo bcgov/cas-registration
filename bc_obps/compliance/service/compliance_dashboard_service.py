@@ -10,12 +10,13 @@ from registration.models.operation import Operation
 from typing import Optional, List, cast, Any, Dict
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
-from registration.models import Operator
+from registration.models import Operator, User
 from compliance.models import ComplianceObligation
 from dataclasses import dataclass
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
+from service.data_access_service.user_operator_service import UserOperatorDataAccessService
 
 
 @dataclass
@@ -153,7 +154,7 @@ class ComplianceDashboardService:
         return PaymentsList(rows=payment_objects, row_count=len(payment_objects))
 
     @classmethod
-    def get_payments_for_dashboard(cls, operator_id: UUID) -> PaymentsDashboardList:
+    def get_payments_for_dashboard(cls, user: User) -> PaymentsDashboardList:
         """
         Get payments for the payments summaries dashboard
 
@@ -163,6 +164,11 @@ class ComplianceDashboardService:
         Returns:
             PaymentsList object containing the payment records
         """
+
+        user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
+        if not user_operator:
+            raise ValidationError("No approved operator found for user")
+        operator_id = user_operator.operator_id
 
         elicensing_api_client = ELicensingAPIClient()
 
