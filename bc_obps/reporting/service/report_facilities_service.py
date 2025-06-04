@@ -66,13 +66,11 @@ class ReportFacilitiesService:
                 )
             )
         ]
-        FacilityReport.objects.bulk_create(new_facility_reports)
+        created_facilities = FacilityReport.objects.bulk_create(new_facility_reports)
 
         # Assign default activities to each new FacilityReport
         default_activities = ReportOperation.objects.get(report_version=report_version).activities.all()
-        for fr in FacilityReport.objects.filter(
-            report_version=report_version, facility_id__in=[fr.facility.id for fr in new_facility_reports]
-        ):
+        for fr in created_facilities:
             fr.activities.set(default_activities)
 
     @staticmethod
