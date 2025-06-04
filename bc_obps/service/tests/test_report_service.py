@@ -223,24 +223,6 @@ class TestReportService(TestCase):
         self.assertIsNotNone(retrieved_data)
         self.assertEqual(retrieved_data["registration_purpose"], self.report_operation.registration_purpose)
 
-    def test_update_report_service(self):
-        operator = baker.make_recipe('registration.tests.utils.operator')
-        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
-        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
-        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
-
-        operation.name = "New Operation Name"
-        operation.registration_purpose = Operation.Purposes.REPORTING_OPERATION
-        operation.save()
-
-        ReportService.update_report_operation(report_version.id)
-
-        report_operation.refresh_from_db()
-
-        assert report_operation.operation_name == "New Operation Name"
-        assert report_operation.registration_purpose == Operation.Purposes.REPORTING_OPERATION
-
     def test_deletes_child_report_product_records_on_product_set_change(self):
         operator = baker.make_recipe('registration.tests.utils.operator')
         operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)

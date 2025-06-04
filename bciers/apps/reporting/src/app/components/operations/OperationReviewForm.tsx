@@ -15,15 +15,10 @@ import {
   NavigationInformation,
   ReportingPage,
 } from "../taskList/types";
-import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 import { SyncFacilitiesButton } from "@reporting/src/data/jsonSchema/reviewFacilities/reviewFacilitiesInfoText";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
-import {
-  showActivities,
-  showBoroId,
-  showRegulatedProducts,
-} from "@reporting/src/app/components/operations/getOperationSchemaParameters";
+import { getUpdatedReportOperationDetails } from "@reporting/src/app/utils/getUpdatedReportOperationDetails";
 
 interface Props {
   formData: any;
@@ -76,11 +71,10 @@ export default function OperationReviewForm({
 
   const onChangeHandler = (data: { formData: any }) => {
     const updatedFormData = data.formData;
-
     if (
-      formDataState.operation_report_type !== undefined &&
-      formDataState.operation_report_type !==
-        updatedFormData.operation_report_type
+      updatedFormData?.operation_report_type !== undefined &&
+      updatedFormData?.operation_report_type !==
+        formDataState?.operation_report_type
     ) {
       setPendingChangeReportType(updatedFormData.operation_report_type);
     }
@@ -94,18 +88,17 @@ export default function OperationReviewForm({
       setErrors(["Unable to sync data"]);
       return;
     }
-
     setPageSchema(
       buildOperationReviewSchema(
         newData,
         reportingYear,
         allActivities,
         allRegulatedProducts,
-        newData.report_operation_representatives,
+        newData.all_representatives,
         reportType,
-        showRegulatedProducts(newData.registration_purpose),
-        showBoroId(newData.registration_purpose),
-        showActivities(newData.registration_purpose),
+        newData.show_regulated_products,
+        newData.show_boro_id,
+        newData.show_activities,
       ),
     );
     setNavigationInfo(
@@ -116,7 +109,7 @@ export default function OperationReviewForm({
         facilityId,
       ),
     );
-    setFormDataState(newData);
+    setFormDataState(newData.report_operation);
     setErrors(undefined);
     setIsSnackbarOpen(true);
   };

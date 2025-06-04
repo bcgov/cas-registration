@@ -1,6 +1,6 @@
 from uuid import UUID
 from django.db import transaction
-from typing import Any, List, Optional, Tuple, cast
+from typing import Any, List, Optional, cast
 from ninja import Query
 from registration.models import Activity, Facility
 from reporting.models import ReportActivity, ReportProductEmissionAllocation, ReportProduct
@@ -34,14 +34,12 @@ class FacilityReportService:
         )
 
     @classmethod
-    def get_facility_report_by_version_id(cls, report_version_id: int) -> Optional[Tuple[UUID]]:
-        # Return the first facility_id as a tuple or None
-        facility_id = (
+    def get_facility_report_by_version_id(cls, report_version_id: int) -> Optional[UUID]:
+        return (
             FacilityReport.objects.filter(report_version__id=report_version_id)
             .values_list('facility_id', flat=True)
             .first()
         )
-        return (facility_id,) if facility_id else None
 
     @classmethod
     def get_activity_ids_for_facility(cls, version_id: int, facility_id: UUID) -> List[int]:
