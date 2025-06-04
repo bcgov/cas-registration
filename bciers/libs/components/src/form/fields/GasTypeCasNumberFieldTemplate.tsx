@@ -14,6 +14,7 @@ function InlineFieldTemplate({
   classNames,
   formContext,
   formData,
+  readonly,
 }: FieldTemplateProps) {
   const isHidden = uiSchema?.["ui:widget"] === "hidden";
   if (isHidden) return null;
@@ -78,13 +79,19 @@ function InlineFieldTemplate({
           </div>
         )}
         <div className={`relative flex items-center w-full ${cellWidth}`}>
-          <TextField
-            id="outlined-basic"
-            variant="outlined"
-            fullWidth
-            disabled
-            defaultValue={selectedGasTypeObject?.cas_number}
-          />
+          {readonly ? (
+            <span className="ml-2 font-medium">
+              {selectedGasTypeObject?.cas_number}
+            </span>
+          ) : (
+            <TextField
+              id="outlined-basic"
+              variant="outlined"
+              fullWidth
+              disabled
+              defaultValue={selectedGasTypeObject?.cas_number}
+            />
+          )}
         </div>
       </div>
     </div>
