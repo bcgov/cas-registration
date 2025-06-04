@@ -48,7 +48,7 @@ const activityFactoryItem: ReviewDataFactoryItem = async (
       schema: schema,
       uiSchema: activity.slug,
       data: formData,
-      context: { gasTypes, readOnly: true },
+      context: { gasTypes },
     });
   }
 
