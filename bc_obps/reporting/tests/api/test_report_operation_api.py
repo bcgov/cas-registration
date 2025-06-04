@@ -49,16 +49,16 @@ class TestReportOperationDataApi(CommonTestSetup):
     @patch.object(ReportOperationService, "get_report_operation_data_by_version_id")
     def test_returns_report_operation_data(self, mock_get_report_operation_data):
         mock_get_report_operation_data.return_value = {
-            "reportOperation": self.report_operation,
-            "facilityId": self.facility_report["facility_id"],
-            "allActivities": self.activities,
-            "allRegulatedProducts": self.products,
-            "allRepresentatives": self.report_operation["report_operation_representatives"],
-            "reportType": self.report_operation["operation_report_type"],
-            "showRegulatedProducts": True,
-            "showBoroId": True,
-            "showActivities": True,
-            "reportingYear": self.reporting_year.reporting_year,
+            "report_operation": self.report_operation,
+            "facility_id": self.facility_report["facility_id"],
+            "all_activities": self.activities,
+            "all_regulated_products": self.products,
+            "all_representatives": self.report_operation["report_operation_representatives"],
+            "report_type": self.report_operation["operation_report_type"],
+            "show_regulated_products": True,
+            "show_boro_id": True,
+            "show_activities": True,
+            "reporting_year": self.reporting_year.reporting_year,
         }
         expected_purpose = self.report_operation["registration_purpose"]
 
@@ -73,13 +73,13 @@ class TestReportOperationDataApi(CommonTestSetup):
 
         assert response.status_code == 200
         response_json = response.json()
-        assert response_json["reportOperation"]["operation_name"] == self.report_operation["operation_name"]
-        assert response_json["allActivities"] == self.activities
-        assert response_json["allRegulatedProducts"] == self.products
-        assert response_json["reportType"] == self.report_operation["operation_report_type"]
-        assert response_json["reportingYear"] == self.reporting_year.reporting_year
+        assert response_json["report_operation"]["operation_name"] == self.report_operation["operation_name"]
+        assert response_json["all_activities"] == self.activities
+        assert response_json["all_regulated_products"] == self.products
+        assert response_json["report_type"] == self.report_operation["operation_report_type"]
+        assert response_json["reporting_year"] == self.reporting_year.reporting_year
 
-        assert response_json["showRegulatedProducts"] == (
+        assert response_json["show_regulated_products"] == (
             expected_purpose
             not in [
                 Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
@@ -87,14 +87,14 @@ class TestReportOperationDataApi(CommonTestSetup):
                 Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
             ]
         )
-        assert response_json["showBoroId"] == (
+        assert response_json["show_boro_id"] == (
             expected_purpose
             not in [
                 Operation.Purposes.REPORTING_OPERATION,
                 Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
             ]
         )
-        assert response_json["showActivities"] == (
+        assert response_json["show_activities"] == (
             expected_purpose
             not in [
                 Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
@@ -102,7 +102,7 @@ class TestReportOperationDataApi(CommonTestSetup):
             ]
         )
 
-        assert response_json["allRepresentatives"] == self.report_operation["report_operation_representatives"]
+        assert response_json["all_representatives"] == self.report_operation["report_operation_representatives"]
 
     @patch("reporting.service.report_operation_service.ReportOperationService.update_report_operation")
     def test_update_report_operation(self, mock_update: MagicMock):
@@ -115,9 +115,11 @@ class TestReportOperationDataApi(CommonTestSetup):
         mock_update.return_value = updated_report_operation
 
         TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
-        TestUtils.mock_get_with_auth_role(
+        TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
+            self.content_type,
+            {},
             custom_reverse_lazy(
                 "get_update_report",
                 kwargs={"version_id": report_version.id},

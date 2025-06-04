@@ -14,10 +14,6 @@ from ..schema.report_operation import ReportOperationDataSchema, ReportOperation
 from ..service.report_operation_service import ReportOperationService
 
 
-def should_show(purpose: str, excluded_purposes: list) -> bool:
-    return purpose not in excluded_purposes
-
-
 @router.get(
     "/report-version/{version_id}/report-operation-data",
     response={200: ReportOperationDataSchema, custom_codes_4xx: Message},
@@ -29,7 +25,7 @@ def get_report_operation_data(request: HttpRequest, version_id: int) -> dict:
     return ReportOperationService.get_report_operation_data_by_version_id(version_id)
 
 
-@router.get(
+@router.patch(
     "/report-version/{version_id}/report-operation/update",
     response={200: ReportOperationDataSchema, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,

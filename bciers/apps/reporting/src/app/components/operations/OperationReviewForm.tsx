@@ -94,11 +94,11 @@ export default function OperationReviewForm({
         reportingYear,
         allActivities,
         allRegulatedProducts,
-        newData.allRepresentatives,
+        newData.all_representatives,
         reportType,
-        newData.showRegulatedProducts,
-        newData.showBoroId,
-        newData.showActivities,
+        newData.show_regulated_products,
+        newData.show_boro_id,
+        newData.show_activities,
       ),
     );
     setNavigationInfo(
@@ -109,7 +109,7 @@ export default function OperationReviewForm({
         facilityId,
       ),
     );
-    setFormDataState(newData.reportOperation);
+    setFormDataState(newData.report_operation);
     setErrors(undefined);
     setIsSnackbarOpen(true);
   };

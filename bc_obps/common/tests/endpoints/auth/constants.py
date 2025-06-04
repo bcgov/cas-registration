@@ -465,7 +465,7 @@ ENDPOINTS = {
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {
-            "method": "get",
+            "method": "patch",
             "endpoint_name": "get_update_report",
             "kwargs": {"version_id": MOCK_INT},
         },
