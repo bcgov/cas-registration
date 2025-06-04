@@ -15,6 +15,7 @@ import {
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Loading from "@bciers/components/loading/SkeletonSpinner";
 
 /*
 📚
@@ -40,7 +41,7 @@ export default function Page() {
   useEffect(() => {
     if (status === "loading") {
       // Session is still loading, do nothing
-      return;
+      return <Loading />
     }
 
     if (session) {
