@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 import uuid
+from compliance.service.elicensing.schema import TempInvoiceQueryResponseJustNumber
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 import requests
 from datetime import date
@@ -135,6 +136,12 @@ class TestObligationELicensingService:
         assert result["paymentDueDate"] == "2024-12-31"
         assert result["businessAreaCode"] == "OBPS"
         assert result["fees"] == [fee_id]
+
+    def test_get_invoice_from_summary_id(self) -> TempInvoiceQueryResponseJustNumber:
+        """Test grabbing invoice info with summary_id string"""
+        result = ObligationELicensingService.get_invoice_from_summary_id("OBI000003temp")
+
+        assert result.invoiceNumber == "OBI000003temp"
 
     @pytest.mark.django_db
     def test_process_obligation_integration_success(
