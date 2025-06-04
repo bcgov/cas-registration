@@ -6,6 +6,7 @@ from registration.models.user import User
 from model_bakery import baker
 from rls.enums import RlsOperations, RlsRoles
 from rls.middleware.rls import RlsMiddleware
+from django.db import transaction
 
 
 def get_models_for_rls(app_name=None):
@@ -39,25 +40,39 @@ def test_policies_for_cas_roles(
 
             RlsMiddleware._set_user_guid_and_role(cursor, user)
 
-            if RlsOperations.SELECT in operations:
-                if select_function is noop:
-                    raise ValueError("SELECT operation granted, but no select_function provided.")
-                select_function(cursor, i)
+            with transaction.atomic():
+                # Mark this block for rollback so that when we loop and there's an insert, it doesn't affect the next iteration's select
+                sid = transaction.savepoint()
+                try:
+                    RlsMiddleware._set_user_guid_and_role(cursor, user)
 
-            if RlsOperations.INSERT in operations:
-                if insert_function is noop:
-                    raise ValueError(f"INSERT operation granted for role {role}, but no select_function provided.")
-                insert_function(cursor, i)
+                    if RlsOperations.SELECT in operations:
+                        if select_function is noop:
+                            raise ValueError("SELECT operation granted, but no select_function provided.")
+                        select_function(cursor, i)
 
-            if RlsOperations.UPDATE in operations:
-                if update_function is noop:
-                    raise ValueError(f"UPDATE operation granted for role {role}, but no select_function provided.")
-                update_function(cursor, i)
+                    if RlsOperations.INSERT in operations:
+                        if insert_function is noop:
+                            raise ValueError(
+                                f"INSERT operation granted for role {role}, but no insert_function provided."
+                            )
+                        insert_function(cursor, i)
 
-            if RlsOperations.DELETE in operations:
-                if delete_function is noop:
-                    raise ValueError(f"DELETE operation granted for role {role}, but no select_function provided.")
-                delete_function(cursor, i)
+                    if RlsOperations.UPDATE in operations:
+                        if update_function is noop:
+                            raise ValueError(
+                                f"UPDATE operation granted for role {role}, but no update_function provided."
+                            )
+                        update_function(cursor, i)
+
+                    if RlsOperations.DELETE in operations:
+                        if delete_function is noop:
+                            raise ValueError(
+                                f"DELETE operation granted for role {role}, but no delete_function provided."
+                            )
+                        delete_function(cursor, i)
+                finally:
+                    transaction.savepoint_rollback(sid)
 
 
 def test_policies_for_industry_user(
