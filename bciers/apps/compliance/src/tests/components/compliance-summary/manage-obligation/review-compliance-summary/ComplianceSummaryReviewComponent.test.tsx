@@ -45,6 +45,7 @@ const mockData = {
 describe("ComplianceSummaryReviewComponent", () => {
   beforeEach(() => {
     mockWindowOpen.mockClear();
+    vi.restoreAllMocks();
   });
 
   it("renders the component with all sections", () => {
@@ -149,7 +150,21 @@ describe("ComplianceSummaryReviewComponent", () => {
   it("handles invoice generation correctly", async () => {
     const user = userEvent.setup();
 
-    // Render the component
+    // Mock `fetch` to return a successful response with a Blob
+    const mockBlob = new Blob(["dummy PDF"], { type: "application/pdf" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => mockBlob,
+      } as unknown as Response),
+    );
+
+    // Define `URL.createObjectURL` (JSDOM doesn’t provide it by default)
+    const fakeUrl = "blob:fake-invoice-url";
+    (URL as any).createObjectURL = vi.fn(() => fakeUrl);
+
     render(
       <ComplianceSummaryReviewComponent
         data={mockData}
@@ -162,16 +177,78 @@ describe("ComplianceSummaryReviewComponent", () => {
     });
     expect(generateInvoiceButton).toBeEnabled();
 
+    // Click the button to trigger handleGenerateInvoice()
     await user.click(generateInvoiceButton);
 
-    // Verify window.open was called with correct arguments
+    // Verify `fetch` was called with the correct URL and options
+    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/123", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    // Verify `createObjectURL` was called with the returned Blob
+    expect((URL as any).createObjectURL).toHaveBeenCalledWith(mockBlob);
+
+    // Verify `window.open` was called with the fake URL and correct args
     expect(mockWindowOpen).toHaveBeenCalledWith(
-      "/compliance/api/invoice/123",
+      fakeUrl,
       "_blank",
       "noopener,noreferrer",
     );
 
-    // Wait for the button to return to its normal state
+    // 7) Finally, the button should be re‐enabled
+    expect(
+      screen.getByRole("button", { name: "Generate Compliance Invoice" }),
+    ).toBeEnabled();
+  });
+
+  it("displays an error when invoice generation fails", async () => {
+    const user = userEvent.setup();
+
+    // 1) Mock `fetch` to return a non-OK response with an `errors` object
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({
+          errors: { invoice: ["Unable to generate invoice"] },
+        }),
+      } as unknown as Response),
+    );
+
+    render(
+      <ComplianceSummaryReviewComponent
+        data={mockData}
+        complianceSummaryId="999"
+      />,
+    );
+
+    const generateInvoiceButton = screen.getByRole("button", {
+      name: "Generate Compliance Invoice",
+    });
+    expect(generateInvoiceButton).toBeEnabled();
+
+    // Click to trigger the failing case
+    await user.click(generateInvoiceButton);
+
+    // Verify `fetch` was called with the correct URL
+    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/999", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    // Ensure `window.open` was not called
+    expect(mockWindowOpen).not.toHaveBeenCalled();
+
+    // Confirm the error message is displayed in an alert role
+    const allAlerts = await screen.findAllByRole("alert");
+    const hasErrorText = allAlerts.some(
+      (node) => node.textContent?.includes("Unable to generate invoice"),
+    );
+    expect(hasErrorText).toBe(true);
+
+    // Finally, the button should be re‐enabled after the error
     expect(
       screen.getByRole("button", { name: "Generate Compliance Invoice" }),
     ).toBeEnabled();

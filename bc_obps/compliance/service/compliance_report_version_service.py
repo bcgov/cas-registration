@@ -150,4 +150,4 @@ class ComplianceReportVersionService:
 
     @staticmethod
     def get_obligation_by_compliance_report_version(compliance_report_version_id: int) -> ComplianceObligation:
-        return ComplianceObligation.objects.filter(compliance_report_version__id=compliance_report_version_id).first()
+        return ComplianceObligation.objects.get(compliance_report_version__id=compliance_report_version_id)
