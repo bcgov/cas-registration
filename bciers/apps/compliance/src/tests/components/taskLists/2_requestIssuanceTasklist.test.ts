@@ -27,7 +27,7 @@ describe("generateRequestIssuanceTaskList", () => {
     expect(taskItems?.[0]).toEqual({
       type: "Page",
       title: "Review 2024 Compliance Summary",
-      link: "/compliance-summaries/123/request-issuance-review-summary",
+      link: "/compliance-summaries/123/review-compliance-summary",
       isActive: true, // Default activeIndex is 0
     });
 
@@ -83,5 +83,50 @@ describe("generateRequestIssuanceTaskList", () => {
   it("handles undefined reporting year", () => {
     const taskList = generateRequestIssuanceTaskList(mockComplianceSummaryId);
     expect(taskList[0].title).toBe("undefined Compliance Summary");
+  });
+
+  it("generates CAS staff task list when isCasStaff is true", () => {
+    const taskList = generateRequestIssuanceTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+      0,
+      true,
+    );
+
+    // Check task items
+    const taskItems = taskList[0].elements;
+    expect(taskItems).toHaveLength(4);
+
+    // Check Review Summary task
+    expect(taskItems?.[0]).toEqual({
+      type: "Page",
+      title: "Review 2024 Compliance Summary",
+      link: "/compliance-summaries/123/review-compliance-summary",
+      isActive: true,
+    });
+
+    // Check Review Credits Issuance Request task
+    expect(taskItems?.[1]).toEqual({
+      type: "Page",
+      title: "Review Credits Issuance Request",
+      link: "/compliance-summaries/123/review-credits-issuance-request",
+      isActive: false,
+    });
+
+    // Check Review by Director task
+    expect(taskItems?.[2]).toEqual({
+      type: "Page",
+      title: "Review by Director",
+      link: "/compliance-summaries/123/review-by-director",
+      isActive: false,
+    });
+
+    // Check Track Status task
+    expect(taskItems?.[3]).toEqual({
+      type: "Page",
+      title: "Track Status of Issuance",
+      link: "/compliance-summaries/123/track-status-of-issuance",
+      isActive: false,
+    });
   });
 });

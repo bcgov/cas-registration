@@ -1,26 +1,24 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
+import TrackStatusOfIssuancePage from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/TrackStatusOfIssuancePage";
 import {
   ActivePage,
   generateRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
 
-// Mock the compliance summary data function
-vi.mock(
-  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
-  () => ({
-    getRequestIssuanceComplianceSummaryData: vi.fn().mockResolvedValue({
-      id: 1,
-      reporting_year: 2024,
-      earned_credits_amount: 15,
-      issuance_status: "Issuance not requested",
-      operation_name: "Test Operation",
-      emissions_attributable_for_compliance: "85.0",
-      emission_limit: "100.0",
-      excess_emissions: "-15.0",
-    }),
+// Mock the track status data function
+vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
+  getRequestIssuanceTrackStatusData: vi.fn().mockResolvedValue({
+    operation_name: "Test Operation",
+    earned_credits: 100,
+    issuance_status: "approved",
+    bccr_trading_name: "Test Trading Name",
+    directors_comments: "Director's test comments",
   }),
-);
+  IssuanceStatus: {
+    APPROVED: "approved",
+    AWAITING: "awaiting",
+  },
+}));
 
 // Mock the session role function
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
@@ -36,6 +34,16 @@ vi.mock(
   }),
 );
 
+// Mock the reporting year utility
+vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+  __esModule: true,
+  getReportingYear: vi.fn().mockResolvedValue({
+    reporting_year: 2024,
+    report_due_date: "2025-03-31",
+    reporting_window_end: "2025-03-31",
+  }),
+}));
+
 // Mock the layout component
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
@@ -43,15 +51,15 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   ),
 }));
 
-// Mock the review component
+// Mock the track status component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/TrackStatusOfIssuanceComponent",
   () => ({
-    default: () => <div>Mock Review Component</div>,
+    default: () => <div>Mock Track Status Component</div>,
   }),
 );
 
-describe("ComplianceSummaryReviewPage", () => {
+describe("TrackStatusOfIssuancePage", () => {
   const mockComplianceSummaryId = "123";
 
   beforeEach(() => {
@@ -60,20 +68,20 @@ describe("ComplianceSummaryReviewPage", () => {
 
   it("renders with correct content and generates task list", async () => {
     render(
-      await ComplianceSummaryReviewPage({
+      await TrackStatusOfIssuancePage({
         compliance_summary_id: mockComplianceSummaryId,
       }),
     );
 
     // Check content is rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(screen.getByText("Mock Review Component")).toBeVisible();
+    expect(screen.getByText("Mock Track Status Component")).toBeVisible();
 
     // Verify task list generation
     expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
       mockComplianceSummaryId,
       2024,
-      ActivePage.ReviewComplianceSummary,
+      ActivePage.TrackStatusOfIssuance,
       false, // isCasStaff parameter should be false with "industry_user" role
     );
   });

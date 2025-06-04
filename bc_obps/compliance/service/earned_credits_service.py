@@ -12,10 +12,10 @@ class ComplianceEarnedCreditsService:
         cls, compliance_report_version_id: int
     ) -> Optional[ComplianceEarnedCredit]:
         """
-        Fetches earned credits data for a specific compliance compliance_report_version
+        Fetches earned credits data for a specific compliance report version
 
         Args:
-            compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve earned credits data for
+            compliance_report_version_id: The ID of the compliance report version to retrieve earned credits data for
 
         Returns:
             The EarnedCredits object if it exists
