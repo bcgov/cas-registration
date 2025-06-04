@@ -102,15 +102,15 @@ def test_policies_for_industry_user(
 
         if RlsOperations.INSERT in operations:
             if insert_function is noop:
-                raise ValueError("INSERT operation granted, but no select_function provided.")
+                raise ValueError("INSERT operation granted, but no insert_function provided.")
             insert_function(cursor)
 
         if RlsOperations.UPDATE in operations:
             if update_function is noop:
-                raise ValueError("UPDATE operation granted, but no select_function provided.")
+                raise ValueError("UPDATE operation granted, but no update_function provided.")
             update_function(cursor)
 
         if RlsOperations.DELETE in operations:
             if delete_function is noop:
-                raise ValueError("DELETE operation granted, but no select_function provided.")
+                raise ValueError("DELETE operation granted, but no delete_function provided.")
             delete_function(cursor)
