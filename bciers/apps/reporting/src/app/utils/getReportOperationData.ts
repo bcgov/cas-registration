@@ -1,6 +1,8 @@
 import { actionHandler } from "@bciers/actions";
 
-export async function getReportingOperationData(reportVersionId: number) {
+export async function getReviewOperationInformationPageData(
+  reportVersionId: number,
+) {
   const endpoint = `reporting/report-version/${reportVersionId}/report-operation-data`;
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {

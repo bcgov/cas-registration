@@ -14,10 +14,6 @@ from service.reporting_year_service import ReportingYearService
 
 class ReportOperationService:
     @classmethod
-    def should_show(cls, purpose: str, excluded_purposes: list) -> bool:
-        return purpose not in excluded_purposes
-
-    @classmethod
     def get_report_operation_data_by_version_id(cls, version_id: int) -> dict:
         report_operation = cls.get_report_operation_by_version_id(version_id)
         all_activities = ActivityService.get_all_activities()
@@ -27,35 +23,29 @@ class ReportOperationService:
         facility_id = FacilityReportService.get_facility_report_by_version_id(version_id)
 
         return {
-            "reportOperation": report_operation,
-            "facilityId": facility_id,
-            "allActivities": all_activities,
-            "allRegulatedProducts": regulated_products,
-            "allRepresentatives": report_operation.get("report_operation_representatives", []),
-            "reportType": report_operation.get("operation_report_type"),
-            "showRegulatedProducts": cls.should_show(
-                purpose,
-                [
-                    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
-                    Operation.Purposes.REPORTING_OPERATION,
-                    Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-                ],
-            ),
-            "showBoroId": cls.should_show(
-                purpose,
-                [
-                    Operation.Purposes.REPORTING_OPERATION,
-                    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
-                ],
-            ),
-            "showActivities": cls.should_show(
-                purpose,
-                [
-                    Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
-                    Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
-                ],
-            ),
-            "reportingYear": reporting_year.reporting_year,
+            "report_operation": report_operation,
+            "facility_id": facility_id,
+            "all_activities": all_activities,
+            "all_regulated_products": regulated_products,
+            "all_representatives": report_operation.get("report_operation_representatives", []),
+            "report_type": report_operation.get("operation_report_type"),
+            "show_regulated_products": purpose
+            not in [
+                Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+                Operation.Purposes.REPORTING_OPERATION,
+                Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+            ],
+            "show_boro_id": purpose
+            not in [
+                Operation.Purposes.REPORTING_OPERATION,
+                Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+            ],
+            "show_activities": purpose
+            not in [
+                Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+                Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+            ],
+            "reporting_year": reporting_year.reporting_year,
         }
 
     @classmethod

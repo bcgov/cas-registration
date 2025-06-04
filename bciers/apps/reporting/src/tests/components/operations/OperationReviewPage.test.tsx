@@ -9,7 +9,7 @@ import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
-import { getReportingOperationData } from "@reporting/src/app/utils/getReportOperationData";
+import { getReviewOperationInformationPageData } from "@reporting/src/app/utils/getReportOperationData";
 
 // ✨ Mock the utility functions
 vi.mock("@reporting/src/app/utils/getReportingOperation", () => ({
@@ -29,7 +29,7 @@ vi.mock("@reporting/src/data/jsonSchema/operations", () => ({
 }));
 
 vi.mock("@reporting/src/app/utils/getReportOperationData", () => ({
-  getReportingOperationData: vi.fn(),
+  getReviewOperationInformationPageData: vi.fn(),
 }));
 
 describe("OperationReviewPage", () => {
@@ -41,15 +41,16 @@ describe("OperationReviewPage", () => {
     const fakeFacilityReport = { facility_id: "facility-123" };
     const fakeNavigationInformation = { nav: "info" };
     const fakeParams = {
-      reportOperation: { op: "op" },
-      reportingYear: "2024",
-      allActivities: [{ id: 1, name: "Activity 1" }],
-      allRegulatedProducts: [{ id: 10, name: "Product 1" }],
-      allRepresentatives: [{ id: 100, representative_name: "Rep 1" }],
-      reportType: { report_type: "Simple Report" },
-      showRegulatedProducts: true,
-      showBoroId: false,
-      showActivities: true,
+      report_operation: { op: "op" },
+      reporting_year: "2024",
+      all_activities: [{ id: 1, name: "Activity 1" }],
+      all_regulated_products: [{ id: 10, name: "Product 1" }],
+      all_representatives: [{ id: 100, representative_name: "Rep 1" }],
+      report_type: { report_type: "Simple Report" },
+      show_regulated_products: true,
+      show_boro_id: false,
+      show_activities: true,
+      facility_id: "facility-123",
     };
     const fakeSchema = { schema: "my schema" };
 
@@ -59,7 +60,9 @@ describe("OperationReviewPage", () => {
     (getNavigationInformation as any).mockResolvedValue(
       fakeNavigationInformation,
     );
-    (getReportingOperationData as any).mockResolvedValue(fakeParams);
+    (getReviewOperationInformationPageData as any).mockResolvedValue(
+      fakeParams,
+    );
     (buildOperationReviewSchema as any).mockReturnValue(fakeSchema);
 
     // Call the page
@@ -68,7 +71,7 @@ describe("OperationReviewPage", () => {
     // Verify that the returned element is an OperationReviewForm with the expected props
     expect(result).toBeDefined();
     expect(result.type).toBe(OperationReviewForm);
-    expect(result.props.formData).toEqual(fakeReportOperation);
+    expect(result.props.formData).toEqual(fakeParams.report_operation);
     expect(result.props.version_id).toEqual(reportVersion.version_id);
     expect(result.props.schema).toEqual(fakeSchema);
     expect(result.props.navigationInformation).toEqual(
@@ -76,29 +79,25 @@ describe("OperationReviewPage", () => {
     );
 
     // Verify that the dependent functions were called with the expected parameters
-    expect(getReportingOperation).toHaveBeenCalledWith(
-      reportVersion.version_id,
-    );
-    expect(getFacilityReport).toHaveBeenCalledWith(reportVersion.version_id);
     expect(getNavigationInformation).toHaveBeenCalledWith(
       HeaderStep.OperationInformation,
       ReportingPage.ReviewOperationInfo,
       reportVersion.version_id,
-      fakeFacilityReport.facility_id,
+      fakeParams.facility_id,
     );
-    expect(getReportingOperationData).toHaveBeenCalledWith(
+    expect(getReviewOperationInformationPageData).toHaveBeenCalledWith(
       reportVersion.version_id,
     );
     expect(buildOperationReviewSchema).toHaveBeenCalledWith(
-      fakeParams.reportOperation,
-      fakeParams.reportingYear,
-      fakeParams.allActivities,
-      fakeParams.allRegulatedProducts,
-      fakeParams.allRepresentatives,
-      fakeParams.reportType,
-      fakeParams.showRegulatedProducts,
-      fakeParams.showBoroId,
-      fakeParams.showActivities,
+      fakeParams.report_operation,
+      fakeParams.reporting_year,
+      fakeParams.all_activities,
+      fakeParams.all_regulated_products,
+      fakeParams.all_representatives,
+      fakeParams.report_type,
+      fakeParams.show_regulated_products,
+      fakeParams.show_boro_id,
+      fakeParams.show_activities,
     );
   });
 });

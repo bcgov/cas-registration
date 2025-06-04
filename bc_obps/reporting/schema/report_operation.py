@@ -82,14 +82,14 @@ class ActivitySchema(BaseModel):
     applicable_to: str
 
 
-class ReportOperationDataSchema(Schema):
-    reportOperation: ReportOperationSchemaOut
-    facilityId: Optional[UUID] = None
-    allActivities: List[ActivitySchema]
-    allRegulatedProducts: List[RegulatedProductSchema]
-    allRepresentatives: List[ReportOperationRepresentativeSchema]
-    reportType: str
-    showRegulatedProducts: bool
-    showBoroId: bool
-    showActivities: bool
-    reportingYear: int
+class ReportOperationDataSchema(BaseModel):
+    report_operation: ReportOperationSchemaOut
+    facility_id: Optional[UUID]
+    all_activities: List[ActivitySchema]
+    all_regulated_products: List[RegulatedProductSchema]
+    all_representatives: List[ReportOperationRepresentativeSchema]
+    report_type: str
+    show_regulated_products: bool
+    show_boro_id: bool
+    show_activities: bool
+    reporting_year: int

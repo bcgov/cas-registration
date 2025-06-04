@@ -3,20 +3,20 @@ import {
   buildOperationReviewUiSchema,
 } from "@reporting/src/data/jsonSchema/operations";
 import { ReviewDataFactoryItem } from "./factory";
-import { getReportingOperationData } from "@reporting/src/app/utils/getReportOperationData";
+import { getReviewOperationInformationPageData } from "@reporting/src/app/utils/getReportOperationData";
 
 const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
-  const schemaData = await getReportingOperationData(versionId);
+  const schemaData = await getReviewOperationInformationPageData(versionId);
   const schema: any = buildOperationReviewSchema(
-    schemaData.reportOperation,
-    schemaData.reportingYear,
-    schemaData.allActivities,
-    schemaData.allRegulatedProducts,
-    schemaData.allRepresentatives,
-    schemaData.reportType,
-    schemaData.showRegulatedProducts,
-    schemaData.showBoroId,
-    schemaData.showActivities,
+    schemaData.report_operation,
+    schemaData.reporting_year,
+    schemaData.all_activities,
+    schemaData.all_regulated_products,
+    schemaData.all_representatives,
+    schemaData.report_type,
+    schemaData.show_regulated_products,
+    schemaData.show_boro_id,
+    schemaData.show_activities,
   );
 
   // Purpose note doesn't show up on the final review page
@@ -26,7 +26,7 @@ const operationReviewFactoryItem: ReviewDataFactoryItem = async (versionId) => {
   return [
     {
       schema: schema,
-      data: schemaData.reportOperation,
+      data: schemaData.report_operation,
       uiSchema: buildOperationReviewUiSchema(),
     },
   ];

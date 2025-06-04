@@ -6,43 +6,43 @@ import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
-import { getReportingOperationData } from "@reporting/src/app/utils/getReportOperationData";
+import { getReviewOperationInformationPageData } from "@reporting/src/app/utils/getReportOperationData";
 
 export default async function OperationReviewPage({
   version_id,
 }: HasReportVersion) {
-  const data = await getReportingOperationData(version_id);
+  const data = await getReviewOperationInformationPageData(version_id);
 
   const navigationInformation = await getNavigationInformation(
     HeaderStep.OperationInformation,
     ReportingPage.ReviewOperationInfo,
     version_id,
-    data.facilityId,
+    data.facility_id,
   );
 
   const schema = buildOperationReviewSchema(
-    data.reportOperation,
-    data.reportingYear,
-    data.allActivities,
-    data.allRegulatedProducts,
-    data.allRepresentatives,
-    data.reportType,
-    data.showRegulatedProducts,
-    data.showBoroId,
-    data.showActivities,
+    data.report_operation,
+    data.reporting_year,
+    data.all_activities,
+    data.all_regulated_products,
+    data.all_representatives,
+    data.report_type,
+    data.show_regulated_products,
+    data.show_boro_id,
+    data.show_activities,
   );
 
   return (
     <OperationReviewForm
-      formData={data.reportOperation}
+      formData={data.report_operation}
       version_id={version_id}
       schema={schema}
       navigationInformation={navigationInformation}
-      reportType={data.reportType}
-      reportingYear={data.reportingYear}
-      allActivities={data.allActivities}
-      allRegulatedProducts={data.allRegulatedProducts}
-      facilityId={data.facilityId}
+      reportType={data.report_type}
+      reportingYear={data.reporting_year}
+      allActivities={data.all_activities}
+      allRegulatedProducts={data.all_regulated_products}
+      facilityId={data.facility_id}
     />
   );
 }
