@@ -15,8 +15,6 @@ import {
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { getToken } from "@bciers/actions";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 /*
 📚
@@ -27,8 +25,10 @@ e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
 */
 
 export default function Page() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
+  // no point using useSessionRole here - we know that there's no sessionRole
+  // const sessionRole = useSessionRole();
 
   const paths = {
     profile: "profile",
@@ -38,37 +38,34 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const handleAuthorization = async () => {
-      const token = await getToken();
+    if (status === "loading") {
+      // Session is still loading, do nothing
+      return;
+    }
 
-      if (token) {
+    if (session) {
+      // console.log("Session role:", sessionRole);
+
+      if (session) {
+        console.log("Session exists:", session);
         // Handle authenticated user without a role
-        if (!token.app_role || token.app_role === "") {
-          router.push(`/administration/${paths.profile}`);
+        if (!session.user.app_role || session.user.app_role === "") {
+          router.push(`/${paths.administration}/${paths.profile}`);
+          router.refresh()
           return;
         }
 
-        // Handle user with token.user.app_role = cas_pending
-        if (token.app_role === FrontEndRoles.CAS_PENDING) {
-          router.push(`/${paths.dashboard}`);
-          return;
-        }
-
-        // Redirect to dashboard if the user is authenticated and has a role
         router.push(`/${paths.dashboard}`);
-        window.location.reload();
         return;
-      } else {
+      } else if (status === "unauthenticated") {
         // Handle unauthenticated user
+        console.log("User is unauthenticated, redirecting to onboarding");
         router.push(`/${paths.onboarding}`);
         return;
       }
     };
 
-    if (session) {
-      handleAuthorization();
-    }
-  }, [session, router]);
+  }, [router, session, status]);
 
   const headerStyle = "text-bc-bg-blue text-2xl";
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
