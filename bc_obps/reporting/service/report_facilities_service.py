@@ -1,6 +1,6 @@
 from django.db import transaction
 
-from reporting.models import ReportVersion, FacilityReport
+from reporting.models import ReportVersion, FacilityReport, ReportOperation
 from registration.models import Facility, FacilityDesignatedOperationTimeline
 from typing import List, Dict
 from uuid import UUID
@@ -51,25 +51,27 @@ class ReportFacilitiesService:
         FacilityReport.objects.filter(report_version=report_version).exclude(facility_id__in=facility_list).delete()
 
         # Bulk create new facilities that are not already in Facility Report
-        FacilityReport.objects.bulk_create(
-            [
-                FacilityReport(
-                    report_version=report_version,
-                    facility=facility,
-                    facility_name=facility.name,
-                    facility_type=facility.type,
-                    facility_bcghgid=str(facility.bcghg_id.id) if facility.bcghg_id else None,
+        new_facility_reports = [
+            FacilityReport(
+                report_version=report_version,
+                facility=facility,
+                facility_name=facility.name,
+                facility_type=facility.type,
+                facility_bcghgid=str(facility.bcghg_id.id) if facility.bcghg_id else None,
+            )
+            for facility in Facility.objects.filter(
+                id__in=set(facility_list)
+                - set(
+                    FacilityReport.objects.filter(report_version=report_version).values_list('facility_id', flat=True)
                 )
-                for facility in Facility.objects.filter(
-                    id__in=set(facility_list)
-                    - set(
-                        FacilityReport.objects.filter(report_version=report_version).values_list(
-                            'facility_id', flat=True
-                        )
-                    )
-                )
-            ]
-        )
+            )
+        ]
+        created_facilities = FacilityReport.objects.bulk_create(new_facility_reports)
+
+        # Assign default activities to each new FacilityReport
+        default_activities = ReportOperation.objects.get(report_version=report_version).activities.all()
+        for fr in created_facilities:
+            fr.activities.set(default_activities)
 
     @staticmethod
     @transaction.atomic
