@@ -24,7 +24,7 @@ const createSummarySection = (
 const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
   earnedCreditsHeader: readOnlyObjectField("Earned Credits"),
   earnedCreditsAlert: readOnlyStringField(),
-  earned_credits: readOnlyStringField("Earned Credits:"),
+  earned_credits_amount: readOnlyStringField("Earned Credits:"),
   issuance_status: readOnlyStringField("Status of Issuance:"),
 });
 
@@ -40,7 +40,9 @@ export const createComplianceSummaryReviewSchema = (
   },
 });
 
-export const complianceSummaryReviewUiSchema: UiSchema = {
+export const complianceSummaryReviewUiSchema = (
+  isCasStaff: boolean,
+): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
 
@@ -53,12 +55,12 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   // Earned Credits Section
   earnedCreditsHeader: headerUiConfig,
   earnedCreditsAlert: {
-    "ui:widget": EarnedCreditsAlertNote,
+    "ui:widget": isCasStaff ? () => null : EarnedCreditsAlertNote,
     "ui:options": {
       label: false,
       inline: true,
     },
   },
-  earned_credits: commonReadOnlyOptions,
+  earned_credits_amount: commonReadOnlyOptions,
   issuance_status: commonReadOnlyOptions,
-};
+});

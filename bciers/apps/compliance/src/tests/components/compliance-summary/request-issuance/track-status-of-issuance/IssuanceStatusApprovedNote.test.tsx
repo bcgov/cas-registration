@@ -1,7 +1,8 @@
-import { IssuanceStatusApprovedNote } from "../../../../../app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
+import { IssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
 import { vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 
 vi.mock("@bciers/components/icons/Check", () => ({
   __esModule: true,
@@ -36,6 +37,14 @@ describe("IssuanceStatusApprovedNote", () => {
 
     const approvedNoteCheckIcon = screen.getByTestId("check-icon");
     expect(approvedNoteCheckIcon).toBeVisible();
-    expect(approvedNoteCheckIcon).toHaveAttribute("width", "24");
+    expect(approvedNoteCheckIcon).toHaveAttribute("width", "20");
+  });
+
+  it("includes the correct BCCR link", () => {
+    render(<IssuanceStatusApprovedNote />);
+
+    const bccrLink = screen.getByText("B.C. Carbon Registry");
+    expect(bccrLink).toBeVisible();
+    expect(bccrLink).toHaveAttribute("href", bcCarbonRegistryLink);
   });
 });

@@ -1,14 +1,8 @@
+import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
+
 export enum IssuanceStatus {
   APPROVED = "approved",
   AWAITING = "awaiting",
-}
-
-export interface RequestIssuanceTrackStatusData {
-  operation_name: string;
-  earned_credits: number;
-  issuance_status: string;
-  bccr_trading_name: string;
-  directors_comments: string;
 }
 
 export const mockRequestIssuanceTrackStatusData: {

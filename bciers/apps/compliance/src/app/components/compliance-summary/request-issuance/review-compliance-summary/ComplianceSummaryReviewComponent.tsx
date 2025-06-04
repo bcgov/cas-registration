@@ -6,45 +6,26 @@ import {
   complianceSummaryReviewUiSchema,
   createComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
-import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-import { EarnedCreditsAlertNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/EarnedCreditsAlertNote";
+import { ComplianceSummaryReviewData } from "@/compliance/src/app/types";
 
 interface Props {
-  data: {
-    operation_name: string;
-    reporting_year: number;
-    emissions_attributable_for_compliance: string;
-    emission_limit: string;
-    excess_emissions: string;
-    earned_credits: number;
-    issuance_status: string;
-    earned_credits_issued?: boolean;
-    id?: number;
-  };
+  data: ComplianceSummaryReviewData;
   complianceSummaryId: string;
+  isCasStaff: boolean;
 }
 
 const ComplianceSummaryReviewComponent = ({
   data,
   complianceSummaryId,
+  isCasStaff,
 }: Props) => {
   const backUrl = "/compliance-summaries";
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
-  const isCasStaff = useSessionRole().startsWith("cas_");
-
-  const uiSchema = {
-    ...complianceSummaryReviewUiSchema,
-    earnedCreditsAlert: {
-      ...complianceSummaryReviewUiSchema.earnedCreditsAlert,
-      "ui:widget": isCasStaff ? () => null : EarnedCreditsAlertNote,
-    },
-  };
-
   return (
     <FormBase
       schema={createComplianceSummaryReviewSchema(data.reporting_year)}
-      uiSchema={uiSchema}
+      uiSchema={complianceSummaryReviewUiSchema(isCasStaff)}
       formData={data}
       className="w-full"
     >

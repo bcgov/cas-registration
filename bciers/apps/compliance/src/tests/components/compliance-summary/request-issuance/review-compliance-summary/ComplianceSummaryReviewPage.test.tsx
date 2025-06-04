@@ -12,7 +12,7 @@ vi.mock(
     getRequestIssuanceComplianceSummaryData: vi.fn().mockResolvedValue({
       id: 1,
       reporting_year: 2024,
-      earned_credits: 15,
+      earned_credits_amount: 15,
       issuance_status: "Issuance not requested",
       operation_name: "Test Operation",
       emissions_attributable_for_compliance: "85.0",
@@ -21,6 +21,11 @@ vi.mock(
     }),
   }),
 );
+
+// Mock the session role function
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  getSessionRole: vi.fn().mockResolvedValue("industry_user"),
+}));
 
 // Mock the task list generator
 vi.mock(
@@ -69,6 +74,7 @@ describe("ComplianceSummaryReviewPage", () => {
       mockComplianceSummaryId,
       2024,
       ActivePage.ReviewComplianceSummary,
+      false, // isCasStaff parameter should be false with "industry_user" role
     );
   });
 });

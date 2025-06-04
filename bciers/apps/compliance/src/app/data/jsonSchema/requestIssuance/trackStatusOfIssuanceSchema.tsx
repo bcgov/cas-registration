@@ -9,7 +9,6 @@ import {
 import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
 import { IssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
 import { IssuanceStatus } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
-import React from "react";
 
 export const StatusNoteWidget = (props: any) => {
   const { value } = props;

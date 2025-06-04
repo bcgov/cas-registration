@@ -34,3 +34,23 @@ export interface PaymentsData {
   rows: Payment[];
   row_count: number;
 }
+
+export interface ComplianceSummaryReviewData {
+  operation_name: string;
+  reporting_year: number;
+  emissions_attributable_for_compliance: string;
+  emission_limit: string;
+  excess_emissions: number;
+  earned_credits_amount: number;
+  issuance_status: string;
+  earned_credits_issued: boolean;
+  id: number;
+}
+
+export interface RequestIssuanceTrackStatusData {
+  operation_name: string;
+  earned_credits: number;
+  issuance_status: string;
+  bccr_trading_name: string;
+  directors_comments: string;
+}
