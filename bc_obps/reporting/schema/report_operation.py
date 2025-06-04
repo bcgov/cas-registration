@@ -6,7 +6,6 @@ from registration.schema import RegulatedProductSchema
 from reporting.models import ReportOperationRepresentative
 from reporting.models.report_operation import ReportOperation
 from pydantic import alias_generators
-from pydantic import BaseModel
 from typing import List, Optional
 
 
@@ -53,7 +52,7 @@ class ReportOperationSchemaOut(ReportOperationOut):
     operation_id: UUID
 
 
-class FacilityReportSchema(BaseModel):
+class FacilityReportSchema(Schema):
     facility_id: UUID
     operation_type: str
 
@@ -76,13 +75,13 @@ class ReportOperationIn(Schema):
     operation_representative_name: List[int]
 
 
-class ActivitySchema(BaseModel):
+class ActivitySchema(Schema):
     id: int
     name: str
     applicable_to: str
 
 
-class ReportOperationDataSchema(BaseModel):
+class ReportOperationDataSchema(Schema):
     report_operation: ReportOperationSchemaOut
     facility_id: Optional[UUID]
     all_activities: List[ActivitySchema]
