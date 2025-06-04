@@ -4,8 +4,8 @@ export async function getUpdatedReportOperationDetails(
   reportVersionId: number,
 ) {
   return actionHandler(
-    `reporting/report-version/${reportVersionId}/report-operation/update`,
-    "GET",
+    `reporting/report-version/${reportVersionId}/report-operation`,
+    "PATCH",
     "",
   );
 }
