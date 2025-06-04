@@ -5,11 +5,7 @@ from compliance.service.compliance_obligation_service import ComplianceObligatio
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from django.db import transaction
 from decimal import Decimal
-from compliance.models import (
-    ComplianceReport,
-    ComplianceReportVersion,
-    ComplianceObligation
-)
+from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
 import logging
 
 logger = logging.getLogger(__name__)
