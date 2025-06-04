@@ -1,4 +1,5 @@
-import { IssuanceStatusAwaitingNote } from "../../../../../app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
+import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
+import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import { vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
@@ -35,7 +36,15 @@ describe("IssuanceStatusAwaitingNote", () => {
 
     const awaitingNoteTimeIcon = screen.getByTestId("time-icon");
     expect(awaitingNoteTimeIcon).toBeVisible();
-    expect(awaitingNoteTimeIcon).toHaveAttribute("width", "32");
-    expect(awaitingNoteTimeIcon).toHaveAttribute("height", "32");
+    expect(awaitingNoteTimeIcon).toHaveAttribute("width", "20");
+    expect(awaitingNoteTimeIcon).toHaveAttribute("height", "20");
+  });
+
+  it("includes the correct BCCR link", () => {
+    render(<IssuanceStatusAwaitingNote />);
+
+    const bccrLink = screen.getByText("B.C. Carbon Registry");
+    expect(bccrLink).toBeVisible();
+    expect(bccrLink).toHaveAttribute("href", bcCarbonRegistryLink);
   });
 });

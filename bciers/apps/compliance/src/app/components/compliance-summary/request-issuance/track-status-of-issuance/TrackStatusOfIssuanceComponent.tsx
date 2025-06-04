@@ -1,6 +1,6 @@
 "use client";
 
-import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
+import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import FormBase from "@bciers/components/form/FormBase";
 import {
@@ -10,7 +10,7 @@ import {
 
 interface Props {
   readonly data: RequestIssuanceTrackStatusData;
-  readonly complianceSummaryId: any;
+  readonly complianceSummaryId: string;
 }
 
 export default function TrackStatusOfIssuanceComponent({
@@ -25,6 +25,9 @@ export default function TrackStatusOfIssuanceComponent({
       uiSchema={trackStatusOfIssuanceUiSchema}
       formData={{
         ...data,
+        // Copy issuance_status to status_note field to drive the StatusNoteWidget
+        // which conditionally renders IssuanceStatusAwaitingNote or IssuanceStatusApprovedNote
+        // based on the status value
         status_note: data.issuance_status,
       }}
       className="w-full"

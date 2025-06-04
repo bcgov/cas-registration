@@ -9,18 +9,16 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
 });
 
-// Mock the session role
-useSessionRole.mockReturnValue("industry_user");
-
 const mockComplianceSummaryId = "123";
 const mockData = {
   operation_name: "Test Operation",
   reporting_year: 2024,
-  excess_emissions: "-15.0",
+  excess_emissions: -15.0,
   emission_limit: "100.0",
   emissions_attributable_for_compliance: "85.0",
-  earned_credits: 15,
+  earned_credits_amount: 15,
   issuance_status: "Issuance not requested",
+  earned_credits_issued: false,
   id: 123,
 };
 
@@ -35,6 +33,7 @@ describe("ComplianceSummaryReviewComponent", () => {
       <ComplianceSummaryReviewComponent
         complianceSummaryId={mockComplianceSummaryId}
         data={mockData}
+        isCasStaff={false}
       />,
     );
 
@@ -52,7 +51,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(screen.getByText("100.0")).toBeVisible();
     expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
     expect(screen.getByText("Excess Emissions:")).toBeVisible();
-    expect(screen.getByText("-15.0")).toBeVisible();
+    expect(screen.getByText(-15.0)).toBeVisible();
     expect(screen.getAllByText("tCO2e")[2]).toBeVisible();
 
     // Check Earned Credits section
@@ -85,6 +84,7 @@ describe("ComplianceSummaryReviewComponent", () => {
       <ComplianceSummaryReviewComponent
         complianceSummaryId={mockComplianceSummaryId}
         data={mockData}
+        isCasStaff={false}
       />,
     );
 
