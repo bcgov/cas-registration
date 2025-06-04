@@ -26,7 +26,7 @@ def get_report_operation_data(request: HttpRequest, version_id: int) -> dict:
 
 
 @router.patch(
-    "/report-version/{version_id}/report-operation/update",
+    "/report-version/{version_id}/report-operation",
     response={200: ReportOperationDataSchema, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Updates the facility report details by version_id and facility_id.",
