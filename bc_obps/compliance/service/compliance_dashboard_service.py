@@ -175,7 +175,6 @@ class ComplianceDashboardService:
             payments = []
             for fee in fee_response['fees']:
                 invoice = elicensing_api_client.query_invoice(client_id=client_id, invoice_number=fee['invoiceNumber'])
-                print("INVOICE: ", invoice)
                 linked_fee = ELicensingLink.objects.filter(elicensing_object_id=fee['feeObjectId']).first()
                 if linked_fee:
                     if linked_fee.content_type == ContentType.objects.get_for_model(ComplianceObligation):
