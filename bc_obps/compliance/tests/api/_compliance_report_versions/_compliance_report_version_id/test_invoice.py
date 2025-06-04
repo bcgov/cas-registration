@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 from registration.utils import custom_reverse_lazy
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -56,4 +57,6 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
 
         # Assert: should return 400 with the same errors payload
         assert response.status_code == 400
-        assert response.json() == {"errors": {"build_fee_items_error": "Mocked: failed to build fee_items (sentinel)."}}
+        raw_bytes = b"".join(response.streaming_content)
+        parsed = json.loads(raw_bytes.decode("utf-8"))
+        assert parsed == {"errors": {"build_fee_items_error": "Mocked: failed to build fee_items."}}

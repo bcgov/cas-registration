@@ -1,4 +1,5 @@
-from django.http import JsonResponse, HttpRequest, StreamingHttpResponse
+import json
+from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -26,8 +27,13 @@ def generate_compliance_report_version_invoice(
     # Run the context‐builder and check for errors
     context_or_errors: Dict[str, Any] = ComplianceInvoiceService.prepare_invoice_context(compliance_report_version_id)
     if "errors" in context_or_errors:
-        # The service detected missing data or an error and returned {"errors": { ... }}
-        return JsonResponse({"errors": context_or_errors["errors"]}, status=400)
+        # Build a JSON string and wrap it in a StreamingHttpResponse
+        err_payload = json.dumps({"errors": context_or_errors["errors"]}).encode("utf-8")
+        return StreamingHttpResponse(
+            streaming_content=iter([err_payload]),
+            content_type="application/json",
+            status=400,
+        )
 
     # Proceed to generate the PDF
     pdf_generator, filename, total_size = ComplianceInvoiceService.generate_invoice_pdf(compliance_report_version_id)
