@@ -11,12 +11,12 @@ from compliance.api.router import router
 
 
 @router.get(
-    "/payments-by-operator",
+    "/dashboard-payments",
     response={200: DashboardPaymentList, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Get all payments an operator has made",
     auth=authorize("approved_industry_user"),
 )
-def get_payments_by_operator(request: HttpRequest) -> Tuple[Literal[200], PaymentsDashboardList]:
+def get_payments_for_dashboard(request: HttpRequest) -> Tuple[Literal[200], PaymentsDashboardList]:
     user = get_current_user(request)
     return 200, ComplianceDashboardService.get_payments_for_dashboard(user)
