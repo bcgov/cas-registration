@@ -18,6 +18,8 @@ class TestComplianceDashboardService(TestCase):
     def test_get_payments_for_dashboard(self, mock_query_invoice, mock_query_fees):
         """Test successful creation of a compliance obligation"""
         obligation_1 = baker.make_recipe('compliance.tests.utils.compliance_obligation', obligation_id="21-0001-1-1")
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
+
         operator_id = obligation_1.compliance_report_version.compliance_report.report.operator_id
 
         # Create client link
@@ -52,9 +54,7 @@ class TestComplianceDashboardService(TestCase):
 
         mock_query_invoice.return_value = {"invoiceOutstandingBalance": 500.05}
 
-        response = ComplianceDashboardService.get_payments_for_dashboard(operator_id)
-
-        print(response)
+        response = ComplianceDashboardService.get_payments_for_dashboard(user)
 
         assert response.row_count == 3
         assert response.rows[0].operation_name == 'Operation 01'

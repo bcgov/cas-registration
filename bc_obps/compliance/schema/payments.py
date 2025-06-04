@@ -19,3 +19,19 @@ class PaymentsListOut(Schema):
 
     rows: List[PaymentOut]
     row_count: int
+
+
+class DashboardPaymentRow(Schema):
+    """Schema for a single payment dashboard record"""
+
+    compliance_period: int
+    operation_name: str
+    payment_towards: str
+    invoice_number: str
+    payment_amount: Decimal
+    outstanding_balance: Decimal
+
+
+class DashboardPaymentList(Schema):
+    rows: List[DashboardPaymentRow]
+    row_count: int
