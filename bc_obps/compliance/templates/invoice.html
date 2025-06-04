@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" xml:lang="en">
   <head>
     <meta charset="utf-8" />
@@ -9,10 +9,44 @@
       rel="stylesheet"
     />
     <style>
+      /* ——— Paged‐media setup: put three items into left/center/right bottom boxes ——— */
       @page {
-        size: A4 landscape; /* Sets A4 page size with landscape orientation */
+        size: A4 landscape;
+        counter-increment: page;
+
+        /* Bottom‐left: “Invoice #: {{ invoice_number }}” */
+        @bottom-left {
+          content: "Invoice #: {{ invoice_number }}";
+          font-size: 12px;
+          margin: 10px;
+        }
+
+        /* Bottom‐center: “Clean Growth Branch” */
+        @bottom-center {
+          content: "Clean Growth Branch";
+          font-size: 12px;
+          margin: 10px;
+        }
+
+        /* Bottom‐right: “Page X of Y” */
+        @bottom-right {
+          content: "Page " counter(page) " of " counter(pages);
+          font-size: 12px;
+          margin: 10px;
+        }
       }
 
+      body {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 400;
+        color: #313132;
+        margin: 0;
+        padding: 0;
+        counter-reset: page 1; /* start counter at 1 */
+      }
+
+      /* ——— the rest of your existing styles unchanged ——— */
       h1,
       h2,
       h3,
@@ -22,20 +56,12 @@
         margin: 0;
       }
 
-      body {
-        font-family: "Inter", sans-serif;
-        font-size: 12px;
-        font-weight: 400;
-        color: #313132;
-      }
-
       .invoice-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 50px;
       }
-
       .invoice-header p {
         margin: 0;
       }
@@ -44,185 +70,108 @@
         position: relative;
         margin-bottom: 40px;
       }
-
       .company-logo {
         height: 25px;
         position: absolute;
         left: 0;
       }
-
       .ministry-title {
         font-size: 16px;
         font-weight: bold;
         width: 100%;
         text-align: center;
       }
-
       .invoice-title {
         text-align: center;
         font-size: 14px;
         margin-bottom: 20px;
       }
-
       .invoice-summary {
         display: flex;
         border-top: 1px solid #000;
         border-bottom: 1px solid #000;
         padding: 20px 0;
       }
-
       .address-container {
         width: 100%;
       }
-
       .address-box:first-child {
         margin-bottom: 30px;
       }
-
       .address-box h4 {
         margin-bottom: 5px;
         font-weight: bold;
       }
-
       .address-box p {
         margin: 2px 0;
       }
-
       .invoice-details {
         width: 100%;
       }
-
       .invoice-details:first-child {
         margin-bottom: 34px;
       }
-
       .detail-row {
         display: flex;
         margin-bottom: 2px;
       }
-
       .detail-row h4 {
         width: 190px;
         margin: 0;
         font-weight: bold;
       }
-
       .detail-row p {
         margin: 0;
       }
-
-      .fees-section {
-        margin-top: 30px;
-      }
-
-      .fees-title {
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-
-      .fees-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .fees-table th {
-        text-align: left;
-        font-weight: bold;
-        padding: 8px 0;
-      }
-
-      .fees-table td {
-        padding: 8px 0;
-      }
-
-      .fees-table .amount-column {
-        text-align: right;
-      }
-
-      .total-row {
-        border-top: 1px solid #ddd;
-        font-weight: bold;
-      }
-
-      .footer {
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .footer p {
-        margin: 0;
-      }
-
       .fees-container {
         margin-top: 30px;
         margin-bottom: 40px;
       }
-
-      .fees-container > h4 {
+      .fees-and-adjustment {
         color: #38598a;
         margin-bottom: 20px;
         font-weight: 400;
       }
-
       .fees-grid {
         display: flex;
         width: 100%;
       }
-
       .fees-column {
         flex: 1;
       }
-
       .fees-column:last-child {
         text-align: right;
       }
-
       .fees-column h4 {
         margin-top: 0;
         margin-bottom: 10px;
         font-weight: bold;
       }
-
-      .fees-column > h4 {
-        display: flex;
-        justify-content: flex-start;
-      }
-
       .fees-column p {
         margin: 5px 0;
       }
-
-      .fees-total {
+      .fees-column--total {
         display: flex;
         justify-content: space-between;
-        margin-top: 10px;
-        padding-top: 10px;
+        align-items: baseline;
+        text-align: left;
+        margin-top: 20px;
         border-top: 1px solid #000;
-        font-weight: bold;
-        text-align: right;
+        padding-top: 10px;
       }
-
-      .fees-total h4 {
-        display: inline-block;
+      .fees-column--total h4 {
         margin: 0;
         font-weight: bold;
       }
-
-      .fees-total p {
-        display: inline-block;
-        margin: 0 0 0 10px;
+      .fees-column--total p {
+        margin: 0;
+        font-weight: bold;
       }
     </style>
   </head>
 
   <body>
     <div class="container">
-      <header class="invoice-header">
-        <p>Invoice #: {{ invoice_number }}</p>
-        <p>Clean Growth Branch</p>
-        <p>Page 1 of 1</p>
-      </header>
-
       <div class="header-section">
         <img
           src="data:image/png;base64,{{ logo_base64 }}"
@@ -249,7 +198,6 @@
             <p>{{ operation_address_line2 }}</p>
           </div>
         </div>
-
         <div class="invoice-details">
           <div class="invoice-details">
             <div class="detail-row">
@@ -269,51 +217,63 @@
               <p>{{ invoice_printed_date }}</p>
             </div>
           </div>
-
           <div>
             <div class="detail-row">
               <h4>Obligation ID:</h4>
-              <p>{{ obligation_id }}</p>
+              <p>{{ compliance_obligation_id }}</p>
             </div>
             <div class="detail-row">
-              <h4>2024 Compliance Obligation:</h4>
-              <p>{{ compliance_obligation }} tCO2e</p>
+              <h4>{{ compliance_obligation_year }} Compliance Obligation:</h4>
+              <p>{{ compliance_obligation }} tCO₂e</p>
+            </div>
+
+            <div class="detail-row">
+              <h4>{{ compliance_obligation_year }} Compliance Charge Rate:</h4>
+              <p>{{ compliance_obligation_charge_rate }} tCO₂e</p>
             </div>
             <div class="detail-row">
               <h4>Equivalent Amount:</h4>
-              <p>{{ equivalent_amount }}</p>
+              <p>{{ compliance_obligation_equivalent_amount }}</p>
             </div>
           </div>
         </div>
       </div>
 
       <div class="fees-container">
-        <h4 class="fees_and_adjastment">Fees and Adjustments</h4>
+        <h4 class="fees-and-adjustment">Fees and Adjustments</h4>
+
+        <!-- Header row -->
+        <div class="fees-grid fees-grid--header">
+          <div class="fees-column"><h4>Date</h4></div>
+          <div class="fees-column"><h4>Description</h4></div>
+          <div class="fees-column"><h4>Amount</h4></div>
+        </div>
+
+        <!-- Loop over each fee_item -->
+        {% for item in fee_items %}
         <div class="fees-grid">
           <div class="fees-column">
-            <h4>Date</h4>
-            <p>{{ fee_date }}</p>
+            <p>{{ item.date }}</p>
           </div>
           <div class="fees-column">
-            <h4>Description</h4>
-            <p>2024 GGIRCA Compliance Obligation</p>
+            <p>{{ item.description }}</p>
           </div>
           <div class="fees-column">
-            <h4>Amount</h4>
-            <p>{{ fee_amount }}</p>
-            <div class="fees-total">
-              <h4>Amount Due:</h4>
-              <p>{{ total_amount }}</p>
-            </div>
+            <p>{{ item.amount }}</p>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Total row -->
+        <div class="fees-grid fees-grid--total-row">
+          <div class="fees-column"></div>
+          <div class="fees-column"></div>
+          <div class="fees-column fees-column--total">
+            <h4>Amount Due:</h4>
+            <p>{{ total_amount }}</p>
           </div>
         </div>
       </div>
-
-      <footer class="footer">
-        <p>Invoice #: {{ invoice_number }}</p>
-        <p>Clean Growth Branch</p>
-        <p>Page 1 of 1</p>
-      </footer>
     </div>
   </body>
 </html>
