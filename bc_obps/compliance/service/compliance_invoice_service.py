@@ -1,12 +1,13 @@
 from datetime import datetime
-from typing import Dict, Any, Tuple, Generator
+from typing import Dict, Any, Optional, Tuple, Generator
 from service.pdf.pdf_generator_service import PDFGeneratorService
 from decimal import ROUND_HALF_UP, Decimal
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
-from registration.models import Address, Operator
-from compliance.models import ComplianceChargeRate, ComplianceObligation
+from compliance.models import ComplianceChargeRate
 from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist
+
+from compliance.service.exceptions import ComplianceInvoiceError
 
 
 class ComplianceInvoiceService:
@@ -19,6 +20,7 @@ class ComplianceInvoiceService:
     def generate_invoice_pdf(
         cls,
         compliance_report_version_id: int,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Generator[bytes, None, None], str, int]:
         """
         Generate a PDF invoice and return a generator that yields chunks of the PDF data.
@@ -29,7 +31,9 @@ class ComplianceInvoiceService:
         Returns:
             Tuple of (PDF data generator, filename, total_size_in_bytes)
         """
-        context = ComplianceInvoiceService.prepare_invoice_context(compliance_report_version_id)
+        if context is None:
+            context = cls.prepare_invoice_context(compliance_report_version_id)
+
         # Use the embedded Base64 rather than reading a file
         context["logo_base64"] = cls._LOGO_BASE64
 
@@ -40,158 +44,133 @@ class ComplianceInvoiceService:
     @staticmethod
     def prepare_invoice_context(compliance_report_version_id: int) -> Dict[str, Any]:
         """
-        Prepare context data for the invoice template, including:
-        - assembling operator, operation, obligation, etc.
-        - computing an equivalent_amount by reporting_year (fee_amount × rate)
-        If any required object is missing, records an error in `errors` and returns that dict.
+        Build the invoice context. Instead of dozens of tiny try/excepts, we wrap
+        everything in one large try and then, at the end, inspect exc's type or message.
         """
-        errors: Dict[str, str] = {}
-
-        # --------------------------------------------------------------------
-        # 1) Fetch operation, operator, address, obligation
-        # --------------------------------------------------------------------
         try:
+            # --------------------------------------------------------------------
+            # 1) Get operation → operator → operator_address → compliance_obligation
+            # --------------------------------------------------------------------
             operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
                 compliance_report_version_id
             )
             if not operation:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            errors[
-                "missing_operation"
-            ] = f"No Operation found for compliance_report_version ID {compliance_report_version_id}."
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_operation",
+                    f"No Operation found for compliance_report_version ID {compliance_report_version_id}.",
+                )
 
-        # Operator
-        try:
-            operator: Operator = operation.operator
+            operator = getattr(operation, "operator", None)
             if not operator:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            msg = f"Operation (ID {getattr(operation, 'pk', 'unknown')}) has no associated Operator."
-            errors["missing_operator"] = msg
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_operator",
+                    f"Operation (ID {getattr(operation, 'pk', 'unknown')}) has no associated Operator.",
+                )
 
-        # Mailing address on Operator
-        try:
-            operator_address: Address | None = operator.mailing_address
+            operator_address = getattr(operator, "mailing_address", None)
             if not operator_address:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            msg = f"Operator (ID {getattr(operator, 'pk', 'unknown')}) has no mailing_address."
-            errors["missing_operator_address"] = msg
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_operator_address",
+                    f"Operator (ID {getattr(operator, 'pk', 'unknown')}) has no mailing_address.",
+                )
 
-        # ComplianceObligation
-        try:
-            compliance_obligation: ComplianceObligation = (
-                ComplianceReportVersionService.get_obligation_by_compliance_report_version(compliance_report_version_id)
+            compliance_obligation = ComplianceReportVersionService.get_obligation_by_compliance_report_version(
+                compliance_report_version_id
             )
             if not compliance_obligation:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            msg = f"No ComplianceObligation found for compliance_report_version ID " f"{compliance_report_version_id}."
-            errors["missing_compliance_obligation"] = msg
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_compliance_obligation",
+                    f"No ComplianceObligation found for compliance_report_version ID {compliance_report_version_id}.",
+                )
 
-        compliance_obligation_id = compliance_obligation.obligation_id
+            compliance_obligation_id = compliance_obligation.obligation_id
 
-        # --------------------------------------------------------------------
-        # 2) Determine ComplianceChargeRate via ComplianceReport → CompliancePeriod → ReportingYear
-        # --------------------------------------------------------------------
-        try:
-            # From compliance_obligation → ComplianceReportVersion
-            compliance_report_version = compliance_obligation.compliance_report_version
+            # --------------------------------------------------------------------
+            # 2) Get compliance_report_version → report → period → reporting_year
+            # --------------------------------------------------------------------
+            compliance_report_version = getattr(compliance_obligation, "compliance_report_version", None)
             if not compliance_report_version:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            msg = (
-                f"ComplianceObligation (ID {getattr(compliance_obligation, 'pk', 'unknown')}) "
-                "has no compliance_report_version."
-            )
-            errors["missing_report_version"] = msg
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_report_version",
+                    f"ComplianceObligation (ID {getattr(compliance_obligation, 'pk', 'unknown')}) "
+                    "has no compliance_report_version.",
+                )
 
-        try:
-            # From compliance_report_version → ComplianceReport
-            compliance_report = compliance_report_version.compliance_report
+            compliance_report = getattr(compliance_report_version, "compliance_report", None)
             if not compliance_report:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            msg = (
-                f"ComplianceReportVersion (ID {getattr(compliance_report_version, 'pk', 'unknown')}) "
-                "has no ComplianceReport."
-            )
-            errors["missing_compliance_report"] = msg
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_compliance_report",
+                    f"ComplianceReportVersion (ID {getattr(compliance_report_version, 'pk', 'unknown')}) "
+                    "has no ComplianceReport.",
+                )
 
-        try:
-            # From compliance_report → CompliancePeriod
-            compliance_period = compliance_report.compliance_period
+            compliance_period = getattr(compliance_report, "compliance_period", None)
             if not compliance_period:
-                raise ObjectDoesNotExist
-        except ObjectDoesNotExist:
-            msg = f"ComplianceReport (ID {getattr(compliance_report, 'pk', 'unknown')}) " "has no CompliancePeriod."
-            errors["missing_compliance_period"] = msg
-            return {"errors": errors}
+                raise ComplianceInvoiceError(
+                    "missing_compliance_period",
+                    f"ComplianceReport (ID {getattr(compliance_report, 'pk', 'unknown')}) has no CompliancePeriod.",
+                )
 
-        try:
-            # From compliance_period → ReportingYear
-            reporting_year_obj = compliance_period.reporting_year
+            reporting_year_obj = getattr(compliance_period, "reporting_year", None)
             if not reporting_year_obj:
-                raise ObjectDoesNotExist
+                raise ComplianceInvoiceError(
+                    "missing_reporting_year",
+                    f"CompliancePeriod (ID {getattr(compliance_period, 'pk', 'unknown')}) has no reporting_year.",
+                )
 
-            # Extract integer year
-            base_year_int = reporting_year_obj.reporting_year
-            context_reporting_year = base_year_int
-        except ObjectDoesNotExist:
-            msg = f"CompliancePeriod (ID {getattr(compliance_period, 'pk', 'unknown')}) " "has no reporting_year."
-            errors["missing_reporting_year"] = msg
-            return {"errors": errors}
+            context_reporting_year = getattr(reporting_year_obj, "reporting_year", None)
+            if context_reporting_year is None:
+                raise ComplianceInvoiceError(
+                    "missing_reporting_year_value",
+                    f"ReportingYear object (ID {getattr(reporting_year_obj, 'pk', 'unknown')}) "
+                    "has no 'reporting_year'.",
+                )
 
-        # Find the ComplianceChargeRate for that reporting_year
-        try:
-            charge_rate_obj = ComplianceChargeRate.objects.get(reporting_year=reporting_year_obj)
+            # --------------------------------------------------------------------
+            # 3) Get compliance_charge_rate for that reporting year
+            # --------------------------------------------------------------------
+            try:
+                charge_rate_obj = ComplianceChargeRate.objects.get(reporting_year=reporting_year_obj)
+            except ObjectDoesNotExist:
+                # Converting the DB‐lookup failure into our custom error
+                raise ComplianceInvoiceError(
+                    "missing_charge_rate", f"No ComplianceChargeRate found for ReportingYear {context_reporting_year}."
+                )
+            except Exception as e_inner:
+                # Any other error in that DB fetch
+                raise ComplianceInvoiceError(
+                    "charge_rate_error", f"Unexpected error fetching ComplianceChargeRate: {e_inner}"
+                )
+
             charge_rate_decimal: Decimal = charge_rate_obj.rate
-        except ObjectDoesNotExist:
-            msg = f"No ComplianceChargeRate found for ReportingYear " f"{context_reporting_year}."
-            errors["missing_charge_rate"] = msg
-            return {"errors": errors}
-        except Exception as exc:
-            msg = f"Unexpected error fetching ComplianceChargeRate: {exc}"
-            errors["charge_rate_error"] = msg
-            return {"errors": errors}
 
-        # --------------------------------------------------------------------
-        # 3) Compute equivalent_amount = (fee_amount_dollars × charge_rate)
-        # --------------------------------------------------------------------
-        try:
+            # --------------------------------------------------------------------
+            # 4) Compute equivalent_amount = fee_amount × charge_rate
+            # --------------------------------------------------------------------
             base_fee: Decimal = compliance_obligation.fee_amount_dollars or Decimal("0.00")
             raw_equivalent = base_fee * charge_rate_decimal
             equivalent_amount_decimal = raw_equivalent.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
             compliance_obligation_equivalent_amount = f"${equivalent_amount_decimal:,.2f}"
             compliance_obligation_charge_rate = f"${charge_rate_decimal:,.2f} per tCO₂e"
-        except Exception as exc:
-            msg = f"Failed to compute equivalent amount: {exc}"
-            errors["compute_equivalent_error"] = msg
-            return {"errors": errors}
 
-        # --------------------------------------------------------------------
-        # 4) Build remaining invoice fields
-        # --------------------------------------------------------------------
-        try:
-            invoice_number = "OBI+six-digits"  # TODO: #139 replace with real ID
-
+            # --------------------------------------------------------------------
+            # 5) Build invoice fields (dates, operator name/address, etc.)
+            # --------------------------------------------------------------------
             if compliance_obligation.fee_date:
                 invoice_date_obj = compliance_obligation.fee_date
             else:
-                if compliance_obligation.created_at:
-                    invoice_date_obj = compliance_obligation.created_at.date()
+                created_at = getattr(compliance_obligation, "created_at", None)
+                if created_at:
+                    invoice_date_obj = created_at.date()
                 else:
-                    raise ValueError(
+                    # Here we deliberately raise our custom exception
+                    raise ComplianceInvoiceError(
+                        "missing_fee_date_and_created_at",
                         f"Obligation (ID {getattr(compliance_obligation, 'pk', 'unknown')}) "
-                        "has neither fee_date nor created_at."
+                        "has neither fee_date nor created_at.",
                     )
+
             invoice_date = invoice_date_obj.strftime("%b %-d, %Y")
             invoice_due_date = compliance_obligation.obligation_deadline.strftime("%b %-d, %Y")
             invoice_printed_date = timezone.now().strftime("%b %-d, %Y")
@@ -201,18 +180,14 @@ class ComplianceInvoiceService:
             operator_address_line2 = (
                 f"{operator_address.municipality}, {operator_address.province}, {operator_address.postal_code}"
             )
-
             operation_name = operation.name
-        except Exception as exc:
-            msg = f"Failed to assemble invoice fields: {exc}"
-            errors["build_invoice_fields_error"] = msg
-            return {"errors": errors}
 
-        # --------------------------------------------------------------------
-        # 5) Build fee_items list (dummy items; replace with real query if needed)
-        # --------------------------------------------------------------------
-        try:
-            EQUIVALENT_NUMERIC = Decimal("16000.00")  # placeholder for mock items
+            invoice_number = "OBI+six-digits"  # TODO: replace with real sequential ID - card 139
+
+            # --------------------------------------------------------------------
+            # 6) Build fee_items list (dummy data for illustration)
+            # --------------------------------------------------------------------
+            EQUIVALENT_NUMERIC = Decimal("16000.00")  # placeholder
             fee_items: list[Dict[str, Any]] = []
             for i in range(1, 51):
                 fee_items.append(
@@ -223,34 +198,41 @@ class ComplianceInvoiceService:
                         "amount": f"${EQUIVALENT_NUMERIC:,.2f}",
                     }
                 )
-            total_amount_numeric = sum(
-                (item["amount_numeric"] for item in fee_items),
-                Decimal("0.00")
-            )
-            total_amount = f"${total_amount_numeric.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
-        except Exception as exc:
-            msg = f"Failed to build fee_items: {exc}"
-            errors["build_fee_items_error"] = msg
-            return {"errors": errors}
 
-        # --------------------------------------------------------------------
-        # 6) Assemble final context dictionary
-        # --------------------------------------------------------------------
-        context = {
-            "invoice_number": invoice_number,
-            "invoice_date": invoice_date,
-            "invoice_due_date": invoice_due_date,
-            "invoice_printed_date": invoice_printed_date,
-            "operator_name": operator_name,
-            "operator_address_line1": operator_address_line1,
-            "operator_address_line2": operator_address_line2,
-            "operation_name": operation_name,
-            "compliance_obligation_year": context_reporting_year,
-            "compliance_obligation_id": compliance_obligation_id,
-            "compliance_obligation": f"{compliance_obligation.fee_amount_dollars:,.4f}",
-            "compliance_obligation_charge_rate": compliance_obligation_charge_rate,
-            "compliance_obligation_equivalent_amount": compliance_obligation_equivalent_amount,
-            "fee_items": fee_items,
-            "total_amount": total_amount,
-        }
-        return context
+            total_amount_numeric = sum((item["amount_numeric"] for item in fee_items), Decimal("0.00"))
+            total_amount = f"${total_amount_numeric.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
+
+            # --------------------------------------------------------------------
+            # 7) All steps succeeded—assemble and return context dictionary
+            # --------------------------------------------------------------------
+            return {
+                "invoice_number": invoice_number,
+                "invoice_date": invoice_date,
+                "invoice_due_date": invoice_due_date,
+                "invoice_printed_date": invoice_printed_date,
+                "operator_name": operator_name,
+                "operator_address_line1": operator_address_line1,
+                "operator_address_line2": operator_address_line2,
+                "operation_name": operation_name,
+                "compliance_obligation_year": context_reporting_year,
+                "compliance_obligation_id": compliance_obligation_id,
+                "compliance_obligation": f"{compliance_obligation.fee_amount_dollars:,.4f}",
+                "compliance_obligation_charge_rate": compliance_obligation_charge_rate,
+                "compliance_obligation_equivalent_amount": compliance_obligation_equivalent_amount,
+                "fee_items": fee_items,
+                "total_amount": total_amount,
+            }
+
+        except ComplianceInvoiceError as cie:
+            return {"errors": {cie.error_key: cie.message}}
+
+        except Exception as exc:
+            if isinstance(exc, ObjectDoesNotExist):
+                return {"errors": {"missing_generic_object": "A required database record was not found."}}
+
+            text = str(exc)
+            if "divide by zero" in text.lower():
+                return {"errors": {"math_error": "A division by zero occurred while computing amounts."}}
+
+            # Otherwise, log it as an unexpected failure:
+            return {"errors": {"unexpected_error": text}}
