@@ -69,16 +69,35 @@ class OperationDataAccessService:
         return operation
 
     @classmethod
-    def get_all_operations_for_user(cls, user: User) -> QuerySet[Operation]:
+    def get_all_operations_for_user(cls, user: User, include_all_statuses: bool = False) -> QuerySet[Operation]:
+        """
+        Returns a queryset of operations visible to the given user.
+
+        - For IRC users:
+            - If `include_all_statuses` is False (default), operations with a status of
+              "Not Started" or "Draft" are excluded.
+            - If `include_all_statuses` is True, all operations are returned regardless of status.
+        - For industry users:
+            - Only operations associated with the user's approved operator are returned.
+
+        Args:
+            user (User): The user requesting the operations.
+            include_all_statuses (bool, optional): Whether to include operations in all statuses
+                for IRC users. Defaults to False.
+
+        Returns:
+            QuerySet[Operation]: A queryset of operations visible to the user.
+        """
         if user.is_irc_user():
-            # IRC users can see all operations except ones with status of "Not Started" or "Draft"
-            return (
-                Operation.objects.select_related("operator", "bc_obps_regulated_operation")
-                .exclude(status=Operation.Statuses.NOT_STARTED)
-                .exclude(status=Operation.Statuses.DRAFT)
-                .only(
-                    "id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id"
-                )
+            # IRC users can optionally see all operations regardless of status (e.g., if they are on the Transfers page),
+            # or filter to only see operations with a status of "Registered" (e.g., if they are in the Operations grid)
+            queryset = Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+
+            if not include_all_statuses:
+                queryset = queryset.exclude(status__in=[Operation.Statuses.NOT_STARTED, Operation.Statuses.DRAFT])
+
+            return queryset.only(
+                "id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id"
             )
         else:
             # Industry users can only see operations associated with their own operator
