@@ -18,7 +18,11 @@ import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 
 const happoPlaywright = require("happo-playwright");
 
-const userRoles = ["INDUSTRY_USER_ADMIN", "INDUSTRY_USER_REPORTER"];
+const userRoles = [
+  "INDUSTRY_USER",
+  "INDUSTRY_USER_ADMIN",
+  "INDUSTRY_USER_REPORTER",
+];
 
 test.describe.configure({ mode: "serial" });
 userRoles.forEach((role) => {
@@ -26,11 +30,16 @@ userRoles.forEach((role) => {
     const roleTest = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
     roleTest(`Dashboard for role: ${role}`, async ({ page }) => {
       let reporter = false;
+      let pendingUser = false;
       if (role === "INDUSTRY_USER_REPORTER") {
         reporter = true;
         // Update the role to reporter in the DB since we do not have this set up
         const userId = process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string;
         await upsertUserOperatorRecord(userId, "reporter", "Approved");
+      } else if (role === "INDUSTRY_USER") {
+        pendingUser = true;
+        const userId = process.env.E2E_INDUSTRY_USER_ADMIN_GUID as string;
+        await upsertUserOperatorRecord(userId, "pending", "Pending");
       }
 
       // 🛸 Navigate to dashboard page
@@ -50,40 +59,59 @@ userRoles.forEach((role) => {
       for (const tile of Object.values(DashboardTiles)) {
         let tileTexts: string[] = [];
         let skipUrlCheck = false;
-        switch (tile) {
-          case DashboardTiles.ADMINISTRATION:
-            tileTexts = Object.values(AdministrationTileText);
-            break;
-          case DashboardTiles.REGISTRATION:
-            tileTexts = Object.values(RegistrationTileText);
-            break;
-          case DashboardTiles.REPORTING:
-            tileTexts = Object.values(ReportingTileText);
-            break;
-          case DashboardTiles.COMPLIANCE:
-            tileTexts = Object.values(ComplianceTileText);
-            break;
-          case DashboardTiles.REPORT_A_PROBLEM:
-            // Report a Problem is a link to an email address, check visibility and href but do not click
-            await expect(
-              page.getByRole("link", { name: DashboardTiles.REPORT_A_PROBLEM }),
-            ).toBeVisible();
-            await dashboardPage.assertMailToLinkIsVisible(
-              LinkSrc.TILE_REPORT_PROBLEM,
-            );
 
-            skipUrlCheck = true;
-            break;
-          case DashboardTiles.ACCESS_REQUEST:
-            // This is for internal user
-            tileTexts = Object.values(AccessRequestText);
-            await expect(
-              page.getByText(tileTexts[0], { exact: true }),
-            ).toBeHidden();
-            skipUrlCheck = true;
-            break;
-          default:
-            skipUrlCheck = true;
+        if (pendingUser) {
+          // For pending users
+          switch (tile) {
+            case DashboardTiles.ADMINISTRATION:
+              tileTexts = [AdministrationTileText.SELECT_OPERATOR];
+              break;
+            case DashboardTiles.REPORT_A_PROBLEM:
+              // Report a Problem is a link to an email address, check visibility and href but do not click
+              await dashboardPage.assertMailToLinkIsVisible(
+                tile,
+                LinkSrc.TILE_REPORT_PROBLEM,
+              );
+              skipUrlCheck = true;
+              break;
+            default:
+              await dashboardPage.linkIsVisible(tile, false);
+              skipUrlCheck = true;
+          }
+        } else {
+          // For admin/reporter
+          switch (tile) {
+            case DashboardTiles.ADMINISTRATION:
+              tileTexts = Object.values(AdministrationTileText);
+              break;
+            case DashboardTiles.REGISTRATION:
+              tileTexts = Object.values(RegistrationTileText);
+              break;
+            case DashboardTiles.REPORTING:
+              tileTexts = Object.values(ReportingTileText);
+              break;
+            case DashboardTiles.COMPLIANCE:
+              tileTexts = Object.values(ComplianceTileText);
+              break;
+            case DashboardTiles.REPORT_A_PROBLEM:
+              // Report a Problem is a link to an email address, check visibility and href but do not click
+              await dashboardPage.assertMailToLinkIsVisible(
+                tile,
+                LinkSrc.TILE_REPORT_PROBLEM,
+              );
+              skipUrlCheck = true;
+              break;
+            case DashboardTiles.ACCESS_REQUEST:
+              // This is for internal user
+              tileTexts = Object.values(AccessRequestText);
+              await expect(
+                page.getByText(tileTexts[0], { exact: true }),
+              ).toBeHidden();
+              skipUrlCheck = true;
+              break;
+            default:
+              skipUrlCheck = true;
+          }
         }
 
         if (!skipUrlCheck) {
@@ -91,14 +119,20 @@ userRoles.forEach((role) => {
           await page.getByRole("link", { name: tile }).first().click();
           await dashboardPage.urlIsCorrect(tile.toLocaleLowerCase(), true);
 
+          // Assert visibility of each tile text on the dashboard page
           for (const text of tileTexts) {
-            // Assert visibility of each tile text on the dashboard page
-            if (reporter && text === AdministrationTileText.ACCESS_REQUEST) {
-              await dashboardPage.linkIsVisible(text, false);
+            // Special case for select operator (only visible for pending)
+            if (text === AdministrationTileText.SELECT_OPERATOR) {
+              dashboardPage.assertSelectOperatorIsVisible(text, pendingUser);
             } else {
-              await dashboardPage.linkIsVisible(text, true);
+              if (reporter && text === AdministrationTileText.ACCESS_REQUEST) {
+                await dashboardPage.linkIsVisible(text, false);
+              } else {
+                await dashboardPage.linkIsVisible(text, true);
+              }
             }
           }
+
           // Say cheese!
           component = `External user ${tile} Dashboard`;
           await takeStabilizedScreenshot(happoPlaywright, page, {

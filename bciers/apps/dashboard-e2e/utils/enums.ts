@@ -9,6 +9,7 @@ export enum DashboardTiles {
 }
 
 export enum AdministrationTileText {
+  SELECT_OPERATOR = "Select an Operator",
   MY_OPERATOR = "My Operator",
   OPERATIONS = "Operations",
   TRANSFER = "Report transfer of operation or facility",
