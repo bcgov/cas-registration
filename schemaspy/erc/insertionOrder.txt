@@ -73,7 +73,7 @@ report_additional_data
 report_attachment_confirmation
 report_electricity_import_data
 report_sign_off
-compliance_earned_credits
+compliance_earned_credit
 document
 facility_designated_operation_timeline
 operation_designated_operator_timeline

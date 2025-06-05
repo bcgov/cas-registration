@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>compliance_earned_credits - default.erc</title>
+        <title>compliance_earned_credit - default.erc</title>
         <!-- Tell the browser to be responsive to screen width -->
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
         <link rel="icon" type="image/png" sizes="16x16" href="../favicon.png">
@@ -73,7 +73,7 @@
             <div class="content-wrapper">
                 <!-- Content Header (Page header) -->
                 <section class="content-header">
-                    <h1>compliance_earned_credits</h1><p><span id="recordNumber">-1</span> rows</p><br />
+                    <h1>compliance_earned_credit</h1><p><span id="recordNumber">-1</span> rows</p><br />
                     <div class="box box-primary">
                         <div class="box-header with-border">
                             <i class="fa fa-file-text-o"></i>
@@ -272,7 +272,7 @@
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                         </table>
                                     </td>
-                                    <td><p>Comments from an analyst. Made when deciding whether or not to reccomend issuance from the director</p></td>
+                                    <td><p>Comments from an analyst. Made when deciding whether or not to recommend issuance from the director</p></td>
                                 </tr>
                                 <tr>
                                     <td><span id="director_comment">director_comment</span></td>
@@ -305,8 +305,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="compliance_earned_credits.archived_by_id references user.user_guid via compliance_earned_cr_archived_by_id_8e2715e4_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
-                                                <td class="constraint detail">compliance_earned_cr_archived_by_id_8e2715e4_fk_user_user</td>
+                                                <td title="compliance_earned_credit.archived_by_id references user.user_guid via compliance_earned_cr_archived_by_id_a803aa95_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">compliance_earned_cr_archived_by_id_a803aa95_fk_user_user</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -327,8 +327,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="compliance_earned_credits.compliance_report_version_id references compliance_report_version.id via compliance_earned_cr_compliance_report_ve_d235d77d_fk_complianc"><a href='compliance_report_version.html'>compliance_report_version</a><span class='relatedKey'>.id</span></td>
-                                                <td class="constraint detail">compliance_earned_cr_compliance_report_ve_d235d77d_fk_complianc</td>
+                                                <td title="compliance_earned_credit.compliance_report_version_id references compliance_report_version.id via compliance_earned_cr_compliance_report_ve_d9d2d8c3_fk_complianc"><a href='compliance_report_version.html'>compliance_report_version</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">compliance_earned_cr_compliance_report_ve_d9d2d8c3_fk_complianc</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -349,8 +349,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="compliance_earned_credits.created_by_id references user.user_guid via compliance_earned_cr_created_by_id_56740054_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
-                                                <td class="constraint detail">compliance_earned_cr_created_by_id_56740054_fk_user_user</td>
+                                                <td title="compliance_earned_credit.created_by_id references user.user_guid via compliance_earned_cr_created_by_id_8fb422d1_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">compliance_earned_cr_created_by_id_8fb422d1_fk_user_user</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -371,13 +371,13 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="compliance_earned_credits.issued_by_id references user.user_guid via compliance_earned_cr_issued_by_id_bb9a8981_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
-                                                <td class="constraint detail">compliance_earned_cr_issued_by_id_bb9a8981_fk_user_user</td>
+                                                <td title="compliance_earned_credit.issued_by_id references user.user_guid via compliance_earned_cr_issued_by_id_9802049c_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">compliance_earned_cr_issued_by_id_9802049c_fk_user_user</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><p>The user who issed the earned credits</p></td>
+                                    <td><p>The user who issued the earned credits</p></td>
                                 </tr>
                                 <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="updated_by_id">updated_by_id</span></td>
@@ -393,8 +393,8 @@
                                     <td>
                                         <table border='0' cellspacing='0' cellpadding='0'>
                                             <tr>
-                                                <td title="compliance_earned_credits.updated_by_id references user.user_guid via compliance_earned_cr_updated_by_id_fd6dc9ce_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
-                                                <td class="constraint detail">compliance_earned_cr_updated_by_id_fd6dc9ce_fk_user_user</td>
+                                                <td title="compliance_earned_credit.updated_by_id references user.user_guid via compliance_earned_cr_updated_by_id_f6a9a453_fk_user_user"><a href='user.html'>user</a><span class='relatedKey'>.user_guid</span></td>
+                                                <td class="constraint detail">compliance_earned_cr_updated_by_id_f6a9a453_fk_user_user</td>
                                                 <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
                                             </tr>
                                         </table>
@@ -432,37 +432,37 @@
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> compliance_earned_credits_pkey</td>
+                                    <td class='primaryKey' title='Primary Key'><i class='icon ion-key iconkey'></i> compliance_earned_credit_pkey</td>
                                     <td>Primary key</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>compliance_earned_credits_archived_by_id_8e2715e4</td>
+                                    <td title='Indexed'>compliance_earned_credit_archived_by_id_a803aa95</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>archived_by_id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>compliance_earned_credits_compliance_report_version_id_d235d77d</td>
+                                    <td title='Indexed'>compliance_earned_credit_compliance_report_version_id_d9d2d8c3</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>compliance_report_version_id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>compliance_earned_credits_created_by_id_56740054</td>
+                                    <td title='Indexed'>compliance_earned_credit_created_by_id_8fb422d1</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>created_by_id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>compliance_earned_credits_issued_by_id_bb9a8981</td>
+                                    <td title='Indexed'>compliance_earned_credit_issued_by_id_9802049c</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>issued_by_id</td>
                                 </tr>
                                 <tr>
-                                    <td title='Indexed'>compliance_earned_credits_updated_by_id_fd6dc9ce</td>
+                                    <td title='Indexed'>compliance_earned_credit_updated_by_id_f6a9a453</td>
                                     <td>Performance</td>
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>updated_by_id</td>
@@ -470,6 +470,38 @@
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <i class="fa fa-sitemap"></i>
+                            <h3 class="box-title">Check Constraints</h3>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <table
+                                    id="check_table"
+                                    class="table table-bordered table-striped dataTable"
+                                    role="grid"
+                                    data-paging="true"
+                                    data-page-length="10"
+                                    data-length-change="false">
+                                <thead align='left'>
+                                <tr>
+                                    <th>Constraint Name</th>
+                                    <th>Constraint</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>compliance_earned_credit_earned_credits_amount_check</td>
+                                    <td>((earned_credits_amount &gt;&#61; 0))</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div class="box box-primary">
                         <div class="box-header with-border">
@@ -492,11 +524,11 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_earned_credits.html" target="_top" title="compliance_earned_credits" alt="" coords="683,5,1107,515">
+<area shape="rect" id="node1" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="683,5,1107,515">
 <area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,207,224,559">
 <area shape="rect" id="node3" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="268,119,639,383">
 </map>
-                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/compliance_earned_credits.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/compliance_earned_credit.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twodegreesDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagram" name="twoDegreesRelationshipsDiagram">
@@ -509,7 +541,7 @@
 <area shape="rect" id="node15" href="operator.html" target="_top" title="operator" alt="" coords="437,3333,587,3421">
 <area shape="rect" id="node23" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="369,3575,655,3663">
 <area shape="rect" id="node6" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="376,4293,648,4381">
-<area shape="rect" id="node7" href="compliance_earned_credits.html" target="_top" title="compliance_earned_credits" alt="" coords="2663,2459,3087,2968">
+<area shape="rect" id="node7" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="2663,2459,3087,2968">
 <area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2281,2948,2576,3036">
 <area shape="rect" id="node11" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1500,2925,1728,3013">
 <area shape="rect" id="node13" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1868,2488,2179,2576">
@@ -558,15 +590,15 @@
 <area shape="rect" id="node56" href="user_operator.html" target="_top" title="user_operator" alt="" coords="725,3848,917,3936">
 <area shape="rect" id="node57" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="363,4609,661,4697">
 </map>
-                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/compliance_earned_credits.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twodegreesDegreeImg" src="../diagrams/tables/compliance_earned_credit.2degrees.png" usemap="#twoDegreesRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="compliance_earned_credits.html" target="_top" title="compliance_earned_credits" alt="" coords="683,5,1107,515">
+<area shape="rect" id="node1" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="683,5,1107,515">
 <area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,207,224,559">
 <area shape="rect" id="node3" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="268,119,639,383">
 </map>
-                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/compliance_earned_credits.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/compliance_earned_credit.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                     <div class="chart tab-pane " id="twoimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="twoDegreesRelationshipsDiagramImplied" name="twoDegreesRelationshipsDiagramImplied">
@@ -581,7 +613,7 @@
 <area shape="rect" id="node18" href="elicensing_link.html" target="_top" title="elicensing_link" alt="" coords="490,3446,686,3534">
 <area shape="rect" id="node24" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="445,2477,731,2565">
 <area shape="rect" id="node6" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="452,2754,724,2842">
-<area shape="rect" id="node7" href="compliance_earned_credits.html" target="_top" title="compliance_earned_credits" alt="" coords="3088,302,3512,812">
+<area shape="rect" id="node7" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="3088,302,3512,812">
 <area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2707,960,3001,1048">
 <area shape="rect" id="node11" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1925,1028,2153,1116">
 <area shape="rect" id="node13" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2293,750,2604,838">
@@ -629,7 +661,7 @@
 <area shape="rect" id="node57" href="user_operator.html" target="_top" title="user_operator" alt="" coords="1150,3642,1342,3730">
 <area shape="rect" id="node58" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="439,3169,737,3257">
 </map>
-                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/compliance_earned_credits.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
+                                        <a name='diagram'><img id="twoimpliedDegreeImg" src="../diagrams/tables/compliance_earned_credit.implied2degrees.png" usemap="#twoDegreesRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
                                 </div>
                             </div>

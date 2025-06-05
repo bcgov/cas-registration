@@ -15,7 +15,7 @@ report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
 document
-compliance_earned_credits
+compliance_earned_credit
 report_sign_off
 report_electricity_import_data
 report_attachment_confirmation

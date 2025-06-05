@@ -9,11 +9,11 @@ digraph "oneDegreeRelationshipsDiagramImplied" {
   "compliance_charge_rate":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_charge_rate":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_charge_rate":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_earned_credits":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_earned_credits":"compliance_report_version_id":w -> "compliance_report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_earned_credits":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_earned_credits":"issued_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
-  "compliance_earned_credits":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_earned_credit":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_earned_credit":"compliance_report_version_id":w -> "compliance_report_version":"id":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_earned_credit":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_earned_credit":"issued_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_earned_credit":"updated_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_obligation":"archived_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_obligation":"compliance_report_version_id":w -> "compliance_report_version":"id":e [arrowhead=none dir=back arrowtail=teeodot];
   "compliance_obligation":"created_by_id":w -> "user":"user_guid.type":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -356,10 +356,10 @@ digraph "oneDegreeRelationshipsDiagramImplied" {
     target="_top"
     tooltip="compliance_charge_rate"
   ];
-  "compliance_earned_credits" [
+  "compliance_earned_credit" [
    label=<
     <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" BGCOLOR="#ffffff">
-      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="162" HEIGHT="16"><B>compliance_earned_credits</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
+      <TR><TD COLSPAN="3"  BGCOLOR="#f5f5f5"><TABLE BORDER="0" CELLSPACING="0"><TR><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="156" HEIGHT="16"><B>compliance_earned_credit</B></TD><TD ALIGN="RIGHT">[table]</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="id" COLSPAN="3" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/primaryKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="177" HEIGHT="16">id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="archived_by_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="177" HEIGHT="16">archived_by_id</TD></TR></TABLE></TD></TR>
       <TR><TD PORT="compliance_report_version_id" COLSPAN="3" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="177" HEIGHT="16">compliance_report_version_id</TD></TR></TABLE></TD></TR>
@@ -369,9 +369,9 @@ digraph "oneDegreeRelationshipsDiagramImplied" {
       <TR><TD PORT="elipses" COLSPAN="3" ALIGN="LEFT">...</TD></TR>
       <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD></TR>
     </TABLE>>
-    URL="compliance_earned_credits.html"
+    URL="compliance_earned_credit.html"
     target="_top"
-    tooltip="compliance_earned_credits"
+    tooltip="compliance_earned_credit"
   ];
   "compliance_obligation" [
    label=<
