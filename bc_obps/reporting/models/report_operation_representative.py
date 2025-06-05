@@ -1,5 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
+from reporting.models import ReportOperation
 from reporting.models.report_version import ReportVersion
 from reporting.models.triggers import immutable_report_version_trigger
 from reporting.models.rls_configs.report_operation_representative import Rls as ReportOperationRepresentativeRls
@@ -15,6 +16,13 @@ class ReportOperationRepresentative(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="report_operation_representatives",
         db_comment="The report version associated with this operation representative.",
+    )
+    report_operation = models.ForeignKey(
+        ReportOperation,
+        on_delete=models.CASCADE,
+        related_name="representatives",
+        null=True,
+        db_comment="The report operation this representative is associated with.",
     )
     representative_name = models.CharField(
         max_length=1000,

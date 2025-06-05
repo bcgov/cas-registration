@@ -42,6 +42,7 @@ class ReportVersionService:
 
         for contact in operation.contacts.all():
             ReportOperationRepresentative.objects.create(
+                report_operation=report_operation,
                 report_version=report_version,
                 representative_name=contact.get_full_name(),
                 selected_for_report=True,
