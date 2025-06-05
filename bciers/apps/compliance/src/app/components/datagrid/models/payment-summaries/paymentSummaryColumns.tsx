@@ -4,7 +4,7 @@ import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 const complianceSummaryColumns = (): GridColDef[] => {
   return [
     {
-      field: "reporting_year",
+      field: "compliance_period",
       headerName: "Compliance Period",
       width: 150,
     },
@@ -14,7 +14,7 @@ const complianceSummaryColumns = (): GridColDef[] => {
       flex: 1,
     },
     {
-      field: "payment_toward",
+      field: "payment_towards",
       headerName: "Payment Towards",
       width: 200,
     },
@@ -24,7 +24,7 @@ const complianceSummaryColumns = (): GridColDef[] => {
       width: 200,
     },
     {
-      field: "payment",
+      field: "payment_amount",
       headerName: "Payment Amount Applied",
       width: 200,
       valueFormatter: (params) => formatMonetaryValue(Number(params.value)),

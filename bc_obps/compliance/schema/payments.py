@@ -24,6 +24,7 @@ class PaymentsListOut(Schema):
 class DashboardPaymentRow(Schema):
     """Schema for a single payment dashboard record"""
 
+    id: int
     compliance_period: int
     operation_name: str
     payment_towards: str
