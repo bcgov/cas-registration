@@ -283,4 +283,16 @@ describe("The attachments form", () => {
 
     expect(submitButton).not.toBeDisabled();
   });
+  it("renders the Attachments heading", () => {
+    render(
+      <AttachmentsForm
+        navigationInformation={dummyNavigationInformation}
+        version_id={1}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={false}
+      />,
+    );
+    expect(screen.getByText("Attachments")).toBeInTheDocument();
+  });
 });
