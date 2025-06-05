@@ -15,7 +15,6 @@ import {
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Loading from "@bciers/components/loading/SkeletonSpinner";
 
 /*
 📚
@@ -39,33 +38,26 @@ export default function Page() {
   };
 
   useEffect(() => {
-    if (status === "loading") {
+    if (status === "loading" || session === undefined) {
+      console.log("Session is loading, waiting for authentication...");
       // Session is still loading, do nothing
-      return <Loading />
+      return;
     }
-
     if (session) {
-      // console.log("Session role:", sessionRole);
-
-      if (session) {
-        console.log("Session exists:", session);
-        // Handle authenticated user without a role
-        if (!session.user.app_role || session.user.app_role === "") {
-          router.push(`/${paths.administration}/${paths.profile}`);
-          router.refresh()
-          return;
-        }
-
-        router.push(`/${paths.dashboard}`);
-        return;
-      } else if (status === "unauthenticated") {
-        // Handle unauthenticated user
-        console.log("User is unauthenticated, redirecting to onboarding");
-        router.push(`/${paths.onboarding}`);
+      console.log("Session exists:", session);
+      // Handle authenticated user without a role
+      if (!session.user.app_role || session.user.app_role === "") {
+        router.push(`/${paths.administration}/${paths.profile}`);
         return;
       }
-    };
-
+      router.push(`/${paths.dashboard}`);
+      return;
+    } else if (status === "unauthenticated") {
+      // Handle unauthenticated user
+      console.log("User is unauthenticated, redirecting to onboarding");
+      router.push(`/${paths.onboarding}`);
+      return;
+    }
   }, [router, session, status]);
 
   const headerStyle = "text-bc-bg-blue text-2xl";
