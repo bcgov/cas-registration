@@ -1,5 +1,5 @@
 import { DataGridSearchParams } from "@/compliance/src/app/types";
-import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
+import { getPaymentSummariesPageData } from "@/compliance/src/app/utils/getPaymentSummariesPageData";
 import PaymentSummariesDataGrid from "@/compliance/src/app/components/payment-summaries/PaymentSummariesDataGrid";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { Suspense } from "react";
@@ -9,7 +9,9 @@ export default async function PaymentSummariesPage({
 }: Readonly<{
   searchParams: DataGridSearchParams;
 }>) {
-  const initialData = await fetchComplianceSummariesPageData(searchParams);
+  const initialData = await getPaymentSummariesPageData(searchParams);
+
+  console.log(initialData);
 
   return (
     <div className="flex flex-col">

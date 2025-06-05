@@ -37,6 +37,7 @@ class PaymentsList:
 
 @dataclass
 class PaymentDashboardRow:
+    id: int
     compliance_period: int
     operation_name: str
     payment_towards: str
@@ -190,6 +191,7 @@ class ComplianceDashboardService:
                         payment_towards = 'Compliance obligation'
                         for payment in fee['payments']:
                             payment_row = PaymentDashboardRow(
+                                id=payment['paymentObjectId'],
                                 compliance_period=compliance_report.report.reporting_year.reporting_year,
                                 operation_name=compliance_report.report.operation.name,
                                 payment_towards=payment_towards,

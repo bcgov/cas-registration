@@ -56,10 +56,10 @@ export interface RequestIssuanceTrackStatusData {
 }
 
 export interface PaymentSummary {
-  reporting_year: number;
+  compliance_year: number;
   operation_name: string;
-  payment_toward: string;
+  payment_towards: string;
   invoice_number: string;
-  payment: number;
+  payment_amount: number;
   outstanding_balance: number;
 }
