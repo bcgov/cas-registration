@@ -47,7 +47,12 @@ export default function Page() {
       console.log("Session exists:", session);
       // Handle authenticated user without a role
       if (!session.user.app_role || session.user.app_role === "") {
-        router.push(`/${paths.administration}/${paths.profile}`);
+        // 🛸 Redirect cross-zone from dashboard to admininistration
+        // For cross‐zone navigation, use a full page reload to avoid missing‐chunk errors.
+        // router.push would attempt to load “/administration/profile” from the dashboard chunk manifest,
+        // but since “profile” lives in the administration zone, those chunks don’t exist here.
+        // window.location.href forces a hard reload into the administration zone’s build.
+        window.location.href = `/${paths.administration}/${paths.profile}`;
         return;
       }
       router.push(`/${paths.dashboard}`);
