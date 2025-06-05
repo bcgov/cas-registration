@@ -6,6 +6,7 @@
 import { Page, expect } from "@playwright/test";
 // ☰ Enums
 import { AppRoute } from "@/administration-e2e/utils/enums";
+
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 
@@ -40,8 +41,8 @@ export class DashboardPOM {
     await this.page.goto(process.env.E2E_BASEURL + url);
   }
 
-  async linkIsVisible(name: string, visible: boolean) {
-    const link = await this.page.getByRole("link", { name: name }).first();
+  async linkIsVisible(tileText: string, visible: boolean) {
+    const link = await this.page.getByRole("link", { name: tileText }).first();
     if (visible) {
       await expect(link).toBeVisible();
     } else {
@@ -49,8 +50,17 @@ export class DashboardPOM {
     }
   }
 
-  async assertMailToLinkIsVisible(link: string) {
+  async assertMailToLinkIsVisible(tile: string, link: string) {
     const mailToLink = this.page.locator(`a[href^="${link}"]`).first();
+    await this.linkIsVisible(tile, true);
     await expect(mailToLink).toHaveAttribute("href", `${link}`);
+  }
+
+  async assertSelectOperatorIsVisible(tileText: string, pendingUser: boolean) {
+    if (pendingUser) {
+      await this.linkIsVisible(tileText, true);
+    } else {
+      await this.linkIsVisible(tileText, false);
+    }
   }
 }
