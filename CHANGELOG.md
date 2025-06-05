@@ -1,3 +1,13 @@
+# [3.6.0](https://github.com/bcgov/cas-registration/compare/v3.5.0...v3.6.0) (2025-06-05)
+
+### Bug Fixes
+
+- default activities for facilities added on review page ([d0dfdef](https://github.com/bcgov/cas-registration/commit/d0dfdef53d24adc4cbb5e9739493c463a4f14d0d))
+
+### Features
+
+- add B.C. Carbon Registry links in issuance status components ([3406d8a](https://github.com/bcgov/cas-registration/commit/3406d8aefac1fcf93ce55c5007518b294f276ba8))
+
 # [3.5.0](https://github.com/bcgov/cas-registration/compare/v3.4.1...v3.5.0) (2025-05-30)
 
 ### Bug Fixes
