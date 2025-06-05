@@ -6,9 +6,9 @@ import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell
 import { PaymentSummary } from "@/compliance/src/app/types";
 import paymentSummaryColumns from "../datagrid/models/payment-summaries/paymentSummaryColumns";
 import paymentSummaryGroupColumns from "../datagrid/models/payment-summaries/paymentSummaryGroupColumns";
-import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
+import { getPaymentSummariesPageData } from "@/compliance/src/app/utils/getPaymentSummariesPageData";
 
-const ComplianceSummariesDataGrid = ({
+const PaymentSummariesDataGrid = ({
   initialData,
 }: {
   initialData: {
@@ -34,11 +34,11 @@ const ComplianceSummariesDataGrid = ({
     <DataGrid
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchComplianceSummariesPageData}
+      fetchPageData={getPaymentSummariesPageData}
       paginationMode="server"
       initialData={initialData}
     />
   );
 };
 
-export default ComplianceSummariesDataGrid;
+export default PaymentSummariesDataGrid;
