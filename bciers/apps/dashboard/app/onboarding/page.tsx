@@ -27,8 +27,6 @@ e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
 export default function Page() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  // no point using useSessionRole here - we know that there's no sessionRole
-  // const sessionRole = useSessionRole();
 
   const paths = {
     profile: "profile",
@@ -39,12 +37,10 @@ export default function Page() {
 
   useEffect(() => {
     if (status === "loading" || session === undefined) {
-      console.log("Session is loading, waiting for authentication...");
       // Session is still loading, do nothing
       return;
     }
     if (session) {
-      console.log("Session exists:", session);
       // Handle authenticated user without a role
       if (!session.user.app_role || session.user.app_role === "") {
         // 🛸 Redirect cross-zone from dashboard to admininistration
@@ -59,7 +55,6 @@ export default function Page() {
       return;
     } else if (status === "unauthenticated") {
       // Handle unauthenticated user
-      console.log("User is unauthenticated, redirecting to onboarding");
       router.push(`/${paths.onboarding}`);
       return;
     }
