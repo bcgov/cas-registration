@@ -7,8 +7,6 @@ from registration.schema.generic import Message
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 
-from typing import Dict, Any
-
 
 @router.get(
     "/compliance-report-versions/{compliance_report_version_id}/invoice",
@@ -22,23 +20,22 @@ def generate_compliance_report_version_invoice(
 ) -> StreamingHttpResponse:
     """
     Generate a PDF invoice for a compliance report version and stream it to the client.
-    If prepare_invoice_context returns an errors dict, return that JSON instead.
+    Delegates all context-building and error handling to ComplianceInvoiceService.generate_invoice_pdf.
     """
-    # Run the context‐builder and check for errors
-    context_or_errors: Dict[str, Any] = ComplianceInvoiceService.prepare_invoice_context(compliance_report_version_id)
-    if "errors" in context_or_errors:
-        # Build a JSON string and wrap it in a StreamingHttpResponse
-        err_payload = json.dumps({"errors": context_or_errors["errors"]}).encode("utf-8")
+    # Call the refactored service method; it returns either a PDF tuple or an errors dict
+    result = ComplianceInvoiceService.generate_invoice_pdf(compliance_report_version_id)
+
+    # If result is an error dictionary, stream it back with status 400
+    if isinstance(result, dict) and "errors" in result:
+        err_payload = json.dumps({"errors": result["errors"]}).encode("utf-8")
         return StreamingHttpResponse(
             streaming_content=iter([err_payload]),
             content_type="application/json",
             status=400,
         )
 
-    # Proceed to generate the PDF
-    pdf_generator, filename, total_size = ComplianceInvoiceService.generate_invoice_pdf(
-        compliance_report_version_id, context_or_errors
-    )
+    # Otherwise, unpack the PDF generator, filename, and total size
+    pdf_generator, filename, total_size = result
 
     response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
