@@ -87,7 +87,16 @@ jobs:
       nx_project: registration
     secrets: inherit
   test-dashboard-e2e:
-    needs: [build-backend, build-dashboard-e2e, check-nx-affected]
+    needs:
+      [
+        build-administration,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-registration,
+        build-reporting,
+        check-nx-affected,
+      ]
     uses: ./.github/workflows/test-nx-project-e2e.yaml
     with:
       image_url: "ghcr.io/bcgov/cas-dash-frontend"
