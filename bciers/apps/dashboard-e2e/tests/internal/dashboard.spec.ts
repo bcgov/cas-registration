@@ -65,11 +65,8 @@ userRoles.forEach((role) => {
             skipUrlCheck = true;
             break;
           case DashboardTiles.REPORT_A_PROBLEM:
-            await dashboardPage.linkIsVisible(
-              DashboardTiles.REPORT_A_PROBLEM,
-              true,
-            );
             await dashboardPage.assertMailToLinkIsVisible(
+              tile,
               LinkSrc.TILE_REPORT_PROBLEM,
             );
             skipUrlCheck = true;

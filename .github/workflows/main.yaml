@@ -101,7 +101,6 @@ jobs:
     with:
       image_url: "ghcr.io/bcgov/cas-dash-frontend"
       is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
-      nx_app_port: 3000
       nx_project: dashboard
     secrets: inherit
   zap-owasp:
