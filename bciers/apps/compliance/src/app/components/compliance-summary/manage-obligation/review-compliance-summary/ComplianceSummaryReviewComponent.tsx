@@ -37,7 +37,6 @@ export function ComplianceSummaryReviewComponent({
     setIsGeneratingInvoice(true);
 
     try {
-      // Call our Next.js API endpoint
       const res = await fetch(
         `/compliance/api/invoice/${complianceSummaryId}`,
         {
@@ -46,44 +45,44 @@ export function ComplianceSummaryReviewComponent({
         },
       );
 
-      // If the API returned a non-OK status, attempt to parse JSON and look for “errors”
-      if (!res.ok) {
-        let payload: any = { error: `Failed with status ${res.status}` };
+      const contentType = res.headers.get("Content-Type") || "";
+
+      // Handle error or JSON payload
+      if (contentType.includes("application/json")) {
+        let payload: any = { message: `Failed with status ${res.status}` };
+
         try {
           payload = await res.json();
         } catch {
-          // ignore JSON parse errors
+          // ignore invalid JSON
         }
 
-        // If the payload has an .errors object, extract its first value
-        if (payload.errors && typeof payload.errors === "object") {
-          const firstErrorKey = Object.keys(payload.errors)[0];
-          const rawErrorMsg = payload.errors[firstErrorKey];
-          setErrors([rawErrorMsg]);
-        } else {
-          // Fallback: use payload.error or generic message
-          const rawError =
-            payload.error ||
-            `Failed to generate invoice (status ${res.status})`;
-          setErrors([rawError]);
+        if (typeof payload.message === "string") {
+          setErrors([payload.message]);
+          return;
         }
 
+        // Generic fallback message
+        setErrors([`Failed to generate invoice (status ${res.status})`]);
         return;
       }
 
-      // Convert to Blob and open in a new tab
+      // Handle non-JSON response errors
+      if (!res.ok) {
+        setErrors([`Failed to generate invoice (status ${res.status})`]);
+        return;
+      }
+
+      // Handle PDF response
       const pdfBlob = await res.blob();
       const objectUrl = URL.createObjectURL(pdfBlob);
       window.open(objectUrl, "_blank", "noopener,noreferrer");
 
-      // Revoke the object URL after a short delay
-      setTimeout(() => {
-        URL.revokeObjectURL(objectUrl);
-      }, 30_000);
+      // Cleanup
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 30_000);
     } catch (err) {
-      // Display error to the user
-      const message = err instanceof Error ? err.message : String(err);
-      setErrors([message]);
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrors([msg]);
     } finally {
       setIsGeneratingInvoice(false);
     }
