@@ -4,7 +4,7 @@ import postAttachments from "@reporting/src/app/utils/postAttachments";
 import AttachmentElement, {
   AttachmentElementOptions,
 } from "./AttachmentElement";
-import { useState } from "react";
+import React, { useState } from "react";
 import { SupplementaryConfirmation, UploadedAttachment } from "./types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { useRouter } from "next/navigation";
@@ -192,6 +192,9 @@ const AttachmentsForm: React.FC<Props> = ({
         noFormSave={() => handleSubmit(false)}
         submitButtonDisabled={submitDisabled}
       >
+        <div className="w-full form-group field field-object form-heading-label">
+          <div className="form-heading">Attachments</div>
+        </div>
         {isSupplementaryReport && (
           <Alert severity="warning" icon={<AlertIcon fill="#635231" />}>
             Review your attachments and replace any that are no longer
