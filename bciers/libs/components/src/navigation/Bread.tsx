@@ -64,10 +64,6 @@ export default function Bread({
   const slicedPathNames =
     lastLinkIndex !== -1 ? pathNames.slice(0, lastLinkIndex + 1) : pathNames;
 
-  console.log(
-    "Breadcrumbs slicedPathNames:",
-    slicedPathNames,)
-
   /**
    * Transforms a path segment for use in the breadcrumb.
    *
