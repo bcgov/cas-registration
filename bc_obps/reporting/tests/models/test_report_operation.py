@@ -27,6 +27,7 @@ class ReportOperationModelTest(BaseTestCase):
             *TIMESTAMP_COMMON_FIELDS,
             ("id", "ID", None, None),
             ("report_version", "report version", None, None),
+            ("representatives", "report operation representative", None, None),
             ("operator_legal_name", "operator legal name", 1000, None),
             ("operator_trade_name", "operator trade name", 1000, None),
             ("operation_name", "operation name", 1000, None),
