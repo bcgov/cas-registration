@@ -36,7 +36,9 @@ def generate_compliance_report_version_invoice(
         )
 
     # Proceed to generate the PDF
-    pdf_generator, filename, total_size = ComplianceInvoiceService.generate_invoice_pdf(compliance_report_version_id)
+    pdf_generator, filename, total_size = ComplianceInvoiceService.generate_invoice_pdf(
+        compliance_report_version_id, context_or_errors
+    )
 
     response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
