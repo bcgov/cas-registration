@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.conf import settings
-from django.db import connection
+from django.db import Error, connection
 from registration.models.app_role import AppRole
 from registration.models.user import User
 from model_bakery import baker
@@ -74,6 +74,11 @@ def test_policies_for_cas_roles(
                 finally:
                     transaction.savepoint_rollback(sid)
 
+def run_with_rollback(cursor, fn):
+        with transaction.atomic():
+            fn(cursor)
+            transaction.set_rollback(True)
+
 
 def test_policies_for_industry_user(
     model, user: User, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
@@ -98,19 +103,19 @@ def test_policies_for_industry_user(
         if RlsOperations.SELECT in operations:
             if select_function is noop:
                 raise ValueError("SELECT operation granted, but no select_function provided.")
-            select_function(cursor)
+            run_with_rollback(cursor, select_function)
 
         if RlsOperations.INSERT in operations:
             if insert_function is noop:
                 raise ValueError("INSERT operation granted, but no insert_function provided.")
-            insert_function(cursor)
+            run_with_rollback(cursor, insert_function)
 
         if RlsOperations.UPDATE in operations:
             if update_function is noop:
                 raise ValueError("UPDATE operation granted, but no update_function provided.")
-            update_function(cursor)
+            run_with_rollback(cursor, update_function)
 
         if RlsOperations.DELETE in operations:
             if delete_function is noop:
                 raise ValueError("DELETE operation granted, but no delete_function provided.")
-            delete_function(cursor)
+            run_with_rollback(cursor, delete_function)
