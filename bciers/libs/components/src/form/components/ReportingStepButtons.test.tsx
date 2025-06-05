@@ -73,4 +73,20 @@ describe("The ReportingStepButtons component", () => {
       screen.getByRole("button", { name: "✅ Redirecting..." }),
     ).toBeVisible();
   });
+  it("displays custom back button text when backButtonText is provided", () => {
+    render(
+      <ReportingStepButtons
+        {...defaultProps}
+        backButtonText="Go to Previous Page"
+      />,
+    );
+    expect(
+      screen.getByRole("button", { name: "Go to Previous Page" }),
+    ).toBeInTheDocument();
+  });
+
+  it("displays default back button text when backButtonText is not provided", () => {
+    render(<ReportingStepButtons {...defaultProps} />);
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+  });
 });

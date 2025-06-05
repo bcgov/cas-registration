@@ -15,6 +15,7 @@ interface StepButtonProps {
   buttonText?: string;
   noFormSave?: () => void;
   noSaveButton?: boolean;
+  backButtonText?: string;
 }
 
 const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
@@ -29,6 +30,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
   buttonText,
   noFormSave,
   noSaveButton,
+  backButtonText,
 }) => {
   const router = useRouter();
   const saveButtonContent = isSaving ? (
@@ -65,7 +67,7 @@ const ReportingStepButtons: React.FunctionComponent<StepButtonProps> = ({
               router.push(backUrl);
             }}
           >
-            Back
+            {backButtonText || "Back"}
           </Button>
         )}
         {!noSaveButton && (

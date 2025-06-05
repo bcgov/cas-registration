@@ -24,6 +24,7 @@ export interface NavigationFormProps
   saveButtonDisabled?: boolean;
   submitButtonDisabled?: boolean;
   noSaveButton?: boolean;
+  backButtonText?: string;
   formContext?: { [key: string]: any }; // used in RJSF schema for access to form data in custom templates
 }
 
@@ -50,6 +51,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
     buttonText,
     errors,
     noSaveButton,
+    backButtonText,
   } = props;
 
   const [isSaving, setIsSaving] = useState(false);
@@ -129,6 +131,7 @@ const NavigationForm: React.FC<NavigationFormProps> = (props) => {
         saveAndContinue={onSubmit ? onSaveAndContinue : undefined}
         buttonText={buttonText}
         noSaveButton={noSaveButton}
+        backButtonText={backButtonText}
       />
       {/* Render form alerts */}
       <FormAlerts key="alerts" errors={errors} />
