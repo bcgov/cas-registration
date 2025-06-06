@@ -295,137 +295,86 @@ class OperationTriggerTests(BaseTestCase):
 
 # RLS tests
 class TestOperationRls(BaseTestCase):
-    def test_operation_rls_industry_user_success(self):
+    def test_operation_rls_industry_user(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        random_operator = baker.make_recipe('registration.tests.utils.operator')
         random_operation = baker.make_recipe(
-            'registration.tests.utils.operation', operator=baker.make_recipe('registration.tests.utils.operator')
+            'registration.tests.utils.operation', operator=random_operator
         )
 
+        assert Operation.objects.count() == 2  # Two operations created
+
         def select_function(cursor):
-            cursor.execute("select count(*) from erc.operation")
-            assert cursor.fetchone()[0] == 1  # Industry user should see only their operation
+            assert Operation.objects.count() == 1
 
         def insert_function(cursor):
-            cursor.execute(
-                """
-                INSERT INTO "erc"."operation" (
-                    id,
-                    name,
-                    type,
-                    operator_id,
-                    status
-                ) VALUES (
-                    %s,
-                    %s,
-                    %s,
-                    %s,
-                    %s
+            Operation.objects.create(
+                    name='Sample Operation Name',
+                    type=Operation.Types.LFO,
+                    operator=approved_user_operator.operator,
+                    status='Not Started',
                 )
-            """,
-                (
-                    '550e8400-e29b-41d4-a716-446655440000',
-                    'Sample Operation Name',
-                    'LFO',
-                    approved_user_operator.operator.id,
-                    'Not Started',
-                ),
-            )
-            assert cursor.rowcount == 1
+            assert Operation.objects.filter(name='Sample Operation Name').exists() 
 
-        def update_function(cursor):
-            cursor.execute(
-                """
-                UPDATE "erc"."operation"
-                SET name = %s
-                WHERE id = %s
-            """,
-                ('Updated Operation Name', operation.id),
-            )
-            assert cursor.rowcount == 1
-
-        test_policies_for_industry_user(
-            Operation, approved_user_operator.user, select_function, insert_function, update_function
-        )
-
-    def test_operation_rls_industry_user_fail(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
-        random_operation = baker.make_recipe(
-            'registration.tests.utils.operation', operator=baker.make_recipe('registration.tests.utils.operator')
-        )
-
-        def select_function(cursor):
-            cursor.execute("select count(*) from erc.operation where id = %s", [random_operation.id])
-            assert cursor.fetchone()[0] == 0  # User should not be able to see another operator's operation
-
-        def insert_function(cursor):
             with pytest.raises(
                 ProgrammingError, match='new row violates row-level security policy for table "operation'
             ):
-                # need transaction.atomic so the subsequent tests won't be caught in the error state
-                with transaction.atomic():
-                    cursor.execute(
-                        """
-                            INSERT INTO "erc"."operation" (
-                                id,
-                                name,
-                                type,
-                                operator_id,
-                                status
-                            ) VALUES (
-                                %s,
-                                %s,
-                                %s,
-                                %s,
-                                %s
-                            )
-                        """,
-                        (
-                            '550e8400-e29b-41d4-a716-446655440000',
-                            'Sample Operation Name',
-                            'LFO',
-                            random_operation.operator.id,
-                            'Not Started',
-                        ),
+                cursor.execute(
+                    """
+                    INSERT INTO "erc"."operation" (
+                        id,
+                        name,
+                        type,
+                        operator_id,
+                        status
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
                     )
+                """,
+                    (
+                        '7f83c2a1-56f4-4bc5-b4ce-bc1f18a72e03',
+                        'Sample Operation Name',
+                        'LFO',
+                        random_operator.id,
+                        'Not Started',
+                    ),
+                )
 
         def update_function(cursor):
-
-            cursor.execute(
-                """
-                            UPDATE "erc"."operation"
-                            SET name = %s
-                            WHERE id = %s
-                        """,
-                ('Updated Operation Name', random_operation.id),
-            )
-            assert cursor.rowcount == 0  # User should not be able to update another operator's operation
+            Operation.objects.update(name='name updated')
+            assert Operation.objects.filter(name='name updated').count() == 1  # only affected 1 
 
         test_policies_for_industry_user(
-            Operation, approved_user_operator.user, select_function, insert_function, update_function
+            Operation, approved_user_operator.user, select_function=select_function, insert_function=insert_function, update_function=update_function
         )
 
     def test_operation_rls_cas_users(self):
 
-        mock_operations = baker.make_recipe(
+        baker.make_recipe(
             'registration.tests.utils.operation',
             _quantity=5,
             operator=baker.make_recipe('registration.tests.utils.operator'),
             status=Operation.Statuses.REGISTERED,
         )
-        for i in range(5):
-            baker.make(BcGreenhouseGasId, id=f"2321999000{i}")
+        
+        # we have to create up here because in the update_function, the role is cas, and they don't have permission to create bcghg ids
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
 
         def select_function(cursor, i):
-            cursor.execute("select count(*) from erc.operation")
-            assert cursor.fetchone()[0] == 5
+            assert Operation.objects.count() == 5
 
         def update_function(cursor, i):
-            cursor.execute(
-                "UPDATE erc.operation SET bcghg_id_id = %s WHERE id = %s",
-                [BcGreenhouseGasId.objects.all()[i].id, mock_operations[i].id],
-            )
-            assert cursor.rowcount == 1
+                           
+            updated_operation = Operation.objects.first()
+            updated_operation.bcghg_id = bcghg_id
+            updated_operation.save()
+
+            assert Operation.objects.filter(bcghg_id__isnull=False).count() == 1
+
 
         test_policies_for_cas_roles(Operation, select_function=select_function, update_function=update_function)
