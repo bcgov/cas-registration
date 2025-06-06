@@ -13,7 +13,7 @@ from .router import router
     description="Generate a PDF payment instructions for a compliance summary and stream it to the client",
     auth=authorize("approved_industry_user"),
 )
-def generate_payment_instructions(request: HttpRequest, summary_id: str) -> StreamingHttpResponse:
+def generate_payment_instructions(request: HttpRequest, summary_id: int) -> StreamingHttpResponse:
     """
     Generate a PDF payment instructions for a compliance summary and stream it to the client.
 

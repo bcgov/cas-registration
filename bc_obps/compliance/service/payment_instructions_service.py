@@ -22,7 +22,7 @@ class PaymentInstructionsService:
     @classmethod
     def generate_payment_instructions_pdf(
         cls,
-        compliance_summary_id: str,
+        compliance_summary_id: int,
     ) -> Tuple[Generator[bytes, None, None], str, int]:
         """
         Generate a PDF payment instructions and return a generator that yields chunks of the PDF data.
@@ -60,7 +60,7 @@ class PaymentInstructionsService:
         return pdf_generator(), filename, total_size
 
     @staticmethod
-    def _prepare_payment_instructions_context(summaryID: str) -> Dict[str, Any]:
+    def _prepare_payment_instructions_context(summaryID: int) -> Dict[str, Any]:
         """
         Prepare context data for the payment instructions template.
 
