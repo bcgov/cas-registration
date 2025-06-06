@@ -9,18 +9,6 @@ export const SESSION_COOKIE = SESSION_SECURE
   ? "__Secure-authjs.session-token"
   : "authjs.session-token";
 
-const SIGNOUT_URL = `${process.env.NEXTAUTH_URL}/onboarding`;
-
-function signOut(request: NextRequest) {
-  if (request.url === SIGNOUT_URL) return NextResponse.next();
-
-  const response = NextResponse.redirect(SIGNOUT_URL);
-  request.cookies.getAll().forEach((cookie) => {
-    if (cookie.name.includes("next-auth")) response.cookies.delete(cookie.name);
-  });
-  return response;
-}
-
 function shouldUpdateToken(token: JWT | null) {
   /***
    * Checks whether our refresh interval has expired
@@ -56,6 +44,10 @@ async function fetchNewAccessToken(refreshToken: string | undefined) {
 }
 
 export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
+  /**
+   * Middleware that supplements next-auth to add access token rotation.
+   * Huge thanks to the community: https://github.com/nextauthjs/next-auth/discussions/9715#discussioncomment-12818495
+   */
   return async (request: NextRequest) => {
     // Casting to our augmented JWT type
     const jwt = (await getToken({
@@ -63,9 +55,9 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
       secret: process.env.NEXTAUTH_SECRET,
     })) as JWT | null;
 
-    if (!jwt) return signOut(request);
-
     const response = NextResponse.next();
+
+    if (!jwt) return response;
 
     if (shouldUpdateToken(jwt)) {
       const newKcTokens = await fetchNewAccessToken(jwt.refresh_token);
