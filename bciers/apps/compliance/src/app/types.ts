@@ -1,4 +1,4 @@
-export interface ComplianceSummariesSearchParams {
+export interface DataGridSearchParams {
   page?: string;
   pageSize?: string;
   sortBy?: string;
@@ -53,4 +53,13 @@ export interface RequestIssuanceTrackStatusData {
   issuance_status: string;
   bccr_trading_name: string;
   directors_comments: string;
+}
+
+export interface PaymentSummary {
+  compliance_year: number;
+  operation_name: string;
+  payment_towards: string;
+  invoice_number: string;
+  payment_amount: number;
+  outstanding_balance: number;
 }

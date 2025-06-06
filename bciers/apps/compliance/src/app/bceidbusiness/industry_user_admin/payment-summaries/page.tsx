@@ -1,10 +1,22 @@
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import Page from "@/compliance/src/app/components/compliance-navigation/ComplianceNavigationPage";
+import ComplianceNavigationPage from "@/compliance/src/app/components/compliance-navigation/ComplianceNavigationPage";
 import { generateMetadata } from "@bciers/components/layout/RootLayout";
+import { DataGridSearchParams } from "@/compliance/src/app/types";
+import PaymentSummariesPage from "@/compliance/src/app/components/payment-summaries/PaymentSummariesPage";
 
-const title = "Payment Summaries";
+const title = "Compliance Summaries";
 export const metadata = generateMetadata(title);
 
-export default defaultPageFactory(() => {
-  return <Page activeTab={1} />;
-});
+function ComplianceSummariesWithNavigation({
+  searchParams,
+}: {
+  searchParams?: DataGridSearchParams;
+}) {
+  return (
+    <ComplianceNavigationPage activeTab={1}>
+      <PaymentSummariesPage searchParams={searchParams || {}} />
+    </ComplianceNavigationPage>
+  );
+}
+
+export default defaultPageFactory(ComplianceSummariesWithNavigation);
