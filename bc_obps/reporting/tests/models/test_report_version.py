@@ -7,7 +7,8 @@ import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_version import ReportVersion
-from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.bakers import report_baker, report_version_baker
+from rls.tests.helpers import test_policies_for_industry_user
 
 
 class ReportVersionTest(BaseTestCase):
@@ -218,3 +219,77 @@ class ReportVersionTest(BaseTestCase):
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
+
+class ReportVersionRlsTest(BaseTestCase):
+
+    def test_report_version_rls_industry_user(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        report = report_baker( operation=operation, operator=approved_user_operator.operator,)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            report__operation=operation,
+            report__operator=approved_user_operator.operator,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+        )
+        random_operation = baker.make_recipe('registration.tests.utils.operation')
+        random_report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            report__operation=random_operation,
+            status=ReportVersion.ReportVersionStatus.Draft,
+        )
+        print("********* Random RV1:", random_report_version.report.id)
+
+        assert ReportVersion.objects.count() == 2
+
+        def select_function(cursor):
+            # Select the report version for the approved user operator and not the random report version
+            assert ReportVersion.objects.filter(report__operation=operation).count() == 1
+            assert ReportVersion.objects.filter(report__operation=random_operation).count() == 0
+
+        def insert_function(cursor):
+            # Insert a new report version for the approved user operator
+            new_report_version = ReportVersion.objects.create(
+                report=report_version.report,
+                report_type=report_version.report_type,
+                is_latest_submitted=False,
+                status=ReportVersion.ReportVersionStatus.Draft,
+            )
+            assert ReportVersion.objects.count() == 2
+            assert new_report_version.id is not None
+            # Attempt to insert a report version that the user is not an operator for
+            with pytest.raises(
+                ProgrammingError, match='new row violates row-level security policy for table "report_version'
+            ):
+                ReportVersion.objects.create(
+                    report=random_report_version.report,
+                    report_type=random_report_version.report_type,
+                    is_latest_submitted=False,
+                    status=ReportVersion.ReportVersionStatus.Draft,
+                )
+
+        def update_function(cursor):
+            # Update the report version for the approved user operator
+            new_report_version = ReportVersion.objects.create(
+                report=report_version.report,
+                report_type=report_version.report_type,
+                is_latest_submitted=False,
+                status=ReportVersion.ReportVersionStatus.Draft,
+            )
+            new_status = ReportVersion.ReportVersionStatus.Submitted
+            new_report_version.status = new_status
+            new_report_version.save()
+            assert ReportVersion.objects.get(id=new_report_version.id).status == new_status
+            # Attempt to update a report version that the user should not have access to
+            with pytest.raises(
+                ProgrammingError, match='new row violates row-level security policy for table "report_version'
+            ):
+                random_report_version.status = new_status
+                print("********* Random RV2:", random_report_version.report.id)
+                random_report_version.save()
+
+        def delete_function(cursor):
+            return None
+
+        test_policies_for_industry_user(
+            ReportVersion, approved_user_operator.user, select_function, insert_function, update_function, delete_function)

@@ -1,4 +1,5 @@
 from common.tests.utils.helpers import BaseTestCase
+from django.db import connection
 import pytest
 from django.core.exceptions import ValidationError
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -7,6 +8,9 @@ from model_bakery.baker import make_recipe, make
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
+from rls.middleware.rls import RlsMiddleware
+from rls.tests.helpers import test_policies_for_industry_user
+import test
 
 
 class ReportProductModelTest(BaseTestCase):
@@ -111,3 +115,36 @@ class ReportProductModelTest(BaseTestCase):
 
     def test_immutable_after_report_version_submitted(self):
         assert_immutable_report_version("reporting.tests.utils.report_product")
+
+class ReportProductRlsTest(BaseTestCase):
+
+    def test_report_product_rls_industry_user_success(self):
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        operation = make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        facility_report = make_recipe("reporting.tests.utils.facility_report", facility__operation=operation)
+        product = make_recipe("registration.tests.utils.regulated_product")
+        report_product = make(
+            ReportProduct,
+            report_version=facility_report.report_version,
+            facility_report=facility_report,
+            product=product,
+        )
+        random_operation = make_recipe('registration.tests.utils.operation')
+        random_facility_report = make_recipe("reporting.tests.utils.facility_report", facility__operation=random_operation)
+        random_product = make_recipe("registration.tests.utils.regulated_product")
+        random_report_product = make(
+            ReportProduct,
+            report_version=random_facility_report.report_version,
+            facility_report=random_facility_report,
+            product=random_product,
+        )
+        # confirm two documents were created
+        assert ReportProduct.objects.count() == 2
+
+        # with connection.cursor() as cursor:
+        #     RlsMiddleware._set_user_guid_and_role(cursor, approved_user_operator.user)
+        #     assert ReportProduct.objects.count() == 1
+        def select_function(cursor):
+            assert ReportProduct.objects.count() == 1
+
+        test_policies_for_industry_user(ReportProduct, approved_user_operator.user, select_function=select_function)
