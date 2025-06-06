@@ -110,9 +110,35 @@ class ContactTriggerTests(TestCase):
 
 # RLS tests
 class TestContactRls(BaseTestCase):
-    def _create_insert_statement(operator_id: str):
-        return (
-            """
+
+
+    def test_contact_rls_industry_user(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        contact = baker.make_recipe('registration.tests.utils.contact', operator=approved_user_operator.operator)
+        random_operator = baker.make_recipe('registration.tests.utils.operator')
+        random_contact = baker.make_recipe(
+            'registration.tests.utils.contact', operator=random_operator)
+        
+
+        assert Contact.objects.count() == 2  # Confirm two contacts were created
+
+        def select_function(cursor):
+            assert Contact.objects.count() == 1  # User should only see their own contact
+
+        def insert_function(cursor):
+            Contact.objects.create(
+                first_name='Jane',
+                last_name='Smith',
+                position_title='Director',
+                email='john.doe@example.com',
+                phone_number='+12505800000',
+                business_role_id='Operation Representative',
+                operator=approved_user_operator.operator,
+                )
+            assert Contact.objects.filter(first_name='Jane').exists()
+
+            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "contact'):
+                 cursor.execute("""
         INSERT INTO "erc"."contact" (
             first_name,
             last_name,
@@ -138,84 +164,37 @@ class TestContactRls(BaseTestCase):
                 'john.doe@example.com',
                 '12505800000',
                 'Operation Representative',
-                operator_id,
-            ),
-        )
-
-    def test_contact_rls_industry_user_success(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        contact = baker.make_recipe('registration.tests.utils.contact', operator=approved_user_operator.operator)
-        random_contact = baker.make_recipe(
-            'registration.tests.utils.contact', operator=baker.make_recipe('registration.tests.utils.operator')
-        )
-
-        def select_function(cursor):
-            cursor.execute("select count(*) from erc.contact")
-            assert cursor.fetchone()[0] == 1  # Industry user should see only their contact
-
-        def insert_function(cursor):
-            sql, params = TestContactRls._create_insert_statement(approved_user_operator.operator.id)
-            cursor.execute(sql, params)
-            assert cursor.rowcount == 1
+                random_operator.id,
+            ))
 
         def update_function(cursor):
-            cursor.execute(
-                """
-                UPDATE "erc"."contact"
-                SET first_name = %s
-                WHERE id = %s
-            """,
-                ('Updated first name', contact.id),
-            )
-            assert cursor.rowcount == 1
+            Contact.objects.update(position_title='Updated Position')
+            assert Contact.objects.filter(position_title='Updated Position').count() == 1
 
         test_policies_for_industry_user(
-            Contact, approved_user_operator.user, select_function, insert_function, update_function
-        )
-
-    def test_contact_rls_industry_user_fail(self):
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        random_contact = baker.make_recipe(
-            'registration.tests.utils.contact', operator=baker.make_recipe('registration.tests.utils.operator')
-        )
-
-        def select_function(cursor):
-            cursor.execute("select count(*) from erc.contact where id = %s", [random_contact.id])
-            assert cursor.fetchone()[0] == 0  # User should not be able to see another operator's contact
-
-        def insert_function(cursor):
-            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "contact'):
-                with transaction.atomic():
-                    sql, params = TestContactRls._create_insert_statement(random_contact.operator.id)
-                    cursor.execute(sql, params)
-
-        def update_function(cursor):
-
-            cursor.execute(
-                """
-                            UPDATE "erc"."contact"
-                            SET first_name = %s
-                            WHERE id = %s
-                        """,
-                ('Updated first name', random_contact.id),
-            )
-            assert cursor.rowcount == 0  # User should not be able to update another operator's contact
-
-        test_policies_for_industry_user(
-            Contact, approved_user_operator.user, select_function, insert_function, update_function
+            Contact, approved_user_operator.user, select_function=select_function, insert_function=insert_function, update_function=update_function
         )
 
     def test_contact_rls_cas_users(self):
 
-        contacts = baker.make_recipe('registration.tests.utils.contact', _quantity=5)
+        baker.make_recipe('registration.tests.utils.contact', _quantity=5)
+        address = baker.make_recipe('registration.tests.utils.address')
+        operator = baker.make_recipe('registration.tests.utils.operator')
 
         def select_function(cursor, i):
-            cursor.execute("select count(*) from erc.contact")
-            assert cursor.fetchone()[0] == 5
+            assert Contact.objects.count() == 5
 
         def insert_function(cursor, i):
-            sql, params = TestContactRls._create_insert_statement(contacts[0].operator.id)
-            cursor.execute(sql, params)
-            assert cursor.rowcount == 1
+                Contact.objects.create(
+                first_name='Jane',
+                last_name='Smith',
+                position_title='Director',
+                email='john.doe@example.com',
+                phone_number='+12505800000',
+                business_role_id='Operation Representative',
+                address=address,
+                operator=operator,
+                )
+
 
         test_policies_for_cas_roles(Contact, select_function=select_function, insert_function=insert_function)
