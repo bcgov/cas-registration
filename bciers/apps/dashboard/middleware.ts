@@ -30,6 +30,6 @@ export const config = {
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
-  withTokenRefreshMiddleware,
   withAuthorizationDashboard,
+  withTokenRefreshMiddleware,
 ]);
