@@ -4,6 +4,8 @@ import {
   generateManageObligationTaskList,
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+import getOperationByComplianceSummaryId from "@/compliance/src/app/utils/getOperationByComplianceSummaryId";
+import getInvoiceByComplianceSummaryId from "@/compliance/src/app/utils/getInvoiceByComplianceSummaryId";
 
 // Mock the task list generator
 vi.mock(
@@ -24,6 +26,21 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 describe("PaymentInstructionsDownloadPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+  it("should render the NewEntrantOperationPage component", async () => {
+    (
+      getOperationByComplianceSummaryId as ReturnType<typeof vi.fn>
+    ).mockReturnValueOnce({
+      name: "BC-specific refinery complexity throughput test heading",
+    });
+    (
+      getInvoiceByComplianceSummaryId as ReturnType<typeof vi.fn>
+    ).mockReturnValueOnce({
+      invoiceNumber: "testnum1234",
+    });
+    const result = await PaymentInstructionsDownloadPage({
+      compliance_summary_id: "1234",
+    });
   });
 
   it("renders with correct content and generates task list", async () => {
