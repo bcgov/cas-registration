@@ -2,6 +2,7 @@ from itertools import cycle
 from django.db.utils import ProgrammingError
 from common.tests.utils.helpers import BaseTestCase
 from common.lib import pgtrigger
+import pytest
 from registration.models import Facility, Operation
 from model_bakery import baker
 from registration.tests.constants import (
@@ -16,6 +17,7 @@ from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     USER_FIXTURE,
 )
+from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
 
 
 class FacilityModelTest(BaseTestCase):
@@ -144,3 +146,79 @@ class FacilityTriggerTests(BaseTestCase):
 
         assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
         assert self.facility_with_non_registered_op.name == "Updated Facility Name"
+
+# RLS tests
+class TestFacilityRls(BaseTestCase):
+    def test_facility_rls_industry_user(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
+
+        random_operation = baker.make_recipe('registration.tests.utils.operation')
+        random_facility = baker.make_recipe('registration.tests.utils.facility', operation=random_operation)
+
+        assert Facility.objects.count() == 2  # Two operations created
+
+        def select_function(cursor):
+            assert Facility.objects.count() == 1
+
+        def insert_function(cursor):
+            Facility.objects.create(
+                name='new',
+                operation=operation,
+                type=Facility.Types.SFO,
+            )
+            assert Facility.objects.filter(name='new').exists()
+
+            with pytest.raises(
+                ProgrammingError,
+                match='new row violates row-level security policy for table "facility',
+            ):
+                cursor.execute(
+                    """
+                    INSERT INTO "erc"."facility" (
+                        name,
+                        type,
+                        operation_id
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s
+                    )
+                """,
+                    ('anme', 'SFO',random_operation.id),
+                )
+
+        def delete_function(cursor):
+            Facility.objects.delete()
+            assert Facility.objects.count() == 1  # only deleted 1/2
+
+        test_policies_for_industry_user(
+            Facility,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            delete_function=delete_function,
+        )
+
+    def test_facility_rls_cas_users(self):
+
+        facilities = baker.make_recipe(
+            'registration.tests.utils.facility',
+            _quantity=5,
+        )
+
+        def select_function(cursor, i):
+            breakpoint()
+            assert Facility.objects.count() == 5
+
+        def update_function(cursor, i):
+            breakpoint()
+            Facility.objects.all().update(name="Updated Facility Name")
+            assert Facility.objects.filter(name='Updated Facility Name').count() == 5
+
+        test_policies_for_cas_roles(
+            Facility,
+            select_function=select_function,
+            update_function=update_function,
+        )
