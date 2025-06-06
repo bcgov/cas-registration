@@ -37,7 +37,7 @@ class Command(BaseCommand):
             while has_unapplied_migrations():
                 if time.time() - wait_start > timeout:
                     raise Exception("Timed out waiting for migrations to be applied.")
-                time.sleep(60)
+                time.sleep(10)
                 self.stdout.write(".")
 
             self.stdout.write("Migrations have been applied.")
