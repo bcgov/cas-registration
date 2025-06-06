@@ -1,12 +1,11 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from compliance.models.compliance_report import ComplianceReport
 from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from django.db import transaction
 from decimal import Decimal
-from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
 import logging
 
 logger = logging.getLogger(__name__)
@@ -148,3 +147,7 @@ class ComplianceReportVersionService:
     @staticmethod
     def get_operation_by_compliance_report_version(compliance_report_version_id: int) -> Operation:
         return ComplianceReportVersion.objects.get(id=compliance_report_version_id).compliance_report.report.operation
+
+    @staticmethod
+    def get_obligation_by_compliance_report_version(compliance_report_version_id: int) -> ComplianceObligation:
+        return ComplianceObligation.objects.get(compliance_report_version__id=compliance_report_version_id)

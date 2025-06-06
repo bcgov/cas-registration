@@ -12,6 +12,7 @@ from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryErr
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
+from compliance.service.exceptions import ComplianceInvoiceError
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,11 @@ class ExceptionResponse:
 class ExceptionHandler:
     EXCEPTION_MAP: dict[tuple[type[BaseException], ...], ExceptionResponse] = {
         (BCCarbonRegistryError,): ExceptionResponse("BC Carbon Registry features not available at this time", 400),
+        (ComplianceInvoiceError,): ExceptionResponse(
+            "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists.",
+            400,
+            "compliance_invoice_error",
+        ),
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
         (ValidationError,): ExceptionResponse(lambda exc: generate_useful_error(exc), 422),

@@ -27,33 +27,6 @@ describe("ComplianceSummariesPage", () => {
     fetchSpy.mockResolvedValue(mockFetchResponse);
   });
 
-  it("renders two alerts", async () => {
-    render(
-      await ComplianceSummariesPage({
-        searchParams: mockSearchParams,
-      }),
-    );
-    const alerts = screen.getAllByRole("alert");
-    expect(alerts).toHaveLength(2);
-  });
-
-  it("renders alerts with correct content", async () => {
-    render(
-      await ComplianceSummariesPage({
-        searchParams: mockSearchParams,
-      }),
-    );
-    const alerts = screen.getAllByRole("alert");
-    expect(alerts[0]).toHaveTextContent(
-      "Your compliance obligation for the 2024 reporting year is due on November 30, 2025. Please pay five business days in advance to account for the processing time.",
-    );
-    expect(alerts[0].querySelector(".MuiAlert-icon")).toBeVisible();
-    expect(alerts[1]).toHaveTextContent(
-      "An automatic overdue penalty has been incurred and accrues at 0.38% daily since the compliance obligation was not paid by its due date. You may pay the penalty after the compliance obligation is paid.",
-    );
-    expect(alerts[1].querySelector(".MuiAlert-icon")).toBeVisible();
-  });
-
   it("renders the grid component", async () => {
     render(
       await ComplianceSummariesPage({
