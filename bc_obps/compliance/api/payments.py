@@ -5,10 +5,7 @@ from common.api.utils import get_current_user
 from compliance.constants import COMPLIANCE
 from compliance.schema.payments import DashboardPaymentList
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from compliance.service.compliance_dashboard_service import (
-    PaymentsDashboardList,
-    PaymentDashboardRow,
-)
+from compliance.service.compliance_dashboard_service import PaymentsDashboardList, ComplianceDashboardService
 from registration.schema.generic import Message
 from compliance.api.router import router
 
@@ -22,18 +19,4 @@ from compliance.api.router import router
 )
 def get_payments_for_dashboard(request: HttpRequest) -> Tuple[Literal[200], PaymentsDashboardList]:
     user = get_current_user(request)
-    return 200, PaymentsDashboardList(
-        rows=[
-            PaymentDashboardRow(
-                id=1,
-                compliance_period=2024,
-                operation_name='OP 1',
-                payment_towards='Beer',
-                invoice_number='INV-01',
-                payment_amount=100.01,
-                outstanding_balance=500.05,
-            )
-        ],
-        row_count=1,
-    )
-    # return 200, ComplianceDashboardService.get_payments_for_dashboard(user)
+    return 200, ComplianceDashboardService.get_payments_for_dashboard(user)
