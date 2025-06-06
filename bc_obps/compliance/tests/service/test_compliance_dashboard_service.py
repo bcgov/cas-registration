@@ -6,6 +6,13 @@ from model_bakery import baker
 from unittest.mock import patch
 from registration.models import Operator
 from django.contrib.contenttypes.models import ContentType
+from decimal import Decimal
+from dataclasses import dataclass
+
+
+@dataclass
+class TestInvoiceQueryResponse:
+    invoiceOutstandingBalance: Decimal
 
 
 class TestComplianceDashboardService(TestCase):
@@ -21,6 +28,10 @@ class TestComplianceDashboardService(TestCase):
         user = baker.make_recipe('registration.tests.utils.industry_operator_user')
 
         operator_id = obligation_1.compliance_report_version.compliance_report.report.operator_id
+
+        baker.make_recipe(
+            'registration.tests.utils.user_operator', user_id=user.user_guid, operator_id=operator_id, status='Approved'
+        )
 
         # Create client link
         baker.make_recipe(
@@ -44,15 +55,15 @@ class TestComplianceDashboardService(TestCase):
                     "feeObjectId": obligation_1_fee_link.elicensing_object_id,
                     "invoiceNumber": "invoice-123",
                     "payments": [
-                        {"amount": 100.01},
-                        {"amount": 200.02},
-                        {"amount": 300.03},
+                        {"paymentObjectId": 1, "amount": 100.01},
+                        {"paymentObjectId": 2, "amount": 200.02},
+                        {"paymentObjectId": 3, "amount": 300.03},
                     ],
                 }
             ]
         }
-
-        mock_query_invoice.return_value = {"invoiceOutstandingBalance": 500.05}
+        invoice_data = {"invoiceOutstandingBalance": 500.05}
+        mock_query_invoice.return_value = TestInvoiceQueryResponse(**invoice_data)
 
         response = ComplianceDashboardService.get_payments_for_dashboard(user)
 
