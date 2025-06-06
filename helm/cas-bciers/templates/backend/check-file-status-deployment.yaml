@@ -32,7 +32,7 @@ spec:
             - -c
             - |
               set -euo pipefail;
-              .venv/bin/python manage.py check_document_file_status --run-forever -d 30
+              .venv/bin/python manage.py check_document_file_status -r 0 -d 30
           volumeMounts:
             - mountPath: "/attachment-credentials"
               name: gcs-attachment-credentials

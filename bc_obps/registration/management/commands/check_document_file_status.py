@@ -16,21 +16,15 @@ class Command(BaseCommand):
             "-r",
             "--repetitions",
             type=int,
-            help="Number of times to repeat the check",
+            help="Number of times to repeat the check. Runs indefinitely if set to 0.",
             default=5,
         )
         parser.add_argument(
             "-d",
             "--repeat-delay",
             type=int,
-            help="Delay between scans in seconds",
+            help="Delay between scans in seconds.",
             default=30,
-        )
-        parser.add_argument(
-            "--run-forever",
-            action="store_true",
-            help="Run the check indefinitely. Overrides repetitions.",
-            default=False,
         )
 
     def handle(self, *args, **options):
@@ -48,10 +42,6 @@ class Command(BaseCommand):
 
             self.stdout.write("Migrations have been applied.")
 
-        RUN_FOREVER = options["run_forever"]
-
-        if not RUN_FOREVER and options["repetitions"] < 1:
-            raise ValueError("repetitions must be greater than 0")
         if options["repeat_delay"] < 1:
             raise ValueError("repeat-delay must be greater than 0")
 
@@ -59,7 +49,8 @@ class Command(BaseCommand):
         REPEAT_DELAY = options["repeat_delay"]
 
         self.stdout.write("Starting check_document_file_status")
-        if RUN_FOREVER:
+        if REPETITIONS == 0:
+            RUN_FOREVER = True
             self.stdout.write("Running indefinitely with a delay of {REPEAT_DELAY} seconds between checks")
         else:
             self.stdout.write(f"Will run {REPETITIONS} times with a delay of {REPEAT_DELAY} seconds between checks")
