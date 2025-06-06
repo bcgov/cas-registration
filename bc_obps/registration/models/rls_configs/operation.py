@@ -1,6 +1,7 @@
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.helpers import generate_rls_grants, generate_m2m_rls
+from rls.utils.m2m import M2MPolicyStatements
 
 
 class Rls:
@@ -56,4 +57,9 @@ class Rls:
             RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
         },
     }
-    m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping)
+    m2m_models_policy_mapping = {
+        RegistrationTableNames.OPERATION_CONTACTS: M2MPolicyStatements(using_statement='true', delete_using_statement='true'),
+        RegistrationTableNames.OPERATION_REGULATED_PRODUCTS: M2MPolicyStatements(using_statement='true', delete_using_statement='true'),
+        RegistrationTableNames.OPERATION_ACTIVITIES: M2MPolicyStatements(using_statement='true', delete_using_statement='true'),
+    }
+    m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping, m2m_models_policy_mapping)
