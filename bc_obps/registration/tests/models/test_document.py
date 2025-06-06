@@ -1,13 +1,10 @@
 from common.tests.utils.helpers import BaseTestCase
-from django.db import ProgrammingError, connection
+from django.db import ProgrammingError
 import pytest
 from registration.models import Document
 from registration.tests.constants import DOCUMENT_FIXTURE, TIMESTAMP_COMMON_FIELDS
-from rls.middleware.rls import RlsMiddleware
 from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
-from django.db import ProgrammingError, transaction
 from model_bakery import baker
-from django.core.exceptions import ValidationError
 
 class DocumentModelTest(BaseTestCase):
     fixtures = [DOCUMENT_FIXTURE]
@@ -56,7 +53,7 @@ class TestDocumentRls(BaseTestCase):
                 
             
             # someone else's document - fail. Using cursor because if we try via django, the error is that the random_operation's id does not exist
-            with pytest.raises(ProgrammingError, match=f'new row violates row-level security policy for table "document'):
+            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "document'):
                 cursor.execute(
                     """
                     INSERT INTO "erc"."document" (
@@ -100,7 +97,7 @@ class TestDocumentRls(BaseTestCase):
             assert Document.objects.count() == 5
 
         def update_function(cursor, i):
-            Document.objects.update(description=f'description updated')
+            Document.objects.update(description='description updated')
             assert Document.objects.filter(description='description updated').count() == 5
 
         test_policies_for_cas_roles(Document, select_function=select_function, update_function=update_function)

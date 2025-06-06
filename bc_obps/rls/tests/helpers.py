@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.conf import settings
-from django.db import Error, connection
+from django.db import connection
 from registration.models.app_role import AppRole
 from registration.models.user import User
 from model_bakery import baker

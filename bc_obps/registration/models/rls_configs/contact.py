@@ -6,6 +6,7 @@ from rls.utils.helpers import generate_rls_grants, generate_rls_policies
 class Rls:
     enable_rls = True
     schema = "erc"
+    table = RegistrationTableNames.CONTACT
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         # CAS_DIRECTOR can create new contacts when approving a user_operator

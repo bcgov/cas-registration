@@ -86,7 +86,7 @@ class RlsManager:
         model = apps.all_models[app_name][model_name]
         if hasattr(model, 'Rls'):
             rls = model.Rls
-            
+
             with connection.cursor() as cursor:
                 if hasattr(rls, 'grants'):
                     for grant in rls.grants:
@@ -94,11 +94,13 @@ class RlsManager:
                 if hasattr(rls, 'm2m_rls_list'):
                     for m2m_rls in rls.m2m_rls_list:
                         cls.apply_m2m_rls(cursor, m2m_rls)
-                if hasattr(rls,'policies'):
+                if hasattr(rls, 'policies'):
                     for policy in rls.policies:
                         policy.apply_policy(cursor)
-                if hasattr(rls,'enable_rls') and rls.enable_rls:
-                    cursor.execute(f'alter table {rls.schema}.{model_name} enable row level security')
+                if hasattr(rls, 'enable_rls') and rls.enable_rls:
+                    cursor.execute(f'alter table {rls.schema}.{rls.table.value} enable row level security')
+                    for policy in rls.policies:
+                        policy.apply_policy(cursor)
 
     @classmethod
     def apply_m2m_rls(cls, cursor: CursorWrapper, m2m_rls: M2mRls) -> None:

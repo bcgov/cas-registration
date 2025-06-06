@@ -11,7 +11,6 @@ from registration.models import (
 from model_bakery import baker
 from django.core.exceptions import ValidationError
 from django.db import ProgrammingError, transaction
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.business_role import BusinessRole
 from registration.models.contact import Contact
 from registration.tests.constants import (

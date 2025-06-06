@@ -1,6 +1,5 @@
 from django.test import TestCase
 from common.tests.utils.helpers import BaseTestCase
-import pytest
 from registration.models import Address, BusinessRole
 from model_bakery import baker
 from django.db import ProgrammingError, transaction

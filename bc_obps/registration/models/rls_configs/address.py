@@ -4,8 +4,9 @@ from rls.utils.helpers import generate_rls_grants, generate_rls_policies
 
 
 class Rls:
-    enable_rls = True
+    # enable_rls = True
     schema = "erc"
+    table = RegistrationTableNames.ADDRESS
     role_grants_mapping = {
         # External users can delete when they update their address when updating Contact or Facility Information or ...
         RlsRoles.INDUSTRY_USER: [
