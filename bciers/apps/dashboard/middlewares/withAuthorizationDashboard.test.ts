@@ -5,6 +5,7 @@ import middleware from "../middleware";
 import { authAllowedPaths } from "./withAuthorizationDashboard";
 
 import { getToken } from "@bciers/testConfig/mocks";
+import { getToken as nextGetToken } from "next-auth/jwt";
 import {
   mockBaseToken,
   mockCasPendingToken,
@@ -21,9 +22,15 @@ vi.spyOn(NextResponse, "rewrite");
 
 const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
+vi.mock("next-auth/jwt", () => ({
+  getToken: vi.fn(),
+}));
+const mockGetToken = nextGetToken as ReturnType<typeof vi.fn>;
+
 describe("withAuthorizationDashboard middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetToken.mockReturnValue(undefined);
   });
   afterEach(() => {
     reset(mockedRequest);
