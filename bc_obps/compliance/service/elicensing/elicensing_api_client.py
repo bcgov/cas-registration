@@ -409,8 +409,8 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/fees"
-        params = {"clientObjectId": client_object_id}
+        endpoint = f"/client/{client_object_id}/fees"
+        params = {}
 
         if fee_status:
             params["feeStatus"] = fee_status
