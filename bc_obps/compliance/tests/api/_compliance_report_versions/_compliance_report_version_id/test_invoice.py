@@ -1,3 +1,4 @@
+import json
 from unittest.mock import patch
 from registration.utils import custom_reverse_lazy
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
@@ -8,9 +9,11 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
     @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_invoice_pdf")
     def test_get_invoice_success(self, mock_generate_invoice_pdf):
         # Arrange
-        mock_generate_invoice_pdf.return_value = (b"PDF content", "invoice.pdf", 100)
+        pdf_bytes = b"%PDF content"
+        mock_generate_invoice_pdf.return_value = (iter([pdf_bytes]), "invoice.pdf", len(pdf_bytes))
+
         TestUtils.authorize_current_user_as_operator_user(
-            self, operator=make_recipe('registration.tests.utils.operator')
+            self, operator=make_recipe("registration.tests.utils.operator")
         )
 
         # Act
@@ -24,4 +27,38 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
 
         # Assert
         assert response.status_code == 200
+        assert response["Content-Type"] == "application/pdf"
+        assert response["Content-Disposition"] == 'attachment; filename="invoice.pdf"'
+        assert response["Content-Length"] == str(len(pdf_bytes))
+        assert b"".join(response.streaming_content) == pdf_bytes
+
+        mock_generate_invoice_pdf.assert_called_once_with(123)
+
+    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_invoice_pdf")
+    def test_get_invoice_error_from_service(self, mock_generate_invoice_pdf):
+        # Arrange: simulate an error result from the service
+        mock_generate_invoice_pdf.return_value = {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
+
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=make_recipe("registration.tests.utils.operator")
+        )
+
+        # Act
+        response = TestUtils.mock_get_with_auth_role(
+            self,
+            "industry_user",
+            custom_reverse_lazy(
+                "generate_compliance_report_version_invoice", kwargs={"compliance_report_version_id": 123}
+            ),
+        )
+
+        # Assert
+        assert response.status_code == 400
+        assert response["Content-Type"] == "application/json"
+
+        # ✅ Properly consume the streaming response
+        raw_bytes = b"".join(response.streaming_content)
+        parsed = json.loads(raw_bytes.decode("utf-8"))
+        assert parsed == {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
+
         mock_generate_invoice_pdf.assert_called_once_with(123)

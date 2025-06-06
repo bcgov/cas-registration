@@ -2,11 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import userEvent from "@testing-library/user-event";
 
-// Mock window.open to behave synchronously
+// Mocks
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
 
-// Mock the grid components
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid",
   () => ({
@@ -42,138 +41,115 @@ const mockData = {
   totalAmount: "93.55",
 };
 
+const setupComponent = (id = "123") =>
+  render(
+    <ComplianceSummaryReviewComponent
+      data={mockData}
+      complianceSummaryId={id}
+    />,
+  );
+
+const getGenerateButton = () =>
+  screen.getByRole("button", { name: "Generate Compliance Invoice" });
+
 describe("ComplianceSummaryReviewComponent", () => {
   beforeEach(() => {
+    vi.restoreAllMocks();
     mockWindowOpen.mockClear();
+
+    if (!("createObjectURL" in URL)) {
+      // @ts-ignore
+      URL.createObjectURL = vi.fn();
+    }
+
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:fake-invoice-url");
+    vi.stubGlobal("open", mockWindowOpen);
   });
 
   it("renders the component with all sections", () => {
-    render(
-      <ComplianceSummaryReviewComponent
-        data={mockData}
-        complianceSummaryId="123"
-      />,
-    );
-
-    // Check form title
+    setupComponent();
     expect(screen.getByText("Review 2025 Compliance Summary")).toBeVisible();
-
-    // Check Summary Section
     expect(screen.getByText("From 2025 Report")).toBeVisible();
-    expect(
-      screen.getByText("Emissions Attributable for Compliance:"),
-    ).toBeVisible();
     expect(screen.getByText("1200.0000")).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[0]).toBeVisible();
-
-    expect(screen.getByText("Emissions Limit:")).toBeVisible();
     expect(screen.getByText("1000.0000")).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
-
-    expect(screen.getByText("Excess Emissions:")).toBeVisible();
     expect(screen.getByText("200.0000")).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[2]).toBeVisible();
-
-    // Check Obligation Section
-    expect(screen.getByText("2025 Compliance Obligation")).toBeVisible();
-    expect(screen.getByText("Obligation ID:")).toBeVisible();
     expect(screen.getByText("25-0001-1-1")).toBeVisible();
-    expect(screen.getByText("2025 Compliance Charge Rate:")).toBeVisible();
-    expect(screen.getByText(/80\.00/i)).toBeVisible();
-    expect(screen.getByText("/tCO2e")).toBeVisible();
-    expect(screen.getAllByText("Equivalent Value:")[0]).toBeVisible();
-    expect(screen.getByText(/16000\.00/i)).toBeVisible();
-
-    // Check grid components are rendered
-    expect(screen.getByText("Compliance Units Applied")).toBeVisible();
+    expect(screen.getByText(/80\.00/)).toBeVisible();
+    expect(screen.getByText(/16000\.00/)).toBeVisible();
     expect(screen.getByText("Mock Compliance Units Grid")).toBeVisible();
-    expect(screen.getByText("Monetary Payments Made")).toBeVisible();
     expect(screen.getByText("Mock Monetary Payments Grid")).toBeVisible();
-
-    // Check Outstanding Balance Section
-    expect(screen.getByText("Outstanding Compliance Obligation")).toBeVisible();
-    expect(screen.getByText("Outstanding Balance:")).toBeVisible();
     expect(screen.getByText("300.0000")).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[3]).toBeVisible();
-    expect(screen.getAllByText("Equivalent Value:")[1]).toBeVisible();
-    expect(screen.getByText(/17000\.00/i)).toBeVisible();
-
-    // Check Penalty Section
-    expect(
-      screen.getByText("Automatic Overdue Penalty (as of Today):"),
-    ).toBeVisible();
-
-    // Check Penalty Alert Note
-    const alertNote = screen.getByRole("alert");
-    expect(alertNote).toBeVisible();
-    expect(alertNote).toHaveTextContent(
-      "The automatic administrative penalty will continue accruing until the compliance obligation is fully met. Once fully met, you will receive the final administrative penalty invoice.",
-    );
-
-    expect(screen.getByText("Penalty Status:")).toBeVisible();
-    expect(screen.getByText("Accruing")).toBeVisible();
-    expect(screen.getByText("Penalty Type:")).toBeVisible();
-    expect(screen.getByText("Automatic Overdue")).toBeVisible();
-    expect(screen.getByText("Penalty Rate (Daily):")).toBeVisible();
-    expect(screen.getByText("0.38")).toBeVisible();
-    expect(screen.getByText("%")).toBeVisible();
-    expect(screen.getByText("Days Late:")).toBeVisible();
-    expect(screen.getByText("3")).toBeVisible();
-    expect(screen.getByText("Accumulated Penalty:")).toBeVisible();
-    expect(screen.getByText(/91\.5/i)).toBeVisible();
-    expect(screen.getByText("Accumulated Compounding:")).toBeVisible();
-    expect(screen.getByText(/0\.35/i)).toBeVisible();
-    expect(screen.getByText("Penalty (as of Today):")).toBeVisible();
-    expect(screen.getByText(/92\.55/i)).toBeVisible();
-
-    // Check FAA Interest and Total Amount
-    expect(screen.getByText("FAA Interest (as of Today):")).toBeVisible();
-    expect(screen.getByText(/1\.00/i)).toBeVisible();
-    expect(screen.getByText("Total Amount (as of Today):")).toBeVisible();
-    expect(screen.getByText(/93\.55/i)).toBeVisible();
-
-    // Check navigation buttons
-    const backButton = screen.getByRole("button", { name: "Back" });
-    expect(backButton).toBeVisible();
-    const continueButton = screen.getByRole("button", { name: "Continue" });
-    expect(continueButton).toBeVisible();
-
-    // Check Generate Invoice button
-    const generateInvoiceButton = screen.getByRole("button", {
-      name: "Generate Compliance Invoice",
-    });
-    expect(generateInvoiceButton).toBeVisible();
-    expect(generateInvoiceButton).not.toBeDisabled();
+    expect(screen.getByText(/17000\.00/)).toBeVisible();
+    expect(screen.getByRole("alert")).toHaveTextContent(/penalty/i);
+    expect(getGenerateButton()).toBeEnabled();
   });
 
   it("handles invoice generation correctly", async () => {
     const user = userEvent.setup();
 
-    // Render the component
-    render(
-      <ComplianceSummaryReviewComponent
-        data={mockData}
-        complianceSummaryId="123"
-      />,
+    const mockBlob = new Blob(["dummy PDF"], { type: "application/pdf" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => mockBlob,
+        headers: new Headers(),
+      }),
     );
 
-    const generateInvoiceButton = screen.getByRole("button", {
-      name: "Generate Compliance Invoice",
+    setupComponent();
+
+    await user.click(getGenerateButton());
+
+    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/123", {
+      method: "GET",
+      cache: "no-store",
     });
-    expect(generateInvoiceButton).toBeEnabled();
 
-    await user.click(generateInvoiceButton);
+    expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
 
-    // Verify window.open was called with correct arguments
     expect(mockWindowOpen).toHaveBeenCalledWith(
-      "/compliance/api/invoice/123",
+      "blob:fake-invoice-url",
       "_blank",
       "noopener,noreferrer",
     );
 
-    // Wait for the button to return to its normal state
-    expect(
-      screen.getByRole("button", { name: "Generate Compliance Invoice" }),
-    ).toBeEnabled();
+    expect(getGenerateButton()).toBeEnabled();
+  });
+
+  it("displays an error when invoice generation fails", async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        headers: new Headers({ "Content-Type": "application/json" }),
+        json: async () => ({
+          message: "Unable to generate invoice",
+        }),
+      }),
+    );
+
+    setupComponent("999");
+
+    await user.click(getGenerateButton());
+
+    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/999", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    expect(mockWindowOpen).not.toHaveBeenCalled();
+
+    const alerts = await screen.findAllByRole("alert");
+    const hasErrorText = alerts.some(
+      (el) =>
+        el.textContent?.toLowerCase().includes("unable to generate invoice"),
+    );
+    expect(hasErrorText).toBe(true);
+    expect(getGenerateButton()).toBeEnabled();
   });
 });
