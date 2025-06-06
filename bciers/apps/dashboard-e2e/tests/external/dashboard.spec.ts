@@ -51,7 +51,7 @@ userRoles.forEach((role) => {
       component = `Main Dashboard for ${role}`;
       await takeStabilizedScreenshot(happoPlaywright, page, {
         component: component,
-        variant: "filled",
+        variant: "default",
       });
       await analyzeAccessibility(page);
 
@@ -137,7 +137,7 @@ userRoles.forEach((role) => {
           component = `External user ${tile} Dashboard`;
           await takeStabilizedScreenshot(happoPlaywright, page, {
             component: component,
-            variant: "filled",
+            variant: "default",
           });
           // Go back to dashboard
           await dashboardPage.route();
