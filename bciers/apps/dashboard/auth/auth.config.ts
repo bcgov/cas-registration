@@ -49,6 +49,9 @@ declare module "next-auth" {
     full_name?: string;
     bceid_business_name: string | undefined;
     bceid_business_guid: string | undefined;
+
+    expires_at: number | undefined;
+    refresh_token: string | undefined;
   }
 }
 
@@ -56,6 +59,8 @@ declare module "next-auth" {
 📌 Make one central auth config that can be imported to auth.ts or middleware when required
 */
 export const AUTH_BASE_PATH = "/api/auth";
+export const OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS = 60;
+
 export default {
   //In a Docker environment, make sure to set either trustHost: true in your Auth.js configuration or the AUTH_TRUST_HOST environment variable to true.
   trustHost: true,
@@ -99,6 +104,11 @@ export default {
           token.user_guid = account.providerAccountId.split("@")[0];
 
           token.identity_provider = account.providerAccountId.split("@")[1];
+
+          token.access_token = account.access_token;
+          token.refresh_token = account.refresh_token;
+          token.expires_at =
+            Date.now() / 1000 + OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS;
         }
         if (!token.full_name) {
           // 🚀 API call: Get user name from user table

@@ -1,4 +1,5 @@
 import { stackMiddlewares } from "@bciers/middlewares";
+import { withTokenRefreshMiddleware } from "./middlewares/withTokenRefresh";
 import { withAuthorizationDashboard } from "./middlewares/withAuthorizationDashboard";
 
 /* 📌
@@ -28,4 +29,7 @@ export const config = {
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([withAuthorizationDashboard]);
+export default stackMiddlewares([
+  withTokenRefreshMiddleware,
+  withAuthorizationDashboard,
+]);
