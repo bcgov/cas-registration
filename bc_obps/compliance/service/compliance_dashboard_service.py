@@ -7,7 +7,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional, List, cast, Any, Dict
+from typing import Optional, List
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
 from registration.models import Operator, User
@@ -197,7 +197,7 @@ class ComplianceDashboardService:
                                 payment_towards=payment_towards,
                                 invoice_number=fee['invoiceNumber'],
                                 payment_amount=payment['amount'],
-                                outstanding_balance=cast(Dict[str, Any], invoice)['invoiceOutstandingBalance'],
+                                outstanding_balance=invoice.invoiceOutstandingBalance,
                             )
                             payments.append(payment_row)
         else:
