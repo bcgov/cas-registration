@@ -13,7 +13,8 @@ dotenv.config({ path: "./e2e/.env.local" });
 export class DashboardPOM {
   readonly page: Page;
 
-  readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
+  readonly url: string =
+    process.env.E2E_BASEURL + AppRoute.ADMINISTRATION_DASHBOARD;
 
   readonly operatorTile: Locator;
 

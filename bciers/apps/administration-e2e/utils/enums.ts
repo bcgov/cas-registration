@@ -1,13 +1,14 @@
 // 🚀  App routes
 export enum AppRoute {
   CONTACTS = "administration/contacts",
-  DASHBOARD = "administration",
+  DASHBOARD = "dashboard",
   OPERATIONS = "administration/operations",
   OPERATOR_ADD = "administration/select-operator/add-operator",
   OPERATOR_SELECT = "administration/select-operator",
   OPERATOR = "administration/my-operator",
   PROFILE = "administration/profile",
   USERS = "administration/users",
+  ADMINISTRATION_DASHBOARD = "administration",
 }
 
 // 🔘 button text
