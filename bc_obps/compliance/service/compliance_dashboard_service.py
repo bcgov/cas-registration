@@ -165,7 +165,6 @@ class ComplianceDashboardService:
         Returns:
             PaymentsList object containing the payment records
         """
-
         user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
         if not user_operator:
             raise ValidationError("No approved operator found for user")
