@@ -40,7 +40,7 @@ class Rls:
     m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping)
     policies = generate_rls_policies(
         role_grants_mapping=role_grants_mapping,
-        table=RegistrationTableNames.FACILITY_DESIGNATED_OPERATION_TIMELINE,
+        table=RegistrationTableNames.FACILITY,
         using_statement="""
                      operation_id in
                      (select id

@@ -147,6 +147,7 @@ class FacilityTriggerTests(BaseTestCase):
         assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
         assert self.facility_with_non_registered_op.name == "Updated Facility Name"
 
+
 # RLS tests
 class TestFacilityRls(BaseTestCase):
     def test_facility_rls_industry_user(self):
@@ -157,7 +158,7 @@ class TestFacilityRls(BaseTestCase):
         random_operation = baker.make_recipe('registration.tests.utils.operation')
         random_facility = baker.make_recipe('registration.tests.utils.facility', operation=random_operation)
 
-        assert Facility.objects.count() == 2  # Two operations created
+        assert Facility.objects.count() == 2  # Two records created
 
         def select_function(cursor):
             assert Facility.objects.count() == 1
@@ -166,7 +167,7 @@ class TestFacilityRls(BaseTestCase):
             Facility.objects.create(
                 name='new',
                 operation=operation,
-                type=Facility.Types.SFO,
+                type=Facility.Types.SINGLE_FACILITY,
             )
             assert Facility.objects.filter(name='new').exists()
 
@@ -186,11 +187,15 @@ class TestFacilityRls(BaseTestCase):
                         %s
                     )
                 """,
-                    ('anme', 'SFO',random_operation.id),
+                    ('anme', 'Single Facility', random_operation.id),
                 )
 
+        def update_function(cursor):
+            Facility.objects.update(name='Updated Facility Name')
+            assert Facility.objects.filter(name='Updated Facility Name').count() == 1
+
         def delete_function(cursor):
-            Facility.objects.delete()
+            Facility.objects.all().delete()
             assert Facility.objects.count() == 1  # only deleted 1/2
 
         test_policies_for_industry_user(
@@ -198,24 +203,28 @@ class TestFacilityRls(BaseTestCase):
             approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
+            update_function=update_function,
             delete_function=delete_function,
         )
 
     def test_facility_rls_cas_users(self):
-
-        facilities = baker.make_recipe(
+        facility_with_operation = baker.make_recipe(
+            'registration.tests.utils.facility',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+        )
+        baker.make_recipe(
             'registration.tests.utils.facility',
             _quantity=5,
         )
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
 
         def select_function(cursor, i):
-            breakpoint()
-            assert Facility.objects.count() == 5
+            assert Facility.objects.count() == 6
 
         def update_function(cursor, i):
-            breakpoint()
-            Facility.objects.all().update(name="Updated Facility Name")
-            assert Facility.objects.filter(name='Updated Facility Name').count() == 5
+            facility_with_operation.bcghg_id = bcghg_id
+            facility_with_operation.save()
+            assert Facility.objects.filter(bcghg_id__isnull=False).count() == 1
 
         test_policies_for_cas_roles(
             Facility,
