@@ -1,5 +1,6 @@
 from itertools import chain
 import logging
+import sys
 from typing import Iterable
 from common.management.commands.custom_migrate import has_unapplied_migrations
 from common.models.scanned_file_storage_mixin import ScannedFileStorageMixin
@@ -31,6 +32,11 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s %(levelname)s %(message)s",
+            stream=sys.stdout,
+        )
         # Check to see if migrations have been applied before running the command
         if has_unapplied_migrations():
             logger.info("Waiting for migrations to be applied...")
