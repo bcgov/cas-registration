@@ -6,25 +6,25 @@ import {
   commonReadOnlyOptions,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import TwoStateWidget from "@/compliance/src/app/widgets/TwoStateWidget";
-import DirectorReviewAlertWidget from "@/compliance/src/app/widgets/DirectorReviewAlertWidget";
-import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal-review-credits-issuance-request/AnnualEmissionsReportButton";
+import TwoStateWidget from "@/compliance/src/app/data/jsonSchema/TwoStateWidget";
+import DirectorReviewAlertWidget from "@/compliance/src/app/data/jsonSchema/DirectorReviewAlertWidget";
+import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
 
 const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
-  sectionHeader: readOnlyObjectField("Earned Credits"),
-  earnedCredits: readOnlyStringField("Earned Credits:"),
-  issuanceStatus: readOnlyStringField("Status of Issuance:"),
-  bccrTradingName: readOnlyStringField("BCCR Trading Name:"),
-  bccrHoldingAccountId: readOnlyStringField("BCCR Holding Account ID:"),
+  section_header: readOnlyObjectField("Earned Credits"),
+  earned_credits_amount: readOnlyStringField("Earned Credits:"),
+  issuance_status: readOnlyStringField("Status of Issuance:"),
+  bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
+  holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
 });
 
 const createAnalystReviewSection = (): RJSFSchema["properties"] => ({
-  analystHeader: readOnlyObjectField("Reviewed by Analyst"),
+  analyst_header: readOnlyObjectField("Reviewed by Analyst"),
   analyst_comment: readOnlyStringField("Analyst's Comment:"),
 });
 
 const createDirectorReviewSection = (): RJSFSchema["properties"] => ({
-  directorHeader: readOnlyObjectField("Review by Director"),
+  director_header: readOnlyObjectField("Review by Director"),
   director_comment: {
     type: "string",
     title: "Director's Comment:",
@@ -35,14 +35,14 @@ export const internalReviewByDirectorSchema = (): RJSFSchema => ({
   type: "object",
   title: "Review by Director",
   properties: {
-    viewAnnualReportButton: {
+    view_annual_report_button: {
       type: "null",
       title: "",
     },
     ...createCreditsIssuanceRequestSection(),
     ...createAnalystReviewSection(),
     ...createDirectorReviewSection(),
-    directorAlertPlaceholder: readOnlyStringField(),
+    director_alert_placeholder: readOnlyStringField(),
   },
   required: [],
 });
@@ -59,23 +59,23 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
     norender: true,
   },
 
-  viewAnnualReportButton: {
+  view_annual_report_button: {
     "ui:field": AnnualEmissionsReportButtonField,
     "ui:options": {
       label: false,
     },
   },
 
-  sectionHeader: headerUiConfig,
-  earnedCredits: fixedWidthLabelStyle,
-  issuanceStatus: fixedWidthLabelStyle,
-  bccrTradingName: fixedWidthLabelStyle,
-  bccrHoldingAccountId: fixedWidthLabelStyle,
+  section_header: headerUiConfig,
+  earned_credits_amount: fixedWidthLabelStyle,
+  issuance_status: fixedWidthLabelStyle,
+  bccr_trading_name: fixedWidthLabelStyle,
+  holding_account_id: fixedWidthLabelStyle,
 
-  analystHeader: headerUiConfig,
+  analyst_header: headerUiConfig,
   analyst_comment: fixedWidthLabelStyle,
 
-  directorHeader: headerUiConfig,
+  director_header: headerUiConfig,
   director_comment: {
     "ui:widget": TwoStateWidget,
     "ui:classNames":
@@ -85,7 +85,7 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
       showSubmissionInfo: false,
     },
   },
-  directorAlertPlaceholder: {
+  director_alert_placeholder: {
     "ui:widget": DirectorReviewAlertWidget,
     "ui:options": {
       label: false,

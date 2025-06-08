@@ -7,22 +7,23 @@ import {
   Link,
   IconButton,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import { AlertIcon } from "@bciers/components/icons";
 
 interface AttachmentElementProps {
   fileName?: string;
-  fileId?: string;
   title: string;
   onFileChange: (file: File | undefined) => void;
   isUploading?: boolean;
+  error?: string | null;
 }
 
 const AttachmentElement: React.FC<AttachmentElementProps> = ({
   fileName,
-  fileId,
   title,
   onFileChange,
   isUploading,
+  error,
 }) => {
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
   const [uploadedFile, setUploadedFile] = useState<File | undefined>();
@@ -30,16 +31,7 @@ const AttachmentElement: React.FC<AttachmentElementProps> = ({
   const handleDownload = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.stopPropagation();
 
-    if (fileId && !uploadedFile) {
-      // For existing files with an ID, we need to fetch from the server
-      // TBD: Backend file download implementation
-      // try {
-      //   const downloadUrl = `/api/compliance/request-issuance/attachments/${fileId}/download`;
-      //   window.open(downloadUrl, '_blank');
-      // } catch (error) {
-      //   throw new Error(`Error submitting form:, ${error}`);
-      // }
-    } else if (fileName && uploadedFile) {
+    if (fileName && uploadedFile) {
       const fileURL = URL.createObjectURL(uploadedFile);
       window.open(fileURL, "_blank");
       setTimeout(() => URL.revokeObjectURL(fileURL), 100);
@@ -61,16 +53,16 @@ const AttachmentElement: React.FC<AttachmentElementProps> = ({
   };
 
   return (
-    <Box className="flex gap-[150px] mt-6">
+    <Box className="flex mt-6">
       <Typography
         variant="body1"
         component="label"
-        className="text-[16px] font-normal mb-[8px]"
+        className="text-[16px] font-bold mb-[8px] w-[240px]"
       >
         {title}
       </Typography>
-      <Box className="flex items-center">
-        {fileName ? (
+      <Box className="flex items-center ml-[10px]">
+        {uploadedFile ? (
           <Box className="mr-[10px]">
             <Link
               href="#"
@@ -86,10 +78,10 @@ const AttachmentElement: React.FC<AttachmentElementProps> = ({
                 setUploadedFile(undefined);
                 onFileChange(undefined);
               }}
-              className="ml-1 border-none text-[16px] text-bc-bg-blue font-normal cursor-pointer bg-transparent p-0"
+              className="ml-1 border-none text-bc-error-red text-[16px] text-bc-bg-blue font-normal cursor-pointer bg-transparent p-0"
               aria-label="Remove file"
             >
-              <CloseIcon fontSize="small" />
+              <DeleteOutlineIcon fontSize="small" />
             </IconButton>
 
             {isUploading && (
@@ -109,7 +101,17 @@ const AttachmentElement: React.FC<AttachmentElementProps> = ({
         >
           Browse
         </Button>
-
+        {error && (
+          <div
+            className="w-full md:w-4/12 flex items-center text-red-600 ml-0 md:ml-4"
+            role="alert"
+          >
+            <div className="hidden md:block mr-3">
+              <AlertIcon />
+            </div>
+            <span>{error}</span>
+          </div>
+        )}
         <input
           ref={hiddenFileInput}
           onChange={handleChange}

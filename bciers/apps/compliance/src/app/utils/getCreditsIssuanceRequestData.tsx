@@ -1,22 +1,6 @@
 import { formatDate } from "@reporting/src/app/utils/formatDate";
-
-export interface CreditsIssuanceRequestData {
-  id: string;
-  operation_name: string;
-  reporting_year: number;
-  earnedCredits: number;
-  issuanceStatus: string;
-  bccrTradingName: string;
-  bccrHoldingAccountId: string;
-  analyst_comment: string;
-  submited_by: string;
-  submited_at: string;
-  attachment?: {
-    id: string;
-    file_name: string;
-  };
-  analyst_recommendation?: string;
-}
+import { CreditsIssuanceRequestData } from "@/compliance/src/app/types";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 /**
  * Retrieves data for the internal review credits issuance request form
@@ -30,22 +14,17 @@ export interface CreditsIssuanceRequestData {
 export const getCreditsIssuanceRequestData = (complianceSummaryId: string) => {
   const data: CreditsIssuanceRequestData = {
     id: complianceSummaryId,
-    operation_name: "Red Operation",
     reporting_year: 2023,
-    earnedCredits: 100,
-    issuanceStatus: "Issuance requested, awaiting approval",
-    bccrTradingName: "Colour Co.",
-    bccrHoldingAccountId: "437248194316283",
+    earned_credits_amount: 100,
+    issuance_status: IssuanceStatus.APPROVED,
+    bccr_trading_name: "Colour Co.",
+    holding_account_id: "437248194316283",
     analyst_comment: "Lorem ipsum",
     submited_by: "Adam A.",
     submited_at: formatDate(
       new Date("2025-05-16 18:00:24.986 -0700"),
       "MMMM D, YYYY",
     ),
-    attachment: {
-      id: "attachment-123",
-      file_name: "document.pdf",
-    },
     analyst_recommendation: "ready_to_approve",
   };
 

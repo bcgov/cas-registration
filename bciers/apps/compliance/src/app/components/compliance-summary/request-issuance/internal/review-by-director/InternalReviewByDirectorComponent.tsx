@@ -5,11 +5,11 @@ import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceSte
 import {
   internalReviewByDirectorSchema,
   internalReviewByDirectorUiSchema,
-} from "@/compliance/src/app/data/jsonSchema/requestIssuance/internalReviewByDirectorSchema";
+} from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalReviewByDirectorSchema";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
-import { DirectorReviewData } from "@/compliance/src/app/utils/getDirectorReviewData";
+import { DirectorReviewData } from "@/compliance/src/app/types";
 
 interface Props {
   formData: DirectorReviewData;
