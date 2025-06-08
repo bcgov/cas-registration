@@ -1,19 +1,5 @@
-export interface DirectorReviewData {
-  id: string;
-  operation_name: string;
-  reporting_year: number;
-  earnedCredits: number;
-  issuanceStatus: string;
-  bccrTradingName: string;
-  bccrHoldingAccountId: string;
-  analyst_comment: string;
-  attachment?: {
-    id: string;
-    file_name: string;
-  };
-  analyst_recommendation?: string;
-  director_comment?: string;
-}
+import { DirectorReviewData } from "@/compliance/src/app/types";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 /**
  * Retrieves data for the internal review by director page
@@ -27,17 +13,12 @@ export interface DirectorReviewData {
 export const getDirectorReviewData = (complianceSummaryId: string) => {
   const data: DirectorReviewData = {
     id: complianceSummaryId,
-    operation_name: "Red Operation",
     reporting_year: 2023,
-    earnedCredits: 100,
-    issuanceStatus: "Issuance requested, awaiting approval",
-    bccrTradingName: "Colour Co.",
-    bccrHoldingAccountId: "437248194316283",
+    earned_credits_amount: 100,
+    issuance_status: IssuanceStatus.APPROVED,
+    bccr_trading_name: "Colour Co.",
+    holding_account_id: "437248194316283",
     analyst_comment: "Lorem ipsum",
-    attachment: {
-      id: "attachment-123",
-      file_name: "document.pdf",
-    },
     analyst_recommendation: "ready_to_approve",
     director_comment: "",
   };

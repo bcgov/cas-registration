@@ -6,19 +6,19 @@ import {
   commonReadOnlyOptions,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import TwoStateWidget from "@/compliance/src/app/widgets/TwoStateWidget";
-import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal-review-credits-issuance-request/AnnualEmissionsReportButton";
+import TwoStateWidget from "@/compliance/src/app/data/jsonSchema/TwoStateWidget";
+import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
 
 const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
-  sectionHeader: readOnlyObjectField("Earned Credits"),
-  earnedCredits: readOnlyStringField("Earned Credits:"),
-  issuanceStatus: readOnlyStringField("Status of Issuance:"),
-  bccrTradingName: readOnlyStringField("BCCR Trading Name:"),
-  bccrHoldingAccountId: readOnlyStringField("BCCR Holding Account ID:"),
+  section_header: readOnlyObjectField("Earned Credits"),
+  earned_credits_amount: readOnlyStringField("Earned Credits:"),
+  issuance_status: readOnlyStringField("Status of Issuance:"),
+  bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
+  holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
 });
 
 const createAnalystReviewSection = (): RJSFSchema["properties"] => ({
-  analystHeader: readOnlyObjectField("Review by Analyst"),
+  analyst_header: readOnlyObjectField("Review by Analyst"),
   analyst_recommendation: {
     type: "string",
     title: "Analyst's Suggestion:",
@@ -43,7 +43,7 @@ export const internalReviewCreditsIssuanceRequestSchema = (): RJSFSchema => ({
   type: "object",
   title: "Review Credits Issuance Request",
   properties: {
-    viewAnnualReportButton: {
+    view_annual_report_button: {
       type: "null",
       title: "",
     },
@@ -65,24 +65,24 @@ export const internalReviewCreditsIssuanceRequestUiSchema: UiSchema = {
     norender: true,
   },
 
-  viewAnnualReportButton: {
+  view_annual_report_button: {
     "ui:field": AnnualEmissionsReportButtonField,
     "ui:options": {
       label: false,
     },
   },
 
-  sectionHeader: headerUiConfig,
-  earnedCredits: fixedWidthLabelStyle,
-  issuanceStatus: fixedWidthLabelStyle,
-  bccrTradingName: fixedWidthLabelStyle,
-  bccrHoldingAccountId: fixedWidthLabelStyle,
+  section_header: headerUiConfig,
+  earned_credits_amount: fixedWidthLabelStyle,
+  issuance_status: fixedWidthLabelStyle,
+  bccr_trading_name: fixedWidthLabelStyle,
+  holding_account_id: fixedWidthLabelStyle,
 
-  analystHeader: headerUiConfig,
+  analyst_header: headerUiConfig,
   analyst_recommendation: {
     "ui:widget": "RadioWidget",
     "ui:classNames":
-      "[&>div>label]:text-[16px] [&>div>label]:font-normal [&>div:first-child]:w-[240px] [&>div:last-child]:w-auto [&>div:last-child]:ml-[10px] ",
+      "[&>div>label]:text-[16px] [&>div:first-child]:w-[240px] [&>div:last-child]:w-auto [&>div:last-child]:ml-[10px] ",
     "ui:options": {
       inline: true,
       required: false,
@@ -91,7 +91,7 @@ export const internalReviewCreditsIssuanceRequestUiSchema: UiSchema = {
   analyst_comment: {
     "ui:widget": TwoStateWidget,
     "ui:classNames":
-      "[&>div>label]:text-[16px] [&>div>label]:font-normal [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full  [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full",
+      "[&>div>label]:text-[16px] [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full",
     "ui:options": {
       isDisabled: true,
     },

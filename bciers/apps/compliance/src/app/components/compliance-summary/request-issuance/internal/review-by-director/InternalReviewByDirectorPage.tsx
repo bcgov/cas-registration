@@ -1,7 +1,7 @@
 import {
-  InternalActivePage,
-  getInternalRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/internal/2_internalRequestIssuanceSchema";
+  generateIssuanceRequestTaskList,
+  ActivePage,
+} from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import InternalReviewByDirectorComponent from "./InternalReviewByDirectorComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { getDirectorReviewData } from "@/compliance/src/app/utils/getDirectorReviewData";
@@ -15,10 +15,10 @@ export default async function InternalReviewByDirectorPage({
 }: Readonly<Props>) {
   const directorReviewData = getDirectorReviewData(complianceSummaryId);
 
-  const taskListElements = getInternalRequestIssuanceTaskList(
+  const taskListElements = generateIssuanceRequestTaskList(
     complianceSummaryId,
     directorReviewData.reporting_year,
-    InternalActivePage.DirectorReview,
+    ActivePage.ReviewByDirector,
   );
 
   return (

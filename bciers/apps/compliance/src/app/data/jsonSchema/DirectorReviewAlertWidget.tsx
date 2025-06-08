@@ -1,6 +1,6 @@
 import { WidgetProps } from "@rjsf/utils";
-import InternalDirectorReviewApprovalNote from "@/compliance/src/app/components/compliance-summary/request-issuance/internal-review-by-director/InternalDirectorReviewApprovalNote";
-import InternalDirectorReviewChangesNote from "@/compliance/src/app/components/compliance-summary/request-issuance/internal-review-by-director/InternalDirectorReviewChangesNote";
+import InternalDirectorReviewApprovalNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewApprovalNote";
+import InternalDirectorReviewChangesNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewChangesNote";
 
 interface DirectorReviewAlertWidgetProps extends WidgetProps {
   formContext?: {

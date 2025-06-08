@@ -1,22 +1,16 @@
 import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
-
-export enum IssuanceStatus {
-  APPROVED = "approved",
-  AWAITING = "awaiting",
-}
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 export const mockRequestIssuanceTrackStatusData: {
   [key: string]: RequestIssuanceTrackStatusData;
 } = {
   awaiting: {
-    operation_name: "Colour Co.",
     earned_credits: 100,
     issuance_status: IssuanceStatus.AWAITING,
     bccr_trading_name: "Colour Co.",
     directors_comments: "",
   },
   approved: {
-    operation_name: "Colour Co.",
     earned_credits: 100,
     issuance_status: IssuanceStatus.APPROVED,
     bccr_trading_name: "Colour Co.",

@@ -48,7 +48,6 @@ export interface ComplianceSummaryReviewData {
 }
 
 export interface RequestIssuanceTrackStatusData {
-  operation_name: string;
   earned_credits: number;
   issuance_status: string;
   bccr_trading_name: string;
@@ -62,4 +61,29 @@ export interface PaymentSummary {
   invoice_number: string;
   payment_amount: number;
   outstanding_balance: number;
+}
+
+export interface DirectorReviewData {
+  id: string;
+  reporting_year: number;
+  earned_credits_amount: number;
+  issuance_status: string;
+  bccr_trading_name: string;
+  holding_account_id: string;
+  analyst_comment: string;
+  analyst_recommendation?: string;
+  director_comment?: string;
+}
+
+export interface CreditsIssuanceRequestData {
+  id: string;
+  reporting_year: number;
+  earned_credits_amount: number;
+  issuance_status: string;
+  bccr_trading_name: string;
+  holding_account_id: string;
+  analyst_comment: string;
+  submited_by: string;
+  submited_at: string;
+  analyst_recommendation?: string;
 }

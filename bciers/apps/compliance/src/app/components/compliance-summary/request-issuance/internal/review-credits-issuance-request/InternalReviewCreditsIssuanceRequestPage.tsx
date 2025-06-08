@@ -1,7 +1,7 @@
 import {
-  InternalActivePage,
-  getInternalRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/internal/2_internalRequestIssuanceSchema";
+  generateIssuanceRequestTaskList,
+  ActivePage,
+} from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import InternalReviewCreditsIssuanceRequestComponent from "./InternalReviewCreditsIssuanceRequestComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { getCreditsIssuanceRequestData } from "@/compliance/src/app/utils/getCreditsIssuanceRequestData";
@@ -16,10 +16,10 @@ export default async function InternalReviewCreditsIssuanceRequestPage({
   const complianceSummary =
     await getCreditsIssuanceRequestData(complianceSummaryId);
 
-  const taskListElements = getInternalRequestIssuanceTaskList(
+  const taskListElements = generateIssuanceRequestTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
-    InternalActivePage.AnalystReview,
+    ActivePage.ReviewCreditsIssuanceRequest,
   );
 
   return (

@@ -34,7 +34,7 @@ export const commonReadOnlyOptions: {
   "ui:widget": ReadOnlyWidget,
   // Override the default class names for the read-only widget
   "ui:classNames":
-    "[&>div:nth-child(2)]:w-fit [&_.read-only-widget]:p-0 [&_.read-only-widget]:min-h-0 [&>div>label]:font-normal ",
+    "[&>div:nth-child(2)]:w-fit [&_.read-only-widget]:p-0 [&_.read-only-widget]:min-h-0",
 };
 
 export const headerUiConfig = {
