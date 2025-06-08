@@ -30,6 +30,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFormChange = (e: IChangeEvent) => {
     setFormState(e.formData);
@@ -87,10 +88,17 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       }
 
       // TBD: Submit the form data to the API when the endpoint is ready
+      // TBD: Submit the form data to the API when the endpoint is ready
       // await submitFormData(complianceSummaryId, formState);
 
       // Navigate to the next page on success
       router.push(saveAndContinueUrl);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "An error occurred during submission",
+      );
     } catch (err) {
       setError(
         err instanceof Error
