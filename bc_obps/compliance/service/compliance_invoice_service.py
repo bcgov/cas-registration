@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any, Tuple, Generator
+from typing import Dict, Any, List, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 
@@ -7,8 +7,11 @@ from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
 from compliance.service.exceptions import ComplianceInvoiceError
-
-
+from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from compliance.service.elicensing.elicensing_api_client import (
+    InvoiceQueryResponse,
+    InvoiceFee,
+)
 class ComplianceInvoiceService:
     """Service for generating PDF invoices for compliance obligations"""
 
@@ -95,23 +98,31 @@ class ComplianceInvoiceService:
 
             operation_name = operation.name or ""
 
-            invoice_number = "OBI_TODO"  # TODO: replace with real sequential ID (card 139)
 
-            # Step 6: Build fee_items list (dummy data)
-            EQUIVALENT_NUMERIC = Decimal("16000.00")  # placeholder
-            fee_items: list[Dict[str, Any]] = []
-            for i in range(1, 51):
-                fee_items.append(
-                    {
-                        "date": invoice_date,
-                        "description": f"GGIRCA Compliance Obligation – item #{i}",
-                        "amount_numeric": EQUIVALENT_NUMERIC,
-                        "amount": f"${EQUIVALENT_NUMERIC:,.2f}",
-                    }
-                )
+            # Step 6: Build fee_items list from eLicensing invoice
+            invoice: InvoiceQueryResponse = ObligationELicensingService._get_obligation_invoice(compliance_obligation)
+            invoice_number = invoice.invoiceNumber
 
-            total_amount_numeric = sum((item["amount_numeric"] for item in fee_items), Decimal("0.00"))
+            fee_items: List[Dict[str, Any]] = []
+            total_amount_numeric = Decimal("0.00")
+            fees: List[InvoiceFee] = invoice.fees
+            for fee in fees:
+                fee_date = fee.feeDate or invoice_date
+                description = fee.description
+                fee_amount = Decimal(fee.baseAmount or "0.00")
+
+                item = {
+                    "date": fee_date,
+                    "description": description,
+                    "amount_numeric": fee_amount,
+                    "amount": f"${fee_amount:,.2f}",
+                }
+                fee_items.append(item)
+                total_amount_numeric += fee_amount
+
             total_amount = f"${total_amount_numeric.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
+
+
 
             # Assemble context dictionary
             context: Dict[str, Any] = {
