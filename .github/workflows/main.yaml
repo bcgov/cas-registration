@@ -86,6 +86,24 @@ jobs:
       nx_app_port: 4000
       nx_project: registration
     secrets: inherit
+  test-dashboard-e2e:
+    needs:
+      [
+        build-administration,
+        build-backend,
+        build-compliance,
+        build-dashboard-e2e,
+        build-registration,
+        build-reporting,
+        check-nx-affected,
+      ]
+    uses: ./.github/workflows/test-nx-project-e2e.yaml
+    with:
+      docker_compose_file: "docker-compose-bciers-apps.yaml"
+      image_url: "ghcr.io/bcgov/cas-dash-frontend"
+      is_nx_affected: ${{contains(needs.check-nx-affected.outputs.NX_AFFECTED_E2E, 'dashboard') || github.ref_name == 'develop' || github.ref_name == 'main' || github.head_ref == 'develop' || github.head_ref == 'main'}}
+      nx_project: dashboard
+    secrets: inherit
   zap-owasp:
     needs:
       [
