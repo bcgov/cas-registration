@@ -117,9 +117,6 @@ dashboardFrontend:
     keycloakAuthUrl: https://dev.loginproxy.gov.bc.ca/auth
     siteminderAuthUrl: https://logontest7.gov.bc.ca
 
-growthbook:
-  clientKey: sdk-YMBcx9KglRDGzGTE
-
 download-dags:
   airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 
