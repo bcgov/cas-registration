@@ -7,6 +7,8 @@ from .elicensing_link import ELicensingLink
 from .compliance_earned_credit import ComplianceEarnedCredit
 from .elicensing_client_operator import ElicensingClientOperator
 from .elicensing_invoice import ElicensingInvoice
+from .elicensing_line_item import ElicensingLineItem
+from .elicensing_payment import ElicensingPayment
 
 __all__ = [
     'ComplianceChargeRate',
@@ -18,4 +20,6 @@ __all__ = [
     'ComplianceEarnedCredit',
     'ElicensingClientOperator',
     'ElicensingInvoice',
+    'ElicensingLineItem',
+    'ElicensingPayment',
 ]
