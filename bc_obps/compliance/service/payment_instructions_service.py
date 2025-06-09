@@ -54,7 +54,9 @@ class PaymentInstructionsService:
             Dictionary of context data for the template
         """
 
-        invoice_number = ObligationELicensingService.get_invoice_from_summary_id(summaryID).invoiceNumber
+        invoice_number = ObligationELicensingService.get_invoice_from_compliance_report_version_id(
+            summaryID
+        ).invoiceNumber
 
         context = {
             'invoice_number': invoice_number,
