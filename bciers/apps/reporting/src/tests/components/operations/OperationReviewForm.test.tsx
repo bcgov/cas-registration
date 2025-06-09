@@ -103,7 +103,7 @@ describe("OperationReviewForm Component", () => {
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/Back/i)).toBeInTheDocument();
+    expect(screen.getByText(/Back to All Reports/i)).toBeInTheDocument();
     expect(screen.getByText(/Save & Continue/i)).toBeInTheDocument();
   });
 
