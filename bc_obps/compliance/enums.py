@@ -10,3 +10,7 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_CHARGE_RATE = "compliance_charge_rate"
     COMPLIANCE_EARNED_CREDIT = "compliance_earned_credit"
     ELICENSING_CLIENT_OPERATOR = "elicensing_client_operator"
+    ELICENSING_INVOICE = "elicensing_invoice"
+    ELICENSING_LINE_ITEM = "elicensing_line_item"
+    ELICENSING_PAYMENT = "elicensing_payment"
+    ELICENSING_ADJUSTMENT = "elicensing_adjustment"
