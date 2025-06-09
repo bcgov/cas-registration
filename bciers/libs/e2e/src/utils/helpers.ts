@@ -383,6 +383,11 @@ export async function setupTestEnvironment(
 ) {
   let browser: Browser | null = null;
 
+  const configs = {
+    headless: true,
+    args: ["--disable-animations"],
+  };
+
   // Attempt launching browsers in order of preference
   for (const browserType of ["chromium", "firefox", "webkit"]) {
     //    console.log(browserType);  // ? always Chromium in e2e:ui
@@ -390,11 +395,11 @@ export async function setupTestEnvironment(
       browser = await (async () => {
         switch (browserType) {
           case "chromium":
-            return chromium.launch();
+            return chromium.launch(configs);
           case "firefox":
-            return firefox.launch();
+            return firefox.launch(configs);
           case "webkit":
-            return webkit.launch();
+            return webkit.launch(configs);
           default:
             throw new Error(`Unsupported browser: ${browserType}`);
         }
