@@ -63,5 +63,5 @@ def get_invoice(request: HttpRequest, summary_id: int) -> InvoiceQueryResponse:
     Returns:
         Invoice information
     """
-    response = ObligationELicensingService.get_invoice_from_summary_id(summary_id)
+    response = ObligationELicensingService.get_invoice_from_compliance_report_version_id(summary_id)
     return response

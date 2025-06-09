@@ -4,15 +4,15 @@ interface Invoice {
   invoiceNumber: string;
 }
 
-const getInvoiceByComplianceSummaryId = async (
-  complianceSummaryId: string,
+const getInvoiceByComplianceReportVersionId = async (
+  complianceReportVersionId: string,
 ): Promise<Invoice> => {
   const response: Invoice = await actionHandler(
-    `compliance/invoice/${complianceSummaryId}`,
+    `compliance/invoice/${complianceReportVersionId}`,
     "GET",
     "",
   );
   return response;
 };
 
-export default getInvoiceByComplianceSummaryId;
+export default getInvoiceByComplianceReportVersionId;

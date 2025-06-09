@@ -7,21 +7,23 @@ import {
   createDownloadPaymentInstructionsSchema,
   downloadPaymentInstructionsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/downloadPaymentInstructionsSchema";
+import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
-  readonly complianceSummaryId: any;
+  readonly complianceReportVersionId: any;
   readonly invoiceID: string;
 }
 
 export default function PaymentInstructionsDownloadComponent({
-  complianceSummaryId,
+  complianceReportVersionId,
   invoiceID,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation/pay-obligation-track-payments`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation/review-compliance-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation/pay-obligation-track-payments`;
+  const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {
-    complianceSummaryId,
+    complianceReportVersionId,
     invoiceNumber: invoiceID,
     bankName: "Canadian Imperial Bank of Commerce",
     bankTransitNumber: "00090",
@@ -32,20 +34,62 @@ export default function PaymentInstructionsDownloadComponent({
     bankAddress: "1175 DOUGLAS STREET, VICTORIA, BC V8W2E1",
   };
 
+  // Borrowed logic from complianceSummaryReviewComponent
   const handleDownloadInstructions = async () => {
-    if (!complianceSummaryId) {
-      return;
-    }
+    setErrors([]);
+    setIsGeneratingDownload(true);
 
     try {
-      setIsGeneratingDownload(true);
+      const res = await fetch(
+        `/compliance/api/payment-instructions/${complianceReportVersionId}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        },
+      );
 
-      const instructionsUrl = `/compliance/api/payment-instructions/${complianceSummaryId}`;
+      const contentType = res.headers.get("Content-Type") || "";
 
-      window.open(instructionsUrl, "_blank", "noopener,noreferrer");
-    } catch (error) {
-      console.error("Error generating payment instructions:", error);
-      throw new Error(error instanceof Error ? error.message : String(error));
+      // Handle error or JSON payload
+      if (contentType.includes("application/json")) {
+        let payload: any = { message: `Failed with status ${res.status}` };
+
+        try {
+          payload = await res.json();
+        } catch {
+          // ignore invalid JSON
+        }
+
+        if (typeof payload.message === "string") {
+          setErrors([payload.message]);
+          return;
+        }
+
+        // Generic fallback message
+        setErrors([
+          `Failed to generate payment instructions (status ${res.status})`,
+        ]);
+        return;
+      }
+
+      // Handle non-JSON response errors
+      if (!res.ok) {
+        setErrors([
+          `Failed to generate payment instructions (status ${res.status})`,
+        ]);
+        return;
+      }
+
+      // Handle PDF response
+      const pdfBlob = await res.blob();
+      const objectUrl = URL.createObjectURL(pdfBlob);
+      window.open(objectUrl, "_blank", "noopener,noreferrer");
+
+      // Cleanup
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 30_000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrors([msg]);
     } finally {
       setIsGeneratingDownload(false);
     }
@@ -67,6 +111,7 @@ export default function PaymentInstructionsDownloadComponent({
         middleButtonText={"Download Payment Information"}
         onMiddleButtonClick={handleDownloadInstructions}
       />
+      <FormAlerts key="alerts" errors={errors} />
     </FormBase>
   );
 }
