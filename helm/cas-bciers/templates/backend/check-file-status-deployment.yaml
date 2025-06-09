@@ -9,12 +9,12 @@ spec:
   selector:
     matchLabels:
 {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
-      component: backend
+      component: backend-check-document-file-status
   template:
     metadata:
       labels:
 {{- include "cas-bciers.selectorLabels" . | nindent 8 }}
-        component: backend
+        component: backend-check-document-file-status
     spec:
       restartPolicy: Always
       serviceAccountName: deployer
