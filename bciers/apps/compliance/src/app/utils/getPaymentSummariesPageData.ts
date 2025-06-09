@@ -8,10 +8,10 @@ export const getPaymentSummariesPageData = async (params: {
   rows: PaymentSummary[];
   row_count: number;
 }> => {
-  const queryParams = buildQueryParams(params);
-  console.log(queryParams);
+  // eslint-disable-next-line
+  const queryParams = buildQueryParams(params); // Ignore until #193 is complete
 
-  const data = await actionHandler(`compliance/dashboard-payments`, "GET", "");
+  const data = await actionHandler(`compliance/dashboard-payments?`, "GET", "");
 
   if (!data || data.error) {
     throw new Error(`Failed to fetch compliance summaries: ${data.error}`);

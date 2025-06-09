@@ -19,7 +19,6 @@ class TestComplianceDashboardService(TestCase):
     """Tests for the ComplianceDashboardService class"""
 
     @pytest.mark.django_db
-    # @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_fees')
     @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_invoice')
     def test_get_payments_for_dashboard(self, mock_query_invoice, mock_query_fees):

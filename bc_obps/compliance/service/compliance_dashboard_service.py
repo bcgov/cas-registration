@@ -160,7 +160,7 @@ class ComplianceDashboardService:
         Get payments for the payments summaries dashboard
 
         Args:
-            operator_id: The ID of the operator for which payments are being requested
+            user: The user record of the logged in user making the request
 
         Returns:
             PaymentsList object containing the payment records
