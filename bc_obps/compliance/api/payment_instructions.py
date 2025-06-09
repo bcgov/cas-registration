@@ -1,3 +1,4 @@
+import json
 from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.payment_instructions_service import PaymentInstructionsService
 from common.permissions import authorize
@@ -24,11 +25,21 @@ def generate_payment_instructions(request: HttpRequest, summary_id: int) -> Stre
     Returns:
         A streaming response containing the PDF
     """
-    pdf_generator, filename, total_size = PaymentInstructionsService.generate_payment_instructions_pdf(summary_id)
+    result = PaymentInstructionsService.generate_payment_instructions_pdf(summary_id)
 
-    response = StreamingHttpResponse(streaming_content=pdf_generator, content_type='application/pdf')
+    # If result is an error dictionary, stream it back with status 400
+    if isinstance(result, dict) and "errors" in result:
+        err_payload = json.dumps({"errors": result["errors"]}).encode("utf-8")
+        return StreamingHttpResponse(
+            streaming_content=iter([err_payload]),
+            content_type="application/json",
+            status=400,
+        )
 
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
-    response['Content-Length'] = str(total_size)
+    # Otherwise, unpack the PDF generator, filename, and total size
+    pdf_generator, filename, total_size = result
 
+    response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    response["Content-Length"] = str(total_size)
     return response

@@ -17,17 +17,17 @@ vi.mock(
 );
 
 // Mock the layout component
-vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div>Mock Layout {children}</div>
-  ),
-}));
+// vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
+//   default: ({ children }: { children: React.ReactNode }) => (
+//     <div>Mock Layout {children}</div>
+//   ),
+// }));
 
 describe("PaymentInstructionsDownloadPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  it("should render the NewEntrantOperationPage component", async () => {
+  it("should render the PaymentInstructionsDownloadPage component", async () => {
     (
       getOperationByComplianceSummaryId as ReturnType<typeof vi.fn>
     ).mockReturnValueOnce({
@@ -38,7 +38,7 @@ describe("PaymentInstructionsDownloadPage", () => {
     ).mockReturnValueOnce({
       invoiceNumber: "testnum1234",
     });
-    const result = await PaymentInstructionsDownloadPage({
+    await PaymentInstructionsDownloadPage({
       compliance_summary_id: "1234",
     });
   });
