@@ -43,7 +43,14 @@ export const PaymentRemarks = () => {
     <div className="w-full">
       <ul>
         <li>
-          Pay by the due date to avoid <a>penalties</a> and/or <a>interests</a>
+          Pay by the due date to avoid{" "}
+          <a href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015">
+            penalties
+          </a>{" "}
+          and/or{" "}
+          <a href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/214_83">
+            interests
+          </a>
         </li>
         <li>Do not include other charges with your payment for this invoice</li>
         <li>Do not mail cash</li>

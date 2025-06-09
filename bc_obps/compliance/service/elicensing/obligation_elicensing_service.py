@@ -105,12 +105,12 @@ class ObligationELicensingService:
             raise
 
     @classmethod
-    def get_invoice_from_summary_id(cls, summary_id: int) -> InvoiceQueryResponse:
+    def get_invoice_from_compliance_report_version_id(cls, compliance_report_version_id: int) -> InvoiceQueryResponse:
         """
-        Get the invoice with summary id from eLicensing.
+        Get the invoice with compliance report version id from eLicensing.
 
         Args:
-            summary_id: The id of compliance summary object
+            compliance_report_version_id: The id of compliance report version object
 
         Returns:
             InvoiceQueryResponse if found, None if no payments exist
@@ -120,7 +120,7 @@ class ObligationELicensingService:
             requests.RequestException: If there's an API error
         """
         # Get report version
-        compliance_report_version = ComplianceReportVersion.objects.get(report_compliance_summary_id=summary_id)
+        compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
 
         # Get obligation object
         obligation = ComplianceObligation.objects.get(compliance_report_version=compliance_report_version)
@@ -137,7 +137,7 @@ class ObligationELicensingService:
 
         if not client_link or not invoice_link:
             error_msg = (
-                f"No client or invoice link found for summary_id {summary_id}. "
+                f"No client or invoice link found for summary_id {compliance_report_version_id}. "
                 f"Client link: {client_link}, Invoice link: {invoice_link}"
             )
             logger.error(error_msg)
@@ -148,7 +148,7 @@ class ObligationELicensingService:
 
         if not client_id or not invoice_number:
             error_msg = (
-                f"Missing client_id or invoice_number for summary_id {summary_id}. "
+                f"Missing client_id or invoice_number for summary_id {compliance_report_version_id}. "
                 f"Client ID: {client_id}, Invoice number: {invoice_number}"
             )
             logger.error(error_msg)
