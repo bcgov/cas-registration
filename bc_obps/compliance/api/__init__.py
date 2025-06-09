@@ -7,5 +7,6 @@ from ._compliance_report_versions.compliance_report_version_id import get_compli
 from ._compliance_report_versions._compliance_report_version_id import operation, payments, invoice, earned_credits
 from ._bccr._accounts import account_id
 from .payments import get_dashboard_payments
+from .payment_instructions import generate_payment_instructions
 
 # from ._summaries._summary_id.issuance import get_compliance_summary_issuance
