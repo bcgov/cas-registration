@@ -17,3 +17,11 @@ spec:
         matchLabels:
           app.kubernetes.io/name: {{ include "cas-bciers.fullname" . }}
           component: backend
+    - podSelector:
+        matchLabels:
+          release: {{ include "cas-bciers.fullname" . }}
+          component: backend-check-document-file-status
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ include "cas-bciers.fullname" . }}
+          component: backend-check-document-file-status
