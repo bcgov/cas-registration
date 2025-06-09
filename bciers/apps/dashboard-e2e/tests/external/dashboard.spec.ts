@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole, LinkSrc } from "@bciers/e2e/utils/enums";
 import {
@@ -19,16 +19,16 @@ import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 const happoPlaywright = require("happo-playwright");
 
 const userRoles = [
-  "INDUSTRY_USER",
   "INDUSTRY_USER_ADMIN",
   "INDUSTRY_USER_REPORTER",
+  "INDUSTRY_USER",
 ];
 
+const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.describe.configure({ mode: "serial" });
 userRoles.forEach((role) => {
   test.describe("External user dashboard", () => {
-    const roleTest = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
-    roleTest(`Dashboard for role: ${role}`, async ({ page }) => {
+    test(`Dashboard for role: ${role}`, async ({ page }) => {
       let reporter = false;
       let pendingUser = false;
       if (role === "INDUSTRY_USER_REPORTER") {
