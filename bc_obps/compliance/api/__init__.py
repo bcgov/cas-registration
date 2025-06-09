@@ -8,3 +8,4 @@ from ._compliance_report_versions._compliance_report_version_id import operation
 from ._bccr._accounts import account_id
 from .payments import get_dashboard_payments
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import compliance_units
+from .payment_instructions import generate_payment_instructions

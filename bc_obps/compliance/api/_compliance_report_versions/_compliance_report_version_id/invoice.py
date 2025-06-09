@@ -3,7 +3,6 @@ from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
 from compliance.service.elicensing.schema import InvoiceQueryResponse
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
-from compliance.service.invoice_service import InvoiceService
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
