@@ -339,7 +339,7 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_payments_for_dashboard",
+            "endpoint_name": "get_dashboard_payments",
         },
     ],
     "all_roles": [

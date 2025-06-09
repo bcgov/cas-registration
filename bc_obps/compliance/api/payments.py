@@ -17,6 +17,6 @@ from compliance.api.router import router
     description="Get all payments an operator has made",
     auth=authorize("approved_industry_user"),
 )
-def get_payments_for_dashboard(request: HttpRequest) -> Tuple[Literal[200], PaymentsDashboardList]:
+def get_dashboard_payments(request: HttpRequest) -> Tuple[Literal[200], PaymentsDashboardList]:
     user = get_current_user(request)
     return 200, ComplianceDashboardService.get_payments_for_dashboard(user)

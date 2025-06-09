@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.contrib.contenttypes.models import ContentType
-from service.data_access_service.user_operator_service import UserOperatorDataAccessService
+from service.user_operator_service import UserOperatorService
 
 
 @dataclass
@@ -165,9 +165,7 @@ class ComplianceDashboardService:
         Returns:
             PaymentsList object containing the payment records
         """
-        user_operator = UserOperatorDataAccessService.get_approved_user_operator(user)
-        if not user_operator:
-            raise ValidationError("No approved operator found for user")
+        user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
         operator_id = user_operator.operator_id
 
         elicensing_api_client = ELicensingAPIClient()
