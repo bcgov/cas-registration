@@ -1,88 +1,74 @@
-from decimal import Decimal
-from uuid import UUID
-from unittest.mock import MagicMock
 from django.test import TestCase
-from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models import ELicensingLink, ComplianceObligation
+from compliance.service.compliance_dashboard_service import ComplianceDashboardService
+import pytest
+from model_bakery import baker
+from unittest.mock import patch
+from registration.models import Operator
+from django.contrib.contenttypes.models import ContentType
+from decimal import Decimal
+from dataclasses import dataclass
+
+
+@dataclass
+class TestInvoiceQueryResponse:
+    invoiceOutstandingBalance: Decimal
 
 
 class TestComplianceDashboardService(TestCase):
     """Tests for the ComplianceDashboardService class"""
 
-    def setUp(self):
-        self.user_guid = UUID("e1300fd7-2dee-47d1-b655-2ad3fd10f052")
-        self.compliance_report_version_id = 1
+    @pytest.mark.django_db
+    @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_fees')
+    @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_invoice')
+    def test_get_payments_for_dashboard(self, mock_query_invoice, mock_query_fees):
+        """Test successful creation of a compliance obligation"""
+        obligation_1 = baker.make_recipe('compliance.tests.utils.compliance_obligation', obligation_id="21-0001-1-1")
+        user = baker.make_recipe('registration.tests.utils.industry_operator_user')
 
-    @staticmethod
-    def _patch_compliance_report_version(
-        mock_get_compliance_report_version, excess_emissions, emission_limit, attributable
-    ):
-        mock_compliance_report_version = MagicMock(spec=ComplianceReportVersion)
-        mock_compliance_report_version.report_compliance_summary.excess_emissions = Decimal(excess_emissions)
-        mock_compliance_report_version.report_compliance_summary.emission_limit = (
-            Decimal(emission_limit) if emission_limit is not None else None
+        operator_id = obligation_1.compliance_report_version.compliance_report.report.operator_id
+
+        baker.make_recipe(
+            'registration.tests.utils.user_operator', user_id=user.user_guid, operator_id=operator_id, status='Approved'
         )
-        mock_compliance_report_version.report_compliance_summary.emissions_attributable_for_compliance = Decimal(
-            attributable
+
+        # Create client link
+        baker.make_recipe(
+            'compliance.tests.utils.elicensing_link',
+            content_type=ContentType.objects.get_for_model(Operator),
+            elicensing_object_id='client1',
+            object_id=str(operator_id),
         )
-        mock_get_compliance_report_version.return_value = mock_compliance_report_version
-        return mock_compliance_report_version
 
-    def _assert_default_compliance_fields(self, result, earned_credits, expected_percentage):
-        self.assertEqual(result.earned_credits, earned_credits)
-        self.assertEqual(result.earned_credits_issued, False)
-        self.assertEqual(result.issuance_status, "Issuance not requested")
-        if expected_percentage is None:
-            self.assertIsNone(result.excess_emissions_percentage)
-        else:
-            self.assertEqual(result.excess_emissions_percentage, expected_percentage)
+        obligation_1_fee_link = baker.make_recipe(
+            'compliance.tests.utils.elicensing_link',
+            content_type=ContentType.objects.get_for_model(ComplianceObligation),
+            elicensing_object_id='fee1',
+            elicensing_object_kind=ELicensingLink.ObjectKind.FEE,
+            object_id=str(obligation_1.id),
+        )
 
-    # Issuance tests to be handled in #117
+        mock_query_fees.return_value = {
+            "fees": [
+                {
+                    "feeObjectId": obligation_1_fee_link.elicensing_object_id,
+                    "invoiceNumber": "invoice-123",
+                    "payments": [
+                        {"paymentObjectId": 1, "amount": 100.01},
+                        {"paymentObjectId": 2, "amount": 200.02},
+                        {"paymentObjectId": 3, "amount": 300.03},
+                    ],
+                }
+            ]
+        }
+        invoice_data = {"invoiceOutstandingBalance": 500.05}
+        mock_query_invoice.return_value = TestInvoiceQueryResponse(**invoice_data)
 
-    # @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_compliance_report_version_by_id")
-    # def test_get_compliance_compliance_report_version_issuance_data_not_found(self, mock_get_compliance_report_version):
-    #     mock_get_compliance_report_version.return_value = None
+        response = ComplianceDashboardService.get_payments_for_dashboard(user)
 
-    #     result = ComplianceDashboardService.get_compliance_summary_issuance_data(self.user_guid, self.summary_id)
-
-    #     self.assertIsNone(result)
-    #     mock_get_summary.assert_called_once_with(self.user_guid, self.summary_id)
-
-    # @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_compliance_report_version_by_id")
-    # def test_with_positive_excess_emissions(self, mock_get_compliance_report_version):
-    #     mock_compliance_report_version = self._patch_compliance_report_version(mock_get_compliance_report_version, "10.0", "100.0", "110.0")
-
-    #     result = ComplianceDashboardService.get_compliance_summary_issuance_data(self.user_guid, self.summary_id)
-
-    #     mock_get_summary.assert_called_once_with(self.user_guid, self.summary_id)
-    #     self.assertEqual(result, mock_summary)
-    #     self._assert_default_compliance_fields(result, 100, 110.0)
-
-    # @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
-    # def test_with_negative_excess_emissions(self, mock_get_summary):
-    #     mock_summary = self._patch_summary(mock_get_summary, "-15.0", "100.0", "85.0")
-
-    #     result = ComplianceDashboardService.get_compliance_summary_issuance_data(self.user_guid, self.summary_id)
-
-    #     mock_get_summary.assert_called_once_with(self.user_guid, self.summary_id)
-    #     self.assertEqual(result, mock_summary)
-    #     self._assert_default_compliance_fields(result, 15, 85.0)
-
-    # @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
-    # def test_with_zero_emission_limit(self, mock_get_summary):
-    #     mock_summary = self._patch_summary(mock_get_summary, "10.0", "0.0", "10.0")
-
-    #     result = ComplianceDashboardService.get_compliance_summary_issuance_data(self.user_guid, self.summary_id)
-
-    #     mock_get_summary.assert_called_once_with(self.user_guid, self.summary_id)
-    #     self.assertEqual(result, mock_summary)
-    #     self._assert_default_compliance_fields(result, 100, None)
-
-    # @patch("compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_summary_by_id")
-    # def test_with_none_emission_limit(self, mock_get_summary):
-    #     mock_summary = self._patch_summary(mock_get_summary, "10.0", None, "10.0")
-
-    #     result = ComplianceDashboardService.get_compliance_summary_issuance_data(self.user_guid, self.summary_id)
-
-    #     mock_get_summary.assert_called_once_with(self.user_guid, self.summary_id)
-    #     self.assertEqual(result, mock_summary)
-    #     self._assert_default_compliance_fields(result, 100, None)
+        assert response.row_count == 3
+        assert response.rows[0].operation_name == 'Operation 01'
+        assert response.rows[0].payment_amount == 100.01
+        assert response.rows[1].payment_amount == 200.02
+        assert response.rows[2].payment_amount == 300.03
+        assert response.rows[0].outstanding_balance == 500.05
