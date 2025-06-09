@@ -178,6 +178,7 @@ export default function OperationReviewForm({
         backUrl={navigationInfo.backUrl}
         continueUrl={navigationInfo.continueUrl}
         errors={errors}
+        backButtonText={"Back to All Reports"}
       />
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}
