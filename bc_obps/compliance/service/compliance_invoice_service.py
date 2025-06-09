@@ -12,6 +12,8 @@ from compliance.service.elicensing.elicensing_api_client import (
     InvoiceQueryResponse,
     InvoiceFee,
 )
+
+
 class ComplianceInvoiceService:
     """Service for generating PDF invoices for compliance obligations"""
 
@@ -98,14 +100,15 @@ class ComplianceInvoiceService:
 
             operation_name = operation.name or ""
 
-
-            # Step 6: Build fee_items list from eLicensing invoice
-            invoice: InvoiceQueryResponse = ObligationELicensingService._get_obligation_invoice(compliance_obligation)
+            # Step 6: Build billing_items list from eLicensing invoice
+            invoice: InvoiceQueryResponse = ObligationELicensingService.get_obligation_invoice(compliance_obligation)
             invoice_number = invoice.invoiceNumber
 
-            fee_items: List[Dict[str, Any]] = []
-            total_amount_numeric = Decimal("0.00")
+            billing_items: List[Dict[str, Any]] = []
+            total_fee_amount = Decimal("0.00")
+            total_payment_amount = Decimal("0.00")
             fees: List[InvoiceFee] = invoice.fees
+
             for fee in fees:
                 fee_date = fee.feeDate or invoice_date
                 description = fee.description
@@ -117,12 +120,33 @@ class ComplianceInvoiceService:
                     "amount_numeric": fee_amount,
                     "amount": f"${fee_amount:,.2f}",
                 }
-                fee_items.append(item)
-                total_amount_numeric += fee_amount
+                billing_items.append(item)
+                total_fee_amount += fee_amount
 
-            total_amount = f"${total_amount_numeric.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
+            # Payments for each fee
+            for payment in fee.payments:
+                payment_date = payment.receivedDate or invoice_date
+                payment_description = f"Payment ({payment.method})"
+                payment_amount = Decimal(payment.amount or "0.00")
 
+                billing_items.append(
+                    {
+                        "date": payment_date,
+                        "description": payment_description,
+                        "amount_numeric": -payment_amount,  # subtract in total
+                        "amount": f"-${payment_amount:,.2f}",
+                        "type": "payment",
+                    }
+                )
+                total_payment_amount += payment_amount
 
+            # Compute value of compliance units applied
+            compliance_units_amount = Decimal("0.00")
+            # TO DO, get the compliance units into the billing_items
+
+            # Calculate amount due
+            amount_due_numeric = total_fee_amount - compliance_units_amount - total_payment_amount
+            total_amount_due = f"${amount_due_numeric.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
 
             # Assemble context dictionary
             context: Dict[str, Any] = {
@@ -139,8 +163,8 @@ class ComplianceInvoiceService:
                 "compliance_obligation": f"{compliance_obligation.fee_amount_dollars:,.4f}",
                 "compliance_obligation_charge_rate": compliance_obligation_charge_rate,
                 "compliance_obligation_equivalent_amount": compliance_obligation_equivalent_amount,
-                "fee_items": fee_items,
-                "total_amount": total_amount,
+                "billing_items": billing_items,
+                "total_amount_due": total_amount_due,
                 "logo_base64": cls._LOGO_BASE64,
             }
 

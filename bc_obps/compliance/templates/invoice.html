@@ -248,7 +248,7 @@
         </div>
 
         <!-- Loop over each fee_item -->
-        {% for item in fee_items %}
+        {% for item in billing_items %}
         <div class="fees-grid">
           <div class="fees-column">
             <p>{{ item.date }}</p>
@@ -268,7 +268,7 @@
           <div class="fees-column"></div>
           <div class="fees-column fees-column--total">
             <h4>Amount Due:</h4>
-            <p>{{ total_amount }}</p>
+            <p>{{ total_amount_due }}</p>
           </div>
         </div>
       </div>
