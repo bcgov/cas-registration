@@ -337,6 +337,10 @@ ENDPOINTS = {
             "endpoint_name": "get_operation_by_compliance_report_version_id",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_dashboard_payments",
+        },
     ],
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},
