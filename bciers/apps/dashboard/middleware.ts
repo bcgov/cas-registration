@@ -31,5 +31,6 @@ export const config = {
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
   withAuthorizationDashboard,
-  withTokenRefreshMiddleware,
+  // Bypass if CI / e2e tests
+  ...(process.env.CI === "true" ? [] : [withTokenRefreshMiddleware]),
 ]);
