@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingClientOperator, ElicensingInvoice, ElicensingLineItem
+from compliance.models import ElicensingInvoice, ElicensingLineItem
 from .rls_configs.elicensing_payment import Rls as ElicensingPaymentRls
 
 
@@ -10,31 +10,20 @@ class ElicensingPayment(TimeStampedModel):
 
     """
 
-    payment_object_id = models.IntegerField(
-        primary_key=True, db_comment="The object id of the payment in elicensing (paymentObjectId)"
-    )
+    payment_object_id = models.IntegerField(db_comment="The object id of the payment in elicensing (paymentObjectId)")
 
     payment_guid = models.CharField(db_comment="The guid of the payment in elicensing")
 
-    client_object_id = models.ForeignKey(
-        ElicensingClientOperator,
-        on_delete=models.CASCADE,
-        db_column="client_object_id",
-        db_comment="The clientObjectId identifier from elicensing for the related client",
-    )
-
-    invoice_number = models.ForeignKey(
+    elicensing_invoice = models.ForeignKey(
         ElicensingInvoice,
         on_delete=models.CASCADE,
-        db_column="invoice_number",
-        db_comment="The invoice number from elicensing this payment relates to. Foreign key to the ElicensingInvoice model.",
+        db_comment="Foreign key to the invoice record this payment relates to.",
     )
 
-    line_item_object_id = models.ForeignKey(
+    elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
         on_delete=models.CASCADE,
-        db_column="line_item_object_id",
-        db_comment="The line item from elicensing this payment relates to. Foreign key to the ElicensingLineItem model",
+        db_comment="Foreign key to the line item record this payment relates to",
     )
 
     amount = models.DecimalField(

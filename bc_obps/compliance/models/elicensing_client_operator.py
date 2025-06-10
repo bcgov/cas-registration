@@ -11,7 +11,7 @@ class ElicensingClientOperator(TimeStampedModel):
     """
 
     client_object_id = models.IntegerField(
-        primary_key=True, db_comment="The clientObjectId identifier from elicensing for the related client"
+        db_comment="The clientObjectId identifier from elicensing for the related client"
     )
 
     client_guid = models.CharField(db_comment="The clientGuid identifier from elicensing for the related client")

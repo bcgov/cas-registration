@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingClientOperator, ElicensingInvoice
+from compliance.models import ElicensingInvoice
 from .rls_configs.elicensing_line_item import Rls as ElicensingLineItemRls
 
 
@@ -18,18 +18,10 @@ class ElicensingLineItem(TimeStampedModel):
 
     guid = models.CharField(db_comment="The guid of the line item from elicensing")
 
-    invoice_number = models.ForeignKey(
+    elicensing_invoice = models.ForeignKey(
         ElicensingInvoice,
         on_delete=models.CASCADE,
-        db_column="invoice_number",
-        db_comment="The invoice number from elicensing. Foreign key to the OBPS elicensing_invoice table.",
-    )
-
-    client_object_id = models.ForeignKey(
-        ElicensingClientOperator,
-        on_delete=models.CASCADE,
-        db_column="client_object_id",
-        db_comment="The clientObjectId identifier from elicensing for the related client. Foreign key to the elicensing_client_operator table.",
+        db_comment="Foreign key to the OBPS elicensing_invoice table.",
     )
 
     line_item_type = models.CharField(
