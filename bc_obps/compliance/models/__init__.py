@@ -9,6 +9,7 @@ from .elicensing_client_operator import ElicensingClientOperator
 from .elicensing_invoice import ElicensingInvoice
 from .elicensing_line_item import ElicensingLineItem
 from .elicensing_payment import ElicensingPayment
+from .elicensing_adjustment import ElicensingAdjustment
 
 __all__ = [
     'ComplianceChargeRate',
@@ -22,4 +23,5 @@ __all__ = [
     'ElicensingInvoice',
     'ElicensingLineItem',
     'ElicensingPayment',
+    'ElicensingAdjustment',
 ]
