@@ -11,12 +11,12 @@ import {
   takeStabilizedScreenshot,
   assertSuccessfulSnackbar,
   clickButton,
-  stabilizeGrid,
 } from "@bciers/e2e/utils/helpers";
+
 const happoPlaywright = require("happo-playwright");
 const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 
-// Task: https://github.com/bcgov/cas-registration/issues/3445
+// https://github.com/bcgov/cas-registration/issues/3445
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
@@ -27,11 +27,18 @@ test.describe("Issue BCGHG and BORO ID", () => {
     await operationPage.route();
     await operationPage.urlIsCorrect();
 
-    // Search the operation page by exact operation name
-    await operationPage.searchOperationByName(IssueIDValues.OPERATION_NAME);
-    await stabilizeGrid(page, 1);
+    // Search the operation page by exact operation and operator name
+    await operationPage.searchOperationByName(
+      IssueIDValues.OPERATION_NAME,
+      IssueIDValues.OPERATOR_NAME,
+    );
 
     await operationPage.goToOperation(IssueIDValues.OPERATION_NAME);
+
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "No BORO ID and BCGHG ID issued",
+      variant: "default",
+    });
 
     await clickButton(page, /issue bcghg id/i);
 
@@ -44,9 +51,11 @@ test.describe("Issue BCGHG and BORO ID", () => {
     await operationPage.route();
     await operationPage.urlIsCorrect();
 
-    // Search the operation page by exact operation name
-    await operationPage.searchOperationByName(IssueIDValues.OPERATION_NAME);
-    await stabilizeGrid(page, 1);
+    // Search the operation page by exact operation and operator name
+    await operationPage.searchOperationByName(
+      IssueIDValues.OPERATION_NAME,
+      IssueIDValues.OPERATOR_NAME,
+    );
 
     await operationPage.goToOperation(IssueIDValues.OPERATION_NAME);
 
@@ -56,7 +65,7 @@ test.describe("Issue BCGHG and BORO ID", () => {
     await assertSuccessfulSnackbar(page, SnackbarMessages.ISSUED_BORO_ID);
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "CAS Director - Issue BORO and BCGHG ID",
+      component: "BORO ID and BCGHG ID issued",
       variant: "default",
     });
     await analyzeAccessibility(page);
