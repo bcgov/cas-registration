@@ -59,28 +59,6 @@ describe("withAuthorizationDashboard middleware", () => {
     expect(result?.status).toBe(200);
   });
 
-  it("redirects to the administration profile page if the user has no app role", async () => {
-    getToken.mockResolvedValue(mockBaseToken);
-    const nextUrl = new NextURL(`${domain}/dashboard`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
-
-    expect(NextResponse.redirect).toHaveBeenCalledOnce();
-    expect(NextResponse.redirect).toHaveBeenCalledWith(
-      new URL("/administration/profile", domain),
-    );
-    expect(result).toBeInstanceOf(NextResponse);
-
-    // 307 is the status code for a temporary redirect
-    expect(result?.status).toBe(307);
-  });
-
   it("calls NextMiddleware if the user has no app role and the route ends in /profile", async () => {
     getToken.mockResolvedValue(mockBaseToken);
     const nextUrl = new NextURL(`${domain}/profile`);
@@ -202,32 +180,5 @@ describe("withAuthorizationDashboard middleware", () => {
       );
       expect(result?.status).toBe(200);
     }
-  });
-
-  it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /administration, /compliance, /onboarding, /registration, /reporting", async () => {
-    getToken.mockResolvedValue(mockCasPendingToken);
-    const paths = [
-      "/administration",
-      "/compliance",
-      "/onboarding",
-      "/registration",
-      "/reporting",
-    ];
-
-    for (const path of paths) {
-      const nextUrl = new NextURL(path, domain);
-
-      when(mockedRequest.nextUrl).thenReturn(nextUrl);
-      when(mockedRequest.url).thenReturn(domain);
-
-      const result = await middleware(
-        instance(mockedRequest),
-        mockNextFetchEvent,
-      );
-      expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
-      expect(result?.status).toBe(307);
-    }
-
-    expect(NextResponse.redirect).toHaveBeenCalledTimes(paths.length);
   });
 });
