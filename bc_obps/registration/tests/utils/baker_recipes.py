@@ -73,13 +73,6 @@ partner_operator = Recipe(
     business_structure=BusinessStructure.objects.first(),
 )
 
-multiple_operator = Recipe(
-    MultipleOperator,
-    cra_business_number=generate_random_cra_business_number,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
-    business_structure=BusinessStructure.objects.first(),
-)
-
 
 operator_for_operation = Recipe(
     Operator,
@@ -126,6 +119,14 @@ approved_user_operator = Recipe(
     status=UserOperator.Statuses.APPROVED,
     operator=foreign_key(operator_for_approved_user_operator),
     user=foreign_key(industry_operator_user),
+)
+
+multiple_operator = Recipe(
+    MultipleOperator,
+    cra_business_number=generate_random_cra_business_number,
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
+    business_structure=BusinessStructure.objects.first(),
+    operation=foreign_key(operation),
 )
 
 opted_in_operation_detail = Recipe(

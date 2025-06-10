@@ -9,16 +9,14 @@ from registration.tests.constants import (
     OPERATOR_FIXTURE,
     DOCUMENT_FIXTURE,
 )
-from registration.tests.utils.bakers import generate_random_bc_corporate_registry_number, generate_random_cra_business_number, multiple_operator_baker
-from datetime import datetime
-from zoneinfo import ZoneInfo
-from common.tests.utils.helpers import BaseTestCase
+from registration.tests.utils.bakers import (
+    generate_random_bc_corporate_registry_number,
+    generate_random_cra_business_number,
+    multiple_operator_baker,
+)
 from django.db import ProgrammingError
 from model_bakery import baker
 import pytest
-from registration.tests.constants import (
-    TIMESTAMP_COMMON_FIELDS,
-)
 from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
 
 
@@ -40,6 +38,7 @@ class MultipleOperatorModelTest(BaseTestCase):
             ("operation", "operation", None, None),
         ]
 
+
 # RLS tests
 class TestMultipleOperatorRls(BaseTestCase):
     def test_multiple_operator_rls_industry_user(self):
@@ -49,19 +48,19 @@ class TestMultipleOperatorRls(BaseTestCase):
             'registration.tests.utils.multiple_operator',
             operation=operation,
         )
-       
+
         random_approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        random_operation = baker.make_recipe('registration.tests.utils.operation', operator=random_approved_user_operator.operator)
+        random_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=random_approved_user_operator.operator
+        )
         random_multiple_operator = baker.make_recipe(
             'registration.tests.utils.multiple_operator',
-            operation=operation,
+            operation=random_operation,
         )
-        
 
         assert MultipleOperator.objects.count() == 2  # Two records created
 
         def select_function(cursor):
-            # brianna failing here
             assert MultipleOperator.objects.count() == 1
 
         def insert_function(cursor):
@@ -70,7 +69,8 @@ class TestMultipleOperatorRls(BaseTestCase):
                 cra_business_number=generate_random_cra_business_number(),
                 bc_corporate_registry_number=generate_random_bc_corporate_registry_number(),
                 business_structure=BusinessStructure.objects.first(),
-
+                legal_name='New Legal Name',
+                trade_name='New Trade Name',
             )
             assert MultipleOperator.objects.filter(operation_id=new_multiple_operator.operation_id).exists()
 
@@ -81,20 +81,29 @@ class TestMultipleOperatorRls(BaseTestCase):
                 cursor.execute(
                     """
                     INSERT INTO "erc"."multiple_operator" (
-                        operation_id, 
+                        operation_id,
                         cra_business_number,
                         bc_corporate_registry_number,
-                        business_structure_id
+                        business_structure_id, legal_name, trade_name
                     ) VALUES (
+                        %s,
+                        %s,
                         %s,
                         %s,
                         %s,
                         %s
                     )
                 """,
-                    (random_operation.id, 111111111,'abc1234567', 'General Partnership'),
+                    (
+                        random_operation.id,
+                        111111111,
+                        'abc1234567',
+                        'General Partnership',
+                        'Random Legal Name',
+                        'Random Trade Name',
+                    ),
                 )
-        
+
         def update_function(cursor):
             multiple_operator.legal_name = 'Updated Legal Name'
             multiple_operator.save()
@@ -112,7 +121,7 @@ class TestMultipleOperatorRls(BaseTestCase):
 
         baker.make_recipe(
             'registration.tests.utils.multiple_operator',
-            _quantity=5
+            _quantity=5,
         )
 
         def select_function(cursor, i):
