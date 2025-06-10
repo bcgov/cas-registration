@@ -1,7 +1,4 @@
 from common.tests.utils.helpers import BaseTestCase
-from django.db import ProgrammingError
-from pgtrigger import Operation
-import pytest
 from registration.models.opted_in_operation_detail import OptedInOperationDetail
 from model_bakery import baker
 from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
