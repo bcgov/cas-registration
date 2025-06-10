@@ -7,10 +7,14 @@ from compliance.models import (
     ComplianceObligation,
     ComplianceReport,
     ComplianceEarnedCredit,
+    ElicensingClientOperator,
 )
 from compliance.models.elicensing_link import ELicensingLink
-from registration.models.operation import Operator
+from registration.models.operator import Operator
 from reporting.tests.utils.baker_recipes import report, report_compliance_summary, reporting_year
+from registration.tests.utils.baker_recipes import (
+    operator,
+)
 
 # CompliancePeriod recipe
 compliance_period = Recipe(
@@ -58,4 +62,10 @@ elicensing_link = Recipe(
 compliance_earned_credit = Recipe(
     ComplianceEarnedCredit,
     compliance_report_version=foreign_key(compliance_report_version),
+)
+
+# ElicensingClientOperator recipe
+elicensing_client_operator = Recipe(
+    ElicensingClientOperator,
+    operator=foreign_key(operator),
 )
