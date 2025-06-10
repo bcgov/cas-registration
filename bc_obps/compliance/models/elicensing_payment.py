@@ -18,12 +18,14 @@ class ElicensingPayment(TimeStampedModel):
         ElicensingInvoice,
         on_delete=models.CASCADE,
         db_comment="Foreign key to the invoice record this payment relates to.",
+        related_name="elicensing_payments",
     )
 
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
         on_delete=models.CASCADE,
         db_comment="Foreign key to the line item record this payment relates to",
+        related_name="elicensing_payments",
     )
 
     amount = models.DecimalField(

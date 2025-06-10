@@ -22,6 +22,7 @@ class ElicensingLineItem(TimeStampedModel):
         ElicensingInvoice,
         on_delete=models.CASCADE,
         db_comment="Foreign key to the OBPS elicensing_invoice table.",
+        related_name="elicensing_line_items",
     )
 
     line_item_type = models.CharField(
