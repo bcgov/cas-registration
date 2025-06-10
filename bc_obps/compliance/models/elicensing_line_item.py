@@ -14,7 +14,7 @@ class ElicensingLineItem(TimeStampedModel):
     class LineItemType(models.TextChoices):
         FEE = ('Fee',)
 
-    object_id = models.IntegerField(primary_key=True, db_comment="The objectId of the line item from elicensing")
+    object_id = models.IntegerField(db_comment="The objectId of the line item from elicensing")
 
     guid = models.CharField(db_comment="The guid of the line item from elicensing")
 
