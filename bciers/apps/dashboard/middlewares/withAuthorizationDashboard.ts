@@ -7,7 +7,6 @@ import {
 
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
 import isInAllowedPath from "@bciers/utils/src/isInAllowedList";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
@@ -42,31 +41,6 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     // Check if the user is authenticated via the jwt encoded in server side cookie
     const token = await getToken();
     if (token) {
-      // Handle user without token.user.app_role
-      if (!token.app_role || token.app_role === "") {
-        if (pathname.endsWith(`/${paths.profile}`)) {
-          // 🛸 Route to next middleware
-          return next(request, _next);
-        } else {
-          // 🛸 Redirect to profile
-          return NextResponse.redirect(
-            new URL(`/administration/${paths.profile}`, request.url),
-          );
-        }
-      }
-      // Handle user with token.user.app_role = cas_pending
-      if (token.app_role === FrontEndRoles.CAS_PENDING) {
-        if (isInAllowedPath(pathname, authAllowedPaths)) {
-          // 🛸 Route to next middleware
-          return next(request, _next);
-        } else {
-          // 🛸 Redirect to dashboard
-          return NextResponse.redirect(
-            new URL(`/${paths.dashboard}`, request.url),
-          );
-        }
-      }
-
       if (pathname === "/" || pathname === `/${paths.onboarding}`) {
         // 🛸 Redirect to dashboard
         return NextResponse.redirect(
