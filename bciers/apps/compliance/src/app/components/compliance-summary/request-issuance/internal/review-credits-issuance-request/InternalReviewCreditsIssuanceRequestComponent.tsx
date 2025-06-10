@@ -6,7 +6,7 @@ import {
   internalReviewCreditsIssuanceRequestUiSchema,
   internalReviewCreditsIssuanceRequestSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalReviewCreditsIssuanceRequestSchema";
-import AttachmentElement from "./InternalReviewCreditsIssuanceRequestAttachmentElement";
+import AttachmentsElement from "./AttachmentsElement";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
@@ -26,19 +26,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   const router = useRouter();
 
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleViewReport = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
-
   const [formState, setFormState] = useState(formData);
-
-  const [fileName, setFileName] = useState("");
-  const [pendingFile, setPendingFile] = useState<File | undefined>();
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,21 +35,55 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     setFormState(e.formData);
   };
 
-  const handleFileChange = (file: File | undefined) => {
-    setFileName(file?.name || "");
-    setPendingFile(file);
+  const handleAddFiles = (newFiles: File[]) => {
+    // Separate duplicates from unique files
+    const { duplicates, uniqueFiles } = newFiles.reduce(
+      (acc, file) => {
+        const isDuplicate = uploadedFiles.some(
+          (existingFile) =>
+            existingFile.name.toLowerCase() === file.name.toLowerCase(),
+        );
+
+        if (isDuplicate) {
+          acc.duplicates.push(file);
+        } else {
+          acc.uniqueFiles.push(file);
+        }
+        return acc;
+      },
+      { duplicates: [] as File[], uniqueFiles: [] as File[] },
+    );
+
+    if (duplicates.length > 0) {
+      const fileNames = duplicates.map((f) => `"${f.name}"`).join(", ");
+      setError(
+        `Skipped duplicate file${
+          duplicates.length > 1 ? "s" : ""
+        }: ${fileNames}`,
+      );
+    }
+
+    if (uniqueFiles.length > 0) {
+      setUploadedFiles((prev) => [...prev, ...uniqueFiles]);
+    }
+  };
+
+  const handleRemoveFile = (index: number) => {
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+    setError(null);
   };
 
   const handleContinue = async () => {
     try {
       setIsUploading(true);
-      if (pendingFile) {
+      if (uploadedFiles.length > 0) {
         // TBD: Implement file upload logic when the API endpoint is available
         // Example implementation:
         // const formData = new FormData();
-        // formData.append('file', pendingFile);
-        // await uploadFile(formData);
-        // Note: Error handling and response validation will be added as part of the implementation
+        // uploadedFiles.forEach((file, index) => {
+        //   formData.append(`file_${index}`, file);
+        // });
+        // await uploadFiles(formData);
       }
 
       // TBD: Submit the form data to the API when the endpoint is ready
@@ -83,8 +106,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     <>
       <SimpleModal
         open={modalOpen}
-        onCancel={handleCloseModal}
-        onConfirm={handleCloseModal}
+        onCancel={() => setModalOpen(false)}
+        onConfirm={() => setModalOpen(false)}
         title="Annual Emissions Report"
       >
         Annual Emissions Report
@@ -96,17 +119,17 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
         onChange={handleFormChange}
         formContext={{
           creditsIssuanceRequestData: formState,
-          openModal: handleViewReport,
+          openModal: () => setModalOpen(true),
         }}
         className="w-full"
       >
-        {error && <div className="text-red-600 text-sm mb-4">{error}</div>}
-        <AttachmentElement
+        <AttachmentsElement
           title="Attachments:"
-          fileName={fileName}
-          onFileChange={handleFileChange}
+          onRemoveFile={handleRemoveFile}
+          onAddFiles={handleAddFiles}
           isUploading={isUploading}
           error={error}
+          uploadedFiles={uploadedFiles}
         />
         <ComplianceStepButtons
           backUrl={backUrl}
