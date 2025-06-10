@@ -26,18 +26,44 @@ spec:
               requests:
                 cpu: 50m
                 memory: 64Mi
+            env:
+              - name: PGUSER
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    key: user
+              - name: PGPASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    key: password
+              - name: PGHOST
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    key: host
+              - name: PGDATABASE
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    key: dbname
+              - name: PGURI
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    key: uri
             command:
               - /usr/bin/env
               - bash
               - -c
               - |
                 set -euo pipefail;
-                until pg_isready -h {{ include "cas-obps-postgres-migration-test.fullname" . }}-pgha1; do
+                until pg_isready -h $PGHOST; do
                   echo "⏱️ Waiting for Postgres to be ready...";
                   sleep 5;
                 done;
 
-                DBCHECK=$(psql -h {{ include "cas-obps-postgres-migration-test.fullname" . }}-pgha1 -U postgres -d obps -t -c "SELECT COUNT(*) FROM django_migrations;" | xargs)
+                DBCHECK=$(psql $PGURI -c "SELECT COUNT(*) FROM django_migrations;" | xargs)
 
                 if [ "$DBCHECK" -gt 0 ]; then
                   echo "✅ Django migrations exist, database successfully restored."

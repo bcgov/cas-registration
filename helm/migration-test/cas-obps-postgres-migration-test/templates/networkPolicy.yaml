@@ -6,12 +6,12 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: cas-obps-postgres
+      app.kubernetes.io/name: {{ include "cas-obps-postgres-migration-test.fullname" . }}
   ingress:
   - from:
     - podSelector:
         matchLabels:
-          release: {{ include "cas-obps-postgres-migration-test.fullname" . }}
+          {{- include "cas-obps-postgres-migration-test.selectorLabels" . | nindent 10 }}
           component: job-with-database-access
     - podSelector:
         matchLabels:
