@@ -9,6 +9,7 @@ from compliance.models import (
     ComplianceEarnedCredit,
     ElicensingClientOperator,
     ElicensingInvoice,
+    ElicensingLineItem,
 )
 from compliance.models.elicensing_link import ELicensingLink
 from registration.models.operator import Operator
@@ -16,6 +17,7 @@ from reporting.tests.utils.baker_recipes import report, report_compliance_summar
 from registration.tests.utils.baker_recipes import (
     operator,
 )
+from decimal import Decimal
 
 # CompliancePeriod recipe
 compliance_period = Recipe(
@@ -73,5 +75,17 @@ elicensing_client_operator = Recipe(
 
 # ElicensingInvoice recipe
 elicensing_invoice = Recipe(
-    ElicensingInvoice, elicensing_client_operator=foreign_key(elicensing_client_operator), is_void=False
+    ElicensingInvoice,
+    elicensing_client_operator=foreign_key(elicensing_client_operator),
+    due_date='2024-11-30',
+    outstanding_balance=Decimal('100.01'),
+    invoice_fee_balance=Decimal('100.01'),
+    invoice_interest_balance=Decimal('0.00'),
+    is_void=False,
+)
+
+# ElicensingLineItem recipe
+elicensing_line_item = Recipe(
+    ElicensingLineItem,
+    elicensing_invoice=foreign_key(elicensing_invoice),
 )
