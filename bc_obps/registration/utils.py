@@ -15,6 +15,7 @@ from registration.models import Document
 from django.urls import reverse_lazy
 from ninja.types import DictStrAny
 from ninja.pagination import PageNumberPagination
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -156,13 +157,9 @@ class CustomPagination(PageNumberPagination):
 
 def is_document_scan_complete(operation: Operation) -> bool:
     # If we're in the CI or local environment, we don't need to check for document scanning
-    ENVIRONMENT = os.environ.get("ENVIRONMENT")
-    CI = os.environ.get("CI")
+    ENVIRONMENT = settings.ENVIRONMENT
+    CI = settings.CI
     if CI == 'true' or ENVIRONMENT == 'local':
         return True
 
-    if not operation.documents.filter(
-        status=Document.FileStatus.UNSCANNED,
-    ).exists():
-        return True
-    return False
+    return not operation.documents.filter(status=Document.FileStatus.UNSCANNED).exists()
