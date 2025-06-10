@@ -8,6 +8,7 @@ from compliance.models import (
     ComplianceReport,
     ComplianceEarnedCredit,
     ElicensingClientOperator,
+    ElicensingInvoice,
 )
 from compliance.models.elicensing_link import ELicensingLink
 from registration.models.operator import Operator
@@ -68,4 +69,9 @@ compliance_earned_credit = Recipe(
 elicensing_client_operator = Recipe(
     ElicensingClientOperator,
     operator=foreign_key(operator),
+)
+
+# ElicensingInvoice recipe
+elicensing_invoice = Recipe(
+    ElicensingInvoice, elicensing_client_operator=foreign_key(elicensing_client_operator), is_void=False
 )
