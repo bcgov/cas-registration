@@ -14,7 +14,7 @@ dotenv.config({ path: "./e2e/.env.local" });
 export class OperationPOM {
   readonly page: Page;
 
-  readonly url: string = process.env.E2E_BASEURL + AppRoute.OPERATIONS;
+  readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
   constructor(page: Page) {
     this.page = page;
@@ -24,6 +24,10 @@ export class OperationPOM {
 
   async route() {
     await this.page.goto(this.url);
+    const operationsLink = await this.page.getByRole("link", {
+      name: "Operations",
+    });
+    await operationsLink.click();
   }
 
   async searchOperationByName(operation: string, operator: string) {
@@ -52,10 +56,4 @@ export class OperationPOM {
   }
 
   // ###  Assertions ###
-
-  async urlIsCorrect() {
-    const path = await this.url;
-    const currentUrl = await this.page.url();
-    expect(currentUrl.toLowerCase()).toMatch(path.toLowerCase());
-  }
 }
