@@ -134,6 +134,7 @@ export enum ContactE2EValue {
 
 export enum IssueIDValues {
   OPERATION_NAME = "Brine LFO - No BORO and BCGHG ID",
+  OPERATOR_NAME = "Bravo Technologies - has parTNER operator",
   EXPECTED_BCGHG_ID = "23251810001",
   EXPECTED_BORO_ID = "25-0001",
 }
