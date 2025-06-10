@@ -16,6 +16,7 @@ class ElicensingInvoice(TimeStampedModel):
         ElicensingClientOperator,
         on_delete=models.CASCADE,
         db_comment="Foreign key to the elicensing_client_operator record for the client who this invoice is for",
+        related_name="elicensing_invoices",
     )
 
     due_date = models.DateTimeField(db_comment="The due date of the invoice. invoicePaymentDueDate in elicensing")

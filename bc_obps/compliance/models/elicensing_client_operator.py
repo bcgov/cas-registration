@@ -16,7 +16,7 @@ class ElicensingClientOperator(TimeStampedModel):
 
     client_guid = models.CharField(db_comment="The clientGuid identifier from elicensing for the related client")
 
-    operator_id = models.ForeignKey(
+    operator = models.ForeignKey(
         Operator,
         on_delete=models.PROTECT,
         related_name="+",
