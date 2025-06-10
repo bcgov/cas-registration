@@ -10,13 +10,12 @@ class ElicensingInvoice(TimeStampedModel):
 
     """
 
-    invoice_number = models.CharField(primary_key=True, db_comment="The invoice number from elicensing.")
+    invoice_number = models.CharField(db_comment="The invoice number from elicensing.")
 
-    client_object_id = models.ForeignKey(
+    elicensing_client_operator = models.ForeignKey(
         ElicensingClientOperator,
         on_delete=models.CASCADE,
-        db_column="client_object_id",
-        db_comment="The clientObjectId identifier from elicensing for the related client",
+        db_comment="Foreign key to the elicensing_client_operator record for the client who this invoice is for",
     )
 
     due_date = models.DateTimeField(db_comment="The due date of the invoice. invoicePaymentDueDate in elicensing")
