@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
+  AppRoute,
   IssueIDValues,
   SnackbarMessages,
 } from "@/administration-e2e/utils/enums";
@@ -11,6 +12,7 @@ import {
   takeStabilizedScreenshot,
   assertSuccessfulSnackbar,
   clickButton,
+  urlIsCorrect,
 } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
@@ -25,7 +27,8 @@ test.describe("Issue BCGHG and BORO ID", () => {
     // 🛸 Navigate to administration/operations
     const operationPage = new OperationPOM(page);
     await operationPage.route();
-    await operationPage.urlIsCorrect();
+    await urlIsCorrect(page, AppRoute.OPERATIONS, true);
+    // await operationPage.urlIsCorrect(AppRoute.OPERATIONS, true);
 
     // Search the operation page by exact operation and operator name
     await operationPage.searchOperationByName(
@@ -49,7 +52,7 @@ test.describe("Issue BCGHG and BORO ID", () => {
   test("Issue BORO ID", async ({ page }) => {
     const operationPage = new OperationPOM(page);
     await operationPage.route();
-    await operationPage.urlIsCorrect();
+    await urlIsCorrect(page, AppRoute.OPERATIONS, true);
 
     // Search the operation page by exact operation and operator name
     await operationPage.searchOperationByName(
