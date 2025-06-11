@@ -63,12 +63,16 @@ spec:
                   sleep 5;
                 done;
 
-                DBCHECK=$(psql $PGURI -c "SELECT COUNT(*) FROM django_migrations;" | xargs)
-
-                if [ "$DBCHECK" -gt 0 ]; then
-                  echo "✅ Django migrations exist, database successfully restored."
-                  exit 0
+                if psql "$PGURI" -tAc "SELECT to_regclass('public.django_migrations');" | grep -q django_migrations; then
+                  DBCHECK=$(psql "$PGURI" -tAc "SELECT COUNT(*) FROM django_migrations;")
+                  if [ "$DBCHECK" -gt 0 ]; then
+                    echo "✅ Django migrations exist, database successfully restored."
+                    exit 0
+                  else
+                    echo "❌ 'django_migrations' table exists but is empty."
+                    exit 1
+                  fi
                 else
-                  echo "❌ No migrations found, database restore failed or empty database."
+                  echo "❌ 'django_migrations' table does not exist. Database restore failed."
                   exit 1
                 fi
