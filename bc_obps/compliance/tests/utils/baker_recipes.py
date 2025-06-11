@@ -10,6 +10,7 @@ from compliance.models import (
     ElicensingClientOperator,
     ElicensingInvoice,
     ElicensingLineItem,
+    ElicensingPayment,
 )
 from compliance.models.elicensing_link import ELicensingLink
 from registration.models.operator import Operator
@@ -88,4 +89,9 @@ elicensing_invoice = Recipe(
 elicensing_line_item = Recipe(
     ElicensingLineItem,
     elicensing_invoice=foreign_key(elicensing_invoice),
+)
+
+# ElicensingPayment recipe
+elicensing_payment = Recipe(
+    ElicensingPayment, elicensing_line_item=foreign_key(elicensing_line_item), amount=Decimal('100.00')
 )
