@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingInvoice, ElicensingLineItem
+from compliance.models import ElicensingLineItem
 from .rls_configs.elicensing_payment import Rls as ElicensingPaymentRls
 
 
@@ -13,13 +13,6 @@ class ElicensingPayment(TimeStampedModel):
     payment_object_id = models.IntegerField(db_comment="The object id of the payment in elicensing (paymentObjectId)")
 
     payment_guid = models.CharField(db_comment="The guid of the payment in elicensing")
-
-    elicensing_invoice = models.ForeignKey(
-        ElicensingInvoice,
-        on_delete=models.CASCADE,
-        db_comment="Foreign key to the invoice record this payment relates to.",
-        related_name="elicensing_payments",
-    )
 
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
