@@ -197,6 +197,21 @@ class UserModelTest(BaseTestCase):
             ("complianceearnedcredit_updated", "compliance earned credit", None, None),
             ("complianceearnedcredit_archived", "compliance earned credit", None, None),
             ("compliance_earned_credits_issued_by", "compliance earned credit", None, None),
+            ("elicensingclientoperator_created", "elicensing client operator", None, None),
+            ("elicensingclientoperator_updated", "elicensing client operator", None, None),
+            ("elicensingclientoperator_archived", "elicensing client operator", None, None),
+            ("elicensinginvoice_created", "elicensing invoice", None, None),
+            ("elicensinginvoice_updated", "elicensing invoice", None, None),
+            ("elicensinginvoice_archived", "elicensing invoice", None, None),
+            ("elicensinglineitem_created", "elicensing line item", None, None),
+            ("elicensinglineitem_updated", "elicensing line item", None, None),
+            ("elicensinglineitem_archived", "elicensing line item", None, None),
+            ("elicensingpayment_created", "elicensing payment", None, None),
+            ("elicensingpayment_updated", "elicensing payment", None, None),
+            ("elicensingpayment_archived", "elicensing payment", None, None),
+            ("elicensingadjustment_created", "elicensing adjustment", None, None),
+            ("elicensingadjustment_updated", "elicensing adjustment", None, None),
+            ("elicensingadjustment_archived", "elicensing adjustment", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):
