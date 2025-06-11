@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cas-obps-backend-migration-test.fullname" . }}-job
+  labels: {{- include "cas-obps-backend-migration-test.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            {{ include "cas-obps-backend-migration-test.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: django-migration-test
+            image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+            env:
+              {{- include "cas-obps-backend-migration-test.backendEnvVars" . | nindent 14 }}
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - |
+                set -euo pipefail;
+                until .venv/bin/python manage.py migrate --check; do
+                  echo "⏱️ Waiting for migrations to be applied...";
+                  sleep 5;
+                done;
+                echo "✅ All migrations have been applied."
