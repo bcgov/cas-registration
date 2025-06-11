@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import os
 from unittest.mock import patch, MagicMock
+from django.test import override_settings
 import pytest
 from common.lib import pgtrigger
 from uuid import uuid4
@@ -1485,9 +1486,9 @@ class TestRaiseExceptionIfOperationRegistrationDataIncomplete:
             OperationService.raise_exception_if_operation_missing_registration_information(operation)
 
     @staticmethod
-    def test_raises_exception_if_documents_are_still_unscanned(monkeypatch):
+    @override_settings(ENVIRONMENT="develop", CI="false")
+    def test_raises_exception_if_documents_are_still_unscanned():
         # This test doesn't actually hit GCS, so we want to change the env variables to hit the check for document scans
-        monkeypatch.setattr(os, "environ", {"ENVIRONMENT": "develop", "CI": "false"})
         operation = set_up_valid_mock_operation(Operation.Purposes.OPTED_IN_OPERATION, document_scan_status="Unscanned")
 
         with pytest.raises(
