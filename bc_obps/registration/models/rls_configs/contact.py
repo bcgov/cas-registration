@@ -1,6 +1,6 @@
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants
+from rls.utils.helpers import generate_rls_grants, generate_rls_policies_reg
 
 
 class Rls:
@@ -17,7 +17,7 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.CONTACT)
-    policies = generate_rls_policies(
+    policies = generate_rls_policies_reg(
         role_grants_mapping=role_grants_mapping,
         table=RegistrationTableNames.CONTACT,
         using_statement="""
