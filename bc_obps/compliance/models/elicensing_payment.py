@@ -27,9 +27,11 @@ class ElicensingPayment(TimeStampedModel):
         db_comment="The amount of this payment in dollars from elicensing",
     )
 
-    received_date = models.DateTimeField(db_comment="receivedDate of the payment in elicensing", null=True, blank=True)
-
-    deposit_date = models.DateTimeField(db_comment="depositDate of the payment in elicensing", null=True, blank=True)
+    received_date = models.DateTimeField(
+        db_comment="receivedDate of the payment in elicensing. The date when payment is received in the OBPS bank account. Receive Date can be backdated. This is the date that impacts interest calculation.",
+        null=True,
+        blank=True,
+    )
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
