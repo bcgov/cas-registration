@@ -12,8 +12,6 @@ class ElicensingPayment(TimeStampedModel):
 
     payment_object_id = models.IntegerField(db_comment="The object id of the payment in elicensing (paymentObjectId)")
 
-    payment_guid = models.CharField(db_comment="The guid of the payment in elicensing")
-
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
         on_delete=models.CASCADE,
