@@ -42,6 +42,7 @@ class TestDocumentRls(BaseTestCase):
 
         def select_function(cursor):
             assert Document.objects.count() == 1
+
         def insert_function(cursor):
         # own document - successful
             new_doc = Document.objects.create(file=                            'test.pdf',
@@ -51,7 +52,6 @@ class TestDocumentRls(BaseTestCase):
                     )
             assert Document.objects.filter(id=new_doc.id).exists() 
                 
-            
             # someone else's document - fail. Using cursor because if we try via django, the error is that the random_operation's id does not exist
             with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "document'):
                 cursor.execute(
@@ -79,7 +79,7 @@ class TestDocumentRls(BaseTestCase):
 
         def update_function(cursor):
             Document.objects.update(description='description updated')
-            assert Document.objects.filter(description='description updated').count() == 1  # only affected 1 
+            assert Document.objects.filter(description='description updated').count() == 1  # only affected 1/2
 
         def delete_function(cursor):
             Document.objects.all().delete()
@@ -93,10 +93,10 @@ class TestDocumentRls(BaseTestCase):
 
         baker.make_recipe('registration.tests.utils.document', _quantity=5)
 
-        def select_function(cursor, i):
+        def select_function(cursor):
             assert Document.objects.count() == 5
 
-        def update_function(cursor, i):
+        def update_function(cursor):
             Document.objects.update(description='description updated')
             assert Document.objects.filter(description='description updated').count() == 5
 

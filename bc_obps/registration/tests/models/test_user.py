@@ -300,11 +300,11 @@ class TestUserRls(BaseTestCase):
     def test_user_rls_cas_users(self):
         baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)
 # brianna these numbers are weird, going to have to refactor the helper I think
-        def select_function(cursor,i):
+        def select_function(cursor):
             breakpoint()
             assert User.objects.count() == 6 # 1 user created by test_policies_for_cas_roles, 5 from the bakers above
 
-        def insert_function(cursor,i):
+        def insert_function(cursor):
             User.objects.create(
                 first_name="John",
                 last_name="Doe",
@@ -320,7 +320,7 @@ class TestUserRls(BaseTestCase):
                                        'John').exists()
 
 
-        def update_function(cursor,i):
+        def update_function(cursor):
             User.objects.update(first_name='Updated Name')
             breakpoint()
             assert User.objects.filter(first_name='Updated Name').count() == 5

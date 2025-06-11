@@ -364,10 +364,10 @@ class TestOperationRls(BaseTestCase):
         # we have to create up here because in the update_function, the role is cas, and they don't have permission to create bcghg ids
         bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
 
-        def select_function(cursor, i):
+        def select_function(cursor):
             assert Operation.objects.count() == 5
 
-        def update_function(cursor, i):
+        def update_function(cursor):
                            
             updated_operation = Operation.objects.first()
             updated_operation.bcghg_id = bcghg_id

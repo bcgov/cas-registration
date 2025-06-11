@@ -24,6 +24,11 @@ def noop(*args, **kwargs):
     pass
 
 
+def run_with_rollback(cursor, fn):
+        with transaction.atomic():
+            fn(cursor)
+            transaction.set_rollback(True)
+
 def test_policies_for_cas_roles(
     model, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
 ):
@@ -31,7 +36,7 @@ def test_policies_for_cas_roles(
     user = baker.make_recipe('registration.tests.utils.cas_admin')
 
     with connection.cursor() as cursor:
-        for i, (role, operations) in enumerate(model.Rls.role_grants_mapping.items()):
+        for role, operations in model.Rls.role_grants_mapping.items():
             user.app_role = AppRole.objects.get(role_name=role.value)
             user.save()
 
@@ -40,47 +45,35 @@ def test_policies_for_cas_roles(
 
             RlsMiddleware._set_user_guid_and_role(cursor, user)
 
-            with transaction.atomic():
-                # Mark this block for rollback so that when we loop and there's an insert, it doesn't affect the next iteration's select
-                sid = transaction.savepoint()
-                try:
-                    RlsMiddleware._set_user_guid_and_role(cursor, user)
+            
+            RlsMiddleware._set_user_guid_and_role(cursor, user)
 
-                    if RlsOperations.SELECT in operations:
-                        if select_function is noop:
-                            raise ValueError("SELECT operation granted, but no select_function provided.")
-                        run_with_rollback(cursor, select_function, i)
+            if RlsOperations.SELECT in operations:
+                if select_function is noop:
+                    raise ValueError("SELECT operation granted, but no select_function provided.")
+                run_with_rollback(cursor, select_function)
 
-                    if RlsOperations.INSERT in operations:
-                        if insert_function is noop:
-                            raise ValueError(
-                                f"INSERT operation granted for role {role}, but no insert_function provided."
-                            )
-                        run_with_rollback(cursor, insert_function, i)
+            if RlsOperations.INSERT in operations:
+                if insert_function is noop:
+                    raise ValueError(
+                        f"INSERT operation granted for role {role}, but no insert_function provided."
+                    )
+                run_with_rollback(cursor, insert_function)
 
-                    if RlsOperations.UPDATE in operations:
-                        if update_function is noop:
-                            raise ValueError(
-                                f"UPDATE operation granted for role {role}, but no update_function provided."
-                            )
-                        run_with_rollback(cursor, update_function, i)
+            if RlsOperations.UPDATE in operations:
+                if update_function is noop:
+                    raise ValueError(
+                        f"UPDATE operation granted for role {role}, but no update_function provided."
+                    )
+                run_with_rollback(cursor, update_function)
 
-                    if RlsOperations.DELETE in operations:
-                        if delete_function is noop:
-                            raise ValueError(
-                                f"DELETE operation granted for role {role}, but no delete_function provided."
-                            )
-                        run_with_rollback(cursor, delete_function, i)
-                finally:
-                    transaction.savepoint_rollback(sid)
-
-def run_with_rollback(cursor, fn, i = None):
-        with transaction.atomic():
-            if i:
-                fn(cursor, i)
-            else:
-                fn(cursor)
-            transaction.set_rollback(True)
+            if RlsOperations.DELETE in operations:
+                if delete_function is noop:
+                    raise ValueError(
+                        f"DELETE operation granted for role {role}, but no delete_function provided."
+                    )
+                run_with_rollback(cursor, delete_function)
+                
 
 
 def test_policies_for_industry_user(
@@ -122,3 +115,4 @@ def test_policies_for_industry_user(
             if delete_function is noop:
                 raise ValueError("DELETE operation granted, but no delete_function provided.")
             run_with_rollback(cursor, delete_function)
+            breakpoint()

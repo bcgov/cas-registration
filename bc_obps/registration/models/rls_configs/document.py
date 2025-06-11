@@ -28,12 +28,12 @@ class Rls:
                      operation_id in
                      (select id
         from erc.operation
-        where operator_id IN
+        where operator_id in
         (
-        SELECT uo.operator_id
-        FROM erc.user_operator uo
-        WHERE uo.user_id = current_setting('my.guid', true)::uuid
-          AND uo.status = 'Approved')
+        select uo.operator_id
+        from erc.user_operator uo
+        where uo.user_id = current_setting('my.guid', true)::uuid
+          and uo.status = 'Approved')
           )
 
                     """,
@@ -41,12 +41,12 @@ class Rls:
                                       operation_id in
                      (select id
         from erc.operation
-        where operator_id IN
+        where operator_id in
         (
-        SELECT uo.operator_id
-        FROM erc.user_operator uo
-        WHERE uo.user_id = current_setting('my.guid', true)::uuid
-          AND uo.status = 'Approved')
+        select uo.operator_id
+        from erc.user_operator uo
+        where uo.user_id = current_setting('my.guid', true)::uuid
+          and uo.status = 'Approved')
           )
                     """,
     )

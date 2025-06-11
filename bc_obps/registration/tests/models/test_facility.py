@@ -218,10 +218,10 @@ class TestFacilityRls(BaseTestCase):
         )
         bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
 
-        def select_function(cursor, i):
+        def select_function(cursor,):
             assert Facility.objects.count() == 6
 
-        def update_function(cursor, i):
+        def update_function(cursor):
             facility_with_operation.bcghg_id = bcghg_id
             facility_with_operation.save()
             assert Facility.objects.filter(bcghg_id__isnull=False).count() == 1

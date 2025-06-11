@@ -181,10 +181,10 @@ class TestContactRls(BaseTestCase):
         address = baker.make_recipe('registration.tests.utils.address')
         operator = baker.make_recipe('registration.tests.utils.operator')
 
-        def select_function(cursor, i):
+        def select_function(cursor):
             assert Contact.objects.count() == 5
 
-        def insert_function(cursor, i):
+        def insert_function(cursor):
                 Contact.objects.create(
                 first_name='Jane',
                 last_name='Smith',
