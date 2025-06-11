@@ -156,10 +156,9 @@ class CustomPagination(PageNumberPagination):
 
 
 def is_document_scan_complete(operation: Operation) -> bool:
-    # If we're in the CI or local environment, we don't need to check for document scanning
+    # If we're in the local environment, we don't hit GCS; we use local file storage (see settings.py)
     ENVIRONMENT = settings.ENVIRONMENT
-    CI = settings.CI
-    if CI == 'true' or ENVIRONMENT == 'local':
+    if ENVIRONMENT == 'local':
         return True
 
     return not operation.documents.filter(status=Document.FileStatus.UNSCANNED).exists()
