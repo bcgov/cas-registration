@@ -105,6 +105,8 @@ export enum FormMode {
 }
 
 export enum IssuanceStatus {
-  APPROVED = "approved",
-  AWAITING = "awaiting",
+  APPROVED = "Approved",
+  AWAITING = "Awaiting Approval",
+  DECLINED = "Declined",
+  CHANGES_REQUIRED = "Changes Required",
 }

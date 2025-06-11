@@ -6,10 +6,9 @@ import {
   readOnlyStringField,
   commonReadOnlyOptions,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { StatusNoteWidget } from "@/compliance/src/app/data/jsonSchema/StatusNoteWidget";
 import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { CreditIssuanceStatusWidget } from "@/compliance/src/app/data/jsonSchema/requestIssuance/CreditIssuanceStatusWidget";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-
 export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
   title: "Track Status of Issuance",
@@ -20,16 +19,34 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
     issuance_status: readOnlyStringField("Status of Issuance:"),
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
-  if: {
-    properties: {
-      issuance_status: { enum: [IssuanceStatus.APPROVED] },
+  allOf: [
+    {
+      if: {
+        properties: {
+          issuance_status: {
+            enum: [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED],
+          },
+        },
+      },
+      then: {
+        properties: {
+          directors_comments: readOnlyStringField("Director's Comments:"),
+        },
+      },
     },
-  },
-  then: {
-    properties: {
-      directors_comments: readOnlyStringField("Director's Comments:"),
+    {
+      if: {
+        properties: {
+          issuance_status: { enum: [IssuanceStatus.CHANGES_REQUIRED] },
+        },
+      },
+      then: {
+        properties: {
+          analysts_comments: readOnlyStringField("Analyst's Comments:"),
+        },
+      },
     },
-  },
+  ],
 };
 
 export const trackStatusOfIssuanceUiSchema: UiSchema = {
@@ -41,7 +58,7 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
     "ui:classNames": "text-bc-bg-blue mt-0 mb-2",
   },
   status_note: {
-    "ui:widget": StatusNoteWidget,
+    "ui:widget": CreditIssuanceStatusWidget,
     "ui:options": {
       label: false,
       inline: true,
@@ -54,4 +71,5 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
   },
   bccr_trading_name: commonReadOnlyOptions,
   directors_comments: commonReadOnlyOptions,
+  analysts_comments: commonReadOnlyOptions,
 };

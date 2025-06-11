@@ -1,9 +1,9 @@
 interface CheckProps {
-  width?: number;
-  height?: number;
+  width?: string;
+  height?: string;
 }
 
-const Check: React.FC<CheckProps> = ({ width = 40, height = 40 }) => {
+const Check: React.FC<CheckProps> = ({ width = "40", height = "40" }) => {
   return (
     <svg
       width={width}

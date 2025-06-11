@@ -51,7 +51,8 @@ export interface RequestIssuanceTrackStatusData {
   earned_credits: number;
   issuance_status: string;
   bccr_trading_name: string;
-  directors_comments: string;
+  directors_comments?: string;
+  analysts_comments?: string;
 }
 
 export interface PaymentSummary {

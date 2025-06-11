@@ -8,13 +8,24 @@ export const mockRequestIssuanceTrackStatusData: {
     earned_credits: 100,
     issuance_status: IssuanceStatus.AWAITING,
     bccr_trading_name: "Colour Co.",
-    directors_comments: "",
   },
   approved: {
     earned_credits: 100,
     issuance_status: IssuanceStatus.APPROVED,
     bccr_trading_name: "Colour Co.",
     directors_comments: "Lorem ipsum",
+  },
+  declined: {
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.DECLINED,
+    bccr_trading_name: "Colour Co.",
+    directors_comments: "Lorem ipsum",
+  },
+  changes_required: {
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.CHANGES_REQUIRED,
+    bccr_trading_name: "Colour Co.",
+    analysts_comments: "Lorem ipsum",
   },
 };
 
@@ -29,7 +40,6 @@ export async function getRequestIssuanceTrackStatusData(): Promise<RequestIssuan
   //   );
   // }
   // return {
-  //   operation_name: response.operation_name,
   //   earned_credits: response.earned_credits,
   //   issuance_status: response.issuance_status,
   //   bccr_trading_name: response.bccr_trading_name,

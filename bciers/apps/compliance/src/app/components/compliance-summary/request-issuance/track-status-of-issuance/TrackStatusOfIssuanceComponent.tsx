@@ -25,9 +25,8 @@ export default function TrackStatusOfIssuanceComponent({
       uiSchema={trackStatusOfIssuanceUiSchema}
       formData={{
         ...data,
-        // Copy issuance_status to status_note field to drive the StatusNoteWidget
-        // which conditionally renders IssuanceStatusAwaitingNote or IssuanceStatusApprovedNote
-        // based on the status value
+        // Copy issuance_status to status_note field to drive the CreditIssuanceStatusWidget
+        // which renders different notes based on the status (AWAITING, APPROVED, DECLINED, or CHANGES_REQUIRED)
         status_note: data.issuance_status,
       }}
       className="w-full"
