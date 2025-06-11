@@ -10,11 +10,13 @@ import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fet
 
 const ComplianceSummariesDataGrid = ({
   initialData,
+  isCasStaff,
 }: {
   initialData: {
     rows: ComplianceSummary[];
     row_count: number;
   };
+  isCasStaff: boolean;
 }) => {
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
@@ -23,7 +25,7 @@ const ComplianceSummariesDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const columns = complianceSummaryColumns();
+  const columns = complianceSummaryColumns(isCasStaff);
 
   const columnGroup = useMemo(
     () => complianceSummaryGroupColumns(SearchCell),

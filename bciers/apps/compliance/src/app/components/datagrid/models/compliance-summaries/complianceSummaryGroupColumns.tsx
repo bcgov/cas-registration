@@ -10,6 +10,7 @@ const complianceSummaryGroupColumns = (
 ) => {
   const columnGroupModel = [
     createColumnGroup("reporting_year", "Compliance Period", SearchCell),
+    createColumnGroup("operator_name", "Operator Name", SearchCell),
     createColumnGroup("operation_name", "Operation Name", SearchCell),
     createColumnGroup("excess_emissions", "Excess Emissions", SearchCell),
     createColumnGroup("outstanding_balance", "Outstanding Balance", SearchCell),
