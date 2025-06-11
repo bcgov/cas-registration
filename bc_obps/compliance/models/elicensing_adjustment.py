@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingInvoice, ElicensingLineItem
+from compliance.models import ElicensingLineItem
 from .rls_configs.elicensing_adjustment import Rls as ElicensingAdjustmentRls
 
 
@@ -15,13 +15,6 @@ class ElicensingAdjustment(TimeStampedModel):
     )
 
     adjustment_guid = models.CharField(db_comment="The guid of the adjustment in elicensing")
-
-    elicensing_invoice = models.ForeignKey(
-        ElicensingInvoice,
-        on_delete=models.CASCADE,
-        db_comment="Foreign key to the invoice record this adjustment relates to.",
-        related_name="elicensing_adjustments",
-    )
 
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
