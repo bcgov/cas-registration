@@ -58,6 +58,21 @@ class RlsPolicy:
         except Exception as e:
             raise RuntimeError(f"Failed to apply policy: {execute_string}") from e
 
+    def drop_policy(self, cursor: CursorWrapper) -> None:
+        """
+        Drops a policy in the specified table.
+
+         Args:
+             cursor (Cursor): The database cursor for executing SQL commands.
+        """
+        execute_string = f"DROP POLICY IF EXISTS {self.policy_name} ON {self.schema}.{self.table}  "
+
+        try:
+            cursor.execute(execute_string)
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to drop policy: {execute_string}") from e
+
     @staticmethod
     def add_draft_check_to_report_using_statement(report_using_statement: str) -> str:
         """

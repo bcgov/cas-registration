@@ -99,6 +99,23 @@ class RlsManager:
                         policy.apply_policy(cursor)
 
     @classmethod
+    def drop_policies(cls) -> None:
+        apps_to_apply_rls = settings.RLS_GRANT_APPS
+        for app_name in apps_to_apply_rls:
+            for model_name in apps.all_models[app_name]:
+                cls.drop_policies_for_model(app_name, model_name)
+
+    @classmethod
+    def drop_policies_for_model(cls, app_name: str, model_name: str) -> None:
+        model = apps.all_models[app_name][model_name]
+        if hasattr(model, 'Rls'):
+            rls = model.Rls
+            with connection.cursor() as cursor:
+                if hasattr(rls, 'policies'):
+                    for policy in rls.policies:
+                        policy.drop_policy(cursor)
+
+    @classmethod
     def apply_m2m_rls(cls, cursor: CursorWrapper, m2m_rls: M2mRls) -> None:
         for grant in m2m_rls.grants:
             grant.apply_grant(cursor)
@@ -109,5 +126,6 @@ class RlsManager:
 
     @classmethod
     def re_apply_rls(cls) -> None:
+        cls.drop_policies()
         cls.reset_privileges_for_roles()
         cls.apply_rls()
