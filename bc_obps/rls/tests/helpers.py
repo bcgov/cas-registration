@@ -49,34 +49,37 @@ def test_policies_for_cas_roles(
                     if RlsOperations.SELECT in operations:
                         if select_function is noop:
                             raise ValueError("SELECT operation granted, but no select_function provided.")
-                        select_function(cursor, i)
+                        run_with_rollback(cursor, select_function, i)
 
                     if RlsOperations.INSERT in operations:
                         if insert_function is noop:
                             raise ValueError(
                                 f"INSERT operation granted for role {role}, but no insert_function provided."
                             )
-                        insert_function(cursor, i)
+                        run_with_rollback(cursor, insert_function, i)
 
                     if RlsOperations.UPDATE in operations:
                         if update_function is noop:
                             raise ValueError(
                                 f"UPDATE operation granted for role {role}, but no update_function provided."
                             )
-                        update_function(cursor, i)
+                        run_with_rollback(cursor, update_function, i)
 
                     if RlsOperations.DELETE in operations:
                         if delete_function is noop:
                             raise ValueError(
                                 f"DELETE operation granted for role {role}, but no delete_function provided."
                             )
-                        delete_function(cursor, i)
+                        run_with_rollback(cursor, delete_function, i)
                 finally:
                     transaction.savepoint_rollback(sid)
 
-def run_with_rollback(cursor, fn):
+def run_with_rollback(cursor, fn, i = None):
         with transaction.atomic():
-            fn(cursor)
+            if i:
+                fn(cursor, i)
+            else:
+                fn(cursor)
             transaction.set_rollback(True)
 
 
