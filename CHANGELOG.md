@@ -1,3 +1,9 @@
+# [3.7.0](https://github.com/bcgov/cas-registration/compare/v3.6.0...v3.7.0) (2025-06-11)
+
+### Features
+
+- payment summary page ([2258e20](https://github.com/bcgov/cas-registration/commit/2258e20fe31d8081503200c985aa42709e5cc73b))
+
 # [3.6.0](https://github.com/bcgov/cas-registration/compare/v3.5.0...v3.6.0) (2025-06-05)
 
 ### Bug Fixes
