@@ -3,7 +3,6 @@ from django.db import ProgrammingError
 import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_attachment import ReportAttachment
-from reporting.tests.utils.bakers import report_baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
@@ -31,7 +30,6 @@ class ReportAttachmentTest(BaseTestCase):
 
 
 class ReportAttachmentRlsTest(BaseTestCase):
-
     def test_report_attachment_rls_industry_user(self):
         # Create a report attachment for an approved user operator
         test = ReportRlsSetup()

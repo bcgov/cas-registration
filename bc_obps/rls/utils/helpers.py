@@ -21,7 +21,7 @@ def generate_rls_grants(
 
 def generate_m2m_rls(
     m2m_models_grants_mapping: Dict[Any, Dict[RlsRoles, List[RlsOperations]]],
-    m2m_models_policy_mapping: Dict[Any, M2MPolicyStatements] = None,
+    m2m_models_policy_mapping: Dict[Any, M2MPolicyStatements] | None = None,
     enable_rls: bool = False,
     schema: Schemas = Schemas.ERC,
 ) -> List[M2mRls]:
@@ -38,7 +38,7 @@ def generate_m2m_rls(
         raise ValueError("Keys in m2m_models_grants_mapping and m2m_models_policy_mapping must be identical.")
     return [
         M2mRls(
-            grants=generate_rls_grants(role_grants_mapping, table, schema), 
+            grants=generate_rls_grants(role_grants_mapping, table, schema),
             policies=generate_rls_policies(
                 role_policy_mapping=generate_report_policy_mapping_from_grants(
                     role_grants_mapping=role_grants_mapping,
@@ -51,64 +51,15 @@ def generate_m2m_rls(
             schema=schema,
             enable_rls=enable_rls,
         )
-        for (table, role_grants_mapping),(table, policy_statements) in zip(m2m_models_grants_mapping.items(), m2m_models_policy_mapping.items())
+        for (table, role_grants_mapping), (table, policy_statements) in zip(
+            m2m_models_grants_mapping.items(), m2m_models_policy_mapping.items()
+        )
     ]
 
 
-def generate_rls_policies_reg(
-    role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
-    table: Any,
-    using_statement: str = "FALSE",
-    check_statement: str = "FALSE",
-    schema: Schemas = Schemas.ERC,
-) -> List[RlsGrant]:
-    """
-    Generate a list of RlsPolicy objects for a given table based on role-to-grants mapping.
-    - For SELECT or UPDATE operations: set using_statement
-    - For INSERT or UPDATE operations: set check_statement
-    - CAS roles always use "TRUE" for those fields; others use the provided arguments
-    """
-    """
-    Generate a list of RlsPolicy objects for a given table based on role-to-grants mapping.
-    - For SELECT or UPDATE operations: set using_statement
-    - For INSERT or UPDATE operations: set check_statement
-    - CAS roles always use "TRUE" for those fields; others use the provided arguments
-    """
-    cas_roles = {
-        RlsRoles.CAS_ADMIN,
-        RlsRoles.CAS_ANALYST,
-        RlsRoles.CAS_DIRECTOR,
-        RlsRoles.CAS_VIEW_ONLY,
-    }
-
-    policies = []
-    for role, operations in role_grants_mapping.items():
-        for operation in operations:
-            policy_kwargs = {
-                "role": role,
-                "policy_name": f"{table.value.lower()}_{role.name.lower()}_{operation.name.lower()}",
-                "operation": operation,
-                "table": table,
-                "schema": schema,
-            }
-
-            if operation in [RlsOperations.SELECT, RlsOperations.UPDATE]:
-                policy_kwargs["using_statement"] = "TRUE" if role in cas_roles else using_statement
-
-            if operation in [RlsOperations.INSERT, RlsOperations.UPDATE]:
-                policy_kwargs["check_statement"] = "TRUE" if role in cas_roles else check_statement
-
-            policies.append(RlsPolicy(**policy_kwargs))
-
-    return policies
-
-
-def generate_rls_policies_rep(
-    #roles: List[RlsRoles],
+def generate_rls_policies(
     role_policy_mapping: Dict[RlsRoles, List[Dict[str, str]]],
-    #operations: List[RlsOperations],
     table: Any,
-    # using_statement: str,
 ) -> List[RlsPolicy]:
     """
     Generate a list of RlsPolicy objects for a given table based on roles and operation.
@@ -131,7 +82,7 @@ def generate_rls_policies_rep(
             )
             if el['operation'] in [RlsOperations.SELECT.value, RlsOperations.UPDATE.value, RlsOperations.DELETE.value]:
                 policy.using_statement = el['using_statement']
-            if el['operation'] in[RlsOperations.UPDATE.value, RlsOperations.INSERT.value]:
+            if el['operation'] in [RlsOperations.UPDATE.value, RlsOperations.INSERT.value]:
                 policy.check_statement = el['using_statement']
             policies.append(policy)
 
@@ -140,7 +91,7 @@ def generate_rls_policies_rep(
 
 def generate_report_policy_mapping_from_grants(
     role_grants_mapping: Dict[RlsRoles, List[RlsOperations]],
-    using_statement: str, 
+    using_statement: str,
     delete_using_statement: str,
 ) -> Dict[RlsRoles, List[Dict[str, str]]]:
     """
@@ -158,15 +109,15 @@ def generate_report_policy_mapping_from_grants(
     Returns:
         dict: A mapping of roles to their corresponding policies.
     """
-    policy_mapping = {}
+    policy_mapping: Dict[RlsRoles, List[Dict[str, str]]] = {}
     for role, operations in role_grants_mapping.items():
         policy_mapping[role] = []
         for operation in operations:
-            policy_data = { 'operation': operation.value}
+            policy_data = {'operation': operation.value}
             # If the role is not INDUSTRY_USER, we set the using_statement to 'true'
             # 'true' means RLS does not filter any rows for that role. Only the grants restrict the operations.
             if role != RlsRoles.INDUSTRY_USER:
-                policy_data['using_statement'] = 'true'  
+                policy_data['using_statement'] = 'true'
             elif operation == RlsOperations.DELETE:
                 policy_data['using_statement'] = delete_using_statement
             else:

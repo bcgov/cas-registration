@@ -58,7 +58,8 @@ class RlsPolicy:
         except Exception as e:
             raise RuntimeError(f"Failed to apply policy: {execute_string}") from e
 
-    def add_draft_check_to_report_using_statement(report_using_statement) -> str:
+    @staticmethod
+    def add_draft_check_to_report_using_statement(report_using_statement: str) -> str:
         """
         Adds an approved check to the report using statement.
         """

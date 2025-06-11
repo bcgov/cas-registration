@@ -1,6 +1,5 @@
 from typing import Any, List, TypedDict
 from common.enums import Schemas
-from requests import delete
 from rls.utils.grant import RlsGrant
 from rls.utils.policy import RlsPolicy
 
@@ -18,7 +17,7 @@ class M2mRls:
     def __init__(
         self,
         grants: List[RlsGrant],
-        policies: List[RlsPolicy] = None,
+        policies: List[RlsPolicy] = [],
         table: Any = None,
         enable_rls: bool = False,
         schema: Schemas = Schemas.ERC,
