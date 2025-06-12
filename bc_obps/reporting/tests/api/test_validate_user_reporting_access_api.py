@@ -78,7 +78,7 @@ class TestValidateUserReportingAccessApi(CommonTestSetup):
         response = TestUtils.mock_get_with_auth_role(self, "industry_user", url)
 
         assert response.status_code == 200
-        # Expect "REGISTERED_AND_INVALID" when report_version_id is provided but not found.
+        # Expect "REGISTERED_AND_INVALID" when report_version_id is provided but Not Found
         assert response.json() == {"status": UserStatusEnum.REGISTERED_AND_INVALID.value}
 
     @patch(

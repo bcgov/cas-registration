@@ -312,6 +312,7 @@ class TestOperationRegistration(CommonTestSetup):
             )
 
         # make sure we are not overriding existing contacts of the operation
+        # brianna
         assert self.operation.contacts.count() == 6
         assert self.operation.contacts.filter(
             business_role__role_name='Operation Representative',

@@ -8,7 +8,7 @@ from reporting.tests.utils.immutable_report_version import (
 )
 from model_bakery.baker import make_recipe, make
 from reporting.tests.utils.report_rls_test_infrastructure import ReportRlsSetup
-from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class ReportAttachmentTest(BaseTestCase):
@@ -122,7 +122,7 @@ class ReportAttachmentRlsTest(BaseTestCase):
             number_of_deleted_report_attachments, _ = random_report_attachment.delete()
             assert number_of_deleted_report_attachments == 0
 
-        test_policies_for_industry_user(
+        assert_policies_for_industry_user(
             ReportAttachment,
             test.approved_user_operator.user,
             select_function,
@@ -144,7 +144,7 @@ class ReportAttachmentRlsTest(BaseTestCase):
         def select_function(cursor, i):
             assert ReportAttachment.objects.count() == test_quantity
 
-        test_policies_for_cas_roles(
+        assert_policies_for_cas_roles(
             ReportAttachment,
             select_function=select_function,
         )
