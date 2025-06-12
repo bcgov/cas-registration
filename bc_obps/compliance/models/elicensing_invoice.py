@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from compliance.models import ElicensingClientOperator
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from .rls_configs.elicensing_invoice import Rls as ElicensingInvoiceRls
 
 
