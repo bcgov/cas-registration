@@ -41,3 +41,38 @@ class TestRlsPolicy(TestCase):
             policy.apply_policy(mock_cursor)
 
         self.assertIn("Failed to apply policy", str(context.exception))
+
+    @patch('django.db.connection.cursor')
+    def test_drop_policy(self, mock_cursor):
+
+        policy = RlsPolicy(
+            role=RlsRoles.INDUSTRY_USER,
+            policy_name="test_policy",
+            operation=RlsOperations.SELECT,
+            table=RegistrationTableNames.CONTACT.value,
+            using_statement=Contact.Rls.using_statement,
+            schema="erc",
+        )
+
+        policy.drop_policy(mock_cursor)
+
+        expected_query = 'DROP POLICY IF EXISTS test_policy ON erc.contact  '
+
+        mock_cursor.execute.assert_called_once_with(expected_query)
+
+    @patch('django.db.connection.cursor')
+    def test_drop_policy_failure(self, mock_cursor):
+        mock_cursor.execute.side_effect = Exception("SQL error")
+        policy = RlsPolicy(
+            role=RlsRoles.INDUSTRY_USER,
+            policy_name="test_policy",
+            operation=RlsOperations.SELECT,
+            table=RegistrationTableNames.CONTACT,
+            using_statement=Contact.Rls.using_statement,
+            schema="erc",
+        )
+
+        with self.assertRaises(RuntimeError) as context:
+            policy.drop_policy(mock_cursor)
+
+        self.assertIn("Failed to drop policy", str(context.exception))
