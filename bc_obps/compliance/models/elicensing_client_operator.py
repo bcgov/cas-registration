@@ -29,7 +29,7 @@ class ElicensingClientOperator(TimeStampedModel):
         db_comment="The clientObjectId identifier from elicensing for the related client"
     )
 
-    client_guid = models.CharField(db_comment="The clientGuid identifier from elicensing for the related client")
+    client_guid = models.UUIDField(db_comment="The clientGuid identifier from elicensing for the related client")
 
     operator = models.ForeignKey(
         Operator,
