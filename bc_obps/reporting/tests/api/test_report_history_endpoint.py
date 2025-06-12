@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 from django.test import Client
-from registration.tests.utils.bakers import operator_baker, operation_baker
-
+from registration.tests.utils.bakers import operator_baker
+from model_bakery.baker import make_recipe
 from registration.utils import custom_reverse_lazy
 from reporting.tests.utils.bakers import report_baker, report_version_baker
 from reporting.schema.report_history import ReportHistoryResponse
@@ -64,11 +64,13 @@ class TestReportHistoryEndpoint(CommonTestSetup):
     def test_get_report_operation_returns_correct_name(self):
         """Test that the report operation endpoint returns the correct operation name."""
         # Arrange: Create a report with an associated operation
-        operation = operation_baker(name="Oil Extraction")
+        approved_user_operator = make_recipe("registration.tests.utils.approved_user_operator")
+        operation = make_recipe(
+            "registration.tests.utils.operation", operator=approved_user_operator.operator, name="Oil Extraction"
+        )
         report = report_baker(operation=operation)
 
-        operator = operator_baker()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
 
         # Act: Make the API request
         response = TestUtils.mock_get_with_auth_role(

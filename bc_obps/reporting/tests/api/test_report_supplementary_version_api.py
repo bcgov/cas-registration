@@ -10,9 +10,14 @@ from reporting.tests.utils.report_access_validation import assert_report_version
 
 class TestReportSupplementaryApi(CommonTestSetup):
     def setup_method(self):
-        self.old_report_version = baker.make_recipe("reporting.tests.utils.report_version")
-        self.new_report_version = baker.make_recipe("reporting.tests.utils.report_version")
         super().setup_method()
+        self.approved_user_operator = baker.make_recipe(
+            "registration.tests.utils.approved_user_operator", user=self.user
+        )
+        self.old_report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report__operation__operator=self.approved_user_operator.operator
+        )
+        self.new_report_version = baker.make_recipe("reporting.tests.utils.report_version")
         TestUtils.authorize_current_user_as_operator_user(self, operator=self.old_report_version.report.operator)
 
     @pytest.mark.parametrize(
@@ -63,6 +68,7 @@ class TestReportSupplementaryApi(CommonTestSetup):
                 kwargs={"version_id": report_version.id},
             ),
         )
+        print(f"Response: {response.json()}")
 
         assert response.status_code == 201
         assert response.json() == self.new_report_version.id
