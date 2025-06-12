@@ -4,6 +4,8 @@ metadata:
   name: {{ include "cas-obps-postgres-migration-test.fullname" . }}
   labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
 spec:
+  users:
+    - name: postgres
   dataSource:
     pgbackrest:
       stanza: db
@@ -50,7 +52,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: 500Mi
+            storage: 400Mi
         storageClassName: netapp-block-standard
       affinity:
         podAntiAffinity:

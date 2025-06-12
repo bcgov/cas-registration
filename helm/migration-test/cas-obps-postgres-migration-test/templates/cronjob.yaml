@@ -59,10 +59,9 @@ spec:
                   echo "⏱️ Waiting for Postgres to be ready...";
                   sleep 5;
                 done;
-                export PGURI="postgres://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/obps"
 
-                if psql "$PGURI" -tAc "SELECT to_regclass('public.django_migrations');" | grep -q django_migrations; then
-                  DBCHECK=$(psql "$PGURI" -tAc "SELECT COUNT(*) FROM django_migrations;")
+                if psql -tAc "SELECT to_regclass('public.django_migrations');" | grep -q django_migrations; then
+                  DBCHECK=$(psql -tAc "SELECT COUNT(*) FROM django_migrations;")
                   if [ "$DBCHECK" -gt 0 ]; then
                     echo "✅ Django migrations exist, database successfully restored."
                     exit 0
