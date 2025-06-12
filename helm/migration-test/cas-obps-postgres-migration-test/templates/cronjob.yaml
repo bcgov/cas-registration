@@ -30,28 +30,25 @@ spec:
               - name: PGUSER
                 valueFrom:
                   secretKeyRef:
-                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
                     key: user
               - name: PGPASSWORD
                 valueFrom:
                   secretKeyRef:
-                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
                     key: password
               - name: PGHOST
                 valueFrom:
                   secretKeyRef:
-                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
                     key: host
+              - name: PGPORT
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                    key: port
               - name: PGDATABASE
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
-                    key: dbname
-              - name: PGURI
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-{{ template "cas-obps-postgres-migration-test.fullname" . }}
-                    key: uri
+                value: "obps"
             command:
               - /usr/bin/env
               - bash
@@ -62,6 +59,7 @@ spec:
                   echo "⏱️ Waiting for Postgres to be ready...";
                   sleep 5;
                 done;
+                export PGURI="postgres://$PGUSER:$PGPASSWORD@$PGHOST:$PGPORT/obps"
 
                 if psql "$PGURI" -tAc "SELECT to_regclass('public.django_migrations');" | grep -q django_migrations; then
                   DBCHECK=$(psql "$PGURI" -tAc "SELECT COUNT(*) FROM django_migrations;")
