@@ -122,6 +122,6 @@ download-dags:
 cas-logging-sidecar:
   host: ~
   index: "cas-bciers-test-logs"
-  prefix: "cas-bciers"
+  prefix: "cas-bciers-test-logs"
   tag: "oc-cas-bciers"
   logName: "cas-bciers-test-logs"

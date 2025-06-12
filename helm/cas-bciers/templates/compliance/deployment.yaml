@@ -51,7 +51,8 @@ spec:
         {{- include "cas-logging-sidecar.containers" (dict
             "containerToSidecar" $containerName
             "logName" "cas-bciers-dev-logs"
-            "host" (index .Values "cas-logging-sidecar" "host")  ) | nindent 8 }}
+            "host" (index .Values "cas-logging-sidecar" "host")
+            "appName" "compliance") | nindent 8 }}
       restartPolicy: Always
       volumes:
              {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
