@@ -30,7 +30,7 @@ def run_with_rollback(cursor, fn):
         transaction.set_rollback(True)
 
 
-def test_policies_for_cas_roles(
+def assert_policies_for_cas_roles(
     model, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
 ):
     """
@@ -74,8 +74,6 @@ def test_policies_for_cas_roles(
 
             RlsMiddleware._set_user_guid_and_role(cursor, user)
 
-            RlsMiddleware._set_user_guid_and_role(cursor, user)
-
             if RlsOperations.SELECT in operations:
                 if select_function is noop:
                     raise ValueError("SELECT operation granted, but no select_function provided.")
@@ -97,8 +95,8 @@ def test_policies_for_cas_roles(
                 run_with_rollback(cursor, delete_function)
 
 
-def test_policies_for_industry_user(
-    model, user: User, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
+def assert_policies_for_industry_user(
+    model_name, user: User, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
 ):
     """
     This function is a helper for testing RLS policies for the industry_user role. Write the select, insert, update, and delete functions and assertions in the test files (see test_contact.py for examples) and then pass them to this function.
@@ -107,7 +105,7 @@ def test_policies_for_industry_user(
 
     with connection.cursor() as cursor:
         RlsMiddleware._set_user_guid_and_role(cursor, user)
-        operations = model.Rls.role_grants_mapping[RlsRoles.INDUSTRY_USER]
+        operations = model_name.Rls.role_grants_mapping[RlsRoles.INDUSTRY_USER]
 
         if RlsOperations.SELECT in operations:
             if select_function is noop:

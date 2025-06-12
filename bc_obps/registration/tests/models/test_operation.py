@@ -1,5 +1,6 @@
 from datetime import datetime
 from common.tests.utils.helpers import BaseTestCase
+import pytest
 from registration.models import (
     BcObpsRegulatedOperation,
     Activity,
@@ -25,6 +26,8 @@ from registration.tests.constants import (
 )
 from registration.tests.utils.bakers import operation_baker
 from itertools import cycle
+
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 
 
 class OperationModelTest(BaseTestCase):
@@ -287,3 +290,91 @@ class OperationTriggerTests(BaseTestCase):
             "Cannot assign bcghg_id to Operation unless status is Registered",
             str(cm.exception),
         )
+
+
+#  RLS tests
+class TestOperationRls(BaseTestCase):
+    def test_operation_rls_industry_user(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        random_operator = baker.make_recipe('registration.tests.utils.operator')
+        random_operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
+
+        assert Operation.objects.count() == 2  # Two operations created
+
+        def select_function(cursor):
+            assert Operation.objects.count() == 1
+
+        def insert_function(cursor):
+            Operation.objects.create(
+                name='Sample Operation Name',
+                type=Operation.Types.LFO,
+                operator=approved_user_operator.operator,
+                status='Not Started',
+            )
+            assert Operation.objects.filter(name='Sample Operation Name').exists()
+
+            with pytest.raises(
+                ProgrammingError, match='new row violates row-level security policy for table "operation'
+            ):
+                cursor.execute(
+                    """
+                    INSERT INTO "erc"."operation" (
+                        id,
+                        name,
+                        type,
+                        operator_id,
+                        status
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s,
+                        %s,
+                        %s
+                    )
+                """,
+                    (
+                        '7f83c2a1-56f4-4bc5-b4ce-bc1f18a72e03',
+                        'Sample Operation Name',
+                        'LFO',
+                        random_operator.id,
+                        'Not Started',
+                    ),
+                )
+
+        def update_function(cursor):
+            Operation.objects.update(name='name updated')
+            assert Operation.objects.filter(name='name updated').count() == 1  # only affected 1
+
+        assert_policies_for_industry_user(
+            Operation,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+        )
+
+    def test_operation_rls_cas_users(self):
+
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            _quantity=5,
+            operator=baker.make_recipe('registration.tests.utils.operator'),
+            status=Operation.Statuses.REGISTERED,
+        )
+
+        # we have to create up here because in the update_function, the role is cas, and they don't have permission to create bcghg ids
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
+
+        def select_function(cursor):
+            assert Operation.objects.count() == 5
+
+        def update_function(cursor):
+
+            updated_operation = Operation.objects.first()
+            updated_operation.bcghg_id = bcghg_id
+            updated_operation.save()
+
+            assert Operation.objects.filter(bcghg_id__isnull=False).count() == 1
+
+        assert_policies_for_cas_roles(Operation, select_function=select_function, update_function=update_function)

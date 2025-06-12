@@ -71,6 +71,7 @@ class TestRlsOperations(TestCase):
                 cursor.execute(f"delete from {model._meta.db_table.replace('\"','')}")  # NOSONAR
 
         def raw_create():
+            # brianna this isn't going to work with policies
             with connection.cursor() as cursor:
                 cursor.execute(f"insert into {model._meta.db_table.replace('\"','')} default values")  # NOSONAR
 
