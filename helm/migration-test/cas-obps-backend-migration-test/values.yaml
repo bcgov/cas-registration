@@ -25,5 +25,5 @@ backend:
       memory: 128Mi
 
   database:
-    releaseName: obps-backups
+    releaseName: obps-bak-test
     appName: cas-obps-postgres-migration-test

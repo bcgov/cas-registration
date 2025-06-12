@@ -173,3 +173,12 @@ Define environment variables for the application.
 - name: ENVIRONMENT
   value: {{ .Values.backend.environment }}
 {{- end }}
+
+
+{{/*
+PostgresDB Selector labels
+*/}}
+{{- define "cas-obps-backend-migration-test.postgresSelectorLabels" -}}
+app.kubernetes.io/name: {{ .Values.backend.database.appName }}
+app.kubernetes.io/instance: {{ .Values.backend.database.releaseName }}
+{{- end }}

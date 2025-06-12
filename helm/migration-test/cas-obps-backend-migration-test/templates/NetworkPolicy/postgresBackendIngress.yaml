@@ -6,13 +6,10 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "cas-obps-backend-migration-test.fullname" . }}
+      {{- include "cas-obps-backend-migration-test.selectorLabels" . | nindent 6 }}
       component: backend
   ingress:
   - from:
     - podSelector:
         matchLabels:
-          app.kubernetes.io/instance: {{ .Values.backend.database.releaseName }}
-    - podSelector:
-        matchLabels:
-          app.kubernetes.io/name: {{ .Values.backend.database.appName }}
+          {{- include "cas-obps-backend-migration-test.postgresSelectorLabels" . | nindent 10 }}
