@@ -46,14 +46,14 @@ class ObligationELicensingService:
             requests.RequestException: If there's an API error
         """
         obligation = ComplianceObligation.objects.get(id=obligation_id)
-        invoice = cls._get_obligation_invoice(obligation)
+        invoice = cls.get_obligation_invoice(obligation)
         if not invoice:
             return []
 
         return cls._parse_invoice_payments(invoice)
 
     @classmethod
-    def _get_obligation_invoice(cls, obligation: ComplianceObligation) -> Optional[InvoiceQueryResponse]:
+    def get_obligation_invoice(cls, obligation: ComplianceObligation) -> Optional[InvoiceQueryResponse]:
         """
         Get the invoice for a compliance obligation from eLicensing.
 
