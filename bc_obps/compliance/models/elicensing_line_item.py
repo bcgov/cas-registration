@@ -16,7 +16,7 @@ class ElicensingLineItem(TimeStampedModel):
 
     object_id = models.IntegerField(db_comment="The objectId of the line item from elicensing")
 
-    guid = models.CharField(db_comment="The guid of the line item from elicensing")
+    guid = models.UUIDField(db_comment="The guid of the line item from elicensing")
 
     elicensing_invoice = models.ForeignKey(
         ElicensingInvoice,
