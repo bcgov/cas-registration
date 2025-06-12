@@ -141,7 +141,7 @@ class ReportAttachmentRlsTest(BaseTestCase):
                 attachment=f'test_attachment_{i}.pdf',
             )
 
-        def select_function(cursor, i):
+        def select_function(cursor):
             assert ReportAttachment.objects.count() == test_quantity
 
         assert_policies_for_cas_roles(
