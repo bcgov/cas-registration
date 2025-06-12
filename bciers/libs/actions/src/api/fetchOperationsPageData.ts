@@ -10,7 +10,7 @@ export default async function fetchOperationsPageData(
     const queryParams = buildQueryParams(searchParams);
     // fetch data from server
     const pageData = await actionHandler(
-      `registration/operations${queryParams}`,
+      `registration/operations-timelines${queryParams}`,
       "GET",
       "",
     );
