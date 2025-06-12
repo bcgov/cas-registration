@@ -575,9 +575,9 @@ class OperationService:
                 "Operation must have a process flow diagram and a boundary map.",
             )
 
-            # Check if operation documents have been scanned for malware
+            # Check if operation documents have been scanned for malware (skip the check in CI because we don't hit GCS)
             yield (
-                lambda: not settings.CI and is_document_scan_complete(operation),
+                lambda: True if settings.CI == 'true' else is_document_scan_complete(operation),
                 "Please wait. Your attachments are being scanned for malware, this may take a few minutes.",
             )
             # Check if operation documents are malware free
