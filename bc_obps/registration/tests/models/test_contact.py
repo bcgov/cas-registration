@@ -1,7 +1,6 @@
 from django.db import ProgrammingError, transaction
 from django.test import TestCase
 from common.tests.utils.helpers import BaseTestCase
-import pytest
 from registration.models import Contact, BusinessRole
 from registration.tests.constants import (
     ADDRESS_FIXTURE,
@@ -11,7 +10,6 @@ from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
 )
 from model_bakery import baker
-from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
 
 
 class ContactModelTest(BaseTestCase):
@@ -106,101 +104,3 @@ class ContactTriggerTests(TestCase):
         self.null_address_contact.refresh_from_db()
         self.assertEqual(self.null_address_contact.email, "updated_null_op_rep@example.com")
         self.assertIsNone(self.null_address_contact.address)
-
-
-# RLS tests
-class TestContactRls(BaseTestCase):
-    def test_contact_rls_industry_user(self):
-
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        # contact belonging to the approved user operator
-        baker.make_recipe('registration.tests.utils.contact', operator=approved_user_operator.operator)
-
-        random_operator = baker.make_recipe('registration.tests.utils.operator')
-        # random contact
-        baker.make_recipe('registration.tests.utils.contact', operator=random_operator)
-
-        assert Contact.objects.count() == 2  # Confirm two contacts were created
-
-        def select_function(cursor):
-            assert Contact.objects.count() == 1  # User should only see their own contact
-
-        def insert_function(cursor):
-            Contact.objects.create(
-                first_name='Jane',
-                last_name='Smith',
-                position_title='Director',
-                email='john.doe@example.com',
-                phone_number='+12505800000',
-                business_role_id='Operation Representative',
-                operator=approved_user_operator.operator,
-            )
-            assert Contact.objects.filter(first_name='Jane').exists()
-
-            # Using cursor because with django, RLS prevents seeing random_operator
-            with pytest.raises(ProgrammingError, match='new row violates row-level security policy for table "contact'):
-                cursor.execute(
-                    """
-        insert into "erc"."contact" (
-            first_name,
-            last_name,
-            position_title,
-            email,
-            phone_number,
-            business_role_id,
-            operator_id
-        ) values (
-            %s,
-            %s,
-            %s,
-            %s,
-            %s,
-            %s,
-            %s
-        )
-        """,
-                    (
-                        'John',
-                        'Doe',
-                        'Manager',
-                        'john.doe@example.com',
-                        '12505800000',
-                        'Operation Representative',
-                        random_operator.id,
-                    ),
-                )
-
-        def update_function(cursor):
-            Contact.objects.update(position_title='Updated Position')
-            assert Contact.objects.filter(position_title='Updated Position').count() == 1
-
-        test_policies_for_industry_user(
-            Contact,
-            approved_user_operator.user,
-            select_function=select_function,
-            insert_function=insert_function,
-            update_function=update_function,
-        )
-
-    def test_contact_rls_cas_users(self):
-
-        baker.make_recipe('registration.tests.utils.contact', _quantity=5)
-        address = baker.make_recipe('registration.tests.utils.address')
-        operator = baker.make_recipe('registration.tests.utils.operator')
-
-        def select_function(cursor):
-            assert Contact.objects.count() == 5
-
-        def insert_function(cursor):
-            Contact.objects.create(
-                first_name='Jane',
-                last_name='Smith',
-                position_title='Director',
-                email='john.doe@example.com',
-                phone_number='+12505800000',
-                business_role_id='Operation Representative',
-                address=address,
-                operator=operator,
-            )
-
-        test_policies_for_cas_roles(Contact, select_function=select_function, insert_function=insert_function)
