@@ -434,7 +434,7 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def query_invoice(self, client_id: str, invoice_number: str) -> InvoiceQueryResponse:
+    def query_invoice(self, client_id: int, invoice_number: str) -> InvoiceQueryResponse:
         """
         Queries an invoice by invoice number.
 
