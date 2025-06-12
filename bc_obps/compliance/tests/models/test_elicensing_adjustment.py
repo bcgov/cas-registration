@@ -14,7 +14,6 @@ class ElicensingAdjustmentTest(BaseTestCase):
             ("id", "ID", None, None),
             ("elicensing_line_item", "elicensing line item", None, None),
             ("adjustment_object_id", "adjustment object id", None, None),
-            ("adjustment_guid", "adjustment guid", None, None),
             ("amount", "amount", None, None),
             ("adjustment_date", "adjustment date", None, None),
             ("reason", "reason", None, None),
