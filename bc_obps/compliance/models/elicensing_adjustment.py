@@ -14,8 +14,6 @@ class ElicensingAdjustment(TimeStampedModel):
         db_comment="The object id of the adjustment in elicensing (adjustmentObjectId)"
     )
 
-    adjustment_guid = models.UUIDField(db_comment="The guid of the adjustment in elicensing")
-
     elicensing_line_item = models.ForeignKey(
         ElicensingLineItem,
         on_delete=models.CASCADE,
