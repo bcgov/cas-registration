@@ -130,22 +130,57 @@ class TestRlsManager(TestCase):
         # Ensure apply_rls_for_model is called for eligible models
         mock_apply_rls_for_model.assert_called_once_with('app1', 'contact')
 
+    @patch('rls.utils.manager.settings')
+    @patch('rls.utils.manager.apps.all_models')
+    @patch.object(RlsManager, 'drop_policies_for_model')
+    def test_drop_policies(self, mock_drop_policies_for_model, mock_all_models, mock_settings):
+        mock_settings.RLS_GRANT_APPS = ['app1', 'app2']
+        mock_all_models.__getitem__.side_effect = lambda app_name: (
+            {'contact': MagicMock()} if app_name == 'app1' else {}
+        )
+        RlsManager.drop_policies()
+
+        # Ensure drop_policies_for_model is called for eligible models
+        mock_drop_policies_for_model.assert_called_once_with('app1', 'contact')
+
     @patch(
-        'django.apps.apps.all_models', new_callable=lambda: {'app1': {'contact': MagicMock(Rls=MagicMock(grants=[]))}}
+        'django.apps.apps.all_models',
+        new_callable=lambda: {'app1': {'contact': MagicMock(Rls=MagicMock(grants=[], policies=[], enable_rls=False))}},
     )
     @patch('django.db.connection.cursor')
     def test_apply_rls_for_model(self, mock_cursor, mock_all_models):
         mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
         RlsManager.apply_rls_for_model('app1', 'contact')
 
-        # Ensure no grants were executed since the list is empty
+        # Ensure no grants or policies were executed since the list is empty
         mock_cursor_instance.execute.assert_not_called()
 
+    @patch(
+        'django.apps.apps.all_models',
+        new_callable=lambda: {
+            'app1': {
+                'contact': MagicMock(Rls=MagicMock(policies=[], enable_rls=True))  # Placeholder, will replace below
+            }
+        },
+    )
+    @patch('django.db.connection.cursor')
+    def test_drop_policies_for_model(self, mock_cursor, mock_all_models):
+        mock_cursor_instance = mock_cursor.return_value.__enter__.return_value
+
+        mock_policy = MagicMock()
+        mock_all_models['app1']['contact'].Rls.policies = [mock_policy]
+
+        RlsManager.drop_policies_for_model('app1', 'contact')
+
+        mock_policy.drop_policy.assert_called_once_with(mock_cursor_instance)
+
+    @patch.object(RlsManager, 'drop_policies')
     @patch.object(RlsManager, 'reset_privileges_for_roles')
     @patch.object(RlsManager, 'apply_rls')
-    def test_re_apply_rls(self, mock_apply_rls, mock_reset_privileges_for_roles):
+    def test_re_apply_rls(self, mock_apply_rls, mock_reset_privileges_for_roles, mock_drop_policies):
         RlsManager.re_apply_rls()
 
         # Ensure methods are called in order
+        mock_drop_policies.assert_called_once()
         mock_reset_privileges_for_roles.assert_called_once()
         mock_apply_rls.assert_called_once()
