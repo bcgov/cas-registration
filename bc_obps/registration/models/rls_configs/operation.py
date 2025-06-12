@@ -1,9 +1,26 @@
 from registration.enums.enums import RegistrationTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants, generate_m2m_rls
+from rls.utils.helpers import (
+    generate_report_policy_mapping_from_grants,
+    generate_rls_grants,
+    generate_m2m_rls,
+    generate_rls_policies,
+)
 
 
 class Rls:
+    enable_rls = True
+    schema = "erc"
+    table = RegistrationTableNames.OPERATION
+    using_statement = """
+                    operator_id IN (
+        SELECT uo.operator_id
+        FROM erc.user_operator uo
+        WHERE uo.user_id = current_setting('my.guid', true)::uuid
+          AND uo.status = 'Approved'
+    )
+                    """
+
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         # To issue BORO ID and BCGHG ID
@@ -57,3 +74,7 @@ class Rls:
         },
     }
     m2m_rls_list = generate_m2m_rls(m2m_models_grants_mapping)
+    role_policy_mapping = generate_report_policy_mapping_from_grants(
+        role_grants_mapping, using_statement, using_statement
+    )
+    policies = generate_rls_policies(role_policy_mapping, table)
