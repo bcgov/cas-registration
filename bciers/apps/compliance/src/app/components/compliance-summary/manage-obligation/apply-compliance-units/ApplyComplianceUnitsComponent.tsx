@@ -39,8 +39,8 @@ export default function ApplyComplianceUnitsComponent({
 
   // Calculate summary values based on BCCR units user has selected
   const calculateSummaryValues = (
-    units: BccrUnit[] = [],
     chargeRate: number,
+    units: BccrUnit[] = [],
   ): Pick<
     ApplyComplianceUnitsFormData,
     | "total_quantity_to_be_applied"
@@ -48,27 +48,25 @@ export default function ApplyComplianceUnitsComponent({
     | "total_equivalent_value"
     | "outstanding_balance"
   > => {
-    const total_quantity_to_be_applied = units.reduce(
+    const totalQuantityToBeApplied = units.reduce(
       (sum, unit) => sum + (unit.quantity_to_be_applied || 0),
       0,
     );
 
     // equivalent emission reduced is the same as quantity
-    const total_equivalent_emission_reduced = total_quantity_to_be_applied;
+    const totalEquivalentEmissionReduced = totalQuantityToBeApplied;
 
     // Calculate total value based on charge rate
-    const total_equivalent_value =
-      total_equivalent_emission_reduced * chargeRate;
+    const totalEquivalentValue = totalEquivalentEmissionReduced * chargeRate;
 
     // Calculate remaining outstanding balance by subtracting the equivalent value from initial balance
-    const outstanding_balance =
-      initialOutstandingBalance - total_equivalent_value;
+    const outstandingBalance = initialOutstandingBalance - totalEquivalentValue;
 
     return {
-      total_quantity_to_be_applied,
-      total_equivalent_emission_reduced,
-      total_equivalent_value,
-      outstanding_balance,
+      total_quantity_to_be_applied: totalQuantityToBeApplied,
+      total_equivalent_emission_reduced: totalEquivalentEmissionReduced,
+      total_equivalent_value: totalEquivalentValue,
+      outstanding_balance: outstandingBalance,
     };
   };
 
@@ -96,8 +94,8 @@ export default function ApplyComplianceUnitsComponent({
       newFormData.bccr_units.length > 0
     ) {
       const summaryValues = calculateSummaryValues(
-        newFormData.bccr_units,
         newFormData.charge_rate,
+        newFormData.bccr_units,
       );
 
       setFormData({
@@ -152,7 +150,7 @@ export default function ApplyComplianceUnitsComponent({
       onSubmit={handleSubmit}
       formContext={{
         // @ts-expect-error - formData is {} when the form is first rendered
-        charge_rate: formData?.charge_rate,
+        chargeRate: formData?.charge_rate,
         validateBccrAccount: (accountId: string) =>
           getBccrComplianceUnitsAccountDetails(accountId, complianceSummaryId),
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {

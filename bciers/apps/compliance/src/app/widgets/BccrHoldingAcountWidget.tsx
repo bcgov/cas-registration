@@ -11,7 +11,7 @@ import {
   bcCarbonRegistryLink,
   ghgRegulatorEmail,
 } from "@bciers/utils/src/urls";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const INVALID_ACCOUNT_MESSAGE = (
   <span className="text-bc-error-red">

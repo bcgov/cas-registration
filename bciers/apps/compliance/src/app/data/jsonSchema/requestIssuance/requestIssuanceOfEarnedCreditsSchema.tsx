@@ -1,10 +1,7 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
-import { Link } from "@mui/material";
-import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import HiddenFieldTemplate from "@bciers/components/form/fields/HiddenFieldTemplate";
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
-import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
 import {
   headerUiConfig,
   readOnlyObjectField,
