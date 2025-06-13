@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/nextjs";
+import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 
 import { Alert, AlertTitle } from "@mui/material";
 
@@ -38,15 +39,11 @@ export default function ErrorBoundary({ error }: Props) {
         </AlertTitle>
         <p>An internal server error has occured.</p>
         <p>
-          Please try refreshing the page or contact support if the problem
-          persists.
+          Please refresh the page. If the problem persists, contact{" "}
+          <a href={ghgRegulatorEmail}>ghgregulator@gov.bc.ca</a> for help and
+          include the reference code:{" "}
+          <strong>{eventId ? eventId : "No reference code available"}</strong>
         </p>
-        <p>If reporting this issue, mention that the error has been logged.</p>
-        {eventId && (
-          <p>
-            Reference Code: <strong>{eventId}</strong>
-          </p>
-        )}
       </Alert>
     </div>
   );
