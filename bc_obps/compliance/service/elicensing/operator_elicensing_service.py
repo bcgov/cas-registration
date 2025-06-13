@@ -103,7 +103,6 @@ class OperatorELicensingService:
             Exception: For any other unexpected errors
         """
         operator = Operator.objects.get(id=operator_id)
-
         # Check if a client already exists for this operator
         existing_link = ELicensingLinkService.get_link_for_model(
             Operator, operator_id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
