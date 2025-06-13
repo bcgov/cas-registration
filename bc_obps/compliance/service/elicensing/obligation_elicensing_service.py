@@ -1,11 +1,8 @@
 import logging
 import uuid
-from typing import List, Optional, Dict, Any
+from typing import List, Dict, Any
 
-from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.models.elicensing_link import ELicensingLink
 from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
-from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
@@ -13,9 +10,10 @@ from compliance.service.elicensing.elicensing_api_client import (
     InvoiceQueryResponse,
     InvoiceFee,
 )
-from registration.models.operator import Operator
 from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
 from django.db import transaction
+from compliance.models import ComplianceObligation, ElicensingInvoice
+from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
 logger = logging.getLogger(__name__)
 
@@ -28,80 +26,6 @@ class ObligationELicensingService:
     This service handles eLicensing integration for compliance obligations,
     including fee creation and synchronization with the eLicensing system.
     """
-
-    @classmethod
-    def get_obligation_invoice_payments(cls, obligation_id: int) -> List[PaymentRecord]:
-        """
-        Get all payments and adjustments for a compliance obligation's invoice.
-
-        Args:
-            obligation_id: The ID of the compliance obligation
-
-        Returns:
-            List of payment records including both payments and adjustments
-
-        Raises:
-            ComplianceObligation.DoesNotExist: If the obligation doesn't exist
-            ValueError: If client or invoice links are missing
-            requests.RequestException: If there's an API error
-        """
-        obligation = ComplianceObligation.objects.get(id=obligation_id)
-        invoice = cls._get_obligation_invoice(obligation)
-        if not invoice:
-            return []
-
-        return cls._parse_invoice_payments(invoice)
-
-    @classmethod
-    def _get_obligation_invoice(cls, obligation: ComplianceObligation) -> Optional[InvoiceQueryResponse]:
-        """
-        Get the invoice for a compliance obligation from eLicensing.
-
-        Args:
-            obligation: The compliance obligation object
-
-        Returns:
-            InvoiceQueryResponse if found, None if no payments exist
-
-        Raises:
-            ValueError: If client or invoice links are missing
-            requests.RequestException: If there's an API error
-        """
-        # Get client link from operator
-        client_link = ELicensingLinkService.get_link_for_model(
-            Operator,
-            obligation.compliance_report_version.compliance_report.report.operation.operator.id,
-            ELicensingLink.ObjectKind.CLIENT,
-        )
-        invoice_link = ELicensingLinkService.get_link_for_model(
-            ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE
-        )
-
-        if not client_link or not invoice_link:
-            error_msg = (
-                f"No client or invoice link found for obligation {obligation.id}. "
-                f"Client link: {client_link}, Invoice link: {invoice_link}"
-            )
-            logger.error(error_msg)
-            raise ValueError(error_msg)
-
-        client_id = client_link.elicensing_object_id
-        invoice_number = invoice_link.elicensing_object_id
-
-        if not client_id or not invoice_number:
-            error_msg = (
-                f"Missing client_id or invoice_number for obligation {obligation.id}. "
-                f"Client ID: {client_id}, Invoice number: {invoice_number}"
-            )
-            logger.error(error_msg)
-            raise ValueError(error_msg)
-
-        try:
-            return elicensing_api_client.query_invoice(client_id, invoice_number)
-        except Exception as e:
-            error_msg = f"Failed to query invoice for obligation {obligation.id}: {str(e)}"
-            logger.error(error_msg)
-            raise
 
     @classmethod
     def _parse_invoice_payments(cls, invoice: InvoiceQueryResponse) -> List[PaymentRecord]:
@@ -187,15 +111,29 @@ class ObligationELicensingService:
                 obligation = ComplianceObligation.objects.get(id=obligation_id)
 
                 # Ensure client exists in eLicensing
-                client_link = OperatorELicensingService.sync_client_with_elicensing(
-                    obligation.compliance_report_version.compliance_report.report.operation.operator.id
+                client_operator = OperatorELicensingService.sync_client_with_elicensing(
+                    obligation.compliance_report_version.compliance_report.report.operator_id
                 )
 
                 # Create fee in eLicensing
-                fee_link = cls.sync_fee_with_elicensing(obligation_id, client_link)
+                fee_data = cls._map_obligation_to_fee_data(obligation)
+                fee_response = elicensing_api_client.create_fees(
+                    client_operator.client_object_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)])
+                )
 
                 # Create invoice in eLicensing
-                cls.sync_invoice_with_elicensing(obligation_id, client_link, fee_link)
+                invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_response.fees[0].feeObjectId)
+                invoice_response = elicensing_api_client.create_invoice(
+                    client_operator.client_object_id, InvoiceCreationRequest(**invoice_data)
+                )
+
+                # Create data in BCIERS database
+                ElicensingDataRefreshService.refresh_data_by_invoice(
+                    client_operator_id=client_operator.id, invoice_number=invoice_response.invoiceNumber
+                )
+                invoice_record = ElicensingInvoice.objects.get(invoice_number=invoice_response.invoiceNumber)
+                obligation.elicensing_invoice = invoice_record
+                obligation.save()
 
                 logger.info(f"Successfully processed obligation {obligation_id} integration with eLicensing")
         except Exception as e:
@@ -239,83 +177,3 @@ class ObligationELicensingService:
             "businessAreaCode": "OBPS",
             "fees": [fee_id],
         }
-
-    @classmethod
-    def sync_fee_with_elicensing(cls, obligation_id: int, client_link: ELicensingLink) -> ELicensingLink:
-        """
-        Creates a fee in eLicensing for a compliance obligation.
-
-        Args:
-            obligation_id: The ID of the compliance obligation
-            client_link: The ELicensingLink for the client
-
-        Returns:
-            The ELicensingLink object for the fee
-
-        Raises:
-            ComplianceObligation.DoesNotExist: If the obligation doesn't exist
-            ValueError: If client_link.elicensing_object_id is None
-            Exception: For any other unexpected errors
-        """
-        obligation = ComplianceObligation.objects.get(id=obligation_id)
-        client_id = client_link.elicensing_object_id
-        if not client_id:
-            raise ValueError("Client link has no elicensing_object_id")
-
-        fee_data = cls._map_obligation_to_fee_data(obligation)
-
-        # Create fee in eLicensing
-        response = elicensing_api_client.create_fees(client_id, FeeCreationRequest(fees=[FeeCreationItem(**fee_data)]))
-
-        fee_object_id = response.fees[0].feeObjectId
-        elicensing_guid = uuid.UUID(response.fees[0].feeGUID)
-
-        # Create link between obligation and eLicensing fee
-        fee_link = ELicensingLinkService.create_link(
-            obligation, fee_object_id, ELicensingLink.ObjectKind.FEE, elicensing_guid
-        )
-
-        return fee_link
-
-    @classmethod
-    def sync_invoice_with_elicensing(
-        cls, obligation_id: int, client_link: ELicensingLink, fee_link: ELicensingLink
-    ) -> ELicensingLink:
-        """
-        Creates an invoice in eLicensing for a compliance obligation.
-
-        Args:
-            obligation_id: The ID of the compliance obligation
-            client_link: The ELicensingLink for the client
-            fee_link: The ELicensingLink for the fee
-
-        Returns:
-            The ELicensingLink object for the invoice
-
-        Raises:
-            ComplianceObligation.DoesNotExist: If the obligation doesn't exist
-            ValueError: If client_link.elicensing_object_id or fee_link.elicensing_object_id is None
-            Exception: For any other unexpected errors
-        """
-        obligation = ComplianceObligation.objects.get(id=obligation_id)
-        client_id = client_link.elicensing_object_id
-        fee_id = fee_link.elicensing_object_id
-
-        if not client_id:
-            raise ValueError("Client link has no elicensing_object_id")
-        if not fee_id:
-            raise ValueError("Fee link has no elicensing_object_id")
-
-        invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_id)
-
-        # Create invoice in eLicensing
-        response = elicensing_api_client.create_invoice(client_id, InvoiceCreationRequest(**invoice_data))
-
-        invoice_number = response.invoiceNumber
-
-        # Create link between obligation and eLicensing invoice
-        invoice_link = ELicensingLinkService.create_link(
-            obligation, invoice_number, ELicensingLink.ObjectKind.INVOICE, elicensing_guid=uuid.uuid4()
-        )
-
-        return invoice_link
