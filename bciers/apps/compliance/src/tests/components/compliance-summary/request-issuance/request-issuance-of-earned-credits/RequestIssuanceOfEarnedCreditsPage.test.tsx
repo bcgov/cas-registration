@@ -3,14 +3,16 @@ import RequestIssuanceOfEarnedCreditsPage from "@/compliance/src/app/components/
 import {
   ActivePage,
   generateRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
+} from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 
 // Mock the task list generator
 vi.mock(
-  "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList",
+  "@/compliance/src/app/components/taskLists/requestIssuanceTaskList",
   () => ({
     generateRequestIssuanceTaskList: vi.fn(),
-    ActivePage: { RequestIssuanceOfEarnedCredits: 1 },
+    ActivePage: {
+      RequestIssuanceOfEarnedCredits: "RequestIssuanceOfEarnedCredits",
+    },
   }),
 );
 

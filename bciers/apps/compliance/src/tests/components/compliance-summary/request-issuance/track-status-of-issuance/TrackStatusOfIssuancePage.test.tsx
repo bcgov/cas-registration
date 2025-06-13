@@ -3,7 +3,7 @@ import TrackStatusOfIssuancePage from "@/compliance/src/app/components/complianc
 import {
   ActivePage,
   generateRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
+} from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 
 // Mock the track status data function
 vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
@@ -27,10 +27,10 @@ vi.mock("@bciers/utils/src/sessionUtils", () => ({
 
 // Mock the task list generator
 vi.mock(
-  "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList",
+  "@/compliance/src/app/components/taskLists/requestIssuanceTaskList",
   () => ({
     generateRequestIssuanceTaskList: vi.fn(),
-    ActivePage: { ReviewComplianceSummary: 0 },
+    ActivePage: { ReviewComplianceSummary: "ReviewComplianceSummary" },
   }),
 );
 
@@ -82,7 +82,6 @@ describe("TrackStatusOfIssuancePage", () => {
       mockComplianceSummaryId,
       2024,
       ActivePage.TrackStatusOfIssuance,
-      false, // isCasStaff parameter should be false with "industry_user" role
     );
   });
 });

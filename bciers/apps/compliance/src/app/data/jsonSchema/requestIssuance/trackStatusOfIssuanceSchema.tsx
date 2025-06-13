@@ -6,34 +6,9 @@ import {
   readOnlyStringField,
   commonReadOnlyOptions,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
-import { IssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
-import { IssuanceStatus } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
-
-export const StatusNoteWidget = (props: any) => {
-  const { value } = props;
-
-  if (value === IssuanceStatus.AWAITING) {
-    return <IssuanceStatusAwaitingNote />;
-  }
-
-  if (value === IssuanceStatus.APPROVED) {
-    return <IssuanceStatusApprovedNote />;
-  }
-
-  return null;
-};
-
-export const StatusTextWidget = (props: any) => {
-  const { value } = props;
-
-  const statusTextMap = {
-    [IssuanceStatus.AWAITING]: "Issuance requested, awaiting approval",
-    [IssuanceStatus.APPROVED]: "Approved, credits issued in BCCR",
-  };
-
-  return <span>{statusTextMap[value as keyof typeof statusTextMap]}</span>;
-};
+import { StatusNoteWidget } from "@/compliance/src/app/data/jsonSchema/StatusNoteWidget";
+import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",

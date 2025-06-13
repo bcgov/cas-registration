@@ -1,7 +1,7 @@
 import {
-  ActivePage,
   generateRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/2_requestIssuanceTaskList";
+  ActivePage,
+} from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
 

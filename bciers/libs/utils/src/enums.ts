@@ -103,3 +103,8 @@ export enum FormMode {
   EDIT = "edit",
   READ_ONLY = "read-only",
 }
+
+export enum IssuanceStatus {
+  APPROVED = "approved",
+  AWAITING = "awaiting",
+}
