@@ -26,7 +26,10 @@ class ExceptionResponse:
 
 class ExceptionHandler:
     EXCEPTION_MAP: dict[tuple[type[BaseException], ...], ExceptionResponse] = {
-        (BCCarbonRegistryError,): ExceptionResponse("BC Carbon Registry features not available at this time", 400),
+        (BCCarbonRegistryError,): ExceptionResponse(
+            "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help.",
+            400,
+            "bccr_error"),
         (ComplianceInvoiceError,): ExceptionResponse(
             "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists.",
             400,
