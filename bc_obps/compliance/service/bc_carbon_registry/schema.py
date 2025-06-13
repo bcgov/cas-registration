@@ -37,6 +37,8 @@ class FilterModel(BaseModel):
     accountTypeId: CommonFilterType = None
     stateCode: CommonFilterType = None
     vintage: CommonFilterType = None
+    complianceYear: CommonFilterType = None
+    boroId: CommonFilterType = None
 
 
 class SearchFilter(BaseModel):
@@ -77,7 +79,7 @@ class AccountDetailEntity(BaseModel):
     standardName: str  # "BC Carbon Registry"
     accountId: NonNegativeInt  # 103100000028577
     accountName: str  # "General Participant Admin Test"
-    mainContactName: str  # "Kelly Konrad"
+    mainContactName: Optional[str] = None  # "Kelly Konrad"
     accountTypeName: Optional[str] = None  # "General Participant"
     accountTypeId: Optional[NonNegativeInt] = None  # 10
     type_of_account_holder: str  # "Corporation"
@@ -251,12 +253,13 @@ class SubAccountPayload(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
     master_account_id: FifteenDigitString  # "103000000037199"
     compliance_year: PositiveInt  # 2025
-    organization_classification_id: FifteenDigitString  # "100000000000096" - organizationClassificationId from account details
+    organization_classification_id: (
+        FifteenDigitString  # "100000000000096" - organizationClassificationId from account details
+    )
     type_of_organization: Literal[
         "140000000000001", "140000000000002", "140000000000003"
     ]  # type_of_account_holder from master account (Corporation)
-    registered_name: str  # we can use operation name for now
-    trading_name: str  # we can use operation name for now
+    registered_name: str  # Operation name + BORO ID
     boro_id: str = Field(pattern=r"^\d{2}-\d{4}$")
     # Optional fields (Default based on the S&P API documentation)
     account_type_id: Optional[PositiveInt] = 14  # Compliance
