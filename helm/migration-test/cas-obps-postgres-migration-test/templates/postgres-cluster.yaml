@@ -6,6 +6,16 @@ metadata:
 spec:
   users:
     - name: postgres
+      databases:
+        - obps
+      password:
+        type: AlphaNumeric
+    - name: registration
+      password:
+        type: AlphaNumeric
+      databases:
+        - obps
+      options: "CREATEROLE"
   dataSource:
     pgbackrest:
       stanza: db
