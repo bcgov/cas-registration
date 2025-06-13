@@ -192,7 +192,7 @@ class InvoiceQueryResponse:
     clientObjectId: str
     clientGUID: str
     invoiceNumber: str
-    invoiceDueDate: str
+    invoicePaymentDueDate: str
     invoiceOutstandingBalance: Decimal
     invoiceFeeBalance: Decimal
     invoiceInterestBalance: Decimal
