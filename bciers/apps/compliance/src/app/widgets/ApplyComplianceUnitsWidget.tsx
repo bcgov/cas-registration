@@ -36,7 +36,7 @@ const ApplyComplianceUnitsWidget = ({
   formContext,
   readonly,
 }: WidgetProps) => {
-  const { charge_rate, complianceLimitStatus } = formContext;
+  const { chargeRate, complianceLimitStatus } = formContext;
   const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value);
 
   const handleUnitUpdate = (updatedUnit: BccrUnit) => {
@@ -48,7 +48,7 @@ const ApplyComplianceUnitsWidget = ({
   };
 
   const columns = applyComplianceUnitsColumns(
-    charge_rate,
+    chargeRate,
     readonly,
     handleUnitUpdate,
   );
