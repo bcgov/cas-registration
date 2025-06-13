@@ -13,13 +13,15 @@ class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
 
     def test_successful_operation_retrieval(self):
         # Arrange
-        compliance_report_version = make_recipe("compliance.tests.utils.compliance_report_version")
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        compliance_report_version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operation__operator=approved_user_operator.operator,
+        )
 
         # Act
         # Mock the authorization and perform the request
-        TestUtils.authorize_current_user_as_operator_user(
-            self, operator=make_recipe('registration.tests.utils.operator')
-        )
+        TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",

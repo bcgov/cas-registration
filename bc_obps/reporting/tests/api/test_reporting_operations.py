@@ -28,8 +28,9 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
         Note: the import for the get_current_user_guid mock needs to have the file path of the importing file,
         since this is a module-level function
         """
-
-        operations = operation_baker(_quantity=5)
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        operations = operation_baker(operator_id=operator.id, _quantity=5)
 
         # The return value needs empty query sets of the right type for the annotations
         mock_get_operations.return_value = Operation.objects.annotate(
@@ -41,8 +42,6 @@ class TestReportingOperationsEndpoint(CommonTestSetup):
         mock_get_current_year.return_value = reporting_year_baker(reporting_year=1234)
         mock_get_current_user.return_value = user_baker()
 
-        operator = operator_baker()
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", self.endpoint_under_test).json()
 
         assert response_json['count'] == 5

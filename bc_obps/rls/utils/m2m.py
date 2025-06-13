@@ -1,6 +1,7 @@
-from typing import List
+from typing import Any, List, TypedDict
 from common.enums import Schemas
 from rls.utils.grant import RlsGrant
+from rls.utils.policy import RlsPolicy
 
 
 class M2mRls:
@@ -16,11 +17,18 @@ class M2mRls:
     def __init__(
         self,
         grants: List[RlsGrant],
+        policies: List[RlsPolicy] = [],
+        table: Any = None,
+        enable_rls: bool = False,
         schema: Schemas = Schemas.ERC,
-        # TODO: Implement the following part when the RlsPolicy class is implemented
-        # policies: List[RlsPolicy],
     ):
         self.grants = grants
-        self.schema = schema
-        # TODO: Implement the following part when the RlsPolicy class is implemented
-        # self.policies = policies
+        self.policies = policies
+        self.table = table.value if table is not None else None
+        self.enable_rls = enable_rls
+        self.schema = schema.value
+
+
+class M2MPolicyStatements(TypedDict):
+    using_statement: str
+    delete_using_statement: str
