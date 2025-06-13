@@ -17,8 +17,39 @@ export interface ComplianceSummary {
 }
 
 export interface BccrAccountDetailsResponse {
-  tradingName: string | null;
+  bccr_holding_account_id?: string;
+  bccr_trading_name?: string | null;
   error?: string;
+  bccr_compliance_account_id?: string;
+  charge_rate: number;
+}
+
+export interface BccrComplianceAccountResponse {
+  bccr_trading_name?: string | null;
+  bccr_compliance_account_id?: string;
+  bccr_units?: BccrUnit[];
+  charge_rate: number;
+  outstanding_balance: number;
+}
+
+export interface ApplyComplianceUnitsFormData
+  extends BccrComplianceAccountResponse {
+  bccr_holding_account_id?: string;
+  total_quantity_to_be_applied: number;
+  total_equivalent_emission_reduced: number;
+  total_equivalent_value: number;
+  outstanding_balance: number;
+}
+
+export interface BccrUnit {
+  id: string;
+  type: string;
+  serial_number: string;
+  vintage_year: number;
+  quantity_available: number;
+  quantity_to_be_applied: number;
+  equivalent_emission_reduced: number;
+  equivalent_value: number;
 }
 
 export interface Payment {
