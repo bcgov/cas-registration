@@ -220,45 +220,6 @@ class BCCarbonRegistryAPIClient:
             "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
         )
 
-    def list_holding_accounts(self, master_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
-        """
-        Lists all holding accounts by compliance account
-        :param master_account_id: The ID of the master account
-        :param limit: Number of holding accounts to retrieve.
-        :param start: Starting index for pagination.
-
-        Account Types - ID:
-        Project Proponent - 2
-        Validator/Verifier - 6
-        Program Administrator - 7
-        General Participant - 10
-        Operator of Regulated Operation - 11
-        Compliance - 14
-        """
-        self._check_pagination_params(limit, start)
-
-        if isinstance(master_account_id, str) and not master_account_id.isdigit():
-            logger.error("Invalid master_account_id: %s", master_account_id)
-            raise ValueError("master_account_id must be a numeric string")
-
-        payload = SearchFilter(
-            pagination=Pagination(start=start, limit=limit),
-            filterModel=FilterModel(
-                accountTypeId={
-                    "columnFilters": [
-                        ColumnFilter(filterType="Number", type="equals", filter=self.COMPLIANCE_ACCOUNT_TYPE_ID)
-                    ]
-                },
-                masterAccountId={
-                    "columnFilters": [ColumnFilter(filterType="Text", type="in", filter=master_account_id)]
-                },
-                stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
-            ),
-        )
-        return self._make_request(
-            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
-        )
-
     def list_all_units(self, holding_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
         """
         List compliance units for a given holding account.
@@ -434,6 +395,14 @@ class BCCarbonRegistryAPIClient:
         :param compliance_year: The compliance year to filter by
         :param boro_id: The BORO ID to filter by
         :return: Dictionary containing the search results
+
+        Account Types - ID:
+        Project Proponent - 2
+        Validator/Verifier - 6
+        Program Administrator - 7
+        General Participant - 10
+        Operator of Regulated Operation - 11
+        Compliance - 14
         """
         if isinstance(master_account_id, str) and not master_account_id.isdigit():
             logger.error("Invalid master_account_id: %s", master_account_id)
