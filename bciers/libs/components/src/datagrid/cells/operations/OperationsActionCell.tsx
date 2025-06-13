@@ -13,7 +13,7 @@ const OperationsActionCell = (isInternalUser: boolean) => {
           break;
         case OperationStatus.DRAFT:
           actionText = "Continue Registration";
-          url = `/registration/register-an-operation/${params.row.operation__id}/1`;
+          url = `/registration/register-an-operation/${params.row.operation__id}/1?continue=true`;
           break;
       }
     }
