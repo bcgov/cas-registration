@@ -18,8 +18,6 @@ backend:
     port: 8000
 
   resources:
-    limits:
-      memory: 256Mi
     requests:
       cpu: 60m
       memory: 128Mi
