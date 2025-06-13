@@ -1,64 +1,82 @@
 import { WidgetProps } from "@rjsf/utils";
-import { useState, useCallback } from "react";
-import { TextField, InputAdornment, CircularProgress } from "@mui/material";
-import debounce from "lodash.debounce";
-import ErrorCircle from "@bciers/components/icons/ErrorCircle";
-import { actionHandler } from "@bciers/actions";
+import {
+  TextField,
+  InputAdornment,
+  CircularProgress,
+  Link,
+} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { BccrAccountDetailsResponse } from "@/compliance/src/app/types";
+import AlertIcon from "@bciers/components/icons/AlertIcon";
+import {
+  bcCarbonRegistryLink,
+  ghgRegulatorEmail,
+} from "@bciers/utils/src/urls";
+import { useState, useEffect } from "react";
 
-// Helper functions
-const isValidAccountIdFormat = (accountId: string): boolean =>
-  accountId.length === 15 && /^\d{15}$/.test(accountId);
+const INVALID_ACCOUNT_MESSAGE = (
+  <span className="text-bc-error-red">
+    Please enter a valid BCCR Holding Account ID to move to the next step, or
+    contact{" "}
+    <a href={ghgRegulatorEmail} className="text-bc-link-blue hover:underline">
+      GHGRegulator@gov.bc.ca
+    </a>{" "}
+    if you have any questions.
+  </span>
+);
 
-const fetchAccountDetails = async (accountId: string) =>
-  actionHandler(`compliance/bccr/accounts/${accountId}`, "GET");
+const BccrHoldingAccountWidget = (props: WidgetProps) => {
+  const { id, value, disabled, readonly, onChange, formContext } = props;
+  const { onValidAccountResolved, validateBccrAccount, onError } =
+    formContext || {};
 
-const isValidResponse = (response: BccrAccountDetailsResponse): boolean =>
-  !response.error && response.tradingName != null;
-
-const BCCRHoldingAccountWidget = (props: WidgetProps) => {
-  const { id, value, onChange, disabled, readonly, placeholder, formContext } =
-    props;
-
+  const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showError, setShowError] = useState(false);
 
-  const validateAccountId = useCallback(
-    debounce(async (accountId: string) => {
-      if (!isValidAccountIdFormat(accountId)) {
-        setIsValid(null);
-        formContext?.onValidAccountResolved?.(undefined);
-        return;
-      }
+  const isReadOnly = disabled || readonly || isLoading;
 
-      setIsLoading(true);
-      try {
-        const response = await fetchAccountDetails(accountId);
-        const valid = isValidResponse(response);
-        setIsValid(valid);
+  const validateAccount = async (accountId: string) => {
+    if (accountId.length !== 15 || !validateBccrAccount) {
+      return;
+    }
 
-        formContext?.onValidAccountResolved?.(valid ? response : undefined);
-      } catch {
+    setIsLoading(true);
+    setShowError(false);
+
+    try {
+      const response = await validateBccrAccount(accountId);
+
+      if (response?.bccr_trading_name === null) {
         setIsValid(false);
-        formContext?.onValidAccountResolved?.(undefined);
-      } finally {
-        setIsLoading(false);
+        setShowError(true);
+        onValidAccountResolved?.(undefined);
+      } else {
+        setIsValid(true);
+        setShowError(false);
+        onValidAccountResolved?.(response);
+        onError?.(undefined);
       }
-    }, 500),
-    [],
-  );
+    } catch (error) {
+      setIsValid(false);
+      setShowError(false);
+      onValidAccountResolved?.(undefined);
+      onError?.([(error as Error).message]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    if (newValue.length > 15) return; // Prevent input longer than 15 characters
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value.replace(/[^0-9]/g, "").slice(0, 15);
+    onChange(newValue);
 
-    if (/^\d*$/.test(newValue) && newValue.length <= 15) {
-      onChange(newValue === "" ? undefined : newValue);
-      await validateAccountId(newValue);
+    if (newValue.length === 15) {
+      validateAccount(newValue);
     } else {
       setIsValid(null);
-      formContext?.onValidAccountResolved?.(undefined);
+      setShowError(false);
+      onValidAccountResolved?.(undefined);
+      onError?.(undefined);
     }
   };
 
@@ -66,13 +84,14 @@ const BCCRHoldingAccountWidget = (props: WidgetProps) => {
     <div className="w-full">
       <TextField
         id={id}
+        helperText={showError && INVALID_ACCOUNT_MESSAGE}
         size="small"
-        disabled={disabled || readonly || isLoading}
+        disabled={isReadOnly}
         name={id}
-        value={value ?? ""}
+        value={value || ""}
         onChange={handleChange}
         className="w-full"
-        placeholder={placeholder}
+        error={showError}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -81,16 +100,29 @@ const BCCRHoldingAccountWidget = (props: WidgetProps) => {
                   <CircularProgress size={20} />
                 ) : isValid === true ? (
                   <CheckCircleIcon color="success" />
-                ) : isValid === false ? (
-                  <ErrorCircle sx={{ mr: 0 }} />
+                ) : showError ? (
+                  <AlertIcon width="20" height="20" />
                 ) : null}
               </div>
             </InputAdornment>
           ),
         }}
       />
+      <small>
+        No account?{" "}
+        <Link
+          href={bcCarbonRegistryLink}
+          underline="hover"
+          className="text-bc-link-blue font-medium"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Create account
+        </Link>{" "}
+        in BCCR.
+      </small>
     </div>
   );
 };
 
-export default BCCRHoldingAccountWidget;
+export default BccrHoldingAccountWidget;
