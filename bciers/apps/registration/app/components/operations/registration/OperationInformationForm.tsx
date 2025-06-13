@@ -11,7 +11,7 @@ import {
   createUnnestedFormData,
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   RegistrationPurposeHelpText,
   RegistrationPurposes,
@@ -55,6 +55,9 @@ const OperationInformationForm = ({
   const [currentUiSchema, setCurrentUiSchema] = useState(
     registrationOperationInformationUiSchema,
   );
+  const searchParams = useSearchParams();
+  const isOperationReadOnly = searchParams.get("continue") as string;
+
   const updateUiSchemaWithHelpText = (
     registrationPurpose: RegistrationPurposes,
   ) => {
@@ -71,6 +74,12 @@ const OperationInformationForm = ({
               {RegistrationPurposeHelpText[registrationPurpose]}
             </small>
           ),
+        },
+        operation: {
+          ...registrationOperationInformationUiSchema.section1.operation,
+          ...(isOperationReadOnly && {
+            "ui:widget": "ReadOnlyComboBoxWidget",
+          }),
         },
       },
     });
