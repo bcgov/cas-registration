@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
 import uuid
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
 import requests
 
@@ -8,6 +9,8 @@ from django.utils import timezone
 
 from registration.models.operator import Operator
 from compliance.models.elicensing_link import ELicensingLink
+from model_bakery.baker import make_recipe
+from django.core.exceptions import MultipleObjectsReturned
 
 
 @pytest.fixture
@@ -145,43 +148,32 @@ class TestOperatorELicensingService:
         assert result.country == "Canada"
 
     @pytest.mark.django_db
-    def test_sync_client_with_elicensing_existing_client(
-        self, mock_operator_get, mock_link_service, mock_operator, mock_elicensing_link
-    ):
+    def test_sync_client_with_elicensing_existing_client(self):
         """Test sync_client_with_elicensing when client already exists"""
         # Setup mocks
-        mock_operator_get.return_value = mock_operator
-        mock_link_service.get_link_for_model.return_value = mock_elicensing_link
-        mock_elicensing_link.elicensing_object_id = "12345"
+        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
 
         # Call the method
-        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(client_operator.operator_id)
 
         # Assert that the existing link was returned
-        assert result == mock_elicensing_link
-        mock_link_service.get_link_for_model.assert_called_once_with(
-            Operator, mock_operator.id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
-        )
+        assert result == client_operator
 
     @pytest.mark.django_db
-    def test_sync_client_with_elicensing_operator_not_found(self, mock_operator_get, mock_operator):
+    def test_sync_client_with_elicensing_operator_not_found(self, mock_operator):
         """Test sync_client_with_elicensing when operator does not exist"""
-        # Setup mock to raise DoesNotExist
-        mock_operator_get.side_effect = Operator.DoesNotExist
+
+        operator = mock_operator
 
         # Call the method and expect exception
         with pytest.raises(Operator.DoesNotExist):
-            OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
+            OperatorELicensingService.sync_client_with_elicensing(operator.id)
 
     @pytest.mark.django_db
-    def test_sync_client_with_elicensing_create_client_success(
-        self, mock_api_client, mock_operator_get, mock_link_service, mock_operator, mock_elicensing_link
-    ):
+    def test_sync_client_with_elicensing_create_client_success(self, mock_api_client):
         """Test sync_client_with_elicensing successfully creates a new client"""
         # Setup mocks
-        mock_operator_get.return_value = mock_operator
-        mock_link_service.get_link_for_model.return_value = None
-        mock_link_service.create_link.return_value = mock_elicensing_link
+        operator = make_recipe('registration.tests.utils.operator')
 
         # Setup successful API call
         mock_response = MagicMock()
@@ -189,24 +181,31 @@ class TestOperatorELicensingService:
         mock_api_client.create_client.return_value = mock_response
 
         # Call the method
-        result = OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
+        result = OperatorELicensingService.sync_client_with_elicensing(operator.id)
 
         # Assert result is the new link
-        assert result == mock_elicensing_link
-        mock_link_service.create_link.assert_called_once()
+        assert result == ElicensingClientOperator.objects.get(operator_id=operator.id)
 
     @pytest.mark.django_db
-    def test_sync_client_with_elicensing_api_error(
-        self, mock_api_client, mock_operator_get, mock_link_service, mock_operator
-    ):
+    def test_sync_client_with_elicensing_api_error(self, mock_api_client):
         """Test sync_client_with_elicensing handles API errors"""
-        # Setup mocks
-        mock_operator_get.return_value = mock_operator
-        mock_link_service.get_link_for_model.return_value = None
+
+        operator = make_recipe('registration.tests.utils.operator')
 
         # Setup API error
         mock_api_client.create_client.side_effect = requests.RequestException("API Error")
 
         # Call the method and expect exception
         with pytest.raises(requests.RequestException):
-            OperatorELicensingService.sync_client_with_elicensing(mock_operator.id)
+            OperatorELicensingService.sync_client_with_elicensing(operator.id)
+
+    @pytest.mark.django_db
+    def test_sync_client_with_elicensing_multiple_records_error(self):
+        """Test sync_client_with_elicensing handles multiple record errors"""
+
+        client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        make_recipe('compliance.tests.utils.elicensing_client_operator', operator_id=client_operator.operator_id)
+
+        # Call the method and expect exception
+        with pytest.raises(MultipleObjectsReturned):
+            OperatorELicensingService.sync_client_with_elicensing(client_operator.operator_id)

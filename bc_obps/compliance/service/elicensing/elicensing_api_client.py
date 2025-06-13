@@ -315,12 +315,12 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def create_fees(self, client_id: str, fees_data: FeeCreationRequest) -> FeeResponse:
+    def create_fees(self, client_id: int, fees_data: FeeCreationRequest) -> FeeResponse:
         """
         Creates fee records for a specified client.
 
         Args:
-            client_id: The client ID (can be either object ID or GUID)
+            client_id: The client object ID
             fees_data: Fee data containing an array of fee records
 
         Returns:
@@ -434,7 +434,7 @@ class ELicensingAPIClient:
             # This line should never be reached due to raise_for_status in _handle_error_response
             raise RuntimeError("Unexpected code path - API error handling failed")
 
-    def query_invoice(self, client_id: str, invoice_number: str) -> InvoiceQueryResponse:
+    def query_invoice(self, client_id: int, invoice_number: str) -> InvoiceQueryResponse:
         """
         Queries an invoice by invoice number.
 
@@ -480,12 +480,12 @@ class ELicensingAPIClient:
         payment_data["distributions"] = distributions
         return Payment(**payment_data)
 
-    def create_invoice(self, client_id: str, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
+    def create_invoice(self, client_id: int, invoice_data: InvoiceCreationRequest) -> InvoiceResponse:
         """
         Creates an invoice in eLicensing for a set of fees.
 
         Args:
-            client_id: The ID of the client
+            client_id: The object ID of the client
             invoice_data: The invoice data to create
 
         Returns:

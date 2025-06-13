@@ -3,6 +3,7 @@ from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from .rls_configs.compliance_obligation import Rls as ComplianceObligationRls
+from compliance.models.elicensing_invoice import ElicensingInvoice
 
 
 class ComplianceObligation(TimeStampedModel):
@@ -24,6 +25,15 @@ class ComplianceObligation(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name="obligation",
         db_comment="The compliance report version this obligation belongs to",
+    )
+
+    elicensing_invoice = models.OneToOneField(
+        ElicensingInvoice,
+        on_delete=models.PROTECT,
+        related_name="compliance_obligation",
+        db_comment="Foreign key to the elicensing_invoice in the OBPS data. The data in the elicensing_invoice table comes from elicensing",
+        null=True,
+        blank=True,
     )
 
     obligation_id = models.CharField(
