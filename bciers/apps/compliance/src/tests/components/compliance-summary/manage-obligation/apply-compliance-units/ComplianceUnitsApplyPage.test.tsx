@@ -23,7 +23,7 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 
 // Mock the main component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyComponent",
+  "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent",
   () => ({
     default: () => <div>Mock Apply Component</div>,
   }),

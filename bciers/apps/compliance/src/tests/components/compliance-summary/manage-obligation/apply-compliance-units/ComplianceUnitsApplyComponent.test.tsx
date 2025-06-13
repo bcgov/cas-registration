@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import ComplianceUnitsApplyComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
+import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 import { useRouter } from "@bciers/testConfig/mocks";
 
 const mockRouterPush = vi.fn();
@@ -16,13 +16,13 @@ vi.mock("@bciers/actions", () => ({
   }),
 }));
 
-describe("ComplianceUnitsApplyComponent", () => {
+describe("ApplyComplianceUnitsComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders the form with correct schema fields and headers", () => {
-    render(<ComplianceUnitsApplyComponent complianceSummaryId="123" />);
+    render(<ApplyComplianceUnitsComponent complianceSummaryId="123" />);
 
     // Check form title
     expect(screen.getByText("Apply Compliance Units")).toBeVisible();
@@ -43,7 +43,7 @@ describe("ComplianceUnitsApplyComponent", () => {
   });
 
   it("updates form data when onValidAccountResolved is called", async () => {
-    render(<ComplianceUnitsApplyComponent complianceSummaryId="123" />);
+    render(<ApplyComplianceUnitsComponent complianceSummaryId="123" />);
 
     // Get the BCCR Holding Account ID input
     const accountInput = screen.getByRole("textbox");
@@ -61,7 +61,7 @@ describe("ComplianceUnitsApplyComponent", () => {
   });
 
   it("renders navigation buttons with correct states", () => {
-    render(<ComplianceUnitsApplyComponent complianceSummaryId="123" />);
+    render(<ApplyComplianceUnitsComponent complianceSummaryId="123" />);
 
     // Check button text
     const cancelButton = screen.getByRole("button", { name: "Cancel" });
