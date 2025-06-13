@@ -150,7 +150,6 @@ def valid_sub_account_payload():
         "registered_name": "Test BC Subaccount",
         "master_account_id": "103000000037199",
         "type_of_organization": "140000000000001",
-        "trading_name": "Test BC Subaccount Trading",
         "boro_id": "12-3456",
     }
 
@@ -377,9 +376,7 @@ class TestBCCarbonRegistryAPIClient:
 
         # Act & Assert
         with pytest.raises(BCCarbonRegistryError, match="Invalid payload"):
-            client._submit_payload(
-                data=empty_payload, url="/test", payload_model=ProjectPayload, error_message="Invalid payload"
-            )
+            client._submit_payload(data=empty_payload, url="/test", payload_model=ProjectPayload, error_message="Invalid payload")
 
     def test_get_account_details_success(self, authenticated_client):
         # Arrange
@@ -484,58 +481,6 @@ class TestBCCarbonRegistryAPIClient:
         assert result["totalEntities"] == 0
         assert len(result["entities"]) == 0
         mock_request.assert_called_once()
-
-    def test_list_holding_accounts_success(self, authenticated_client):
-        # Arrange
-        client, mock_request = authenticated_client
-        mock_response = Mock(
-            status_code=200,
-            json=lambda: {
-                **BASE_ACCOUNT_RESPONSE,
-                "entities": [{**BASE_ACCOUNT_RESPONSE["entities"][0], "accountTypeId": 14}],
-            },
-        )
-        mock_request.return_value = mock_response
-        # Act
-        result = client.list_holding_accounts(master_account_id=MOCK_FIFTEEN_DIGIT_STRING, limit=10, start=0)
-        # Assert
-        assert result["totalEntities"] == 1
-        assert len(result["entities"]) == 1
-        assert_account_keys(result["entities"])
-        mock_request.assert_called_once_with(
-            method="POST",
-            url=f"{API_URL}/es/account/pagePrivateSearchByFilter",
-            headers={
-                "Authorization": f"Bearer {TOKEN}",
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-            json={
-                "pagination": {
-                    "start": 0,
-                    "limit": 10,
-                    "sortOptions": [{"sort": "accountName.keyword", "dir": "ASC"}],
-                },
-                "filterModel": {
-                    "accountTypeId": {"columnFilters": [{"filterType": "Text", "type": "in", "filter": "14"}]},
-                    "masterAccountId": {
-                        "columnFilters": [{"filterType": "Text", "type": "in", "filter": MOCK_FIFTEEN_DIGIT_STRING}]
-                    },
-                    "stateCode": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "ACTIVE"}]},
-                },
-                "groupKeys": [],
-            },
-            params=None,
-        )
-
-    def test_list_holding_accounts_invalid_id(self, setup, caplog):
-        # Arrange
-        client = setup
-        # Act & Assert
-        with caplog.at_level(logging.ERROR):
-            with pytest.raises(ValueError, match="master_account_id must be a numeric string"):
-                client.list_holding_accounts(master_account_id="invalid")
-            assert "Invalid master_account_id" in caplog.text
 
     def test_list_all_units_success(self, authenticated_client):
         # Arrange
@@ -761,3 +706,59 @@ class TestBCCarbonRegistryAPIClient:
         # Act & Assert
         with pytest.raises(BCCarbonRegistryError, match="Invalid sub account payload"):
             client.create_sub_account(invalid_payload)
+
+    def test_get_compliance_account_success(self, authenticated_client):
+        # Arrange
+        client, mock_request = authenticated_client
+        mock_response = Mock(
+            status_code=200,
+            json=lambda: {
+                **BASE_ACCOUNT_RESPONSE,
+                "entities": [{**BASE_ACCOUNT_RESPONSE["entities"][0], "masterAccountId": MOCK_FIFTEEN_DIGIT_STRING, "masterAccountName": "Test Holding Account", "entityId": 123456789012345}],
+            },
+        )
+        mock_request.return_value = mock_response
+        # Act
+        result = client.get_compliance_account(master_account_id=MOCK_FIFTEEN_DIGIT_STRING, compliance_year=2024, boro_id="TEST123")
+        # Assert
+        assert result["totalEntities"] == 1
+        assert len(result["entities"]) == 1
+        assert result["entities"][0]["masterAccountId"] == MOCK_FIFTEEN_DIGIT_STRING
+        assert result["entities"][0]["masterAccountName"] == "Test Holding Account"
+        assert result["entities"][0]["entityId"] == 123456789012345
+        mock_request.assert_called_once_with(
+            method="POST",
+            url=f"{API_URL}/raas-report-api/es/account/pagePrivateSearchByFilter",
+            headers={
+                "Authorization": f"Bearer {TOKEN}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            json={
+                "searchFilter": {
+                    "pagination": {
+                        "start": 0,
+                        "limit": 20,
+                        "sortOptions": [{"sort": "accountName.keyword", "dir": "ASC"}],
+                    },
+                    "filterModel": {
+                        "masterAccountId": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": MOCK_FIFTEEN_DIGIT_STRING}]},
+                        "accountTypeId": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": 14}]},
+                        "stateCode": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "ACTIVE"}]},
+                        "complianceYear": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": 2024}]},
+                        "boroId": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "TEST123"}]},
+                    },
+                    "groupKeys": [],
+                }
+            },
+            params=None,
+        )
+
+    def test_get_compliance_account_invalid_id(self, setup, caplog):
+        # Arrange
+        client = setup
+        # Act & Assert
+        with caplog.at_level(logging.ERROR):
+            with pytest.raises(ValueError, match="master_account_id must be a numeric string"):
+                client.get_compliance_account(master_account_id="invalid", compliance_year=2024, boro_id="TEST123")
+            assert "Invalid master_account_id" in caplog.text
