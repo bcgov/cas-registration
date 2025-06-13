@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import ComplianceUnitsApplyComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyComponent";
+import ComplianceUnitsApplyComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 import { useRouter } from "@bciers/testConfig/mocks";
 
 const mockRouterPush = vi.fn();

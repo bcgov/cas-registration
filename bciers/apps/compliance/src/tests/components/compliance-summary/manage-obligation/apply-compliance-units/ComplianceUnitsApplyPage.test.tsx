@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceUnitsApplyPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyPage";
+import ComplianceUnitsApplyPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsPage";
 import {
   generateManageObligationTaskList,
   ActivePage,
