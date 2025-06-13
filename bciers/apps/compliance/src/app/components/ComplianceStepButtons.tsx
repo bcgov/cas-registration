@@ -38,23 +38,7 @@ export const ComplianceStepButtons: React.FC<ComplianceStepButtonsProps> = ({
   continueButtonType = "button",
   children,
   className = "mt-20",
-}: {
-  backUrl?: string;
-  continueUrl?: string;
-  onBackClick?: () => void;
-  onContinueClick?: () => void;
-  backButtonText?: string;
-  continueButtonText?: string;
-  backButtonDisabled?: boolean;
-  submitButtonDisabled?: boolean;
-  middleButtonText?: string;
-  onMiddleButtonClick?: () => void;
-  middleButtonDisabled?: boolean;
-  middleButtonActive?: boolean;
-  continueButtonType?: "button" | "submit";
-  children?: React.ReactNode;
-  className?: string;
-}) => {
+}: ComplianceStepButtonsProps) => {
   const router = useRouter();
 
   // Default navigation function
