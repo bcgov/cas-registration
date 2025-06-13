@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 from registration.enums.enums import RegistrationTableNames
-from registration.models.contact import Contact
+from registration.models.operation import Operation
 from rls.enums import RlsRoles, RlsOperations
 from rls.utils.policy import RlsPolicy
 
@@ -14,14 +14,14 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.CONTACT.value,
-            using_statement=Contact.Rls.using_statement,
+            table=RegistrationTableNames.OPERATION.value,
+            using_statement=Operation.Rls.using_statement,
             schema="erc",
         )
 
         policy.apply_policy(mock_cursor)
 
-        expected_query = "CREATE POLICY test_policy ON erc.contact FOR RlsOperations.SELECT TO industry_user  USING ( \n                    operator_id in (\n                        select uo.operator_id\n                        from erc.user_operator uo\n                        where uo.user_id = current_setting('my.guid', true)::uuid\n                        and uo.status = 'Approved'\n                    )\n                     );"
+        expected_query = "CREATE POLICY test_policy ON erc.operation FOR RlsOperations.SELECT TO industry_user  USING ( \n                    operator_id IN (\n        SELECT uo.operator_id\n        FROM erc.user_operator uo\n        WHERE uo.user_id = current_setting('my.guid', true)::uuid\n          AND uo.status = 'Approved'\n    )\n                     );"
 
         mock_cursor.execute.assert_called_once_with(expected_query)
 
@@ -32,8 +32,8 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.CONTACT,
-            using_statement=Contact.Rls.using_statement,
+            table=RegistrationTableNames.OPERATION,
+            using_statement=Operation.Rls.using_statement,
             schema="erc",
         )
 
@@ -49,14 +49,14 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.CONTACT.value,
-            using_statement=Contact.Rls.using_statement,
+            table=RegistrationTableNames.OPERATION.value,
+            using_statement=Operation.Rls.using_statement,
             schema="erc",
         )
 
         policy.drop_policy(mock_cursor)
 
-        expected_query = 'DROP POLICY IF EXISTS test_policy ON erc.contact  '
+        expected_query = 'DROP POLICY IF EXISTS test_policy ON erc.operation  '
 
         mock_cursor.execute.assert_called_once_with(expected_query)
 
@@ -67,8 +67,8 @@ class TestRlsPolicy(TestCase):
             role=RlsRoles.INDUSTRY_USER,
             policy_name="test_policy",
             operation=RlsOperations.SELECT,
-            table=RegistrationTableNames.CONTACT,
-            using_statement=Contact.Rls.using_statement,
+            table=RegistrationTableNames.OPERATION,
+            using_statement=Operation.Rls.using_statement,
             schema="erc",
         )
 

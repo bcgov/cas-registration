@@ -296,9 +296,12 @@ class OperationTriggerTests(BaseTestCase):
 class TestOperationRls(BaseTestCase):
     def test_operation_rls_industry_user(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
-        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        # operation belonging to the approved user operator
+        baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+
         random_operator = baker.make_recipe('registration.tests.utils.operator')
-        random_operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
+        # operation belonging to a random operator
+        baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
 
         assert Operation.objects.count() == 2  # Two operations created
 
