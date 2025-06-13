@@ -1,3 +1,5 @@
+from django.apps import apps
+from django.conf import settings
 from model_bakery import baker
 from django.test import TestCase
 from django.db import connection, utils, transaction, IntegrityError
@@ -13,6 +15,23 @@ class TestRlsOperations(TestCase):
             role: baker.make("registration.User", app_role=AppRole.objects.get(role_name=role.value))
             for role in RlsRoles
         }
+
+    @staticmethod
+    def _remove_rls() -> None:
+        """
+        Remove Row Level Security (RLS) from all models that have it enabled.
+        We need to do this to test grants, or RLS will block certain operations that grants allow.
+        """
+        apps_to_apply_rls = settings.RLS_GRANT_APPS
+        for app_name in apps_to_apply_rls:
+            for model_name in apps.all_models[app_name]:
+                model = apps.all_models[app_name][model_name]
+                if hasattr(model, 'Rls'):
+                    rls = model.Rls
+                    if not hasattr(rls, 'enable_rls') or not rls.enable_rls:
+                        continue  # Or raise an error to fail fast
+                    with connection.cursor() as cursor:
+                        cursor.execute(f'ALTER TABLE {rls.schema}.{rls.table.value} DISABLE ROW LEVEL SECURITY')
 
     @staticmethod
     def _set_role(user):
@@ -71,7 +90,6 @@ class TestRlsOperations(TestCase):
                 cursor.execute(f"delete from {model._meta.db_table.replace('\"','')}")  # NOSONAR
 
         def raw_create():
-            # brianna this isn't going to work with policies
             with connection.cursor() as cursor:
                 cursor.execute(f"insert into {model._meta.db_table.replace('\"','')} default values")  # NOSONAR
 
@@ -122,9 +140,10 @@ class TestRlsOperations(TestCase):
             through_model = self._get_through_model(model, table_name.value)
             self._check_permissions(through_model, user_grants, table_name.value)
 
-    def test_all_user_roles_permissions(self):
-        """Test permissions for all user roles on all RLS models."""
+    def test_all_user_roles_grants(self):
+        """Test grants for all user roles on all RLS models."""
         rls_models_to_test = get_models_for_rls()
+        self._remove_rls()
         for model in rls_models_to_test:
             for role in RlsRoles:
                 self._set_role(self.users[role])
