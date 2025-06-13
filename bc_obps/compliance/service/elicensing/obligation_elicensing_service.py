@@ -123,6 +123,7 @@ class ObligationELicensingService:
 
                 # Create invoice in eLicensing
                 invoice_data = cls._map_obligation_to_invoice_data(obligation, fee_response.fees[0].feeObjectId)
+
                 invoice_response = elicensing_api_client.create_invoice(
                     client_operator.client_object_id, InvoiceCreationRequest(**invoice_data)
                 )
@@ -172,6 +173,7 @@ class ObligationELicensingService:
         Returns:
             A dictionary with invoice data in the format expected by the eLicensing API
         """
+
         return {
             "paymentDueDate": obligation.obligation_deadline.strftime("%Y-%m-%d"),
             "businessAreaCode": "OBPS",
