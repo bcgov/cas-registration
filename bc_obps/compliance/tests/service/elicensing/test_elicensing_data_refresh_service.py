@@ -23,7 +23,7 @@ class TestOperatorELicensingService:
           clientObjectId = client_operator.client_object_id,
           clientGUID = "00000000-0000-0000-0000-000000000000",
           invoiceNumber = "inv-001",
-          invoiceDueDate = "2025-11-30",
+          invoicePaymentDueDate = "2025-11-30",
           invoiceOutstandingBalance = Decimal('100.00'),
           invoiceFeeBalance = Decimal('100.00'),
           invoiceInterestBalance = Decimal('0.00'),
