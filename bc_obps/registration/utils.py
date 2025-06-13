@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from ninja.errors import ValidationError as NinjaValidationError
 from django.db import IntegrityError, models
 from registration.constants import DEFAULT_API_NAMESPACE
+from registration.models.operation import Operation
 import requests
 import base64
 import re
@@ -14,6 +15,7 @@ from registration.models import Document
 from django.urls import reverse_lazy
 from ninja.types import DictStrAny
 from ninja.pagination import PageNumberPagination
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
@@ -151,3 +153,12 @@ class CustomPagination(PageNumberPagination):
             "items": queryset[offset : offset + page_size],
             "count": self._items_count(queryset),
         }  # noqa: E203
+
+
+def is_document_scan_complete(operation: Operation) -> bool:
+    # If we're in the local environment, we don't hit GCS; we use local file storage (see settings.py)
+    ENVIRONMENT = settings.ENVIRONMENT
+    if ENVIRONMENT == 'local':
+        return True
+
+    return not operation.documents.filter(status=Document.FileStatus.UNSCANNED).exists()

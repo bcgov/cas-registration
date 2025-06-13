@@ -1,4 +1,3 @@
-import os
 from typing import List, Optional, Tuple, Callable, Generator, Union
 from django.db.models import QuerySet
 from common.exceptions import UserError
@@ -6,6 +5,7 @@ from registration.emails import send_registration_and_boro_id_email
 from registration.enums.enums import EmailTemplateNames
 from registration.models.facility import Facility
 from registration.signals.signals import operation_registration_purpose_changed
+from registration.utils import is_document_scan_complete
 from service.contact_service import ContactService
 from service.data_access_service.document_service import DocumentDataAccessService
 from service.data_access_service.operation_designated_operator_timeline_service import (
@@ -49,6 +49,7 @@ from django.db.models import Q
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
+from django.conf import settings
 
 
 class OperationService:
@@ -573,26 +574,21 @@ class OperationService:
                 ),
                 "Operation must have a process flow diagram and a boundary map.",
             )
-            # Check if operation documents have been scanned for malware
-            ENVIRONMENT = os.environ.get("ENVIRONMENT")
-            CI = os.environ.get("CI")
 
-            if CI != 'true' and ENVIRONMENT != 'local':
-                yield (
-                    lambda: not operation.documents.filter(
-                        status=Document.FileStatus.UNSCANNED,
-                    ).exists(),
-                    "Please wait. Your attachments are being scanned for malware, this may take a few minutes.",
-                )
-                # Check if operation documents are malware free
-                yield (
-                    lambda: not operation.documents.filter(
-                        status=Document.FileStatus.QUARANTINED,
-                    ).exists(),
-                    f"Potential threat detected in "
-                    f"{', '.join(operation.documents.filter(status=Document.FileStatus.QUARANTINED).values_list('file', flat=True))}. "
-                    f"Please go back and replace these attachments before submitting.",
-                )
+            # Check if operation documents have been scanned for malware (skip the check in CI because we don't hit GCS)
+            yield (
+                lambda: True if settings.CI == 'true' else is_document_scan_complete(operation),
+                "Please wait. Your attachments are being scanned for malware, this may take a few minutes.",
+            )
+            # Check if operation documents are malware free
+            yield (
+                lambda: not operation.documents.filter(
+                    status=Document.FileStatus.QUARANTINED,
+                ).exists(),
+                f"Potential threat detected in "
+                f"{', '.join(operation.documents.filter(status=Document.FileStatus.QUARANTINED).values_list('file', flat=True))}. "
+                f"Please go back and replace these attachments before submitting.",
+            )
             yield (
                 lambda: not (
                     operation.registration_purpose == Operation.Purposes.NEW_ENTRANT_OPERATION
