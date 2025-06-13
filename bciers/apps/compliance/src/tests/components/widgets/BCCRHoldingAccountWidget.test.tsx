@@ -1,4 +1,4 @@
-import BCCRHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
+import BccrHoldingAccountWidget from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
 import { actionHandler } from "@bciers/actions";
 import {
   render,
@@ -29,13 +29,13 @@ const defaultProps: any = {
   },
 };
 
-describe("BCCRHoldingAccountWidget", () => {
+describe("BccrHoldingAccountWidget", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders input field with correct attributes", () => {
-    render(<BCCRHoldingAccountWidget {...defaultProps} />);
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
 
     const input = screen.getByRole("textbox");
     expect(input).toBeVisible();
@@ -44,7 +44,7 @@ describe("BCCRHoldingAccountWidget", () => {
   });
 
   it("allows only numeric input up to 15 digits", () => {
-    render(<BCCRHoldingAccountWidget {...defaultProps} />);
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
     const input = screen.getByRole("textbox");
 
     // Test valid input
@@ -65,7 +65,7 @@ describe("BCCRHoldingAccountWidget", () => {
       tradingName: null,
     });
 
-    render(<BCCRHoldingAccountWidget {...defaultProps} />);
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
     const input = screen.getByRole("textbox");
 
     // Enter invalid account ID
@@ -79,18 +79,18 @@ describe("BCCRHoldingAccountWidget", () => {
   });
 
   it("disables input when disabled prop is true", () => {
-    render(<BCCRHoldingAccountWidget {...defaultProps} disabled />);
+    render(<BccrHoldingAccountWidget {...defaultProps} disabled />);
     expect(screen.getByRole("textbox")).toBeDisabled();
   });
 
   it("disables input when readonly prop is true", () => {
-    render(<BCCRHoldingAccountWidget {...defaultProps} readonly />);
+    render(<BccrHoldingAccountWidget {...defaultProps} readonly />);
     expect(screen.getByRole("textbox")).toBeDisabled();
   });
 
   it("debounces API calls", async () => {
     vi.useFakeTimers();
-    render(<BCCRHoldingAccountWidget {...defaultProps} />);
+    render(<BccrHoldingAccountWidget {...defaultProps} />);
     const input = screen.getByRole("textbox");
 
     // Type quickly
