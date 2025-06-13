@@ -7,6 +7,8 @@ from compliance.models import (
     ElicensingPayment,
     ElicensingAdjustment,
 )
+from datetime import datetime
+from decimal import Decimal
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -39,10 +41,10 @@ class ElicensingDataRefreshService:
             elicensing_client_operator=client_operator,
             invoice_number=invoice_response.invoiceNumber,
             defaults={
-                "due_date": invoice_response.invoiceDueDate,
-                "outstanding_balance": invoice_response.invoiceOutstandingBalance,
-                "invoice_fee_balance": invoice_response.invoiceFeeBalance,
-                "invoice_interest_balance": invoice_response.invoiceInterestBalance,
+                "due_date": datetime.fromisoformat(invoice_response.invoicePaymentDueDate),
+                "outstanding_balance": Decimal(invoice_response.invoiceOutstandingBalance).quantize(Decimal("0.00")),
+                "invoice_fee_balance": Decimal(invoice_response.invoiceFeeBalance).quantize(Decimal("0.00")),
+                "invoice_interest_balance": Decimal(invoice_response.invoiceInterestBalance).quantize(Decimal("0.00")),
             },
         )
         for fee in invoice_response.fees:
@@ -56,15 +58,15 @@ class ElicensingDataRefreshService:
                 ElicensingPayment.objects.update_or_create(
                     elicensing_line_item=fee_record,
                     payment_object_id=payment.paymentObjectId,
-                    defaults={"received_date": payment.receivedDate, "amount": payment.amount},
+                    defaults={"received_date": datetime.fromisoformat(payment.receivedDate), "amount": Decimal(payment.amount).quantize(Decimal("0.00"))},
                 )
             for adjustment in fee.adjustments:
                 ElicensingAdjustment.objects.update_or_create(
                     elicensing_line_item=fee_record,
                     adjustment_object_id=adjustment.adjustmentObjectId,
                     defaults={
-                        "amount": adjustment.amount,
-                        "adjustment_date": adjustment.date,
+                        "amount": Decimal(adjustment.amount).quantize(Decimal("0.00")),
+                        "adjustment_date": datetime.fromisoformat(adjustment.date),
                         "reason": adjustment.reason,
                         "type": adjustment.type,
                         "comment": adjustment.comment,
