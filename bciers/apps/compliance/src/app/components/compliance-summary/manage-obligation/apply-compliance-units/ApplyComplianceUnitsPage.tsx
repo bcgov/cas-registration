@@ -3,15 +3,14 @@ import {
   ActivePage,
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
-import ComplianceUnitsApplyComponent from "./ComplianceUnitsApplyComponent";
+import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 
 interface Props {
-  readonly compliance_summary_id: string;
+  compliance_summary_id: string;
 }
-export default async function ComplianceUnitsApplyPage({
+export default async function ApplyComplianceUnitsPage({
   compliance_summary_id: complianceSummaryId,
-}: Props) {
-  // const complianceUnitsData = await getComplianceUnitsApplyData();
+}: Readonly<Props>) {
   const complianceUnitsData = {
     reportingYear: "2025",
   };
@@ -27,7 +26,7 @@ export default async function ComplianceUnitsApplyPage({
       complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     >
-      <ComplianceUnitsApplyComponent
+      <ApplyComplianceUnitsComponent
         complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>

@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceUnitsApplyPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyPage";
+import ComplianceUnitsApplyPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsPage";
 import {
   generateManageObligationTaskList,
   ActivePage,
@@ -23,7 +23,7 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 
 // Mock the main component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ComplianceUnitsApplyComponent",
+  "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent",
   () => ({
     default: () => <div>Mock Apply Component</div>,
   }),

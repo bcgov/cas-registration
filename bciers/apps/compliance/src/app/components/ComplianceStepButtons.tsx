@@ -19,26 +19,26 @@ interface ComplianceStepButtonsProps {
   saveAndContinue?: () => void;
   children?: React.ReactNode;
   className?: string;
+  continueButtonType?: "button" | "submit";
 }
 
-const ComplianceStepButtons: React.FunctionComponent<
-  ComplianceStepButtonsProps
-> = ({
+export const ComplianceStepButtons: React.FC<ComplianceStepButtonsProps> = ({
   backUrl,
   continueUrl,
   onBackClick,
   onContinueClick,
-  backButtonDisabled = false,
-  middleButtonDisabled,
-  submitButtonDisabled = false,
   backButtonText = "Back",
   continueButtonText = "Continue",
+  backButtonDisabled = false,
+  submitButtonDisabled = false,
   middleButtonText,
   onMiddleButtonClick,
+  middleButtonDisabled = false,
   middleButtonActive = true,
+  continueButtonType = "button",
   children,
-  className = "",
-}) => {
+  className = "mt-20",
+}: ComplianceStepButtonsProps) => {
   const router = useRouter();
 
   // Default navigation function
@@ -49,7 +49,7 @@ const ComplianceStepButtons: React.FunctionComponent<
   };
 
   return (
-    <div className={`flex justify-between mt-20 ${className}`}>
+    <div className={`flex justify-between ${className}`}>
       <div>
         {(backUrl || onBackClick) && (
           <Button
@@ -82,6 +82,7 @@ const ComplianceStepButtons: React.FunctionComponent<
             onClick={onContinueClick ?? (() => navigate(continueUrl))}
             disabled={submitButtonDisabled}
             className="py-2.5 min-w-[120px] bg-bc-blue hover:bg-bc-primary-blue disabled:bg-bc-grey disabled:text-bc-grey-bg"
+            type={continueButtonType}
           >
             {continueButtonText}
           </Button>

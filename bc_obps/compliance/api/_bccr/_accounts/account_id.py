@@ -6,9 +6,9 @@ from compliance.service.bc_carbon_registry.schema import FifteenDigitString
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import BCCR
-from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
+from compliance.service.bc_carbon_registry.bc_carbon_registry_service import BCCarbonRegistryService
 
-bccr_client = BCCarbonRegistryAPIClient()
+bccr_service = BCCarbonRegistryService()
 
 
 @router.get(
@@ -21,14 +21,6 @@ bccr_client = BCCarbonRegistryAPIClient()
 def get_bccr_account_details(
     request: HttpRequest, account_id: FifteenDigitString
 ) -> Tuple[Literal[200], Dict[str, Optional[str]]]:
-    # At the time of writing, we only care about the account name.
-    account_details = bccr_client.get_account_details(account_id=account_id)
-
-    account_name = None
-    entities = account_details.get("entities") if account_details else None
-
-    if entities and isinstance(entities, list) and len(entities) > 0:
-        first_entity = entities[0]
-        account_name = first_entity.get("accountName")
-
-    return 200, {"tradingName": account_name}
+    account_details = bccr_service.get_account_details(account_id=account_id)
+    trading_name = getattr(account_details, "trading_name", None) if account_details else None
+    return 200, {"bccr_trading_name": trading_name}

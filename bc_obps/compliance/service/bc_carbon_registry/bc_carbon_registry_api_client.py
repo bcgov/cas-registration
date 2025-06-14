@@ -37,6 +37,17 @@ class BCCarbonRegistryAPIClient:
     client_id: Optional[str]
     client_secret: Optional[str]
     token_expiry: Optional[datetime] = None
+    COMPLIANCE_ACCOUNT_TYPE_ID = 14
+
+    # API Endpoints
+    AUTH_ENDPOINT = "/user-api/okta/token"
+    ACCOUNT_SEARCH_ENDPOINT = "/raas-report-api/es/account/pagePrivateSearchByFilter"
+    UNIT_SEARCH_ENDPOINT = "/raas-report-api/es/unit/pagePrivateSearchByFilter"
+    PROJECT_DETAILS_ENDPOINT = "/raas-project-api/project-manager/getById"
+    PROJECT_SUBMIT_ENDPOINT = "/raas-project-api/project-manager/doSubmit"
+    TRANSFER_SUBMIT_ENDPOINT = "/raas-credit-api/transfer-manager/doSubmit"
+    ISSUANCE_SUBMIT_ENDPOINT = "/br-reg/rest/market-issuance-manager/doSubmit"
+    ACCOUNT_SUBMIT_ENDPOINT = "/br-reg/rest/account-manager/doSubmit"
 
     def __new__(cls) -> 'BCCarbonRegistryAPIClient':
         if cls._instance is None:
@@ -59,7 +70,7 @@ class BCCarbonRegistryAPIClient:
         Obtain JWT token for authentication.
         """
         self._validate_config()
-        url = f"{self.api_url}/user-api/okta/token"
+        url = f"{self.api_url}{self.AUTH_ENDPOINT}"
 
         try:
             response = requests.post(
@@ -180,7 +191,6 @@ class BCCarbonRegistryAPIClient:
         Retrieves account details for the given account ID. This endpoint works for both compliance and holding accounts.
         :param account_id: The ID of the account to retrieve.
         """
-        url = "/raas-report-api/es/account/pagePrivateSearchByFilter"
         if isinstance(account_id, str) and not account_id.isdigit():
             logger.error("Invalid account_id: %s", account_id)
             raise ValueError("account_id must be a numeric string")
@@ -192,7 +202,9 @@ class BCCarbonRegistryAPIClient:
                 ),
             )
         )
-        return self._make_request("POST", url, data=payload, response_model=AccountDetailsResponse)
+        return self._make_request(
+            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
+        )
 
     def list_all_accounts(self, limit: int = 20, start: int = 0) -> Dict:
         """
@@ -201,55 +213,18 @@ class BCCarbonRegistryAPIClient:
         :param start: Starting index for pagination.
         NOTE: We can extend filterModel to filter by different options in the future. (e.g. accountTypeId, entityId, etc.)
         """
-        url = "/raas-report-api/es/account/pagePrivateSearchByFilter"
         self._check_pagination_params(limit, start)
 
         payload = SearchFilterWrapper(searchFilter=SearchFilter(pagination=Pagination(start=start, limit=limit)))
-        return self._make_request("POST", url, data=payload, response_model=AccountDetailsResponse)
-
-    def list_holding_accounts(self, master_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
-        """
-        Lists all holding accounts by compliance account
-        :param master_account_id: The ID of the master account
-        :param limit: Number of holding accounts to retrieve.
-        :param start: Starting index for pagination.
-
-        Account Types - ID:
-        Project Proponent - 2
-        Validator/Verifier - 6
-        Program Administrator - 7
-        General Participant - 10
-        Operator of Regulated Operation - 11
-        Compliance - 14
-        """
-        url = "/es/account/pagePrivateSearchByFilter"
-        COMPLIANCE_ACCOUNT_TYPE_ID = "14"
-        self._check_pagination_params(limit, start)
-
-        if isinstance(master_account_id, str) and not master_account_id.isdigit():
-            logger.error("Invalid master_account_id: %s", master_account_id)
-            raise ValueError("master_account_id must be a numeric string")
-
-        payload = SearchFilter(
-            pagination=Pagination(start=start, limit=limit),
-            filterModel=FilterModel(
-                accountTypeId={
-                    "columnFilters": [ColumnFilter(filterType="Text", type="in", filter=COMPLIANCE_ACCOUNT_TYPE_ID)]
-                },
-                masterAccountId={
-                    "columnFilters": [ColumnFilter(filterType="Text", type="in", filter=master_account_id)]
-                },
-                stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
-            ),
+        return self._make_request(
+            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
         )
-        return self._make_request("POST", url, data=payload, response_model=AccountDetailsResponse)
 
     def list_all_units(self, holding_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
         """
         List compliance units for a given holding account.
         We need to list the units that are ACTIVE and issued in the last 3 years.(Using vintage filter)
         """
-        url = "/raas-report-api/es/unit/pagePrivateSearchByFilter"
         self._check_pagination_params(limit, start)
 
         if isinstance(holding_account_id, str) and not holding_account_id.isdigit():
@@ -274,16 +249,16 @@ class BCCarbonRegistryAPIClient:
         )
         return self._make_request(
             "POST",
-            url,
+            self.UNIT_SEARCH_ENDPOINT,
             data=payload,
             response_model=UnitDetailsResponse,
         )
 
     def get_project_details(self, project_id: Union[str, int]) -> Dict:
-        url = f"/raas-project-api/project-manager/getById/{project_id}"
         if isinstance(project_id, str) and not project_id.isdigit():
             logger.error("Invalid project_id: %s", project_id)
             raise ValueError("project_id must be a numeric string")
+        url = f"{self.PROJECT_DETAILS_ENDPOINT}/{project_id}"
         return self._make_request("GET", url, response_model=ProjectDetailsResponse)
 
     def create_project(self, project_data: Dict) -> Dict:
@@ -307,7 +282,7 @@ class BCCarbonRegistryAPIClient:
         """
         return self._submit_payload(
             data=project_data,
-            url="/raas-project-api/project-manager/doSubmit",
+            url=self.PROJECT_SUBMIT_ENDPOINT,
             payload_model=ProjectPayload,
             response_model=ProjectDetailsResponse,
             error_message="Invalid project payload",
@@ -341,7 +316,7 @@ class BCCarbonRegistryAPIClient:
         """
         return self._submit_payload(
             data=transfer_data,
-            url="/raas-credit-api/transfer-manager/doSubmit",
+            url=self.TRANSFER_SUBMIT_ENDPOINT,
             payload_model=TransferPayload,
             error_message="Invalid transfer payload",
         )
@@ -380,7 +355,7 @@ class BCCarbonRegistryAPIClient:
         """
         return self._submit_payload(
             data=issuance_data,
-            url="/br-reg/rest/market-issuance-manager/doSubmit",
+            url=self.ISSUANCE_SUBMIT_ENDPOINT,
             payload_model=IssuancePayload,
             error_message="Invalid issuance payload",
         )
@@ -397,7 +372,6 @@ class BCCarbonRegistryAPIClient:
             "type_of_organization": "140000000000002", We can get this from account details (type_of_account_holder) and then map it to the below list
             "boro_id": "25-0004",
             "registered_name": "Test Billie Blue Subaccount 2 May 1 - operation name",
-            "trading_name": "Test Billie Blue Subaccount 2 May 1 - operation name"
         }
 
         Account Holder Type
@@ -408,7 +382,51 @@ class BCCarbonRegistryAPIClient:
         """
         return self._submit_payload(
             data=sub_account_data,
-            url="/br-reg/rest/account-manager/doSubmit",
+            url=self.ACCOUNT_SUBMIT_ENDPOINT,
             payload_model=SubAccountPayload,
             error_message="Invalid sub account payload",
+        )
+
+    def get_compliance_account(self, master_account_id: Union[str, int], compliance_year: int, boro_id: str) -> Dict:
+        """
+        Get compliance account(Sub Account) filtered by master account ID, compliance year, and BORO ID.
+
+        :param master_account_id: The ID of the master account
+        :param compliance_year: The compliance year to filter by
+        :param boro_id: The BORO ID to filter by
+        :return: Dictionary containing the search results
+
+        Account Types - ID:
+        Project Proponent - 2
+        Validator/Verifier - 6
+        Program Administrator - 7
+        General Participant - 10
+        Operator of Regulated Operation - 11
+        Compliance - 14
+        """
+        if isinstance(master_account_id, str) and not master_account_id.isdigit():
+            logger.error("Invalid master_account_id: %s", master_account_id)
+            raise ValueError("master_account_id must be a numeric string")
+
+        payload = SearchFilterWrapper(
+            searchFilter=SearchFilter(
+                filterModel=FilterModel(
+                    accountTypeId={
+                        "columnFilters": [
+                            ColumnFilter(filterType="Number", type="equals", filter=self.COMPLIANCE_ACCOUNT_TYPE_ID)
+                        ]
+                    },
+                    masterAccountId={
+                        "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=master_account_id)]
+                    },
+                    stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
+                    complianceYear={
+                        "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=compliance_year)]
+                    },
+                    boroId={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter=boro_id)]},
+                ),
+            )
+        )
+        return self._make_request(
+            "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
         )
