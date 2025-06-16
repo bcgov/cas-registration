@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceUnitsApplyPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsPage";
+import ApplyComplianceUnitsPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsPage";
 import {
   generateManageObligationTaskList,
   ActivePage,
@@ -29,13 +29,13 @@ vi.mock(
   }),
 );
 
-describe("ComplianceUnitsApplyPage", () => {
+describe("ApplyComplianceUnitsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders with correct components and generates task list", async () => {
-    render(await ComplianceUnitsApplyPage({ compliance_summary_id: "123" }));
+    render(await ApplyComplianceUnitsPage({ compliance_summary_id: "123" }));
 
     // Check components are rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();

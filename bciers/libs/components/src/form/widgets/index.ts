@@ -19,5 +19,5 @@ export { default as BoroIdWidget } from "./BoroIdWidget";
 export { default as CheckboxGroupWidget } from "./CheckboxGroupWidget";
 export { default as BcghgIdWidget } from "./BcghgIdWidget";
 export { default as OperationRepresentativeWidget } from "./OperationRepresentativeWidget";
-export { default as BccrHoldingAccountWidget } from "@/compliance/src/app/widgets/BccrHoldingAcountWidget";
-export { default as ApplyComplianceUnitsWidget } from "@/compliance/src/app/widgets/ApplyComplianceUnitsWidget";
+export { default as BccrHoldingAccountWidget } from "../../../../../apps/compliance/src/app/widgets/BccrHoldingAcountWidget";
+export { default as ApplyComplianceUnitsWidget } from "../../../../../apps/compliance/src/app/widgets/ApplyComplianceUnitsWidget";

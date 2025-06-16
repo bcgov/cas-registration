@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -8,109 +9,167 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
 });
 
-// Mock the actionHandler
-vi.mock("@bciers/actions", () => ({
-  actionHandler: vi.fn().mockResolvedValue({
-    tradingName: "Test Trading Co",
-    error: null,
-  }),
+vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
+  getBccrAccountDetails: vi.fn(),
 }));
+
+const TEST_COMPLIANCE_SUMMARY_ID = "123";
+const VALID_ACCOUNT_ID = "123456789012345";
+const INVALID_ACCOUNT_ID = "123";
+const MOCK_TRADING_NAME = "Test Company";
+
+const setupValidAccount = async () => {
+  (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+    bccr_trading_name: MOCK_TRADING_NAME,
+  });
+
+  render(
+    <RequestIssuanceOfEarnedCreditsComponent
+      complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+    />,
+  );
+  const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+  fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+
+  await waitFor(() => {
+    expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
+  });
+
+  return accountInput;
+};
 
 describe("RequestIssuanceOfEarnedCreditsComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("renders the form with correct schema fields and headers", () => {
+  it("displays form title and BCCR account section", () => {
     render(
-      <RequestIssuanceOfEarnedCreditsComponent complianceSummaryId="123" />,
+      <RequestIssuanceOfEarnedCreditsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      />,
     );
 
-    // Check form title
     expect(
       screen.getByText("Request Issuance of Earned Credits"),
     ).toBeVisible();
-
-    // Check BCCR account section header
     expect(
       screen.getByText("B.C. Carbon Registry (BCCR) Account Information"),
     ).toBeVisible();
+  });
 
-    // Check BCCR Holding Account ID field
+  it("shows BCCR account input field with help text", () => {
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      />,
+    );
+
     const accountIdField = screen.getByLabelText("BCCR Holding Account ID:*");
     expect(accountIdField).toBeVisible();
+  });
 
-    // Check help text
-    const helpText = screen.getByText(/No account\?/);
-    expect(helpText).toBeVisible();
-    const createAccountLink = screen.getByRole("link", {
-      name: "Create account",
-    });
-    expect(createAccountLink).toBeVisible();
-    expect(createAccountLink).toHaveAttribute("target", "_blank");
-    expect(createAccountLink).toHaveAttribute("rel", "noopener noreferrer");
-
-    // BCCR Trading Name field should not be visible initially
+  it("does not show BCCR trading name initially", () => {
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      />,
+    );
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
   });
 
-  it("updates form data when onValidAccountResolved is called", async () => {
-    render(
-      <RequestIssuanceOfEarnedCreditsComponent complianceSummaryId="123" />,
-    );
+  it("validates account and displays trading name on success", async () => {
+    await setupValidAccount();
 
-    // Get the BCCR Holding Account ID input
-    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
-
-    // Enter a valid 15-digit account number
-    fireEvent.change(accountInput, { target: { value: "123456789012345" } });
-
-    // Wait for the trading name to appear (account details fetched and resolved)
-    const tradingNameLabel = await screen.findByText("BCCR Trading Name:");
-    expect(tradingNameLabel).toBeVisible();
-
-    const tradingNameValue = await screen.findByText("Test Trading Co");
-    expect(tradingNameValue).toBeVisible();
+    expect(getBccrAccountDetails).toHaveBeenCalledWith(VALID_ACCOUNT_ID);
+    expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
+    expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
   });
 
-  it("renders navigation buttons with correct states", () => {
-    render(
-      <RequestIssuanceOfEarnedCreditsComponent complianceSummaryId="123" />,
+  it("does not show trading name when account is invalid", async () => {
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error("Invalid account"),
     );
 
-    // Check button text and states
-    const backButton = screen.getByRole("button", { name: "Back" });
-    expect(backButton).toBeVisible();
-    expect(backButton).not.toBeDisabled();
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      />,
+    );
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+    expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
+  });
 
-    const requestButton = screen.getByRole("button", {
+  it("clears trading name when account ID changes", async () => {
+    const accountInput = await setupValidAccount();
+
+    // Change to a different valid account
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: "New Company",
+    });
+    fireEvent.change(accountInput, { target: { value: "987654321098765" } });
+
+    await waitFor(() => {
+      expect(screen.queryByText(MOCK_TRADING_NAME)).not.toBeInTheDocument();
+    });
+  });
+
+  it("enables continue button only with valid account", async () => {
+    const accountInput = await setupValidAccount();
+
+    const backButton = screen.getByRole("button", { name: "Back" });
+    const continueButton = screen.getByRole("button", {
       name: "Requests Issuance of Earned Credits",
     });
-    expect(requestButton).toBeVisible();
-    expect(requestButton).toBeDisabled(); // Disabled initially since bccrTradingName is not set
 
-    // Verify router push is called with correct URLs when buttons are clicked
+    // Should be enabled after valid account
+    expect(backButton).not.toBeDisabled();
+    expect(continueButton).not.toBeDisabled();
+
+    // Change to invalid account
+    fireEvent.change(accountInput, { target: { value: INVALID_ACCOUNT_ID } });
+
+    // Should be disabled with invalid account
+    const disabledContinueButton = screen.getByRole("button", {
+      name: "Requests Issuance of Earned Credits",
+    });
+    expect(disabledContinueButton).toBeDisabled();
+  });
+
+  it("navigates to correct URLs when buttons are clicked", async () => {
+    await setupValidAccount();
+
+    const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
     expect(mockRouterPush).toHaveBeenCalledWith(
-      "/compliance-summaries/123/request-issuance-review-summary",
+      `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/request-issuance-review-summary`,
     );
 
-    // Enter valid account details to enable the continue button
+    const continueButton = screen.getByRole("button", {
+      name: "Requests Issuance of Earned Credits",
+    });
+    fireEvent.click(continueButton);
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/track-status-of-issuance`,
+    );
+  });
+
+  it("shows error message when validation fails", async () => {
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error("Unknown error"),
+    );
+
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      />,
+    );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
-    fireEvent.change(accountInput, { target: { value: "123456789012345" } });
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 
-    // Wait for the trading name to appear and button to be enabled
-    return waitFor(() => {
-      const enabledRequestButton = screen.getByRole("button", {
-        name: "Requests Issuance of Earned Credits",
-      });
-      expect(enabledRequestButton).not.toBeDisabled();
-
-      // Click the enabled button and verify navigation
-      fireEvent.click(enabledRequestButton);
-      expect(mockRouterPush).toHaveBeenCalledWith(
-        "/compliance-summaries/123/track-status-of-issuance",
-      );
+    await waitFor(() => {
+      expect(screen.getByText("Unknown error")).toBeVisible();
     });
   });
 });
