@@ -68,6 +68,9 @@ class TestRlsOperations(TestCase):
         if not hasattr(rls, "grants"):
             raise NotImplementedError(f"Model `{table_name}` must implement a 'grants' attribute in 'Rls' class.")
 
+        if not hasattr(rls, "policies"):
+            raise NotImplementedError(f"Model `{table_name}` must implement a 'policies' attribute in 'Rls' class.")
+
         if model._meta.many_to_many:
             m2m_rls_list = getattr(rls, "m2m_rls_list", None)
             if not m2m_rls_list or len(model._meta.many_to_many) != len(m2m_rls_list):
@@ -81,7 +84,7 @@ class TestRlsOperations(TestCase):
         Actions are lambda functions that perform the operation to be tested.
 
         NOTE: Using Django ORM functions for SELECT and UPDATE operations to keep the testing as close to the actual implementation as possible.
-        For the INSERT operation, we use raw SQL to avoid the ORM's insert cascade adn for the DELETE operation, we use raw SQL to avoid the ORM's delete cascade.
+        For the INSERT operation, we use raw SQL to avoid the ORM's insert cascade and for the DELETE operation, we use raw SQL to avoid the ORM's delete cascade.
         (For instance, if a model has a foreign key constraint, the ORM will try to create/delete the related objects first)
         """
 
