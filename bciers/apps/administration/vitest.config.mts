@@ -17,7 +17,6 @@ export default defineConfig({
       "@/dashboard": path.resolve(__dirname, "../dashboard"),
       "@/administration": path.resolve(__dirname, "./"),
       "@/registration": path.resolve(__dirname, "../registration"),
-      "@": path.resolve(__dirname, "./"),
       app: path.resolve(__dirname, "./app"),
     },
     reporters: ["default"],
