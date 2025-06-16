@@ -140,6 +140,13 @@ def init_activity_schema_data(apps, schema_monitor):
         valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
     )
 
+    Activity.objects.create(
+        name="Illegal data",
+        applicable_to="all",
+        slug="illegal-data",
+        weight=999999.99,
+    )
+
 
 def reverse_init_activity_schema_data(apps, schema_monitor):
     """
