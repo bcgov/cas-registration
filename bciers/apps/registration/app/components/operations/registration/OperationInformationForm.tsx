@@ -53,7 +53,7 @@ const OperationInformationForm = ({
     useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
   const searchParams = useSearchParams();
-  const isOperationReadOnly = searchParams.get("continue") as string;
+  const isOperationReadOnly = searchParams.get("continue") === "true";
   const [currentUiSchema, setCurrentUiSchema] = useState({
     ...registrationOperationInformationUiSchema,
     section1: {
