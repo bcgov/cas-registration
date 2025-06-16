@@ -19,6 +19,8 @@ from reporting.models import (
     EmissionCategory,
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
+from reporting.service.compliance_service import ComplianceService, ComplianceData
+from reporting.service.emission_category_service import EmissionCategoryService
 
 
 class EmissionCategorySchema(ModelSchema):
@@ -161,6 +163,10 @@ class FacilityReportSchema(ModelSchema):
     def resolve_raw_activity_data(obj: FacilityReport) -> List[ReportRawActivityData]:
         return list(obj.reportrawactivitydata_records.all())
 
+    @staticmethod
+    def resolve_emission_summary(obj: FacilityReport) -> Optional[Any]:
+        return EmissionCategoryService.get_facility_emission_summary_form_data(obj.id)
+
     class Meta:
         model = FacilityReport
         fields = [
@@ -244,6 +250,10 @@ class ReportVersionSchema(ModelSchema):
     facility_reports: List[FacilityReportSchema] = []
     report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
     reportemissionallocation_records: List[ReportEmissionAllocationSchema] = []
+
+    @staticmethod
+    def resolve_report_compliance_summary(obj: ReportVersion) -> ComplianceData:
+        return ComplianceService.get_calculated_compliance_data(obj.id)
 
     class Meta:
         model = ReportVersion
