@@ -36,9 +36,7 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const isReadOnly = disabled || readonly || isLoading;
 
   const validateAccount = async (accountId: string) => {
-    if (accountId.length !== 15 || !validateBccrAccount) {
-      return;
-    }
+    if (accountId.length !== 15 || !validateBccrAccount) return;
 
     setIsLoading(true);
     setShowError(false);
