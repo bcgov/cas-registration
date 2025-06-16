@@ -35,7 +35,7 @@ const InternalReviewByDirectorComponent = ({
         return;
       }
 
-      // TBD: API integration for approval submission (Ticket number unknown as of 13 Jun 2025)
+      // TBD: Implement API integration for approval submission (Ticket #166)
       // await submitDirectorDecision(complianceSummaryId, updatedFormData, "approved");
 
       // router.push(saveAndContinueUrl);
@@ -50,7 +50,7 @@ const InternalReviewByDirectorComponent = ({
         return;
       }
 
-      // TBD: API integration for decline submission (Ticket number unknown as of 13 Jun 2025)
+      // TBD: API integration for decline submission (Ticket #166)
       // await submitDirectorDecision(complianceSummaryId, updatedFormData, "declined");
 
       // router.push(saveAndContinueUrl);

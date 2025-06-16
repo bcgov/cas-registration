@@ -6,9 +6,8 @@ export const AnnualEmissionsReportButtonField = ({
   formContext,
 }: FieldProps) => {
   const complianceSummaryId = formContext.creditsIssuanceRequestData.id;
-
-  // Generate the report URL - adjust this path as needed
-  const reportUrl = `/api/compliance-summaries/${complianceSummaryId}/annual-emissions-report`;
+  // Mock URL for the annual emissions report project - this might change when task #667(cas-reporting) is implemented
+  const reportUrl = `/reports/${complianceSummaryId}/annual-report`;
 
   return (
     <Link

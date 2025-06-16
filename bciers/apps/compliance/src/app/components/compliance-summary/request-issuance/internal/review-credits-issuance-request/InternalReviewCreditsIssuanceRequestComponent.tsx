@@ -76,7 +76,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     try {
       setIsUploading(true);
       if (uploadedFiles.length > 0) {
-        // TBD: Implement file upload logic when the API endpoint is available (Ticket number unknown as of 13 Jun 2025)
+        // TBD: Implement file upload logic when the API endpoint is available (Ticket #166)
         // Example implementation:
         // const formData = new FormData();
         // uploadedFiles.forEach((file, index) => {
@@ -85,7 +85,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
         // await uploadFiles(formData);
       }
 
-      // TBD: Submit the form data to the API when the endpoint is ready (Ticket number unknown as of 13 Jun 2025)
+      // TBD: Submit the form data to the API when the endpoint is ready (Ticket #166)
       // await submitFormData(complianceSummaryId, formState);
 
       // Navigate to the next page on success
