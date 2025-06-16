@@ -7,7 +7,8 @@ import pytest
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from reporting.models.report_verification import ReportVerification
 from reporting.models.report_version import ReportVersion
-from reporting.tests.utils.bakers import report_version_baker
+from reporting.tests.utils.bakers import report_baker, report_version_baker
+from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
 
 
 class ReportVersionTest(BaseTestCase):
@@ -218,3 +219,126 @@ class ReportVersionTest(BaseTestCase):
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
+
+class ReportVersionRlsTest(BaseTestCase):
+
+    def test_report_version_rls_industry_user(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        report = report_baker( operation=operation, operator=approved_user_operator.operator,)
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            report=report,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+        )
+        number_of_accesible_records = ReportVersion.objects.count()
+        random_operation = baker.make_recipe('registration.tests.utils.operation')
+        random_report = report_baker(
+            operation=random_operation,
+        )
+        random_report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version",
+            report=random_report,
+            status=ReportVersion.ReportVersionStatus.Draft,
+        )
+
+        number_of_total_records = ReportVersion.objects.count()
+
+        def select_function(cursor):
+            # Select the report version for the approved user operator and not the random report version
+            assert ReportVersion.objects.count() < number_of_total_records
+            assert ReportVersion.objects.count() == number_of_accesible_records
+            assert ReportVersion.objects.filter(report=random_report).count() == 0
+
+        def insert_function(cursor):
+            # Insert a new report version for the approved user operator
+            new_report_version = ReportVersion.objects.create(
+                report=report,
+                is_latest_submitted=False,
+                status=ReportVersion.ReportVersionStatus.Draft,
+            )
+            number_of_accesible_records_after_insert = number_of_accesible_records + 1
+            assert ReportVersion.objects.count() == number_of_accesible_records_after_insert
+            assert new_report_version.id is not None
+            # Attempt to insert a report version that the user is not an operator for
+            with pytest.raises(
+                ProgrammingError, match='new row violates row-level security policy for table "report_version'
+            ):
+                cursor.execute(
+                    """
+                    INSERT INTO "erc"."report_version" (
+                        "report_id", "is_latest_submitted", "status", "report_type"
+                    )
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    [random_report.id, False, ReportVersion.ReportVersionStatus.Draft, ReportVersion.ReportType.ANNUAL_REPORT],
+                )
+
+        def update_function(cursor):
+            # Update the report version for the approved user operator
+            new_report_version = ReportVersion.objects.create(
+                report=report,
+                report_type=report_version.report_type,
+                is_latest_submitted=False,
+                status=ReportVersion.ReportVersionStatus.Draft,
+            )
+            new_status = ReportVersion.ReportVersionStatus.Submitted
+            new_report_version.status = new_status
+            new_report_version.save()
+            assert ReportVersion.objects.get(id=new_report_version.id).status == new_status
+            # Attempt to update a report version that the user should not have access to
+
+            cursor.execute(
+                """
+                UPDATE "erc"."report_version"
+                SET "status" = %s
+                WHERE "id" = %s
+                """,
+                [ReportVersion.ReportVersionStatus.Submitted, random_report_version.id],
+            )
+            assert cursor.rowcount == 0
+
+        def delete_function(cursor):
+            # Try to delete the report version for the approved user where the status is not 'Draft'
+            number_of_deleted_report_versions, _ = report_version.delete()
+            assert number_of_deleted_report_versions == 0
+            assert ReportVersion.objects.count() == number_of_accesible_records
+            # Create a new report version with status 'Draft' to delete
+            new_report_version = ReportVersion.objects.create(
+                report=report,
+                report_type=report_version.report_type,
+                is_latest_submitted=False,
+                status=ReportVersion.ReportVersionStatus.Draft,
+            )
+            assert ReportVersion.objects.count() == number_of_accesible_records + 1
+            # Delete the new report version
+            number_of_deleted_report_versions, _ = new_report_version.delete()
+            assert number_of_deleted_report_versions == 1
+            assert ReportVersion.objects.count() == number_of_accesible_records
+            # Attempt to delete a report version that the user should not have access to
+            number_of_deleted_report_versions, _ = random_report_version.delete()
+            assert number_of_deleted_report_versions == 0
+
+        test_policies_for_industry_user(
+            ReportVersion, 
+            approved_user_operator.user, 
+            select_function, 
+            insert_function, 
+            update_function, 
+            delete_function
+        )
+    def test_report_version_rls_cas_user(self):
+        """
+        Test RLS for ReportVersion model for CAS users.
+        """
+        test_quantity = 5
+        report_version_baker("reporting.tests.utils.report_version", _quantity=test_quantity)
+
+        def select_function(cursor, i):
+            assert ReportVersion.objects.count() == test_quantity
+        
+        test_policies_for_cas_roles(
+            ReportVersion, 
+            select_function,
+        )
+       
