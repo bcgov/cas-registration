@@ -32,6 +32,11 @@ export interface BccrComplianceAccountResponse {
   outstanding_balance: number;
 }
 
+export interface RequestIssuanceOfEarnedCreditsFormData {
+  bccr_holding_account_id?: string;
+  bccr_trading_name?: string;
+}
+
 export interface ApplyComplianceUnitsFormData
   extends BccrComplianceAccountResponse {
   bccr_holding_account_id?: string;

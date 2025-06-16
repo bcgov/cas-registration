@@ -19,7 +19,7 @@ import { ApplyComplianceUnitsAlertNote } from "./ApplyComplianceUnitsAlertNote";
 import { IChangeEvent } from "@rjsf/core";
 
 interface ApplyComplianceUnitsComponentProps {
-  complianceSummaryId: any;
+  complianceSummaryId: string;
 }
 
 export type ComplianceLimitStatus = "EXCEEDS" | "EQUALS" | "BELOW";
@@ -72,15 +72,12 @@ export default function ApplyComplianceUnitsComponent({
 
   const handleChange = (e: IChangeEvent<ApplyComplianceUnitsFormData>) => {
     const newFormData = e.formData;
-    // @ts-expect-error - formData is {} when the form is first rendered
-    const prevAccountId = formData?.bccr_holding_account_id;
+    const prevAccountId = (formData as ApplyComplianceUnitsFormData)
+      ?.bccr_holding_account_id;
     const newAccountId = newFormData?.bccr_holding_account_id;
 
-    // If account ID changed and is not 15 digits, clear everything except the account ID
-    if (
-      prevAccountId !== newAccountId &&
-      (!newAccountId || newAccountId.length !== 15)
-    ) {
+    // If account ID changed, clear everything except the account ID
+    if (prevAccountId !== newAccountId) {
       setFormData({
         bccr_holding_account_id: newAccountId,
       });
@@ -131,9 +128,10 @@ export default function ApplyComplianceUnitsComponent({
 
   const canSubmit = useMemo(() => {
     return (
-      "bccr_trading_name" in formData &&
-      "total_quantity_to_be_applied" in formData &&
-      (formData as ApplyComplianceUnitsFormData).total_quantity_to_be_applied >
+      (formData as ApplyComplianceUnitsFormData)?.bccr_holding_account_id &&
+      (formData as ApplyComplianceUnitsFormData)
+        ?.total_quantity_to_be_applied &&
+      (formData as ApplyComplianceUnitsFormData)?.total_quantity_to_be_applied >
         0 &&
       complianceLimitStatus !== "EXCEEDS" &&
       (!errors || errors.length === 0)
@@ -149,22 +147,20 @@ export default function ApplyComplianceUnitsComponent({
       onChange={handleChange}
       onSubmit={handleSubmit}
       formContext={{
-        // @ts-expect-error - formData is {} when the form is first rendered
-        chargeRate: formData?.charge_rate,
+        chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
         validateBccrAccount: (accountId: string) =>
           getBccrComplianceUnitsAccountDetails(accountId, complianceSummaryId),
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
           if (response?.outstanding_balance) {
             setInitialOutstandingBalance(response.outstanding_balance);
           }
-          setFormData((prev: any) => ({
+          setFormData((prev: ApplyComplianceUnitsFormData) => ({
             ...prev,
             ...response,
           }));
         },
         onError: setErrors,
         complianceLimitStatus,
-        exceedsLimit: complianceLimitStatus === "EXCEEDS",
         isSubmitted,
       }}
       className="w-full min-h-[62vh] flex flex-col justify-between"

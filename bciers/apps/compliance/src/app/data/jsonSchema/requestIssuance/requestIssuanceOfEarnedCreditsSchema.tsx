@@ -11,7 +11,7 @@ import {
 export const requestIssuanceOfEarnedCreditsSchema: RJSFSchema = {
   type: "object",
   title: "Request Issuance of Earned Credits",
-  required: ["bccrHoldingAccountId"],
+  required: ["bccr_holding_account_id"],
   properties: {
     bccr_account_header: readOnlyObjectField(
       "B.C. Carbon Registry (BCCR) Account Information",
