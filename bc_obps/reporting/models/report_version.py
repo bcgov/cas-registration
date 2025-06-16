@@ -46,6 +46,8 @@ class ReportVersion(TimeStampedModel):
         db_comment="Reason explaining why a supplementary report change was made.",
     )
 
+    test_field = models.BooleanField(default=False, db_comment="Test field to be removed and never committed")
+
     class Meta(TimeStampedModel.Meta):
         db_table_comment = "A table representing the multiple versions that a single report can have."
         db_table = 'erc"."report_version'
