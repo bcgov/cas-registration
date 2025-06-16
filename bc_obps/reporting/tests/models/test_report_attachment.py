@@ -1,6 +1,10 @@
+import operator
+import random
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
+from reporting.models import report
 from reporting.models.report_attachment import ReportAttachment
+from reporting.tests.utils.bakers import report_baker
 from reporting.tests.utils.immutable_report_version import (
     assert_immutable_report_version,
 )
