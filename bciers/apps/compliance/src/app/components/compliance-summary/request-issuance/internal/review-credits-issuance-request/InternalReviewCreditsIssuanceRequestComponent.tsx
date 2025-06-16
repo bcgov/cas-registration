@@ -6,14 +6,14 @@ import {
   internalReviewCreditsIssuanceRequestUiSchema,
   internalReviewCreditsIssuanceRequestSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalReviewCreditsIssuanceRequestSchema";
+import { CreditsIssuanceRequestData } from "@/compliance/src/app/types";
 import AttachmentsElement from "./AttachmentsElement";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
-import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  formData: any;
+  formData: CreditsIssuanceRequestData;
   complianceSummaryId: string;
 }
 
@@ -25,7 +25,6 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
   const router = useRouter();
 
-  const [modalOpen, setModalOpen] = useState(false);
   const [formState, setFormState] = useState(formData);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -77,7 +76,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
     try {
       setIsUploading(true);
       if (uploadedFiles.length > 0) {
-        // TBD: Implement file upload logic when the API endpoint is available
+        // TBD: Implement file upload logic when the API endpoint is available (Ticket number unknown as of 13 Jun 2025)
         // Example implementation:
         // const formData = new FormData();
         // uploadedFiles.forEach((file, index) => {
@@ -86,7 +85,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
         // await uploadFiles(formData);
       }
 
-      // TBD: Submit the form data to the API when the endpoint is ready
+      // TBD: Submit the form data to the API when the endpoint is ready (Ticket number unknown as of 13 Jun 2025)
       // await submitFormData(complianceSummaryId, formState);
 
       // Navigate to the next page on success
@@ -103,40 +102,29 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   };
 
   return (
-    <>
-      <SimpleModal
-        open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onConfirm={() => setModalOpen(false)}
-        title="Annual Emissions Report"
-      >
-        Annual Emissions Report
-      </SimpleModal>
-      <FormBase
-        schema={internalReviewCreditsIssuanceRequestSchema()}
-        uiSchema={internalReviewCreditsIssuanceRequestUiSchema}
-        formData={formState}
-        onChange={handleFormChange}
-        formContext={{
-          creditsIssuanceRequestData: formState,
-          openModal: () => setModalOpen(true),
-        }}
-        className="w-full"
-      >
-        <AttachmentsElement
-          title="Attachments:"
-          onRemoveFile={handleRemoveFile}
-          onAddFiles={handleAddFiles}
-          isUploading={isUploading}
-          error={error}
-          uploadedFiles={uploadedFiles}
-        />
-        <ComplianceStepButtons
-          backUrl={backUrl}
-          onContinueClick={handleContinue}
-        />
-      </FormBase>
-    </>
+    <FormBase
+      schema={internalReviewCreditsIssuanceRequestSchema}
+      uiSchema={internalReviewCreditsIssuanceRequestUiSchema}
+      formData={formState}
+      onChange={handleFormChange}
+      formContext={{
+        creditsIssuanceRequestData: formState,
+      }}
+      className="w-full"
+    >
+      <AttachmentsElement
+        title="Attachments:"
+        onRemoveFile={handleRemoveFile}
+        onAddFiles={handleAddFiles}
+        isUploading={isUploading}
+        error={error}
+        uploadedFiles={uploadedFiles}
+      />
+      <ComplianceStepButtons
+        backUrl={backUrl}
+        onContinueClick={handleContinue}
+      />
+    </FormBase>
   );
 };
 

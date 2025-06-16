@@ -6,9 +6,10 @@ import {
   commonReadOnlyOptions,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import TwoStateWidget from "@/compliance/src/app/data/jsonSchema/TwoStateWidget";
-import DirectorReviewAlertWidget from "@/compliance/src/app/data/jsonSchema/DirectorReviewAlertWidget";
+import CommentWidget from "@/compliance/src/app/data/jsonSchema/CommentWidget";
 import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
+import InternalDirectorReviewApprovalNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewApprovalNote";
+import InternalDirectorReviewChangesNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewChangesNote";
 
 const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
   section_header: readOnlyObjectField("Earned Credits"),
@@ -31,21 +32,38 @@ const createDirectorReviewSection = (): RJSFSchema["properties"] => ({
   },
 });
 
-export const internalReviewByDirectorSchema = (): RJSFSchema => ({
+export const internalReviewByDirectorSchema: RJSFSchema = {
   type: "object",
   title: "Review by Director",
   properties: {
-    view_annual_report_button: {
-      type: "null",
-      title: "",
-    },
+    view_annual_report_button: readOnlyObjectField(),
     ...createCreditsIssuanceRequestSection(),
     ...createAnalystReviewSection(),
     ...createDirectorReviewSection(),
-    director_alert_placeholder: readOnlyStringField(),
+    analyst_recommendation: {
+      type: "string",
+      enum: ["ready_to_approve", "require_changes"],
+    },
   },
-  required: [],
-});
+  dependencies: {
+    analyst_recommendation: {
+      oneOf: [
+        {
+          properties: {
+            analyst_recommendation: { enum: ["ready_to_approve"] },
+            approval_note: readOnlyStringField(),
+          },
+        },
+        {
+          properties: {
+            analyst_recommendation: { enum: ["require_changes"] },
+            changes_note: readOnlyStringField(),
+          },
+        },
+      ],
+    },
+  },
+};
 
 const fixedWidthLabelStyle = {
   ...commonReadOnlyOptions,
@@ -55,10 +73,6 @@ const fixedWidthLabelStyle = {
 export const internalReviewByDirectorUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:submitButtonOptions": {
-    norender: true,
-  },
-
   view_annual_report_button: {
     "ui:field": AnnualEmissionsReportButtonField,
     "ui:options": {
@@ -77,19 +91,26 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
 
   director_header: headerUiConfig,
   director_comment: {
-    "ui:widget": TwoStateWidget,
+    "ui:widget": CommentWidget,
     "ui:classNames":
-      "[&>div>label]:text-[16px] [&>div>label]:font-normal [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full  [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full mb-[2px]",
-    "ui:options": {
-      isDisabled: false,
-      showSubmissionInfo: false,
-    },
+      "[&>div>label]:text-[16px] [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full  [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full mb-[2px]",
   },
-  director_alert_placeholder: {
-    "ui:widget": DirectorReviewAlertWidget,
+  approval_note: {
+    "ui:widget": InternalDirectorReviewApprovalNote,
     "ui:options": {
       label: false,
       inline: true,
     },
+  },
+  changes_note: {
+    "ui:widget": InternalDirectorReviewChangesNote,
+    "ui:options": {
+      label: false,
+      inline: true,
+    },
+  },
+
+  analyst_recommendation: {
+    "ui:widget": "hidden",
   },
 };

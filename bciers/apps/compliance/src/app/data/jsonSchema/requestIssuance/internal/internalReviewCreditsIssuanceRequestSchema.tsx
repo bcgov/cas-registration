@@ -6,7 +6,7 @@ import {
   commonReadOnlyOptions,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import TwoStateWidget from "@/compliance/src/app/data/jsonSchema/TwoStateWidget";
+import CommentWidget from "@/compliance/src/app/data/jsonSchema/CommentWidget";
 import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
 
 const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
@@ -39,19 +39,15 @@ const createAnalystReviewSection = (): RJSFSchema["properties"] => ({
   },
 });
 
-export const internalReviewCreditsIssuanceRequestSchema = (): RJSFSchema => ({
+export const internalReviewCreditsIssuanceRequestSchema: RJSFSchema = {
   type: "object",
   title: "Review Credits Issuance Request",
   properties: {
-    view_annual_report_button: {
-      type: "null",
-      title: "",
-    },
+    view_annual_report_button: readOnlyObjectField(),
     ...createCreditsIssuanceRequestSection(),
     ...createAnalystReviewSection(),
   },
-  required: [],
-});
+};
 
 const fixedWidthLabelStyle = {
   ...commonReadOnlyOptions,
@@ -61,9 +57,6 @@ const fixedWidthLabelStyle = {
 export const internalReviewCreditsIssuanceRequestUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:submitButtonOptions": {
-    norender: true,
-  },
 
   view_annual_report_button: {
     "ui:field": AnnualEmissionsReportButtonField,
@@ -89,11 +82,9 @@ export const internalReviewCreditsIssuanceRequestUiSchema: UiSchema = {
     },
   },
   analyst_comment: {
-    "ui:widget": TwoStateWidget,
+    "ui:widget": CommentWidget,
     "ui:classNames":
       "[&>div>label]:text-[16px] [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full",
-    "ui:options": {
-      isDisabled: true,
-    },
+    "ui:disabled": true,
   },
 };

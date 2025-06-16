@@ -1,10 +1,10 @@
 import {
   generateRequestIssuanceTaskList,
-  ActivePage as IndActivePage,
+  ActivePage as ExternalActivePage,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import {
   generateIssuanceRequestTaskList,
-  ActivePage as CasActivePage,
+  ActivePage as InternalActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
@@ -23,23 +23,23 @@ export default async function ComplianceSummaryReviewPage({
   const frontEndRole = await getSessionRole();
   const isCasStaff = frontEndRole.startsWith("cas_");
 
-  // Task list for industrial user
-  const indTaskListElements = generateRequestIssuanceTaskList(
+  const externalTaskListElements = generateRequestIssuanceTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
-    IndActivePage.ReviewComplianceSummary,
+    ExternalActivePage.ReviewComplianceSummary,
   );
-  // Task list for cas users
-  const casTaskListElements = generateIssuanceRequestTaskList(
+  const internalTaskListElements = generateIssuanceRequestTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
-    CasActivePage.ReviewComplianceSummary,
+    InternalActivePage.ReviewComplianceSummary,
   );
 
   return (
     <CompliancePageLayout
       complianceSummaryId={complianceSummaryId}
-      taskListElements={isCasStaff ? casTaskListElements : indTaskListElements}
+      taskListElements={
+        isCasStaff ? internalTaskListElements : externalTaskListElements
+      }
     >
       <ComplianceSummaryReviewComponent
         complianceSummaryId={complianceSummaryId}

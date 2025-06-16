@@ -8,7 +8,6 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalReviewByDirectorSchema";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
-import SimpleModal from "@bciers/components/modal/SimpleModal";
 import { DirectorReviewData } from "@/compliance/src/app/types";
 
 interface Props {
@@ -24,7 +23,6 @@ const InternalReviewByDirectorComponent = ({
   // const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}`;
   // const router = useRouter();
 
-  const [modalOpen, setModalOpen] = useState(false);
   const [formState, setFormState] = useState(formData);
 
   const handleFormChange = (e: IChangeEvent) => {
@@ -37,7 +35,7 @@ const InternalReviewByDirectorComponent = ({
         return;
       }
 
-      // TBD: API integration for approval submission
+      // TBD: API integration for approval submission (Ticket number unknown as of 13 Jun 2025)
       // await submitDirectorDecision(complianceSummaryId, updatedFormData, "approved");
 
       // router.push(saveAndContinueUrl);
@@ -52,7 +50,7 @@ const InternalReviewByDirectorComponent = ({
         return;
       }
 
-      // TBD: API integration for decline submission
+      // TBD: API integration for decline submission (Ticket number unknown as of 13 Jun 2025)
       // await submitDirectorDecision(complianceSummaryId, updatedFormData, "declined");
 
       // router.push(saveAndContinueUrl);
@@ -62,41 +60,30 @@ const InternalReviewByDirectorComponent = ({
   };
 
   return (
-    <>
-      <SimpleModal
-        open={modalOpen}
-        onCancel={() => setModalOpen(false)}
-        onConfirm={() => setModalOpen(false)}
-        title="Annual Emissions Report"
-      >
-        Annual Emissions Report
-      </SimpleModal>
-      <FormBase
-        schema={internalReviewByDirectorSchema()}
-        uiSchema={internalReviewByDirectorUiSchema}
-        formData={formState}
-        onChange={handleFormChange}
-        formContext={{
-          creditsIssuanceRequestData: formState,
-          openModal: () => setModalOpen(true),
-        }}
-        className="w-full"
-      >
-        <ComplianceStepButtons
-          onMiddleButtonClick={handleDecline}
-          onContinueClick={handleApprove}
-          backUrl={backUrl}
-          middleButtonText="Decline"
-          continueButtonText="Approve"
-          middleButtonDisabled={
-            formState?.analyst_recommendation === "require_changes"
-          }
-          submitButtonDisabled={
-            formState?.analyst_recommendation === "require_changes"
-          }
-        />
-      </FormBase>
-    </>
+    <FormBase
+      schema={internalReviewByDirectorSchema}
+      uiSchema={internalReviewByDirectorUiSchema}
+      formData={formState}
+      onChange={handleFormChange}
+      formContext={{
+        creditsIssuanceRequestData: formState,
+      }}
+      className="w-full"
+    >
+      <ComplianceStepButtons
+        onMiddleButtonClick={handleDecline}
+        onContinueClick={handleApprove}
+        backUrl={backUrl}
+        middleButtonText="Decline"
+        continueButtonText="Approve"
+        middleButtonDisabled={
+          formState?.analyst_recommendation === "require_changes"
+        }
+        submitButtonDisabled={
+          formState?.analyst_recommendation === "require_changes"
+        }
+      />
+    </FormBase>
   );
 };
 
