@@ -6,7 +6,9 @@ from compliance.dataclass import BCCRAccountResponseDetails
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
-BCCR_SERVICE_PATH = "compliance.service.bc_carbon_registry.bc_carbon_registry_service.BCCarbonRegistryService.get_account_details"
+BCCR_SERVICE_PATH = (
+    "compliance.service.bc_carbon_registry.bc_carbon_registry_service.BCCarbonRegistryService.get_account_details"
+)
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 
 
@@ -26,7 +28,12 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
     def test_successful_account_details_retrieval(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
-        mock_service.return_value = BCCRAccountResponseDetails(entity_id="123", organization_classification_id="456", type_of_account_holder="Corporation", trading_name="Test Account Inc.")
+        mock_service.return_value = BCCRAccountResponseDetails(
+            entity_id="123",
+            organization_classification_id="456",
+            type_of_account_holder="Corporation",
+            trading_name="Test Account Inc.",
+        )
         # Act
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
         # Assert
@@ -66,4 +73,6 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
         # Assert
         assert response.status_code == 400
-        assert response.json() == {"message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."}
+        assert response.json() == {
+            "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
+        }

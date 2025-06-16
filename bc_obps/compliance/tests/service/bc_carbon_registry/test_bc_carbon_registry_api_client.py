@@ -376,7 +376,9 @@ class TestBCCarbonRegistryAPIClient:
 
         # Act & Assert
         with pytest.raises(BCCarbonRegistryError, match="Invalid payload"):
-            client._submit_payload(data=empty_payload, url="/test", payload_model=ProjectPayload, error_message="Invalid payload")
+            client._submit_payload(
+                data=empty_payload, url="/test", payload_model=ProjectPayload, error_message="Invalid payload"
+            )
 
     def test_get_account_details_success(self, authenticated_client):
         # Arrange
@@ -714,12 +716,21 @@ class TestBCCarbonRegistryAPIClient:
             status_code=200,
             json=lambda: {
                 **BASE_ACCOUNT_RESPONSE,
-                "entities": [{**BASE_ACCOUNT_RESPONSE["entities"][0], "masterAccountId": MOCK_FIFTEEN_DIGIT_STRING, "masterAccountName": "Test Holding Account", "entityId": 123456789012345}],
+                "entities": [
+                    {
+                        **BASE_ACCOUNT_RESPONSE["entities"][0],
+                        "masterAccountId": MOCK_FIFTEEN_DIGIT_STRING,
+                        "masterAccountName": "Test Holding Account",
+                        "entityId": 123456789012345,
+                    }
+                ],
             },
         )
         mock_request.return_value = mock_response
         # Act
-        result = client.get_compliance_account(master_account_id=MOCK_FIFTEEN_DIGIT_STRING, compliance_year=2024, boro_id="TEST123")
+        result = client.get_compliance_account(
+            master_account_id=MOCK_FIFTEEN_DIGIT_STRING, compliance_year=2024, boro_id="TEST123"
+        )
         # Assert
         assert result["totalEntities"] == 1
         assert len(result["entities"]) == 1
@@ -742,10 +753,16 @@ class TestBCCarbonRegistryAPIClient:
                         "sortOptions": [{"sort": "accountName.keyword", "dir": "ASC"}],
                     },
                     "filterModel": {
-                        "masterAccountId": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": MOCK_FIFTEEN_DIGIT_STRING}]},
+                        "masterAccountId": {
+                            "columnFilters": [
+                                {"filterType": "Number", "type": "equals", "filter": MOCK_FIFTEEN_DIGIT_STRING}
+                            ]
+                        },
                         "accountTypeId": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": 14}]},
                         "stateCode": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "ACTIVE"}]},
-                        "complianceYear": {"columnFilters": [{"filterType": "Number", "type": "equals", "filter": 2024}]},
+                        "complianceYear": {
+                            "columnFilters": [{"filterType": "Number", "type": "equals", "filter": 2024}]
+                        },
                         "boroId": {"columnFilters": [{"filterType": "Text", "type": "equals", "filter": "TEST123"}]},
                     },
                     "groupKeys": [],

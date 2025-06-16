@@ -134,12 +134,16 @@ class TestExceptionHandler:
         exc = ComplianceInvoiceError("missing_data", "Required invoice data is missing")
         response = ExceptionHandler.handle(mock_request, exc)
         assert response.status_code == 400
-        assert json.loads(response.content) == {"message": "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists."}
+        assert json.loads(response.content) == {
+            "message": "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists."
+        }
 
 
 def test_global_handle_exception(mock_request):
     exc = Exception("Test")
-    with patch.object(ExceptionHandler, "handle", return_value=Response({"message": "Test"}, status=400)) as mock_handle:
+    with patch.object(
+        ExceptionHandler, "handle", return_value=Response({"message": "Test"}, status=400)
+    ) as mock_handle:
         response = handle_exception(mock_request, exc)
         mock_handle.assert_called_once_with(mock_request, exc)
         assert response.status_code == 400
