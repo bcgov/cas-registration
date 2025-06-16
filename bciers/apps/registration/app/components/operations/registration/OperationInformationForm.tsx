@@ -11,7 +11,7 @@ import {
   createUnnestedFormData,
 } from "@bciers/components/form/formDataUtils";
 import { registrationOperationInformationUiSchema } from "@/registration/app/data/jsonSchema/operationInformation/registrationOperationInformation";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   RegistrationPurposeHelpText,
   RegistrationPurposes,
@@ -52,19 +52,31 @@ const OperationInformationForm = ({
   const [isConfirmTypeChangeModalOpen, setIsConfirmTypeChangeModalOpen] =
     useState<boolean>(false);
   const [key, setKey] = useState(Math.random());
-  const [currentUiSchema, setCurrentUiSchema] = useState(
-    registrationOperationInformationUiSchema,
-  );
+  const searchParams = useSearchParams();
+  const isOperationReadOnly = searchParams.get("continue") === "true";
+  const [currentUiSchema, setCurrentUiSchema] = useState({
+    ...registrationOperationInformationUiSchema,
+    section1: {
+      ...registrationOperationInformationUiSchema.section1,
+
+      operation: {
+        ...registrationOperationInformationUiSchema.section1.operation,
+        ...(isOperationReadOnly && {
+          "ui:widget": "ReadOnlyComboBoxWidget",
+        }),
+      },
+    },
+  });
+
   const updateUiSchemaWithHelpText = (
     registrationPurpose: RegistrationPurposes,
   ) => {
     setCurrentUiSchema({
-      ...registrationOperationInformationUiSchema,
+      ...currentUiSchema,
       section1: {
-        ...registrationOperationInformationUiSchema.section1,
+        ...currentUiSchema.section1,
         registration_purpose: {
-          ...registrationOperationInformationUiSchema.section1
-            .registration_purpose,
+          ...currentUiSchema.section1.registration_purpose,
           "ui:help": (
             <small>
               <b>Note: </b>
