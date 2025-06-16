@@ -265,11 +265,11 @@ describe("OperationsDataGrid component", () => {
 
     expect(continueRegistrationlinks[0]).toHaveAttribute(
       "href",
-      "/registration/register-an-operation/uuid2/1?continue=true",
+      "/registration/register-an-operation/uuid2/1?continueRegistration=true",
     );
     expect(continueRegistrationlinks[1]).toHaveAttribute(
       "href",
-      "/registration/register-an-operation/uuid3/1?continue=true",
+      "/registration/register-an-operation/uuid3/1?continueRegistration=true",
     );
   });
   it("renders the correct text about BORO ID column depending the registration purpose", async () => {
