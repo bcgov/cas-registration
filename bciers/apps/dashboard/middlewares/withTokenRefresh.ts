@@ -17,6 +17,7 @@ function shouldUpdateToken(token: JWT | null) {
 }
 
 async function fetchNewAccessToken(refreshToken: string | undefined) {
+  console.log("Feching new tokens...");
   /**
    * Attempt to refresh access token from the OAuth provider
    */
@@ -35,6 +36,11 @@ async function fetchNewAccessToken(refreshToken: string | undefined) {
 
   const newTokens = await newTokensResponse.json();
 
+  console.log(
+    "New expiry:    : ",
+    Math.round(Date.now() / 1000) + OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS,
+  );
+
   return {
     access_token: newTokens.access_token,
     refresh_token: newTokens.refresh_token,
@@ -49,11 +55,17 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
    * Huge thanks to the community: https://github.com/nextauthjs/next-auth/discussions/9715#discussioncomment-12818495
    */
   return async (request: NextRequest) => {
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+    console.log("Middleware called.");
     // Casting to our augmented JWT type
     const jwt = (await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     })) as JWT | null;
+
+    console.log("Now           : ", Date.now() / 1000);
+    console.log("JWT expires at: ", jwt?.expires_at);
+    console.log("Difference    : ", Date.now() / 1000 - (jwt?.expires_at ?? 0));
 
     const response = NextResponse.next();
 
@@ -89,6 +101,8 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
         });
       }
     }
+
+    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
     return response;
   };
