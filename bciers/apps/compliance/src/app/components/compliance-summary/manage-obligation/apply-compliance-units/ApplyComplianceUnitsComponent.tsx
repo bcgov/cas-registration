@@ -127,7 +127,7 @@ export default function ApplyComplianceUnitsComponent({
   }, [formData, initialOutstandingBalance]);
 
   const canSubmit = useMemo(() => {
-    return (
+    return !!(
       (formData as ApplyComplianceUnitsFormData)?.bccr_holding_account_id &&
       (formData as ApplyComplianceUnitsFormData)
         ?.total_quantity_to_be_applied &&
@@ -182,7 +182,6 @@ export default function ApplyComplianceUnitsComponent({
           }
           onContinueClick={isSubmitted ? undefined : () => {}}
           continueButtonType="submit"
-          middleButtonDisabled={false}
           submitButtonDisabled={!canSubmit}
           className="mt-4"
         />
