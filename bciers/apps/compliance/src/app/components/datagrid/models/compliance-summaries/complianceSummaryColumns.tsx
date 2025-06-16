@@ -1,7 +1,10 @@
 import { GridColDef } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 
-const complianceSummaryColumns = (isCasStaff?: boolean): GridColDef[] => {
+const complianceSummaryColumns = (
+  actionedECs: any[],
+  isCasStaff: boolean,
+): GridColDef[] => {
   const columns: GridColDef[] = [
     {
       field: "reporting_year",
@@ -44,7 +47,15 @@ const complianceSummaryColumns = (isCasStaff?: boolean): GridColDef[] => {
       field: "actions",
       headerName: "Actions",
       flex: 1,
-      renderCell: ActionCell,
+      renderCell: (params) => {
+        return (
+          <ActionCell
+            {...params}
+            isCasStaff={isCasStaff}
+            actionedECs={actionedECs}
+          />
+        );
+      },
     },
   ];
   if (isCasStaff) {

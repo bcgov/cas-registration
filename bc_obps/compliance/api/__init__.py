@@ -8,3 +8,4 @@ from ._compliance_report_versions.compliance_report_version_id import get_compli
 from ._compliance_report_versions._compliance_report_version_id import operation, invoice, earned_credits
 from ._bccr._accounts import account_id
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import compliance_units
+from .earned_credits import get_compliance_report_version_ids_with_actioned_ecs

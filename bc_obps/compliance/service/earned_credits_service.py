@@ -1,5 +1,5 @@
 from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
-from typing import Optional
+from typing import List, Optional
 
 
 class ComplianceEarnedCreditsService:
@@ -41,3 +41,21 @@ class ComplianceEarnedCreditsService:
             earned_credits_amount=int(compliance_report_version.report_compliance_summary.credited_emissions),
         )
         return earned_credits_record
+
+    @classmethod
+    def get_compliance_report_version_ids_with_actioned_ecs(cls) -> List[int]:
+        """
+        Fetch all compliance report versions with actioned earned credits
+
+        Returns:
+            A list of all actioned earned credits compliance report versions IDs
+        """
+        compliance_report_version_ids = (
+            ComplianceEarnedCredit.objects.exclude(
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+            )
+            .values_list("compliance_report_version", flat=True)
+            .distinct()
+        )
+
+        return list(compliance_report_version_ids)
