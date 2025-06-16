@@ -9,6 +9,9 @@ import fetchFormEnums from "@bciers/testConfig/helpers/fetchFormEnums";
 import { Apps } from "@bciers/utils/src/enums";
 
 useSessionRole.mockReturnValue("industry_user_admin");
+useSearchParams.mockReturnValue({
+  get: vi.fn(),
+});
 
 describe("the OperationRegistrationPage component", () => {
   beforeEach(() => {
