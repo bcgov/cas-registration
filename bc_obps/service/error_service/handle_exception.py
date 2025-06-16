@@ -96,11 +96,19 @@ class ExceptionHandler:
 
         # Default: unexpected error
         event_id = cls.capture_sentry_exception(exc, "unexpected_error")
-        message = str(exc)
         if event_id:
             logger.critical(f"Unexpected error. Sentry Reference ID: {event_id}", exc_info=True)
 
-        return Response({"message": message}, status=400)
+        return Response(
+            {
+                "message": (
+                    "An internal server error has occurred. "
+                    "Please contact ghgregulator@gov.bc.ca for help"
+                    + (f" and include the reference code: {event_id}" if event_id else ".")
+                )
+            },
+            status=500,
+        )
 
 
 def handle_exception(request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
