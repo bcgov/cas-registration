@@ -9,6 +9,7 @@ import {
   getReportingActivities,
   getBusinessStructures,
   fetchOperationsPageData,
+  useSearchParams,
 } from "@bciers/testConfig/mocks";
 import OperationInformationForm from "apps/registration/app/components/operations/registration/OperationInformationForm";
 import {
@@ -35,6 +36,10 @@ describe("the OperationInformationForm component", () => {
     useRouter.mockReturnValue({
       query: {},
       push: mockPush,
+    });
+
+    useSearchParams.mockReturnValue({
+      get: vi.fn(),
     });
   });
 
@@ -672,5 +677,25 @@ describe("the OperationInformationForm component", () => {
       }),
     );
     consoleErrorMock.mockRestore();
+  });
+
+  it("should show the operation field as readonly when the user has arrived at the page via the `Continue Registration` button in Admin", async () => {
+    useSearchParams.mockClear();
+    useSearchParams.mockReturnValue({
+      get: (key: string) => (key === "continue" ? "true" : null),
+    });
+    fetchFormEnums(Apps.REGISTRATION);
+    render(
+      <OperationInformationForm
+        rawFormData={{ operation: "uuid1" }}
+        schema={await createRegistrationOperationInformationSchema()}
+        step={1}
+        steps={allOperationRegistrationSteps}
+      />,
+    );
+    expect(screen.getByText(/Operation 1/i)).toHaveAttribute(
+      "class",
+      "read-only-widget",
+    );
   });
 });
