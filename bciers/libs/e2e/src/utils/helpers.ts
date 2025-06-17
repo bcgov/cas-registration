@@ -240,11 +240,16 @@ export async function getTableRowById(table: Locator, rowId: string) {
 export async function getTableColumnTextValues(
   table: Locator,
   dataField: string,
+  hasSearchRow: boolean = false,
 ): Promise<string[]> {
+  let indexStart = 1;
+  if (hasSearchRow) {
+    indexStart = 2;
+  }
   const uniqueColumnValues = new Set<string>();
   const rows = await table.locator('[role="row"]').all();
   const rowsLength = rows.length;
-  const indexStart = 2; //skip header row; skip search row
+  // const indexStart = 2; //skip header row; skip search row
 
   for (let i = indexStart; i < rowsLength; i++) {
     const row = rows[i];
@@ -255,6 +260,63 @@ export async function getTableColumnTextValues(
 
   return Array.from(uniqueColumnValues);
 }
+
+// 🛠️ Function: find the nth row where a unique value resides in a given column and return that row Locator
+export async function getRowByUniqueCellValue(
+  page: Page,
+  uniqueCellDataField: string,
+  uniqueCellValue: string,
+): Promise<Locator | null> {
+  const table = page.locator(".MuiDataGrid-root");
+  const rows = await table.locator('[role="row"]').all();
+  const indexStart = 1; // skip header row
+
+  for (let i = indexStart; i < rows.length; i++) {
+    const row = rows[i];
+    const uniqueCell = await getRowCellBySelector(
+      row,
+      `[data-field="${uniqueCellDataField}"]`,
+    );
+    const text = (await uniqueCell.textContent())?.trim() || "";
+    if (text === uniqueCellValue) {
+      return row;
+    }
+  }
+  return null; // uniqueCellValue not found
+}
+
+// 🛠️ Function: find a row by unique cell value and get the nth cell's text content (no search row)
+export async function getNthCellTextByUniqueCellValue(
+  page: Page,
+  uniqueCellDataField: string,
+  uniqueCellValue: string,
+  nthCellIndex: number,
+): Promise<string | null> {
+  const table = page.locator(".MuiDataGrid-root");
+  const rows = await table.locator('[role="row"]').all();
+  const indexStart = 1; // skip header row
+
+  for (let i = indexStart; i < rows.length; i++) {
+    const row = rows[i];
+    const uniqueCell = await getRowCellBySelector(
+      row,
+      `[data-field="${uniqueCellDataField}"]`,
+    );
+    const text = (await uniqueCell.textContent())?.trim() || "";
+    if (text === uniqueCellValue) {
+      const cells = await row.locator('[role="gridcell"]').all();
+      if (nthCellIndex >= 0 && nthCellIndex < cells.length) {
+        const nthCellText =
+          (await cells[nthCellIndex].textContent())?.trim() || null;
+        return nthCellText;
+      } else {
+        return null; // nthCellIndex out of range
+      }
+    }
+  }
+  return null; // uniqueCellValue not found
+}
+
 // 🛠️ Function: clears form fields
 export async function fieldsClear(page: Page, formFields: string | any[]) {
   // 📛 Clear the required input fields
@@ -364,7 +426,7 @@ export async function tableColumnNamesAreCorrect(
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
-  expect(actualColumnNames).toEqual(expectedColumnNames);
+  await expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 
 export async function tableHasExpectedRowCount(
@@ -558,7 +620,10 @@ export function getStorageStateForRole(role: string) {
   return JSON.parse(processEnv as string);
 }
 
-export async function assertSuccessfulSnackbar(page: Page, message: string) {
+export async function assertSuccessfulSnackbar(
+  page: Page,
+  message: string | RegExp,
+) {
   const snackbarLocator = page.locator(".MuiSnackbar-root").getByText(message);
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
@@ -577,6 +642,31 @@ export async function clickWithRetry(
       console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
     }
   }
+}
+
+export async function linkIsVisible(page: Page, linkName: string | RegExp) {
+  const link = page.getByRole("link", { name: linkName });
+  await expect(link).toBeVisible();
+
+  return link;
+}
+
+export async function assertSpinnerIsDone(row: Locator) {
+  const spinner = row.locator('svg[aria-label="loading"]').first();
+  await expect(spinner).toBeVisible();
+  await expect(spinner).toBeHidden();
+}
+
+// This is specifically for a combobox that does not allow manual entries
+export async function selectOptionFromCombobox(
+  page: Page,
+  choice: string | RegExp,
+) {
+  const optionsContainer = page.locator('ul[role="listbox"]');
+  await expect(optionsContainer).toBeVisible();
+  const option = optionsContainer.getByRole("option", { name: choice });
+  await expect(option).toBeVisible();
+  await option.click();
 }
 
 export async function urlIsCorrect(page: Page, expectedPath: string) {
