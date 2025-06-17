@@ -45,7 +45,13 @@ const mockResponse = {
 
 describe("ComplianceSummariesDataGrid component", () => {
   it("renders the ComplianceSummariesDataGrid with initial data", async () => {
-    render(<ComplianceSummariesDataGrid initialData={mockResponse} />);
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={mockResponse}
+        isCasStaff={false}
+        actionedECReportVersionIDs={[]}
+      />,
+    );
 
     // Verify headers are present
     expect(
@@ -136,6 +142,50 @@ describe("ComplianceSummariesDataGrid component", () => {
     ).toHaveAttribute(
       "href",
       "/compliance-summaries/3/request-issuance-review-summary",
+    );
+  });
+
+  it("renders the ComplianceSummariesDataGrid with initial data", async () => {
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={mockResponse}
+        isCasStaff={true}
+        actionedECReportVersionIDs={[3]}
+      />,
+    );
+
+    // Verify operator name is present
+    expect(
+      screen.getByRole("columnheader", { name: "Operator Name" }),
+    ).toBeVisible();
+
+    // Verify search inputs are present
+    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(8);
+
+    // Verify data displays
+    const summaryRows = screen.getAllByRole("row");
+    expect(summaryRows).toHaveLength(5); // 1 header row + 1 filter row + 3 data rows
+
+    // Check third row - Earned credits
+    const thirdRow = summaryRows[4];
+    expect(within(thirdRow).getByText("Operation 3")).toBeVisible();
+    expect(within(thirdRow).getByText("2024")).toBeVisible();
+    expect(within(thirdRow).getByText("0 tCO2e")).toBeVisible();
+    expect(within(thirdRow).getByText("1 tCO2e")).toBeVisible();
+    expect(within(thirdRow).getByText("Earned credits")).toBeVisible();
+    expect(within(thirdRow).getByText("N/A")).toBeVisible();
+    expect(
+      within(thirdRow).getByRole("link", {
+        name: "Review Credits Issuance Request",
+      }),
+    ).toBeVisible();
+    expect(
+      within(thirdRow).getByRole("link", {
+        name: "Review Credits Issuance Request",
+      }),
+    ).toHaveAttribute(
+      "href",
+      "/compliance-summaries/3/request-issuance-of-earned-credits",
     );
   });
 });

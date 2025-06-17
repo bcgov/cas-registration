@@ -28,9 +28,9 @@ const ActionCell = (params: ActionCellProps) => {
         basePath += "/manage-obligation-review-summary";
       } else if (p.row.status === "Earned credits") {
         if (params.isCasStaff && params.actionedECs.includes(params.id)) {
-          basePath += "/request-issuance-review-summary";
-        } else {
           basePath += "/request-issuance-of-earned-credits";
+        } else {
+          basePath += "/request-issuance-review-summary";
         }
       }
       return basePath;
