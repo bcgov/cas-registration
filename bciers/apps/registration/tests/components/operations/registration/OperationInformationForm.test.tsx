@@ -682,7 +682,7 @@ describe("the OperationInformationForm component", () => {
   it("should show the operation field as readonly when the user has arrived at the page via the `Continue Registration` button in Admin", async () => {
     useSearchParams.mockClear();
     useSearchParams.mockReturnValue({
-      get: (key: string) => (key === "continue" ? "true" : null),
+      get: (key: string) => (key === "continueRegistration" ? "true" : null),
     });
     fetchFormEnums(Apps.REGISTRATION);
     render(
