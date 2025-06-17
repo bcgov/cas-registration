@@ -1,0 +1,23 @@
+backend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-reg-backend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  environment: ~
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  resources:
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+  database:
+    releaseName: postgres-migration-test
+    appName: cas-obps-postgres-migration-test
