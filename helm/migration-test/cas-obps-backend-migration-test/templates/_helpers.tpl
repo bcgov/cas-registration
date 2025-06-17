@@ -141,27 +141,27 @@ Define environment variables for the application.
   valueFrom:
     secretKeyRef:
       key: user
-      name: {{ .Values.backend.database }}-pguser-registration
+      name: {{ .Values.dbShortName }}-pguser-registration
 - name: DB_PASSWORD
   valueFrom:
     secretKeyRef:
       key: password
-      name: {{ .Values.backend.database }}-pguser-registration
+      name: {{ .Values.dbShortName }}-pguser-registration
 - name: DB_NAME
   valueFrom:
     secretKeyRef:
       key: dbname
-      name: {{ .Values.backend.database }}-pguser-registration
+      name: {{ .Values.dbShortName }}-pguser-registration
 - name: DB_PORT
   valueFrom:
     secretKeyRef:
       key: port
-      name: {{ .Values.backend.database }}-pguser-registration
+      name: {{ .Values.dbShortName }}-pguser-registration
 - name: DB_HOST
   valueFrom:
     secretKeyRef:
       key: host
-      name: {{ .Values.backend.database }}-pguser-registration
+      name: {{ .Values.dbShortName }}-pguser-registration
 - name: ALLOWED_HOSTS
   value: '*'
 - name: GS_UNSCANNED_BUCKET_NAME
