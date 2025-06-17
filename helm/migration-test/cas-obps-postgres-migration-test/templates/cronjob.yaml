@@ -1,0 +1,75 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-job
+  labels: {{- include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: postgres-migration-test
+            image: postgres:16
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+            env:
+              - name: PGUSER
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                    key: user
+              - name: PGPASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                    key: password
+              - name: PGHOST
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                    key: host
+              - name: PGPORT
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pguser-postgres
+                    key: port
+              - name: PGDATABASE
+                value: "obps"
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - |
+                set -euo pipefail;
+                until pg_isready; do
+                  echo "⏱️ Waiting for Postgres to be ready...";
+                  sleep 5;
+                done;
+
+                if psql -tAc "SELECT to_regclass('public.django_migrations');" | grep -q django_migrations; then
+                  DBCHECK=$(psql -tAc "SELECT COUNT(*) FROM django_migrations;")
+                  if [ "$DBCHECK" -gt 0 ]; then
+                    echo "✅ Django migrations exist, database successfully restored."
+                    exit 0
+                  else
+                    echo "❌ 'django_migrations' table exists but is empty."
+                    exit 1
+                  fi
+                else
+                  echo "❌ 'django_migrations' table does not exist. Database restore failed."
+                  exit 1
+                fi
