@@ -15,7 +15,7 @@ backend:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "latest"
 
-  environment: ~
+  environment: test
 
   service:
     type: ClusterIP
