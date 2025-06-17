@@ -61,9 +61,8 @@ class ReportActivitySaveService:
         activity_data = exclude_keys(data, ["sourceTypes", "id"])
 
         # Save raw json data
-        self.save_raw_data(data)
 
-        # Only one ReportActivity record per report_version/faciltiy/activity should ever exist
+        # Only one ReportActivity record per report_version/facility/activity should ever exist
         report_activity, _ = ReportActivity.objects.update_or_create(
             id=data.get("id"),
             report_version=self.facility_report.report_version,
@@ -80,13 +79,18 @@ class ReportActivitySaveService:
             defaults={"json_data": activity_data},
         )
 
-        # Delete the existing report_source_types with an id not in the form_data (this means they've been deleted on the form)
-        ReportSourceType.objects.filter(report_activity=report_activity).exclude(
-            id__in=retrieve_ids(data["sourceTypes"])
-        ).delete()
+        # Check if "sourceTypes" exists in the data before processing
+        if "sourceTypes" in data:
+            # Delete the existing report_source_types with an id not in the form_data (this means they've been deleted on the form)
+            ReportSourceType.objects.filter(report_activity=report_activity).exclude(
+                id__in=retrieve_ids(data["sourceTypes"])
+            ).delete()
 
-        for source_type_key in data["sourceTypes"]:
-            self.save_source_type(report_activity, source_type_key, data["sourceTypes"][source_type_key])
+            for source_type_key in data["sourceTypes"]:
+                self.save_source_type(report_activity, source_type_key, data["sourceTypes"][source_type_key])
+
+        # Save raw data after processing source types
+        self.save_raw_data(data)
 
         return report_activity
 
