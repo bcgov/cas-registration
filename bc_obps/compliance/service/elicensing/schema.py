@@ -192,11 +192,16 @@ class InvoiceQueryResponse:
     clientObjectId: str
     clientGUID: str
     invoiceNumber: str
+<<<<<<< HEAD
     invoicePaymentDueDate: str
+=======
+>>>>>>> f0f860f88 (chore: add compliance adjustments to invoice)
     invoiceOutstandingBalance: Decimal
     invoiceFeeBalance: Decimal
     invoiceInterestBalance: Decimal
     fees: List[InvoiceFee]
+    invoicePaymentDueDate: Optional[str] = None
+    invoiceDueDate: Optional[str] = None
 
 
 @dataclass
