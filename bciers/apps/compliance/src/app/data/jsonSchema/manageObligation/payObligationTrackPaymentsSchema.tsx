@@ -18,7 +18,9 @@ interface PayObligationTrackPaymentsFormData {
   paymentAmountReceived: string;
 }
 
-const PaymentStatusNoteWidget = ({ formData }: WidgetProps<PayObligationTrackPaymentsFormData>) => {
+const PaymentStatusNoteWidget = ({
+  formData,
+}: WidgetProps<PayObligationTrackPaymentsFormData>) => {
   const outstandingBalance = parseFloat(formData?.outstandingBalance ?? "0");
   return <PaymentStatusNote outstandingBalance={outstandingBalance} />;
 };
@@ -31,7 +33,7 @@ export const createPayObligationTrackPaymentsSchema = (
   properties: {
     // Outstanding Compliance Obligation Section
     outstandingObligationHeader: readOnlyObjectField(
-      "Outstanding Compliance Obligation"
+      "Outstanding Compliance Obligation",
     ),
     paymentStatusNote: readOnlyStringField(),
     outstandingBalance: readOnlyStringField("Outstanding Balance:"),
@@ -76,4 +78,4 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
       inline: true,
     },
   },
-}; 
+};

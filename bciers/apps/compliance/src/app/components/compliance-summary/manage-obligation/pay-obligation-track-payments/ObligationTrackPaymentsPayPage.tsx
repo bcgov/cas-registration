@@ -15,7 +15,7 @@ export default async function ObligationTrackPaymentsPayPage({
   // Mock data - replace with actual API call later
   const complianceSummary = {
     reportingYear: "2024",
-    outstandingBalance: "0",
+    outstandingBalance: "0.00",
     equivalentValue: "0.00",
     paymentReceivedDate: "Dec 6, 2025",
     paymentAmountReceived: "8,000.00",
