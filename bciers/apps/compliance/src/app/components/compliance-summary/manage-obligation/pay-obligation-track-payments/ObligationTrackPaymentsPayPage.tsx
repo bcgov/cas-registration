@@ -3,7 +3,7 @@ import {
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
+import { ObligationTrackPaymentsComponent } from "./ObligationTrackPaymentsComponent";
 
 interface Props {
   readonly compliance_summary_id: string;
@@ -12,9 +12,13 @@ interface Props {
 export default async function ObligationTrackPaymentsPayPage({
   compliance_summary_id: complianceSummaryId,
 }: Props) {
-  // const complianceSummary = await getComplianceSummary(complianceSummaryId);
+  // Mock data - replace with actual API call later
   const complianceSummary = {
-    reportingYear: "2025",
+    reportingYear: "2024",
+    outstandingBalance: "0",
+    equivalentValue: "0.00",
+    paymentReceivedDate: "Dec 6, 2025",
+    paymentAmountReceived: "8,000.00",
   };
 
   const taskListElements = generateManageObligationTaskList(
@@ -23,18 +27,14 @@ export default async function ObligationTrackPaymentsPayPage({
     ActivePage.PayObligationTrackPayments,
   );
 
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
-  const saveAndContinueUrl = "#";
-
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
       complianceSummaryId={complianceSummaryId}
     >
-      <p>ObligationTrackPaymentsPay ...TBD</p>
-      <ComplianceStepButtons
-        backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
+      <ObligationTrackPaymentsComponent
+        data={complianceSummary}
+        complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>
   );
