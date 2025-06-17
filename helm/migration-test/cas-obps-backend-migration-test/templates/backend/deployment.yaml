@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cas-obps-backend-migration-test.fullname" . }}-backend
+  labels:
+    component: backend
+{{- include "cas-obps-backend-migration-test.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+{{- include "cas-obps-backend-migration-test.selectorLabels" . | nindent 6 }}
+      component: backend
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+{{- include "cas-obps-backend-migration-test.selectorLabels" . | nindent 8 }}
+        component: backend
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          env:
+            {{- include "cas-obps-backend-migration-test.backendEnvVars" . | nindent 12 }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/attachment-credentials/attachment-credentials.json"
+          ports:
+            - containerPort: {{ .Values.backend.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 8000
+            # we want the readiness threshold to fail fast,
+            # to prevent any request from going to a pod that is not ready
+            failureThreshold: 1
+            successThreshold: 1
+            periodSeconds: 30
+            timeoutSeconds: 5
+            initialDelaySeconds: 120
+          livenessProbe:
+            # the liveness probe is here to ensure that a pod does not get
+            # stuck in a shutdown state. It needs to allow enough time for
+            # the registered shutdown handler to run to completion.
+            httpGet:
+              path: /liveness
+              port: 8000
+            initialDelaySeconds: 150
+            periodSeconds: 30
+            failureThreshold: 3
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources: {{ toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: "/attachment-credentials"
+              name: gcs-attachment-credentials
+              readOnly: true
+      volumes:
+        - name: gcs-attachment-credentials
+          secret:
+            secretName: gcp-{{ .Release.Namespace }}-bciers-attach-service-account-key
+            items:
+            - key: credentials.json
+              path: attachment-credentials.json
+      restartPolicy: Always
