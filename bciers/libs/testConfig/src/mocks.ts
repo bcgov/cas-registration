@@ -50,6 +50,7 @@ const fetchFacilitiesPageData = vi.fn();
 const getFacility = vi.fn();
 const getCurrentUsersOperations = vi.fn();
 const handleInternalAccessRequest = vi.fn();
+const captureException = vi.fn();
 
 export {
   actionHandler,
@@ -80,4 +81,5 @@ export {
   useSessionRole,
   getSession,
   useContext,
+  captureException,
 };

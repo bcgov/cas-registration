@@ -29,6 +29,7 @@ import {
   getSessionRole,
   getSession,
   useContext,
+  captureException,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -70,6 +71,11 @@ vi.mock("next-auth", () => ({
 
 vi.mock("@/dashboard/auth", () => ({
   auth,
+}));
+
+// Mock the Sentry module to avoid actual error logging during tests
+vi.mock("@sentry/nextjs", () => ({
+  captureException,
 }));
 
 vi.mock("@bciers/utils/src/sessionUtils", () => ({

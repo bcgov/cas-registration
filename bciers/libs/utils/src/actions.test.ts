@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/nextjs";
 
 // disable the global mock since we are testing actions here
 vi.unmock("@bciers/actions");
+vi.unmock("@sentry/nextjs");
 
 vi.mock("next/headers", () => ({
   cookies: vi.fn(() => ({
