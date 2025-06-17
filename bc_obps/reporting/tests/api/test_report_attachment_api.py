@@ -164,7 +164,7 @@ class TestReportAttachmentEndpoints(CommonTestSetup):
             HTTP_AUTHORIZATION=self.auth_header_dumps,
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 500
         mock_set_attachment.assert_not_called()
         mock_get_attachments.assert_not_called()
 

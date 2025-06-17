@@ -100,7 +100,7 @@ class TestExceptionHandler:
     def test_handle_unexpected_error(self, mock_logger, mock_request):
         exc = Exception("Unexpected")
         response = ExceptionHandler.handle(mock_request, exc)
-        assert response.status_code == 400
+        assert response.status_code == 500
         assert json.loads(response.content) == {"message": "Unexpected"}
         mock_logger.assert_called_with("Unexpected error. Sentry Reference ID: 67890", exc_info=True)
 
