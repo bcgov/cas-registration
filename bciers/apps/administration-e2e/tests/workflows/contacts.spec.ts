@@ -11,6 +11,7 @@ import {
 import { FrontendMessages } from "@bciers/utils/src/enums";
 
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 
 const happoPlaywright = require("happo-playwright");
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);

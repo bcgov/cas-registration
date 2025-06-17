@@ -9,6 +9,7 @@ export enum AppRoute {
   PROFILE = "administration/profile",
   USERS = "administration/users",
   ADMINISTRATION_DASHBOARD = "administration",
+  USER_ACCESS_REQUEST = "administration/users-and-access-requests",
 }
 
 // 🔘 button text
@@ -142,4 +143,37 @@ export enum IDE2EValue {
 export enum SnackbarMessages {
   ISSUED_BCGHG_ID = "BCGHG ID issued successfully",
   ISSUED_BORO_ID = "BORO ID issued successfully",
+}
+
+export enum UserAndAccessRequestGridHeaders {
+  USER_ID = "User ID",
+  NAME = "Name",
+  EMAIL = "Email",
+  BUSINESS_BCEID = "Business BCeID",
+  USER_ROLE = "User Role",
+  STATUS = "Status",
+  ACTIONS = "Actions",
+}
+
+export enum UserAndAccessRequestValues {
+  EMAIL = "email@email.com",
+}
+
+export enum UserAccessRequestStatus {
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+  PENDING = "Pending",
+}
+
+export enum UserAccessRequestRoles {
+  ADMIN = "Admin",
+  REPORTER = "Reporter",
+  PENDING = "Pending",
+  NONE = "N/A",
+}
+
+export enum UserAccessRequestActions {
+  APPROVE = "Approve",
+  DECLINE = "Decline",
+  EDIT = "Edit",
 }
