@@ -15,6 +15,18 @@ export const readOnlyStringField = (
   readOnly: true,
 });
 
+export const readOnlyNumberField = (
+  title: string = "",
+): {
+  type: "number";
+  title: string;
+  readOnly: boolean;
+} => ({
+  type: "number",
+  title,
+  readOnly: true,
+});
+
 export const readOnlyObjectField = (
   title: string = "",
 ): {

@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from ninja.responses import Response
 from unittest.mock import patch
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
+from compliance.service.exceptions import ComplianceInvoiceError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
 from service.error_service.handle_exception import ExceptionHandler, ExceptionResponse, handle_exception
@@ -125,7 +126,17 @@ class TestExceptionHandler:
         exc = BCCarbonRegistryError("BC Carbon Registry error")
         response = ExceptionHandler.handle(mock_request, exc)
         assert response.status_code == 400
-        assert json.loads(response.content) == {"message": "BC Carbon Registry features not available at this time"}
+        assert json.loads(response.content) == {
+            "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
+        }
+
+    def test_handle_compliance_invoice_error(self, mock_request):
+        exc = ComplianceInvoiceError("missing_data", "Required invoice data is missing")
+        response = ExceptionHandler.handle(mock_request, exc)
+        assert response.status_code == 400
+        assert json.loads(response.content) == {
+            "message": "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists."
+        }
 
 
 def test_global_handle_exception(mock_request):

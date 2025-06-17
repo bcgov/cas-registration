@@ -2,11 +2,12 @@ from unittest.mock import patch
 from django.test import SimpleTestCase, override_settings, Client
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import custom_reverse_lazy
+from compliance.dataclass import BCCRAccountResponseDetails
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
-BCCR_API_PATH = (
-    "compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient.get_account_details"
+BCCR_SERVICE_PATH = (
+    "compliance.service.bc_carbon_registry.bc_carbon_registry_service.BCCarbonRegistryService.get_account_details"
 )
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 
@@ -22,18 +23,23 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
     def _get_endpoint_url(account_id):
         return custom_reverse_lazy("get_bccr_account_details", kwargs={"account_id": account_id})
 
-    @patch(BCCR_API_PATH)
+    @patch(BCCR_SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_successful_account_details_retrieval(self, mock_permission, mock_api_client):
+    def test_successful_account_details_retrieval(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
-        mock_api_client.return_value = {"entities": [{"accountName": "Test Account Inc."}]}
+        mock_service.return_value = BCCRAccountResponseDetails(
+            entity_id="123",
+            organization_classification_id="456",
+            type_of_account_holder="Corporation",
+            trading_name="Test Account Inc.",
+        )
         # Act
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
         # Assert
-        mock_api_client.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
+        mock_service.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
         assert response.status_code == 200
-        assert response.json() == {"tradingName": "Test Account Inc."}
+        assert response.json() == {"bccr_trading_name": "Test Account Inc."}
 
     @patch(PERMISSION_CHECK_PATH)
     def test_invalid_account_id_format(self, mock_permission):
@@ -45,26 +51,28 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         assert response.status_code == 422
         assert "Account Id: String should match pattern" in response.json().get("message")
 
-    @patch(BCCR_API_PATH)
+    @patch(BCCR_SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_empty_entities_response(self, mock_permission, mock_api_client):
+    def test_empty_account_details_response(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
-        mock_api_client.return_value = {"entities": []}
+        mock_service.return_value = None
         # Act
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
         # Assert
         assert response.status_code == 200
-        assert response.json() == {"tradingName": None}
+        assert response.json() == {"bccr_trading_name": None}
 
-    @patch(BCCR_API_PATH)
+    @patch(BCCR_SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_api_client_error_handling(self, mock_api_client, mock_permission):
+    def test_service_error_handling(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
-        mock_api_client.side_effect = BCCarbonRegistryError("Client error")
+        mock_service.side_effect = BCCarbonRegistryError("Service error")
         # Act
         response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
         # Assert
         assert response.status_code == 400
-        assert response.json() == {"message": "BC Carbon Registry features not available at this time"}
+        assert response.json() == {
+            "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
+        }

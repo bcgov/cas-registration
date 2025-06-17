@@ -37,6 +37,11 @@ describe("AlertNote", () => {
     render(<AlertNote>Test message</AlertNote>);
 
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveClass("bg-bc-light-blue", "text-bc-text", "mb-2");
+    expect(alert).toHaveClass(
+      "bg-bc-light-blue",
+      "text-bc-text",
+      "mb-2",
+      "items-center",
+    );
   });
 });

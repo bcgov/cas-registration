@@ -14,7 +14,6 @@ export default defineConfig({
     include: ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     alias: {
       "@/compliance": path.resolve(__dirname, "../compliance"),
-      "@": path.resolve(__dirname, "./"),
       app: path.resolve(__dirname, "./app"),
     },
     reporters: ["default"],
