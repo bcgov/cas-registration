@@ -36,11 +36,12 @@ export default function Page() {
   };
 
   useEffect(() => {
+    console.log(status, session);
     if (status === "loading" || session === undefined) {
       // Session is still loading, do nothing
       return;
     }
-    if (session) {
+    if (session && status === "authenticated") {
       // Handle authenticated user without a role
       if (!session.user.app_role || session.user.app_role === "") {
         // 🛸 Redirect cross-zone from dashboard to admininistration
