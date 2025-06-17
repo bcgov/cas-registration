@@ -21,7 +21,9 @@ export function ObligationTrackPaymentsComponent({
 
   return (
     <FormBase
-      schema={createPayObligationTrackPaymentsSchema(Number(data.reportingYear))}
+      schema={createPayObligationTrackPaymentsSchema(
+        Number(data.reportingYear),
+      )}
       uiSchema={payObligationTrackPaymentsUiSchema}
       formData={data}
       className="w-full"
@@ -32,4 +34,4 @@ export function ObligationTrackPaymentsComponent({
       />
     </FormBase>
   );
-} 
+}
