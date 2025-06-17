@@ -37,11 +37,7 @@ describe("AnnualEmissionsReportButtonField", () => {
       name: /view annual emissions report/i,
     });
     expect(link).toHaveTextContent("View Annual Emissions Report");
-    // Update this expected URL if the component's URL format changes
-    expect(link).toHaveAttribute(
-      "href",
-      "/api/compliance-summaries/test-123/annual-emissions-report",
-    );
+    expect(link).toHaveAttribute("href", "/reports/test-123/annual-report");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
   });
