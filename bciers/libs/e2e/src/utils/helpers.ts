@@ -240,16 +240,11 @@ export async function getTableRowById(table: Locator, rowId: string) {
 export async function getTableColumnTextValues(
   table: Locator,
   dataField: string,
-  hasSearchRow: boolean = false,
 ): Promise<string[]> {
-  let indexStart = 1;
-  if (hasSearchRow) {
-    indexStart = 2;
-  }
   const uniqueColumnValues = new Set<string>();
   const rows = await table.locator('[role="row"]').all();
   const rowsLength = rows.length;
-  // const indexStart = 2; //skip header row; skip search row
+  const indexStart = 2; //skip header row; skip search row
 
   for (let i = indexStart; i < rowsLength; i++) {
     const row = rows[i];
@@ -280,38 +275,6 @@ export async function getRowByUniqueCellValue(
     const text = (await uniqueCell.textContent())?.trim() || "";
     if (text === uniqueCellValue) {
       return row;
-    }
-  }
-  return null; // uniqueCellValue not found
-}
-
-// 🛠️ Function: find a row by unique cell value and get the nth cell's text content (no search row)
-export async function getNthCellTextByUniqueCellValue(
-  page: Page,
-  uniqueCellDataField: string,
-  uniqueCellValue: string,
-  nthCellIndex: number,
-): Promise<string | null> {
-  const table = page.locator(".MuiDataGrid-root");
-  const rows = await table.locator('[role="row"]').all();
-  const indexStart = 1; // skip header row
-
-  for (let i = indexStart; i < rows.length; i++) {
-    const row = rows[i];
-    const uniqueCell = await getRowCellBySelector(
-      row,
-      `[data-field="${uniqueCellDataField}"]`,
-    );
-    const text = (await uniqueCell.textContent())?.trim() || "";
-    if (text === uniqueCellValue) {
-      const cells = await row.locator('[role="gridcell"]').all();
-      if (nthCellIndex >= 0 && nthCellIndex < cells.length) {
-        const nthCellText =
-          (await cells[nthCellIndex].textContent())?.trim() || null;
-        return nthCellText;
-      } else {
-        return null; // nthCellIndex out of range
-      }
     }
   }
   return null; // uniqueCellValue not found
