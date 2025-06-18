@@ -11,7 +11,6 @@ from compliance.models import (
 )
 from datetime import datetime
 from decimal import Decimal
-from typing import Tuple
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -37,12 +36,12 @@ class ElicensingDataRefreshService:
         ).elicensing_invoice
         try:
             ElicensingDataRefreshService.refresh_data_by_invoice(
-                client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number # type: ignore[union-attr]
+                client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number  # type: ignore[union-attr]
             )
-        except:
+        except:  # noqa: E722
             data_is_fresh = False
         finally:
-            return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice) # type: ignore[arg-type]
+            return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice)  # type: ignore[arg-type]
 
     @classmethod
     @transaction.atomic
