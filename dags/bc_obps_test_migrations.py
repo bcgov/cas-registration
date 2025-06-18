@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
 TEST_MIGRATIONS_DAG_NAME = "cas-_bciers_test_migrations"
 K8S_IMAGE = "alpine/k8s:1.29.15"
+SERVICE_ACCOUNT_NAME = "airflow-deployer"
 
 # Environment variables
 DESTINATION_NAMESPACE = os.getenv("DESTINATION_NAMESPACE")
@@ -46,6 +47,7 @@ postgres_helm_install = KubernetesPodOperator(
     task_id="install_cas_obps_postgres_migration_test_chart",
     name="install_cas_obps_postgres_migration_test_chart",
     namespace=DESTINATION_NAMESPACE,
+    service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
@@ -62,6 +64,7 @@ wait_for_postgres_restore = KubernetesPodOperator(
     task_id="wait_for_postgres_restore",
     name="wait_for_postgres_restore",
     namespace=DESTINATION_NAMESPACE,
+    service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
@@ -100,6 +103,7 @@ backend_helm_install = KubernetesPodOperator(
     task_id="install_cas_obps_backend_migration_test_chart",
     name="install_cas_obps_backend_migration_test_chart",
     namespace=DESTINATION_NAMESPACE,
+    service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
@@ -116,6 +120,7 @@ wait_for_backend = KubernetesPodOperator(
     task_id="wait_for_backend",
     name="wait_for_backend",
     namespace=DESTINATION_NAMESPACE,
+    service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
@@ -154,6 +159,7 @@ uninstall_helm_charts = KubernetesPodOperator(
     task_id="uninstall_helm_charts",
     name="uninstall_helm_charts",
     namespace=DESTINATION_NAMESPACE,
+    service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
