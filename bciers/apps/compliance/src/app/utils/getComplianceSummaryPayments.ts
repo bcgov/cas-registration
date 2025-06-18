@@ -6,7 +6,7 @@ export async function getComplianceSummaryPayments(
 ): Promise<PaymentsData> {
   try {
     const data = await actionHandler(
-      `compliance/compliance-report-versions/${complianceReportVersionId}/payments`,
+      `compliance/compliance-report-versions/${complianceReportVersionId}/obligation/payments`,
       "GET",
       "",
     );
