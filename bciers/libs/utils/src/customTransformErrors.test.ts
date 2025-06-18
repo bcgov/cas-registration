@@ -83,15 +83,14 @@ const mininumLengthError = [
 
 const craBusinessNumberError = [
   {
-    name: "minimum",
+    name: "pattern",
     property: ".cra_business_number",
-    message: "must be >= 100000000",
+    message: "must be 9 digits",
     params: {
-      comparison: ">=",
-      limit: 100000000,
+      pattern: "^\\d{9}$",
     },
-    stack: "'CRA Business Number' must be >= 100000000",
-    schemaPath: "#/properties/cra_business_number/minimum",
+    stack: "'CRA Business Number' must be 9 digits",
+    schemaPath: "#/properties/cra_business_number/pattern",
   },
 ];
 

@@ -42,9 +42,8 @@ export const selectOperatorSchema: RJSFSchema = {
         required: ["cra_business_number"],
         properties: {
           cra_business_number: {
-            type: "number",
-            minLength: 1,
-            maxLength: 100,
+            type: "string",
+            pattern: "^[0-9]{9}$",
           },
         },
       },
@@ -81,6 +80,7 @@ export const selectOperatorUiSchema = {
       label: false,
       buttonLabel: "Search Operator",
       title: "CRA Business Number",
+      "aria-label": "cra_business_number",
     },
   },
 };

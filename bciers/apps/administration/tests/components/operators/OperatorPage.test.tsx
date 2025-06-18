@@ -61,7 +61,7 @@ describe("Operator component", () => {
       parent_operators_array: [
         {
           po_legal_name: "Parent Operator Legal Name",
-          po_cra_business_number: 123456780,
+          po_cra_business_number: "123456780",
           po_street_address: "789 Oak St",
           po_municipality: "Village",
           po_province: "BC",
@@ -74,7 +74,7 @@ describe("Operator component", () => {
         },
         {
           po_legal_name: "Parent Operator Legal Name",
-          po_cra_business_number: 123456780,
+          po_cra_business_number: "123456780",
           po_street_address: "789 Oak St",
           po_municipality: "Village",
           po_province: "BC",
@@ -91,7 +91,7 @@ describe("Operator component", () => {
       legal_name: "Test Operator Name",
       trade_name: "bloop",
       business_structure: "BC Corporation",
-      cra_business_number: 987654321,
+      cra_business_number: "987654321",
       bc_corporate_registry_number: "def1234567",
       mailing_address: 5,
     });

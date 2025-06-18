@@ -20,7 +20,7 @@ function createOperation(operationType) {
       {
         mo_legal_name: "Multiple Operator Legal Name",
         mo_trade_name: "Multiple Operator Trade Name",
-        mo_cra_business_number: 123456789,
+        mo_cra_business_number: "123456789",
         mo_bc_corporate_registry_number: "abc1234567",
         mo_business_structure: "Sole Proprietorship",
         mo_street_address: "123 Test St",
@@ -58,7 +58,7 @@ function updateOperation(operationId) {
       {
         mo_legal_name: "Multiple Operator Legal Name Updated",
         mo_trade_name: "Multiple Operator Trade Name Updated",
-        mo_cra_business_number: 987654321,
+        mo_cra_business_number: "987654321",
         mo_bc_corporate_registry_number: "def9876543",
         mo_business_structure: "Sole Proprietorship",
         mo_street_address: "123 Test St Updated",
