@@ -215,7 +215,7 @@ export const emissionAllocationSchema: RJSFSchema = {
                 type: "string",
               },
               allocated_quantity: {
-                type: "string",
+                type: "number",
               },
             },
           },
@@ -274,7 +274,7 @@ export const emissionAllocationSchema: RJSFSchema = {
                 type: "string",
               },
               allocated_quantity: {
-                type: "string",
+                type: "number",
               },
             },
           },

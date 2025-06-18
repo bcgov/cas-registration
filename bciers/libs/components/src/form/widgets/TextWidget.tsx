@@ -65,6 +65,7 @@ const TextWidget: React.FC<WidgetProps> = ({
 
   // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
+    // console.log("typeof value", typeof Number(value), Number(value));
     return (
       <>
         brianna NUMBER
@@ -72,11 +73,15 @@ const TextWidget: React.FC<WidgetProps> = ({
           id={id}
           name={name}
           disabled={disabled || readonly}
-          value={value}
+          value={Number(value)}
           onValueChange={handleNumberChange}
           max={maxNum}
           style={widthStyle}
-          format={{ maximumFractionDigits: 4 }}
+          format={{
+            maximumFractionDigits: 4,
+            // sometimes numbers are returned
+            minimumFractionDigits: value.toString().split(".")[1]?.length ?? 0,
+          }}
         >
           <NumberField.Group>
             <NumberField.Input
