@@ -40,8 +40,8 @@ class ElicensingDataRefreshService:
             )
         except:  # noqa: E722
             data_is_fresh = False
-        finally:
-            return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice)  # type: ignore[arg-type]
+
+        return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice)  # type: ignore[arg-type]
 
     @classmethod
     @transaction.atomic
