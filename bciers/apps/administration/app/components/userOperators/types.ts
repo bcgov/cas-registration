@@ -26,7 +26,7 @@ export interface Operator {
 export interface SelectOperatorFormData {
   search_type: string;
   legal_name?: string;
-  cra_business_number?: number;
+  cra_business_number?: string;
 }
 
 export interface AccessRequestDataGridRow {
@@ -107,7 +107,7 @@ interface ParentOperator {
   // PO = Parent Operator(Company)
   po_legal_name?: string;
   po_trade_name?: string;
-  po_cra_business_number?: number;
+  po_cra_business_number?: string;
   po_bc_corporate_registry_number?: string;
   po_business_structure?: string;
   po_website?: string;
@@ -121,7 +121,7 @@ export interface UserOperatorFormData extends UserFormData {
   is_senior_officer: string;
   legal_name: string;
   trade_name?: string;
-  cra_business_number?: number;
+  cra_business_number?: string;
   bc_corporate_registry_number?: string;
   business_structure: string;
   street_address: string;

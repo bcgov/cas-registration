@@ -39,7 +39,7 @@ const operatorFormData = {
   parent_operators_array: [
     {
       po_legal_name: "Parent Operator Legal Name",
-      po_cra_business_number: 123456780,
+      po_cra_business_number: "123456780",
       po_street_address: "789 Oak St",
       po_municipality: "Village",
       po_province: "BC",
@@ -68,7 +68,7 @@ const operatorFormData = {
     {
       partner_legal_name: "Partner Operator Legal Name",
       partner_trade_name: "Partner Operator Trade Name",
-      partner_cra_business_number: 123456780,
+      partner_cra_business_number: "123456780",
       partner_bc_corporate_registry_number: "zzz1212121",
       partner_business_structure: "General Partnership",
       id: 1,
@@ -78,7 +78,7 @@ const operatorFormData = {
   legal_name: "Existing Operator 2 Legal Name",
   trade_name: "Existing Operator 2 Trade Name",
   business_structure: "General Partnership",
-  cra_business_number: 987654321,
+  cra_business_number: "987654321",
   bc_corporate_registry_number: "def1234567",
   mailing_address: 5,
 };
@@ -116,14 +116,14 @@ const postPartnerParent = {
   legal_name: "Existing Operator 2 Legal Name",
   trade_name: "Existing Operator 2 Trade Name",
   business_structure: "General Partnership",
-  cra_business_number: 987654321,
+  cra_business_number: "987654321",
   bc_corporate_registry_number: "def1234567",
   partner_operators_array: [
     {
       partner_legal_name: "Partner Operator Legal Name",
       partner_trade_name: "Partner Operator Trade Name",
       partner_business_structure: "General Partnership",
-      partner_cra_business_number: 123456780,
+      partner_cra_business_number: "123456780",
       partner_bc_corporate_registry_number: "zzz1212121",
     },
   ],
@@ -136,7 +136,7 @@ const postPartnerParent = {
     {
       po_legal_name: "Parent Operator Legal Name",
       operator_registered_in_canada: true,
-      po_cra_business_number: 123456780,
+      po_cra_business_number: "123456780",
       po_street_address: "789 Oak St",
       po_municipality: "Village",
       po_province: "MB",
@@ -166,7 +166,7 @@ const fillMandatoryFields = async () => {
 
   await userEvent.type(
     screen.getByLabelText(/CRA Business Number+/i),
-    postMandatory.cra_business_number.toString(),
+    postMandatory.cra_business_number,
   );
 
   await userEvent.type(
@@ -225,7 +225,7 @@ const fillPartnerParentFields = async () => {
   );
   await userEvent.type(
     screen.getAllByLabelText(/CRA Business Number+/i)[1],
-    postPartnerParent.partner_operators_array[0].partner_cra_business_number.toString(),
+    postPartnerParent.partner_operators_array[0].partner_cra_business_number,
   );
   await userEvent.type(
     screen.getAllByLabelText(/BC Corporate Registry Number+/i)[1],
@@ -247,8 +247,7 @@ const fillPartnerParentFields = async () => {
   );
   await userEvent.type(
     screen.getAllByLabelText(/CRA Business Number+/i)[2],
-    postPartnerParent.parent_operators_array?.[0]?.po_cra_business_number?.toString() ??
-      "",
+    postPartnerParent.parent_operators_array?.[0]?.po_cra_business_number ?? "",
   );
   await userEvent.type(
     screen.getAllByLabelText(/business mailing Address+/i)[1],
@@ -547,14 +546,14 @@ describe("OperatorForm component", () => {
             legal_name: "Existing Operator 2 Legal Nameedit",
             trade_name: "Existing Operator 2 Trade Nameedit",
             business_structure: "Limited Liability Partnership",
-            cra_business_number: 999999999,
+            cra_business_number: "999999999",
             bc_corporate_registry_number: "zzz9999999",
             partner_operators_array: [
               {
                 partner_legal_name: "Partner Operator Legal Nameedit",
                 partner_trade_name: "Partner Operator Trade Nameedit",
                 partner_business_structure: "Limited Liability Partnership",
-                partner_cra_business_number: 888888888,
+                partner_cra_business_number: "888888888",
                 partner_bc_corporate_registry_number: "yyy9999999",
               },
             ],
@@ -567,7 +566,7 @@ describe("OperatorForm component", () => {
               {
                 po_legal_name: "Parent Operator Legal Nameedit",
                 operator_registered_in_canada: true,
-                po_cra_business_number: 888888888,
+                po_cra_business_number: "888888888",
                 po_street_address: "789 Oak Stedit",
                 po_municipality: "Villageedit",
                 po_province: "MB",

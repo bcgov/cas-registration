@@ -47,7 +47,7 @@ describe("UserOperator component", () => {
     //   mock form data
     getUserOperatorFormData.mockReturnValueOnce({
       legal_name: "Test Operator Name",
-      cra_business_number: 987654326,
+      cra_business_number: "987654326",
       bc_corporate_registry_number: "stu1234567",
       business_structure: "BC Corporation",
       street_address: "789 Oak St",

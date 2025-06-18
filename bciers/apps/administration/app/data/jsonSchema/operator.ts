@@ -43,10 +43,9 @@ const createSection1Schema = async () => {
           anyOf: businessStructureOptions,
         },
         partner_cra_business_number: {
-          type: "number",
+          type: "string",
           title: "CRA Business Number",
-          minimum: 100000000,
-          maximum: 999999999,
+          format: "cra_business_number",
         },
         partner_bc_corporate_registry_number: {
           type: "string",
@@ -91,10 +90,9 @@ const createSection1Schema = async () => {
         anyOf: businessStructureOptions,
       },
       cra_business_number: {
-        type: "number",
+        type: "string",
         title: "CRA Business Number",
-        minimum: 100000000,
-        maximum: 999999999,
+        format: "cra_business_number",
       },
       bc_corporate_registry_number: {
         type: "string",
@@ -194,10 +192,9 @@ const section3: RJSFSchema = {
                         properties: {
                           operator_registered_in_canada: { const: true },
                           po_cra_business_number: {
-                            type: "number",
+                            type: "string",
                             title: "CRA Business Number",
-                            minimum: 100000000,
-                            maximum: 999999999,
+                            pattern: "^\\d{9}$",
                           },
                           po_street_address: {
                             type: "string",
