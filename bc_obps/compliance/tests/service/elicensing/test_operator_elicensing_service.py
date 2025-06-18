@@ -86,13 +86,6 @@ def mock_elicensing_link():
 
 
 @pytest.fixture
-def mock_link_service():
-    """Mock ELicensingLinkService"""
-    with patch('compliance.service.elicensing.operator_elicensing_service.ELicensingLinkService') as mock:
-        yield mock
-
-
-@pytest.fixture
 def mock_operator_get():
     """Mock Operator.objects.get"""
     with patch('compliance.service.elicensing.operator_elicensing_service.Operator.objects.get') as mock:
