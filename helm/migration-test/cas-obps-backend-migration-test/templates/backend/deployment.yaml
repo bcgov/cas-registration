@@ -19,10 +19,12 @@ spec:
 {{- include "cas-obps-backend-migration-test.selectorLabels" . | nindent 8 }}
         component: backend
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Release.Name }}-backend
           image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          {{- toYaml .Values.backend.resources | nindent 10 }}
           env:
             {{- include "cas-obps-backend-migration-test.backendEnvVars" . | nindent 12 }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
