@@ -23,6 +23,6 @@ from service.operator_service import OperatorService
     auth=authorize("authorized_roles"),
 )
 def get_operators_by_cra_number_or_legal_name(
-    request: HttpRequest, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
+    request: HttpRequest, cra_business_number: Optional[str] = None, legal_name: Optional[str] = ""
 ) -> Tuple[Literal[200], Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]]:
     return 200, OperatorService.get_operators_by_cra_number_or_legal_name(cra_business_number, legal_name)

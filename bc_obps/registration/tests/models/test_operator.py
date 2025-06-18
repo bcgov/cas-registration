@@ -72,12 +72,12 @@ class OperatorModelTest(BaseTestCase):
         ]
 
     def test_check_cra_business_number_format(self):
-        valid_numbers = [123454321]
+        valid_numbers = ['123454321', 123454321]
         for number in valid_numbers:
             self.test_object.cra_business_number = number
             self.test_object.save()
 
-        invalid_numbers = [123, '123456789', 'ABCDEFGHI', '123-ABCd', '^&*%#@!()']
+        invalid_numbers = [1234543210, 12345432, '1234567890', '12345678', 'ABCDEFGHI', '123-ABCde', '^&*%#@!()']
         for number in invalid_numbers:
             self.test_object.cra_business_number = number
             with self.assertRaises(ValidationError):

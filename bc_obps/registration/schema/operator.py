@@ -13,6 +13,7 @@ from pydantic import field_validator, Field
 from registration.models import BusinessStructure, Operator, ParentOperator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
+    CRA_BUSINESS_NUMBER_REGEX,
 )
 
 
@@ -95,7 +96,7 @@ class OperatorIn(ModelSchema):
 
     trade_name: Optional[str] = ''
     business_structure: str
-    cra_business_number: int
+    cra_business_number: str = Field(pattern=CRA_BUSINESS_NUMBER_REGEX)
     bc_corporate_registry_number: str = Field(pattern=BC_CORPORATE_REGISTRY_REGEX)
     parent_operators_array: Optional[List[ParentOperatorIn]] = None
     partner_operators_array: Optional[List[PartnerOperatorIn]] = None
@@ -112,7 +113,7 @@ class OperatorIn(ModelSchema):
 
     @field_validator("cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: int) -> Optional[int]:
+    def validate_cra_business_number(cls, value: str) -> Optional[str]:
         return validate_cra_business_number(value)
 
     class Meta:

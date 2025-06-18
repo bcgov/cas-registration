@@ -29,7 +29,7 @@ class TestUpdateOperator:
         )
         payload = OperatorIn(
             business_structure='BC Corporation',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name='Legal Name Example',
             trade_name='Trade Name Example',
             bc_corporate_registry_number='BCG1234567',
@@ -63,7 +63,7 @@ class TestUpdateOperator:
 
         payload = OperatorIn(
             business_structure='BC Corporation',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name='Legal Name Example',
             trade_name='Trade Name Example',
             bc_corporate_registry_number='BCG1234567',
@@ -99,7 +99,7 @@ class TestUpdateOperator:
 
         payload = OperatorIn(
             business_structure='General Partnership',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name='Legal Name Example',
             trade_name='Trade Name Example',
             bc_corporate_registry_number='BCG1234567',
@@ -114,14 +114,14 @@ class TestUpdateOperator:
                 id=operator.partner_operators.first().id,
                 partner_legal_name='balloons legally',
                 partner_trade_name='balloons tradily',
-                partner_cra_business_number=999999999,
+                partner_cra_business_number='999999999',
                 partner_bc_corporate_registry_number='abc1234567',
                 partner_business_structure='General Partnership',
             ),
             PartnerOperatorIn(
                 partner_legal_name='i am new',
                 partner_trade_name='new',
-                partner_cra_business_number=111111111,
+                partner_cra_business_number='111111111',
                 partner_business_structure='General Partnership',
                 partner_bc_corporate_registry_number='ghj1234567',
             ),
@@ -150,7 +150,7 @@ class TestUpdateOperator:
 
         payload = OperatorIn(
             business_structure='General Partnership',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name='Legal Name Example',
             trade_name='Trade Name Example',
             bc_corporate_registry_number='BCG1234567',
@@ -187,7 +187,7 @@ class TestUpdateOperator:
 
         payload = OperatorIn(
             business_structure='BC Corporation',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name='Legal Name Example',
             trade_name='Trade Name Example',
             bc_corporate_registry_number='BCG1234567',
@@ -201,7 +201,7 @@ class TestUpdateOperator:
             ParentOperatorIn(
                 id=operator.parent_operators.first().id,
                 po_legal_name='balloons legally',
-                po_cra_business_number=999999999,
+                po_cra_business_number='999999999',
                 po_mailing_address=operator.parent_operators.first().mailing_address.id,
                 po_street_address='edited street address',
                 po_municipality=operator.parent_operators.first().mailing_address.municipality,
@@ -211,7 +211,7 @@ class TestUpdateOperator:
             ParentOperatorIn(
                 id=operator.parent_operators.last().id,
                 po_legal_name='i used to be a foreign operator',
-                po_cra_business_number=111111111,
+                po_cra_business_number='111111111',
                 po_street_address='new',
                 po_municipality='new',
                 po_province='AB',
@@ -251,7 +251,7 @@ class TestUpdateOperator:
         )
         payload = OperatorIn(
             business_structure='BC Corporation',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name=operator.legal_name,
             trade_name=operator.trade_name,
             bc_corporate_registry_number=operator.bc_corporate_registry_number,
@@ -294,7 +294,7 @@ class TestUpdateOperator:
 
         payload = OperatorIn(
             business_structure='BC Corporation',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             legal_name='Legal Name Example',
             trade_name='Trade Name Example',
             bc_corporate_registry_number='BCG1234567',

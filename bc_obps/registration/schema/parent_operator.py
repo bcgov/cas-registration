@@ -13,7 +13,7 @@ class ParentOperatorIn(ModelSchema):
     id: Optional[int] = None
     legal_name: str = Field(..., alias="po_legal_name")
     # the following are optional because international operators don't have them
-    cra_business_number: Optional[int] = Field(None, alias="po_cra_business_number")
+    cra_business_number: Optional[str] = Field(None, alias="po_cra_business_number")
     street_address: Optional[str] = Field(None, alias="po_street_address")
     municipality: Optional[str] = Field(None, alias="po_municipality")
     province: Optional[str] = Field(None, alias="po_province")
@@ -25,7 +25,7 @@ class ParentOperatorIn(ModelSchema):
 
     @field_validator("cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: int) -> Optional[int]:
+    def validate_cra_business_number(cls, value: str) -> Optional[str]:
         return validate_cra_business_number(value)
 
     class Meta:
@@ -41,7 +41,7 @@ class ParentOperatorOut(ModelSchema):
 
     po_legal_name: str = Field(..., alias="legal_name")
     # the following are optional because international operators don't have them
-    po_cra_business_number: Optional[int] = Field(..., alias="cra_business_number")
+    po_cra_business_number: Optional[str] = Field(..., alias="cra_business_number")
     po_street_address: Optional[str] = Field(None, alias="mailing_address.street_address")
     po_municipality: Optional[str] = Field(None, alias="mailing_address.municipality")
     po_province: Optional[str] = Field(None, alias="mailing_address.province")
