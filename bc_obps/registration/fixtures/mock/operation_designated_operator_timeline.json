@@ -390,5 +390,35 @@
       "created_at": "2024-12-06T21:09:07Z",
       "start_date": "2024-12-06T21:09:07Z"
     }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "a12bc34d-56ef-78ab-90cd-12ef3456ab78",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z"
+    }
+  },
+  {
+    "model": "registration.operationdesignatedoperatortimeline",
+    "fields": {
+      "operation": "3f47b2e1-9a4c-4d3f-8b21-7e9a0c5d2f6b",
+      "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_by": "00000000-0000-0000-0000-000000000001",
+      "created_at": "2024-06-05T23:21:02.353Z",
+      "start_date": "2024-06-05T23:20:57Z"
+    }
   }
 ]
