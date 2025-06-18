@@ -130,7 +130,7 @@ wait_for_backend = KubernetesPodOperator(
         elapsed=0
         while [[ $elapsed -lt $timeout ]]; do
             ready=$(kubectl get deployment {BACKEND_CHART_SHORTNAME}-backend -n {DESTINATION_NAMESPACE} -o json \
-                | jq -r '.status.readyReplicas == .spec.replicas')
+                | jq -r 'select(.status.readyReplicas == .spec.replicas)')
             if [[ -n "$ready" ]]; then
                 echo "Deployment {BACKEND_CHART_SHORTNAME}-backend is ready."
                 exit 0
