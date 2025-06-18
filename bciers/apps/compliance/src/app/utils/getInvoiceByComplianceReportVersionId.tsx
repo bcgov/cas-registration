@@ -8,7 +8,7 @@ const getInvoiceByComplianceReportVersionId = async (
   complianceReportVersionId: string,
 ): Promise<Invoice> => {
   const response: Invoice = await actionHandler(
-    `compliance/invoice/${complianceReportVersionId}`,
+    `compliance/compliance-report-versions/${complianceReportVersionId}/invoice`,
     "GET",
     "",
   );
