@@ -5,6 +5,8 @@ from registration.models.operator import Operator
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+    CRA_BUSINESS_NUMBER_MESSAGE,
+    CRA_BUSINESS_NUMBER_REGEX,
 )
 from registration.models import TimeStampedModel, BusinessStructure, Address
 from simple_history.models import HistoricalRecords
@@ -28,8 +30,11 @@ class ParentOperator(TimeStampedModel):
     trade_name = models.CharField(
         max_length=1000, blank=True, null=True, db_comment="The trade name of a parent operator"
     )
-    cra_business_number = models.IntegerField(
-        db_comment="The CRA business number of a parent operator", blank=True, null=True
+    cra_business_number = models.CharField(
+        validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
+        db_comment="The CRA business number of an operator",
+        blank=True,
+        null=True,
     )
     foreign_tax_id_number = models.CharField(
         max_length=1000,
