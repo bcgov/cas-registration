@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import cast, Optional
+from typing import Optional
 from ninja import ModelSchema, Field
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from registration.models import Operation
@@ -37,10 +37,6 @@ class ComplianceReportVersionOut(ModelSchema):
     class Meta:
         model = ComplianceReportVersion
         fields = ['id', 'status']
-
-    @staticmethod
-    def resolve_excess_emissions(obj: ComplianceReportVersion) -> Decimal:
-        return cast(Decimal, round(obj.report_compliance_summary.excess_emissions))
 
 
 # To be handled in issue #117
