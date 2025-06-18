@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 from django.db import transaction
 from compliance.models import (
@@ -6,17 +7,42 @@ from compliance.models import (
     ElicensingLineItem,
     ElicensingPayment,
     ElicensingAdjustment,
+    ComplianceObligation,
 )
 from datetime import datetime
 from decimal import Decimal
+from typing import Tuple
 
 elicensing_api_client = ELicensingAPIClient()
 
 
+@dataclass
+class RefreshWrapperReturn:
+    data_is_fresh: bool
+    invoice: ElicensingInvoice
+
+
 class ElicensingDataRefreshService:
     """
-    Service for refreshing our elicensing models with fresh data from elicensing.
+    Wrapper for refreshing elicensing data with the compliance_report_version_id
     """
+
+    @classmethod
+    def refresh_data_wrapper_by_compliance_report_version_id(
+        cls, compliance_report_version_id: int
+    ) -> RefreshWrapperReturn:
+        data_is_fresh = True
+        invoice = ComplianceObligation.objects.get(
+            compliance_report_version_id=compliance_report_version_id
+        ).elicensing_invoice
+        try:
+            ElicensingDataRefreshService.refresh_data_by_invoice(
+                client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number # type: ignore[union-attr]
+            )
+        except:
+            data_is_fresh = False
+        finally:
+            return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice) # type: ignore[arg-type]
 
     @classmethod
     @transaction.atomic
@@ -58,7 +84,10 @@ class ElicensingDataRefreshService:
                 ElicensingPayment.objects.update_or_create(
                     elicensing_line_item=fee_record,
                     payment_object_id=payment.paymentObjectId,
-                    defaults={"received_date": datetime.fromisoformat(payment.receivedDate), "amount": Decimal(payment.amount).quantize(Decimal("0.00"))},
+                    defaults={
+                        "received_date": datetime.fromisoformat(payment.receivedDate),
+                        "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
+                    },
                 )
             for adjustment in fee.adjustments:
                 ElicensingAdjustment.objects.update_or_create(

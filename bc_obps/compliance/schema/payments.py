@@ -1,24 +1,17 @@
+from datetime import datetime
 from typing import List
 from decimal import Decimal
-from ninja import Schema
+from compliance.models.elicensing_payment import ElicensingPayment
+from ninja import Schema, ModelSchema
+from django.db.models import QuerySet
 
 
-class PaymentOut(Schema):
+class PaymentOut(ModelSchema):
     """Schema for a single payment record"""
 
-    id: str
-    paymentReceivedDate: str
-    paymentAmountApplied: Decimal
-    paymentMethod: str
-    transactionType: str
-    receiptNumber: str
-
-
-class PaymentsListOut(Schema):
-    """Schema for the list of payments response"""
-
-    rows: List[PaymentOut]
-    row_count: int
+    class Meta:
+        model = ElicensingPayment
+        fields = ['id', 'amount', 'received_date']
 
 
 class DashboardPaymentRow(Schema):
@@ -36,3 +29,11 @@ class DashboardPaymentRow(Schema):
 class DashboardPaymentList(Schema):
     rows: List[DashboardPaymentRow]
     row_count: int
+
+
+class ElicensingPaymentListOut(Schema):
+    data_is_fresh: bool
+    rows: List[PaymentOut]
+    row_count: int
+
+
