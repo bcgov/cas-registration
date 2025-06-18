@@ -1,9 +1,7 @@
-from datetime import datetime
 from typing import List
 from decimal import Decimal
 from compliance.models.elicensing_payment import ElicensingPayment
 from ninja import Schema, ModelSchema
-from django.db.models import QuerySet
 
 
 class PaymentOut(ModelSchema):
@@ -35,5 +33,3 @@ class ElicensingPaymentListOut(Schema):
     data_is_fresh: bool
     rows: List[PaymentOut]
     row_count: int
-
-
