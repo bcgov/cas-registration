@@ -2,7 +2,7 @@ from typing import Optional
 from registration.models.business_structure import BusinessStructure
 from registration.schema import validate_business_structure, validate_cra_business_number
 from ninja import Field, ModelSchema
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
 from registration.models import MultipleOperator
 from pydantic import field_validator
 
@@ -16,7 +16,7 @@ class MultipleOperatorIn(ModelSchema):
     legal_name: str = Field(..., alias="mo_legal_name")
     trade_name: str = Field(..., alias="mo_trade_name")
     business_structure: str = Field(..., alias="mo_business_structure")
-    cra_business_number: int = Field(..., alias="mo_cra_business_number")
+    cra_business_number: str = Field(..., alias="mo_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX)
     bc_corporate_registry_number: Optional[str] = Field(
         None, alias="mo_bc_corporate_registry_number", pattern=BC_CORPORATE_REGISTRY_REGEX
     )
@@ -27,7 +27,7 @@ class MultipleOperatorIn(ModelSchema):
 
     @field_validator("cra_business_number")
     @classmethod
-    def validate_cra_business_number(cls, value: int) -> Optional[int]:
+    def validate_cra_business_number(cls, value: str) -> Optional[str]:
         return validate_cra_business_number(value)
 
     @field_validator("business_structure")
@@ -49,7 +49,7 @@ class MultipleOperatorOut(ModelSchema):
     mo_is_extraprovincial_company: bool
     mo_legal_name: str = Field(..., alias="legal_name")
     mo_trade_name: str = Field(..., alias="trade_name")
-    mo_cra_business_number: int = Field(..., alias="cra_business_number")
+    mo_cra_business_number: str = Field(..., alias="cra_business_number")
     mo_bc_corporate_registry_number: Optional[str] = Field(None, alias="bc_corporate_registry_number")
     mo_business_structure: str = Field(..., alias="business_structure")
     mo_attorney_street_address: Optional[str] = Field(None, alias="attorney_address.street_address")

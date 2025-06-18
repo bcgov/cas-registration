@@ -16,7 +16,7 @@ class TestCreateUserOperator(CommonTestSetup):
         "legal_name": "Legal Name",
         "trade_name": "Trade name",
         "business_structure": "BC Corporation",
-        "cra_business_number": 999999999,
+        "cra_business_number": "999999999",
         "bc_corporate_registry_number": "adh1234321",
         "street_address": "123 Updated St",
         "municipality": "Updated Municipality",
@@ -167,7 +167,7 @@ class TestCreateUserOperator(CommonTestSetup):
             {
                 "po_legal_name": "test po legal name",
                 "po_trade_name": "test po trade name",
-                "po_cra_business_number": 123456789,
+                "po_cra_business_number": "123456789",
                 "po_bc_corporate_registry_number": "poo7654321",
                 "po_business_structure": BusinessStructure.objects.first().pk,
                 "po_website": "https://testpo.com",
@@ -180,7 +180,7 @@ class TestCreateUserOperator(CommonTestSetup):
             {
                 "po_legal_name": "test po legal name 2",
                 "po_trade_name": "test po trade name 2",
-                "po_cra_business_number": 123456789,
+                "po_cra_business_number": "123456789",
                 "po_bc_corporate_registry_number": "opo7654321",
                 "po_business_structure": BusinessStructure.objects.first().pk,
                 "po_physical_street_address": "test po physical street address 2",
@@ -202,7 +202,7 @@ class TestCreateUserOperator(CommonTestSetup):
                 "partner_legal_name": "Partner Operator Legal Name",
                 "partner_trade_name": "Partner Operator Trade Name",
                 "partner_business_structure": "General Partnership",
-                "partner_cra_business_number": 123456780,
+                "partner_cra_business_number": "123456780",
                 "partner_bc_corporate_registry_number": "zzz1212121",
             },
         ]

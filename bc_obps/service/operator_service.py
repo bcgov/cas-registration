@@ -19,7 +19,7 @@ from django.db.models import QuerySet
 class OperatorService:
     @classmethod
     def get_operators_by_cra_number_or_legal_name(
-        cls, cra_business_number: Optional[int] = None, legal_name: Optional[str] = ""
+        cls, cra_business_number: Optional[str] = None, legal_name: Optional[str] = ""
     ) -> Union[Operator, QuerySet[Operator], OperatorSearchOut, List[OperatorSearchOut]]:
         if not cra_business_number and not legal_name:
             raise UserError("No search value provided")

@@ -48,7 +48,7 @@ def user_baker(custom_properties=None) -> User:
 
 
 def generate_random_cra_business_number():
-    return random.randint(100000000, 999999999)
+    return str(random.randint(100000000, 999999999))
 
 
 def address_baker() -> Address:

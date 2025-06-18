@@ -173,7 +173,7 @@ class TestUtils:
         return {
             "legal_name": "Put Operator Legal Name",
             "trade_name": "Put Operator Trade Name",
-            "cra_business_number": 963852741,
+            "cra_business_number": "963852741",
             "bc_corporate_registry_number": "abc1234321",
             "business_structure": business_structure.pk,
             "physical_street_address": "test physical street address",

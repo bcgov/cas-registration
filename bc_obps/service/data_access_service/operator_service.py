@@ -29,7 +29,7 @@ class OperatorDataAccessService:
         return first_approved_admin.business_guid
 
     @classmethod
-    def get_operators_by_cra_number(cls, cra_business_number: int) -> Operator:
+    def get_operators_by_cra_number(cls, cra_business_number: str) -> Operator:
         return Operator.objects.exclude(status=Operator.Statuses.DECLINED).get(cra_business_number=cra_business_number)
 
     @classmethod
