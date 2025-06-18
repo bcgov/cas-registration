@@ -27,5 +27,10 @@
       "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
     }
   },
-  "packageManager": "yarn@4.2.0"
+  "packageManager": "yarn@4.2.0",
+  "dependencies": {
+    "add": "^2.0.6",
+    "react-number-format": "^5.4.4",
+    "yarn": "^1.22.22"
+  }
 }
