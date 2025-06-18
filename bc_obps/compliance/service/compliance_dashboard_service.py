@@ -1,47 +1,19 @@
 from uuid import UUID
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.db.models import QuerySet
-from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models import ComplianceReportVersion, ElicensingPayment
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
 from registration.models.operation import Operation
-from typing import Optional, List
-from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from typing import Optional
 from dataclasses import dataclass
-from decimal import Decimal
+from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
 
 @dataclass
-class Payment:
-    id: str
-    paymentReceivedDate: str
-    paymentAmountApplied: Decimal
-    paymentMethod: str
-    transactionType: str
-    receiptNumber: str
-
-
-@dataclass
-class PaymentsList:
-    rows: List[Payment]
-    row_count: int
-
-
-@dataclass
-class PaymentDashboardRow:
-    id: int
-    compliance_period: int
-    operation_name: str
-    payment_towards: str
-    invoice_number: str
-    payment_amount: Decimal
-    outstanding_balance: Decimal
-
-
-@dataclass
-class PaymentsDashboardList:
-    rows: List[PaymentDashboardRow]
-    row_count: int
+class PaymentDataWithFreshnessFlag:
+    data_is_fresh: bool
+    data: QuerySet[ElicensingPayment]
 
 
 class ComplianceDashboardService:
@@ -114,34 +86,22 @@ class ComplianceDashboardService:
         return compliance_report_version
 
     @classmethod
-    def get_compliance_report_version_payments(cls, user_guid: UUID, compliance_report_version_id: int) -> PaymentsList:
+    def get_compliance_obligation_payments_by_compliance_report_version_id(
+        cls, compliance_report_version_id: int
+    ) -> PaymentDataWithFreshnessFlag:
         """
-        Get payments for a compliance report version.
+        Fetches a the monetary payments made towards a compliance obligation
 
         Args:
-            user_guid: The GUID of the user requesting the payments
-            compliance_report_version_id: The ID of the compliance report version
+            compliance_report_version_id: The ID of the compliance report version the obligation belongs to
 
         Returns:
-            PaymentsList object containing the payment records
+            The set of payment records that relate to the compliance obligation via the elicensing invoice
         """
-        compliance_report_version = cls.get_compliance_report_version_by_id(user_guid, compliance_report_version_id)
-        if not compliance_report_version:
-            return PaymentsList(rows=[], row_count=0)
 
-        payment_records = ObligationELicensingService.get_obligation_invoice_payments(
-            compliance_report_version.obligation.id
+        refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id
         )
-        payment_objects = [
-            Payment(
-                id=record.id,
-                paymentReceivedDate=record.paymentReceivedDate,
-                paymentAmountApplied=record.paymentAmountApplied,
-                paymentMethod=record.paymentMethod,
-                transactionType=record.transactionType,
-                receiptNumber=record.receiptNumber,
-            )
-            for record in payment_records
-        ]
+        payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
 
-        return PaymentsList(rows=payment_objects, row_count=len(payment_objects))
+        return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
