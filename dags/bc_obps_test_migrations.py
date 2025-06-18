@@ -32,6 +32,7 @@ POSTGRES_CHART = "cas-registration/migration-test/cas-obps-postgres-migration-te
 BACKEND_CHART_INSTANCE = os.getenv("BACKEND_CHART_INSTANCE", "backend-migration-test")
 BACKEND_CHART_SHORTNAME = os.getenv("BACKEND_CHART_SHORTNAME", "be-migration-test")
 BACKEND_CHART = "cas-registration/migration-test/cas-obps-backend-migration-test"
+BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 
 default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 
@@ -109,7 +110,7 @@ backend_helm_install = KubernetesPodOperator(
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
         "helm repo update && "
-        f"helm install {HELM_OPTIONS} {BACKEND_CHART_INSTANCE} {BACKEND_CHART}"
+        f"helm install {HELM_OPTIONS} {BACKEND_CHART_INSTANCE} {BACKEND_CHART} --set defaultImageTag={BACKEND_CHART_TAG}"
     ],
     get_logs=True,
     is_delete_operator_pod=True,
