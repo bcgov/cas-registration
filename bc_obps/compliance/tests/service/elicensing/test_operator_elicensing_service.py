@@ -5,10 +5,8 @@ from compliance.service.elicensing.operator_elicensing_service import OperatorEL
 import requests
 
 import pytest
-from django.utils import timezone
 
 from registration.models.operator import Operator
-from compliance.models.elicensing_link import ELicensingLink
 from model_bakery.baker import make_recipe
 from django.core.exceptions import MultipleObjectsReturned
 
@@ -70,19 +68,6 @@ def mock_operator_mailing_only():
     operator.mailing_address = mock_address
 
     return operator
-
-
-@pytest.fixture
-def mock_elicensing_link():
-    """Mock an ELicensingLink object"""
-    link = MagicMock(spec=ELicensingLink)
-    link.id = 1
-    link.elicensing_guid = uuid.uuid4()
-    link.elicensing_object_id = "test-client-id"
-    link.elicensing_object_kind = ELicensingLink.ObjectKind.CLIENT
-    link.sync_status = "SUCCESS"
-    link.last_sync_at = timezone.now()
-    return link
 
 
 @pytest.fixture
