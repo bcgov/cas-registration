@@ -7,7 +7,8 @@ export const complianceSummarySchema: RJSFSchema = {
   title: "Compliance Summary",
   properties: {
     emissions_attributable_for_reporting: {
-      type: "string",
+      // brianna this one has decimals, no commas, why a string?
+      type: "number",
       title: "Emissions attributable for reporting",
     },
     reporting_only_emissions: {

@@ -66,42 +66,48 @@ const TextWidget: React.FC<WidgetProps> = ({
   // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     return (
-      <NumberField.Root
-        id={id}
-        name={name}
-        disabled={disabled || readonly}
-        value={value}
-        onValueChange={handleNumberChange}
-        max={maxNum}
-        style={widthStyle}
-        format={{ maximumFractionDigits: 4 }}
-      >
-        <NumberField.Group>
-          <NumberField.Input
-            aria-label={name}
-            style={numberStyles}
-            // sx doesn't like numberInput and tailwind doesn't like dynamic colors
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = borderColor;
-            }}
-          />
-        </NumberField.Group>
-      </NumberField.Root>
+      <>
+        brianna NUMBER
+        <NumberField.Root
+          id={id}
+          name={name}
+          disabled={disabled || readonly}
+          value={value}
+          onValueChange={handleNumberChange}
+          max={maxNum}
+          style={widthStyle}
+          format={{ maximumFractionDigits: 4 }}
+        >
+          <NumberField.Group>
+            <NumberField.Input
+              aria-label={name}
+              style={numberStyles}
+              // sx doesn't like numberInput and tailwind doesn't like dynamic colors
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = borderColor;
+              }}
+            />
+          </NumberField.Group>
+        </NumberField.Root>
+      </>
     );
   } else {
     return (
-      <TextField
-        id={id}
-        disabled={disabled || readonly}
-        name={name}
-        value={value}
-        onChange={handleChange}
-        sx={styles}
-        placeholder={placeholder}
-      />
+      <>
+        <>brianna STRING</>
+        <TextField
+          id={id}
+          disabled={disabled || readonly}
+          name={name}
+          value={value}
+          onChange={handleChange}
+          sx={styles}
+          placeholder={placeholder}
+        />
+      </>
     );
   }
 };

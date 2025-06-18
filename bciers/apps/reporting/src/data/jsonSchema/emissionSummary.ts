@@ -29,6 +29,7 @@ const properties: RJSFSchema = {
         minimum: 0,
       },
       stationary_combustion: {
+        // brianna this one has commas
         type: "number",
         title: "Stationary fuel combustion emissions",
         minimum: 0,
