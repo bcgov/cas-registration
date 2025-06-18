@@ -4,7 +4,7 @@
     "pk": "00000000-0000-0000-0000-000000000000",
     "fields": {
       "legal_name": "BCGOV",
-      "cra_business_number": 123456787,
+      "cra_business_number": "123456787",
       "bc_corporate_registry_number": "abc1234569",
       "business_structure": "Sole Proprietorship",
       "status": "Approved"
@@ -15,7 +15,7 @@
     "pk": "685d581b-5698-411f-ae00-de1d97334a71",
     "fields": {
       "legal_name": "Alpha Enterprises",
-      "cra_business_number": 123456789,
+      "cra_business_number": "123456789",
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "Sole Proprietorship",
       "status": "Approved"
@@ -27,7 +27,7 @@
     "fields": {
       "legal_name": "Bravo Technologies - has parTNER operator",
       "trade_name": "Bravo Technologies",
-      "cra_business_number": 987654321,
+      "cra_business_number": "987654321",
       "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
       "mailing_address": 3,
@@ -40,7 +40,7 @@
     "pk": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
     "fields": {
       "legal_name": "Charlie Solutions",
-      "cra_business_number": 987654322,
+      "cra_business_number": "987654322",
       "bc_corporate_registry_number": "ghi1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -52,7 +52,7 @@
     "pk": "7e8b72dc-4196-427f-a553-7879748139e1",
     "fields": {
       "legal_name": "Delta Innovations",
-      "cra_business_number": 987654323,
+      "cra_business_number": "987654323",
       "bc_corporate_registry_number": "jkl1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -64,7 +64,7 @@
     "pk": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
     "fields": {
       "legal_name": "Echo Systems",
-      "cra_business_number": 987654324,
+      "cra_business_number": "987654324",
       "bc_corporate_registry_number": "mno1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -76,7 +76,7 @@
     "pk": "5712ee05-5f3b-4822-825d-6fffddafda4c",
     "fields": {
       "legal_name": "Foxtrot Enterprises - has parENT operator",
-      "cra_business_number": 987654325,
+      "cra_business_number": "987654325",
       "bc_corporate_registry_number": "pqr1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -88,7 +88,7 @@
     "pk": "edb1aff1-f888-4199-ab88-068364496347",
     "fields": {
       "legal_name": "Golf Solutions",
-      "cra_business_number": 987654326,
+      "cra_business_number": "987654326",
       "bc_corporate_registry_number": "stu1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -100,7 +100,7 @@
     "pk": "ea4314ea-1974-465a-a851-278c8f9c8daa",
     "fields": {
       "legal_name": "Hotel Ventures",
-      "cra_business_number": 987654327,
+      "cra_business_number": "987654327",
       "bc_corporate_registry_number": "vwx1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -112,7 +112,7 @@
     "pk": "04384911-264a-4510-b582-11ee704b8e41",
     "fields": {
       "legal_name": "India Innovations",
-      "cra_business_number": 987654328,
+      "cra_business_number": "987654328",
       "bc_corporate_registry_number": "yza1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -124,7 +124,7 @@
     "pk": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
     "fields": {
       "legal_name": "Juliet Enterprises",
-      "cra_business_number": 987654329,
+      "cra_business_number": "987654329",
       "bc_corporate_registry_number": "bcd1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -136,7 +136,7 @@
     "pk": "bb979661-0782-49b2-9c64-acd8424b692b",
     "fields": {
       "legal_name": "Kilo Logistics",
-      "cra_business_number": 987654330,
+      "cra_business_number": "987654330",
       "bc_corporate_registry_number": "efg1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -148,7 +148,7 @@
     "pk": "bb702949-e303-4788-9ba9-806232a5f711",
     "fields": {
       "legal_name": "Lima Enterprises",
-      "cra_business_number": 987654331,
+      "cra_business_number": "987654331",
       "bc_corporate_registry_number": "hij1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -160,7 +160,7 @@
     "pk": "a35fb5ad-edd9-4465-982e-81b824644d07",
     "fields": {
       "legal_name": "Mike Ventures",
-      "cra_business_number": 987654332,
+      "cra_business_number": "987654332",
       "bc_corporate_registry_number": "klm1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -172,7 +172,7 @@
     "pk": "5c847c75-3b17-414c-97f8-88ba81cb3821",
     "fields": {
       "legal_name": "November Solutions",
-      "cra_business_number": 987654333,
+      "cra_business_number": "987654333",
       "bc_corporate_registry_number": "nop1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -184,7 +184,7 @@
     "pk": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
     "fields": {
       "legal_name": "Oscar Enterprises",
-      "cra_business_number": 987654334,
+      "cra_business_number": "987654334",
       "bc_corporate_registry_number": "qrs1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
@@ -196,7 +196,7 @@
     "pk": "550e8400-e29b-41d4-a716-446655440000",
     "fields": {
       "legal_name": "Papa Enterprises - no associated operations",
-      "cra_business_number": 987654356,
+      "cra_business_number": "987654356",
       "bc_corporate_registry_number": "tuv1234567",
       "business_structure": "BC Corporation",
       "mailing_address": 4,
