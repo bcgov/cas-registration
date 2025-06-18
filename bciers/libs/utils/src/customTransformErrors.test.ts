@@ -85,11 +85,11 @@ const craBusinessNumberError = [
   {
     name: "pattern",
     property: ".cra_business_number",
-    message: "must be 9 digits",
+    message: "CRA Business Number should be 9 digits",
     params: {
       pattern: "^\\d{9}$",
     },
-    stack: "'CRA Business Number' must be 9 digits",
+    stack: "CRA Business Number should be 9 digits",
     schemaPath: "#/properties/cra_business_number/pattern",
   },
 ];

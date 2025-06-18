@@ -194,7 +194,7 @@ const section3: RJSFSchema = {
                           po_cra_business_number: {
                             type: "string",
                             title: "CRA Business Number",
-                            pattern: "^\\d{9}$",
+                            format: "cra_business_number",
                           },
                           po_street_address: {
                             type: "string",
