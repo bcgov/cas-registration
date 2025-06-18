@@ -84,7 +84,7 @@ class ApplyComplianceUnitsService:
             charge_rate=ComplianceChargeRateService.get_rate_for_year(
                 compliance_report_version.report_compliance_summary.report_version.report.reporting_year
             ),
-            # TODO: This value is hardcoded for now, We need to implement the logic to fetch the actual outstanding balance in ticket #193
+            # TODO: Ticket #206
             outstanding_balance="16000",
             bccr_units=cls._format_bccr_units_for_display(bccr_units.get("entities", [])),
         )

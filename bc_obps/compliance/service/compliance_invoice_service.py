@@ -12,6 +12,13 @@ from compliance.service.elicensing.elicensing_api_client import (
     InvoiceQueryResponse,
     InvoiceFee,
 )
+from compliance.models import (
+    ElicensingInvoice,
+    ElicensingLineItem,
+    ElicensingPayment,
+    ElicensingAdjustment,
+)
+
 
 
 class ComplianceInvoiceService:
@@ -96,17 +103,12 @@ class ComplianceInvoiceService:
 
             operation_name = operation.name or ""
 
-            # Get eLicensing invoice information
-            # Compliance Obligation → Invoice
-            invoice: InvoiceQueryResponse = ObligationELicensingService._get_obligation_invoice(compliance_obligation)
-            invoice_number = invoice.invoiceNumber
-            invoice_due_date = ""
-            if invoice.invoicePaymentDueDate:
-                invoice_due_date_parsed = datetime.strptime(invoice.invoicePaymentDueDate, "%Y-%m-%d").date()
-                invoice_due_date_formatted = f"{invoice_due_date_parsed.strftime('%b').rstrip('.')} {invoice_due_date_parsed.day}, {invoice_due_date_parsed.year}"
-                invoice_due_date = invoice_due_date_formatted
-            elif compliance_obligation.obligation_deadline:
-                invoice_due_date = compliance_obligation.obligation_deadline.strftime("%b %-d, %Y")
+            # Get eLicensing invoice number
+            invoice_number = ObligationELicensingService._get_obligation_invoice(compliance_obligation).invoiceNumber
+
+            # Get BCIERS invoice information
+            invoice = ElicensingInvoice.objects.get(invoice_number=invoice_number)
+            invoice_due_date = invoice.due_date
 
             # Build invoice biling items and amount due
             totals, billing_items = cls.calculate_invoice_amount_due(invoice)
@@ -143,74 +145,70 @@ class ComplianceInvoiceService:
             )
 
         except Exception as exc:
+            print(f"[ERROR] Exception occurred during invoice generation: {exc}")
             # If it’s already a ComplianceInvoiceError, just re‐raise it.
             if isinstance(exc, ComplianceInvoiceError):
                 raise
 
             # Otherwise wrap in ComplianceInvoiceError and raise
             raise ComplianceInvoiceError("unexpected_error", str(exc))
-
+        
     @staticmethod
-    def calculate_invoice_amount_due(invoice: InvoiceQueryResponse) -> Tuple[Dict[str, Decimal], List[Dict[str, Any]]]:
+    def calculate_invoice_amount_due(invoice: ElicensingInvoice) -> Tuple[Dict[str, Decimal], List[Dict[str, any]]]:
         """
-        Calculates the amount due for an invoice, factoring in fees, payments, and compliance unit adjustments.
+        Calculates the billing items and amount due for an invoice using Django ORM models.
 
         Args:
-            invoice (InvoiceQueryResponse): The invoice object.
+            invoice (ElicensingInvoice): The invoice model instance.
 
         Returns:
-            Tuple[Dict[str, Decimal], List[Dict[str, Any]]]: A dict of totals and a list of billing items.
+            Tuple[Dict[str, Decimal], List[Dict[str, Any]]]: Totals and billing items.
         """
-        billing_items: List[Dict[str, Any]] = []
+        billing_items: List[Dict[str, any]] = []
         total_fee_amount = Decimal("0.00")
         total_payment_amount = Decimal("0.00")
         compliance_units_amount = Decimal("0.00")
-        fees: List[InvoiceFee] = invoice.fees
 
-        # Fees
-        for fee in fees:
-            fee_date = fee.feeDate
-            fee_amount = Decimal(fee.baseAmount or "0.00")
+        line_items = ElicensingLineItem.objects.filter(
+            elicensing_invoice=invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
+        )
 
-            billing_items.append(
-                {
-                    "date": fee_date,
-                    "description": fee.description,
-                    "amount": f"${fee_amount:,.2f}",
-                }
-            )
+        for fee in line_items:
+            # Fee
+            fee_amount = fee.amount or Decimal("0.00")
+            fee_date = fee.created_at.strftime("%Y-%m-%d") if fee.created_at else ""
+            billing_items.append({
+                "date": fee_date,
+                "description": fee.description or "Compliance Fee",
+                "amount": f"${fee_amount:,.2f}",
+            })
             total_fee_amount += fee_amount
 
             # Payments
-            for payment in getattr(fee, "payments", []):
-                payment_date = payment.receivedDate
-                payment_description = f"Payment {payment.referenceNumber} ({payment.method})"
-                payment_amount = Decimal(payment.amount or "0.00")
-
-                billing_items.append(
-                    {
-                        "date": payment_date,
-                        "description": payment_description,
-                        "amount": f"-${payment_amount:,.2f}",
-                        "type": "payment",
-                    }
-                )
+            payments = ElicensingPayment.objects.filter(elicensing_line_item=fee)
+            for payment in payments:
+                payment_amount = payment.amount or Decimal("0.00")
+                payment_date = payment.received_date.strftime("%Y-%m-%d") if payment.received_date else ""
+                billing_items.append({
+                    "date": payment_date,
+                    "description": f"Payment {payment.payment_object_id}",
+                    "amount": f"-${payment_amount:,.2f}",
+                    "type": "payment",
+                })
                 total_payment_amount += payment_amount
 
-            # Adjustments (assumed to be compliance units)
-            for adjustment in getattr(fee, "adjustments", []):
-                adjustment_date = adjustment.date
-                adjustment_amount = Decimal(adjustment.amount or "0.00")
-                adjustment_description = f"Adjustment {adjustment.adjustmentObjectId} ({adjustment.type})"
-
-                billing_items.append(
-                    {
-                        "date": adjustment_date,
-                        "description": adjustment_description,
-                        "amount": f"-${adjustment_amount:,.2f}",
-                        "type": "compliance_unit",
-                    }
-                )
+            # Adjustments (compliance units)
+            adjustments = ElicensingAdjustment.objects.filter(elicensing_line_item=fee)
+            for adjustment in adjustments:
+                adjustment_amount = adjustment.amount or Decimal("0.00")
+                adjustment_date = adjustment.adjustment_date.strftime("%Y-%m-%d") if adjustment.adjustment_date else ""
+                billing_items.append({
+                    "date": adjustment_date,
+                    "description": f"Adjustment {adjustment.adjustment_object_id} ({adjustment.type})",
+                    "amount": f"-${adjustment_amount:,.2f}",
+                    "type": "compliance_unit",
+                })
                 compliance_units_amount += adjustment_amount
 
         amount_due = total_fee_amount - total_payment_amount - compliance_units_amount
