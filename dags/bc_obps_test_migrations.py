@@ -11,7 +11,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
-TEST_MIGRATIONS_DAG_NAME = "cas-_bciers_test_migrations"
+TEST_MIGRATIONS_DAG_NAME = "cas_bciers_test_migrations"
 K8S_IMAGE = "alpine/k8s:1.29.15"
 SERVICE_ACCOUNT_NAME = "airflow-deployer"
 
