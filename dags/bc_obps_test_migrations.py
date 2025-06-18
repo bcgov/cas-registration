@@ -150,6 +150,21 @@ trigger_backend_migration_test_cronjob = PythonOperator(
     dag=test_migrations_dag,
 )
 
+uninstall_helm_charts = KubernetesPodOperator(
+    task_id="uninstall_helm_charts",
+    name="uninstall_helm_charts",
+    namespace=DESTINATION_NAMESPACE,
+    image=K8S_IMAGE,
+    cmds=["bash", "-c"],
+    arguments=[
+        f"helm uninstall {POSTGRES_CHART_INSTANCE} -n {DESTINATION_NAMESPACE} && "
+        f"helm uninstall {BACKEND_CHART_INSTANCE} -n {DESTINATION_NAMESPACE}"
+    ],
+    get_logs=True,
+    is_delete_operator_pod=True,
+    dag=test_migrations_dag,
+)
+
 (
     postgres_helm_install
     >> wait_for_postgres_restore
@@ -157,4 +172,5 @@ trigger_backend_migration_test_cronjob = PythonOperator(
     >> backend_helm_install
     >> wait_for_backend
     >> trigger_backend_migration_test_cronjob
+    >> uninstall_helm_charts
 )
