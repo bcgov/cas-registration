@@ -339,10 +339,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_dashboard_payments",
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_apply_compliance_units_page_data",
             "kwargs": {
                 "account_id": MOCK_UUID,
