@@ -1,6 +1,8 @@
 from unittest.mock import patch
 from compliance.models import ElicensingLineItem, ElicensingInvoice, ElicensingPayment, ElicensingAdjustment
-from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+from compliance.service.elicensing.elicensing_data_refresh_service import (
+    ElicensingDataRefreshService,
+)
 from compliance.service.elicensing.schema import InvoiceQueryResponse, InvoiceFee, Payment, FeeAdjustment
 from decimal import Decimal
 
@@ -83,3 +85,30 @@ class TestOperatorELicensingService:
         assert fee.object_id == 1
         assert payment.amount == Decimal('50')
         assert adjustment.amount == Decimal('10.11')
+
+    @pytest.mark.django_db
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
+    )
+    def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh):
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        mock_refresh.side_effect = ValueError("Failed to parse API response")
+        returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id
+        )
+        assert returned_data.data_is_fresh == False  # noqa: E712
+        assert returned_data.invoice == invoice
+
+    @pytest.mark.django_db
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
+    )
+    def test_compliance_report_version_id_wrapper_fresh_data(self, mock_refresh):
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id
+        )
+        assert returned_data.data_is_fresh == True  # noqa: E712
+        assert returned_data.invoice == invoice
