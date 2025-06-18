@@ -80,7 +80,6 @@ export const selectOperatorUiSchema = {
       label: false,
       buttonLabel: "Search Operator",
       title: "CRA Business Number",
-      "aria-label": "cra_business_number",
     },
   },
 };

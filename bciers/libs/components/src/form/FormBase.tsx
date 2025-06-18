@@ -18,6 +18,7 @@ const customFormats = {
   date_format: /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]).*/,
   starting_date_year: yearRegEx,
   signature: /^[A-Za-z\s]+$/,
+  cra_business_number: /^\d{9}$/,
 };
 export const customFormatsErrorMessages = {
   bc_corporate_registry_number:
@@ -31,6 +32,7 @@ export const customFormatsErrorMessages = {
     currentYear - 1
   } and ${currentYear}`,
   signature: "Signature should not include special characters or numbers",
+  cra_business_number: "CRA Business Number should be 9 digits",
 };
 
 const transformErrors = (errors: RJSFValidationError[]) => {

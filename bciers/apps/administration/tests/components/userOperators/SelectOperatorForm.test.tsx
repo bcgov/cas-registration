@@ -21,7 +21,7 @@ const buttonLegalName = "Select Operator";
 const CRANumberDefaultText = "Enter CRA Business Number";
 const buttonCRANumber = "Search Operator";
 const requiredLegalName = "Business Legal Name is required";
-const requiredCRANumber = "CRA Business Number should be 9 digits.";
+const requiredCRANumber = "CRA Business Number should be 9 digits";
 const responseLegalName = {
   id: id,
   legal_name: operatorLegalName,
