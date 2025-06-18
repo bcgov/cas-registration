@@ -30,7 +30,7 @@ export async function GET(
       }),
     });
 
-    const url = `${apiUrl}compliance/payment-instructions/generate/${id}`;
+    const url = `${apiUrl}compliance/compliance-report-versions/${id}/payment_instructions/pdf`;
 
     const response = await fetch(url, {
       method: "GET",

@@ -105,7 +105,9 @@ class ObligationELicensingService:
             raise
 
     @classmethod
-    def get_invoice_from_compliance_report_version_id(cls, compliance_report_version_id: int) -> InvoiceQueryResponse:
+    def get_invoice_from_compliance_report_version_id(
+        cls, compliance_report_version_id: int
+    ) -> Optional[InvoiceQueryResponse]:
         """
         Get the invoice with compliance report version id from eLicensing.
 
@@ -122,44 +124,10 @@ class ObligationELicensingService:
         # Get report version
         compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
 
-        # Get obligation object
+        # Get obligation object with compliance report version
         obligation = ComplianceObligation.objects.get(compliance_report_version=compliance_report_version)
 
-        # Get client link from operator
-        client_link = ELicensingLinkService.get_link_for_model(
-            Operator,
-            obligation.compliance_report_version.compliance_report.report.operation.operator.id,
-            ELicensingLink.ObjectKind.CLIENT,
-        )
-        invoice_link = ELicensingLinkService.get_link_for_model(
-            ComplianceObligation, obligation.id, ELicensingLink.ObjectKind.INVOICE
-        )
-
-        if not client_link or not invoice_link:
-            error_msg = (
-                f"No client or invoice link found for summary_id {compliance_report_version_id}. "
-                f"Client link: {client_link}, Invoice link: {invoice_link}"
-            )
-            logger.error(error_msg)
-            raise ValueError(error_msg)
-
-        client_id = client_link.elicensing_object_id
-        invoice_number = invoice_link.elicensing_object_id
-
-        if not client_id or not invoice_number:
-            error_msg = (
-                f"Missing client_id or invoice_number for summary_id {compliance_report_version_id}. "
-                f"Client ID: {client_id}, Invoice number: {invoice_number}"
-            )
-            logger.error(error_msg)
-            raise ValueError(error_msg)
-
-        try:
-            return elicensing_api_client.query_invoice(client_id, invoice_number)
-        except Exception as e:
-            error_msg = f"Failed to query invoice for obligation {obligation.id}: {str(e)}"
-            logger.error(error_msg)
-            raise
+        return cls._get_obligation_invoice(obligation)
 
     @classmethod
     def _parse_invoice_payments(cls, invoice: InvoiceQueryResponse) -> List[PaymentRecord]:

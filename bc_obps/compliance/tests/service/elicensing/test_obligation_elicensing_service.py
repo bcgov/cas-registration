@@ -1,6 +1,5 @@
 from unittest.mock import patch, MagicMock
 import uuid
-from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 import requests
 from datetime import date
@@ -34,11 +33,6 @@ def mock_obligation() -> MagicMock:
     mock_year.reporting_year = 2024
     mock_period.reporting_year = mock_year
     mock_compliance_report_version.compliance_report.compliance_period = mock_period
-
-    # Mock report compliance summary
-    mock_report_compliance_summary = MagicMock(spec=ReportComplianceSummary)
-    mock_report_compliance_summary.id = 1
-    mock_compliance_report_version.report_compliance_summary = mock_report_compliance_summary
 
     # Mock operation and operator
     mock_operation = MagicMock(spec=Operation)

@@ -46,7 +46,7 @@ class PaymentInstructionsService:
             raise ComplianceInvoiceError("unexpected_error", str(exc))
 
     @staticmethod
-    def _prepare_payment_instructions_context(summaryID: int) -> Dict[str, Any]:
+    def _prepare_payment_instructions_context(complianceReportVersionID: int) -> Dict[str, Any]:
         """
         Prepare context data for the payment instructions template.
 
@@ -54,12 +54,10 @@ class PaymentInstructionsService:
             Dictionary of context data for the template
         """
 
-        invoice_number = ObligationELicensingService.get_invoice_from_compliance_report_version_id(
-            summaryID
-        ).invoiceNumber
+        invoice = ObligationELicensingService.get_invoice_from_compliance_report_version_id(complianceReportVersionID)
 
         context = {
-            'invoice_number': invoice_number,
+            'invoice_number': invoice.invoiceNumber if invoice else "Missing Invoice Number",
         }
 
         return context
