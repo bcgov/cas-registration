@@ -3,6 +3,8 @@ from common.enums import Schemas
 from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
+    CRA_BUSINESS_NUMBER_MESSAGE,
+    CRA_BUSINESS_NUMBER_REGEX,
 )
 from registration.enums.enums import RegistrationTableNames
 from registration.models import Address, BusinessStructure, Operation, TimeStampedModel
@@ -20,7 +22,10 @@ class MultipleOperator(TimeStampedModel):
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator")
     trade_name = models.CharField(max_length=1000, db_comment="The trade name of an operator")
-    cra_business_number = models.IntegerField(db_comment="The CRA business number of an operator")
+    cra_business_number = models.CharField(
+        validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
+        db_comment="The CRA business number of an operator",
+    )
     bc_corporate_registry_number = models.CharField(
         db_comment="The BC corporate registry number of an operator",
         validators=[RegexValidator(regex=BC_CORPORATE_REGISTRY_REGEX, message=BC_CORPORATE_REGISTRY_REGEX_MESSAGE)],

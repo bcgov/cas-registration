@@ -5,11 +5,12 @@ from registration.constants import (
     BC_CORPORATE_REGISTRY_REGEX,
     BC_CORPORATE_REGISTRY_REGEX_MESSAGE,
     CRA_BUSINESS_NUMBER_MESSAGE,
+    CRA_BUSINESS_NUMBER_REGEX,
 )
 from registration.models import TimeStampedModel, Address, BusinessStructure
 from registration.enums.enums import RegistrationTableNames
 from simple_history.models import HistoricalRecords
-from django.core.validators import RegexValidator, MaxValueValidator, MinValueValidator
+from django.core.validators import RegexValidator
 from registration.models.rls_configs.operator import Rls as OperatorRls
 
 
@@ -26,11 +27,8 @@ class Operator(TimeStampedModel):
     )
     legal_name = models.CharField(max_length=1000, db_comment="The legal name of an operator", unique=True)
     trade_name = models.CharField(max_length=1000, blank=True, null=True, db_comment="The trade name of an operator")
-    cra_business_number = models.IntegerField(
-        validators=[
-            MaxValueValidator(999999999, message=CRA_BUSINESS_NUMBER_MESSAGE),
-            MinValueValidator(100000000, message=CRA_BUSINESS_NUMBER_MESSAGE),  # Assuming  9-digit number
-        ],
+    cra_business_number = models.CharField(
+        validators=[RegexValidator(regex=CRA_BUSINESS_NUMBER_REGEX, message=CRA_BUSINESS_NUMBER_MESSAGE)],
         db_comment="The CRA business number of an operator",
     )
     swrs_organisation_id = models.IntegerField(
