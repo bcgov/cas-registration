@@ -18,4 +18,5 @@ class ElicensingInvoiceTest(BaseTestCase):
             ("invoice_interest_balance", "invoice interest balance", None, None),
             ("is_void", "is void", None, None),
             ("elicensing_line_items", "elicensing line item", None, None),
+            ("compliance_obligation", "compliance obligation", None, None),
         ]
