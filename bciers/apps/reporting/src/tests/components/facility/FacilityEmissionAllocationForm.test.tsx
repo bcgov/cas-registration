@@ -30,15 +30,15 @@ const mockInitialData = {
   report_product_emission_allocations: [
     {
       category_type: "basic",
-      emission_total: 100,
+      emission_total: "100",
       products: [
         {
-          allocated_quantity: 40,
+          allocated_quantity: "40",
           report_product_id: 1,
           product_name: "Product 1",
         },
         {
-          allocated_quantity: 60,
+          allocated_quantity: "60",
           report_product_id: 2,
           product_name: "Product 2",
         },
@@ -46,22 +46,22 @@ const mockInitialData = {
     },
     {
       category_type: "fuel_excluded",
-      emission_total: 50,
+      emission_total: "50",
       products: [
         {
-          allocated_quantity: 24.0005,
+          allocated_quantity: "24.0005",
           report_product_id: 1,
           product_name: "Product 1",
         },
         {
-          allocated_quantity: 25.9995,
+          allocated_quantity: "25.9995",
           report_product_id: 2,
           product_name: "Product 2",
         },
       ],
     },
   ],
-  facility_total_emissions: 150,
+  facility_total_emissions: "150.0000",
   report_product_emission_allocation_totals: [
     {
       report_product_id: 1,
@@ -94,13 +94,16 @@ const submitFormAndAssert = async () => {
     // Assert expected behavior after submission
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
-    // expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
-    // brianna this test doesn't actually check submission
+    expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
+    // brianna does ^ make sense? all were commented out before
   });
 };
 
 // 🧪 Test suite
 describe("FacilityEmissionAllocationForm component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it("renders the form with initial data", () => {
     render(
       <FacilityEmissionAllocationForm
@@ -180,7 +183,7 @@ describe("FacilityEmissionAllocationForm component", () => {
       ).toBeEnabled();
     });
   });
-  it.only(
+  it(
     "submits successfully",
     {
       timeout: 10000,

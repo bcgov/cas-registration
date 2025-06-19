@@ -147,10 +147,6 @@ export default function FacilityEmissionAllocationForm({
   overlappingIndustrialProcessEmissions,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
-  console.log(
-    " initialData.facility_total_emissions",
-    initialData.facility_total_emissions,
-  );
   const [formData, setFormData] = useState<any>(() => ({
     allocation_methodology: initialData.allocation_methodology,
     allocation_other_methodology_description:
@@ -165,12 +161,13 @@ export default function FacilityEmissionAllocationForm({
         .map(calculateEmissionData),
     total_emission_allocations: {
       facility_total_emissions: Number(initialData.facility_total_emissions),
-      products: initialData.report_product_emission_allocation_totals.map(
-        (product) => ({
-          ...product,
-          allocated_quantity: Number(product.allocated_quantity),
-        }),
-      ),
+      products:
+        initialData.report_product_emission_allocation_totals?.map(
+          (product: { [key: string]: any }) => ({
+            ...product,
+            allocated_quantity: Number(product.allocated_quantity),
+          }),
+        ) || [],
     },
   }));
   const [shouldReset, setShouldReset] = useState(false);
