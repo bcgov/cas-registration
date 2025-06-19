@@ -2,7 +2,7 @@ import logging
 import uuid
 from typing import List, Dict, Any
 
-from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
+from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 elicensing_api_client = ELicensingAPIClient()
 
 
-class ObligationELicensingService:
+class ElicensingObligationService:
     """
     Service for managing Compliance Obligation-related eLicensing operations.
     This service handles eLicensing integration for compliance obligations,
@@ -111,7 +111,7 @@ class ObligationELicensingService:
                 obligation = ComplianceObligation.objects.get(id=obligation_id)
 
                 # Ensure client exists in eLicensing
-                client_operator = OperatorELicensingService.sync_client_with_elicensing(
+                client_operator = ElicensingOperatorService.sync_client_with_elicensing(
                     obligation.compliance_report_version.compliance_report.report.operator_id
                 )
 

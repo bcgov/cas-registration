@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 elicensing_api_client = ELicensingAPIClient()
 
 
-class OperatorELicensingService:
+class ElicensingOperatorService:
     """
     Service for managing operator-related eLicensing operations.
     This service handles the mapping between operators and eLicensing clients,

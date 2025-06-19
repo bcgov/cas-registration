@@ -1,6 +1,6 @@
 from unittest.mock import patch, MagicMock
 import uuid
-from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from datetime import date
 from decimal import Decimal
 
@@ -50,12 +50,12 @@ def mock_obligation() -> MagicMock:
     return obligation
 
 
-class TestObligationELicensingService:
-    """Tests for the ObligationELicensingService class"""
+class TestElicensingObligationService:
+    """Tests for the ElicensingObligationService class"""
 
     def test_map_obligation_to_fee_data(self, mock_obligation: MagicMock) -> None:
         """Test mapping obligation data to fee data"""
-        result = ObligationELicensingService._map_obligation_to_fee_data(mock_obligation)
+        result = ElicensingObligationService._map_obligation_to_fee_data(mock_obligation)
 
         assert "businessAreaCode" in result
         assert result["businessAreaCode"] == "OBPS"
@@ -68,7 +68,7 @@ class TestObligationELicensingService:
     def test_map_obligation_to_invoice_data(self, mock_obligation: MagicMock) -> None:
         """Test mapping obligation data to invoice data"""
         fee_id = "test-fee-id"
-        result = ObligationELicensingService._map_obligation_to_invoice_data(mock_obligation, fee_id)
+        result = ElicensingObligationService._map_obligation_to_invoice_data(mock_obligation, fee_id)
 
         assert result["paymentDueDate"] == "2024-12-31"
         assert result["businessAreaCode"] == "OBPS"
@@ -107,7 +107,7 @@ class TestObligationELicensingService:
         invoice = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
 
         # Call the method
-        ObligationELicensingService.process_obligation_integration(obligation.id)
+        ElicensingObligationService.process_obligation_integration(obligation.id)
 
         obligation.refresh_from_db()
 

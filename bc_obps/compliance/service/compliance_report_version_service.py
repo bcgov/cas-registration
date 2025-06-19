@@ -2,7 +2,7 @@ from compliance.service.earned_credits_service import ComplianceEarnedCreditsSer
 from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
-from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
@@ -74,7 +74,7 @@ class ComplianceReportVersionService:
             Exception: If integration fails
         """
         try:
-            ObligationELicensingService.process_obligation_integration(obligation_id)
+            ElicensingObligationService.process_obligation_integration(obligation_id)
         except Exception as e:
             logger.error(
                 f"Failed to process eLicensing integration for obligation {obligation_id}: {str(e)}", exc_info=True

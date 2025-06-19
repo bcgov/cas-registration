@@ -1,7 +1,7 @@
 from unittest.mock import patch, MagicMock
 import uuid
 from compliance.models.elicensing_client_operator import ElicensingClientOperator
-from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
+from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
 import requests
 
 import pytest
@@ -84,12 +84,12 @@ def mock_api_client():
         yield mock
 
 
-class TestOperatorELicensingService:
-    """Tests for the OperatorELicensingService class"""
+class TestElicensingOperatorService:
+    """Tests for the ElicensingOperatorService class"""
 
     def test_map_operator_to_client_data_with_physical_address(self, mock_operator):
         """Test mapping operator data to client data with physical address"""
-        result = OperatorELicensingService._map_operator_to_client_data(mock_operator)
+        result = ElicensingOperatorService._map_operator_to_client_data(mock_operator)
 
         # Verify the mapping is correct
         assert result.clientGUID is not None
@@ -106,7 +106,7 @@ class TestOperatorELicensingService:
 
     def test_map_operator_to_client_data_with_mailing_address(self, mock_operator_mailing_only):
         """Test mapping operator with only mailing address"""
-        result = OperatorELicensingService._map_operator_to_client_data(mock_operator_mailing_only)
+        result = ElicensingOperatorService._map_operator_to_client_data(mock_operator_mailing_only)
 
         # Check mailing address is used
         assert result.addressLine1 == mock_operator_mailing_only.mailing_address.street_address
@@ -116,7 +116,7 @@ class TestOperatorELicensingService:
 
     def test_map_operator_to_client_data_no_addresses(self, mock_operator_no_addresses):
         """Test mapping operator with no addresses uses placeholder values"""
-        result = OperatorELicensingService._map_operator_to_client_data(mock_operator_no_addresses)
+        result = ElicensingOperatorService._map_operator_to_client_data(mock_operator_no_addresses)
 
         # Check placeholder values are used
         assert result.addressLine1 == "Unknown"
@@ -132,7 +132,7 @@ class TestOperatorELicensingService:
         client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
 
         # Call the method
-        result = OperatorELicensingService.sync_client_with_elicensing(client_operator.operator_id)
+        result = ElicensingOperatorService.sync_client_with_elicensing(client_operator.operator_id)
 
         # Assert that the existing link was returned
         assert result == client_operator
@@ -145,7 +145,7 @@ class TestOperatorELicensingService:
 
         # Call the method and expect exception
         with pytest.raises(Operator.DoesNotExist):
-            OperatorELicensingService.sync_client_with_elicensing(operator.id)
+            ElicensingOperatorService.sync_client_with_elicensing(operator.id)
 
     @pytest.mark.django_db
     def test_sync_client_with_elicensing_create_client_success(self, mock_api_client):
@@ -159,7 +159,7 @@ class TestOperatorELicensingService:
         mock_api_client.create_client.return_value = mock_response
 
         # Call the method
-        result = OperatorELicensingService.sync_client_with_elicensing(operator.id)
+        result = ElicensingOperatorService.sync_client_with_elicensing(operator.id)
 
         # Assert result is the new link
         assert result == ElicensingClientOperator.objects.get(operator_id=operator.id)
@@ -175,7 +175,7 @@ class TestOperatorELicensingService:
 
         # Call the method and expect exception
         with pytest.raises(requests.RequestException):
-            OperatorELicensingService.sync_client_with_elicensing(operator.id)
+            ElicensingOperatorService.sync_client_with_elicensing(operator.id)
 
     @pytest.mark.django_db
     def test_sync_client_with_elicensing_multiple_records_error(self):
@@ -186,4 +186,4 @@ class TestOperatorELicensingService:
 
         # Call the method and expect exception
         with pytest.raises(MultipleObjectsReturned):
-            OperatorELicensingService.sync_client_with_elicensing(client_operator.operator_id)
+            ElicensingOperatorService.sync_client_with_elicensing(client_operator.operator_id)

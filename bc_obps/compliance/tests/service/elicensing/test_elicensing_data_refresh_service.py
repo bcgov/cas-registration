@@ -10,7 +10,7 @@ import pytest
 from model_bakery.baker import make_recipe
 
 
-class TestOperatorELicensingService:
+class TestElicensingOperatorService:
     """Tests for the ElicensingDataRefreshService class"""
 
     @pytest.mark.django_db
