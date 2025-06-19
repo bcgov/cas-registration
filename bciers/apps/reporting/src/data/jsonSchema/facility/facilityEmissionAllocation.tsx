@@ -353,7 +353,7 @@ export const emissionAllocationUiSchema: UiSchema = {
             "ui:widget": "hidden",
           },
           allocated_quantity: {
-            // "ui:FieldTemplate": DynamicLabelProductAllocation,
+            "ui:FieldTemplate": DynamicLabelProductAllocation,
           },
         },
       },
@@ -402,14 +402,9 @@ export const emissionAllocationUiSchema: UiSchema = {
           },
           allocated_quantity: {
             "ui:FieldTemplate": DynamicLabelProductAllocation,
-            "ui:options": {
-              actuallyANumber: true,
-            },
-            // see about doing format here
           },
         },
       },
-      // brianna all activity schemas are backend generated
       products_emission_allocation_sum: {
         "ui:widget": ReadOnlyWidget,
       },
@@ -438,10 +433,7 @@ export const emissionAllocationUiSchema: UiSchema = {
           "ui:widget": "hidden",
         },
         allocated_quantity: {
-          // "ui:FieldTemplate": DynamicLabelTotalProductAllocation,
-          "ui:options": {
-            actuallyANumber: true,
-          },
+          "ui:FieldTemplate": DynamicLabelTotalProductAllocation,
         },
       },
     },
