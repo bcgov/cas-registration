@@ -36,7 +36,6 @@ export default function Page() {
   };
 
   useEffect(() => {
-    console.log(status, session);
     if (status === "loading" || session === undefined) {
       // Session is still loading, do nothing
       return;
