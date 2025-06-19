@@ -20,7 +20,7 @@ export const getDirectorReviewData = (complianceSummaryId: string) => {
     holding_account_id: "437248194316283",
     analyst_comment: "Lorem ipsum",
     analyst_recommendation: "ready_to_approve",
-    director_comment: "",
+    director_comment: "Lorem ipsum",
   };
 
   // Mock data for development and testing purposes

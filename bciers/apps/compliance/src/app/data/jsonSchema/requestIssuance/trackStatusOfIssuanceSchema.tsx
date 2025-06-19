@@ -9,17 +9,15 @@ import {
 import { IssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusApprovedNote";
 import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusAwaitingNote";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
 
 export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
   title: "Track Status of Issuance",
   properties: {
     status_header: readOnlyObjectField("Status of Issuance"),
-    issuance_status: {
-      type: "string",
-      enum: [IssuanceStatus.APPROVED, IssuanceStatus.AWAITING],
-    },
     earned_credits: readOnlyStringField("Earned Credits:"),
+    issuance_status: readOnlyStringField("Status of Issuance:"),
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
 
@@ -30,10 +28,6 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
           properties: {
             issuance_status: { enum: [IssuanceStatus.APPROVED] },
             approved_note: readOnlyStringField(),
-            status_text: {
-              ...readOnlyStringField("Status of Issuance:"),
-              default: "Approved, credits issued in BCCR",
-            },
             directors_comments: readOnlyStringField("Director's Comments:"),
           },
         },
@@ -41,10 +35,6 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
           properties: {
             issuance_status: { enum: [IssuanceStatus.AWAITING] },
             awaiting_note: readOnlyStringField(),
-            status_text: {
-              ...readOnlyStringField("Status of Issuance:"),
-              default: "Issuance requested, awaiting approval",
-            },
           },
         },
       ],
@@ -65,10 +55,7 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
     "directors_comments",
     "issuance_status",
   ],
-  status_header: {
-    ...headerUiConfig,
-    "ui:classNames": "text-bc-bg-blue mt-0 mb-2",
-  },
+  status_header: headerUiConfig,
   approved_note: {
     "ui:widget": IssuanceStatusApprovedNote,
     "ui:options": { label: false, inline: true },
@@ -83,6 +70,6 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
   directors_comments: commonReadOnlyOptions,
 
   issuance_status: {
-    "ui:widget": "hidden",
+    "ui:widget": StatusTextWidget,
   },
 };

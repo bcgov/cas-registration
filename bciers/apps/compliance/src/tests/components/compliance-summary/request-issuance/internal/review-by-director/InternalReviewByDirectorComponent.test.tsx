@@ -9,6 +9,11 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+// Mock useSessionRole
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  useSessionRole: vi.fn().mockReturnValue("cas_director"),
+}));
+
 describe("InternalReviewByDirectorComponent", () => {
   const mockFormData = {
     id: "123",
@@ -31,7 +36,7 @@ describe("InternalReviewByDirectorComponent", () => {
   it("renders form fields, section headers, and navigation buttons", () => {
     render(
       <InternalReviewByDirectorComponent
-        formData={mockFormData}
+        initialFormData={mockFormData}
         complianceSummaryId={mockComplianceSummaryId}
       />,
     );
@@ -57,7 +62,7 @@ describe("InternalReviewByDirectorComponent", () => {
   it("handles navigation and action buttons with correct states", () => {
     render(
       <InternalReviewByDirectorComponent
-        formData={mockFormData}
+        initialFormData={mockFormData}
         complianceSummaryId={mockComplianceSummaryId}
       />,
     );

@@ -28,7 +28,7 @@ export default async function InternalReviewCreditsIssuanceRequestPage({
       taskListElements={taskListElements}
     >
       <InternalReviewCreditsIssuanceRequestComponent
-        formData={complianceSummary}
+        initialFormData={complianceSummary}
         complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>

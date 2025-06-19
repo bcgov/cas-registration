@@ -5,14 +5,16 @@ import {
   readOnlyObjectField,
   commonReadOnlyOptions,
   headerUiConfig,
+  stringField,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import CommentWidget from "@/compliance/src/app/data/jsonSchema/CommentWidget";
 import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
 import InternalDirectorReviewApprovalNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewApprovalNote";
 import InternalDirectorReviewChangesNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewChangesNote";
+import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { TextWidget } from "@bciers/components/form/widgets";
 
 const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
-  section_header: readOnlyObjectField("Earned Credits"),
+  earned_credits_header: readOnlyObjectField("Earned Credits"),
   earned_credits_amount: readOnlyStringField("Earned Credits:"),
   issuance_status: readOnlyStringField("Status of Issuance:"),
   bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
@@ -26,10 +28,6 @@ const createAnalystReviewSection = (): RJSFSchema["properties"] => ({
 
 const createDirectorReviewSection = (): RJSFSchema["properties"] => ({
   director_header: readOnlyObjectField("Review by Director"),
-  director_comment: {
-    type: "string",
-    title: "Director's Comment:",
-  },
 });
 
 export const internalReviewByDirectorSchema: RJSFSchema = {
@@ -40,12 +38,36 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
     ...createCreditsIssuanceRequestSection(),
     ...createAnalystReviewSection(),
     ...createDirectorReviewSection(),
+    read_only: {
+      type: "boolean",
+    },
     analyst_recommendation: {
       type: "string",
       enum: ["ready_to_approve", "require_changes"],
     },
   },
   dependencies: {
+    read_only: {
+      oneOf: [
+        {
+          properties: {
+            read_only: { const: false },
+            editable_director_comment: stringField(
+              "Director's Comment:",
+              false,
+            ),
+          },
+        },
+        {
+          properties: {
+            read_only: { const: true },
+            readonly_director_comment: readOnlyStringField(
+              "Director's Comment:",
+            ),
+          },
+        },
+      ],
+    },
     analyst_recommendation: {
       oneOf: [
         {
@@ -65,14 +87,26 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
   },
 };
 
-const fixedWidthLabelStyle = {
-  ...commonReadOnlyOptions,
-  "ui:classNames": `${commonReadOnlyOptions["ui:classNames"]} [&>div:first-child]:w-[240px] [&>div:first-child]:mr-[10px]`,
-};
-
 export const internalReviewByDirectorUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  "ui:order": [
+    "view_annual_report_button",
+    "earned_credits_header",
+    "earned_credits_amount",
+    "issuance_status",
+    "bccr_trading_name",
+    "holding_account_id",
+    "analyst_header",
+    "analyst_comment",
+    "director_header",
+    "editable_director_comment",
+    "readonly_director_comment",
+    "approval_note",
+    "changes_note",
+    "analyst_recommendation",
+    "read_only",
+  ],
   view_annual_report_button: {
     "ui:field": AnnualEmissionsReportButtonField,
     "ui:options": {
@@ -80,20 +114,29 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
     },
   },
 
-  section_header: headerUiConfig,
-  earned_credits_amount: fixedWidthLabelStyle,
-  issuance_status: fixedWidthLabelStyle,
-  bccr_trading_name: fixedWidthLabelStyle,
-  holding_account_id: fixedWidthLabelStyle,
+  earned_credits_header: headerUiConfig,
+  earned_credits_amount: commonReadOnlyOptions,
+  issuance_status: {
+    "ui:widget": StatusTextWidget,
+  },
+  bccr_trading_name: commonReadOnlyOptions,
+  holding_account_id: commonReadOnlyOptions,
 
   analyst_header: headerUiConfig,
-  analyst_comment: fixedWidthLabelStyle,
+  analyst_comment: commonReadOnlyOptions,
 
   director_header: headerUiConfig,
-  director_comment: {
-    "ui:widget": CommentWidget,
+  read_only: {
+    "ui:widget": "hidden",
+  },
+  editable_director_comment: {
+    "ui:widget": TextWidget,
     "ui:classNames":
-      "[&>div>label]:text-[16px] [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full  [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full mb-[2px]",
+      "[&>div:nth-child(2)]:w-9/12 [&_.mui-24rejj-MuiInputBase-input-MuiOutlinedInput-input]:py-[8px]",
+  },
+  readonly_director_comment: commonReadOnlyOptions,
+  analyst_recommendation: {
+    "ui:widget": "hidden",
   },
   approval_note: {
     "ui:widget": InternalDirectorReviewApprovalNote,
@@ -108,9 +151,5 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
       label: false,
       inline: true,
     },
-  },
-
-  analyst_recommendation: {
-    "ui:widget": "hidden",
   },
 };

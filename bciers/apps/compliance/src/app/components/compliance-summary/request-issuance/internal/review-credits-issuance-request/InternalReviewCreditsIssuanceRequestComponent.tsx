@@ -11,21 +11,28 @@ import AttachmentsElement from "./AttachmentsElement";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { useRouter } from "next/navigation";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
-  formData: CreditsIssuanceRequestData;
+  initialFormData: CreditsIssuanceRequestData;
   complianceSummaryId: string;
 }
 
 const InternalReviewCreditsIssuanceRequestComponent = ({
-  formData,
+  initialFormData,
   complianceSummaryId,
 }: Props) => {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-compliance-summary`;
+  const userRole = useSessionRole();
+  const isCasStaff = userRole.startsWith("cas_");
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/${
+    isCasStaff ? "request-issuance-review-summary" : "review-compliance-summary"
+  }`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
   const router = useRouter();
 
-  const [formState, setFormState] = useState(formData);
+  const isReadOnly = userRole !== "cas_analyst";
+
+  const [formData, setFormState] = useState(initialFormData);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,7 +93,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       }
 
       // TBD: Submit the form data to the API when the endpoint is ready (Ticket #166)
-      // await submitFormData(complianceSummaryId, formState);
+      // await submitFormData(complianceSummaryId, formData);
 
       // Navigate to the next page on success
       router.push(saveAndContinueUrl);
@@ -104,11 +111,11 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
   return (
     <FormBase
       schema={internalReviewCreditsIssuanceRequestSchema}
-      uiSchema={internalReviewCreditsIssuanceRequestUiSchema}
-      formData={formState}
+      uiSchema={internalReviewCreditsIssuanceRequestUiSchema(isReadOnly)}
+      formData={formData}
       onChange={handleFormChange}
       formContext={{
-        creditsIssuanceRequestData: formState,
+        creditsIssuanceRequestData: formData,
       }}
       className="w-full"
     >
@@ -119,6 +126,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
         isUploading={isUploading}
         error={error}
         uploadedFiles={uploadedFiles}
+        readOnly={isReadOnly}
       />
       <ComplianceStepButtons
         backUrl={backUrl}

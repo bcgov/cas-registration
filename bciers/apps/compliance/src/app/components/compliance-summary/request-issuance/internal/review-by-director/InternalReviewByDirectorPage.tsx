@@ -27,7 +27,7 @@ export default async function InternalReviewByDirectorPage({
       taskListElements={taskListElements}
     >
       <InternalReviewByDirectorComponent
-        formData={directorReviewData}
+        initialFormData={directorReviewData}
         complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>

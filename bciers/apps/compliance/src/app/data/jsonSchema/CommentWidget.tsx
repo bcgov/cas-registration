@@ -2,12 +2,14 @@ import { TextField } from "@mui/material";
 import { WidgetProps } from "@rjsf/utils";
 
 const CommentWidget: React.FC<WidgetProps> = ({
-  disabled,
+  readonly,
   onChange,
   value,
   name,
   formContext,
+  options,
 }) => {
+  const { showSubmissionInfo = false } = options || {};
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
     onChange(val === "" ? undefined : val);
@@ -18,8 +20,8 @@ const CommentWidget: React.FC<WidgetProps> = ({
   const commentValue = name && formContext?.creditsIssuanceRequestData?.[name];
 
   const submissionInfoElement =
-    !disabled || (!submittedBy && !submittedAt) ? null : (
-      <p className="text-normal text-gray-600 m-0 mb-[10px] leading-none">
+    !submittedBy && !submittedAt ? null : (
+      <p className="text-normal text-gray-600 m-0 mt-[10px] leading-none">
         Submitted
         {submittedBy ? (
           <>
@@ -40,13 +42,11 @@ const CommentWidget: React.FC<WidgetProps> = ({
       </p>
     );
 
-  if (disabled) {
+  if (readonly) {
     return (
-      <div className="flex flex-col gap-[10px]">
-        <div className="bg-bc-bg-grey rounded-[5px] px-[10px] py-[9px] h-[39px] flex items-center">
-          {commentValue}
-        </div>
-        {submissionInfoElement}
+      <div className="flex flex-col">
+        <p className="m-0">{commentValue}</p>
+        {showSubmissionInfo && submissionInfoElement}
       </div>
     );
   }
@@ -69,8 +69,8 @@ const CommentWidget: React.FC<WidgetProps> = ({
         onChange={handleChange}
         sx={styles}
         role="textbox"
-        disabled={disabled}
       />
+      {showSubmissionInfo && submissionInfoElement}
     </div>
   );
 };

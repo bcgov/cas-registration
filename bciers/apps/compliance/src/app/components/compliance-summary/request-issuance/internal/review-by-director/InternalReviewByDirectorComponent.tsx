@@ -9,21 +9,34 @@ import {
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { DirectorReviewData } from "@/compliance/src/app/types";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
-  formData: DirectorReviewData;
+  initialFormData: DirectorReviewData;
   complianceSummaryId: string;
 }
 
 const InternalReviewByDirectorComponent = ({
-  formData,
+  initialFormData,
   complianceSummaryId,
 }: Props) => {
   const backUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
+  // TODO: Uncomment after Ticket #166 is implemented
   // const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}`;
   // const router = useRouter();
 
-  const [formState, setFormState] = useState(formData);
+  const userRole = useSessionRole();
+  const isReadOnly = userRole !== "cas_director";
+  const isActionDisabled =
+    isReadOnly || initialFormData?.analyst_recommendation === "require_changes";
+
+  const data = {
+    ...initialFormData,
+    read_only: isReadOnly,
+    editable_director_comment: initialFormData.director_comment,
+    readonly_director_comment: initialFormData.director_comment,
+  };
+  const [formData, setFormState] = useState(data);
 
   const handleFormChange = (e: IChangeEvent) => {
     setFormState(e.formData);
@@ -31,7 +44,7 @@ const InternalReviewByDirectorComponent = ({
 
   const handleApprove = async () => {
     try {
-      if (formState?.analyst_recommendation === "require_changes") {
+      if (formData.analyst_recommendation === "require_changes") {
         return;
       }
 
@@ -46,7 +59,7 @@ const InternalReviewByDirectorComponent = ({
 
   const handleDecline = async () => {
     try {
-      if (formState?.analyst_recommendation === "require_changes") {
+      if (formData.analyst_recommendation === "require_changes") {
         return;
       }
 
@@ -63,10 +76,10 @@ const InternalReviewByDirectorComponent = ({
     <FormBase
       schema={internalReviewByDirectorSchema}
       uiSchema={internalReviewByDirectorUiSchema}
-      formData={formState}
+      formData={formData}
       onChange={handleFormChange}
       formContext={{
-        creditsIssuanceRequestData: formState,
+        creditsIssuanceRequestData: formData,
       }}
       className="w-full"
     >
@@ -76,12 +89,8 @@ const InternalReviewByDirectorComponent = ({
         backUrl={backUrl}
         middleButtonText="Decline"
         continueButtonText="Approve"
-        middleButtonDisabled={
-          formState?.analyst_recommendation === "require_changes"
-        }
-        submitButtonDisabled={
-          formState?.analyst_recommendation === "require_changes"
-        }
+        middleButtonDisabled={isActionDisabled}
+        submitButtonDisabled={isActionDisabled}
       />
     </FormBase>
   );

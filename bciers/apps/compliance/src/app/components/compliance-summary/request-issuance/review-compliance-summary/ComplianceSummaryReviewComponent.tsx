@@ -20,8 +20,13 @@ const ComplianceSummaryReviewComponent = ({
   isCasStaff,
 }: Props) => {
   const backUrl = "/compliance-summaries";
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
-
+  console.log("isCasStaff: ", isCasStaff);
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/${
+    isCasStaff
+      ? "review-credits-issuance-request"
+      : "request-issuance-of-earned-credits"
+  }`;
+  console.log("saveAndContinueUrl: ", saveAndContinueUrl);
   return (
     <FormBase
       schema={createComplianceSummaryReviewSchema(data.reporting_year)}

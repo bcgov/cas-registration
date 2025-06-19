@@ -1,6 +1,11 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import InternalReviewCreditsIssuanceRequestComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-credits-issuance-request/InternalReviewCreditsIssuanceRequestComponent";
 
+// Mock useSessionRole
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  useSessionRole: vi.fn().mockReturnValue("cas_analyst"),
+}));
+
 // Mock the router
 const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -31,7 +36,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   it("renders form fields, section headers, and navigation buttons", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        formData={mockFormData}
+        initialFormData={mockFormData}
         complianceSummaryId={mockComplianceSummaryId}
       />,
     );
@@ -59,7 +64,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   it("handles navigation buttons with correct states", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
-        formData={mockFormData}
+        initialFormData={mockFormData}
         complianceSummaryId={mockComplianceSummaryId}
       />,
     );
@@ -74,7 +79,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     // Test back button navigation
     fireEvent.click(backButton);
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-compliance-summary`,
+      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-review-summary`,
     );
 
     // Test continue button navigation

@@ -16,9 +16,10 @@ interface AttachmentsElementProps {
   title: string;
   onRemoveFile: (index: number) => void;
   onAddFiles: (files: File[]) => void;
-  isUploading?: boolean;
-  error?: string | null;
+  isUploading: boolean;
+  error: string | null;
   uploadedFiles: File[];
+  readOnly: boolean;
 }
 
 const AttachmentsElement: React.FC<AttachmentsElementProps> = ({
@@ -28,6 +29,7 @@ const AttachmentsElement: React.FC<AttachmentsElementProps> = ({
   isUploading,
   error,
   uploadedFiles,
+  readOnly,
 }) => {
   const hiddenFileInput = useRef() as MutableRefObject<HTMLInputElement>;
 
@@ -44,7 +46,7 @@ const AttachmentsElement: React.FC<AttachmentsElementProps> = ({
   };
 
   return (
-    <Box className="flex mt-6">
+    <Box className="flex mt-1">
       <Typography
         variant="body2"
         component="label"
@@ -78,17 +80,19 @@ const AttachmentsElement: React.FC<AttachmentsElementProps> = ({
                 >
                   {file.name}
                 </Link>
-                <IconButton
-                  edge="end"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemoveFile(index);
-                  }}
-                  className="text-bc-error-red ml-2 p-0"
-                  aria-label={`Remove ${file.name}`}
-                >
-                  <DeleteOutlineIcon fontSize="small" />
-                </IconButton>
+                {!readOnly && (
+                  <IconButton
+                    edge="end"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRemoveFile(index);
+                    }}
+                    className="text-bc-error-red ml-2 p-0"
+                    aria-label={`Remove ${file.name}`}
+                  >
+                    <DeleteOutlineIcon fontSize="small" />
+                  </IconButton>
+                )}
               </ListItem>
             ))}
           </List>
@@ -100,13 +104,15 @@ const AttachmentsElement: React.FC<AttachmentsElementProps> = ({
           </Typography>
         )}
 
-        <Button
-          variant="text"
-          onClick={() => hiddenFileInput.current.click()}
-          className="p-0 border-0 text-[16px] bg-transparent cursor-pointer underline text-bc-bg-blue min-w-[auto]"
-        >
-          Browse
-        </Button>
+        {!readOnly && (
+          <Button
+            variant="text"
+            onClick={() => hiddenFileInput.current.click()}
+            className="p-0 border-0 text-[16px] bg-transparent cursor-pointer underline text-bc-bg-blue min-w-[auto]"
+          >
+            Browse
+          </Button>
+        )}
 
         {isUploading && (
           <Box className="flex items-center mt-2">
