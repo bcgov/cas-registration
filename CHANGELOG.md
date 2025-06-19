@@ -1,3 +1,13 @@
+# [3.8.0](https://github.com/bcgov/cas-registration/compare/v3.7.0...v3.8.0) (2025-06-19)
+
+### Bug Fixes
+
+- improve canSubmit logic in ApplyComplianceUnitsComponent ([d87c1f8](https://github.com/bcgov/cas-registration/commit/d87c1f8b3981588faa26cd239760e91accc8805f))
+
+### Features
+
+- implement Apply Compliance Units feature with data models and UI components ([a6d0282](https://github.com/bcgov/cas-registration/commit/a6d02827d27111917043b9919cdb82cb870cdaff))
+
 # [3.7.0](https://github.com/bcgov/cas-registration/compare/v3.6.0...v3.7.0) (2025-06-11)
 
 ### Features
