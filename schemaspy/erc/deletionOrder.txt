@@ -14,6 +14,8 @@ report_new_entrant_emission
 report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
+elicensing_payment
+elicensing_adjustment
 document
 compliance_earned_credit
 report_sign_off
@@ -54,12 +56,15 @@ reporting_field
 document_type
 report_emission
 report_operation
+elicensing_line_item
 compliance_report_version
 report_new_entrant
 report_fuel
 custom_methodology_schema
 compliance_report
+elicensing_invoice
 report_compliance_summary
+elicensing_client_operator
 compliance_period
 report_unit
 report_source_type

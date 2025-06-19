@@ -29,12 +29,15 @@ report_activity
 report_source_type
 report_unit
 compliance_period
+elicensing_client_operator
 report_compliance_summary
+elicensing_invoice
 compliance_report
 custom_methodology_schema
 report_fuel
 report_new_entrant
 compliance_report_version
+elicensing_line_item
 report_operation
 report_emission
 document_type
@@ -75,6 +78,8 @@ report_electricity_import_data
 report_sign_off
 compliance_earned_credit
 document
+elicensing_adjustment
+elicensing_payment
 facility_designated_operation_timeline
 operation_designated_operator_timeline
 report_attachment

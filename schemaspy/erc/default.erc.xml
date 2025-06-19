@@ -808,11 +808,182 @@
             <column ascending="true" name="id"/>
          </index>
       </table>
+      <table name="elicensing_adjustment" remarks="Table contains adjustment data from elicensing" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="adjustment_object_id" nullable="false" remarks="The object id of the adjustment in elicensing (adjustmentObjectId)" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="adjustment_guid" nullable="false" remarks="The guid of the adjustment in elicensing" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="6" name="amount" nullable="false" remarks="The amount of this adjustment in dollars from elicensing" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="adjustment_date" nullable="true" remarks="date of the adjustment in elicensing" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="reason" nullable="true" remarks="Reason for adjustment in elicesning" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="type" nullable="true" remarks="Type of adjustment in elicesning" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="comment" nullable="true" remarks="Comments on adjustment in elicesning" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_adjustment_archived_by_id_c1e93a9c_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_adjustment_created_by_id_80466580_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_adjustment_updated_by_id_a9b4d72e_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="elicensing_line_item_id" nullable="false" remarks="Foreign key to the line item record this adjustment relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="elicensing_adjustmen_elicensing_line_item_3d0404f0_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_adjustment_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="elicensing_adjustment_archived_by_id_c1e93a9c" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="elicensing_adjustment_created_by_id_80466580" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="elicensing_adjustment_elicensing_line_item_id_3d0404f0" unique="false">
+            <column ascending="true" name="elicensing_line_item_id"/>
+         </index>
+         <index name="elicensing_adjustment_updated_by_id_a9b4d72e" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="elicensing_client_operator" remarks="A table to define the relationship between a BCIERS Operator record and the corresponding client record in elicensing" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="elicensing_client_operator_id" foreignKey="elicensing_invoice_elicensing_client_op_55b33481_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="client_object_id" nullable="false" remarks="The clientObjectId identifier from elicensing for the related client" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="client_guid" nullable="false" remarks="The clientGuid identifier from elicensing for the related client" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_client_op_archived_by_id_23e9a243_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_client_op_created_by_id_d59eeaec_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="operator_id" nullable="false" remarks="Foreign key to the BCIERS operator object for this record" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="id" foreignKey="elicensing_client_operator_operator_id_5317a5be_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operator"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_client_op_updated_by_id_170cd96d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_client_operator_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="elicensing_client_operator_archived_by_id_23e9a243" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="elicensing_client_operator_created_by_id_d59eeaec" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="elicensing_client_operator_operator_id_5317a5be" unique="false">
+            <column ascending="true" name="operator_id"/>
+         </index>
+         <index name="elicensing_client_operator_updated_by_id_170cd96d" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="elicensing_invoice" remarks="Table contains invoice data from elicensing" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="elicensing_invoice_id" foreignKey="elicensing_line_item_elicensing_invoice_i_1450e1c0_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="invoice_number" nullable="false" remarks="The invoice number from elicensing." size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="due_date" nullable="false" remarks="The due date of the invoice. invoicePaymentDueDate in elicensing" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="6" name="outstanding_balance" nullable="false" remarks="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="7" name="invoice_fee_balance" nullable="true" remarks="The balance of fees for this invoice. invoiceFeeBalance in elicensing" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="8" name="invoice_interest_balance" nullable="true" remarks="The balance of interest for this invoice. invoiceInterestBalance in elicensing" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="is_void" nullable="false" remarks="Boolean field indicates whether this invoice has been voided" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_invoice_archived_by_id_8586301c_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_invoice_created_by_id_6f1ca0f3_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="elicensing_client_operator_id" nullable="false" remarks="Foreign key to the elicensing_client_operator record for the client who this invoice is for" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="elicensing_invoice_elicensing_client_op_55b33481_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_client_operator"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_invoice_updated_by_id_19a9a28f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_invoice_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="elicensing_invoice_archived_by_id_8586301c" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="elicensing_invoice_created_by_id_6f1ca0f3" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="elicensing_invoice_elicensing_client_operator_id_55b33481" unique="false">
+            <column ascending="true" name="elicensing_client_operator_id"/>
+         </index>
+         <index name="elicensing_invoice_updated_by_id_19a9a28f" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="elicensing_line_item" remarks="Table contains line item data on an invoice from elicensing" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="elicensing_line_item_id" foreignKey="elicensing_adjustmen_elicensing_line_item_3d0404f0_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
+            <child column="elicensing_line_item_id" foreignKey="elicensing_payment_elicensing_line_item_b365729b_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_payment"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="object_id" nullable="false" remarks="The objectId of the line item from elicensing" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="guid" nullable="false" remarks="The guid of the line item from elicensing" size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="line_item_type" nullable="false" remarks="The type of line item from elicensing." size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_line_item_archived_by_id_d2489ed7_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_line_item_created_by_id_f112e6c2_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="elicensing_invoice_id" nullable="false" remarks="Foreign key to the OBPS elicensing_invoice table." size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="elicensing_line_item_elicensing_invoice_i_1450e1c0_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_line_item_updated_by_id_700038d0_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_line_item_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="elicensing_line_item_archived_by_id_d2489ed7" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="elicensing_line_item_created_by_id_f112e6c2" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="elicensing_line_item_elicensing_invoice_id_1450e1c0" unique="false">
+            <column ascending="true" name="elicensing_invoice_id"/>
+         </index>
+         <index name="elicensing_line_item_updated_by_id_700038d0" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="elicensing_link" remarks="A table to store links between system objects and eLicensing objects" schema="erc" type="TABLE">
          <column autoUpdated="false" defaultValue="null" digits="6" id="0" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="true" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Standard Django primary key" size="10" type="int4" typeCode="4">
+            <child column="adjustment_object_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
+            <child column="client_object_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_client_operator"/>
+            <child column="object_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
+            <child column="payment_object_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_payment"/>
             <child column="swrs_facility_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="facility"/>
             <child column="swrs_facility_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="swrs_organisation_id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="operator"/>
@@ -868,6 +1039,45 @@
             <column ascending="true" name="created_by_id"/>
          </index>
          <index name="elicensing_link_updated_by_id_79f14f48" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="elicensing_payment" remarks="Table contains payment data from elicensing" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="payment_object_id" nullable="false" remarks="The object id of the payment in elicensing (paymentObjectId)" size="10" type="int4" typeCode="4">
+            <parent column="id" foreignKey="Implied Constraint" implied="true" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="amount" nullable="false" remarks="The amount of this payment in dollars from elicensing" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="received_date" nullable="true" remarks="receivedDate of the payment in elicensing. The date when payment is received in the OBPS bank account. Receive Date can be backdated. This is the date that impacts interest calculation." size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_payment_archived_by_id_14039cb6_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_payment_created_by_id_a3e3e37f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="elicensing_line_item_id" nullable="false" remarks="Foreign key to the line item record this payment relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="elicensing_payment_elicensing_line_item_b365729b_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="elicensing_payment_updated_by_id_07ac7256_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_payment_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="elicensing_payment_archived_by_id_14039cb6" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="elicensing_payment_created_by_id_a3e3e37f" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="elicensing_payment_elicensing_line_item_id_b365729b" unique="false">
+            <column ascending="true" name="elicensing_line_item_id"/>
+         </index>
+         <index name="elicensing_payment_updated_by_id_07ac7256" unique="false">
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
@@ -1511,6 +1721,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Primary key to identify the operator" size="2147483647" type="uuid" typeCode="1111">
             <child column="operator_id" foreignKey="contact_operator_id_c1f35c4d_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="contact"/>
+            <child column="operator_id" foreignKey="elicensing_client_operator_operator_id_5317a5be_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_client_operator"/>
             <child column="operator_id" foreignKey="operation_operator_id_fdf52598_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="operation"/>
             <child column="operator_id" foreignKey="operation_designated_operator_id_76d4ac88_fk_operator_" implied="false" onDeleteCascade="false" schema="erc" table="operation_designated_operator_timeline"/>
             <child column="child_operator_id" foreignKey="parent_operator_child_operator_id_66a27872_fk_operator_id" implied="false" onDeleteCascade="false" schema="erc" table="parent_operator"/>
@@ -3572,9 +3783,24 @@
             <child column="archived_by_id" foreignKey="document_archived_by_id_f815d708_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
             <child column="created_by_id" foreignKey="document_created_by_id_9ca09a36_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
             <child column="updated_by_id" foreignKey="document_updated_by_id_e225f4ce_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="document"/>
+            <child column="archived_by_id" foreignKey="elicensing_adjustment_archived_by_id_c1e93a9c_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
+            <child column="created_by_id" foreignKey="elicensing_adjustment_created_by_id_80466580_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
+            <child column="updated_by_id" foreignKey="elicensing_adjustment_updated_by_id_a9b4d72e_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
+            <child column="archived_by_id" foreignKey="elicensing_client_op_archived_by_id_23e9a243_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_client_operator"/>
+            <child column="created_by_id" foreignKey="elicensing_client_op_created_by_id_d59eeaec_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_client_operator"/>
+            <child column="updated_by_id" foreignKey="elicensing_client_op_updated_by_id_170cd96d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_client_operator"/>
+            <child column="archived_by_id" foreignKey="elicensing_invoice_archived_by_id_8586301c_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
+            <child column="created_by_id" foreignKey="elicensing_invoice_created_by_id_6f1ca0f3_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
+            <child column="updated_by_id" foreignKey="elicensing_invoice_updated_by_id_19a9a28f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
+            <child column="archived_by_id" foreignKey="elicensing_line_item_archived_by_id_d2489ed7_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
+            <child column="created_by_id" foreignKey="elicensing_line_item_created_by_id_f112e6c2_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
+            <child column="updated_by_id" foreignKey="elicensing_line_item_updated_by_id_700038d0_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
             <child column="archived_by_id" foreignKey="elicensing_link_archived_by_id_f25b9704_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
             <child column="created_by_id" foreignKey="elicensing_link_created_by_id_c1b19f44_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
             <child column="updated_by_id" foreignKey="elicensing_link_updated_by_id_79f14f48_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_link"/>
+            <child column="archived_by_id" foreignKey="elicensing_payment_archived_by_id_14039cb6_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_payment"/>
+            <child column="created_by_id" foreignKey="elicensing_payment_created_by_id_a3e3e37f_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_payment"/>
+            <child column="updated_by_id" foreignKey="elicensing_payment_updated_by_id_07ac7256_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_payment"/>
             <child column="archived_by_id" foreignKey="facility_archived_by_id_8292bf94_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
             <child column="created_by_id" foreignKey="facility_created_by_id_491dc391_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
             <child column="updated_by_id" foreignKey="facility_updated_by_id_43590626_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="facility"/>
