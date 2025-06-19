@@ -17,6 +17,8 @@ const OperationEmissionSummary: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
+  console.log("summaryFormData", summaryFormData);
+  console.log("navigationInformation", navigationInformation);
   return (
     <MultiStepFormWithTaskList
       taskListElements={navigationInformation.taskList}

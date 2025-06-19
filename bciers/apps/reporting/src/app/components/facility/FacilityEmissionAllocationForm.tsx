@@ -160,12 +160,16 @@ export default function FacilityEmissionAllocationForm({
         .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
-      facility_total_emissions: Number(initialData.facility_total_emissions),
+      facility_total_emissions: initialData.facility_total_emissions
+        ? Number(initialData.facility_total_emissions)
+        : initialData.facility_total_emissions,
       products:
         initialData.report_product_emission_allocation_totals?.map(
           (product: { [key: string]: any }) => ({
             ...product,
-            allocated_quantity: Number(product.allocated_quantity),
+            allocated_quantity: product.allocated_quantity
+              ? Number(product.allocated_quantity)
+              : product.allocated_quantity,
           }),
         ) || [],
     },

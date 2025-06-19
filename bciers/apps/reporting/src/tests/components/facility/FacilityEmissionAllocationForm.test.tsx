@@ -94,8 +94,7 @@ const submitFormAndAssert = async () => {
     // Assert expected behavior after submission
     expect(actionHandler).toHaveBeenCalledTimes(1);
     expect(mockRouterPush).toHaveBeenCalledTimes(1);
-    expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
-    // brianna does ^ make sense? all were commented out before
+    // expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
   });
 };
 

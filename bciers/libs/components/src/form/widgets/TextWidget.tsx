@@ -72,14 +72,16 @@ const TextWidget: React.FC<WidgetProps> = ({
           id={id}
           name={name}
           disabled={disabled || readonly}
-          value={Number(value)}
+          value={value ? Number(value) : value}
           onValueChange={handleNumberChange}
           max={maxNum}
           style={widthStyle}
           format={{
             maximumFractionDigits: 4,
             // sometimes numbers are returned
-            minimumFractionDigits: value?value.toString().split(".")[1]?.length : 0,
+            minimumFractionDigits: value
+              ? value.toString().split(".")[1]?.length
+              : 0,
           }}
         >
           <NumberField.Group>
