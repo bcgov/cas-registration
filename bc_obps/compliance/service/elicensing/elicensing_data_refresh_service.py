@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 from django.db import transaction
 from compliance.models import (
@@ -11,14 +10,9 @@ from compliance.models import (
 )
 from datetime import datetime
 from decimal import Decimal
+from compliance.dataclass import RefreshWrapperReturn
 
 elicensing_api_client = ELicensingAPIClient()
-
-
-@dataclass
-class RefreshWrapperReturn:
-    data_is_fresh: bool
-    invoice: ElicensingInvoice
 
 
 class ElicensingDataRefreshService:

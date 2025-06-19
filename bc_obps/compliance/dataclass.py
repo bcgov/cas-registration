@@ -1,6 +1,8 @@
 from decimal import Decimal
 from dataclasses import dataclass
 from typing import Optional, List
+from django.db.models import QuerySet
+from compliance.models import ElicensingPayment, ElicensingInvoice
 
 
 @dataclass
@@ -41,3 +43,16 @@ class BCCRComplianceAccountResponseDetails:
 
     master_account_name: Optional[str]
     entity_id: Optional[str]
+
+
+## Elicensing Dataclasses
+@dataclass
+class PaymentDataWithFreshnessFlag:
+    data_is_fresh: bool
+    data: QuerySet[ElicensingPayment]
+
+
+@dataclass
+class RefreshWrapperReturn:
+    data_is_fresh: bool
+    invoice: ElicensingInvoice

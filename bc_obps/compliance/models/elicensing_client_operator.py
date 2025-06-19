@@ -1,4 +1,3 @@
-from __future__ import annotations
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from registration.models import Operator
