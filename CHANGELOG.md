@@ -1,3 +1,5 @@
+## [3.8.1](https://github.com/bcgov/cas-registration/compare/v3.8.0...v3.8.1) (2025-06-19)
+
 # [3.8.0](https://github.com/bcgov/cas-registration/compare/v3.7.0...v3.8.0) (2025-06-19)
 
 ### Bug Fixes
