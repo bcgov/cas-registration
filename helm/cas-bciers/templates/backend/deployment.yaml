@@ -84,7 +84,7 @@ spec:
         {{- $containerName := printf "%s-backend" (include "cas-bciers.fullname" .) }}
       {{- include "cas-logging-sidecar.containers" (dict
           "containerToSidecar" $containerName
-          "logName" "cas-bciers-dev-logs"
+          "logName" (index .Values "cas-logging-sidecar" "logName")
           "host" (index .Values "cas-logging-sidecar" "host")
           "appName" "backend") | nindent 8 }}
       volumes:
