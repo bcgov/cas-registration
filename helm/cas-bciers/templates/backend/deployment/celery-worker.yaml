@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.celery.worker.replicas | default 2 }}
+  selector:
+    matchLabels:
+      {{- include "cas-bciers.selectorLabels" . | nindent 6 }}
+      component: celery-worker
+  template:
+    metadata:
+      labels:
+        {{- include "cas-bciers.selectorLabels" . | nindent 8 }}
+        component: celery-worker
+    spec:
+      restartPolicy: Always
+      serviceAccountName: deployer
+      containers:
+        - name: celery-worker
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          env:
+            {{- include "cas-bciers.backendEnvVars" . | nindent 12 }}
+            - name: CELERY_BROKER_URL
+              value: {{ .Values.celery.brokerUrl | default "redis://redis:6379/0" }}
+            - name: CELERY_RESULT_BACKEND
+              value: {{ .Values.celery.resultBackend | default "redis://redis:6379/0" }}
+          command:
+            - /usr/bin/env
+            - bash
+            - -c
+            - |
+              set -euo pipefail;
+              .venv/bin/python manage.py migrate;
+              .venv/bin/celery -A bc_obps worker -l info -Q elicensing
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi 

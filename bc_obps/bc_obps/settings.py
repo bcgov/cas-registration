@@ -51,9 +51,7 @@ else:
         "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
     }
     if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-            os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
-        )
+        GS_CREDENTIALS = service_account.Credentials.from_service_account_file(os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"))
     GS_FILE_OVERWRITE = False
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -167,13 +165,9 @@ WSGI_APPLICATION = "bc_obps.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DB_USER = os.environ.get("DB_USER", "postgres")
-CONNECTION_MAX_AGE = (
-    0 if ENVIRONMENT == "local" else 60
-)  # to prevent too many clients already issues in local environment
+CONNECTION_MAX_AGE = 0 if ENVIRONMENT == "local" else 60  # to prevent too many clients already issues in local environment
 default_db_url = f"postgres://{DB_USER}:{urllib.parse.quote(str(os.environ.get('DB_PASSWORD')))}@{os.environ.get('DB_HOST', '127.0.0.1')}:{os.environ.get('DB_PORT', '5432')}/{os.environ.get('DB_NAME', 'registration')}"
-DATABASES = {
-    'default': dj_database_url.config(default=default_db_url, conn_max_age=CONNECTION_MAX_AGE, conn_health_checks=True)
-}
+DATABASES = {'default': dj_database_url.config(default=default_db_url, conn_max_age=CONNECTION_MAX_AGE, conn_health_checks=True)}
 
 
 # Password validation
@@ -258,6 +252,33 @@ QUERYCOUNT = {
     # print the 2 most duplicated queries
     'DISPLAY_DUPLICATES': 2,
 }
+
+
+# Celery Configuration
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
+
+# Task routing
+CELERY_TASK_ROUTES = {
+    'compliance.tasks.*': {'queue': 'elicensing'},
+}
+
+# Task settings
+CELERY_TASK_ALWAYS_EAGER = os.environ.get('CELERY_TASK_ALWAYS_EAGER', 'False').lower() == 'true'
+CELERY_TASK_EAGER_PROPAGATES = True
+
+# Worker settings
+CELERY_WORKER_CONCURRENCY = int(os.environ.get('CELERY_WORKER_CONCURRENCY', '4'))
+CELERY_WORKER_MAX_TASKS_PER_CHILD = int(os.environ.get('CELERY_WORKER_MAX_TASKS_PER_CHILD', '1000'))
+
+# Retry settings
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
 
 
 CACHES = {

@@ -3,6 +3,8 @@ from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
+from compliance.service.elicensing_integration_queue_service import ElicensingIntegrationQueueService
+from compliance.tasks import process_elicensing_integration
 from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
@@ -14,9 +16,7 @@ logger = logging.getLogger(__name__)
 class ComplianceReportVersionService:
     @classmethod
     @transaction.atomic
-    def create_compliance_report_version(
-        cls, compliance_report: ComplianceReport, report_version_id: int
-    ) -> ComplianceReportVersion:
+    def create_compliance_report_version(cls, compliance_report: ComplianceReport, report_version_id: int) -> ComplianceReportVersion:
         """
         Creates a compliance report version for a submitted report version
 
@@ -41,20 +41,16 @@ class ComplianceReportVersionService:
             compliance_report_version = ComplianceReportVersion.objects.create(
                 compliance_report=compliance_report,
                 report_compliance_summary=report_compliance_summary,
-                status=ComplianceReportVersionService._determine_compliance_status(
-                    excess_emissions, credited_emissions
-                ),
+                status=ComplianceReportVersionService._determine_compliance_status(excess_emissions, credited_emissions),
             )
 
             # Create compliance obligation if there are excess emissions
             if excess_emissions > Decimal('0'):
-                obligation = ComplianceObligationService.create_compliance_obligation(
-                    compliance_report_version.id, excess_emissions
-                )
+                obligation = ComplianceObligationService.create_compliance_obligation(compliance_report_version.id, excess_emissions)
 
-                # Integration operation - handle eLicensing integration
-                # This is done outside of the main transaction to prevent rollback if integration fails
-                transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
+                # Queue elicensing integration for truly asynchronous processing
+                # This prevents blocking report submission if elicensing API is down
+                transaction.on_commit(lambda: cls._queue_async_obligation_integration(obligation.id))
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
@@ -63,9 +59,43 @@ class ComplianceReportVersionService:
             return compliance_report_version
 
     @classmethod
+    def _queue_async_obligation_integration(cls, obligation_id: int) -> None:
+        """
+        Queue an obligation for truly asynchronous elicensing integration using Celery.
+        This method is called outside the main transaction to ensure
+        the report submission succeeds even if elicensing integration fails.
+
+        Args:
+            obligation_id: The ID of the compliance obligation to queue
+        """
+        try:
+            # Create queue entry for tracking
+            ElicensingIntegrationQueueService.queue_obligation_integration(obligation_id)
+
+            # Submit Celery task for asynchronous processing
+            task = process_elicensing_integration.delay(obligation_id)
+
+            logger.info(f"Successfully queued obligation {obligation_id} for async elicensing integration (task_id: {task.id})")
+        except Exception as e:
+            logger.error(f"Failed to queue obligation {obligation_id} for async elicensing integration: {str(e)}", exc_info=True)
+            # Don't re-raise - we don't want to fail the report submission
+
+    @classmethod
+    def _queue_obligation_integration(cls, obligation_id: int) -> None:
+        """
+        Queue an obligation for elicensing integration (legacy method).
+        This method is kept for backward compatibility.
+
+        Args:
+            obligation_id: The ID of the compliance obligation to queue
+        """
+        cls._queue_async_obligation_integration(obligation_id)
+
+    @classmethod
     def _process_obligation_integration(cls, obligation_id: int) -> None:
         """
         Process eLicensing integration for a compliance obligation.
+        This method is kept for backward compatibility and direct integration calls.
 
         Args:
             obligation_id: The ID of the compliance obligation to process
@@ -76,9 +106,7 @@ class ComplianceReportVersionService:
         try:
             ObligationELicensingService.process_obligation_integration(obligation_id)
         except Exception as e:
-            logger.error(
-                f"Failed to process eLicensing integration for obligation {obligation_id}: {str(e)}", exc_info=True
-            )
+            logger.error(f"Failed to process eLicensing integration for obligation {obligation_id}: {str(e)}", exc_info=True)
             raise
 
     @classmethod
