@@ -11,6 +11,10 @@ from compliance.models import (
 from datetime import datetime
 from decimal import Decimal
 from compliance.dataclass import RefreshWrapperReturn
+import logging
+from pydantic import ValidationError
+
+logger = logging.getLogger(__name__)
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -28,14 +32,18 @@ class ElicensingDataRefreshService:
         invoice = ComplianceObligation.objects.get(
             compliance_report_version_id=compliance_report_version_id
         ).elicensing_invoice
+        if not invoice:
+            raise ValidationError(f"No related invoice found for report version ID: {compliance_report_version_id}")
         try:
             ElicensingDataRefreshService.refresh_data_by_invoice(
-                client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number  # type: ignore[union-attr]
+                client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number
             )
-        except:  # noqa: E722
+        except Exception as e:  # noqa: E722
+            logger.error(f"Failed to refresh data by invoice: {str(e)}")
             data_is_fresh = False
 
-        return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice)  # type: ignore[arg-type]
+        invoice.refresh_from_db()
+        return RefreshWrapperReturn(data_is_fresh=data_is_fresh, invoice=invoice)
 
     @classmethod
     @transaction.atomic
