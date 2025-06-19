@@ -83,6 +83,7 @@ class TestElicensingOperatorService:
         adjustment = ElicensingAdjustment.objects.get(elicensing_line_item=fee)
         assert invoice.outstanding_balance == 100.00
         assert fee.object_id == 1
+        assert fee.description == 'desc'
         assert payment.amount == Decimal('50')
         assert adjustment.amount == Decimal('10.11')
 
