@@ -62,7 +62,6 @@ const TextWidget: React.FC<WidgetProps> = ({
   const widthStyle = {
     width: "100%",
   };
-
   // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     // console.log("typeof value", typeof Number(value), Number(value));
@@ -100,6 +99,16 @@ const TextWidget: React.FC<WidgetProps> = ({
       </>
     );
   } else {
+    // let transformedValue = value;
+    // // brianna add commas with this
+    // if (uiSchema?.["ui:options"]?.actuallyANumber) {
+    //   const [integerPart, decimalPart] = value.split(".");
+    //   const formattedInteger = parseInt(integerPart, 10).toLocaleString();
+    //   transformedValue = decimalPart
+    //     ? `${formattedInteger}.${decimalPart}`
+    //     : formattedInteger;
+    // }
+
     return (
       <>
         <>brianna STRING</>

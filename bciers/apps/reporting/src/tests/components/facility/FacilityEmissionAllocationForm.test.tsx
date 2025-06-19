@@ -95,6 +95,7 @@ const submitFormAndAssert = async () => {
     // expect(actionHandler).toHaveBeenCalledTimes(1);
     // expect(mockRouterPush).toHaveBeenCalledTimes(1);
     // expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
+    // brianna this test doesn't actually check submission
   });
 };
 

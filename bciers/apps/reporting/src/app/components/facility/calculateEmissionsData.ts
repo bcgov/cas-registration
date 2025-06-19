@@ -33,7 +33,9 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
   } else {
     percentage = sum ? -1 : 100;
   }
+  
 
+console.log('category',category)
   return {
     ...category,
     products_emission_allocation_sum:
@@ -43,5 +45,12 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
           )}`
         : `${percentage.toFixed(2)}%`,
     emission_total: category.emission_total.toString(),
+    products: category.products.map((product)=>({
+      ...product,
+      allocated_quantity: Number(product.allocated_quantity)
+
+
+    })
+  )
   };
 };
