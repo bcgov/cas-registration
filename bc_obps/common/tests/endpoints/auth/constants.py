@@ -394,11 +394,6 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_transfer_event", "kwargs": {"transfer_id": MOCK_UUID}},
         {"method": "get", "endpoint_name": "get_internal_users"},
         {"method": "get", "endpoint_name": "get_all_attachments"},
-        {
-            "method": "get",
-            "endpoint_name": "get_compliance_report_version_ids_with_actioned_ecs",
-            "kwargs": {},
-        },
     ],
     "approved_authorized_roles": [
         {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},

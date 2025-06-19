@@ -25,7 +25,7 @@ class ComplianceEarnedCredit(TimeStampedModel):
         CREDITS_NOT_ISSUED = ('Credits Not Issued in BCCR',)
         CHANGES_REQUIRED = 'Changes Required'
 
-    compliance_report_version = models.ForeignKey(
+    compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
         on_delete=models.CASCADE,
         related_name="compliance_earned_credits",

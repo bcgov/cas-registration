@@ -3,17 +3,18 @@ import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFacto
 import { ComplianceSummary } from "@/compliance/src/app/types";
 
 interface ActionCellProps extends GridRenderCellParams {
-  isCasStaff?: boolean;
-  actionedECs: any[];
+  isAllowedCas?: boolean;
 }
 
 const ActionCell = (params: ActionCellProps) => {
   let cellText = "View Details";
-
   if (params.row.obligation_id) {
     cellText = "Manage Obligation";
   } else if (params.row.status === "Earned credits") {
-    if (params.isCasStaff && params.actionedECs.includes(params.id)) {
+    if (
+      params.isAllowedCas &&
+      params.row.issuance_status !== "Credits Not Issued in BCCR"
+    ) {
       cellText = "Review Credits Issuance Request";
     } else {
       cellText = "Request Issuance of Credits";
@@ -27,7 +28,10 @@ const ActionCell = (params: ActionCellProps) => {
       if (p.row.obligation_id) {
         basePath += "/manage-obligation-review-summary";
       } else if (p.row.status === "Earned credits") {
-        if (params.isCasStaff && params.actionedECs.includes(params.id)) {
+        if (
+          params.isAllowedCas &&
+          params.row.issuance_status !== "Credits Not Issued in BCCR"
+        ) {
           basePath += "/request-issuance-of-earned-credits";
         } else {
           basePath += "/request-issuance-review-summary";

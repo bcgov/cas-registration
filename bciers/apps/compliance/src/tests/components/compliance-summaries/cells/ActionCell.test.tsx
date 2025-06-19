@@ -6,24 +6,23 @@ import { ComplianceSummary } from "@/compliance/src/app/types";
 describe("ActionCell", () => {
   interface ActionCellParams extends GridRenderCellParams {
     id: number;
-    isCasStaff: boolean;
-    actionedECs: number[];
+    isAllowedCas: boolean;
     obligation_id?: string;
     status?: string;
+    issuance_status?: string;
   }
 
   const createMockParams = (
     id: number,
-    isCasStaff: boolean,
-    actionedECs: number[],
+    isAllowedCas: boolean,
     obligation_id?: string,
     status?: string,
+    issuance_status?: string,
   ): ActionCellParams =>
     ({
       id: id,
-      row: { id, obligation_id, status } as ComplianceSummary,
-      isCasStaff: isCasStaff,
-      actionedECs: actionedECs,
+      row: { id, obligation_id, status, issuance_status } as ComplianceSummary,
+      isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
 
   const expectLink = (name: string, href: string) => {
@@ -33,7 +32,11 @@ describe("ActionCell", () => {
   };
 
   it("displays 'Manage Obligation' when obligation_id is present", () => {
-    render(ActionCell(createMockParams(123, false, [], "24-0001-1-1")));
+    render(
+      ActionCell(
+        createMockParams(123, false, "24-0001-1-1", undefined, undefined),
+      ),
+    );
     expectLink(
       "Manage Obligation",
       "/compliance-summaries/123/manage-obligation-review-summary",
@@ -42,7 +45,15 @@ describe("ActionCell", () => {
 
   it("displays 'Request Issuance of Credits' when status is 'Earned credits'", () => {
     render(
-      ActionCell(createMockParams(123, false, [], undefined, "Earned credits")),
+      ActionCell(
+        createMockParams(
+          123,
+          false,
+          undefined,
+          "Earned credits",
+          "Credits Not Issued in BCCR",
+        ),
+      ),
     );
     expectLink(
       "Request Issuance of Credits",
@@ -50,11 +61,9 @@ describe("ActionCell", () => {
     );
   });
 
-  it("displays 'Review Credits Issuance Request' when status is 'Earned credits', user is cas staff and row id matches actioned EC compliance report version ID", () => {
+  it("displays 'Review Credits Issuance Request' when status is 'Earned credits', user is cas staff and earned credits is not actioned", () => {
     render(
-      ActionCell(
-        createMockParams(555, true, [555], undefined, "Earned credits"),
-      ),
+      ActionCell(createMockParams(555, true, undefined, "Earned credits")),
     );
     expectLink(
       "Review Credits Issuance Request",
@@ -63,14 +72,20 @@ describe("ActionCell", () => {
   });
 
   it("displays 'View Details' when neither obligation_id nor earned credits status is present", () => {
-    render(ActionCell(createMockParams(123, false, [])));
+    render(ActionCell(createMockParams(123, false)));
     expectLink("View Details", "/compliance-summaries/123");
   });
 
   it("prioritizes 'Manage Obligation' over 'Request Issuance' when both conditions are met", () => {
     render(
       ActionCell(
-        createMockParams(123, false, [], "24-0001-1-1", "Earned credits"),
+        createMockParams(
+          123,
+          false,
+          "24-0001-1-1",
+          "Earned credits",
+          "Credits Not Issued in BCCR",
+        ),
       ),
     );
     expectLink(

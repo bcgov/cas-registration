@@ -38,6 +38,7 @@ const mockResponse = {
       status: "Earned credits",
       penalty_status: "N/A",
       obligation_id: null,
+      issuance_status: "Credits Issued",
     },
   ] as ComplianceSummary[],
   row_count: 3,
@@ -48,8 +49,7 @@ describe("ComplianceSummariesDataGrid component", () => {
     render(
       <ComplianceSummariesDataGrid
         initialData={mockResponse}
-        isCasStaff={false}
-        actionedECReportVersionIDs={[]}
+        isAllowedCas={false}
       />,
     );
 
@@ -149,8 +149,7 @@ describe("ComplianceSummariesDataGrid component", () => {
     render(
       <ComplianceSummariesDataGrid
         initialData={mockResponse}
-        isCasStaff={true}
-        actionedECReportVersionIDs={[3]}
+        isAllowedCas={true}
       />,
     );
 

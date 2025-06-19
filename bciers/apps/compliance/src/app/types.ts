@@ -14,6 +14,7 @@ export interface ComplianceSummary {
   status?: string;
   penalty_status?: string;
   obligation_id?: string;
+  issuance_status?: string;
 }
 
 export interface BccrAccountDetailsResponse {
