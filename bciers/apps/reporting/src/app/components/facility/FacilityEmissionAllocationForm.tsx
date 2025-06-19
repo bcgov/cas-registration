@@ -162,7 +162,12 @@ export default function FacilityEmissionAllocationForm({
     total_emission_allocations: {
       facility_total_emissions:
         initialData.facility_total_emissions?.toString(),
-      products: initialData.report_product_emission_allocation_totals,
+      products: initialData.report_product_emission_allocation_totals.map((product)=>({
+        ...product,
+        allocated_quantity: Number(product.allocated_quantity)
+  
+  
+      })),
     },
   }));
   const [shouldReset, setShouldReset] = useState(false);
