@@ -4,13 +4,6 @@ import { padding } from "@mui/system";
 import { FieldProps } from "@rjsf/utils";
 
 export default function FinalReviewStringField(props: FieldProps) {
-  // if (props.schema.type === "number" && typeof props.formData === "string") {
-  //   console.log("-------------------");
-  //   console.log("props.schema.type", props.schema.type);
-  //   console.log("props.formData typeof", typeof props.formData);
-  //   console.log("-------------------");
-  // }
-
   const numberStyles = {
     font: "inherit",
     width: "100%",
