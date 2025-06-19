@@ -79,6 +79,16 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "generate_payment_instructions",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_invoice",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_report_additional_data_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },

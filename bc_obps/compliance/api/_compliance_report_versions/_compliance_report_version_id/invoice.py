@@ -1,6 +1,9 @@
 import json
+from typing import Optional
 from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
+from compliance.service.elicensing.schema import InvoiceQueryResponse
+from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
@@ -9,7 +12,7 @@ from compliance.constants import COMPLIANCE
 
 
 @router.get(
-    "/compliance-report-versions/{compliance_report_version_id}/invoice",
+    "/compliance-report-versions/{compliance_report_version_id}/invoice/pdf",
     response={200: None, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Generate a PDF invoice for a compliance report version and stream it to the client",
@@ -40,4 +43,26 @@ def generate_compliance_report_version_invoice(
     response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     response["Content-Length"] = str(total_size)
+    return response
+
+
+@router.get(
+    "/compliance-report-versions/{compliance_report_version_id}/invoice",
+    response={200: InvoiceQueryResponse, custom_codes_4xx: Message},
+    tags=COMPLIANCE,
+    description="Returns invoice info for a compliance summary id",
+    auth=authorize("approved_industry_user"),
+)
+def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> Optional[InvoiceQueryResponse]:
+    """
+    Returns invoice info for a given compliance report version id.
+
+    Args:
+        request: The HTTP request
+        compliance_report_version_id: ID of the compliance report version
+
+    Returns:
+        Invoice information
+    """
+    response = ObligationELicensingService.get_invoice_from_compliance_report_version_id(compliance_report_version_id)
     return response

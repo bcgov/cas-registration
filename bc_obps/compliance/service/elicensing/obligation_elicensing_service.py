@@ -2,10 +2,12 @@ import logging
 import uuid
 from typing import List, Optional, Dict, Any
 
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_link import ELicensingLink
 from compliance.service.elicensing.operator_elicensing_service import OperatorELicensingService
 from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
+from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
@@ -14,7 +16,6 @@ from compliance.service.elicensing.elicensing_api_client import (
     InvoiceFee,
 )
 from registration.models.operator import Operator
-from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
 from django.db import transaction
 
 logger = logging.getLogger(__name__)
@@ -102,6 +103,31 @@ class ObligationELicensingService:
             error_msg = f"Failed to query invoice for obligation {obligation.id}: {str(e)}"
             logger.error(error_msg)
             raise
+
+    @classmethod
+    def get_invoice_from_compliance_report_version_id(
+        cls, compliance_report_version_id: int
+    ) -> Optional[InvoiceQueryResponse]:
+        """
+        Get the invoice with compliance report version id from eLicensing.
+
+        Args:
+            compliance_report_version_id: The id of compliance report version object
+
+        Returns:
+            InvoiceQueryResponse if found, None if no payments exist
+
+        Raises:
+            ValueError: If client or invoice links are missing
+            requests.RequestException: If there's an API error
+        """
+        # Get report version
+        compliance_report_version = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+
+        # Get obligation object with compliance report version
+        obligation = ComplianceObligation.objects.get(compliance_report_version=compliance_report_version)
+
+        return cls._get_obligation_invoice(obligation)
 
     @classmethod
     def _parse_invoice_payments(cls, invoice: InvoiceQueryResponse) -> List[PaymentRecord]:

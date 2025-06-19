@@ -136,6 +136,36 @@ class TestObligationELicensingService:
         assert result["businessAreaCode"] == "OBPS"
         assert result["fees"] == [fee_id]
 
+    # elicensing_link table to be refactored, dealt with in ticket #193
+    # @pytest.mark.django_db
+    # @patch('compliance.models.ComplianceReportVersion.objects.get')
+    # @patch('compliance.models.ComplianceObligation.objects.get')
+    # def test_get_invoice_from_compliance_report_version_id(self,
+    # recipes instead of mocks
+    # ) -> InvoiceQueryResponse:
+    #     """Test grabbing invoice info with summary_id string"""
+    #     # Setup mocks
+    #     mock_obligation_get.return_value = mock_obligation
+    #     mock_link_service.create_link.return_value = mock_invoice_link
+
+    #     # Setup API response
+    #     mock_response = MagicMock()
+    #     mock_response.raise_for_status = MagicMock()
+    #     mock_response.invoiceNumber = "test-invoice-number"
+    #     mock_api_client.create_invoice.return_value = mock_response
+
+    #     # Create invoice
+    #     ObligationELicensingService.sync_invoice_with_elicensing(
+    #         mock_obligation.id, mock_client_link, mock_fee_link
+    #     )
+    #     mock_query_response = MagicMock()
+    #     mock_query_response.invoiceNumber = "test-invoice-number"
+    #     mock_api_client.query_invoice.return_value = mock_query_response
+
+    #     # Verify invoice
+    #     result = ObligationELicensingService.get_invoice_from_compliance_report_version_id(mock_obligation.compliance_report_version.report_compliance_summary.id)
+    #     assert result.invoiceNumber == "test-invoice-number"
+
     @pytest.mark.django_db
     def test_process_obligation_integration_success(
         self,
