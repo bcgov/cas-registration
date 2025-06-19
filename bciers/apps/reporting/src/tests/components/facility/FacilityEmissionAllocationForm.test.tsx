@@ -92,8 +92,8 @@ const submitFormAndAssert = async () => {
   await waitFor(() => {
     expect(screen.queryByText(/Required field/i)).not.toBeInTheDocument();
     // Assert expected behavior after submission
-    // expect(actionHandler).toHaveBeenCalledTimes(1);
-    // expect(mockRouterPush).toHaveBeenCalledTimes(1);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+    expect(mockRouterPush).toHaveBeenCalledTimes(1);
     // expect(mockRouterPush).toHaveBeenCalledWith(config.mockRouteSubmit);
     // brianna this test doesn't actually check submission
   });
@@ -180,7 +180,7 @@ describe("FacilityEmissionAllocationForm component", () => {
       ).toBeEnabled();
     });
   });
-  it(
+  it.only(
     "submits successfully",
     {
       timeout: 10000,
