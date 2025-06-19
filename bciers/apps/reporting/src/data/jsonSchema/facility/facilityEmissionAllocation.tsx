@@ -421,7 +421,6 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:disabled": true,
 
     facility_total_emissions: {
-      
       // "ui:widget": ReadOnlyWidget,
     },
     products: {

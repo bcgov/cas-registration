@@ -54,7 +54,7 @@ const validateEmissions = (formData: FormData): boolean => {
           FLOATING_POINT_PRECISION_FACTOR || 0), // we multiply by the factor when adding
       0,
     );
-// parseFloat does a bit more than just convert, ok? https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_parsefloat
+    // parseFloat does a bit more than just convert, ok? https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_parsefloat
     const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
 
     return (
@@ -147,6 +147,10 @@ export default function FacilityEmissionAllocationForm({
   overlappingIndustrialProcessEmissions,
 }: Props) {
   // Using the useState hook to initialize the form data with initialData values
+  console.log(
+    " initialData.facility_total_emissions",
+    initialData.facility_total_emissions,
+  );
   const [formData, setFormData] = useState<any>(() => ({
     allocation_methodology: initialData.allocation_methodology,
     allocation_other_methodology_description:
@@ -160,14 +164,13 @@ export default function FacilityEmissionAllocationForm({
         .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
-      facility_total_emissions:
-        Number(initialData.facility_total_emissions),
-      products: initialData.report_product_emission_allocation_totals.map((product)=>({
-        ...product,
-        allocated_quantity: Number(product.allocated_quantity)
-  
-  
-      })),
+      facility_total_emissions: Number(initialData.facility_total_emissions),
+      products: initialData.report_product_emission_allocation_totals.map(
+        (product) => ({
+          ...product,
+          allocated_quantity: Number(product.allocated_quantity),
+        }),
+      ),
     },
   }));
   const [shouldReset, setShouldReset] = useState(false);
