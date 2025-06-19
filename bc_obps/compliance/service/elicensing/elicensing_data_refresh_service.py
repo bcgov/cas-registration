@@ -63,7 +63,6 @@ class ElicensingDataRefreshService:
         invoice_response = elicensing_api_client.query_invoice(
             client_id=client_operator.client_object_id, invoice_number=invoice_number
         )
-
         invoice_record, _ = ElicensingInvoice.objects.update_or_create(
             elicensing_client_operator=client_operator,
             invoice_number=invoice_response.invoiceNumber,
@@ -80,6 +79,11 @@ class ElicensingDataRefreshService:
                 object_id=fee.feeObjectId,
                 guid=fee.feeGUID,
                 line_item_type=ElicensingLineItem.LineItemType.FEE,
+                defaults={
+                    "fee_date": datetime.fromisoformat(fee.feeDate),
+                    "description": fee.description,
+                    "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
+                },
             )
             for payment in fee.payments:
                 ElicensingPayment.objects.update_or_create(
