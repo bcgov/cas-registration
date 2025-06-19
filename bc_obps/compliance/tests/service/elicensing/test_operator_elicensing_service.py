@@ -73,14 +73,14 @@ def mock_operator_mailing_only():
 @pytest.fixture
 def mock_operator_get():
     """Mock Operator.objects.get"""
-    with patch('compliance.service.elicensing.operator_elicensing_service.Operator.objects.get') as mock:
+    with patch('compliance.service.elicensing.elicensing_operator_service.Operator.objects.get') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_api_client():
     """Mock elicensing_api_client"""
-    with patch('compliance.service.elicensing.operator_elicensing_service.elicensing_api_client') as mock:
+    with patch('compliance.service.elicensing.elicensing_operator_service.elicensing_api_client') as mock:
         yield mock
 
 
