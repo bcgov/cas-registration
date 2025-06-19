@@ -44,7 +44,7 @@ console.log('category',category)
             4,
           )}`
         : `${percentage.toFixed(2)}%`,
-    emission_total: category.emission_total.toString(),
+    emission_total: Number(category.emission_total),
     products: category.products.map((product)=>({
       ...product,
       allocated_quantity: Number(product.allocated_quantity)

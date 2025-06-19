@@ -79,7 +79,7 @@ const TextWidget: React.FC<WidgetProps> = ({
           format={{
             maximumFractionDigits: 4,
             // sometimes numbers are returned
-            minimumFractionDigits: value.toString().split(".")[1]?.length ?? 0,
+            minimumFractionDigits: value?value.toString().split(".")[1]?.length : 0,
           }}
         >
           <NumberField.Group>

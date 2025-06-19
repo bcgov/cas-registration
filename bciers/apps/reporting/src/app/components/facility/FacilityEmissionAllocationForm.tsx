@@ -161,7 +161,7 @@ export default function FacilityEmissionAllocationForm({
         .map(calculateEmissionData),
     total_emission_allocations: {
       facility_total_emissions:
-        initialData.facility_total_emissions?.toString(),
+        Number(initialData.facility_total_emissions),
       products: initialData.report_product_emission_allocation_totals.map((product)=>({
         ...product,
         allocated_quantity: Number(product.allocated_quantity)
