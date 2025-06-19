@@ -100,8 +100,10 @@ class TestExceptionHandler:
     def test_handle_unexpected_error(self, mock_logger, mock_request):
         exc = Exception("Unexpected")
         response = ExceptionHandler.handle(mock_request, exc)
-        assert response.status_code == 400
-        assert json.loads(response.content) == {"message": "Unexpected"}
+        assert response.status_code == 500
+        assert json.loads(response.content) == {
+            "message": "An internal server error has occurred. Please contact ghgregulator@gov.bc.ca for help and include the reference code: 67890"
+        }
         mock_logger.assert_called_with("Unexpected error. Sentry Reference ID: 67890", exc_info=True)
 
     def test_handle_object_does_not_exist(self, mock_request):
