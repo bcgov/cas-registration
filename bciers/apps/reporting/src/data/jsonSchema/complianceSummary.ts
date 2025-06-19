@@ -37,12 +37,13 @@ export const complianceSummarySchema: RJSFSchema = {
         reduction_factor: { type: "number", title: "Reduction factor" },
         tightening_rate: { type: "number", title: "Tightening rate" },
         initial_compliance_period: {
-          type: "number",
+          // brianna these are years?, so strings?
+          type: "string",
           title: "Initial compliance period",
           default: "2024",
         },
         compliance_period: {
-          type: "number",
+          type: "string",
           title: "Compliance period",
         },
       },
