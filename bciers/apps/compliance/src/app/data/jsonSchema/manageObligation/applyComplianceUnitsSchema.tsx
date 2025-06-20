@@ -57,7 +57,7 @@ export const applyComplianceUnitsSchema: RJSFSchema = {
                   type: { type: "string" },
                   serial_number: { type: "string" },
                   vintage_year: { type: "number" },
-                  quantity_available: { type: "string" },
+                  quantity_available: { type: "number" },
                   quantity_to_be_applied: { type: "number" },
                 },
               },
