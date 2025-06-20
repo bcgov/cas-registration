@@ -36,7 +36,7 @@ const ApplyComplianceUnitsWidget = ({
   formContext,
   readonly,
 }: WidgetProps) => {
-  const { chargeRate, complianceLimitStatus } = formContext;
+  const { chargeRate, complianceLimitStatus, isSubmitted } = formContext;
   const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value);
 
   const handleUnitUpdate = (updatedUnit: BccrUnit) => {
@@ -56,7 +56,7 @@ const ApplyComplianceUnitsWidget = ({
   return (
     <div className="w-full">
       {
-        COMPLIANCE_LIMIT_MESSAGES[
+        !isSubmitted && COMPLIANCE_LIMIT_MESSAGES[
           complianceLimitStatus as ComplianceLimitStatus
         ]
       }
