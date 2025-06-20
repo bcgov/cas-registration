@@ -55,11 +55,10 @@ const ApplyComplianceUnitsWidget = ({
 
   return (
     <div className="w-full">
-      {
-        !isSubmitted && COMPLIANCE_LIMIT_MESSAGES[
+      {!isSubmitted &&
+        COMPLIANCE_LIMIT_MESSAGES[
           complianceLimitStatus as ComplianceLimitStatus
-        ]
-      }
+        ]}
       <DataGrid
         columns={columns}
         initialData={{ rows: localUnits, row_count: localUnits.length }}
