@@ -5,7 +5,6 @@ import {
   readOnlyObjectField,
   commonReadOnlyOptions,
   headerUiConfig,
-  stringField,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
 import InternalDirectorReviewApprovalNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewApprovalNote";
@@ -52,10 +51,10 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
         {
           properties: {
             read_only: { const: false },
-            editable_director_comment: stringField(
-              "Director's Comment:",
-              false,
-            ),
+            editable_director_comment: {
+              title: "Director's Comment:",
+              type: "string",
+            },
           },
         },
         {
@@ -131,8 +130,7 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
   },
   editable_director_comment: {
     "ui:widget": TextWidget,
-    "ui:classNames":
-      "[&>div:nth-child(2)]:w-9/12 [&_.mui-24rejj-MuiInputBase-input-MuiOutlinedInput-input]:py-[8px]",
+    "ui:classNames": "[&>div:nth-child(2)]:w-9/12 [&_input]:py-[8px]",
   },
   readonly_director_comment: commonReadOnlyOptions,
   analyst_recommendation: {

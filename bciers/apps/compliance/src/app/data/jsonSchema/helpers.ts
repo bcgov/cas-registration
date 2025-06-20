@@ -3,19 +3,6 @@ import { FC } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import { TitleOnlyFieldTemplate } from "@bciers/components/form/fields";
 
-export const stringField = (
-  title: string = "",
-  readOnly: boolean = false,
-): {
-  type: "string";
-  title: string;
-  readOnly: boolean;
-} => ({
-  type: "string",
-  title,
-  readOnly,
-});
-
 export const readOnlyStringField = (
   title: string = "",
 ): {
