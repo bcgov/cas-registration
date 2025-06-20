@@ -9,12 +9,28 @@ export const mockRequestIssuanceTrackStatusData: {
     issuance_status: IssuanceStatus.AWAITING,
     bccr_trading_name: "Colour Co.",
     directors_comments: "",
+    analysts_comments: "",
   },
   approved: {
     earned_credits: 100,
     issuance_status: IssuanceStatus.APPROVED,
     bccr_trading_name: "Colour Co.",
     directors_comments: "Lorem ipsum",
+    analysts_comments: "",
+  },
+  declined: {
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.DECLINED,
+    bccr_trading_name: "Colour Co.",
+    directors_comments: "Lorem ipsum",
+    analysts_comments: "",
+  },
+  changes_required: {
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.CHANGES_REQUIRED,
+    bccr_trading_name: "Colour Co.",
+    directors_comments: "",
+    analysts_comments: "Lorem ipsum",
   },
 };
 

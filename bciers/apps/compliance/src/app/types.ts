@@ -89,6 +89,7 @@ export interface RequestIssuanceTrackStatusData {
   issuance_status: string;
   bccr_trading_name: string;
   directors_comments: string;
+  analysts_comments: string;
 }
 
 export interface PaymentSummary {

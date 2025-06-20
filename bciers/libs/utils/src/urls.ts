@@ -32,3 +32,5 @@ export const reportAnEventLink =
 
 export const bcCarbonRegistryLink =
   "https://carbonregistry.gov.bc.ca/bccarbonregistry";
+
+export const bceabLink = "https://www.bceab.ca/appeal-process/start-my-appeal/";
