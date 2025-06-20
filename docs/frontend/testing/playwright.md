@@ -59,9 +59,9 @@ In order to run authenticated end-to-end (E2E) tests without going through the l
 
 ### Step-by-Step: Create a Storage State File
 
-1. **Update auth config to match the storage state role**
+1. **Update auth.js config to set token.app_role as the storage state role**
 
-   In `bciers/apps/dashboard/auth/auth.config.ts`, locate the logic that maps a session to a role, and force set the role when using Playwright.
+   In `bciers/apps/dashboard/auth/auth.config.ts`, force set the token's app_role for use with Playwright.
 
 ```
     // 🔒 return encrypted nextauth JWT
@@ -69,13 +69,32 @@ In order to run authenticated end-to-end (E2E) tests without going through the l
     return token;
 ```
 
-🔐 This ensures when the session from name_of_role.json is loaded, your app treats that user as a name_of_role.
+🔐 This ensures when the session from name_of_role.json is loaded, and the app treats a logged in user as a name_of_role.
 
-2. **Start your local dev server**
+2. **Update auth.js config to set maxAge as far future expiry**
 
-3. **Open Playwright Codegen and Login Manually**
+   In `bciers/apps/dashboard/auth/index.ts`, force set the token expiration time for use with Playwright.
 
-   Run the following command in your terminal:
+```
+
+    maxAge: 60 * 60 * 24 * 365 * 100, // 100 years
+```
+
+3. **Start your local dev servers**
+
+   Run the following terminal commands:
+
+   ```sh
+   cd bc_obps &&  make run
+   ```
+
+   ```sh
+   cd bciers && yarn dev-all
+   ```
+
+4. **Open Playwright Codegen and Login Manually**
+
+   Run the following terminal command:
 
    ```bash
    cd bciers
@@ -86,7 +105,7 @@ In order to run authenticated end-to-end (E2E) tests without going through the l
    - Interact with the site as a **name_of_role** user
    - Complete the login flow manually.
 
-4. **Close the Browser Window**
+5. **Close the Browser Window**
 
    Once you're fully logged in and the app is loaded, close the Playwright browser window. The session (cookies, tokens) will be saved to a file named:
 
@@ -94,11 +113,31 @@ In order to run authenticated end-to-end (E2E) tests without going through the l
    name_of_role.json
    ```
 
-5. **Stringify and add to .env.local**
-   Create a STORAGE_STATE key to with JSON string contents of name_of_role.json to .env.local
+6. **Revert auth config update**
+
+   In `bciers/apps/dashboard/auth/auth.config.ts`, revert the logic update on the token app_role.
+   In `bciers/apps/dashboard/auth/index.ts`, revert the update on the maxAge.
+
+7. **Stringify and add to .env.local**
+
+   Create an E2E_NAME_OF_ROLE_STORAGE_STATE key to with JSON string contents of name_of_role.json to .env.local
    Ensure that all "expire" properties are set to -1.
 
-6. **Delete the name_of_role.json file**
+8. **Add as a GitHub Secret**
+
+   In the GitHub repository, navigate to `Settings → Secrets and variables → Actions → New repository secret`.Add a new secret:
+
+```
+  Name: E2E_NAME_OF_ROLE_STORAGE_STATE
+
+  Value: Paste the full stringified contents from .env.local
+```
+
+9. **Reference in GitHub Actions workflow**
+
+   In `in .github/workflows/test-nx-project-e2e.yaml`, add reference to `E2E_NAME_OF_ROLE_STORAGE_STATE: ${{ secrets.E2E_NAME_OF_ROLE_STORAGE_STATE}}`
+
+10. **Delete the name_of_role.json file**
 
 > 🛑 **Do not commit this file if it contains sensitive credentials or tokens**
 
