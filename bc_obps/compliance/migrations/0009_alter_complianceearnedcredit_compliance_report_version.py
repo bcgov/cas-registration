@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0006_elicensing_models'),
+        ('compliance', '0008_additonal_elicensing_line_item_fields'),
     ]
 
     operations = [
