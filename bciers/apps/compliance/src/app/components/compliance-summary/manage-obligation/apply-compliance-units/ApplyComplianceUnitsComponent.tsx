@@ -17,6 +17,8 @@ import {
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ApplyComplianceUnitsAlertNote } from "./ApplyComplianceUnitsAlertNote";
 import { IChangeEvent } from "@rjsf/core";
+import { actionHandler } from "@bciers/actions";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface ApplyComplianceUnitsComponentProps {
   complianceSummaryId: string;
@@ -33,6 +35,7 @@ export default function ApplyComplianceUnitsComponent({
   );
   const [errors, setErrors] = useState<string[] | undefined>();
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Keep track of the initial outstanding balance from the API
   const [initialOutstandingBalance, setInitialOutstandingBalance] =
     useState<number>(0);
@@ -106,10 +109,25 @@ export default function ApplyComplianceUnitsComponent({
     }
   };
 
-  const handleSubmit = (e: IChangeEvent<ApplyComplianceUnitsFormData>) => {
-    // TODO: Implement submit logic in ticket 161
-    console.log(e.formData);
-    setIsSubmitted(true);
+  const handleSubmit = async (
+    e: IChangeEvent<ApplyComplianceUnitsFormData>,
+  ) => {
+    setIsSubmitting(true);
+    const response = await actionHandler(
+      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceSummaryId}/compliance-units`,
+      "POST",
+      "",
+      {
+        body: JSON.stringify(e.formData),
+      },
+    );
+    setIsSubmitting(false);
+    if (!response || response.error) {
+      setErrors([response.error || "Failed to apply compliance units"]);
+    } else {
+      setIsSubmitted(true);
+      setErrors(undefined);
+    }
   };
 
   // Check if the selected units exceed or equal 50% of the initial outstanding balance
@@ -133,10 +151,9 @@ export default function ApplyComplianceUnitsComponent({
         ?.total_quantity_to_be_applied &&
       (formData as ApplyComplianceUnitsFormData)?.total_quantity_to_be_applied >
         0 &&
-      complianceLimitStatus !== "EXCEEDS" &&
-      (!errors || errors.length === 0)
+      complianceLimitStatus !== "EXCEEDS"
     );
-  }, [formData, errors, complianceLimitStatus]);
+  }, [formData, complianceLimitStatus]);
 
   return (
     <FormBase
@@ -166,25 +183,27 @@ export default function ApplyComplianceUnitsComponent({
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
       <div>
-        <FormAlerts errors={errors} />
-        {canSubmit && (
+        {canSubmit && !isSubmitted && (
           <div className="mt-8">
             <ApplyComplianceUnitsAlertNote />
           </div>
         )}
+        <FormAlerts errors={errors} />
         <ComplianceStepButtons
           backButtonText="Cancel"
-          continueButtonText="Apply"
           onBackClick={() =>
             router.push(
               `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
             )
           }
-          onContinueClick={isSubmitted ? undefined : () => {}}
-          continueButtonType="submit"
-          submitButtonDisabled={!canSubmit}
-          className="mt-4"
-        />
+          className="mt-8"
+        >
+          {!isSubmitted && (
+            <SubmitButton isSubmitting={isSubmitting} disabled={!canSubmit}>
+              Apply
+            </SubmitButton>
+          )}
+        </ComplianceStepButtons>
       </div>
     </FormBase>
   );
