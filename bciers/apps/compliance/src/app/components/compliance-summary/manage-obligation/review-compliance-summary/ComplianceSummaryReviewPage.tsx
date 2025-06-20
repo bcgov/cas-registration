@@ -18,19 +18,8 @@ export default async function ComplianceSummaryReviewPage({
     complianceUnits: {
       complianceSummaryId,
       gridData: {
-        rows: [
-          {
-            id: 1,
-            type: "-",
-            serialNumber: "-",
-            vintageYear: "-",
-            quantityApplied: "-",
-            equivalentEmissionReduced: "-",
-            equivalentValue: "-",
-            status: "-",
-          },
-        ],
-        row_count: 1,
+        rows: [],
+        row_count: 0,
       },
     },
     monetaryPayments: {
