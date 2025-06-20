@@ -14,6 +14,7 @@ class BCCRUnit:
     serial_number: Optional[str]
     vintage_year: Optional[int]
     quantity_available: Optional[str]
+    quantity_to_be_applied: int = 0  # Default to 0, will be passed to the frontend to populate the input field
 
 
 @dataclass
@@ -56,3 +57,20 @@ class PaymentDataWithFreshnessFlag:
 class RefreshWrapperReturn:
     data_is_fresh: bool
     invoice: ElicensingInvoice
+
+@dataclass
+class MixedUnit:
+    """Data model for a unit in the mixed unit list for BCCR transfer"""
+
+    account_id: str
+    serial_no: str
+    new_quantity: int
+    id: str
+
+
+@dataclass
+class TransferComplianceUnitsPayload:
+    """Data model for the BCCR transfer compliance units API payload"""
+
+    destination_account_id: str
+    mixedUnitList: List[MixedUnit]

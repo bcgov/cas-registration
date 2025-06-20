@@ -1,5 +1,7 @@
+from dataclasses import asdict
 from typing import Dict, List, Optional, Any
-from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData
+from common.exceptions import UserError
+from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
 from compliance.service.bc_carbon_registry.bc_carbon_registry_service import BCCarbonRegistryService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
@@ -88,3 +90,46 @@ class ApplyComplianceUnitsService:
             outstanding_balance="16000",
             bccr_units=cls._format_bccr_units_for_display(bccr_units.get("entities", [])),
         )
+
+    @classmethod
+    def _validate_quantity_limits(cls, units: List[Dict[str, Any]]) -> None:
+        """
+        Validates that quantity_to_be_applied doesn't exceed quantity_available for each unit.
+
+        Args:
+            units: List of unit dictionaries with quantity_available and quantity_to_be_applied fields.
+
+        Raises:
+            UserError: If any unit has quantity_to_be_applied greater than quantity_available.
+        """
+        for unit in units:
+            if unit.get("quantity_to_be_applied", 0) > unit.get("quantity_available", 0):
+                raise UserError(
+                    f"Quantity to be applied exceeds available quantity for unit {unit.get('serial_number', 'Unknown')}"
+                )
+
+    @classmethod
+    def apply_compliance_units(cls, account_id: str, payload: Dict[str, Any]) -> None:
+        """
+        Applies compliance units to a BCCR compliance account. (Transfers units from holding account to compliance account)
+
+        Args:
+            account_id (str): BCCR holding account ID.
+            payload (Dict[str, Any]): Data model for the Apply Compliance Units page data as dictionary.
+        """
+        cls._validate_quantity_limits(payload["bccr_units"])
+
+        transfer_compliance_units_payload = TransferComplianceUnitsPayload(
+            destination_account_id=payload["bccr_compliance_account_id"],
+            mixedUnitList=[
+                MixedUnit(
+                    account_id=account_id,
+                    serial_no=unit["serial_number"],
+                    new_quantity=unit["quantity_to_be_applied"],
+                    id=unit["id"],
+                )
+                for unit in payload["bccr_units"]
+                if unit.get("quantity_to_be_applied") and unit["quantity_to_be_applied"] > 0
+            ],
+        )
+        bccr_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
