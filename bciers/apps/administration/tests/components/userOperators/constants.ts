@@ -7,7 +7,7 @@ export const operatorJSON = {
   id: id,
   legal_name: operatorLegalName,
   trade_name: "Operator 1 Trade Name",
-  cra_business_number: 123456789,
+  cra_business_number: "123456789",
 };
 
 export const UserOperatorJSON = {

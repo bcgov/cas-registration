@@ -2,7 +2,7 @@ from typing import Optional, List
 from ninja import Schema, FilterSchema, Field, ModelSchema
 from uuid import UUID
 from registration.models import UserOperator
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
 from registration.models.partner_operator import PartnerOperator
 from registration.schema import (
     OperatorExternalDashboardUsersTileData,
@@ -50,7 +50,9 @@ class UserOperatorOut(ModelSchema):
 
     legal_name: str = Field(..., alias="operator.legal_name")
     trade_name: Optional[str] = Field("", alias="operator.trade_name")
-    cra_business_number: Optional[int] = Field(None, alias="operator.cra_business_number")
+    cra_business_number: Optional[str] = Field(
+        None, pattern=CRA_BUSINESS_NUMBER_REGEX, alias="operator.cra_business_number"
+    )
     bc_corporate_registry_number: Optional[str] = Field(
         None, pattern=BC_CORPORATE_REGISTRY_REGEX, alias="operator.bc_corporate_registry_number"
     )

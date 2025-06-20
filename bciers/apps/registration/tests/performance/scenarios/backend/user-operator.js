@@ -46,7 +46,7 @@ const createOperatorAndUserOperator = (newUserGuid) => {
     legal_name: `Test Operator Legal Name ${randomString(5)}`, // to avoid duplicate legal names
     trade_name: "Test Operator Trade Name",
     business_structure: "Sole Proprietorship",
-    cra_business_number: randomIntBetween(100000000, 999999999),
+    cra_business_number: `${randomIntBetween(100000000, 999999999)}`,
     bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
       1000000,
       9999999,
@@ -55,7 +55,7 @@ const createOperatorAndUserOperator = (newUserGuid) => {
       {
         partner_legal_name: "Partner Operator Legal Name",
         partner_trade_name: "Partner Operator Trade Name",
-        partner_cra_business_number: 123456789,
+        partner_cra_business_number: "123456789",
         partner_bc_corporate_registry_number: `${randomString(
           3,
         )}${randomIntBetween(1000000, 9999999)}`,
@@ -140,7 +140,7 @@ const updateCurrentUsersOperatorDetails = () => {
     legal_name: "Updated Test Operator Legal Name",
     trade_name: "Updated Test Operator Trade Name",
     business_structure: "Sole Proprietorship",
-    cra_business_number: randomIntBetween(100000000, 999999999),
+    cra_business_number: `${randomIntBetween(100000000, 999999999)}`,
     bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
       1000000,
       9999999,
@@ -149,7 +149,7 @@ const updateCurrentUsersOperatorDetails = () => {
       {
         po_legal_name: "Updated Parent Operator Legal Name",
         po_trade_name: "Updated Parent Operator Trade Name",
-        po_cra_business_number: 987654321,
+        po_cra_business_number: "987654321",
         po_bc_corporate_registry_number: `${randomString(3)}${randomIntBetween(
           1000000,
           9999999,
@@ -165,7 +165,7 @@ const updateCurrentUsersOperatorDetails = () => {
       {
         partner_legal_name: "Updated Partner Operator Legal Name",
         partner_trade_name: "Updated Partner Operator Trade Name",
-        partner_cra_business_number: 123456789,
+        partner_cra_business_number: "123456789",
         partner_bc_corporate_registry_number: `${randomString(
           3,
         )}${randomIntBetween(1000000, 9999999)}`,

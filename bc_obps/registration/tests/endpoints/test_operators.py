@@ -74,7 +74,7 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json().get('items')
         assert len(response_data) == 1
-        assert response_data[0].get('cra_business_number') == 118675309
+        assert response_data[0].get('cra_business_number') == '118675309'
 
         # Test with a cra_business_number filter that doesn't exist
         response = TestUtils.mock_get_with_auth_role(
@@ -93,5 +93,5 @@ class TestOperatorsEndpoint(CommonTestSetup):
         assert response.status_code == 200
         response_data = response.json().get('items')
         assert len(response_data) == 1
-        assert response_data[0].get('cra_business_number') == 118675309
+        assert response_data[0].get('cra_business_number') == '118675309'
         assert response_data[0].get('business_structure') == 'BC Corporation'

@@ -7,7 +7,7 @@
       "legal_name": "Parent Operator Legal Name",
       "trade_name": "Parent Operator Trade Name",
       "operator_index": 1,
-      "cra_business_number": 123456780,
+      "cra_business_number": "123456780",
       "bc_corporate_registry_number": "zzz1212121",
       "business_structure": "Sole Proprietorship",
       "physical_address": 3,

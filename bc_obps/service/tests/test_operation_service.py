@@ -197,7 +197,7 @@ class TestOperationService:
 
         random_operator = baker.make_recipe(
             'registration.tests.utils.operator',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             bc_corporate_registry_number='abc1234567',
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
@@ -470,7 +470,7 @@ class TestOperationService:
 
         random_operator = baker.make_recipe(
             'registration.tests.utils.operator',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             bc_corporate_registry_number='abc1234567',
         )
         operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
@@ -703,7 +703,7 @@ class TestOperationServiceV2CreateOperation:
             MultipleOperatorIn(
                 mo_legal_name='i am new',
                 mo_trade_name='new',
-                mo_cra_business_number=111111111,
+                mo_cra_business_number='111111111',
                 mo_business_structure='General Partnership',
                 mo_bc_corporate_registry_number='ghj1234567',
                 mo_attorney_street_address='Seahorses St',
@@ -714,7 +714,7 @@ class TestOperationServiceV2CreateOperation:
             MultipleOperatorIn(
                 mo_legal_name='i am new 2',
                 mo_trade_name='new 2',
-                mo_cra_business_number=111111111,
+                mo_cra_business_number='111111111',
                 mo_business_structure='General Partnership',
                 mo_attorney_street_address='Lion St',
                 mo_municipality='Zebra Town',
@@ -776,7 +776,7 @@ class TestOperationServiceV2UpdateOperation:
 
         random_operator = baker.make_recipe(
             'registration.tests.utils.operator',
-            cra_business_number=123456789,
+            cra_business_number='123456789',
             bc_corporate_registry_number='abc1234567',
         )
         # random operator's operation
@@ -922,7 +922,7 @@ class TestOperationServiceV2UpdateOperation:
             MultipleOperatorIn(
                 mo_legal_name='i am new',
                 mo_trade_name='new',
-                mo_cra_business_number=111111111,
+                mo_cra_business_number='111111111',
                 mo_business_structure='General Partnership',
                 mo_bc_corporate_registry_number='ghj1234567',
                 mo_attorney_street_address='Seahorses St',
@@ -933,7 +933,7 @@ class TestOperationServiceV2UpdateOperation:
             MultipleOperatorIn(
                 mo_legal_name='i am new 2',
                 mo_trade_name='new 2',
-                mo_cra_business_number=111111111,
+                mo_cra_business_number='111111111',
                 mo_business_structure='General Partnership',
                 mo_attorney_street_address='Lion St',
                 mo_municipality='Zebra Town',

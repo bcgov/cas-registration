@@ -5,7 +5,7 @@
     "fields": {
       "legal_name": "Registered Operator",
       "trade_name": "Registered Operator",
-      "cra_business_number": 123456789,
+      "cra_business_number": "123456789",
       "bc_corporate_registry_number": "abc1234567",
       "business_structure": "Sole Proprietorship",
       "physical_address": 1,
@@ -20,7 +20,7 @@
     "fields": {
       "legal_name": "Fresh Operator",
       "trade_name": "Fresh Operator",
-      "cra_business_number": 987654321,
+      "cra_business_number": "987654321",
       "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
       "physical_address": 2,

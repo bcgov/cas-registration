@@ -13,7 +13,7 @@ class PartnerOperatorIn(ModelSchema):
 
     legal_name: str = Field(..., alias="partner_legal_name")
     trade_name: Optional[str] = Field("", alias="partner_trade_name")
-    cra_business_number: int = Field(..., alias="partner_cra_business_number")
+    cra_business_number: str = Field(..., alias="partner_cra_business_number")
     bc_corporate_registry_number: str = Field(
         ..., alias="partner_bc_corporate_registry_number", pattern=BC_CORPORATE_REGISTRY_REGEX
     )
@@ -37,7 +37,7 @@ class PartnerOperatorOut(ModelSchema):
 
     partner_legal_name: str = Field(..., alias="legal_name")
     partner_trade_name: Optional[str] = Field("", alias="trade_name")
-    partner_cra_business_number: int = Field(..., alias="cra_business_number")
+    partner_cra_business_number: str = Field(..., alias="cra_business_number")
     partner_bc_corporate_registry_number: str = Field(..., alias="bc_corporate_registry_number")
     partner_business_structure: str = Field(..., alias="business_structure.name")
 
