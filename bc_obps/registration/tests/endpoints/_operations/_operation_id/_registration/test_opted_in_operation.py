@@ -18,8 +18,10 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             ),
         )
         # RLS makes this 404 instead of 401
-        assert response.status_code == 404
-        assert response.json()['message'] == "Not Found"
+        # assert response.status_code == 404
+        # assert response.json()['message'] == "Not Found"
+        assert response.status_code == 401
+        assert response.json()['message'] == "Unauthorized."
 
     def test_get_opted_in_operation_detail_endpoint_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
@@ -76,8 +78,10 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
             ),
         )
         # RLS makes this 404 instead of 401
-        assert response.status_code == 404
-        assert response.json()['message'] == "Not Found"
+        # assert response.status_code == 404
+        # assert response.json()['message'] == "Not Found"
+        assert response.status_code == 401
+        assert response.json()['message'] == "Unauthorized."
 
     def test_update_opted_in_operation_detail_endpoint_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)

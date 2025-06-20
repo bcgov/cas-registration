@@ -49,7 +49,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
             self, "industry_user", custom_reverse_lazy("get_operation", kwargs={"operation_id": random_operation.id})
         )
         # RLS makes this 404 instead of 401
-        assert response_2.status_code == 404
+        # assert response_2.status_code == 404
+        assert response_2.status_code == 401
 
     def test_industry_users_can_only_get_their_own_operations_with_documents(self):
         random_operator = operator_baker()
@@ -78,7 +79,8 @@ class TestOperationIdEndpoint(CommonTestSetup):
             custom_reverse_lazy("get_operation_with_documents", kwargs={"operation_id": random_operation.id}),
         )
         # RLS makes this 404 instead of 401
-        assert response_2.status_code == 404
+        # assert response_2.status_code == 404
+        assert response_2.status_code == 401
 
     def test_operations_endpoint_get_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)

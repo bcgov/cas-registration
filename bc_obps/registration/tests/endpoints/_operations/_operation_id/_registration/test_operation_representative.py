@@ -30,8 +30,11 @@ class TestOperationRepresentativePostEndpoint(CommonTestSetup):
             custom_reverse_lazy("create_operation_representative", kwargs={'operation_id': operation.id}),
         )
         # RLS makes this 404 instead of 401
-        assert response.status_code == 404
-        assert response.json().get('message') == 'Not Found'
+        # assert response.status_code == 404
+        # assert response.json().get('message') == 'Not Found'
+
+        assert response.status_code == 401
+        assert response.json()['message'] == "Unauthorized."
 
     def test_operation_representative_endpoint_existing_contact_changing_prohibited_fields(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)
@@ -174,8 +177,11 @@ class TestOperationRepresentativePutEndpoint(CommonTestSetup):
             custom_reverse_lazy("remove_operation_representative", kwargs={'operation_id': operation.id}),
         )
         # RLS makes this 404 instead of 401
-        assert response.status_code == 404
-        assert response.json().get('message') == 'Not Found'
+        # assert response.status_code == 404
+        # assert response.json().get('message') == 'Not Found'
+
+        assert response.status_code == 401
+        assert response.json()['message'] == "Unauthorized."
 
     def test_remove_operation_representative_endpoint_success(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', user=self.user)

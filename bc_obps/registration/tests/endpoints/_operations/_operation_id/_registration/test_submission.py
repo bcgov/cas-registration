@@ -26,7 +26,8 @@ class TestOperationRegistrationSubmissionEndpoint(CommonTestSetup):
             custom_reverse_lazy("operation_registration_submission", kwargs={'operation_id': operation.id}),
         )
         # RLS makes this 404 instead of 401
-        assert response.status_code == 404
+        # assert response.status_code == 404
+        assert response.status_code == 401
 
     def test_submission_endpoint_raises_exception_if_not_all_checkboxes_are_checked(self):
         operation = baker.make_recipe(

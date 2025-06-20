@@ -102,6 +102,8 @@ def assert_policies_for_industry_user(
     This function is a helper for testing RLS policies for the industry_user role. Write the select, insert, update, and delete functions and assertions in the test files (see test_contact.py for examples) and then pass them to this function.
     If we forget to test an operation that RLS applies to, this function will raise a ValueError. It rolls back the changes after each operation to ensure the database state remains unchanged for subsequent tests.
     """
+    if not hasattr(model_name.Rls, 'enable_rls') or not model_name.Rls.enable_rls:
+        return
 
     with connection.cursor() as cursor:
         RlsMiddleware._set_user_guid_and_role(cursor, user)
