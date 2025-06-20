@@ -16,13 +16,23 @@ class ElicensingLineItem(TimeStampedModel):
 
     object_id = models.IntegerField(db_comment="The objectId of the line item from elicensing")
 
-    guid = models.CharField(db_comment="The guid of the line item from elicensing")
+    guid = models.UUIDField(db_comment="The guid of the line item from elicensing")
 
     elicensing_invoice = models.ForeignKey(
         ElicensingInvoice,
         on_delete=models.CASCADE,
         db_comment="Foreign key to the OBPS elicensing_invoice table.",
         related_name="elicensing_line_items",
+    )
+
+    fee_date = models.DateTimeField(db_comment="The date of the fee. feeDueDate in elicensing")
+
+    description = models.CharField(db_comment="Description of the line item (fee).", blank=True, null=True)
+
+    base_amount = models.DecimalField(
+        decimal_places=2,
+        max_digits=20,
+        db_comment="The amount of this line item. baseAmount in elicensing",
     )
 
     line_item_type = models.CharField(

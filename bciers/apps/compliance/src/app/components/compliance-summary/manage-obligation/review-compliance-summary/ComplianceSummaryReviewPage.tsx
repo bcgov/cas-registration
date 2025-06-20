@@ -4,6 +4,7 @@ import {
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
+// import { fetchComplianceSummaryReviewPageData } from "./fetchComplianceSummaryReviewPageData";
 interface Props {
   compliance_summary_id: string;
 }
@@ -11,7 +12,7 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  // TODO: Replace with actual data fetching logic post-refactoring
+  // TODO: Replace with actual data fetching logic post-refactoring #188
   // const { complianceSummary, paymentsData } = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   const complianceSummary = {
     complianceUnits: {

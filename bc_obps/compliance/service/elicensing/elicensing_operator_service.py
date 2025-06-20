@@ -1,17 +1,17 @@
 import logging
 import uuid
 from compliance.service.elicensing.elicensing_api_client import ClientCreationRequest, ELicensingAPIClient
-from compliance.service.elicensing.elicensing_link_service import ELicensingLinkService
 from django.db import transaction
 from registration.models.operator import Operator
-from compliance.models.elicensing_link import ELicensingLink
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
+from django.core.exceptions import MultipleObjectsReturned
 
 logger = logging.getLogger(__name__)
 
 elicensing_api_client = ELicensingAPIClient()
 
 
-class OperatorELicensingService:
+class ElicensingOperatorService:
     """
     Service for managing operator-related eLicensing operations.
     This service handles the mapping between operators and eLicensing clients,
@@ -86,46 +86,50 @@ class OperatorELicensingService:
 
     @classmethod
     @transaction.atomic
-    def sync_client_with_elicensing(cls, operator_id: uuid.UUID) -> ELicensingLink:
+    def sync_client_with_elicensing(cls, operator_id: uuid.UUID) -> ElicensingClientOperator:
         """
         Syncs an operator with eLicensing by creating a client.
-        If a client already exists, returns the existing link.
+        If a client already exists, returns the existing record.
 
         Args:
             operator_id: The ID of the operator to sync
 
         Returns:
-            The ELicensingLink object for the client
+            The ElicensingClientOperator record for the client
 
         Raises:
             Operator.DoesNotExist: If the operator doesn't exist
             requests.RequestException: If the API request fails
+            MultipleObjectsReturned: If there are multiple records found to exist in the ElicensingClientOperator table
             Exception: For any other unexpected errors
         """
         operator = Operator.objects.get(id=operator_id)
 
         # Check if a client already exists for this operator
-        existing_link = ELicensingLinkService.get_link_for_model(
-            Operator, operator_id, elicensing_object_kind=ELicensingLink.ObjectKind.CLIENT
-        )
+        # existing_record = ElicensingClientOperator.managed_objects.get_one_or_none(operator_id=operator_id)
+        try:
+            existing_record = ElicensingClientOperator.objects.get(operator_id=operator_id)
+        except (ElicensingClientOperator.DoesNotExist):
+            existing_record = None
+        except (MultipleObjectsReturned):
+            raise MultipleObjectsReturned
 
-        if existing_link and existing_link.elicensing_object_id is not None:
+        if existing_record and existing_record.client_object_id is not None:
             logger.info(
-                f"Operator {operator_id} already has eLicensing client with ID {existing_link.elicensing_object_id}"
+                f"Operator {operator_id} already has eLicensing client with ID {existing_record.client_object_id}"
             )
-            return existing_link
+            return existing_record
 
         client_data = cls._map_operator_to_client_data(operator)
 
         response = elicensing_api_client.create_client(client_data)
 
         # Create link with the client ID and GUID from the client data
-        client_link = ELicensingLinkService.create_link(
-            operator,
-            response.clientObjectId,
-            ELicensingLink.ObjectKind.CLIENT,
-            elicensing_guid=uuid.UUID(client_data.clientGUID),
+        client_record = ElicensingClientOperator.objects.create(
+            client_object_id=response.clientObjectId,
+            client_guid=uuid.UUID(client_data.clientGUID),
+            operator=operator,
         )
 
         logger.info(f"Successfully synced operator {operator_id} with eLicensing as client {response.clientObjectId}")
-        return client_link
+        return client_record

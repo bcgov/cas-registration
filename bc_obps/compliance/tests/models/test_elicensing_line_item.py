@@ -16,6 +16,9 @@ class ElicensingLineItemTest(BaseTestCase):
             ("object_id", "object id", None, None),
             ("guid", "guid", None, None),
             ("line_item_type", "line item type", None, None),
+            ("fee_date", "fee date", None, None),
+            ("description", "description", None, None),
+            ("base_amount", "base amount", None, None),
             ("elicensing_payments", "elicensing payment", None, None),
             ("elicensing_adjustments", "elicensing adjustment", None, None),
         ]
