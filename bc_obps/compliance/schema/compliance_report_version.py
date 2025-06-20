@@ -5,17 +5,20 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from registration.models import Operation
 
 # Constants for field aliases
+OPERATOR_NAME_ALIAS = "compliance_report.report.operator.legal_name"
 OPERATION_NAME_ALIAS = "compliance_report.report.operation.name"
 REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.end_date.year"
 OBLIGATION_ID_ALIAS = "obligation.obligation_id"
 
 
 class ComplianceReportVersionListOut(ModelSchema):
+    operator_name: str = Field(..., alias=OPERATOR_NAME_ALIAS)
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance: Optional[Decimal] = None
     excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
+    issuance_status: Optional[str] = Field(None, alias="compliance_earned_credits.issuance_status")
 
     class Meta:
         model = ComplianceReportVersion

@@ -1,8 +1,8 @@
 import { GridColDef } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 
-const complianceSummaryColumns = (): GridColDef[] => {
-  return [
+const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
+  const columns: GridColDef[] = [
     {
       field: "reporting_year",
       headerName: "Compliance Period",
@@ -43,10 +43,21 @@ const complianceSummaryColumns = (): GridColDef[] => {
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
-      renderCell: ActionCell,
+      width: 150,
+      renderCell: (params) => {
+        return <ActionCell {...params} isAllowedCas={isAllowedCas} />;
+      },
     },
   ];
+  if (isAllowedCas) {
+    columns.splice(1, 0, {
+      field: "operator_name",
+      headerName: "Operator Name",
+      width: 200,
+    });
+  }
+
+  return columns;
 };
 
 export default complianceSummaryColumns;

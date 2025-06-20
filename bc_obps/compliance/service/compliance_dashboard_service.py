@@ -34,6 +34,7 @@ class ComplianceDashboardService:
         ).select_related(
             'compliance_report__report__operation',
             'compliance_report__compliance_period',
+            'compliance_earned_credits',
         )
 
         # Calculate and attach the outstanding balance to each compliance_report_version

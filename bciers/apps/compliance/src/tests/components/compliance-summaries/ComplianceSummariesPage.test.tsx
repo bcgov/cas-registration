@@ -11,6 +11,9 @@ vi.mock(
     };
   },
 );
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  getSessionRole: vi.fn(() => "cas_admin"),
+}));
 
 // Spy on fetchComplianceSummariesPageData
 const fetchSpy = vi.spyOn(fetchModule, "fetchComplianceSummariesPageData");

@@ -2,13 +2,23 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { ComplianceSummary } from "@/compliance/src/app/types";
 
-const ActionCell = (params: GridRenderCellParams) => {
-  let cellText = "View Details";
+interface ActionCellProps extends GridRenderCellParams {
+  isAllowedCas?: boolean;
+}
 
+const ActionCell = (params: ActionCellProps) => {
+  let cellText = "View Details";
   if (params.row.obligation_id) {
     cellText = "Manage Obligation";
   } else if (params.row.status === "Earned credits") {
-    cellText = "Request Issuance of Credits";
+    if (
+      params.isAllowedCas &&
+      params.row.issuance_status !== "Credits Not Issued in BCCR"
+    ) {
+      cellText = "Review Credits Issuance Request";
+    } else {
+      cellText = "Request Issuance of Credits";
+    }
   }
 
   const cell = ActionCellFactory({
@@ -18,7 +28,14 @@ const ActionCell = (params: GridRenderCellParams) => {
       if (p.row.obligation_id) {
         basePath += "/manage-obligation-review-summary";
       } else if (p.row.status === "Earned credits") {
-        basePath += "/request-issuance-review-summary";
+        if (
+          params.isAllowedCas &&
+          params.row.issuance_status !== "Credits Not Issued in BCCR"
+        ) {
+          basePath += "/request-issuance-of-earned-credits";
+        } else {
+          basePath += "/request-issuance-review-summary";
+        }
       }
       return basePath;
     },
