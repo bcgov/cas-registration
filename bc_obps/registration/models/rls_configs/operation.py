@@ -9,7 +9,7 @@ from rls.utils.helpers import (
 
 
 class Rls:
-    enable_rls = True
+    # enable_rls = True
     schema = "erc"
     table = RegistrationTableNames.OPERATION
     using_statement = """

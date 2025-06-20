@@ -5,7 +5,7 @@ from rls.utils.helpers import generate_report_policy_mapping_from_grants, genera
 
 
 class Rls:
-    enable_rls = True
+    # enable_rls = True
     schema = 'erc'
     table = ReportingTableNames.REPORT_ATTACHMENT
     role_grants_mapping = {
