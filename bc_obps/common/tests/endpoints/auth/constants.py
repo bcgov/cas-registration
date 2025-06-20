@@ -350,6 +350,14 @@ ENDPOINTS = {
                 "compliance_report_version_id": MOCK_INT,
             },
         },
+        {
+            "method": "post",
+            "endpoint_name": "apply_compliance_units",
+            "kwargs": {
+                "account_id": MOCK_UUID,
+                "compliance_report_version_id": MOCK_INT,
+            },
+        },
     ],
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},
