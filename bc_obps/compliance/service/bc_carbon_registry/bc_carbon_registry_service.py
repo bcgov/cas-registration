@@ -91,7 +91,8 @@ class BCCarbonRegistryService:
         )  # passing empty dict to avoid KeyError
         entity_id = new_compliance_account.get("id")
         return BCCRComplianceAccountResponseDetails(
-            master_account_name=new_compliance_account.get("parent_name"), entity_id=str(entity_id) if entity_id else None
+            master_account_name=new_compliance_account.get("parent_name"),
+            entity_id=str(entity_id) if entity_id else None,
         )
 
     def get_or_create_compliance_account(

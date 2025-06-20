@@ -58,6 +58,7 @@ class RefreshWrapperReturn:
     data_is_fresh: bool
     invoice: ElicensingInvoice
 
+
 @dataclass
 class MixedUnit:
     """Data model for a unit in the mixed unit list for BCCR transfer"""
