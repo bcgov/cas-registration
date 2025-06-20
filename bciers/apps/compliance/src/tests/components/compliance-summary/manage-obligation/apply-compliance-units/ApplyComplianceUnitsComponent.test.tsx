@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 import { getBccrComplianceUnitsAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
+import { actionHandler } from "@bciers/actions";
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -17,6 +18,10 @@ vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
   getBccrComplianceUnitsAccountDetails: vi.fn(),
 }));
 
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
+}));
+
 const TEST_COMPLIANCE_SUMMARY_ID = "123";
 const VALID_ACCOUNT_ID = "123456789012345";
 const MOCK_TRADING_NAME = "Test Company";
@@ -29,7 +34,7 @@ const MOCK_UNITS = [
     type: "Earned Credits",
     serial_number: "EC123",
     vintage_year: 2024,
-    quantity_available: "1000",
+    quantity_available: 1000,
     quantity_to_be_applied: 0,
   },
 ];
@@ -204,7 +209,11 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
-  it("shows ApplyComplianceUnitsSuccessAlertNote when form is submitted", async () => {
+  it("shows ApplyComplianceUnitsSuccessAlertNote and hides Apply button when form is submitted", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      success: true,
+    });
+
     await setupValidAccount();
 
     const quantityInput = screen.getByLabelText("quantity_to_be_applied");
@@ -214,11 +223,14 @@ describe("ApplyComplianceUnitsComponent", () => {
     expect(applyButton).not.toBeDisabled();
     fireEvent.click(applyButton);
 
-    expect(
-      screen.getByText(
-        /the compliance unit\(s\) have been applied towards the compliance obligation successfully\./i,
-      ),
-    ).toBeVisible();
+    await waitFor(() => {
+      expect(applyButton).not.toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /the compliance unit\(s\) have been applied towards the compliance obligation successfully\./i,
+        ),
+      ).toBeVisible();
+    });
   });
 
   it("disables the apply button when selected units exceed 50% of the initial outstanding balance", async () => {
@@ -239,6 +251,128 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
+  it("enables the apply button when selected units equal exactly 50% of the initial outstanding balance", async () => {
+    await setupValidAccount();
+
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    // Set quantity to 160 to equal exactly 50% of the initial outstanding balance (16000 * 0.5 = 8000)
+    // With charge rate of 50, 160 units = 8000 which equals the limit
+    fireEvent.change(quantityInput, { target: { value: "160" } });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Apply" })).not.toBeDisabled();
+    });
+  });
+
+  it("enables the apply button when selected units are below 50% of the initial outstanding balance", async () => {
+    await setupValidAccount();
+
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    // Set quantity to 100 to be below 50% of the initial outstanding balance (16000 * 0.5 = 8000)
+    // With charge rate of 50, 100 units = 5000 which is below the limit
+    fireEvent.change(quantityInput, { target: { value: "100" } });
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Apply" })).not.toBeDisabled();
+    });
+  });
+
+  it("shows loading state when submitting form", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
+    );
+
+    await setupValidAccount();
+
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    fireEvent.change(quantityInput, { target: { value: "75" } });
+
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    fireEvent.click(applyButton);
+
+    const spinner = screen.getByTestId("spinner");
+    expect(spinner).toBeVisible();
+    expect(applyButton).toBeDisabled();
+  });
+
+  it("handles submission error correctly", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Failed to apply compliance units",
+    });
+
+    await setupValidAccount();
+
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    fireEvent.change(quantityInput, { target: { value: "75" } });
+
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    fireEvent.click(applyButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Failed to apply compliance units"),
+      ).toBeVisible();
+    });
+  });
+
+  it("does not show errors when user clears the account ID", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Failed to apply compliance units",
+    });
+    await setupValidAccount();
+
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: "" } });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Failed to apply compliance units"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("does not show existing error when form is submitted", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Failed to apply compliance units",
+    });
+    await setupValidAccount();
+
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    fireEvent.change(quantityInput, { target: { value: "75" } });
+
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    fireEvent.click(applyButton);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Failed to apply compliance units"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("calls actionHandler with correct parameters when submitting", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({});
+
+    await setupValidAccount();
+
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    fireEvent.change(quantityInput, { target: { value: "75" } });
+
+    const applyButton = screen.getByRole("button", { name: "Apply" });
+    fireEvent.click(applyButton);
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_SUMMARY_ID}/compliance-units`,
+        "POST",
+        "",
+        {
+          body: expect.stringContaining('"quantity_to_be_applied":75'),
+        },
+      );
+    });
+  });
+
   it("navigates to correct URL when cancel button is clicked", async () => {
     await setupValidAccount();
 
@@ -249,6 +383,7 @@ describe("ApplyComplianceUnitsComponent", () => {
       `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/manage-obligation-review-summary`,
     );
   });
+
   it("shows error message when validation fails", async () => {
     (
       getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
@@ -264,6 +399,20 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Unknown error")).toBeVisible();
+    });
+  });
+
+  it("maintains initial outstanding balance when account is validated", async () => {
+    await setupValidAccount();
+
+    // The initial outstanding balance should be set from the API response
+    // and used for calculations even when form data changes
+    const quantityInput = screen.getByLabelText("quantity_to_be_applied");
+    fireEvent.change(quantityInput, { target: { value: "100" } });
+
+    await waitFor(() => {
+      // Should calculate outstanding balance as: 16000 - (100 * 50) = 11000
+      expect(screen.getByText("11000")).toBeVisible();
     });
   });
 });

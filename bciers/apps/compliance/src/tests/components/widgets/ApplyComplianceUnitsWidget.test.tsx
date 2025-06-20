@@ -4,6 +4,7 @@ import ApplyComplianceUnitsWidget from "@/compliance/src/app/widgets/ApplyCompli
 import { BccrUnit } from "@/compliance/src/app/types";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 import { fireEvent } from "@testing-library/react";
+import { ComplianceLimitStatus } from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
 
 useSearchParams.mockReturnValue({
   get: vi.fn(),
@@ -38,7 +39,8 @@ const defaultProps = {
   value: mockUnits,
   formContext: {
     chargeRate: 40,
-    complianceLimitStatus: "BELOW" as const,
+    complianceLimitStatus: "BELOW" as ComplianceLimitStatus,
+    isSubmitted: false,
   },
 } as unknown as WidgetProps;
 
@@ -95,12 +97,13 @@ describe("ApplyComplianceUnitsWidget", () => {
     expect(secondRow.getByText("$0.00")).toBeVisible();
   });
 
-  it("shows compliance limit message when status is EXCEEDS", () => {
+  it("shows compliance limit message when status is EXCEEDS and not submitted", () => {
     const props = {
       ...defaultProps,
       formContext: {
         ...defaultProps.formContext,
-        complianceLimitStatus: "EXCEEDS" as const,
+        complianceLimitStatus: "EXCEEDS" as ComplianceLimitStatus,
+        isSubmitted: false,
       },
     };
 
@@ -113,12 +116,13 @@ describe("ApplyComplianceUnitsWidget", () => {
     ).toBeVisible();
   });
 
-  it("shows compliance limit message when status is EQUALS", () => {
+  it("shows compliance limit message when status is EQUALS and not submitted", () => {
     const props = {
       ...defaultProps,
       formContext: {
         ...defaultProps.formContext,
-        complianceLimitStatus: "EQUALS" as const,
+        complianceLimitStatus: "EQUALS" as ComplianceLimitStatus,
+        isSubmitted: false,
       },
     };
 
@@ -131,8 +135,41 @@ describe("ApplyComplianceUnitsWidget", () => {
     ).toBeVisible();
   });
 
+  it("does not show compliance limit message when status is EQUALS but form is submitted", () => {
+    const props = {
+      ...defaultProps,
+      formContext: {
+        ...defaultProps.formContext,
+        complianceLimitStatus: "EQUALS" as ComplianceLimitStatus,
+        isSubmitted: true,
+      },
+    };
+
+    render(<ApplyComplianceUnitsWidget {...props} />);
+
+    expect(
+      screen.queryByText(
+        /the compliance units \(earned credits, offset units\) you selected below have reached 50% of the compliance obligation\. the remaining balance must be met with monetary payment\(s\)\./i,
+      ),
+    ).not.toBeInTheDocument();
+  });
+
   it("does not show compliance limit message when status is BELOW", () => {
     render(<ApplyComplianceUnitsWidget {...defaultProps} />);
+
+    expect(screen.queryByText(/compliance obligation/)).not.toBeInTheDocument();
+  });
+
+  it("does not show compliance limit message when status is BELOW and form is submitted", () => {
+    const props = {
+      ...defaultProps,
+      formContext: {
+        ...defaultProps.formContext,
+        isSubmitted: true,
+      },
+    };
+
+    render(<ApplyComplianceUnitsWidget {...props} />);
 
     expect(screen.queryByText(/compliance obligation/)).not.toBeInTheDocument();
   });

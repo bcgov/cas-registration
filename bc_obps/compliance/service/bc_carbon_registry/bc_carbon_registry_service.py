@@ -89,8 +89,10 @@ class BCCarbonRegistryService:
         new_compliance_account = new_compliance_account_response_dict.get(
             "entity", {}
         )  # passing empty dict to avoid KeyError
+        entity_id = new_compliance_account.get("id")
         return BCCRComplianceAccountResponseDetails(
-            master_account_name=new_compliance_account.get("parent_name"), entity_id=new_compliance_account.get("id")
+            master_account_name=new_compliance_account.get("parent_name"),
+            entity_id=str(entity_id) if entity_id else None,
         )
 
     def get_or_create_compliance_account(
@@ -110,9 +112,10 @@ class BCCarbonRegistryService:
         existing_compliance_account = self._get_first_entity(compliance_account)
 
         if existing_compliance_account:
+            entity_id = existing_compliance_account.get("entityId")
             return BCCRComplianceAccountResponseDetails(
                 master_account_name=existing_compliance_account.get("masterAccountName"),
-                entity_id=existing_compliance_account.get("entityId"),
+                entity_id=str(entity_id) if entity_id else None,
             )
 
         return self.create_compliance_account(
