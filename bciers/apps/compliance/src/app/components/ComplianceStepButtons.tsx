@@ -65,7 +65,7 @@ export const ComplianceStepButtons: React.FC<ComplianceStepButtonsProps> = ({
       <div className="flex gap-2">
         {middleButtonText && onMiddleButtonClick && middleButtonActive && (
           <Button
-            variant="outlined"
+            variant={middleButtonDisabled ? "contained" : "outlined"}
             onClick={onMiddleButtonClick}
             disabled={middleButtonDisabled}
             className="py-2.5 min-w-[120px] border-bc-blue text-bc-links hover:border-bc-primary-blue disabled:border-bc-grey disabled:text-bc-grey-bg"

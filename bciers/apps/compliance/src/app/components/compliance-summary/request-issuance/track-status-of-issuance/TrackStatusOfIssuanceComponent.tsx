@@ -23,13 +23,7 @@ export default function TrackStatusOfIssuanceComponent({
     <FormBase
       schema={trackStatusOfIssuanceSchema}
       uiSchema={trackStatusOfIssuanceUiSchema}
-      formData={{
-        ...data,
-        // Copy issuance_status to status_note field to drive the StatusNoteWidget
-        // which conditionally renders IssuanceStatusAwaitingNote or IssuanceStatusApprovedNote
-        // based on the status value
-        status_note: data.issuance_status,
-      }}
+      formData={data}
       className="w-full"
     >
       <ComplianceStepButtons
