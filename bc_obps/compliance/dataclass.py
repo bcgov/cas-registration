@@ -9,7 +9,7 @@ from compliance.models import ElicensingPayment, ElicensingInvoice
 class BCCRUnit:
     """Data model for BC Carbon Registry Unit information"""
 
-    id: Optional[int]
+    id: Optional[str]
     type: Optional[str]
     serial_number: Optional[str]
     vintage_year: Optional[int]

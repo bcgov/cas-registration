@@ -42,7 +42,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             outstanding_balance="16000",
             bccr_units=[
                 BCCRUnit(
-                    id=1,
+                    id="1",
                     type="Earned Credits",
                     serial_number="BCE-2023-0001",
                     vintage_year=2023,
@@ -58,7 +58,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response.status_code == 200
         response_data = response.json()
         assert response_data["bccr_trading_name"] == "Test Company"
-        assert response_data["bccr_compliance_account_id"] == int(VALID_ACCOUNT_ID)
+        assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
         assert response_data["charge_rate"] == "40.00"
         assert response_data["outstanding_balance"] == "16000"
         assert len(response_data["bccr_units"]) == 1
@@ -124,7 +124,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response.status_code == 200
         response_data = response.json()
         assert response_data["bccr_trading_name"] == "Test Company"
-        assert response_data["bccr_compliance_account_id"] == int(VALID_ACCOUNT_ID)
+        assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
         assert response_data["charge_rate"] == "40.00"
         assert response_data["outstanding_balance"] == "16000"
         assert response_data["bccr_units"] == []
