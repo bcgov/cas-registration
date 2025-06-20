@@ -49,6 +49,9 @@ jobs:
     uses: ./.github/workflows/build-registration.yaml
   build-reporting:
     uses: ./.github/workflows/build-reporting.yaml
+  check-immutable-migrations:
+    needs: [build-backend]
+    uses: ./.github/workflows/check-immutable-migrations.yaml
   test-code:
     needs: [check-nx-affected]
     uses: ./.github/workflows/test-code.yaml
