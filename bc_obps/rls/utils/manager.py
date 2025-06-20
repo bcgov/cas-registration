@@ -93,24 +93,39 @@ class RlsManager:
                 if hasattr(rls, 'm2m_rls_list'):
                     for m2m_rls in rls.m2m_rls_list:
                         cls.apply_m2m_rls(cursor, m2m_rls)
+                if hasattr(rls, 'enable_rls') and rls.enable_rls and hasattr(rls, 'policies'):
+                    cursor.execute(f'alter table {rls.schema}.{rls.table.value} enable row level security')
+                    for policy in rls.policies:
+                        policy.apply_policy(cursor)
 
-            # TODO: Implement the following part when the RlsPolicy class is implemented
-            # if rls.enable_rls:
-            #     cursor.execute('alter table %s.%s enable row level security', [rls.schema, rls.table])
-            #     for policy in rls.policies:
-            #         policy.apply_policy(cursor)
+    @classmethod
+    def drop_policies(cls) -> None:
+        apps_to_apply_rls = settings.RLS_GRANT_APPS
+        for app_name in apps_to_apply_rls:
+            for model_name in apps.all_models[app_name]:
+                cls.drop_policies_for_model(app_name, model_name)
+
+    @classmethod
+    def drop_policies_for_model(cls, app_name: str, model_name: str) -> None:
+        model = apps.all_models[app_name][model_name]
+        if hasattr(model, 'Rls'):
+            rls = model.Rls
+            with connection.cursor() as cursor:
+                if hasattr(rls, 'policies'):
+                    for policy in rls.policies:
+                        policy.drop_policy(cursor)
 
     @classmethod
     def apply_m2m_rls(cls, cursor: CursorWrapper, m2m_rls: M2mRls) -> None:
         for grant in m2m_rls.grants:
             grant.apply_grant(cursor)
-        # TODO: Implement the following part when the RlsPolicy class is implemented
-        # if m2m.enable_rls:
-        #     cursor.execute('alter table %s.%s enable row level security', [m2m.schema, m2m.table])
-        #     for policy in m2m.policies:
-        #         policy.apply_policy(cursor)
+        if m2m_rls.enable_rls:
+            cursor.execute(f'alter table {m2m_rls.schema}.{m2m_rls.table} enable row level security')
+            for policy in m2m_rls.policies:
+                policy.apply_policy(cursor)
 
     @classmethod
     def re_apply_rls(cls) -> None:
+        cls.drop_policies()
         cls.reset_privileges_for_roles()
         cls.apply_rls()

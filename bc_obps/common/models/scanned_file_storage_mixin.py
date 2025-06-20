@@ -69,4 +69,4 @@ class ScannedFileStorageMixin(models.Model):
         if self.get_file_field():
             default_storage.delete(self.get_file_field().name)
 
-        super().delete(*args, **kwargs)
+        return super().delete(*args, **kwargs)

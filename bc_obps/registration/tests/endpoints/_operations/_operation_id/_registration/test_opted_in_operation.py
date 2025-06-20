@@ -17,6 +17,9 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "operation_registration_get_opted_in_operation_detail", kwargs={'operation_id': operation.id}
             ),
         )
+        # RLS makes this 404 instead of 401
+        # assert response.status_code == 404
+        # assert response.json()['message'] == "Not Found"
         assert response.status_code == 401
         assert response.json()['message'] == "Unauthorized."
 
@@ -74,6 +77,9 @@ class TestOperationRegistrationOptedInOperationEndpoints(CommonTestSetup):
                 "operation_registration_update_opted_in_operation_detail", kwargs={'operation_id': operation.id}
             ),
         )
+        # RLS makes this 404 instead of 401
+        # assert response.status_code == 404
+        # assert response.json()['message'] == "Not Found"
         assert response.status_code == 401
         assert response.json()['message'] == "Unauthorized."
 

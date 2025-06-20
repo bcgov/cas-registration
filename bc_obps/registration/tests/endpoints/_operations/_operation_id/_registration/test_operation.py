@@ -33,6 +33,8 @@ class TestPutOperationRegistrationInformationEndpoint(CommonTestSetup):
             json.dumps(self.mock_payload),
             custom_reverse_lazy("register_edit_operation_information", kwargs={'operation_id': operation.id}),
         )
+        # RLS makes this 404 instead of 401
+        # assert response.status_code == 404
         assert response.status_code == 401
 
     def test_register_edit_operation_information_endpoint_success(self):
@@ -81,6 +83,8 @@ class TestGetOperationRegistrationInformationEndpoint(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy("register_get_operation_information", kwargs={'operation_id': operation.id}),
         )
+        # RLS makes this 404 instead of 401
+        # assert response.status_code == 404
         assert response.status_code == 401
 
     def test_register_get_operation_information_endpoint_success(self):
