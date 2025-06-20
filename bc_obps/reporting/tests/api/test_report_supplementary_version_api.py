@@ -68,7 +68,6 @@ class TestReportSupplementaryApi(CommonTestSetup):
                 kwargs={"version_id": report_version.id},
             ),
         )
-        print(f"Response: {response.json()}")
 
         assert response.status_code == 201
         assert response.json() == self.new_report_version.id
