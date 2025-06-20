@@ -53,6 +53,57 @@ To find locators, leverage Playwright's code generation feature. Use the followi
 cd bciers && npx playwright codegen http://localhost:3000
 ```
 
+## Generating Playwright Storage State for Authenticated Tests
+
+In order to run authenticated end-to-end (E2E) tests without going through the login flow each time, we use **Playwright storage state stringifyed JSON** to persist session cookies and tokens.
+
+### Step-by-Step: Create a Storage State File
+
+1. **Update auth config to match the storage state role**
+
+   In `bciers/apps/dashboard/auth/auth.config.ts`, locate the logic that maps a session to a role, and force set the role when using Playwright.
+
+```
+    // 🔒 return encrypted nextauth JWT
+    token.app_role = "name_of_role";
+    return token;
+```
+
+🔐 This ensures when the session from name_of_role.json is loaded, your app treats that user as a name_of_role.
+
+2. **Start your local dev server**
+
+3. **Open Playwright Codegen and Login Manually**
+
+   Run the following command in your terminal:
+
+   ```bash
+   cd bciers
+   npx playwright codegen http://localhost:3000 --save-storage=name_of_role.json
+   ```
+
+   - This will open a Chromium browser with developer tools.
+   - Interact with the site as a **name_of_role** user
+   - Complete the login flow manually.
+
+4. **Close the Browser Window**
+
+   Once you're fully logged in and the app is loaded, close the Playwright browser window. The session (cookies, tokens) will be saved to a file named:
+
+   ```
+   name_of_role.json
+   ```
+
+5. **Stringify and add to .env.local**
+   Create a STORAGE_STATE key to with JSON string contents of name_of_role.json to .env.local
+   Ensure that all "expire" properties are set to -1.
+
+6. **Delete the name_of_role.json file**
+
+> 🛑 **Do not commit this file if it contains sensitive credentials or tokens**
+
+---
+
 ### Visual Comparisons
 
 [Happo](https://happo.io/) is a cross browser screenshot testing library used to test for visual regressions. It is integrated with Playwright to capture screenshots of your application and compare them against a baseline to detect any visual changes and will upload the screenshots to the happo servers.
