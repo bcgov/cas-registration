@@ -4,7 +4,8 @@ from compliance.models import (
     ComplianceReportVersion,
     ComplianceObligation,
     ComplianceReport,
-    ComplianceEarnedCredit,
+    ComplianceEarnedCredit, 
+    ComplianceChargeRate,
     ElicensingClientOperator,
     ElicensingInvoice,
     ElicensingLineItem,
@@ -51,6 +52,13 @@ compliance_obligation = Recipe(
 compliance_earned_credit = Recipe(
     ComplianceEarnedCredit,
     compliance_report_version=foreign_key(compliance_report_version),
+)
+
+# ComplianceChargeRate recipe
+compliance_charge_rate = Recipe(
+    ComplianceChargeRate,
+    reporting_year=foreign_key(reporting_year),
+    rate=Decimal("50.00"),
 )
 
 # ElicensingClientOperator recipe
