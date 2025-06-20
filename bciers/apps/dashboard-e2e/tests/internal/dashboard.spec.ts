@@ -17,7 +17,11 @@ import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
 
 const happoPlaywright = require("happo-playwright");
 
-const userRoles = [UserRole.CAS_ADMIN, UserRole.CAS_ANALYST];
+const userRoles = [
+  UserRole.CAS_ADMIN,
+  UserRole.CAS_ANALYST,
+  UserRole.CAS_DIRECTOR,
+];
 
 userRoles.forEach((role) => {
   test.describe(" Internal user dashboard", () => {
