@@ -43,7 +43,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      width: 150,
       renderCell: (params) => {
         return <ActionCell {...params} isAllowedCas={isAllowedCas} />;
       },

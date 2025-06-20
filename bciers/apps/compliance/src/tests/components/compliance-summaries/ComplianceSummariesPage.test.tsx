@@ -14,13 +14,6 @@ vi.mock(
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
   getSessionRole: vi.fn(() => "cas_admin"),
 }));
-vi.mock(
-  "@/compliance/src/app/utils/getReportVersionIDsWithActionedECs",
-  () => ({
-    __esModule: true,
-    default: vi.fn(() => Promise.resolve([1])),
-  }),
-);
 
 // Spy on fetchComplianceSummariesPageData
 const fetchSpy = vi.spyOn(fetchModule, "fetchComplianceSummariesPageData");
