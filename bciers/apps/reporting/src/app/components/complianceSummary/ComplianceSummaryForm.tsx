@@ -42,6 +42,7 @@ const ComplianceSummaryForm: React.FC<Props> = ({
   summaryFormData,
   navigationInformation,
 }) => {
+  console.log("summaryFormData:", summaryFormData);
   return (
     <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="compliance-summary">

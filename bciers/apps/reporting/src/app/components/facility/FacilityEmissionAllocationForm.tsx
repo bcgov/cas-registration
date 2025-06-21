@@ -54,7 +54,7 @@ const validateEmissions = (formData: FormData): boolean => {
           FLOATING_POINT_PRECISION_FACTOR || 0), // we multiply by the factor when adding
       0,
     );
-
+    // parseFloat does a bit more than just convert, ok? https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_parsefloat
     const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
 
     return (
@@ -160,13 +160,22 @@ export default function FacilityEmissionAllocationForm({
         .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
-      facility_total_emissions:
-        initialData.facility_total_emissions?.toString(),
-      products: initialData.report_product_emission_allocation_totals,
+      facility_total_emissions: initialData.facility_total_emissions
+        ? Number(initialData.facility_total_emissions)
+        : initialData.facility_total_emissions,
+      products:
+        initialData.report_product_emission_allocation_totals?.map(
+          (product: { [key: string]: any }) => ({
+            ...product,
+            allocated_quantity: product.allocated_quantity
+              ? Number(product.allocated_quantity)
+              : product.allocated_quantity,
+          }),
+        ) || [],
     },
   }));
   const [shouldReset, setShouldReset] = useState(false);
-
+  console.log("formData", formData);
   // State for submit button disable
   const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
@@ -195,7 +204,7 @@ export default function FacilityEmissionAllocationForm({
       });
       setShouldReset(false);
     }
-
+    console.log("briiii", parseFloat("1.56"));
     if (formData.allocation_methodology === "Not Applicable") {
       removeProducts(formData);
       setShouldReset(true);
@@ -237,7 +246,8 @@ export default function FacilityEmissionAllocationForm({
             }
             return {
               ...product,
-              allocated_quantity: String(allocatedQuantity),
+              // brianna here?
+              allocated_quantity: allocatedQuantity,
             };
           }),
         }))
@@ -249,11 +259,10 @@ export default function FacilityEmissionAllocationForm({
       updatedFormData.total_emission_allocations.products =
         updatedFormData.total_emission_allocations.products.map(
           (product: { report_product_id: number }) => ({
+            // brianna
             ...product,
-            allocated_quantity: String(
-              parseFloat(
-                (productAllocations[product.report_product_id] || 0).toFixed(4),
-              ),
+            allocated_quantity: parseFloat(
+              (productAllocations[product.report_product_id] || 0).toFixed(4),
             ),
           }),
         );
@@ -282,15 +291,37 @@ export default function FacilityEmissionAllocationForm({
         formData?.allocation_methodology === "Not Applicable"
           ? []
           : [
-              ...formData.basic_emission_allocation_data.map((item: any) => ({
-                emission_total: item.emission_total,
-                emission_category_id: item.emission_category_id,
-                products: item.products.map((product: any) => ({
-                  report_product_id: product.report_product_id,
-                  product_name: product.product_name,
-                  allocated_quantity: parseFloat(product.allocated_quantity),
-                })),
-              })),
+              ...formData.basic_emission_allocation_data.map((item: any) => {
+                return {
+                  emission_total: item.emission_total,
+                  emission_category_id: item.emission_category_id,
+                  products: item.products.map((product: any) => {
+                    console.log(
+                      "parseFloat(product.allocated_quantity)",
+                      parseFloat(product.allocated_quantity),
+                    );
+                    console.log(
+                      "typeof parseFloat(product.allocated_quantity)",
+                      typeof parseFloat(product.allocated_quantity),
+                    );
+                    console.log(
+                      "product.allocated_quantity",
+                      product.allocated_quantity,
+                    );
+                    console.log(
+                      "typeof product.allocated_quantity",
+                      typeof product.allocated_quantity,
+                    );
+                    return {
+                      report_product_id: product.report_product_id,
+                      product_name: product.product_name,
+                      allocated_quantity: parseFloat(
+                        product.allocated_quantity,
+                      ),
+                    };
+                  }),
+                };
+              }),
               ...formData.fuel_excluded_emission_allocation_data.map(
                 (item: any) => ({
                   emission_total: item.emission_total,

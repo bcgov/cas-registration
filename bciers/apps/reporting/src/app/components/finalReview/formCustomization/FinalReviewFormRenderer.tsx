@@ -39,19 +39,24 @@ const FinalReviewFormRenderer = ({
   idx: number;
   form: any;
   data: any;
-}) => (
-  <Form
-    key={idx}
-    schema={form.schema}
-    formData={form.data}
-    uiSchema={{
-      ...resolveUiSchema(form.uiSchema),
-      "ui:submitButtonOptions": { norender: true },
-    }}
-    readonly={true}
-    formContext={form.context || {}}
-    validator={customizeValidator({})}
-  />
-);
+}) =>
+  (
+    // brianna it would probably be hard to transform these to numbers and I don't think we ~need to?
+    console.log("title", form.schema.title, "form.data:", form.data),
+    (
+      <Form
+        key={idx}
+        schema={form.schema}
+        formData={form.data}
+        uiSchema={{
+          ...resolveUiSchema(form.uiSchema),
+          "ui:submitButtonOptions": { norender: true },
+        }}
+        readonly={true}
+        formContext={form.context || {}}
+        validator={customizeValidator({})}
+      />
+    )
+  );
 
 export default FinalReviewFormRenderer;

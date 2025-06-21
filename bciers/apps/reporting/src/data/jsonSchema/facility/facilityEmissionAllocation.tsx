@@ -199,7 +199,7 @@ export const emissionAllocationSchema: RJSFSchema = {
       title: "Totals in tCO2e",
       properties: {
         facility_total_emissions: {
-          type: "string",
+          type: "number",
           title: "Total emissions attributable for reporting",
         },
         products: {
@@ -215,7 +215,7 @@ export const emissionAllocationSchema: RJSFSchema = {
                 type: "string",
               },
               allocated_quantity: {
-                type: "string",
+                type: "number",
               },
             },
           },
@@ -258,7 +258,7 @@ export const emissionAllocationSchema: RJSFSchema = {
         },
         emission_total: {
           title: "Total Emissions",
-          type: "string",
+          type: "number",
           readOnly: true,
         },
         products: {
@@ -274,7 +274,7 @@ export const emissionAllocationSchema: RJSFSchema = {
                 type: "string",
               },
               allocated_quantity: {
-                type: "string",
+                type: "number",
               },
             },
           },
@@ -336,7 +336,7 @@ export const emissionAllocationUiSchema: UiSchema = {
         },
       },
       emission_total: {
-        "ui:widget": ReadOnlyWidget,
+        // "ui:widget": ReadOnlyWidget,
       },
       products: {
         "ui:options": {
@@ -384,7 +384,7 @@ export const emissionAllocationUiSchema: UiSchema = {
         },
       },
       emission_total: {
-        "ui:widget": ReadOnlyWidget,
+        // "ui:widget": ReadOnlyWidget,
       },
       products: {
         "ui:options": {
@@ -416,7 +416,7 @@ export const emissionAllocationUiSchema: UiSchema = {
     "ui:disabled": true,
 
     facility_total_emissions: {
-      "ui:widget": ReadOnlyWidget,
+      // "ui:widget": ReadOnlyWidget,
     },
     products: {
       "ui:options": {

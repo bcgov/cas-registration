@@ -62,46 +62,68 @@ const TextWidget: React.FC<WidgetProps> = ({
   const widthStyle = {
     width: "100%",
   };
-
   // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
+    // console.log("typeof value", typeof Number(value), Number(value));
     return (
-      <NumberField.Root
-        id={id}
-        name={name}
-        disabled={disabled || readonly}
-        value={value}
-        onValueChange={handleNumberChange}
-        max={maxNum}
-        style={widthStyle}
-        format={{ maximumFractionDigits: 4 }}
-      >
-        <NumberField.Group>
-          <NumberField.Input
-            aria-label={name}
-            style={numberStyles}
-            // sx doesn't like numberInput and tailwind doesn't like dynamic colors
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = borderColor;
-            }}
-          />
-        </NumberField.Group>
-      </NumberField.Root>
+      <>
+        brianna NUMBER
+        <NumberField.Root
+          id={id}
+          name={name}
+          disabled={disabled || readonly}
+          value={value ? Number(value) : value}
+          onValueChange={handleNumberChange}
+          max={maxNum}
+          style={widthStyle}
+          format={{
+            maximumFractionDigits: 4,
+            // sometimes numbers are returned
+            minimumFractionDigits: value
+              ? value.toString().split(".")[1]?.length
+              : 0,
+          }}
+        >
+          <NumberField.Group>
+            <NumberField.Input
+              aria-label={name}
+              style={numberStyles}
+              // sx doesn't like numberInput and tailwind doesn't like dynamic colors
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = BC_GOV_LINKS_COLOR;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = borderColor;
+              }}
+            />
+          </NumberField.Group>
+        </NumberField.Root>
+      </>
     );
   } else {
+    // let transformedValue = value;
+    // // brianna add commas with this
+    // if (uiSchema?.["ui:options"]?.actuallyANumber) {
+    //   const [integerPart, decimalPart] = value.split(".");
+    //   const formattedInteger = parseInt(integerPart, 10).toLocaleString();
+    //   transformedValue = decimalPart
+    //     ? `${formattedInteger}.${decimalPart}`
+    //     : formattedInteger;
+    // }
+
     return (
-      <TextField
-        id={id}
-        disabled={disabled || readonly}
-        name={name}
-        value={value}
-        onChange={handleChange}
-        sx={styles}
-        placeholder={placeholder}
-      />
+      <>
+        <>brianna STRING</>
+        <TextField
+          id={id}
+          disabled={disabled || readonly}
+          name={name}
+          value={value}
+          onChange={handleChange}
+          sx={styles}
+          placeholder={placeholder}
+        />
+      </>
     );
   }
 };
