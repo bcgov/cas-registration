@@ -15,7 +15,7 @@ export const IssuanceStatusAwaitingNote = () => {
         href={bcCarbonRegistryLink}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-bc-link-blue underline decoration-[1.2px] font-bold"
+        className="text-bc-link-blue decoration-bc-link-blue"
       >
         B.C. Carbon Registry
       </Link>{" "}

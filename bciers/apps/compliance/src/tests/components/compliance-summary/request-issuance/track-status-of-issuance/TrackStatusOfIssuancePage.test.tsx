@@ -14,10 +14,6 @@ vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
     bccr_trading_name: "Test Trading Name",
     directors_comments: "Director's test comments",
   }),
-  IssuanceStatus: {
-    APPROVED: "approved",
-    AWAITING: "awaiting",
-  },
 }));
 
 // Mock the session role function
@@ -30,7 +26,7 @@ vi.mock(
   "@/compliance/src/app/components/taskLists/requestIssuanceTaskList",
   () => ({
     generateRequestIssuanceTaskList: vi.fn(),
-    ActivePage: { ReviewComplianceSummary: "ReviewComplianceSummary" },
+    ActivePage: { TrackStatusOfIssuance: "TrackStatusOfIssuance" },
   }),
 );
 
