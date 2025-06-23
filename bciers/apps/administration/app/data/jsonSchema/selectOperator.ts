@@ -43,7 +43,7 @@ export const selectOperatorSchema: RJSFSchema = {
         properties: {
           cra_business_number: {
             type: "string",
-            pattern: "^[0-9]{9}$",
+            format: "cra_business_number",
           },
         },
       },
