@@ -200,7 +200,7 @@ class TestFacilitiesEndpoint(CommonTestSetup):
             'latitude_of_largest_emissions': 5,
             'longitude_of_largest_emissions': 5,
             'operation_id': owning_operation.id,
-            'well_authorization_numbers': [1234, 5641, 89899],
+            'well_authorization_numbers': ["1234", "5641", "89899"],
         }
         TestUtils.authorize_current_user_as_operator_user(self, operator_baker())
         post_response = TestUtils.mock_post_with_auth_role(

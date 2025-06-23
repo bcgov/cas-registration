@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import RegexValidator
 from common.enums import Schemas
 from registration.enums.enums import RegistrationTableNames
 from registration.models import TimeStampedModel
@@ -7,8 +8,11 @@ from registration.models.rls_configs.well_authorization_number import Rls as Wel
 
 
 class WellAuthorizationNumber(TimeStampedModel):
-    well_authorization_number = models.IntegerField(
-        primary_key=True, db_comment="A well authorization number from the BC Energy Regulator"
+    well_authorization_number = models.CharField(
+        primary_key=True,
+        max_length=10,
+        validators=[RegexValidator(regex=r'^\d+$', message='Well authorization number must only contain digits')],
+        db_comment="A well authorization number from the BC Energy Regulator",
     )
 
     history = HistoricalRecords(

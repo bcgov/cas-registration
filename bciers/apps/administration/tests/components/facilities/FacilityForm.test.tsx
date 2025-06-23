@@ -60,7 +60,7 @@ const sfoFormData = {
 const lfoFormData = {
   name: "Monkeyfuzz",
   type: "Large Facility",
-  well_authorization_numbers: [24546, 54321],
+  well_authorization_numbers: ["24546", "54321"],
   latitude_of_largest_emissions: "3.000000",
   longitude_of_largest_emissions: "4.000000",
   street_address: "adf",
@@ -75,7 +75,7 @@ const defaultFillFormValues = {
   name: "test facility name",
   type_sfo: "Single Facility",
   type_lfo: "Large Facility",
-  well_authorization_numbers: [355],
+  well_authorization_numbers: ["355"],
   street_address: "address",
   municipality: "city",
   postal_code: "H0H 0H0",
@@ -87,7 +87,7 @@ const defaultFillFormValues = {
 
 const defaultUpdateFormValues = {
   name: "Updated Facility Name",
-  well_authorization_numbers: [123],
+  well_authorization_numbers: ["123"],
   street_address: "123 New Address",
   municipality: "New City",
   postal_code: "A1A 1A1",
@@ -119,7 +119,7 @@ const lfoResponsePost = [
     postal_code: "H0H0H0",
     latitude_of_largest_emissions: 48.3,
     longitude_of_largest_emissions: 123.32,
-    well_authorization_numbers: [355],
+    well_authorization_numbers: ["355"],
     is_current_year: true,
     starting_date: "2024-07-07T09:00:00.000Z",
     operation_id: "8be4c7aa-6ab3-4aad-9206-0ef914fea063",

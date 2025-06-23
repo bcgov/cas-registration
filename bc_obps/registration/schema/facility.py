@@ -11,7 +11,7 @@ class FacilityIn(ModelSchema):
     province: Optional[str] = None
     postal_code: Optional[str] = None
     operation_id: UUID
-    well_authorization_numbers: List[int] = []
+    well_authorization_numbers: List[str] = []
     latitude_of_largest_emissions: Optional[decimal.Decimal] = None
     longitude_of_largest_emissions: Optional[decimal.Decimal] = None
 

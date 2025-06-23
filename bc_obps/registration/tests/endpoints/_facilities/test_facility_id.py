@@ -22,7 +22,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         self.mock_payload_with_all_data = {
             "name": "Updated Facility Name",
             "type": "Large Facility",
-            "well_authorization_numbers": [1, 2, 3],
+            "well_authorization_numbers": ["1", "2", "3"],
             "is_current_year": True,
             "starting_date": "2024-07-07T09:00:00.000Z",
             "street_address": "123 Updated St",
@@ -302,7 +302,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
-        payload["well_authorization_numbers"] = [1, 2, 3]  # updates to well_authorization_numbers
+        payload["well_authorization_numbers"] = ["1", "2", "3"]  # updates to well_authorization_numbers
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
@@ -379,7 +379,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
-        payload["well_authorization_numbers"] = [1, 1, 2, 3]  # Duplicate value 1
+        payload["well_authorization_numbers"] = ["1", "1", "2", "3"]  # Duplicate value "1"
 
         # Act
         response = TestUtils.mock_put_with_auth_role(
@@ -402,7 +402,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         TestUtils.assert_facility_db_state(facility)
 
         # Create well authorization numbers
-        well_auth_numbers = [123456789, 987654321]
+        well_auth_numbers = ["123456789", "987654321"]
         # Create WellAuthorizationNumber objects
         WellAuthorizationNumber.objects.bulk_create(
             WellAuthorizationNumber(well_authorization_number=num) for num in well_auth_numbers
@@ -413,7 +413,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Define a payload
         payload = self.mock_payload_with_mandatory_data.copy()
-        payload["well_authorization_numbers"] = [123456789]  # existing value
+        payload["well_authorization_numbers"] = ["123456789"]  # existing value
 
         # Act
         response = TestUtils.mock_put_with_auth_role(

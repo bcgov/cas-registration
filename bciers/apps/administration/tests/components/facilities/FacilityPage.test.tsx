@@ -93,7 +93,7 @@ describe("Facilities component", () => {
     getFacility.mockReturnValueOnce({
       name: "Test Facility Name",
       type: "Large Facility",
-      well_authorization_numbers: [3442, 42643],
+      well_authorization_numbers: ["3442", "42643"],
       latitude_of_largest_emissions: "3.000000",
       longitude_of_largest_emissions: "4.000000",
       street_address: "adf",
