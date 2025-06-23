@@ -1,9 +1,9 @@
 import logging
 from datetime import datetime
 from typing import Dict, Any, Tuple, Generator
+from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.exceptions import ComplianceInvoiceError
 from service.pdf.pdf_generator_service import PDFGeneratorService
-from compliance.service.elicensing.obligation_elicensing_service import ObligationELicensingService
 
 # Type ignore for weasyprint since it lacks stubs
 
@@ -54,10 +54,14 @@ class PaymentInstructionsService:
             Dictionary of context data for the template
         """
 
-        invoice = ObligationELicensingService.get_invoice_from_compliance_report_version_id(complianceReportVersionID)
+        refreshResult = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            complianceReportVersionID
+        )
 
         context = {
-            'invoice_number': invoice.invoiceNumber if invoice else "Missing Invoice Number",
+            'invoice_number': refreshResult.invoice.invoice_number
+            if refreshResult.invoice
+            else "Missing Invoice Number",
         }
 
         return context
