@@ -76,6 +76,7 @@ class OperatorModelTest(BaseTestCase):
         for number in valid_numbers:
             self.test_object.cra_business_number = number
             self.test_object.save()
+            assert isinstance(self.test_object.cra_business_number, str)
 
         invalid_numbers = [1234543210, 12345432, '1234567890', '12345678', 'ABCDEFGHI', '123-ABCde', '^&*%#@!()']
         for number in invalid_numbers:
