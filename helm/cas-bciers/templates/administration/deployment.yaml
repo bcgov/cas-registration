@@ -50,8 +50,9 @@ spec:
           {{- $containerName := printf "%s-administration-frontend" (include "cas-bciers.fullname" .) }}
         {{- include "cas-logging-sidecar.containers" (dict
             "containerToSidecar" $containerName
-            (index .Values "cas-logging-sidecar" "logName")
-            "host" (index .Values "cas-logging-sidecar" "host")  ) | nindent 8 }}
+            "logName" (index .Values "cas-logging-sidecar" "logName")
+            "host" (index .Values "cas-logging-sidecar" "host"
+            "appName" "administration")  ) | nindent 8 }}
       restartPolicy: Always
       volumes:
              {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
