@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Dict, Any, List, Tuple, Generator
+from typing import Dict, Any, List, Optional, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
@@ -17,23 +17,17 @@ from registration.models import (
     Operation,
 )
 from reporting.models import (
-    ReportingYear,
     ReportComplianceSummary,
 )
 from compliance.models import (
-    ComplianceReport,
     ComplianceReportVersion,
-    CompliancePeriod,
     ComplianceObligation,
     ElicensingInvoice,
     ElicensingLineItem,
-    ElicensingPayment,
-    ElicensingAdjustment,
 )
 
 
 class ComplianceInvoiceService:
-
     @classmethod
     def generate_invoice_pdf(
         cls,
@@ -54,6 +48,11 @@ class ComplianceInvoiceService:
             refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
                 compliance_report_version_id=compliance_report_version_id
             )
+            if not refresh_result.data_is_fresh:
+                raise ComplianceInvoiceError(
+                    "stale_data",
+                    "Invoice data could not be refreshed from Elicensing.  Please try again, or contact support if the problem persists.",
+                )
 
             # Get operation information
             # compliance_report_version_id  →  ComplianceReportVersion → ComplianceReport → Report →  Operation
@@ -66,41 +65,42 @@ class ComplianceInvoiceService:
             # Operation → Operator
             operator: Operator = operation.operator
             operator_name = operator.legal_name
-             # Operator → Address
-            operator_address: Address = operator.physical_address
-            if operator_address:
-                operator_address_line1 = operator_address.street_address
+            # Operator → Address
+            operator_address: Optional[Address] = operator.physical_address
+
+            operator_address_line1: str = ""
+            operator_address_line2: str = ""
+
+            if operator_address is not None:
+                operator_address_line1 = operator_address.street_address or ""
                 operator_address_line2 = ", ".join(
                     filter(
                         None,
                         [
-                            operator_address.municipality,
-                            operator_address.province,
-                            operator_address.postal_code,
+                            operator_address.municipality or "",
+                            operator_address.province or "",
+                            operator_address.postal_code or "",
                         ],
                     )
                 )
-            else:
-                operator_address_line1 = ""
-                operator_address_line2 = ""
 
             # Get compliance obligation information
             # compliance_report_version_id  → ComplianceObligation
-            compliance_obligation: ComplianceObligation = ComplianceReportVersionService.get_obligation_by_compliance_report_version(
-                compliance_report_version_id
+            compliance_obligation: ComplianceObligation = (
+                ComplianceReportVersionService.get_obligation_by_compliance_report_version(compliance_report_version_id)
             )
             compliance_obligation_id = compliance_obligation.obligation_id
             invoice_date = (
-                compliance_obligation.fee_date.strftime("%b %-d, %Y")
+                compliance_obligation.fee_date.strftime("%b %-d, %Y") if compliance_obligation.fee_date else "—"
             )
 
             # Get compliance obligation amounts
-            # Get fee_amount_dollars (calculated emmissions * charge rate) from 
+            # Get fee_amount_dollars (calculated emmissions * charge rate) from
             # ComplianceObligation  → ComplianceReportVersion
             compliance_report_version: ComplianceReportVersion = compliance_obligation.compliance_report_version
-            fee_amount_dollars =  compliance_obligation.fee_amount_dollars
-           
-            # Get excess_emissions from 
+            fee_amount_dollars = compliance_obligation.fee_amount_dollars
+
+            # Get excess_emissions from
             # ComplianceReportVersion → ReportComplianceSummary
             report_compliance_summary: ReportComplianceSummary = compliance_report_version.report_compliance_summary
             excess_emissions = report_compliance_summary.excess_emissions
@@ -114,7 +114,7 @@ class ComplianceInvoiceService:
             # Format obligation amounts
             compliance_obligation_emissions = f"{excess_emissions} tCO₂e"
             compliance_obligation_charge_rate = f"${charge_rate_decimal:,.2f} / tCO₂e"
-            compliance_obligation_fee_amount_dollars =  f"${fee_amount_dollars:,.2f}"
+            compliance_obligation_fee_amount_dollars = f"${fee_amount_dollars:,.2f}"
 
             # Get reporting year
             compliance_obligation_year: int = (
@@ -124,9 +124,7 @@ class ComplianceInvoiceService:
             # Get invoice data
             invoice = refresh_result.invoice
             invoice_number = invoice.invoice_number
-            invoice_due_date = (
-                invoice.due_date.strftime("%b %-d, %Y")
-            )            
+            invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
 
             # Build invoice biling items and amounts due
             amount_due, billing_items = cls.calculate_invoice_amount_due(invoice)
@@ -164,21 +162,19 @@ class ComplianceInvoiceService:
             )
 
         except Exception as exc:
-            print(f"[ERROR] Exception occurred during invoice generation: {exc}")
             # If it’s already a ComplianceInvoiceError, just re‐raise it.
             if isinstance(exc, ComplianceInvoiceError):
                 raise
 
             # Otherwise wrap in ComplianceInvoiceError and raise
             raise ComplianceInvoiceError("unexpected_error", str(exc))
-        
-    
+
     @staticmethod
     def calculate_invoice_amount_due(invoice: ElicensingInvoice) -> Tuple[Decimal, List[Dict[str, Any]]]:
         """
         Calculates the amount due for an invoice and returns billing items.
         Amount due (dynamic from eLicensing) = Compliance Obligation (fees) - Compliance Units Applied (adjustments) - Monetary payments (payments)
-        
+
         Args:
             invoice (ElicensingInvoice): The invoice model instance.
 
@@ -194,43 +190,48 @@ class ComplianceInvoiceService:
             line_item_type=ElicensingLineItem.LineItemType.FEE
         )
 
-        for fee in fee_line_items:
-            fee: ElicensingLineItem
-            fee_date = fee.fee_date.strftime("%b %-d, %Y")
-            fee_description = fee.description
-            fee_amount =  fee.base_amount
-            billing_items.append({
-                "date": fee_date,
-                "description": fee_description,
-                "amount": f"${fee_amount:,.2f}",
-            })
-            total_fee += fee_amount
+        for fee_line_item in fee_line_items:
+            fee_date = fee_line_item.fee_date.strftime("%b %-d, %Y") if fee_line_item.fee_date else "—"
+            billing_items.append(
+                {
+                    "date": fee_date,
+                    "description": fee_line_item.description,
+                    "amount": f"${fee_line_item.base_amount:,.2f}",
+                }
+            )
+            total_fee += fee_line_item.base_amount
 
-            for payment in fee.elicensing_payments.all():
-                payment: ElicensingPayment
-                payment_amount = payment.amount
-                payment_date = payment.received_date.strftime("%b %-d, %Y")
-                payment_description = getattr(payment, "description", None) or f"Payment {payment.payment_object_id}"
-                billing_items.append({
-                    "date": payment_date,
-                    "description": payment_description,
-                    "amount": f"(${payment_amount:,.2f})",
-                })
-                total_payments += payment_amount
+            for fee_payment in fee_line_item.elicensing_payments.all():
+                fee_payment_date = (
+                    fee_payment.received_date.strftime("%b %-d, %Y") if fee_payment.received_date else "—"
+                )
+                fee_payment_description = (
+                    getattr(fee_payment, "description", None) or f"Payment {fee_payment.payment_object_id}"
+                )
+                billing_items.append(
+                    {
+                        "date": fee_payment_date,
+                        "description": fee_payment_description,
+                        "amount": f"(${fee_payment.amount:,.2f})",
+                    }
+                )
+                total_payments += fee_payment.amount
 
-            for adjustment in fee.elicensing_adjustments.all():
-                adjustment: ElicensingAdjustment
-                adjustment_amount = adjustment.amount
-                adjustment_date = adjustment.adjustment_date.strftime("%b %-d, %Y")
-                adjustment_description = adjustment.reason or f"Adjustment {adjustment.adjustment_object_id} ({adjustment.type})"
-                billing_items.append({
-                    "date": adjustment_date,
-                    "description": adjustment_description,
-                    "amount": f"(${adjustment_amount:,.2f})",
-                })
-                total_adjustments += adjustment_amount
-
+            for fee_adjustment in fee_line_item.elicensing_adjustments.all():
+                fee_adjustment_date = (
+                    fee_adjustment.adjustment_date.strftime("%b %-d, %Y") if fee_adjustment.adjustment_date else "—"
+                )
+                fee_adjustment_description = (
+                    fee_adjustment.reason or f"Adjustment {fee_adjustment.adjustment_object_id} ({fee_adjustment.type})"
+                )
+                billing_items.append(
+                    {
+                        "date": fee_adjustment_date,
+                        "description": fee_adjustment_description,
+                        "amount": f"(${fee_adjustment.amount:,.2f})",
+                    }
+                )
+                total_adjustments += fee_adjustment.amount
 
         amount_due = (total_fee - total_payments - total_adjustments).quantize(Decimal("0.01"))
-
         return amount_due, billing_items
