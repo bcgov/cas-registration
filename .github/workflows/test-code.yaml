@@ -78,8 +78,11 @@ jobs:
   check-immutable-migrations:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
       - name: Run check
-        run: ./.bin/check-immutable-migrations.sh
+        run: ./.bin/check-immutable-migration-files.sh
 
   check-test-data:
     runs-on: ubuntu-latest
