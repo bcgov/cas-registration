@@ -14,6 +14,16 @@ vi.mock(
   }),
 );
 
+// Mock the invoice grabber
+vi.mock(
+  "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId",
+  () => ({
+    default: () => {
+      return { invoiceNumber: 1 };
+    },
+  }),
+);
+
 // Mock the layout component
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
@@ -33,9 +43,7 @@ describe("PaymentInstructionsDownloadPage", () => {
 
     // Check content is rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(
-      screen.getByText("PaymentInstructionsDownload ...TBD"),
-    ).toBeVisible();
+    expect(screen.getByText("Download Payment Instructions")).toBeVisible();
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
