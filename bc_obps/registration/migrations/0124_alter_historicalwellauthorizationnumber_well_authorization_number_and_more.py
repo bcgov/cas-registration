@@ -53,7 +53,10 @@ class Migration(migrations.Migration):
         ),
         migrations.RunSQL(
             sql=[
-                # ALTER COLUMN TYPE!
+                # see comment above - this is necessary because the through table's column type does not automatically change
+                # when the primary key type of a model changes
+                #
+                # alter column type
                 """
                 alter table erc.facility_well_authorization_numbers
                 alter column wellauthorizationnumber_id type varchar(10)
