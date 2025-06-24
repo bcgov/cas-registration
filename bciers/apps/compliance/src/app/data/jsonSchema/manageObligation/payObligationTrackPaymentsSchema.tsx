@@ -25,9 +25,7 @@ const PaymentStatusNoteWidget = ({
   return <PaymentStatusNote outstandingBalance={outstandingBalance} />;
 };
 
-export const createPayObligationTrackPaymentsSchema = (
-  reportingYear: number,
-): RJSFSchema => ({
+export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
   type: "object",
   title: "Pay Obligation and Track Payment(s)",
   properties: {
