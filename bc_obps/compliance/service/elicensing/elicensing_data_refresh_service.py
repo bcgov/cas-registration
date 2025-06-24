@@ -35,7 +35,8 @@ class ElicensingDataRefreshService:
         ).elicensing_invoice
         if not invoice:
             raise ValidationError(f"No related invoice found for report version ID: {compliance_report_version_id}")
-        if invoice.last_refreshed is not None and invoice.last_refreshed > timezone.now() - timedelta(seconds=3600):
+        # Limit calls successive calls to refresh an invoice from the elicensing API to once per 15mins
+        if invoice.last_refreshed is not None and invoice.last_refreshed > timezone.now() - timedelta(seconds=900):
             return RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
         try:
             ElicensingDataRefreshService.refresh_data_by_invoice(
