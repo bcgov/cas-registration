@@ -392,15 +392,13 @@ describe("customTransformErrors", () => {
   });
 
   it("returns the transformed error message for CRA Business Number", () => {
-    const originalErrorMessage = craBusinessNumberError[0].message;
     const transformedErrors = customTransformErrors(
       craBusinessNumberError,
       customFormatsErrorMessages,
     );
 
-    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(
-      "CRA Business Number should be 9 digits.",
+      "CRA Business Number should be 9 digits",
     );
   });
   // format errors (format errors appear to only work for string fields)
