@@ -17,7 +17,6 @@ function shouldUpdateToken(token: JWT | null) {
 }
 
 async function fetchNewAccessToken(refreshToken: string | undefined) {
-  console.log("Feching new tokens...");
   /**
    * Attempt to refresh access token from the OAuth provider
    */
@@ -31,15 +30,14 @@ async function fetchNewAccessToken(refreshToken: string | undefined) {
     }),
   });
 
-  if (!newTokensResponse.ok)
-    throw new Error("Error refreshing KeyCloak access token");
+  if (!newTokensResponse.ok) {
+    console.error(
+      `Failed to refresh access token from KC: ${newTokensResponse.status}`,
+    );
+    return undefined;
+  }
 
   const newTokens = await newTokensResponse.json();
-
-  console.log(
-    "New expiry:    : ",
-    Math.round(Date.now() / 1000) + OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS,
-  );
 
   return {
     access_token: newTokens.access_token,
@@ -49,23 +47,31 @@ async function fetchNewAccessToken(refreshToken: string | undefined) {
   };
 }
 
+function signOut(request: NextRequest) {
+  /**
+   * Signs out the user by redirecting to the sign-in page
+   * and clearing the session cookies.
+   */
+  const response = NextResponse.redirect(new URL("/onboarding", request.url));
+
+  request.cookies.getAll().forEach((cookie) => {
+    if (cookie.name.includes("next-auth")) response.cookies.delete(cookie.name);
+  });
+
+  return response;
+}
+
 export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
   /**
    * Middleware that supplements next-auth to add access token rotation.
    * Huge thanks to the community: https://github.com/nextauthjs/next-auth/discussions/9715#discussioncomment-12818495
    */
   return async (request: NextRequest) => {
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-    console.log("Middleware called.");
     // Casting to our augmented JWT type
     const jwt = (await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     })) as JWT | null;
-
-    console.log("Now           : ", Date.now() / 1000);
-    console.log("JWT expires at: ", jwt?.expires_at);
-    console.log("Difference    : ", Date.now() / 1000 - (jwt?.expires_at ?? 0));
 
     const response = NextResponse.next();
 
@@ -73,6 +79,11 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
 
     if (shouldUpdateToken(jwt)) {
       const newKcTokens = await fetchNewAccessToken(jwt.refresh_token);
+
+      if (!newKcTokens) {
+        // There was an error refreshing the tokens
+        return signOut(request);
+      }
 
       const newSessionToken = await encode({
         secret: `${process.env.NEXTAUTH_SECRET}`,
@@ -96,13 +107,11 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
             httpOnly: true,
             maxAge: 30 * 60, // 30 min to match KC
             secure: SESSION_SECURE,
-            sameSite: "lax",
+            sameSite: "strict",
           });
         });
       }
     }
-
-    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
     return response;
   };
