@@ -97,7 +97,7 @@ userRoles.forEach((role) => {
         }
 
         if (!skipUrlCheck) {
-          component = `Internal user ${tile} Dashboard`;
+          component = `Internal user ${tile} Dashboard for role: ${role}`;
           await takeStabilizedScreenshot(happoPlaywright, page, {
             component: component,
             variant: "default",
