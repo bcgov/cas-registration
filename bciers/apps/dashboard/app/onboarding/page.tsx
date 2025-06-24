@@ -78,6 +78,7 @@ export default function Page() {
         }}
       >
         <section>
+          <h1 className={`${headerStyle} text-3xl`}>TEST</h1>
           <h1 className={`${headerStyle} text-3xl`}>
             Welcome to the B.C. Industrial Emissions Reporting System
           </h1>
