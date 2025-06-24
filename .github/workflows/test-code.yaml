@@ -75,6 +75,17 @@ jobs:
       - run: poetry run python manage.py makemigrations --check --dry-run
         working-directory: ./bc_obps
 
+  check-immutable-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: dev env setup
+        uses: ./.github/actions/dev-env-setup
+      - name: Run check
+        run: ./.bin/check-immutable-migration-files.sh
+
   check-test-data:
     runs-on: ubuntu-latest
     steps:
