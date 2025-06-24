@@ -21,6 +21,12 @@ class ComplianceReport(TimeStampedModel):
         related_name="compliance_reports",
         db_comment="The compliance period this compliance report is for",
     )
+    bccr_subaccount_id = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True,
+        db_comment="The BCCR subaccount ID associated with this compliance report. This is nullable because not all compliance reports will have a BCCR subaccount to deal with the compliance units.",
+    )
 
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
