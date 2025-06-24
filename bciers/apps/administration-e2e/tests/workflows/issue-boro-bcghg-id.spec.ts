@@ -23,12 +23,11 @@ const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
 test.describe("Issue BCGHG and BORO ID", () => {
-  test("Issue BCGHG ID", async ({ page }) => {
+  test("Issue BCGHG and BORO ID", async ({ page }) => {
     // 🛸 Navigate to administration/operations
     const operationPage = new OperationPOM(page);
     await operationPage.route();
     await urlIsCorrect(page, AppRoute.OPERATIONS, true);
-    // await operationPage.urlIsCorrect(AppRoute.OPERATIONS, true);
 
     // Search the operation page by exact operation and operator name
     await operationPage.searchOperationByName(
@@ -47,20 +46,6 @@ test.describe("Issue BCGHG and BORO ID", () => {
 
     await expect(page.getByText(IssueIDValues.EXPECTED_BCGHG_ID)).toBeVisible();
     await assertSuccessfulSnackbar(page, SnackbarMessages.ISSUED_BCGHG_ID);
-  });
-
-  test("Issue BORO ID", async ({ page }) => {
-    const operationPage = new OperationPOM(page);
-    await operationPage.route();
-    await urlIsCorrect(page, AppRoute.OPERATIONS, true);
-
-    // Search the operation page by exact operation and operator name
-    await operationPage.searchOperationByName(
-      IssueIDValues.OPERATION_NAME,
-      IssueIDValues.OPERATOR_NAME,
-    );
-
-    await operationPage.goToOperation(IssueIDValues.OPERATION_NAME);
 
     await clickButton(page, /issue boro id/i);
 
