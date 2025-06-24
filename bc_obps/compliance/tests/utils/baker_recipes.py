@@ -5,6 +5,7 @@ from compliance.models import (
     ComplianceObligation,
     ComplianceReport,
     ComplianceEarnedCredit,
+    ComplianceChargeRate,
     ElicensingClientOperator,
     ElicensingInvoice,
     ElicensingLineItem,
@@ -16,6 +17,13 @@ from registration.tests.utils.baker_recipes import (
     operator,
 )
 from decimal import Decimal
+
+# ComplianceChargeRate recipe
+compliance_charge_rate = Recipe(
+    ComplianceChargeRate,
+    reporting_year=foreign_key(reporting_year),
+    rate=Decimal('40.00'),
+)
 
 # CompliancePeriod recipe
 compliance_period = Recipe(
