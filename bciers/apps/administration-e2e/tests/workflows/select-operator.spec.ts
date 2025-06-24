@@ -11,6 +11,8 @@ import {
   analyzeAccessibility,
   assertSuccessfulSnackbar,
 } from "@bciers/e2e/utils/helpers";
+import { FrontendMessages } from "@bciers/utils/src/enums";
+
 const happoPlaywright = require("happo-playwright");
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER);
 
@@ -101,6 +103,6 @@ test.describe("Test select operator paths", () => {
     await analyzeAccessibility(page);
 
     await selectOperatorPage.buttonSave.click();
-    await assertSuccessfulSnackbar(page);
+    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
   });
 });

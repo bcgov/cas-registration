@@ -9,6 +9,7 @@ import {
   assertSuccessfulSnackbar,
 } from "@bciers/e2e/utils/helpers";
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
+import { FrontendMessages } from "@bciers/utils/src/enums";
 
 const happoPlaywright = require("happo-playwright");
 const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -35,7 +36,7 @@ test.describe("Test add/edit contact", () => {
     // Submit form
     await clickButton(page, /save/i);
     await page.waitForLoadState("load");
-    await assertSuccessfulSnackbar(page);
+    await assertSuccessfulSnackbar(page, FrontendMessages.SUBMIT_CONFIRMATION);
 
     // Verify note is not visible
     await contactsPage.assertFootnoteIsVisible(false);
