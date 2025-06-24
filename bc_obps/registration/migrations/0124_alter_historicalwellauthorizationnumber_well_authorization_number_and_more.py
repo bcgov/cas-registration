@@ -11,27 +11,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # had to write this SQL script manually because Django seems unable to recognize when
-        # the type of an identifier column changes in a through table.
+        # had to write this SQL script manually because Django migrations don't automatically alter the
+        # through table's column type when the primary key type of a model changes
         migrations.RunSQL(
             sql=[
                 # Drop existing FK constraint
                 """
                 alter table erc.facility_well_authorization_numbers
-                drop constraint if exists facility_well_authorization_numbers_wellauthorizationnumber_id_fkey;
-                """,
-                # Alter the column type from integer to varchar(10)
-                """
-                alter table erc.facility_well_authorization_numbers
-                alter column wellauthorizationnumber_id type varchar(10);
-                using wellauthorizationnumber_id::varchar(10);
-                """
-                # Re-introduce FK constraint
-                """
-                alter table erc.facility_well_authorization_numbers
-                add constraint facility_well_authorization_numbers_wellauthorizationnumber_id_fkey
-                foreign key (wellauthorizationnumber_id)
-                references erc.well_authorization_number(well_authorization_number)
+                drop constraint if exists facility_well_author_wellauthorizationnum_2fc21025_fk_well_auth;
                 """,
             ]
         ),
@@ -63,5 +50,22 @@ class Migration(migrations.Migration):
                     )
                 ],
             ),
+        ),
+        migrations.RunSQL(
+            sql=[
+                # ALTER COLUMN TYPE!
+                """
+                alter table erc.facility_well_authorization_numbers
+                alter column wellauthorizationnumber_id type varchar(10)
+                using wellauthorizationnumber_id::varchar(10);
+                """,
+                # Re-introduce FK constraint
+                """
+                alter table erc.facility_well_authorization_numbers
+                add constraint facility_well_authorization_numbers_wellauthorizationnumber_id_fkey
+                foreign key (wellauthorizationnumber_id)
+                references erc.well_authorization_number(well_authorization_number)
+                """,
+            ]
         ),
     ]
