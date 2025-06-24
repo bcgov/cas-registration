@@ -45,6 +45,10 @@ class ElicensingInvoice(TimeStampedModel):
         default=False, db_comment="Boolean field indicates whether this invoice has been voided"
     )
 
+    last_refreshed = models.DateTimeField(
+        db_comment="The last time (UTC) that the invoice and its child data was successfully refreshed via the elicensing api",
+    )
+
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "Table contains invoice data from elicensing"
