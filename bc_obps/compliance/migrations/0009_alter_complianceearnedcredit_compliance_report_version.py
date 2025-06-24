@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             field=models.OneToOneField(
                 db_comment='The compliance report version this earned_credit record belongs to',
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_earned_credits',
+                related_name='compliance_earned_credit',
                 to='compliance.compliancereportversion',
             ),
         ),
