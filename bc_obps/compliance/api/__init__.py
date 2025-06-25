@@ -11,4 +11,5 @@ from ._compliance_report_versions._compliance_report_version_id import (
     payment_instructions,
 )
 from ._bccr._accounts import account_id
+from ._bccr._compliance_report_versions._compliance_report_version_id import applied_compliance_units
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import compliance_units
