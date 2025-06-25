@@ -28,7 +28,7 @@ def mock_compliance_charge_rate_service():
 
 
 class TestApplyComplianceUnitsService:
-    def test_format_bccr_units_for_display(self):
+    def test_format_bccr_units_display(self):
         # Arrange
         bccr_units = [
             {
@@ -49,7 +49,7 @@ class TestApplyComplianceUnitsService:
         ]
 
         # Act
-        result = ApplyComplianceUnitsService._format_bccr_units_for_display(bccr_units)
+        result = ApplyComplianceUnitsService._format_bccr_units_for_grid_display(bccr_units)
 
         # Assert
         assert len(result) == 2
