@@ -11,7 +11,7 @@ class FacilityIn(ModelSchema):
     province: Optional[str] = None
     postal_code: Optional[str] = None
     operation_id: UUID
-    well_authorization_numbers: List[int] = []
+    well_authorization_numbers: List[str] = []
     latitude_of_largest_emissions: Optional[decimal.Decimal] = None
     longitude_of_largest_emissions: Optional[decimal.Decimal] = None
 
@@ -34,6 +34,7 @@ class FacilityOut(ModelSchema):
     latitude_of_largest_emissions: Optional[float] = Field(None, alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: Optional[float] = Field(None, alias="longitude_of_largest_emissions")
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+    well_authorization_numbers: List[str] = Field(None, alias="well_authorization_numbers")
 
     class Meta:
         model = Facility
@@ -41,7 +42,6 @@ class FacilityOut(ModelSchema):
             "id",
             "name",
             "type",
-            'well_authorization_numbers',
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
             "is_current_year",
