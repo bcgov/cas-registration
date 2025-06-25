@@ -32,7 +32,7 @@ const ActionCell = (params: ActionCellProps) => {
           params.isAllowedCas &&
           params.row.issuance_status !== "Credits Not Issued in BCCR"
         ) {
-          basePath += "/request-issuance-of-earned-credits";
+          basePath += "/review-credits-issuance-request";
         } else {
           basePath += "/request-issuance-review-summary";
         }

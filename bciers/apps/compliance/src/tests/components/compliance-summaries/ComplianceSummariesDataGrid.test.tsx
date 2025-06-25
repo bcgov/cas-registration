@@ -210,7 +210,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/3/request-issuance-of-earned-credits",
+      "/compliance-summaries/3/review-credits-issuance-request",
     );
   });
 
@@ -236,7 +236,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/2/request-issuance-of-earned-credits",
+      "/compliance-summaries/2/review-credits-issuance-request",
     );
 
     // Check third row - action cell to have request credits text
