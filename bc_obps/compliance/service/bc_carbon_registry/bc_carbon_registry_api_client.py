@@ -1,6 +1,6 @@
 import requests
 import logging
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 from typing import Dict, Optional, Type, Any, Union, Literal
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -81,7 +81,7 @@ class BCCarbonRegistryAPIClient:
             response.raise_for_status()
             data = TokenResponse(**response.json())
             self.token = data.access_token
-            self.token_expiry = datetime.now(ZoneInfo("UTC")) + timedelta(seconds=data.expires_in)
+            self.token_expiry = timezone.now() + timedelta(seconds=data.expires_in)
         except Timeout as e:
             logger.error("Authentication timed out: %s", str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Request timed out: {str(e)}", endpoint=url) from e
@@ -103,7 +103,7 @@ class BCCarbonRegistryAPIClient:
         """
         token = getattr(self, "token", None)
         token_expiry = getattr(self, "token_expiry", None)
-        if token is None or token_expiry is None or datetime.now(ZoneInfo("UTC")) >= token_expiry:
+        if token is None or token_expiry is None or timezone.now() >= token_expiry:
             logger.warning("Token missing or expired. Re-authenticating...")
             self._authenticate()
 
@@ -254,10 +254,9 @@ class BCCarbonRegistryAPIClient:
                     stateCode={
                         "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
                     },
-                    stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
                     vintage={
                         "columnFilters": [
-                            ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=datetime.now().year - 3)
+                            ColumnFilter(filterType="Number", type="greaterThanOrEqual", filter=timezone.now().year - 3)
                         ]
                     },
                 ),
