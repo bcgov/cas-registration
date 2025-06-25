@@ -223,23 +223,36 @@ class BCCarbonRegistryAPIClient:
             "POST", self.ACCOUNT_SEARCH_ENDPOINT, data=payload, response_model=AccountDetailsResponse
         )
 
-    def list_all_units(self, holding_account_id: Union[str, int], limit: int = 20, start: int = 0) -> Dict:
+    def list_all_units(
+        self, account_id: Union[str, int], limit: int = 20, start: int = 0, state_filter: str = "ACTIVE"
+    ) -> Dict:
         """
         List compliance units for a given holding account.
         We need to list the units that are ACTIVE and issued in the last 3 years.(Using vintage filter)
+
+        Args:
+            account_id: The ID of the account
+            limit: Maximum number of units to return
+            start: Starting index for pagination
+            state_filter: State filter for units. Can be single state like "ACTIVE"
+                         or multiple states like "ACTIVE,RETIRED"
         """
         self._check_pagination_params(limit, start)
 
-        if isinstance(holding_account_id, str) and not holding_account_id.isdigit():
-            logger.error("Invalid holding_account_id: %s", holding_account_id)
-            raise ValueError("holding_account_id must be a numeric string")
+        if isinstance(account_id, str) and not account_id.isdigit():
+            logger.error("Invalid account_id: %s", account_id)
+            raise ValueError("account_id must be a numeric string")
+
+        # Determine filter type based on whether we have multiple states
+        filter_type: Literal["in", "equals"] = "in" if "," in state_filter else "equals"
 
         payload = SearchFilterWrapper(
             searchFilter=SearchFilter(
                 pagination=Pagination(start=start, limit=limit),
                 filterModel=FilterModel(
-                    accountId={
-                        "columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=holding_account_id)]
+                    accountId={"columnFilters": [ColumnFilter(filterType="Number", type="equals", filter=account_id)]},
+                    stateCode={
+                        "columnFilters": [ColumnFilter(filterType="Text", type=filter_type, filter=state_filter)]
                     },
                     stateCode={"columnFilters": [ColumnFilter(filterType="Text", type="equals", filter="ACTIVE")]},
                     vintage={
