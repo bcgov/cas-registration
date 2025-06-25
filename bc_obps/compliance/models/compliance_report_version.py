@@ -12,6 +12,7 @@ class ComplianceReportVersion(TimeStampedModel):
         OBLIGATION_NOT_MET = "Obligation not met"
         OBLIGATION_FULLY_MET = "Obligation fully met"
         EARNED_CREDITS = "Earned credits"
+        NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits"
 
     compliance_report = models.ForeignKey(
         ComplianceReport,

@@ -43,9 +43,11 @@ class TestComplianceReportVersionService:
         status = ComplianceReportVersionService._determine_compliance_status(Decimal('0.0'), Decimal('10.0'))
         assert status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
 
-        # Test OBLIGATION_FULLY_MET
+        # Test NO_OBLIGATION_OR_EARNED_CREDITS
         status = ComplianceReportVersionService._determine_compliance_status(Decimal('0.0'), Decimal('0.0'))
-        assert status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        assert status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+        # OBLIGATION_FULLY_MET is not tested here anymore since it's only after outstanding balance calculations
 
     def test_create_compliance_report_version_with_credited_emissions(self):
         # Arrange
