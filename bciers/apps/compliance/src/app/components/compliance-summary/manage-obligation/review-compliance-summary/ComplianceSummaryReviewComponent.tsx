@@ -10,8 +10,8 @@ import { FormBase } from "@bciers/components/form";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
-  readonly data: any;
-  readonly complianceSummaryId: string;
+  data: any; // TODO: Replace with the correct type once doing the refactoring #188
+  complianceSummaryId: string;
 }
 
 export function ComplianceSummaryReviewComponent({
@@ -90,7 +90,7 @@ export function ComplianceSummaryReviewComponent({
 
   return (
     <FormBase
-      schema={createComplianceSummaryReviewSchema(data.reportingYear)}
+      schema={createComplianceSummaryReviewSchema(data.reporting_year)}
       uiSchema={complianceSummaryReviewUiSchema}
       formData={data}
       className="w-full"
