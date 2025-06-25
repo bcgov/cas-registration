@@ -67,7 +67,7 @@ describe("ActionCell", () => {
     );
     expectLink(
       "Review Credits Issuance Request",
-      "/compliance-summaries/555/request-issuance-of-earned-credits",
+      "/compliance-summaries/555/review-credits-issuance-request",
     );
   });
 
