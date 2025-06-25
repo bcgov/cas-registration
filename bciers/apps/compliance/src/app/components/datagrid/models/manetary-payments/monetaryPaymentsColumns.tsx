@@ -4,32 +4,32 @@ import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 const monetaryPaymentsColumns = (): GridColDef[] => {
   return [
     {
-      field: "paymentReceivedDate",
+      field: "received_date",
       headerName: "Payment Received Date",
       width: 200,
       type: "string",
     },
     {
-      field: "paymentAmountApplied",
+      field: "amount",
       headerName: "Payment Amount Applied",
       type: "string",
       width: 200,
       valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
     },
     {
-      field: "paymentMethod",
+      field: "payment_method",
       headerName: "Payment Method",
       width: 200,
       type: "string",
     },
     {
-      field: "transactionType",
+      field: "transaction_type",
       headerName: "Transaction Type",
       width: 200,
       type: "string",
     },
     {
-      field: "receiptNumber",
+      field: "payment_object_id",
       headerName: "Receipt Number",
       type: "string",
       flex: 1,

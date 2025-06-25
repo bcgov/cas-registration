@@ -57,16 +57,11 @@ export interface BccrUnit {
 
 export interface Payment {
   id: string | number;
-  paymentReceivedDate: string;
-  paymentAmountApplied: number;
-  paymentMethod: string;
-  transactionType: string;
-  receiptNumber: string;
-}
-
-export interface PaymentsData {
-  rows: Payment[];
-  row_count: number;
+  received_date: string;
+  amount: number;
+  payment_method: string;
+  transaction_type: string;
+  payment_object_id: string;
 }
 
 export interface ComplianceSummaryReviewNoEmissionNoObligationData {
@@ -141,4 +136,42 @@ export interface RequestIssuanceComplianceSummaryData {
   bccr_trading_name: string;
   analyst_comment: string;
   director_comment: string;
+}
+
+export interface ObligationData {
+  reporting_year: number;
+  outstanding_balance: number;
+  equivalent_value: number;
+  obligation_id: string;
+  payments: PaymentData;
+}
+
+export interface PaymentData {
+  data_is_fresh: boolean;
+  rows: Array<{
+    id: number;
+    amount: number;
+    received_date: string;
+    payment_method: string;
+    transaction_type: string;
+    payment_object_id: string;
+  }>;
+  row_count: number;
+}
+
+export interface PaymentRecordData {
+  id: number;
+  amount: number;
+  received_date: string;
+  payment_method: string;
+  transaction_type: string;
+  payment_object_id: string;
+  payment_header: string;
+}
+
+export interface PayObligationTrackPaymentsFormData {
+  outstanding_balance: number;
+  equivalent_value: number;
+  payments: PaymentRecordData[];
+  reporting_year: number;
 }

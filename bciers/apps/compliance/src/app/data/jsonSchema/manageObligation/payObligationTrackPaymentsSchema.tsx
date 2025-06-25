@@ -1,49 +1,55 @@
-import { RJSFSchema, UiSchema, WidgetProps } from "@rjsf/utils";
+import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
   commonReadOnlyOptions,
   readOnlyObjectField,
   readOnlyStringField,
+  readOnlyNumberField,
   tco2eUiConfig,
   headerUiConfig,
   currencyUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { PaymentStatusNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNote";
+import { PaymentStatusNoteWidget } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNoteWidget";
 import { AutomaticOverduePenaltyNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
+import { WidgetProps } from "@rjsf/utils";
 
-interface PayObligationTrackPaymentsFormData {
-  outstandingBalance: string;
-  equivalentValue: string;
-  paymentReceivedDate: string;
-  paymentAmountReceived: string;
-}
+// Custom widget for payment headers
+const PaymentHeaderWidget = (props: WidgetProps) => {
+  const { id } = props;
+  // Extract index from field id like "root_payments_0_payment_header"
+  const indexMatch = id?.match(/root_payments_(\d+)_payment_header/);
+  const paymentIndex = indexMatch ? parseInt(indexMatch[1], 10) : 0;
 
-const PaymentStatusNoteWidget = ({
-  formData,
-}: WidgetProps<PayObligationTrackPaymentsFormData>) => {
-  const outstandingBalance = parseFloat(formData?.outstandingBalance ?? "0");
-  return <PaymentStatusNote outstandingBalance={outstandingBalance} />;
+  return <span>{`Payment ${paymentIndex + 1}`}</span>;
 };
 
 export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
   type: "object",
-  title: "Pay Obligation and Track Payment(s)",
+  title: "Pay Obligation and Track Payments",
   properties: {
     // Outstanding Compliance Obligation Section
-    outstandingObligationHeader: readOnlyObjectField(
+    outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
     ),
-    paymentStatusNote: readOnlyStringField(),
-    outstandingBalance: readOnlyStringField("Outstanding Balance:"),
-    equivalentValue: readOnlyStringField("Equivalent Value:"),
+    payment_status_note: readOnlyStringField(),
+    outstanding_balance: readOnlyNumberField("Outstanding Balance:"),
+    equivalent_value: readOnlyNumberField("Equivalent Value:"),
 
-    // Payment Section
-    paymentHeader: readOnlyObjectField("Payment 1"),
-    paymentReceivedDate: readOnlyStringField("Payment Received Date:"),
-    paymentAmountReceived: readOnlyStringField("Payment Amount Received:"),
+    // Payments Section
+    payments: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          payment_header: readOnlyStringField(),
+          received_date: readOnlyStringField("Payment Received Date:"),
+          amount: readOnlyNumberField("Payment Amount Received:"),
+        },
+      },
+    },
 
     // Penalty Alert Section
-    penaltyAlert: readOnlyStringField(),
+    penalty_alert: readOnlyStringField(),
   },
 });
 
@@ -52,24 +58,40 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
   "ui:classNames": "form-heading-label",
 
   // Outstanding Compliance Obligation Section
-  outstandingObligationHeader: headerUiConfig,
-  paymentStatusNote: {
+  outstanding_obligation_header: headerUiConfig,
+  payment_status_note: {
     "ui:widget": PaymentStatusNoteWidget,
     "ui:options": {
       label: false,
       inline: true,
     },
   },
-  outstandingBalance: tco2eUiConfig,
-  equivalentValue: currencyUiConfig,
+  outstanding_balance: tco2eUiConfig,
+  equivalent_value: currencyUiConfig,
 
-  // Payment Section
-  paymentHeader: headerUiConfig,
-  paymentReceivedDate: commonReadOnlyOptions,
-  paymentAmountReceived: currencyUiConfig,
+  // Payments Section
+  payments: {
+    "ui:options": {
+      orderable: false,
+      addable: false,
+      removable: false,
+      label: false,
+    },
+    items: {
+      payment_header: {
+        "ui:widget": PaymentHeaderWidget,
+        "ui:classNames": "text-bc-bg-blue mt-4",
+        "ui:options": {
+          label: false,
+        },
+      },
+      received_date: commonReadOnlyOptions,
+      amount: currencyUiConfig,
+    },
+  },
 
   // Penalty Alert Section
-  penaltyAlert: {
+  penalty_alert: {
     "ui:widget": AutomaticOverduePenaltyNote,
     "ui:options": {
       label: false,

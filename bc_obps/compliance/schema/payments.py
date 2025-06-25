@@ -1,14 +1,14 @@
 from typing import List
 from compliance.models.elicensing_payment import ElicensingPayment
-from ninja import Schema, ModelSchema
+from ninja import ModelSchema, Schema
 
 
 class PaymentOut(ModelSchema):
-    """Schema for a single payment record"""
+    """Schema for a single payment record using actual model field names"""
 
     class Meta:
         model = ElicensingPayment
-        fields = ['id', 'amount', 'received_date']
+        fields = ['id', 'amount', 'received_date', 'payment_object_id']
 
 
 class ElicensingPaymentListOut(Schema):

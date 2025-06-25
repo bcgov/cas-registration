@@ -3,9 +3,12 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.core.exceptions import ValidationError
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from reporting.models.report_version import ReportVersion
+from reporting.models.reporting_year import ReportingYear
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.dataclass import ObligationData
+from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -156,3 +159,89 @@ class ComplianceObligationService:
             ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
         """
         return ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+
+    @staticmethod
+    def _get_outstanding_balance_dollars(obligation: ComplianceObligation) -> Decimal:
+        """
+        Gets the outstanding balance in dollars for a compliance obligation.
+
+        Args:
+            obligation (ComplianceObligation): The compliance obligation
+
+        Returns:
+            Decimal: The outstanding balance amount in dollars
+        """
+        if obligation.elicensing_invoice:
+            return obligation.elicensing_invoice.outstanding_balance
+        elif obligation.fee_amount_dollars:
+            return obligation.fee_amount_dollars
+        return Decimal('0.00')
+
+    @staticmethod
+    def _calculate_outstanding_balance_tco2e(
+        outstanding_balance_dollars: Decimal, reporting_year: ReportingYear
+    ) -> Decimal:
+        """
+        Calculates the tCO2e equivalent of the outstanding balance in dollars.
+
+        Args:
+            outstanding_balance_dollars (Decimal): The outstanding balance amount in dollars
+            reporting_year (ReportingYear): The reporting year for getting the charge rate
+
+        Returns:
+            Decimal: The tCO2e equivalent of the outstanding balance
+        """
+        charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
+
+        # Handle zero balance
+        if outstanding_balance_dollars == 0:
+            return Decimal('0')
+
+        # Handle zero charge rate
+        if charge_rate == 0:
+            return Decimal('0')
+
+        # Convert outstanding balance to tCO2e equivalent (dollars / rate = tCO2e)
+        return outstanding_balance_dollars / charge_rate
+
+    @classmethod
+    def get_obligation_data_by_report_version(cls, compliance_report_version_id: int) -> ObligationData:
+        """
+        Gets essential obligation data without payments for a compliance report version.
+
+        Args:
+            compliance_report_version_id (int): The ID of the compliance report version
+
+        Returns:
+            ObligationData: Essential obligation data
+
+        Raises:
+            ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
+        """
+        # Refresh elicensing data before accessing it
+        refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id
+        )
+
+        obligation = ComplianceObligation.objects.select_related(
+            'compliance_report_version__report_compliance_summary__report_version__report__reporting_year',
+            'elicensing_invoice',
+        ).get(compliance_report_version_id=compliance_report_version_id)
+
+        outstanding_balance_dollars = ComplianceObligationService._get_outstanding_balance_dollars(obligation)
+
+        reporting_year = (
+            obligation.compliance_report_version.report_compliance_summary.report_version.report.reporting_year
+        )
+
+        outstanding_balance_tco2e = ComplianceObligationService._calculate_outstanding_balance_tco2e(
+            outstanding_balance_dollars, reporting_year
+        )
+
+        return ObligationData(
+            reporting_year=reporting_year.reporting_year,
+            outstanding_balance=outstanding_balance_tco2e,
+            equivalent_value=outstanding_balance_dollars,
+            obligation_id=obligation.obligation_id,
+            data_is_fresh=refreshed_data.data_is_fresh,
+        )

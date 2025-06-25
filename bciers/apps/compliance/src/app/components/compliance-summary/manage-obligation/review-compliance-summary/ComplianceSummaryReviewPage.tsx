@@ -26,11 +26,11 @@ export default async function ComplianceSummaryReviewPage({
         rows: [
           {
             id: 1,
-            paymentReceivedDate: "-",
-            paymentAmount: "-",
-            paymentMethod: "-",
-            transactionType: "-",
-            referenceNumber: "-",
+            received_date: "-",
+            amount: "-",
+            payment_method: "-",
+            transaction_type: "-",
+            payment_object_id: "-",
           },
         ],
         row_count: 1,

@@ -49,11 +49,21 @@ vi.mock(
 );
 
 const mockData = {
-  reportingYear: "2024",
-  outstandingBalance: "0",
-  equivalentValue: "0.00",
-  paymentReceivedDate: "Dec 6, 2025",
-  paymentAmountReceived: "8,000.00",
+  reporting_year: "2024",
+  outstanding_balance: "0.0000 tCO2e",
+  equivalent_value: "$0.00",
+  payments: [
+    {
+      id: 1,
+      amount: 8000,
+      received_date: "Dec 6, 2025",
+      payment_method: "Credit Card",
+      transaction_type: "Payment",
+      payment_object_id: "RCP-001",
+      payment_header: "Payment 1",
+      payment_amount_received: 8000,
+    },
+  ],
 };
 
 describe("ObligationTrackPaymentsComponent", () => {
