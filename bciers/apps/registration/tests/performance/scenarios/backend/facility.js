@@ -21,7 +21,7 @@ export function createFacility(operationId) {
       province: "ON",
       postal_code: "A1A 1A1",
       operation_id: operationId || mockOperationId,
-      well_authorization_numbers: [randomIntBetween(0, 1000000000)], // Randomize well auth number
+      well_authorization_numbers: [str(randomIntBetween(0, 1000000000))], // Randomize well auth number
       latitude_of_largest_emissions: 43.7,
       longitude_of_largest_emissions: -79.42,
     },
