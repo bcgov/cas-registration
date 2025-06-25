@@ -141,9 +141,11 @@ export class OperatorPOM {
       OperatorFormField.HAS_PARENT_COMPANY,
     );
     this.fieldPostal = page.getByLabel(OperatorFormField.POSTAL_CODE);
-    this.fieldSelectCRA = page.getByRole("textbox", {
-      name: SelectOperatorFormField.NAME_CRA,
-    });
+    this.fieldSelectCRA =
+      page.getByPlaceholder(SelectOperatorFormField.PLACEHOLDER_CRA) ||
+      page.getByRole("textbox", {
+        name: OperatorFormField.CRA_LABEL,
+      });
     this.fieldSelectLegalName = page.getByPlaceholder(
       SelectOperatorFormField.PLACEHOLDER_LEGAL_NAME,
     );
@@ -226,6 +228,7 @@ export class OperatorPOM {
   async fillFields(fieldLabels: string[], values: { [key: string]: string }) {
     for (const labelText of fieldLabels) {
       // Get all matching input fields for the current field label
+      console.log(`Filling field: ${labelText}`);
       const inputFields = await this.page.getByLabel(labelText);
       const inputField = inputFields.nth((await inputFields.count()) - 1);
 
@@ -251,7 +254,7 @@ export class OperatorPOM {
     // Define fields and values for parent information
     const parentFields = [
       OperatorFormField.BUSINESS_ADDRESS,
-      OperatorFormField.CRA,
+      OperatorFormField.CRA_LABEL,
       OperatorFormField.LEGAL_NAME,
       OperatorFormField.MUNICIPALITY,
       OperatorFormField.POSTAL_CODE,
@@ -260,7 +263,7 @@ export class OperatorPOM {
     const parentValues = {
       [OperatorFormField.BUSINESS_ADDRESS]:
         OperatorE2EValue.INPUT_BUSINESS_ADDRESS_PARENT,
-      [OperatorFormField.CRA]: OperatorE2EValue.INPUT_CRA_PARENT,
+      [OperatorFormField.CRA_LABEL]: OperatorE2EValue.INPUT_CRA_PARENT,
       [OperatorFormField.LEGAL_NAME]: OperatorE2EValue.INPUT_LEGAL_NAME_PARENT,
       [OperatorFormField.MUNICIPALITY]:
         OperatorE2EValue.INPUT_MUNICIPALITY_PARENT,
@@ -287,14 +290,14 @@ export class OperatorPOM {
     const partnerFields = [
       OperatorFormField.BC_CRN,
       OperatorFormField.BUSINESS_STRUCTURE,
-      OperatorFormField.CRA,
+      OperatorFormField.CRA_LABEL,
       OperatorFormField.LEGAL_NAME,
     ];
     const partnerValues = {
       [OperatorFormField.BC_CRN]: OperatorE2EValue.INPUT_BC_CRN_PARTNER,
       [OperatorFormField.BUSINESS_STRUCTURE]:
         OperatorE2EValue.INPUT_BUSINESS_STRUCTRE_1,
-      [OperatorFormField.CRA]: OperatorE2EValue.INPUT_CRA_PARTNER,
+      [OperatorFormField.CRA_LABEL]: OperatorE2EValue.INPUT_CRA_PARTNER,
       [OperatorFormField.LEGAL_NAME]: OperatorE2EValue.INPUT_LEGAL_NAME_PARTNER,
     };
 
@@ -308,7 +311,7 @@ export class OperatorPOM {
       OperatorFormField.BC_CRN,
       OperatorFormField.BUSINESS_ADDRESS,
       OperatorFormField.BUSINESS_STRUCTURE,
-      OperatorFormField.CRA,
+      OperatorFormField.CRA_LABEL,
       OperatorFormField.LEGAL_NAME,
       OperatorFormField.MUNICIPALITY,
       OperatorFormField.POSTAL_CODE,
@@ -320,7 +323,7 @@ export class OperatorPOM {
         OperatorE2EValue.INPUT_BUSINESS_ADDRESS,
       [OperatorFormField.BUSINESS_STRUCTURE]:
         OperatorE2EValue.INPUT_BUSINESS_STRUCTRE_1,
-      [OperatorFormField.CRA]: OperatorE2EValue.INPUT_CRA,
+      [OperatorFormField.CRA_LABEL]: OperatorE2EValue.INPUT_CRA,
       [OperatorFormField.LEGAL_NAME]: OperatorE2EValue.INPUT_LEGAL_NAME,
       [OperatorFormField.MUNICIPALITY]: OperatorE2EValue.INPUT_MUNICIPALITY,
       [OperatorFormField.POSTAL_CODE]: OperatorE2EValue.INPUT_POSTAL_CODE,
