@@ -26,7 +26,7 @@ export function ComplianceSummaryReviewComponent({
 
   /**
    * Attempts to fetch and open a compliance invoice PDF in a new window.
-   * - Calls the API endpoint `/compliance/api/invoice/{complianceSummaryId}`.
+   * - Calls the app API route `/compliance/api/invoice/{complianceSummaryId}`.
    * - If the response is a 4xx/5xx with a JSON payload containing `errors`,
    *   extracts the first error message and stores it in state for display.
    * - If the response is successful (PDF stream), converts it to a Blob,

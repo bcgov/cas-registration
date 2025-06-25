@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 
 /**
  * API route handler for downloading invoice PDFs directly.
+   Calls the endpoint `/compliance/api/{complianceSummaryId}/invoice/pdf`.
  * Also handles JSON‐encoded errors returned by the service.
  */
 export async function GET(
@@ -18,7 +19,7 @@ export async function GET(
     if (!apiUrl) {
       throw new Error("API_URL environment variable is not set");
     }
-    const url = `${apiUrl}compliance/compliance-report-versions/${id}/invoice`;
+    const url = `${apiUrl}compliance/compliance-report-versions/${id}/invoice/pdf`;
 
     // Obtain user token
     const token = await getToken();
