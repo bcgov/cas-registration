@@ -6,12 +6,17 @@ vi.mock("next-auth/jwt", () => ({
   getToken: vi.fn(),
   encode: vi.fn(),
 }));
-vi.mock("next/server", () => ({
-  ...vi.importActual("next/server"),
-  NextResponse: {
-    next: vi.fn(),
-  },
-}));
+vi.mock("next/server", async (importOriginal) => {
+  const original: any = await importOriginal();
+
+  return {
+    ...original,
+    NextResponse: {
+      redirect: original.NextResponse.redirect,
+      next: vi.fn(),
+    },
+  };
+});
 
 const mockGetToken = getToken as ReturnType<typeof vi.fn>;
 const mockEncode = encode as ReturnType<typeof vi.fn>;
@@ -43,6 +48,41 @@ describe("The withTokenRefresh middleware", () => {
 
     expect(response).toEqual({ test: 2 });
   });
+  it("Signs out the user if the token refresh fails", async () => {
+    mockGetToken.mockReturnValue({ expires_at: 10000 });
+
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: false,
+        status: 401,
+        json: () =>
+          Promise.resolve({
+            error: "Unauthorized",
+          }),
+      }),
+    ) as any;
+
+    const middlewareUnderTest = withTokenRefreshMiddleware(vi.fn());
+    const request = {
+      url: "http://example.com/some-path",
+      cookies: {
+        getAll: vi
+          .fn()
+          .mockReturnValue([
+            { name: "next-auth.session-token.to-delete" },
+            { name: "to-keep" },
+          ]),
+      },
+    };
+
+    const response = await middlewareUnderTest(request as any, {} as any);
+
+    // Temporary redirect
+    expect(response?.status).toEqual(307);
+    expect(response?.headers.get("Location")).toEqual(
+      "http://example.com/onboarding",
+    );
+  });
   it("Encodes a JWT with the new tokens", async () => {
     global.fetch = vi.fn(() =>
       Promise.resolve({
@@ -56,7 +96,7 @@ describe("The withTokenRefresh middleware", () => {
     ) as any;
 
     mockEncode.mockReturnValue("encoded token");
-    mockGetToken.mockReturnValue({ expires_at: Date.now() / 1000 - 10000 });
+    mockGetToken.mockReturnValue({ expires_at: 10000 });
 
     const mockSetCookies = vi.fn();
     const mockNextResponse = { cookies: { set: mockSetCookies } };
