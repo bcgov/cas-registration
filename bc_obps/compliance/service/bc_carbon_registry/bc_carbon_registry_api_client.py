@@ -89,8 +89,13 @@ class BCCarbonRegistryAPIClient:
             logger.error("Authentication failed due to connection error: %s", str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Connection error: {str(e)}", endpoint=url) from e
         except HTTPError as e:
+            response_text = (
+                getattr(e.response, 'text', 'No response text available')
+                if hasattr(e, 'response')
+                else 'No response available'
+            )
             logger.error(
-                "Authentication failed with HTTP error: %s, response: %s", str(e), response.text, exc_info=True
+                "Authentication failed with HTTP error: %s, response: %s", str(e), response_text, exc_info=True
             )
             raise BCCarbonRegistryError(f"HTTP error: {str(e)}", endpoint=url) from e
         except (ValidationError, RequestException) as e:
