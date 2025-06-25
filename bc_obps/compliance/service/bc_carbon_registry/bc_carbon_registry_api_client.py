@@ -22,6 +22,8 @@ from compliance.service.bc_carbon_registry.schema import (
     SearchFilterWrapper,
 )
 from requests.exceptions import Timeout, ConnectionError, HTTPError, RequestException
+from compliance.service.bc_carbon_registry.utils import log_error_message
+
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +147,7 @@ class BCCarbonRegistryAPIClient:
             logger.error("Invalid response from %s: %s", url, str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Invalid response format: {str(e)}", endpoint=url) from e
         except Exception as e:
+            log_error_message(e)  # If BCCR API returns a valid error response, this will log it
             logger.error("Request to %s failed: %s", url, str(e), exc_info=True)
             raise BCCarbonRegistryError(f"Request failed: {str(e)}", endpoint=url) from e
 
