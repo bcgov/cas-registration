@@ -19,45 +19,46 @@ export const createComplianceSummaryReviewSchema = (
   title: `Review ${reportingYear} Compliance Summary`,
   properties: {
     // Summary Section
-    summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
-    emissionsAttributableForCompliance: readOnlyStringField(
+    summary_header: readOnlyObjectField(`From ${reportingYear} Report`),
+    emissions_attributable_for_compliance: readOnlyStringField(
       "Emissions Attributable for Compliance:",
     ),
-    emissionLimit: readOnlyStringField("Emissions Limit:"),
-    excessEmissions: readOnlyStringField("Excess Emissions:"),
+    emission_limit: readOnlyStringField("Emissions Limit:"),
+    excess_emissions: readOnlyStringField("Excess Emissions:"),
     // Obligation Section
-    obligationHeader: readOnlyObjectField(
+    obligation_header: readOnlyObjectField(
       `${reportingYear} Compliance Obligation`,
     ),
-    obligationId: readOnlyStringField("Obligation ID:"),
-    complianceChargeRate: readOnlyStringField(
+    obligation_id: readOnlyStringField("Obligation ID:"),
+    compliance_charge_rate: readOnlyStringField(
       `${reportingYear} Compliance Charge Rate:`,
     ),
-    equivalentValue: readOnlyStringField("Equivalent Value:"),
+    equivalent_value: readOnlyStringField("Equivalent Value:"),
     // Compliance Units Section
-    complianceUnits: readOnlyStringField("Compliance Units Applied"),
+    applied_compliance_units: readOnlyStringField(),
     // Monetary Payments Section
-    monetaryPayments: readOnlyStringField("Monetary Payments Made"),
+    monetary_payments: readOnlyStringField(),
     // Outstanding Compliance Obligation Section
-    outstandingObligationHeader: readOnlyObjectField(
+    outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
     ),
-    outstandingBalance: readOnlyStringField("Outstanding Balance:"),
-    outstandingBalanceEquivalentValue: readOnlyStringField("Equivalent Value:"),
+    outstanding_balance: readOnlyStringField("Outstanding Balance:"),
+    outstanding_balance_equivalent_value:
+      readOnlyStringField("Equivalent Value:"),
     // Penalty Section
-    penaltyHeader: readOnlyObjectField(
+    penalty_header: readOnlyObjectField(
       "Automatic Overdue Penalty (as of Today):",
     ),
-    penaltyAlert: readOnlyStringField(),
-    penaltyStatus: readOnlyStringField("Penalty Status:"),
-    penaltyType: readOnlyStringField("Penalty Type:"),
-    penaltyChargeRate: readOnlyStringField("Penalty Rate (Daily):"),
-    daysLate: readOnlyStringField("Days Late:"),
-    accumulatedPenalty: readOnlyStringField("Accumulated Penalty:"),
-    accumulatedCompounding: readOnlyStringField("Accumulated Compounding:"),
-    penaltyToday: readOnlyStringField("Penalty (as of Today):"),
-    faaInterest: readOnlyStringField("FAA Interest (as of Today):"),
-    totalAmount: readOnlyStringField("Total Amount (as of Today):"),
+    penalty_alert: readOnlyStringField(),
+    penalty_status: readOnlyStringField("Penalty Status:"),
+    penalty_type: readOnlyStringField("Penalty Type:"),
+    penalty_charge_rate: readOnlyStringField("Penalty Rate (Daily):"),
+    days_late: readOnlyStringField("Days Late:"),
+    accumulated_penalty: readOnlyStringField("Accumulated Penalty:"),
+    accumulated_compounding: readOnlyStringField("Accumulated Compounding:"),
+    penalty_today: readOnlyStringField("Penalty (as of Today):"),
+    faa_interest: readOnlyStringField("FAA Interest (as of Today):"),
+    total_amount: readOnlyStringField("Total Amount (as of Today):"),
   },
 });
 
@@ -66,71 +67,72 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   "ui:classNames": "form-heading-label",
 
   // Summary Section
-  summaryHeader: headerUiConfig,
-  emissionsAttributableForCompliance: tco2eUiConfig,
-  emissionLimit: tco2eUiConfig,
-  excessEmissions: tco2eUiConfig,
+  summary_header: headerUiConfig,
+  emissions_attributable_for_compliance: tco2eUiConfig,
+  emission_limit: tco2eUiConfig,
+  excess_emissions: tco2eUiConfig,
 
   // Obligation Section
-  obligationHeader: headerUiConfig,
-  obligationId: commonReadOnlyOptions,
-  complianceChargeRate: {
+  obligation_header: headerUiConfig,
+  obligation_id: commonReadOnlyOptions,
+  compliance_charge_rate: {
     ...commonReadOnlyOptions,
     "ui:options": {
       prefix: "$",
-      displayUnit: " /tCO2e",
+      suffix: "/tCO2e",
     },
   },
-  equivalentValue: {
+  equivalent_value: {
     ...commonReadOnlyOptions,
     "ui:options": {
       prefix: "$",
-      displayUnit: "tCO2e",
     },
   },
-  complianceUnits: {
+  applied_compliance_units: {
     "ui:widget": ComplianceUnitsGrid,
     "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
+      label: false,
       inline: true,
     },
   },
-  monetaryPayments: {
+  monetary_payments: {
     "ui:widget": MonetaryPaymentsGrid,
     "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
+      label: false,
       inline: true,
     },
   },
 
   // Outstanding Compliance Obligation Section
-  outstandingObligationHeader: headerUiConfig,
-  outstandingBalance: tco2eUiConfig,
-  outstandingBalanceEquivalentValue: currencyUiConfig,
+  outstanding_obligation_header: headerUiConfig,
+  outstanding_balance: tco2eUiConfig,
+  outstanding_balance_equivalent_value: currencyUiConfig,
 
   // Penalty Section
-  penaltyHeader: headerUiConfig,
-  penaltyAlert: {
+  penalty_header: headerUiConfig,
+  penalty_alert: {
     "ui:widget": AutomaticOverduePenaltyAlertNote,
     "ui:options": {
       label: false,
       inline: true,
     },
   },
-  penaltyStatus: commonReadOnlyOptions,
-  penaltyType: commonReadOnlyOptions,
-  penaltyChargeRate: {
+  penalty_status: commonReadOnlyOptions,
+  penalty_type: commonReadOnlyOptions,
+  penalty_charge_rate: {
     ...commonReadOnlyOptions,
     "ui:options": {
       suffix: "%",
     },
   },
-  daysLate: commonReadOnlyOptions,
-  accumulatedPenalty: currencyUiConfig,
-  accumulatedCompounding: currencyUiConfig,
-  penaltyToday: currencyUiConfig,
-  faaInterest: currencyUiConfig,
-  totalAmount: currencyUiConfig,
+  days_late: commonReadOnlyOptions,
+  accumulated_penalty: currencyUiConfig,
+  accumulated_compounding: currencyUiConfig,
+  penalty_today: currencyUiConfig,
+  faa_interest: currencyUiConfig,
+  total_amount: currencyUiConfig,
 };
