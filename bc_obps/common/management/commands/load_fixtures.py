@@ -21,6 +21,7 @@ class Command(BaseCommand):
             f'{fixture_base_dir}/multiple_operator.json',
             f'{fixture_base_dir}/document.json',
             f'{fixture_base_dir}/user_operator.json',
+            f'{fixture_base_dir}/well_authorization_number.json',
             f'{fixture_base_dir}/facility.json',
             f'{fixture_base_dir}/facility_designated_operation_timeline.json',
             f'{fixture_base_dir}/operation_designated_operator_timeline.json',

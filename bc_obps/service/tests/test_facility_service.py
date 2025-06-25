@@ -116,7 +116,7 @@ class TestGetIfAuthorized:
                 latitude_of_largest_emissions=5,
                 longitude_of_largest_emissions=5,
                 operation_id=owning_operation.id,
-                well_authorization_numbers=[12345, 654321],
+                well_authorization_numbers=["12345", "654321"],
             ),
             FacilityIn(
                 name='Test Facility 3',
@@ -211,7 +211,7 @@ class TestCreateFacilityWithDesignatedOperation:
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
-            well_authorization_numbers=[12345, 654321],
+            well_authorization_numbers=["12345", "654321"],
         )
 
         FacilityService.create_facility_with_designated_operation(approved_user_operator.user.user_guid, payload)
@@ -353,7 +353,7 @@ class TestUpdateFacility:
         payload = FacilityIn(
             name='zip',
             type=Facility.Types.LARGE_FACILITY,
-            well_authorization_numbers=[1, 2, 3],
+            well_authorization_numbers=["1", "2", "3"],
             is_current_year=True,
             starting_date="2024-07-07T09:00:00.000Z",
             street_address="1234 Test St",
@@ -457,7 +457,7 @@ class TestUpdateFacility:
             latitude_of_largest_emissions=5,
             longitude_of_largest_emissions=5,
             operation_id=owning_operation.id,
-            well_authorization_numbers=[1, 2, 3],
+            well_authorization_numbers=["1", "2", "3"],
         )
         FacilityService.update_facility(user.user_guid, facility.id, payload)
         facility.refresh_from_db()
@@ -475,7 +475,7 @@ class TestUpdateFacility:
 
     @staticmethod
     def test_update_facility_remove_well_authorization_numbers():
-        well_auth_numbers = [123, 9876]
+        well_auth_numbers = ["123", "9876"]
         user, owning_operation, facility = TestUpdateFacility._setup_facility(
             facility_well_authorization_numbers=well_auth_numbers
         )

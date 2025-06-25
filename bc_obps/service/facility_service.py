@@ -127,8 +127,9 @@ class FacilityService:
         # Add new numbers
         if numbers_to_add:
             for number in numbers_to_add:
+                # convert the number from a string to an integer (as the database expects)
                 facility.well_authorization_numbers.add(
-                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, number)
+                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, int(number))
                 )
 
         # Numbers to remove
