@@ -31,6 +31,7 @@
       "bc_corporate_registry_number": "def1234567",
       "business_structure": "General Partnership",
       "mailing_address": 3,
+      "physical_address": 4,
       "status": "Approved"
     }
   },

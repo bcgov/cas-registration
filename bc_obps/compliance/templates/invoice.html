@@ -123,6 +123,10 @@
       .detail-row p {
         margin: 0;
       }
+      .amount-header {
+        text-align: left !important;
+        padding-left: 8px; /* optional: tweak this for visual alignment with "Amount Due:" */
+      }
       .fees-container {
         margin-top: 30px;
         margin-bottom: 40px;
@@ -222,12 +226,12 @@
             </div>
             <div class="detail-row">
               <h4>{{ compliance_obligation_year }} Compliance Obligation:</h4>
-              <p>{{ compliance_obligation }} tCO₂e</p>
+              <p>{{ compliance_obligation }}</p>
             </div>
 
             <div class="detail-row">
               <h4>{{ compliance_obligation_year }} Compliance Charge Rate:</h4>
-              <p>{{ compliance_obligation_charge_rate }} tCO₂e</p>
+              <p>{{ compliance_obligation_charge_rate }}</p>
             </div>
             <div class="detail-row">
               <h4>Equivalent Amount:</h4>
@@ -244,11 +248,11 @@
         <div class="fees-grid fees-grid--header">
           <div class="fees-column"><h4>Date</h4></div>
           <div class="fees-column"><h4>Description</h4></div>
-          <div class="fees-column"><h4>Amount</h4></div>
+          <div class="fees-column amount-header"><h4>Amount</h4></div>
         </div>
 
         <!-- Loop over each fee_item -->
-        {% for item in fee_items %}
+        {% for item in billing_items %}
         <div class="fees-grid">
           <div class="fees-column">
             <p>{{ item.date }}</p>
@@ -268,7 +272,7 @@
           <div class="fees-column"></div>
           <div class="fees-column fees-column--total">
             <h4>Amount Due:</h4>
-            <p>{{ total_amount }}</p>
+            <p>{{ total_amount_due }}</p>
           </div>
         </div>
       </div>
