@@ -8,11 +8,12 @@ from compliance.models import (
     ElicensingAdjustment,
     ComplianceObligation,
 )
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from compliance.dataclass import RefreshWrapperReturn
 import logging
 from pydantic import ValidationError
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,9 @@ class ElicensingDataRefreshService:
         ).elicensing_invoice
         if not invoice:
             raise ValidationError(f"No related invoice found for report version ID: {compliance_report_version_id}")
+        # Limit calls successive calls to refresh an invoice from the elicensing API to once per 15mins
+        if invoice.last_refreshed is not None and invoice.last_refreshed > timezone.now() - timedelta(seconds=900):
+            return RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
         try:
             ElicensingDataRefreshService.refresh_data_by_invoice(
                 client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number
@@ -71,6 +75,7 @@ class ElicensingDataRefreshService:
                 "outstanding_balance": Decimal(invoice_response.invoiceOutstandingBalance).quantize(Decimal("0.00")),
                 "invoice_fee_balance": Decimal(invoice_response.invoiceFeeBalance).quantize(Decimal("0.00")),
                 "invoice_interest_balance": Decimal(invoice_response.invoiceInterestBalance).quantize(Decimal("0.00")),
+                "last_refreshed": timezone.now(),
             },
         )
         for fee in invoice_response.fees:

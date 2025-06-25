@@ -8,6 +8,8 @@ from decimal import Decimal
 
 import pytest
 from model_bakery.baker import make_recipe
+from django.utils import timezone
+from datetime import timedelta
 
 
 class TestElicensingOperatorService:
@@ -92,7 +94,9 @@ class TestElicensingOperatorService:
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
     )
     def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh):
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+        invoice = make_recipe(
+            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
+        )
         obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
         mock_refresh.side_effect = ValueError("Failed to parse API response")
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
@@ -105,11 +109,30 @@ class TestElicensingOperatorService:
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
     )
-    def test_compliance_report_version_id_wrapper_fresh_data(self, mock_refresh):
-        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+    def test_compliance_report_version_id_wrapper_successful_refresh(self, mock_refresh):
+        invoice = make_recipe(
+            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
+        )
         obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
+        mock_refresh.assert_called_once()
+        assert returned_data.data_is_fresh == True  # noqa: E712
+        assert returned_data.invoice == invoice
+
+    @pytest.mark.django_db
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
+    )
+    def test_compliance_report_version_id_wrapper_skips_refresh(self, mock_refresh):
+        invoice = make_recipe(
+            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(seconds=30)
+        )
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id
+        )
+        mock_refresh.assert_not_called()
         assert returned_data.data_is_fresh == True  # noqa: E712
         assert returned_data.invoice == invoice
