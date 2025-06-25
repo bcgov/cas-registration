@@ -2,8 +2,7 @@
 const { withSentryConfig } = require("@sentry/nextjs");
 
 const baseConfig = {
-  // TODO: Set back to true
-  reactStrictMode: false,
+  reactStrictMode: true,
   swcMinify: true,
   output: "standalone",
   experimental: {
