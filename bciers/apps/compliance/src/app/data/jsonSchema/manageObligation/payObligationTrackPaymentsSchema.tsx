@@ -22,6 +22,7 @@ const PaymentStatusNoteWidget = ({
   formData,
 }: WidgetProps<PayObligationTrackPaymentsFormData>) => {
   const outstandingBalance = parseFloat(formData?.outstandingBalance ?? "0");
+
   return <PaymentStatusNote outstandingBalance={outstandingBalance} />;
 };
 

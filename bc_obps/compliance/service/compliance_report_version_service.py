@@ -3,6 +3,8 @@ from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from reporting.models.reporting_year import ReportingYear
 from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
@@ -117,32 +119,97 @@ class ComplianceReportVersionService:
             return ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
 
     @staticmethod
-    def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:
+    def _get_base_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:
         """
-        Calculates the outstanding balance for a compliance report_version.
-        The balance is equal to excess emissions if excess emissions are greater than 0,
-        and 0 otherwise.
+        Gets the base outstanding balance from excess emissions.
 
         Args:
             compliance_report_version (ComplianceReportVersion): The compliance report version record
 
         Returns:
-            Decimal: The outstanding balance
+            Decimal: The base outstanding balance (excess emissions if positive, otherwise 0)
         """
+        return max(compliance_report_version.report_compliance_summary.excess_emissions, Decimal('0'))
 
+    @staticmethod
+    def _get_compliance_obligation(compliance_report_version: ComplianceReportVersion) -> ComplianceObligation | None:
+        """
+        Gets the compliance obligation for a compliance report version.
+
+        Args:
+            compliance_report_version (ComplianceReportVersion): The compliance report version record
+
+        Returns:
+            ComplianceObligation | None: The compliance obligation or None if it doesn't exist
+        """
+        try:
+            return ComplianceObligation.objects.get(compliance_report_version=compliance_report_version)
+        except ComplianceObligation.DoesNotExist:
+            return None
+
+    @staticmethod
+    def _calculate_emissions_paid_equivalent(
+        obligation: ComplianceObligation, reporting_year: ReportingYear
+    ) -> Decimal:
+        """
+        Calculates the emissions equivalent of monetary payments made.
+
+        Args:
+            obligation (ComplianceObligation): The compliance obligation
+            reporting_year (ReportingYear): The reporting year for getting the charge rate
+
+        Returns:
+            Decimal: The emissions equivalent of payments made (in tCO2e)
+        """
+        if not obligation.fee_amount_dollars:
+            return Decimal('0')
+
+        charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
+
+        if charge_rate <= Decimal('0'):
+            return Decimal('0')
+
+        monetary_outstanding = ComplianceObligationService.calculate_outstanding_balance(obligation.id)
+        monetary_paid = obligation.fee_amount_dollars - monetary_outstanding
+
+        # Convert monetary payments back to emissions equivalent (dollars / rate = tCO2e)
+        return monetary_paid / charge_rate
+
+    @staticmethod
+    def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:
+        """
+        Calculates the outstanding balance for a compliance report_version in tCO2e.
+        The balance equals excess emissions minus any monetary payments converted to emissions equivalent.
+
+        Args:
+            compliance_report_version (ComplianceReportVersion): The compliance report version record
+
+        Returns:
+            Decimal: The outstanding balance in tCO2e
+        """
         # Start with the base outstanding balance (excess emissions if positive, otherwise 0)
-        outstanding_balance = max(compliance_report_version.report_compliance_summary.excess_emissions, Decimal('0'))
+        outstanding_balance = ComplianceReportVersionService._get_base_outstanding_balance(compliance_report_version)
+
+        if outstanding_balance == Decimal('0'):
+            return outstanding_balance
+
+        # Check if there is a compliance obligation with monetary payments
+        obligation = ComplianceReportVersionService._get_compliance_obligation(compliance_report_version)
+
+        if obligation:
+            reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
+            emissions_paid_equivalent = ComplianceReportVersionService._calculate_emissions_paid_equivalent(
+                obligation, reporting_year
+            )
+
+            outstanding_balance = max(outstanding_balance - emissions_paid_equivalent, Decimal('0'))
 
         # Future extension points:
-        # 1. Incorporate monetary payments into the calculation
-        # monetary_payments = _get_monetary_payments(compliance_summary)
-        # outstanding_balance = calculate_with_monetary_payments(outstanding_balance, monetary_payments)
-
         # 2. Incorporate compliance credits into the calculation
         # compliance_credits = _get_compliance_credits(compliance_summary)
         # outstanding_balance = calculate_with_compliance_credits(outstanding_balance, compliance_credits)
 
-        return outstanding_balance
+        return outstanding_balance.quantize(Decimal('0.0001'))
 
     @staticmethod
     def get_operation_by_compliance_report_version(compliance_report_version_id: int) -> Operation:

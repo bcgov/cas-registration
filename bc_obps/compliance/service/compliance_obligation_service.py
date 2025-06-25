@@ -156,3 +156,77 @@ class ComplianceObligationService:
             ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
         """
         return ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+
+    @classmethod
+    def _get_obligation_with_payments(cls, obligation_id: int) -> ComplianceObligation:
+        """
+        Retrieves a compliance obligation with all related payment data pre-fetched.
+
+        Args:
+            obligation_id (int): The ID of the compliance obligation
+
+        Returns:
+            ComplianceObligation: The obligation with related data
+
+        Raises:
+            ComplianceObligation.DoesNotExist: If the compliance obligation doesn't exist
+        """
+        return (
+            ComplianceObligation.objects.select_related('elicensing_invoice')
+            .prefetch_related('elicensing_invoice__elicensing_line_items__elicensing_payments')
+            .get(id=obligation_id)
+        )
+
+    @classmethod
+    def _calculate_total_payments(cls, obligation: ComplianceObligation) -> Decimal:
+        """
+        Calculates the total payments made for a compliance obligation.
+
+        Args:
+            obligation (ComplianceObligation): The compliance obligation
+
+        Returns:
+            Decimal: The total amount of payments made
+        """
+        if not obligation.elicensing_invoice:
+            return Decimal('0.00')
+
+        total_payments = Decimal('0.00')
+
+        # Sum all payments from line items in the elicensing invoice
+        for line_item in obligation.elicensing_invoice.elicensing_line_items.all():
+            for payment in line_item.elicensing_payments.all():
+                total_payments += payment.amount
+
+        return total_payments
+
+    @classmethod
+    def calculate_outstanding_balance(cls, obligation_id: int) -> Decimal:
+        """
+        Calculates the outstanding balance for a compliance obligation in CAD dollars.
+        Outstanding balance = fee_amount_dollars - payments from elicensing invoice
+
+        Args:
+            obligation_id (int): The ID of the compliance obligation
+
+        Returns:
+            Decimal: The outstanding balance in CAD dollars
+
+        Raises:
+            ComplianceObligation.DoesNotExist: If the compliance obligation doesn't exist
+        """
+        # Get the obligation with all payment data
+        obligation = cls._get_obligation_with_payments(obligation_id)
+
+        # Return 0 if no fee amount
+        if not obligation.fee_amount_dollars:
+            return Decimal('0.00')
+
+        # Return full fee amount if no elicensing invoice
+        if not obligation.elicensing_invoice:
+            return obligation.fee_amount_dollars
+
+        total_payments = cls._calculate_total_payments(obligation)
+        outstanding_balance = obligation.fee_amount_dollars - total_payments
+
+        return outstanding_balance.quantize(Decimal('0.01'))
