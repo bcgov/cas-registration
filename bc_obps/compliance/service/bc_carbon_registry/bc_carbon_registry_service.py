@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Any, TypeVar, cast
-from compliance.models import ComplianceReportVersion
+from compliance.models import ComplianceReport
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
 
@@ -69,7 +69,7 @@ class BCCarbonRegistryService:
         type_of_account_holder: str,
         compliance_year: int,
         boro_id: str,
-        compliance_report_version: ComplianceReportVersion,
+        compliance_report: ComplianceReport,
     ) -> BCCRComplianceAccountResponseDetails:
         """Create a new compliance subaccount in BCCR.
 
@@ -80,7 +80,7 @@ class BCCarbonRegistryService:
             "master_account_id": str(holding_account_id),
             "compliance_year": compliance_year,
             "boro_id": boro_id,
-            "registered_name": f"{compliance_report_version.compliance_report.report.operation.name} {boro_id}",
+            "registered_name": f"{compliance_report.report.operation.name} {boro_id}",
             "type_of_organization": self._get_type_of_organization(type_of_account_holder),
             "organization_classification_id": organization_classification_id,
         }
@@ -95,34 +95,92 @@ class BCCarbonRegistryService:
             entity_id=str(entity_id) if entity_id else None,
         )
 
-    def get_or_create_compliance_account(
-        self, holding_account_details: BCCRAccountResponseDetails, compliance_report_version: ComplianceReportVersion
-    ) -> BCCRComplianceAccountResponseDetails:
-        """Retrieve existing compliance account or create new one if not found.
+    def _get_compliance_account_from_bccr(
+        self, holding_account_details: BCCRAccountResponseDetails, compliance_year: int, boro_id: str
+    ) -> Optional[T]:
+        """Retrieve compliance account from BCCR API.
 
-        Looks up a compliance account for the given holding account, compliance period and boro_id.
-        If none exists, creates a new compliance subaccount.
+        Args:
+            holding_account_details: Details of the holding account
+            compliance_year: The compliance year
+            boro_id: The BORO ID
+
+        Returns:
+            Compliance account details from BCCR if found, None otherwise
         """
-        compliance_year = compliance_report_version.compliance_report.compliance_period.end_date.year
-        boro_id = compliance_report_version.compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]  # an operation must have a boro_id to get to this point
-
         compliance_account = self.client.get_compliance_account(
             master_account_id=holding_account_details.entity_id, compliance_year=compliance_year, boro_id=boro_id
         )
-        existing_compliance_account = self._get_first_entity(compliance_account)
+        return self._get_first_entity(compliance_account)
 
-        if existing_compliance_account:
-            entity_id = existing_compliance_account.get("entityId")
-            return BCCRComplianceAccountResponseDetails(
-                master_account_name=existing_compliance_account.get("masterAccountName"),
-                entity_id=str(entity_id) if entity_id else None,
-            )
+    def _create_and_save_compliance_account(
+        self, holding_account_details: BCCRAccountResponseDetails, compliance_report: ComplianceReport
+    ) -> BCCRComplianceAccountResponseDetails:
+        """Create a new compliance account and save its ID to the compliance report.
 
-        return self.create_compliance_account(
+        Args:
+            holding_account_details: Details of the holding account
+            compliance_report: The compliance report to associate with
+
+        Returns:
+            Details of the newly created compliance account
+        """
+        compliance_year = compliance_report.compliance_period.end_date.year
+        boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
+
+        new_compliance_account = self.create_compliance_account(
             holding_account_id=holding_account_details.entity_id,
             organization_classification_id=holding_account_details.organization_classification_id,
             type_of_account_holder=holding_account_details.type_of_account_holder,
             compliance_year=compliance_year,
             boro_id=boro_id,
-            compliance_report_version=compliance_report_version,
+            compliance_report=compliance_report,
         )
+
+        # Save the new subaccount ID to the compliance report
+        if new_compliance_account.entity_id:
+            compliance_report.bccr_subaccount_id = new_compliance_account.entity_id
+            compliance_report.save(update_fields=["bccr_subaccount_id"])
+
+        return new_compliance_account
+
+    def get_or_create_compliance_account(
+        self, holding_account_details: BCCRAccountResponseDetails, compliance_report: ComplianceReport
+    ) -> BCCRComplianceAccountResponseDetails:
+        """Retrieve existing compliance account or create new one if not found.
+
+        Looks up a compliance account for the given holding account, compliance period and boro_id.
+        If none exists, creates a new compliance subaccount.
+
+        The method prioritizes the locally stored bccr_subaccount_id, but also performs a safety check
+        against the BCCR API for cases where we have a subaccount in BCCR but not in local database
+        (mostly for dev and test environments, not expected in production).
+        """
+        # If we already have a bccr_subaccount_id, we know we have an existing subaccount
+        if compliance_report.bccr_subaccount_id:
+            return BCCRComplianceAccountResponseDetails(
+                master_account_name=holding_account_details.trading_name,
+                entity_id=compliance_report.bccr_subaccount_id,
+            )
+
+        compliance_year = compliance_report.compliance_period.end_date.year
+        boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
+
+        # This is a safety check for cases where we have a subaccount in BCCR but not in local database
+        # (mostly for dev and test environments, not expected in production).
+        existing_compliance_account = self._get_compliance_account_from_bccr(
+            holding_account_details, compliance_year, boro_id
+        )
+
+        if existing_compliance_account:
+            entity_id = existing_compliance_account.get("entityId")
+            # Save the existing subaccount ID to the compliance report
+            compliance_report.bccr_subaccount_id = str(entity_id) if entity_id else None
+            compliance_report.save(update_fields=["bccr_subaccount_id"])
+
+            return BCCRComplianceAccountResponseDetails(
+                master_account_name=existing_compliance_account.get("masterAccountName"),
+                entity_id=str(entity_id) if entity_id else None,
+            )
+
+        return self._create_and_save_compliance_account(holding_account_details, compliance_report)
