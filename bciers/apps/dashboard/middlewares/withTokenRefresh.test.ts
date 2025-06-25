@@ -80,7 +80,7 @@ describe("The withTokenRefresh middleware", () => {
       {
         httpOnly: true,
         maxAge: 1800,
-        sameSite: "lax",
+        sameSite: "strict",
         secure: undefined,
       },
     );
