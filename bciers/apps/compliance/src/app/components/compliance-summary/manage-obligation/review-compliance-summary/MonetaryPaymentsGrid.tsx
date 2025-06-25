@@ -7,6 +7,7 @@ import monetaryPaymentsColumns from "@/compliance/src/app/components/datagrid/mo
 import monetaryPaymentsGroupColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsGroupColumns";
 import { PaymentsData } from "@/compliance/src/app/types";
 import AlertNote from "@bciers/components/form/components/AlertNote";
+import SimpleAccordion from "@bciers/components/accordion/SimpleAccordion";
 
 interface MonetaryPaymentsProps {
   gridData: PaymentsData;
@@ -35,7 +36,7 @@ export const MonetaryPaymentsGrid = ({
   const showAlert = gridData.rows.length === 0;
 
   return (
-    <>
+    <SimpleAccordion title="Monetary Payments Made">
       {showAlert && (
         <AlertNote>You have not made any monetary payment yet.</AlertNote>
       )}
@@ -44,6 +45,6 @@ export const MonetaryPaymentsGrid = ({
         initialData={gridData}
         columnGroupModel={columnGroup}
       />
-    </>
+    </SimpleAccordion>
   );
 };
