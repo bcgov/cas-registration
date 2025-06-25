@@ -20,16 +20,14 @@ def service(mock_api_client):
 
 
 @pytest.fixture
-def compliance_report_version_instance():
+def compliance_report_instance():
     operation = baker.make_recipe(
         "registration.tests.utils.operation",
         bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
         status=Operation.Statuses.REGISTERED,
     )
-    version = baker.make_recipe(
-        "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
-    )
-    return version
+    compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report__operation=operation)
+    return compliance_report
 
 
 class TestBCCarbonRegistryService:
@@ -101,7 +99,7 @@ class TestBCCarbonRegistryService:
         assert service._get_type_of_organization("Invalid") is None
         assert service._get_type_of_organization(None) is None
 
-    def test_create_compliance_account(self, service, mock_api_client, compliance_report_version_instance):
+    def test_create_compliance_account(self, service, mock_api_client, compliance_report_instance):
         # Arrange
         mock_api_client.create_sub_account.return_value = {"entity": {"id": "789", "parent_name": "Parent Corp"}}
 
@@ -112,7 +110,7 @@ class TestBCCarbonRegistryService:
             type_of_account_holder="Corporation",
             compliance_year=2024,
             boro_id="BORO123",
-            compliance_report_version=compliance_report_version_instance,
+            compliance_report=compliance_report_instance,
         )
 
         # Assert
@@ -128,9 +126,7 @@ class TestBCCarbonRegistryService:
         assert call_args["boro_id"] == "BORO123"
         assert call_args["type_of_organization"] == "140000000000002"
 
-    def test_get_or_create_compliance_account_existing(
-        self, service, mock_api_client, compliance_report_version_instance
-    ):
+    def test_get_or_create_compliance_account_existing(self, service, mock_api_client, compliance_report_instance):
         holding_account = BCCRAccountResponseDetails(
             entity_id="123",
             organization_classification_id="456",
@@ -144,7 +140,7 @@ class TestBCCarbonRegistryService:
 
         # Act
         result = service.get_or_create_compliance_account(
-            holding_account_details=holding_account, compliance_report_version=compliance_report_version_instance
+            holding_account_details=holding_account, compliance_report=compliance_report_instance
         )
 
         # Assert
@@ -153,7 +149,7 @@ class TestBCCarbonRegistryService:
         assert result.master_account_name == "Parent Corp"
         mock_api_client.create_sub_account.assert_not_called()
 
-    def test_get_or_create_compliance_account_new(self, service, mock_api_client, compliance_report_version_instance):
+    def test_get_or_create_compliance_account_new(self, service, mock_api_client, compliance_report_instance):
         # Arrange
         holding_account = BCCRAccountResponseDetails(
             entity_id="123",
@@ -167,7 +163,7 @@ class TestBCCarbonRegistryService:
 
         # Act
         result = service.get_or_create_compliance_account(
-            holding_account_details=holding_account, compliance_report_version=compliance_report_version_instance
+            holding_account_details=holding_account, compliance_report=compliance_report_instance
         )
 
         # Assert
