@@ -96,7 +96,7 @@ class OperatorIn(ModelSchema):
 
     trade_name: Optional[str] = ''
     business_structure: str
-    cra_business_number: str = Field(pattern=CRA_BUSINESS_NUMBER_REGEX)
+    cra_business_number: str = Field(..., pattern=CRA_BUSINESS_NUMBER_REGEX)
     bc_corporate_registry_number: str = Field(pattern=BC_CORPORATE_REGISTRY_REGEX)
     parent_operators_array: Optional[List[ParentOperatorIn]] = None
     partner_operators_array: Optional[List[PartnerOperatorIn]] = None

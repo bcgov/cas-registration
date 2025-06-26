@@ -1,4 +1,5 @@
 from typing import Optional
+from registration.constants import CRA_BUSINESS_NUMBER_REGEX
 from registration.schema import validate_cra_business_number
 from ninja import ModelSchema, Field
 from pydantic import field_validator
@@ -13,7 +14,7 @@ class ParentOperatorIn(ModelSchema):
     id: Optional[int] = None
     legal_name: str = Field(..., alias="po_legal_name")
     # the following are optional because international operators don't have them
-    cra_business_number: Optional[str] = Field(None, alias="po_cra_business_number")
+    cra_business_number: Optional[str] = Field(None, alias="po_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX)
     street_address: Optional[str] = Field(None, alias="po_street_address")
     municipality: Optional[str] = Field(None, alias="po_municipality")
     province: Optional[str] = Field(None, alias="po_province")

@@ -2,7 +2,7 @@ from typing import Optional
 from registration.schema import validate_business_structure
 from ninja import ModelSchema, Field
 from pydantic import field_validator
-from registration.constants import BC_CORPORATE_REGISTRY_REGEX
+from registration.constants import BC_CORPORATE_REGISTRY_REGEX, CRA_BUSINESS_NUMBER_REGEX
 from registration.models import BusinessStructure, PartnerOperator
 
 
@@ -13,7 +13,7 @@ class PartnerOperatorIn(ModelSchema):
 
     legal_name: str = Field(..., alias="partner_legal_name")
     trade_name: Optional[str] = Field("", alias="partner_trade_name")
-    cra_business_number: str = Field(..., alias="partner_cra_business_number")
+    cra_business_number: str = Field(..., alias="partner_cra_business_number", pattern=CRA_BUSINESS_NUMBER_REGEX)
     bc_corporate_registry_number: str = Field(
         ..., alias="partner_bc_corporate_registry_number", pattern=BC_CORPORATE_REGISTRY_REGEX
     )
