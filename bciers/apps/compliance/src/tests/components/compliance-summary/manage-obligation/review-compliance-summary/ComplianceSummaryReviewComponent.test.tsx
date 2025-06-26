@@ -145,8 +145,9 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(mockWindowOpen).not.toHaveBeenCalled();
 
     const alerts = await screen.findAllByRole("alert");
-    const hasErrorText = alerts.some((el) =>
-      el.textContent?.toLowerCase().includes("unable to generate invoice"),
+    const hasErrorText = alerts.some(
+      (el) =>
+        el.textContent?.toLowerCase().includes("unable to generate invoice"),
     );
     expect(hasErrorText).toBe(true);
     expect(getGenerateButton()).toBeEnabled();
