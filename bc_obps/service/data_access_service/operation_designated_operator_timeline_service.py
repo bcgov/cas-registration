@@ -92,4 +92,4 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         Gets a list of operations & the dates that they were previously owned by an operator.
         """
 
-        OperationDesignatedOperatorTimeline.objects.filter(operator_id=operator_id, end_date__isnull=False)
+        return OperationDesignatedOperatorTimeline.objects.filter(operator_id=operator_id, end_date__isnull=False)
