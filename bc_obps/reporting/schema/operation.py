@@ -42,7 +42,9 @@ class ReportingDashboardOperationFilterSchema(FilterSchema):
             filters |= Q(report_status__isnull=True)
 
         if re.search(value, 'draft supplementary report', re.IGNORECASE):
-            filters |= Q(report_status=ReportVersion.ReportVersionStatus.Draft) & Q(report_version_id__gt=1)
+            filters |= Q(report_status=ReportVersion.ReportVersionStatus.Draft) 
+            # brianna use is initial
+            & Q(report_version_id__gt=1)
 
         # Generic partial match (e.g., value = 'draft' should match both Draft and Draft Supplementary Report)
         filters |= Q(report_status__icontains=value)
