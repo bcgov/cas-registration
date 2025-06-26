@@ -142,6 +142,23 @@ class TestContactService:
         # No exception should be raised
         ContactService._validate_operation_representative_address(non_op_rep_contact.id, empty_address_data)
 
+    @staticmethod
+    def test_validate_new_contact_email():
+        # Setup: Create a contact
+        email = "test1@email.ca"
+        baker.make_recipe('registration.tests.utils.contact', email=email)
+
+        with pytest.raises(
+            Exception,
+            match=f"A contact with the email '{email}' already exists. Please add a different contact or edit the existing contact.",
+        ):
+            # Attempt to validate the same email for a different contact
+            ContactService._validate_contact_email(contact_id=None, email=email)
+
+        # Validating a different email should not raise an exception
+        new_email = "test2@email.ca"
+        ContactService._validate_contact_email(contact_id=None, email=new_email)
+
 
 class TestUpdateContactService:
     @staticmethod
@@ -216,3 +233,22 @@ class TestUpdateContactService:
         assert updated_contact.first_name == "Updated"
         assert updated_contact.address is None
         mock_get.assert_called_once()
+
+    @staticmethod
+    def test_validate_contact_email_update():
+        # Setup: Create two contact
+        email = "test1@email.ca"
+        baker.make_recipe('registration.tests.utils.contact', email=email)
+
+        updating_contact = baker.make_recipe('registration.tests.utils.contact')
+
+        # Attempt to validate the same email for a different contact
+        with pytest.raises(
+            Exception,
+            match=f"The email '{email}' is in use by another contact. Please use a different email address.",
+        ):
+            ContactService._validate_contact_email(contact_id=updating_contact.id, email=email)
+
+        # Validating a different email should not raise an exception
+        new_email = "test2@email.ca"
+        ContactService._validate_contact_email(contact_id=updating_contact.id, email=new_email)
