@@ -42,8 +42,8 @@ vi.mock("@/compliance/src/app/utils/getCreditsIssuanceRequestData", () => ({
     bccr_trading_name: "Test Company",
     holding_account_id: "123456789012345",
     analyst_comment: "Test comment",
-    submited_by: "Test User",
-    submited_at: "2023-01-01",
+    submitted_by: "Test User",
+    submitted_at: "2023-01-01",
     analyst_recommendation: "ready_to_approve",
   }),
 }));
