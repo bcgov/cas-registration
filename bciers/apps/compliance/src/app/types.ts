@@ -17,6 +17,33 @@ export interface ComplianceSummary {
   issuance_status?: string;
 }
 
+export interface ComplianceReportVersion {
+  id: number;
+  status: string;
+  operation_name: string;
+  operation_bcghg_id?: string;
+  reporting_year: number;
+  excess_emissions: number;
+  credited_emissions: number;
+  outstanding_balance?: number;
+  obligation_id?: string;
+  // Additional calculated fields
+  emissions_attributable_for_compliance?: number;
+  emission_limit?: number;
+  compliance_charge_rate: number;
+  equivalent_value: number;
+  penalty_status?: string;
+  penalty_type?: string;
+  penalty_rate_daily?: number;
+  days_late?: number;
+  accumulated_penalty?: number;
+  accumulated_compounding?: number;
+  penalty_today?: number;
+  faa_interest?: number;
+  total_amount?: number;
+  compliance_status?: string;
+}
+
 export interface BccrAccountDetailsResponse {
   bccr_holding_account_id?: string;
   bccr_trading_name?: string | null;

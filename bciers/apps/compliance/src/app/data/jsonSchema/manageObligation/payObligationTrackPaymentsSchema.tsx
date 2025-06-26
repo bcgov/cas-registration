@@ -11,17 +11,22 @@ import {
 import { PaymentStatusNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNote";
 import { AutomaticOverduePenaltyNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
 
-interface PayObligationTrackPaymentsFormData {
+export interface PayObligationTrackPaymentsFormData {
   outstandingBalance: string;
   equivalentValue: string;
   paymentReceivedDate: string;
   paymentAmountReceived: string;
 }
 
-const PaymentStatusNoteWidget = ({
-  formData,
-}: WidgetProps<PayObligationTrackPaymentsFormData>) => {
-  const outstandingBalance = parseFloat(formData?.outstandingBalance ?? "0");
+interface PaymentStatusNoteWidgetProps extends WidgetProps {
+  formContext?: PayObligationTrackPaymentsFormData;
+}
+
+const PaymentStatusNoteWidget = (props: PaymentStatusNoteWidgetProps) => {
+  const formContext =
+    props.formContext || ({} as PayObligationTrackPaymentsFormData);
+  const outstandingBalance = parseFloat(formContext.outstandingBalance ?? "0");
+
   return <PaymentStatusNote outstandingBalance={outstandingBalance} />;
 };
 

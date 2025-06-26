@@ -10,5 +10,6 @@ from ._compliance_report_versions._compliance_report_version_id import (
     earned_credits,
     payment_instructions,
 )
+from ._compliance_report_versions._compliance_report_version_id._obligation import payments
 from ._bccr._accounts import account_id
 from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import compliance_units

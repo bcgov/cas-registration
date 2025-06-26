@@ -156,3 +156,28 @@ class ComplianceObligationService:
             ComplianceObligation.DoesNotExist: If no obligation exists for the compliance report version
         """
         return ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
+
+    @classmethod
+    def calculate_outstanding_balance(cls, obligation_id: int) -> Decimal:
+        """
+        Gets the outstanding balance for a compliance obligation in CAD dollars.
+
+        The outstanding balance is retrieved directly from the elicensing invoice,
+        which already accounts for all payments, credits, and adjustments.
+
+        Args:
+            obligation_id (int): The ID of the compliance obligation
+
+        Returns:
+            Decimal: The outstanding balance in CAD dollars
+
+        Raises:
+            ComplianceObligation.DoesNotExist: If the compliance obligation doesn't exist
+        """
+        # Get the obligation with elicensing invoice data
+        obligation = ComplianceObligation.objects.select_related('elicensing_invoice').get(id=obligation_id)
+
+        if not obligation.elicensing_invoice:
+            return obligation.fee_amount_dollars or Decimal('0.00')
+
+        return obligation.elicensing_invoice.outstanding_balance

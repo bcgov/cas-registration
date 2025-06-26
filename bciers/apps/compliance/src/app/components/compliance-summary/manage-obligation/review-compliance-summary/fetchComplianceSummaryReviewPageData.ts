@@ -1,18 +1,21 @@
-import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
+import { getComplianceReportVersion } from "@/compliance/src/app/utils/getComplianceReportVersion";
 import { getComplianceSummaryPayments } from "@/compliance/src/app/utils/getComplianceSummaryPayments";
-import { PaymentsData } from "@/compliance/src/app/types";
+import {
+  PaymentsData,
+  ComplianceReportVersion,
+} from "@/compliance/src/app/types";
 
 interface ComplianceSummaryReviewPageData {
-  complianceSummary: any;
+  complianceSummary: ComplianceReportVersion;
   paymentsData: PaymentsData;
 }
 
 export async function fetchComplianceSummaryReviewPageData(
-  complianceSummaryId: string,
+  complianceReportVersionId: string,
 ): Promise<ComplianceSummaryReviewPageData> {
   const [complianceSummary, paymentsData] = await Promise.all([
-    getComplianceSummary(complianceSummaryId),
-    getComplianceSummaryPayments(complianceSummaryId),
+    getComplianceReportVersion(complianceReportVersionId),
+    getComplianceSummaryPayments(complianceReportVersionId),
   ]);
 
   return {

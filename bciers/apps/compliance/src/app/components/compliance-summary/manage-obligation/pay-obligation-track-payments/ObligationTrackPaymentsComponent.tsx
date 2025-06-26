@@ -5,10 +5,11 @@ import { FormBase } from "@bciers/components/form";
 import {
   createPayObligationTrackPaymentsSchema,
   payObligationTrackPaymentsUiSchema,
+  PayObligationTrackPaymentsFormData,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/payObligationTrackPaymentsSchema";
 
 interface Props {
-  readonly data: any;
+  readonly data: PayObligationTrackPaymentsFormData;
   readonly complianceSummaryId: string;
 }
 
@@ -24,6 +25,7 @@ export function ObligationTrackPaymentsComponent({
       schema={createPayObligationTrackPaymentsSchema()}
       uiSchema={payObligationTrackPaymentsUiSchema}
       formData={data}
+      formContext={data}
       className="w-full"
     >
       <ComplianceStepButtons
