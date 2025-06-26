@@ -96,6 +96,7 @@ export enum ReportOperationStatus {
   NOT_STARTED = "Not started",
   DRAFT = "Draft",
   SUBMITTED = "Submitted",
+  DRAFT_SUPPLEMENTARY = "Draft Supplementary Report",
 }
 
 export enum FormMode {

@@ -7,6 +7,7 @@ import operationGroupColumns from "@reporting/src/app/components/datagrid/models
 import { fetchOperationsPageData } from "./fetchOperationsPageData";
 import operationColumns from "@reporting/src/app/components/datagrid/models/operations/operationColumns";
 import { OperationRow } from "./types";
+import { transformStatus } from "./transformStatus";
 
 const OperationDataGrid = ({
   initialData,
@@ -16,6 +17,7 @@ const OperationDataGrid = ({
     row_count: number;
   };
 }) => {
+  console.log("initialData", initialData);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -34,14 +36,17 @@ const OperationDataGrid = ({
   const gridKey = useMemo(() => JSON.stringify(initialData), [initialData]);
 
   return (
-    <DataGrid
-      key={gridKey} // This forces a remount when initialData changes.
-      columns={columns}
-      columnGroupModel={columnGroup}
-      fetchPageData={fetchOperationsPageData}
-      paginationMode="server"
-      initialData={initialData}
-    />
+    <>
+      brianna here?
+      <DataGrid
+        key={gridKey} // This forces a remount when initialData changes.
+        columns={columns}
+        columnGroupModel={columnGroup}
+        fetchPageData={fetchOperationsPageData}
+        paginationMode="server"
+        initialData={transformStatus(initialData)}
+      />
+    </>
   );
 };
 

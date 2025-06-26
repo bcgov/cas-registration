@@ -70,7 +70,10 @@ const ActionCell = (params: GridRenderCellParams) => {
   let buttonDisabled = hasClicked;
 
   if (reportVersionId) {
-    if (reportStatus === ReportOperationStatus.DRAFT) {
+    if (
+      reportStatus === ReportOperationStatus.DRAFT ||
+      reportStatus === ReportOperationStatus.DRAFT_SUPPLEMENTARY
+    ) {
       buttonText = "Continue";
       buttonAction = async () =>
         router.push(`reports/${reportVersionId}/review-operation-information`);
