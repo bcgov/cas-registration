@@ -129,8 +129,8 @@ export interface CreditsIssuanceRequestData {
   bccr_trading_name: string;
   holding_account_id: string;
   analyst_comment: string;
-  submited_by: string;
-  submited_at: string;
+  submitted_by: string;
+  submitted_at: string;
   analyst_recommendation?: string;
 }
 

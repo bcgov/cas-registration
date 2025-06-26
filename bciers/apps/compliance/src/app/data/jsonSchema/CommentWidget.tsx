@@ -15,8 +15,8 @@ const CommentWidget: React.FC<WidgetProps> = ({
     onChange(val === "" ? undefined : val);
   };
 
-  const submittedBy = formContext?.creditsIssuanceRequestData?.submited_by;
-  const submittedAt = formContext?.creditsIssuanceRequestData?.submited_at;
+  const submittedBy = formContext?.creditsIssuanceRequestData?.submitted_by;
+  const submittedAt = formContext?.creditsIssuanceRequestData?.submitted_at;
   const commentValue = name && formContext?.creditsIssuanceRequestData?.[name];
 
   const submissionInfoElement =
