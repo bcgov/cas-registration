@@ -10,6 +10,6 @@ class Rls:
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
-        RlsRoles.CAS_PENDING: [RlsOperations.SELECT, RlsOperations.INSERT],
+        RlsRoles.CAS_PENDING: [RlsOperations.SELECT, RlsOperations.INSERT, RlsOperations.UPDATE],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.USER)
