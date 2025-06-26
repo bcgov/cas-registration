@@ -56,30 +56,6 @@ operator = Recipe(
     cra_business_number=generate_random_cra_business_number,
 )
 
-canadian_parent_operator = Recipe(
-    ParentOperator,
-    cra_business_number=generate_random_cra_business_number,
-    mailing_address=foreign_key(address),
-)
-
-foreign_parent_operator = Recipe(
-    ParentOperator,
-)
-
-partner_operator = Recipe(
-    PartnerOperator,
-    cra_business_number=generate_random_cra_business_number,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
-    business_structure=BusinessStructure.objects.first(),
-)
-
-multiple_operator = Recipe(
-    MultipleOperator,
-    cra_business_number=generate_random_cra_business_number,
-    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
-    business_structure=BusinessStructure.objects.first(),
-)
-
 
 operator_for_operation = Recipe(
     Operator,
@@ -126,6 +102,33 @@ approved_user_operator = Recipe(
     status=UserOperator.Statuses.APPROVED,
     operator=foreign_key(operator_for_approved_user_operator),
     user=foreign_key(industry_operator_user),
+)
+
+multiple_operator = Recipe(
+    MultipleOperator,
+    cra_business_number=generate_random_cra_business_number,
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
+    business_structure=BusinessStructure.objects.first(),
+    operation=foreign_key(operation),
+)
+
+canadian_parent_operator = Recipe(
+    ParentOperator,
+    cra_business_number=generate_random_cra_business_number,
+    mailing_address=foreign_key(address),
+    child_operator=foreign_key(operator),
+)
+foreign_parent_operator = Recipe(
+    ParentOperator,
+    child_operator=foreign_key(operator),
+)
+
+partner_operator = Recipe(
+    PartnerOperator,
+    cra_business_number=generate_random_cra_business_number,
+    bc_corporate_registry_number=generate_random_bc_corporate_registry_number,
+    business_structure=BusinessStructure.objects.first(),
+    bc_obps_operator=foreign_key(operator),
 )
 
 opted_in_operation_detail = Recipe(

@@ -2,6 +2,7 @@ from itertools import cycle
 from django.db.utils import ProgrammingError
 from common.tests.utils.helpers import BaseTestCase
 from common.lib import pgtrigger
+import pytest
 from registration.models import Facility, Operation
 from model_bakery import baker
 from registration.tests.constants import (
@@ -16,6 +17,7 @@ from registration.tests.constants import (
     TIMESTAMP_COMMON_FIELDS,
     USER_FIXTURE,
 )
+from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
 
 
 class FacilityModelTest(BaseTestCase):
@@ -144,3 +146,90 @@ class FacilityTriggerTests(BaseTestCase):
 
         assert self.facility_with_non_registered_op.bcghg_id == facility_bcghgid
         assert self.facility_with_non_registered_op.name == "Updated Facility Name"
+
+
+# RLS tests
+class TestFacilityRls(BaseTestCase):
+    def test_facility_rls_industry_user(self):
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
+
+        random_operation = baker.make_recipe('registration.tests.utils.operation')
+        random_facility = baker.make_recipe('registration.tests.utils.facility', operation=random_operation)
+
+        assert Facility.objects.count() == 2  # Two records created
+
+        def select_function(cursor):
+            assert Facility.objects.count() == 1
+
+        def insert_function(cursor):
+            Facility.objects.create(
+                name='new',
+                operation=operation,
+                type=Facility.Types.SINGLE_FACILITY,
+            )
+            assert Facility.objects.filter(name='new').exists()
+
+            with pytest.raises(
+                ProgrammingError,
+                match='new row violates row-level security policy for table "facility',
+            ):
+                cursor.execute(
+                    """
+                    INSERT INTO "erc"."facility" (
+                        name,
+                        type,
+                        operation_id
+                    ) VALUES (
+                        %s,
+                        %s,
+                        %s
+                    )
+                """,
+                    ('anme', 'Single Facility', random_operation.id),
+                )
+
+        def update_function(cursor):
+            Facility.objects.update(name='Updated Facility Name')
+            assert Facility.objects.filter(name='Updated Facility Name').count() == 1
+
+        def delete_function(cursor):
+            Facility.objects.all().delete()
+            assert Facility.objects.count() == 1  # only deleted 1/2
+
+        test_policies_for_industry_user(
+            Facility,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            delete_function=delete_function,
+        )
+
+    def test_facility_rls_cas_users(self):
+        facility_with_operation = baker.make_recipe(
+            'registration.tests.utils.facility',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+        )
+        baker.make_recipe(
+            'registration.tests.utils.facility',
+            _quantity=5,
+        )
+        bcghg_id = baker.make_recipe('registration.tests.utils.bcghg_id')
+
+        def select_function(
+            cursor,
+        ):
+            assert Facility.objects.count() == 6
+
+        def update_function(cursor):
+            facility_with_operation.bcghg_id = bcghg_id
+            facility_with_operation.save()
+            assert Facility.objects.filter(bcghg_id__isnull=False).count() == 1
+
+        test_policies_for_cas_roles(
+            Facility,
+            select_function=select_function,
+            update_function=update_function,
+        )
