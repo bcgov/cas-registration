@@ -34,7 +34,13 @@ class ReportingDashboardService:
         sort_field = sort_field or "id"
         sort_order = sort_order or "asc"
         sort_direction = "-" if sort_order == "desc" else ""
-        sort_by = f"{sort_direction}{sort_field}"
+
+        sort_fields = [f"{sort_direction}{sort_field}"]
+
+        # On the frontend, we have two draft statuses ('Draft Supplementary Report' and 'Draft'). This ensures they order properly when sorting.
+        if sort_field == "report_status":
+            sort_fields.append(f"{sort_direction}report_version_id")
+
         report_version_subquery = (
             ReportVersion.objects.filter(report_id=OuterRef("id"))
             .order_by("-id")
@@ -71,4 +77,4 @@ class ReportingDashboardService:
             )
         )
 
-        return filters.filter(queryset).order_by(sort_by)
+        return filters.filter(queryset).order_by(*sort_fields)
