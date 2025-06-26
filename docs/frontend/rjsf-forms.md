@@ -122,6 +122,10 @@ You can use RJSF `definitions` if you have a lot of repeated schema like CementP
 
 Custom widgets can be created and added to the `widgets` object in the `defaultTheme.ts` which is done automatically if the widget is added to the exports in `bciers/libs/components/src/form/index.ts`. They can then be set in the forms `uiSchema` using the `ui:widget` option.
 
+Note that we don't have a `NumberWidget` because the `TextWidget` handles both string and number inputs ([see Types section](#types)). RJSF doesn't have a built-in `NumberWidget` we can override, so if we used a number widget, we would have to specify in the ui:schema for every single number field.
+
+Note also that the `ReadOnlyTextWidget` currently only supports strings (non-editable numbers appear only in reporting and are set to readOnly in the rjsf schema).
+
 ```
 IMPORTANT: When creating a custom widget don't forget to handle it in the readonly theme located in bciers/libs/components/src/form/theme/readOnlyTheme.ts. If the widget saves the value as a basic string or number, you can set it to the generic ReadOnlyWidget, otherwise create a custom ReadOnlyWidget.
 ```
