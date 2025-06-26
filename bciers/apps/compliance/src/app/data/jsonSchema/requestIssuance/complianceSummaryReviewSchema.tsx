@@ -9,25 +9,6 @@ import {
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 
-// Section creators
-const createSummarySection = (
-  reportingYear: number,
-): RJSFSchema["properties"] => ({
-  summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
-  emissions_attributable_for_compliance: readOnlyStringField(
-    "Emissions Attributable for Compliance:",
-  ),
-  emission_limit: readOnlyStringField("Emissions Limit:"),
-  excess_emissions: readOnlyStringField("Excess Emissions:"),
-});
-
-const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
-  earnedCreditsHeader: readOnlyObjectField("Earned Credits"),
-  earnedCreditsAlert: readOnlyStringField(),
-  earned_credits_amount: readOnlyStringField("Earned Credits:"),
-  issuance_status: readOnlyStringField("Status of Issuance:"),
-});
-
 // Main schema creator
 export const createComplianceSummaryReviewSchema = (
   reportingYear: number,
@@ -35,8 +16,18 @@ export const createComplianceSummaryReviewSchema = (
   type: "object",
   title: `Review ${reportingYear} Compliance Summary`,
   properties: {
-    ...createSummarySection(reportingYear),
-    ...createEarnedCreditsSection(),
+    // Summary Section
+    summary_header: readOnlyObjectField(`From ${reportingYear} Report`),
+    emissions_attributable_for_compliance: readOnlyStringField(
+      "Emissions Attributable for Compliance:",
+    ),
+    emission_limit: readOnlyStringField("Emissions Limit:"),
+    excess_emissions: readOnlyStringField("Excess Emissions:"),
+    // Earned Credits Section
+    earned_credits_header: readOnlyObjectField("Earned Credits"),
+    earned_credits_alert: readOnlyStringField(),
+    earned_credits_amount: readOnlyStringField("Earned Credits:"),
+    issuance_status: readOnlyStringField("Status of Issuance:"),
   },
 });
 
@@ -47,14 +38,14 @@ export const complianceSummaryReviewUiSchema = (
   "ui:classNames": "form-heading-label",
 
   // Summary Section
-  summaryHeader: headerUiConfig,
+  summary_header: headerUiConfig,
   emissions_attributable_for_compliance: tco2eUiConfig,
   emission_limit: tco2eUiConfig,
   excess_emissions: tco2eUiConfig,
 
   // Earned Credits Section
-  earnedCreditsHeader: headerUiConfig,
-  earnedCreditsAlert: {
+  earned_credits_header: headerUiConfig,
+  earned_credits_alert: {
     "ui:widget": isCasStaff ? () => null : EarnedCreditsAlertNote,
     "ui:options": {
       label: false,
