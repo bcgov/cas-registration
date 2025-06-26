@@ -1,3 +1,15 @@
+# [3.9.0](https://github.com/bcgov/cas-registration/compare/v3.8.1...v3.9.0) (2025-06-26)
+
+### Features
+
+- add declined and changes required status for issuance requests ([d5c9c40](https://github.com/bcgov/cas-registration/commit/d5c9c40c87603a49891c281346cbde4ac284168a))
+- add read-only mode to Review Credits Issuance Request and Review by Director pages ([4bc5761](https://github.com/bcgov/cas-registration/commit/4bc5761eb61ba3fd8083b5473c2f7cbccf504b86))
+- add review and action ec request ([c12c7c3](https://github.com/bcgov/cas-registration/commit/c12c7c3bb80b5b47976e46c7e454d5ef4312fc3a))
+- apply compliance units feature ([b783181](https://github.com/bcgov/cas-registration/commit/b78318108864be6dc61001f3a2d303b29debe0d5))
+- connect invoiceID to download instructions and create service for it ([9fed3be](https://github.com/bcgov/cas-registration/commit/9fed3bec6d51c280f09d111c46928d2da87cc5d8))
+- Create endpoint to grab actioned EC's compliance report version IDs and use it to dynamically change related action cell ([700a773](https://github.com/bcgov/cas-registration/commit/700a7737ea1d8c672ba9e2a01900bf9f8605001e))
+- generate compliance invoiced pdf ([6b783fe](https://github.com/bcgov/cas-registration/commit/6b783fe05c8df694bd0c083e8f49eb239622431b))
+
 ## [3.8.1](https://github.com/bcgov/cas-registration/compare/v3.8.0...v3.8.1) (2025-06-19)
 
 # [3.8.0](https://github.com/bcgov/cas-registration/compare/v3.7.0...v3.8.0) (2025-06-19)
