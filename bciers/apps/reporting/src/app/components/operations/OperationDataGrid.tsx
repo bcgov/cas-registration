@@ -44,7 +44,8 @@ const OperationDataGrid = ({
         columnGroupModel={columnGroup}
         fetchPageData={fetchOperationsPageData}
         paginationMode="server"
-        initialData={transformStatus(initialData)}
+        initialData={initialData}
+        // initialData={transformStatus(initialData)}
       />
     </>
   );

@@ -14,9 +14,13 @@ export const fetchOperationsPageData = async (
     "GET",
     "",
   );
-  const gridData = transformStatus({
+  const gridData = {
     rows: pageData.items,
     row_count: pageData.count,
-  });
+  };
+  // const gridData = transformStatus({
+  //   rows: pageData.items,
+  //   row_count: pageData.count,
+  // });
   return gridData;
 };
