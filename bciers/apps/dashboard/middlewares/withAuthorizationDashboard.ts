@@ -7,8 +7,8 @@ import {
 
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
-import { FrontEndRoles } from "@bciers/utils/src/enums";
 import isInAllowedPath from "@bciers/utils/src/isInAllowedList";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 /*
 Access control logic is managed using Next.js middleware and NextAuth.js authentication JWT session.
 The middleware intercepts requests, and for restricted areas...
@@ -23,6 +23,7 @@ const paths = {
   dashboard: "dashboard",
   profile: "profile",
   declined: "declined",
+  administration: "administration",
 };
 export const authAllowedPaths = [paths.dashboard, paths.profile];
 const unauthAllowedPaths = [paths.auth, paths.unauth, paths.declined];
@@ -33,6 +34,54 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
 ) => {
   return async (request: NextRequest, _next: NextFetchEvent) => {
     const { pathname } = request.nextUrl;
+
+    const routeWithNoToken = () => {
+      if (pathname.endsWith(`/${paths.onboarding}`)) {
+        // 🛸 Route to next middleware
+        return next(request, _next);
+      } else {
+        // 🛸 Redirect to onboarding
+        return NextResponse.redirect(
+          new URL(`/${paths.onboarding}`, request.url),
+        );
+      }
+    };
+
+    const routeWithNoAppRole = () => {
+      if (pathname.endsWith(`/${paths.profile}`)) {
+        // route to next middleware
+        return next(request, _next);
+      } else {
+        return NextResponse.redirect(
+          new URL(`/${paths.administration}/${paths.profile}`, request.url),
+        );
+      }
+    };
+
+    const routeForRoleCasPending = () => {
+      if (isInAllowedPath(pathname, authAllowedPaths)) {
+        // 🛸 Route to next middleware
+        return next(request, _next);
+      } else {
+        // 🛸 Redirect to dashboard
+        return NextResponse.redirect(
+          new URL(`/${paths.dashboard}`, request.url),
+        );
+      }
+    };
+
+    const routeForOtherAppRoles = () => {
+      if (pathname === "/" || pathname === `/${paths.onboarding}`) {
+        // 🛸 Redirect to dashboard
+        return NextResponse.redirect(
+          new URL(`/${paths.dashboard}`, request.url),
+        );
+      } else {
+        // 🛸 Route to next middleware
+        return next(request, _next);
+      }
+    };
+
     // Check if the path is in the unauthenticated allow list
     if (isInAllowedPath(pathname, unauthAllowedPaths)) {
       // 🛸 Route to next middleware
@@ -44,48 +93,16 @@ export const withAuthorizationDashboard: MiddlewareFactory = (
     if (token) {
       // Handle user without token.user.app_role
       if (!token.app_role || token.app_role === "") {
-        if (pathname.endsWith(`/${paths.profile}`)) {
-          // 🛸 Route to next middleware
-          return next(request, _next);
-        } else {
-          // 🛸 Redirect to profile
-          return NextResponse.redirect(
-            new URL(`/administration/${paths.profile}`, request.url),
-          );
-        }
+        return routeWithNoAppRole();
       }
       // Handle user with token.user.app_role = cas_pending
       if (token.app_role === FrontEndRoles.CAS_PENDING) {
-        if (isInAllowedPath(pathname, authAllowedPaths)) {
-          // 🛸 Route to next middleware
-          return next(request, _next);
-        } else {
-          // 🛸 Redirect to dashboard
-          return NextResponse.redirect(
-            new URL(`/${paths.dashboard}`, request.url),
-          );
-        }
+        return routeForRoleCasPending();
       }
-
-      if (pathname === "/" || pathname === `/${paths.onboarding}`) {
-        // 🛸 Redirect to dashboard
-        return NextResponse.redirect(
-          new URL(`/${paths.dashboard}`, request.url),
-        );
-      } else {
-        // 🛸 Route to next middleware
-        return next(request, _next);
-      }
+      // else Handle user with token.user.app_role that isn't cas_pending
+      return routeForOtherAppRoles();
     } else {
-      if (pathname.endsWith(`/${paths.onboarding}`)) {
-        // 🛸 Route to next middleware
-        return next(request, _next);
-      } else {
-        // 🛸 Redirect to onboarding
-        return NextResponse.redirect(
-          new URL(`/${paths.onboarding}`, request.url),
-        );
-      }
+      return routeWithNoToken();
     }
   };
 };

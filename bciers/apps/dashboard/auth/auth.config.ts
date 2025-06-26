@@ -56,6 +56,16 @@ declare module "next-auth" {
 📌 Make one central auth config that can be imported to auth.ts or middleware when required
 */
 export const AUTH_BASE_PATH = "/api/auth";
+const isProd = process.env.NODE_ENV === "production";
+const isCI = process.env.CI === "true";
+
+/**
+ * Prefix with "__Secure-" when on a real production HTTPS host,
+ * but fall back to the un‑prefixed name for local dev or CI.
+ */
+function makeCookieName(base: string) {
+  return isProd && !isCI ? `__Secure-${base}` : base;
+}
 export default {
   //In a Docker environment, make sure to set either trustHost: true in your Auth.js configuration or the AUTH_TRUST_HOST environment variable to true.
   trustHost: true,
@@ -73,6 +83,33 @@ export default {
       },
     }),
   ],
+  cookies: {
+    sessionToken: {
+      name: makeCookieName("authjs.session-token"),
+      options: {
+        httpOnly: true,
+        sameSite: "strict", // default
+        path: "/",
+        // secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    callbackUrl: {
+      name: makeCookieName("authjs.callback-url"),
+      options: {
+        sameSite: "strict",
+        path: "/",
+        // secure: process.env.NODE_ENV === 'production',
+      },
+    },
+    csrfToken: {
+      name: "authjs.csrf-token",
+      options: {
+        sameSite: "strict",
+        path: "/",
+        // secure: process.env.NODE_ENV === 'production',
+      },
+    },
+  },
   secret: `${process.env.NEXTAUTH_SECRET}`,
   pages: {
     error: "/auth/error", // Error code passed in query string as ?error=
