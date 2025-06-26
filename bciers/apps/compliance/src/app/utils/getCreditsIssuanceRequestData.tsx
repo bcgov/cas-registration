@@ -20,8 +20,8 @@ export const getCreditsIssuanceRequestData = (complianceSummaryId: string) => {
     bccr_trading_name: "Colour Co.",
     holding_account_id: "437248194316283",
     analyst_comment: "Lorem ipsum",
-    submited_by: "Adam A.",
-    submited_at: formatDate(
+    submitted_by: "Adam A.",
+    submitted_at: formatDate(
       new Date("2025-05-16 18:00:24.986 -0700"),
       "MMMM D, YYYY",
     ),
