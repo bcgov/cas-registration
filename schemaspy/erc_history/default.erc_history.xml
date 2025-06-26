@@ -271,6 +271,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="compliance_report_version_id" nullable="true" remarks="The compliance report version this obligation belongs to" size="19" type="int8" typeCode="-5"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="elicensing_invoice_id" nullable="true" remarks="Foreign key to the elicensing_invoice in the OBPS data. The data in the elicensing_invoice table comes from elicensing" size="19" type="int8" typeCode="-5"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="compliance_obligation_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
@@ -283,6 +284,9 @@
          </index>
          <index name="compliance_obligation_history_created_by_id_8ea8950d" unique="false">
             <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_obligation_history_elicensing_invoice_id_a5829df3" unique="false">
+            <column ascending="true" name="elicensing_invoice_id"/>
          </index>
          <index name="compliance_obligation_history_history_date_5fe4c1ef" unique="false">
             <column ascending="true" name="history_date"/>
@@ -521,7 +525,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="legal_name" nullable="false" remarks="The legal name of an operator" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="trade_name" nullable="false" remarks="The trade name of an operator" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="bc_corporate_registry_number" nullable="true" remarks="The BC corporate registry number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="true" defaultValue="null" digits="0" id="9" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
@@ -711,7 +715,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="id" nullable="false" remarks="Primary key to identify the operator" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="legal_name" nullable="false" remarks="The legal name of an operator" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="trade_name" nullable="true" remarks="The trade name of an operator" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="swrs_organisation_id" nullable="true" remarks="An identifier used in the CIIP/SWRS dataset (in swrs: organisation = operator). This identifier will only be populated for operators that were imported from that dataset." size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="bc_corporate_registry_number" nullable="true" remarks="The BC corporate registry number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="website" nullable="true" remarks="The website address of an operator" size="200" type="varchar" typeCode="12"/>
@@ -820,7 +824,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="operator_index" nullable="true" remarks="Index used to differentiate parent operators for the child operator for saving/updating purposes" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="legal_name" nullable="false" remarks="The legal name of a parent operator" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="trade_name" nullable="true" remarks="The trade name of a parent operator" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="cra_business_number" nullable="true" remarks="The CRA business number of a parent operator" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="cra_business_number" nullable="true" remarks="The CRA business number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="bc_corporate_registry_number" nullable="true" remarks="The BC corporate registry number of a parent operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="website" nullable="true" remarks="The website address of a parent operator" size="200" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
@@ -879,7 +883,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="legal_name" nullable="false" remarks="The legal name of an operator" size="1000" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="trade_name" nullable="true" remarks="The trade name of an operator" size="1000" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="cra_business_number" nullable="false" remarks="The CRA business number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="bc_corporate_registry_number" nullable="false" remarks="The BC corporate registry number of an operator" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="history_user_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="true" defaultValue="null" digits="0" id="9" name="history_id" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
