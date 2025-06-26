@@ -83,3 +83,13 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return queryset.filter(operator_id=user_operator.operator_id, end_date__isnull=True)
+
+    @classmethod
+    def get_previously_owned_operations_by_operator(
+        cls, operator_id: UUID
+    ) -> QuerySet[OperationDesignatedOperatorTimeline]:
+        """
+        Gets a list of operations & the dates that they were previously owned by an operator.
+        """
+
+        OperationDesignatedOperatorTimeline.objects.filter(operator_id=operator_id, end_date__isnull=False)
