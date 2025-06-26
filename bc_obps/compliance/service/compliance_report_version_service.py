@@ -1,5 +1,4 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
@@ -7,6 +6,12 @@ from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
 import logging
+from uuid import UUID
+from django.db.models import QuerySet
+from service.data_access_service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineDataAccessService,
+)
+from registration.models import Operation, UserOperator
 
 logger = logging.getLogger(__name__)
 
@@ -151,3 +156,32 @@ class ComplianceReportVersionService:
     @staticmethod
     def get_obligation_by_compliance_report_version(compliance_report_version_id: int) -> ComplianceObligation:
         return ComplianceObligation.objects.get(compliance_report_version__id=compliance_report_version_id)
+
+    @classmethod
+    def get_compliance_report_versions_for_previously_owned_operations(
+        cls, user_guid: UUID
+    ) -> QuerySet[ComplianceReportVersion]:
+        """
+        Fetches all compliance report versions that a user should have access to based on historical operator -> operation ownership relationships
+        """
+
+        all_historical_report_versions = ComplianceReportVersion.objects.none()
+        operator_id = UserOperator.objects.get(user_id=user_guid).operator_id
+        previously_owned_operations = (
+            OperationDesignatedOperatorTimelineDataAccessService.get_previously_owned_operations_by_operator(
+                operator_id=operator_id
+            )
+        )
+
+        for operation_ownership in previously_owned_operations:
+            historical_report_versions = ComplianceReportVersion.objects.filter(
+                compliance_report__report__operation_id=operation_ownership.operation_id,
+                compliance_report__compliance_period__end_date__gte=operation_ownership.start_date,
+                compliance_report__compliance_period__end_date__lt=operation_ownership.end_date,
+            ).select_related(
+                'compliance_report__report__operation',
+                'compliance_report__compliance_period',
+                'compliance_earned_credits',
+            )
+            all_historical_report_versions.union(historical_report_versions)
+        return historical_report_versions
