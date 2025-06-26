@@ -69,7 +69,6 @@ class ReportOperationService:
 
         new_representatives = [
             ReportOperationRepresentative(
-                report_operation=report_operation,
                 report_version=report_operation.report_version,
                 representative_name=contact.get_full_name(),
                 selected_for_report=True,

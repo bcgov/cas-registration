@@ -17,6 +17,7 @@ from reporting.models import (
     ReportEmissionAllocation,
     ReportProductEmissionAllocation,
     EmissionCategory,
+    ReportOperationRepresentative,
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.service.compliance_service import ComplianceService, ComplianceData
@@ -83,7 +84,10 @@ class ReportOperationSchema(ModelSchema):
 
     @staticmethod
     def resolve_representatives(obj: ReportOperation) -> str:
-        return ", ".join(representative.representative_name for representative in obj.representatives.all())
+        return ", ".join(
+            rep.representative_name
+            for rep in ReportOperationRepresentative.objects.filter(report_version__report_operation=obj)
+        )
 
     @staticmethod
     def resolve_activities(obj: ReportOperation) -> str:

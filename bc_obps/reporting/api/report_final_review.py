@@ -67,4 +67,5 @@ def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple
         )
         .get(id=version_id)
     )
+
     return 200, report_version

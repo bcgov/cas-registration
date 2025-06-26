@@ -16,7 +16,6 @@ class ReportOperationRepresentativeModelTest(BaseTestCase):
             ("report_version", "report version", None, None),
             ("representative_name", "representative name", None, None),
             ("selected_for_report", "selected for report", None, None),
-            ("report_operation", "report operation", None, None),
         ]
 
     def test_immutable_after_report_version_submitted(self):
