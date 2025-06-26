@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from compliance.models import ComplianceReportVersion, ElicensingPayment
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
-from registration.models.operation import Operation
+from registration.models import Operation
 from typing import Optional
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.dataclass import PaymentDataWithFreshnessFlag
@@ -37,9 +37,12 @@ class ComplianceDashboardService:
             'compliance_earned_credit',
         )
 
-        # Calculate and attach the outstanding balance to each compliance_report_version
-        for version in compliance_report_versions:
-            version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
+        compliance_report_versions = (
+            compliance_report_versions
+            | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
+                user_guid=user_guid
+            )
+        )
 
         return compliance_report_versions
 
