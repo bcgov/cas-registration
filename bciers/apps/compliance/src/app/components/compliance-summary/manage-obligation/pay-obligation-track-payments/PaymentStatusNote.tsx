@@ -10,6 +10,7 @@ interface PaymentStatusNoteProps {
 export const PaymentStatusNote = ({
   outstandingBalance,
 }: PaymentStatusNoteProps) => {
+  console.log("outstandingBalance", outstandingBalance);
   const isPaid = outstandingBalance === 0;
 
   if (isPaid) {

@@ -47,7 +47,7 @@ export const getComplianceReportVersion = async (
     emission_limit: parseDecimal(data.emission_limit),
     obligation_id: data.obligation_id,
     compliance_charge_rate: chargeRate,
-    equivalent_value: parseDecimal(data.excess_emissions) * chargeRate,
+    equivalent_value: parseDecimal(data.outstanding_balance) * chargeRate,
     penalty_status: "Accruing",
     penalty_type: "Automatic Overdue",
     penalty_rate_daily: 0.38,

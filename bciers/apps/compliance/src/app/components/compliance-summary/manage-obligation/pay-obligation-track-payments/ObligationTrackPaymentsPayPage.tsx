@@ -7,11 +7,11 @@ import { ObligationTrackPaymentsComponent } from "./ObligationTrackPaymentsCompo
 import { getComplianceReportVersion } from "@/compliance/src/app/utils/getComplianceReportVersion";
 
 interface Props {
-  readonly compliance_report_version_id: string;
+  readonly compliance_summary_id: string;
 }
 
 export default async function ObligationTrackPaymentsPayPage({
-  compliance_report_version_id: complianceReportVersionId,
+  compliance_summary_id: complianceReportVersionId,
 }: Props) {
   const complianceReportVersion = await getComplianceReportVersion(
     complianceReportVersionId,

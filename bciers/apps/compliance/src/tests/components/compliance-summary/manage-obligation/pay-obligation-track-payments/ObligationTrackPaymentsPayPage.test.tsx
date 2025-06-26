@@ -48,7 +48,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
   it("renders with correct content and generates task list", async () => {
     render(
       await ObligationTrackPaymentsPayPage({
-        compliance_report_version_id: "123",
+        compliance_summary_id: "123",
       }),
     );
 
@@ -67,7 +67,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
   it("passes correct data to the component", async () => {
     render(
       await ObligationTrackPaymentsPayPage({
-        compliance_report_version_id: "456",
+        compliance_summary_id: "456",
       }),
     );
 
@@ -86,7 +86,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
   it("passes correct compliance summary ID to the component", async () => {
     render(
       await ObligationTrackPaymentsPayPage({
-        compliance_report_version_id: "789",
+        compliance_summary_id: "789",
       }),
     );
 
