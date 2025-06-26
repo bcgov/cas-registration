@@ -1,7 +1,7 @@
 import React from "react";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 
-export const InternalDirectorReviewApprovalNote = () => {
+export const InternalDirectorReviewAwaitingNote = () => {
   return (
     <AlertNote>
       Once the issuance request is approved, the earned credits will be issued
@@ -10,4 +10,4 @@ export const InternalDirectorReviewApprovalNote = () => {
   );
 };
 
-export default InternalDirectorReviewApprovalNote;
+export default InternalDirectorReviewAwaitingNote;

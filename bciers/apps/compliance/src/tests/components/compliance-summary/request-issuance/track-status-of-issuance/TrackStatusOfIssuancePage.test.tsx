@@ -16,11 +16,6 @@ vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
   }),
 }));
 
-// Mock the session role function
-vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  getSessionRole: vi.fn().mockResolvedValue("industry_user"),
-}));
-
 // Mock the task list generator
 vi.mock(
   "@/compliance/src/app/components/taskLists/requestIssuanceTaskList",

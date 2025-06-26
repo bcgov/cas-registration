@@ -10,6 +10,7 @@ import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { DirectorReviewData } from "@/compliance/src/app/types";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import { useRouter } from "next/navigation";
 
 interface Props {
   initialFormData: DirectorReviewData;
@@ -21,9 +22,8 @@ const InternalReviewByDirectorComponent = ({
   complianceSummaryId,
 }: Props) => {
   const backUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
-  // TODO: Uncomment after Ticket #166 is implemented
-  // const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}`;
-  // const router = useRouter();
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
+  const router = useRouter();
 
   const userRole = useSessionRole();
   const isReadOnly = userRole !== "cas_director";
@@ -51,7 +51,7 @@ const InternalReviewByDirectorComponent = ({
       // TBD: Implement API integration for approval submission (Ticket #166)
       // await submitDirectorDecision(complianceSummaryId, updatedFormData, "approved");
 
-      // router.push(saveAndContinueUrl);
+      router.push(saveAndContinueUrl);
     } catch (error) {
       throw new Error(`Error approving request: ${error}`);
     }
@@ -66,7 +66,7 @@ const InternalReviewByDirectorComponent = ({
       // TBD: API integration for decline submission (Ticket #166)
       // await submitDirectorDecision(complianceSummaryId, updatedFormData, "declined");
 
-      // router.push(saveAndContinueUrl);
+      router.push(saveAndContinueUrl);
     } catch (error) {
       throw new Error(`Error declining request: ${error}`);
     }
