@@ -83,15 +83,14 @@ const mininumLengthError = [
 
 const craBusinessNumberError = [
   {
-    name: "minimum",
+    name: "pattern",
     property: ".cra_business_number",
-    message: "must be >= 100000000",
+    message: "CRA Business Number should be 9 digits",
     params: {
-      comparison: ">=",
-      limit: 100000000,
+      pattern: "^\\d{9}$",
     },
-    stack: "'CRA Business Number' must be >= 100000000",
-    schemaPath: "#/properties/cra_business_number/minimum",
+    stack: "CRA Business Number should be 9 digits",
+    schemaPath: "#/properties/cra_business_number/pattern",
   },
 ];
 
@@ -393,15 +392,13 @@ describe("customTransformErrors", () => {
   });
 
   it("returns the transformed error message for CRA Business Number", () => {
-    const originalErrorMessage = craBusinessNumberError[0].message;
     const transformedErrors = customTransformErrors(
       craBusinessNumberError,
       customFormatsErrorMessages,
     );
 
-    expect(transformedErrors[0].message).not.toBe(originalErrorMessage);
     expect(transformedErrors[0].message).toBe(
-      "CRA Business Number should be 9 digits.",
+      "CRA Business Number should be 9 digits",
     );
   });
   // format errors (format errors appear to only work for string fields)

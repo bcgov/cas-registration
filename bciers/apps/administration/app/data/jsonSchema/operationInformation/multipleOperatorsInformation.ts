@@ -74,8 +74,9 @@ export const createMultipleOperatorsInformationSchema =
                         ),
                       },
                       mo_cra_business_number: {
-                        type: "number",
+                        type: "string",
                         title: "CRA Business Number",
+                        format: "cra_business_number",
                       },
 
                       mo_attorney_street_address: {

@@ -13,7 +13,7 @@ const getFieldNameIfExists = (text: string | undefined) => {
 };
 
 export const CRA_BUSINESS_NUMBER_VALIDATION_ERROR =
-  "CRA Business Number should be 9 digits.";
+  "CRA Business Number should be 9 digits";
 const LATITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =
   "Latitude of largest point of emissions must be between -90 and 90";
 const LONGITUDE_OF_LARGEST_EMISSIONS_VALIDATION_ERROR =

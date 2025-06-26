@@ -18,8 +18,8 @@ class TestUserOperatorService:
         payload = OperatorIn(
             legal_name="Example Legal Name",
             trade_name="Example Trade Name",
-            business_structure='General Partnership',
-            cra_business_number=123456789,
+            business_structure="General Partnership",
+            cra_business_number="123456789",
             bc_corporate_registry_number="aaa1111111",
             street_address="123 Main St",
             municipality="City",
@@ -147,8 +147,8 @@ class TestUserOperatorService:
         payload = OperatorIn(
             legal_name="Test",
             business_structure="BC Corporation",
-            bc_corporate_registry_number='aaa1111111',
-            cra_business_number=999999999,
+            bc_corporate_registry_number="aaa1111111",
+            cra_business_number="999999999",
             street_address="Test",
             municipality="Test",
             province="AB",
@@ -203,8 +203,8 @@ class TestUserOperatorService:
         payload = OperatorIn(
             legal_name="Test",
             business_structure="BC Corporation",
-            bc_corporate_registry_number='aaa1111111',
-            cra_business_number=999999999,
+            bc_corporate_registry_number="aaa1111111",
+            cra_business_number="999999999",
             street_address="Test",
             municipality="Test",
             province="AB",

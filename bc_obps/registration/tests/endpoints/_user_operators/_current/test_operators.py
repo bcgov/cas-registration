@@ -53,7 +53,7 @@ class TestCurrentUserOperatorV2Endpoint(CommonTestSetup):
                 "id": "4242ea9d-b917-4129-93c2-db00b7451051",
                 "legal_name": "khg",
                 "trade_name": "Existing Operator 2 Trade Name",
-                "cra_business_number": 987654321,
+                "cra_business_number": "987654321",
                 "bc_corporate_registry_number": "def1234567",
                 "business_structure": "BC Corporation",
             },

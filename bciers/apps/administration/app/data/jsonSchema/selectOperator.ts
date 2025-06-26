@@ -42,9 +42,8 @@ export const selectOperatorSchema: RJSFSchema = {
         required: ["cra_business_number"],
         properties: {
           cra_business_number: {
-            type: "number",
-            minLength: 1,
-            maxLength: 100,
+            type: "string",
+            format: "cra_business_number",
           },
         },
       },
