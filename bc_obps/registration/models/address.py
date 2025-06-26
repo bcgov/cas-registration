@@ -7,7 +7,6 @@ from registration.enums.enums import RegistrationTableNames
 from registration.models.rls_configs.address import Rls as AddressRls
 import pgtrigger
 
-# do we need to do brianna
 class Address(BaseModel):
     street_address = models.CharField(
         max_length=1000, null=True, blank=True, db_comment="Street address of relevant location)"
