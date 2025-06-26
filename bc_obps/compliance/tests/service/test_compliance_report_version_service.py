@@ -4,6 +4,7 @@ import pytest
 from unittest.mock import patch
 from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
 from model_bakery import baker
+from registration.models import Operation
 
 pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
 
@@ -66,3 +67,90 @@ class TestComplianceReportVersionService:
         assert result.report_compliance_summary_id == report_compliance_summary.id
         assert result.compliance_report_id == compliance_report.id
         assert earned_credits_record.earned_credits_amount == 10
+
+    def test_get_compliance_report_versions_for_previously_owned_operations(self):
+        # Arrange
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        user_operator = baker.make_recipe('registration.tests.utils.user_operator', operator=operator)
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_period',
+            id=2025,
+            reporting_year_id=2025,
+            start_date='2025-01-01',
+            end_date='2025-12-31',
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_period',
+            id=2026,
+            reporting_year_id=2026,
+            start_date='2026-01-01',
+            end_date='2026-12-31',
+        )
+
+        # TRANSFERRED DATA
+        xferred_operation = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+            start_date="2024-01-01 01:46:20.789146",
+            end_date="2026-02-27 01:46:20.789146",
+            operator=operator,
+        )
+
+        xferred_emissions_report = baker.make_recipe(
+            'reporting.tests.utils.report', reporting_year_id=2025, operation=xferred_operation.operation
+        )
+
+        xferred_compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', compliance_period_id=2025, report=xferred_emissions_report
+        )
+
+        xferred_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=xferred_compliance_report
+        )
+
+        xferred_compliance_report_version_2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=xferred_compliance_report
+        )
+
+        # OUT OF BOUNDS REPORTS
+        # Report date is out of bounds for the transfer date. Should not be returned.
+        ob_emissions_report = baker.make_recipe(
+            'reporting.tests.utils.report', reporting_year_id=2026, operation=xferred_operation.operation
+        )
+
+        ob_compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', compliance_period_id=2026, report=ob_emissions_report
+        )
+
+        baker.make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=ob_compliance_report)
+
+        # ACTIVE DATA
+        # Reports from active operations should not be returned
+        active_operation = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, operator=operator
+            ),
+            end_date=None,
+        )
+
+        active_emissions_report = baker.make_recipe(
+            'reporting.tests.utils.report', reporting_year_id=2025, operation=active_operation.operation
+        )
+
+        active_compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', compliance_period_id=2025, report=active_emissions_report
+        )
+
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=active_compliance_report
+        )
+
+        result = ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
+            user_guid=user_operator.user_id
+        )
+
+        # Assert
+        assert result.count() == 2
+        assert result.first() == xferred_compliance_report_version
+        assert result.last() == xferred_compliance_report_version_2
