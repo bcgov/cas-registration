@@ -51,9 +51,21 @@ class ReportingDashboardOperationFilterSchema(FilterSchema):
     #     return self.filtering_including_custom_statuses('operation__name', value)
 
     def filter_report_status(self, value: str) -> Q:
-        # re.search("c", "abcdef")
-        if value and re.search(value, 'not started', re.IGNORECASE):
-            return Q(report_status__isnull=True)
-        if value and re.search(value, 'draft supplementary report', re.IGNORECASE):
-            return Q(report_status=ReportVersion.ReportVersionStatus.Draft) & Q(report_version_id__gt=1)
-        return Q(report_status__icontains=value)
+        """
+        Sometimes on the front-end, we tweak the status display to give the user more information. This function allows us to filter by the front-end status Not Started (db status is null) and Draft Supplementary Report (db status is Draft and report_version_id > 1).
+        """
+        if not value:
+            return Q()
+
+        filters = Q()
+
+        if re.search(value, 'not started', re.IGNORECASE):
+            filters |= Q(report_status__isnull=True)
+
+        if re.search(value, 'draft supplementary report', re.IGNORECASE):
+            filters |= Q(report_status=ReportVersion.ReportVersionStatus.Draft) & Q(report_version_id__gt=1)
+
+        # Generic partial match (e.g., value = 'draft' should match both Draft and Draft Supplementary Report)
+        filters |= Q(report_status__icontains=value)
+
+        return filters
