@@ -6,7 +6,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from compliance.api.router import router
-from compliance.schema.payments import ElicensingPaymentListOut
+from compliance.schema.payments import ElicensingPaymentListOut, PaymentOut
 
 
 @router.get(
@@ -22,7 +22,10 @@ def get_compliance_obligation_payments_by_compliance_report_version_id(
     payment_data = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
         compliance_report_version_id=compliance_report_version_id
     )
+
+    payment_rows = [PaymentOut.from_elicensing_payment(payment) for payment in payment_data.data]
     response = ElicensingPaymentListOut(
-        data_is_fresh=payment_data.data_is_fresh, rows=list(payment_data.data), row_count=len(payment_data.data)  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
+        data_is_fresh=payment_data.data_is_fresh, rows=payment_rows, row_count=len(payment_rows)
     )
+
     return 200, response
