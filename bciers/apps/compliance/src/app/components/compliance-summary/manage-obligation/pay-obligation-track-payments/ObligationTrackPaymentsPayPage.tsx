@@ -21,7 +21,7 @@ export default async function ObligationTrackPaymentsPayPage({
   const complianceSummary = {
     reportingYear: complianceReportVersion.reporting_year.toString(),
     outstandingBalance:
-      complianceReportVersion.outstanding_balance?.toFixed(2) || "0.00",
+      complianceReportVersion.outstanding_balance?.toFixed(4) || "0.0000",
     equivalentValue:
       complianceReportVersion.equivalent_value?.toFixed(2) || "0.00",
     paymentReceivedDate: "Dec 6, 2025", // Mock data
