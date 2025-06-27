@@ -19,14 +19,14 @@ export default async function ComplianceSummaryReviewPage({
   const test = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   console.log(test);
   const complianceSummary = {
-    complianceUnits: {
+    compliance_units: {
       complianceSummaryId,
       gridData: {
         rows: [],
         row_count: 0,
       },
     },
-    monetaryPayments: {
+    monetary_payments: {
       gridData: {
         rows: [
           {
