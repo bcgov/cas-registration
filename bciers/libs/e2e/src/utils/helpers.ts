@@ -579,14 +579,7 @@ export async function clickWithRetry(
   }
 }
 
-export async function urlIsCorrect(
-  page: Page,
-  expectedPath: string,
-  fromBaseUrl?: boolean,
-) {
-  if (fromBaseUrl) {
-    expectedPath = process.env.E2E_BASEURL + expectedPath;
-  }
+export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
 }

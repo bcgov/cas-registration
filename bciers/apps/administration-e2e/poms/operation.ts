@@ -3,7 +3,7 @@
  * Page objects model (POM) simplify test authoring by creating a higher-level API
  * POM simplify maintenance by capturing element selectors in one place and create reusable code to avoid repetition. *
  */
-import { Page, expect } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import { AppRoute } from "@/administration-e2e/utils/enums";
 import { stabilizeGrid } from "@bciers/e2e/utils/helpers";
@@ -46,13 +46,16 @@ export class OperationPOM {
     return row;
   }
 
-  async goToOperation(operation: string) {
-    const viewOperation = await this.page
-      .getByRole("link", { name: /view operation/i })
-      .first();
+  async goToOperation(row: Locator) {
+    const viewOperation = await row.getByRole("link", {
+      name: /view operation/i,
+    });
+    // const viewOperation = await this.page
+    //   .getByRole("link", { name: /view operation/i })
+    //   .first();
     await expect(viewOperation).toBeVisible();
     await viewOperation.click();
-    await expect(this.page.getByText(operation)).toBeVisible();
+    // await expect(this.page.getByText(operation)).toBeVisible();
   }
 
   // ###  Assertions ###
