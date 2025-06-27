@@ -181,7 +181,7 @@ class ComplianceReportVersionService:
             ).select_related(
                 'compliance_report__report__operation',
                 'compliance_report__compliance_period',
-                'compliance_earned_credits',
+                'compliance_earned_credit',
             )
             all_historical_report_versions = all_historical_report_versions.union(historical_report_versions)
         return all_historical_report_versions
