@@ -90,7 +90,7 @@ export function ComplianceSummaryReviewComponent({
 
   return (
     <FormBase
-      schema={createComplianceSummaryReviewSchema(data.reportingYear)}
+      schema={createComplianceSummaryReviewSchema(data.reporting_year)}
       uiSchema={complianceSummaryReviewUiSchema}
       formData={data}
       className="w-full"
