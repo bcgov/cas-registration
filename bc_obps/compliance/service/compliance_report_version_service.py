@@ -183,5 +183,5 @@ class ComplianceReportVersionService:
                 'compliance_report__compliance_period',
                 'compliance_earned_credits',
             )
-            all_historical_report_versions.union(historical_report_versions)
+            all_historical_report_versions = all_historical_report_versions.union(historical_report_versions)
         return all_historical_report_versions
