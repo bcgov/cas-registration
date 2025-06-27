@@ -7,7 +7,6 @@ T = TypeVar('T', bound=Dict[str, Any])
 
 
 class BCCarbonRegistryAccountService:
-    """Service layer for BC Carbon Registry operations."""
 
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
