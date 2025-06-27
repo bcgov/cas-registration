@@ -18,7 +18,7 @@ export default function StatusCell(params: GridRenderCellParams) {
     [ReportOperationStatus.SUBMITTED, BC_GOV_SEMANTICS_GREEN],
   ]);
   const status =
-    params.row.report_version_id > 1
+    params.row.report_version_id > params.row.first_report_version_id
       ? `${params.value} Supplementary Report`
       : params.value || ReportOperationStatus.NOT_STARTED;
   const statusColor = colorMap.get(status) || "primary";
