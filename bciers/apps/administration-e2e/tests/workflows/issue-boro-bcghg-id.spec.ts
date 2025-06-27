@@ -16,7 +16,7 @@ import {
 } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
-const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
+const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR1);
 
 // https://github.com/bcgov/cas-registration/issues/3445
 
