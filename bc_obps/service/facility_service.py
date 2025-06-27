@@ -122,6 +122,7 @@ class FacilityService:
         )
 
         # Numbers to add
+        # TODO - fix. One is type set[str] and the other is set[int]
         numbers_to_add = set(new_numbers) - existing_numbers_set
 
         # Add new numbers
@@ -133,6 +134,7 @@ class FacilityService:
                 )
 
         # Numbers to remove
+        # TODO - fix. One is type set[str] and the other is set[int]
         numbers_to_remove = existing_numbers_set - set(new_numbers)
 
         # Archive old numbers

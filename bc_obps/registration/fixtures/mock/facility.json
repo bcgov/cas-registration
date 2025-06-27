@@ -9,7 +9,8 @@
       "name": "Facility 1",
       "type": "Large Facility",
       "latitude_of_largest_emissions": 43.5,
-      "longitude_of_largest_emissions": -123.5
+      "longitude_of_largest_emissions": -123.5,
+      "well_authorization_numbers": [19454, 24634, 67394]
     }
   },
   {

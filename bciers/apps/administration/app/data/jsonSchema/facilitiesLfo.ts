@@ -79,7 +79,7 @@ const section1: RJSFSchema = {
             well_authorization_numbers: {
               type: "array",
               items: {
-                type: "number",
+                type: "string",
               },
               title: "BC Energy Regulator Well Authorization Number(s)",
             },
