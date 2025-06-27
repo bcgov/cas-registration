@@ -1,4 +1,5 @@
 import { stackMiddlewares } from "@bciers/middlewares";
+import { withTokenRefreshMiddleware } from "./middlewares/withTokenRefresh";
 import { withAuthorizationDashboard } from "./middlewares/withAuthorizationDashboard";
 
 /* 📌
@@ -24,8 +25,12 @@ Conditional statements
 */
 
 export const config = {
-  matcher: ["/((?!static|.*\\..*|api|_next|sw.js|favicon.ico|bciers/libs/).*)"],
+  matcher: ["/((?!static|.*\\..*|_next|sw.js|favicon.ico|bciers/libs/).*)"],
 };
 
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
-export default stackMiddlewares([withAuthorizationDashboard]);
+export default stackMiddlewares([
+  withAuthorizationDashboard,
+  // Bypass if CI / e2e tests
+  ...(process.env.CI === "true" ? [] : [withTokenRefreshMiddleware]),
+]);
