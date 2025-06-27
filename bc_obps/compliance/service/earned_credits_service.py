@@ -31,7 +31,7 @@ class ComplianceEarnedCreditsService:
         Creates an earned credits record for the specific compliance compliance_report_version
 
         Args:
-            compliance_report_version_id: The ID of the compliance compliance_report_version to retrieve earned credits data for
+            compliance_report_version: The compliance report version to create an earned credits record for
 
         Returns:
             The EarnedCredits object if it exists

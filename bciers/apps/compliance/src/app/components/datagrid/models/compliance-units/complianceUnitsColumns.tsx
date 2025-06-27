@@ -1,4 +1,3 @@
-import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 import { GridColDef } from "@mui/x-data-grid";
 
 const complianceUnitsColumns = (): GridColDef[] => {
@@ -10,42 +9,50 @@ const complianceUnitsColumns = (): GridColDef[] => {
       type: "string",
     },
     {
-      field: "serialNumber",
+      field: "serial_number",
       headerName: "Serial Number",
       width: 200,
+      flex: 1,
       type: "string",
+      cellClassName: "text-left break-all",
     },
     {
-      field: "vintageYear",
+      field: "vintage_year",
       headerName: "Vintage Year",
       width: 120,
       type: "string",
     },
     {
-      field: "quantityApplied",
-      headerName: "Quantity Applied",
+      field: "quantity_applied",
+      headerName: "Quantity",
       width: 150,
       type: "string",
+      valueFormatter: (params) => `${Number(params.value).toFixed(0)}`,
+      sortComparator: (a, b) => a - b,
     },
     {
-      field: "equivalentEmissionReduced",
+      field: "equivalent_emission_reduced",
       headerName: "Equivalent Emission Reduced",
       width: 200,
       type: "string",
+      valueGetter: (params) => {
+        return !params.row.quantity_applied
+          ? 0
+          : Number(params.row.quantity_applied);
+      },
       valueFormatter: (params) => `${params.value} tCO2e`,
+      sortComparator: (a, b) => a - b,
     },
     {
-      field: "equivalentValue",
+      field: "equivalent_value",
       headerName: "Equivalent Value",
       width: 150,
       type: "string",
-      valueFormatter: (params) => formatMonetaryValue(Number(params.value)),
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      type: "string",
-      flex: 1,
+      valueFormatter: (params) =>
+        `$${Number(params.value).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
     },
   ];
 };

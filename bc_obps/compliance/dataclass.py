@@ -9,12 +9,32 @@ from compliance.models import ElicensingPayment, ElicensingInvoice
 class BCCRUnit:
     """Data model for BC Carbon Registry Unit information"""
 
-    id: Optional[str]
-    type: Optional[str]
-    serial_number: Optional[str]
-    vintage_year: Optional[int]
-    quantity_available: Optional[str]
+    # Common fields
+    id: Optional[str] = None
+    type: Optional[str] = None
+    serial_number: Optional[str] = None
+    vintage_year: Optional[int] = None
+
+    # BCCR Unit specific fields
+    quantity_available: Optional[str] = None
     quantity_to_be_applied: int = 0  # Default to 0, will be passed to the frontend to populate the input field
+
+    # Applied Compliance Unit specific fields
+    quantity_applied: Optional[str] = None
+    equivalent_value: Optional[str] = None
+
+
+@dataclass
+class AppliedComplianceUnit:
+    """Data model for applied compliance units in grid format"""
+
+    id: Optional[str] = None
+    type: Optional[str] = None
+    serial_number: Optional[str] = None
+    vintage_year: Optional[int] = None
+    quantity_applied: Optional[str] = None
+    equivalent_emission_reduced: Optional[str] = None
+    equivalent_value: Optional[str] = None
 
 
 @dataclass

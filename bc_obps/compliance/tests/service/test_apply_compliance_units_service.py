@@ -2,8 +2,9 @@ import pytest
 from unittest.mock import patch, Mock
 from model_bakery import baker
 from common.exceptions import UserError
-from compliance.service.apply_compliance_units_service import ApplyComplianceUnitsService
+from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
 from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData
+from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.models.operation import Operation
 
 pytestmark = pytest.mark.django_db
@@ -11,24 +12,28 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def mock_bccr_service():
-    with patch('compliance.service.apply_compliance_units_service.bccr_service') as mock:
+    with patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service') as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_compliance_report_version_service():
-    with patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService') as mock:
+    with patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceReportVersionService'
+    ) as mock:
         yield mock
 
 
 @pytest.fixture
 def mock_compliance_charge_rate_service():
-    with patch('compliance.service.apply_compliance_units_service.ComplianceChargeRateService') as mock:
+    with patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceChargeRateService'
+    ) as mock:
         yield mock
 
 
 class TestApplyComplianceUnitsService:
-    def test_format_bccr_units_for_display(self):
+    def test_format_bccr_units_display(self):
         # Arrange
         bccr_units = [
             {
@@ -49,7 +54,7 @@ class TestApplyComplianceUnitsService:
         ]
 
         # Act
-        result = ApplyComplianceUnitsService._format_bccr_units_for_display(bccr_units)
+        result = ApplyComplianceUnitsService._format_bccr_units_for_grid_display(bccr_units)
 
         # Assert
         assert len(result) == 2
@@ -190,7 +195,7 @@ class TestApplyComplianceUnitsService:
         with pytest.raises(UserError, match="Quantity to be applied exceeds available quantity for unit BCE-2023-0001"):
             ApplyComplianceUnitsService._validate_quantity_limits(units)
 
-    @patch('compliance.service.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
     def test_apply_compliance_units_success(self, mock_bccr_service):
         # Arrange
         account_id = "123"
@@ -237,7 +242,7 @@ class TestApplyComplianceUnitsService:
         assert unit2["new_quantity"] == 75
         assert unit2["id"] == "unit-2"
 
-    @patch('compliance.service.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
     def test_apply_compliance_units_filters_zero_quantities(self, mock_bccr_service):
         # Arrange
         account_id = "123"
@@ -288,7 +293,7 @@ class TestApplyComplianceUnitsService:
         assert "BCO-2023-0001" not in serial_numbers
         assert "BCE-2023-0002" not in serial_numbers
 
-    @patch('compliance.service.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
     def test_apply_compliance_units_validation_error(self, mock_bccr_service):
         # Arrange
         account_id = "123"
@@ -311,7 +316,7 @@ class TestApplyComplianceUnitsService:
         # Verify that the transfer was not called due to validation error
         mock_bccr_service.client.transfer_compliance_units.assert_not_called()
 
-    @patch('compliance.service.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
     def test_apply_compliance_units_all_zero_quantities(self, mock_bccr_service):
         # Arrange
         account_id = "123"
@@ -341,3 +346,84 @@ class TestApplyComplianceUnitsService:
         call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
         assert call_args["destination_account_id"] == "456"
         assert call_args["mixedUnitList"] == []
+
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService')
+    def test_get_applied_compliance_units_data_success(
+        self, mock_report_version_service, mock_bccr_service, mock_compliance_charge_rate_service
+    ):
+        # Arrange
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report", bccr_subaccount_id="123456789101234"
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
+        )
+        mock_report_version_service.get_compliance_report_version.return_value = compliance_report_version
+
+        mock_bccr_service.client.list_all_units.return_value = {
+            "entities": [
+                {
+                    "id": "1",
+                    "unitType": "BCE",
+                    "serialNo": "BCE-2025-0001",
+                    "vintage": 2025,
+                    "holdingQuantity": 50,
+                }
+            ]
+        }
+        mock_compliance_charge_rate_service.get_rate_for_year.return_value = 80
+
+        # Act
+        result = ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
+
+        # Assert
+        mock_report_version_service.get_compliance_report_version.assert_called_once_with(42)
+        mock_bccr_service.client.list_all_units.assert_called_once_with(
+            account_id="123456789101234", state_filter="ACTIVE,RETIRED"
+        )
+        mock_compliance_charge_rate_service.get_rate_for_year.assert_called_once_with(
+            compliance_report.report.reporting_year
+        )
+        assert isinstance(result, list)
+        assert isinstance(result[0], BCCRUnit)
+        assert result[0].id == "1"
+        assert result[0].type == "Earned Credits"
+        assert result[0].serial_number == "BCE-2025-0001"
+        assert result[0].vintage_year == 2025
+        assert result[0].quantity_applied == "50"
+        assert result[0].equivalent_value == "4000.00"  # 50 * 80
+
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService')
+    def test_get_applied_compliance_units_data_no_subaccount(self, mock_report_version_service, mock_bccr_service):
+        # Arrange
+        compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", bccr_subaccount_id=None)
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
+        )
+        mock_report_version_service.get_compliance_report_version.return_value = compliance_report_version
+
+        # Act
+        result = ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
+
+        # Assert
+        assert result == []
+
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
+    @patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService')
+    def test_get_applied_compliance_units_data_bccr_error(self, mock_report_version_service, mock_bccr_service):
+        # Arrange
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report", bccr_subaccount_id="123456789101234"
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
+        )
+        mock_report_version_service.get_compliance_report_version.return_value = compliance_report_version
+
+        mock_bccr_service.client.list_all_units.side_effect = BCCarbonRegistryError("Service error")
+
+        # Act & Assert
+        with pytest.raises(BCCarbonRegistryError):
+            ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
