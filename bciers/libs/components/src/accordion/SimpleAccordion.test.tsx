@@ -6,40 +6,39 @@ const getSummaryButton = (title: string) => {
   return screen.getByRole("button", { name: title });
 };
 
+// Common test props to reduce duplication
+const defaultProps = {
+  title: "Accordion Title",
+  children: <div>Accordion Content</div>,
+};
+
+const renderAccordion = (props: { defaultExpanded?: boolean } = {}) => {
+  return render(
+    <SimpleAccordion {...defaultProps} {...props}>
+      {defaultProps.children}
+    </SimpleAccordion>,
+  );
+};
+
 describe("SimpleAccordion", () => {
   it("renders the title", () => {
-    render(
-      <SimpleAccordion title="Accordion Title">
-        <div>Accordion Content</div>
-      </SimpleAccordion>,
-    );
+    renderAccordion();
     expect(screen.getByText("Accordion Title")).toBeVisible();
   });
 
   it("renders the children when expanded", () => {
-    render(
-      <SimpleAccordion title="Accordion Title">
-        <div>Accordion Content</div>
-      </SimpleAccordion>,
-    );
+    renderAccordion();
     expect(screen.getByText("Accordion Content")).toBeVisible();
   });
 
   it("shows the custom expand icon", () => {
-    render(
-      <SimpleAccordion title="Accordion Title">
-        <div>Accordion Content</div>
-      </SimpleAccordion>,
-    );
+    renderAccordion();
     expect(screen.getByText("▼")).toBeVisible();
   });
 
   it("toggles content visibility when clicked", () => {
-    render(
-      <SimpleAccordion title="Accordion Title" defaultExpanded={false}>
-        <div>Accordion Content</div>
-      </SimpleAccordion>,
-    );
+    renderAccordion({ defaultExpanded: false });
+
     // Content should not be visible initially
     expect(screen.queryByText("Accordion Content")).not.toBeVisible();
 
