@@ -48,6 +48,9 @@ class ComplianceDashboardService:
             )
         )
 
+        for version in compliance_report_versions:
+            version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
+
         return compliance_report_versions
 
     @classmethod
