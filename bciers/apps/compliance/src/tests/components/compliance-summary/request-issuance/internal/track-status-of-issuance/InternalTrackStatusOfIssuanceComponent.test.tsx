@@ -1,23 +1,19 @@
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
 import InternalTrackStatusOfIssuanceComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalTrackStatusOfIssuanceComponent";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
 
-vi.mock("@bciers/components/form/FormBase", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="form-base">{children}</div>
-  ),
-}));
-
-vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
-  default: ({ backUrl }: { backUrl: string }) => (
-    <div data-testid="compliance-buttons">{backUrl}</div>
-  ),
+const mockPush = vi.fn();
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockPush,
+  }),
 }));
 
 describe("InternalTrackStatusOfIssuanceComponent", () => {
   const mockComplianceSummaryId = "123";
-  const mockData = {
+  const mockData: RequestIssuanceTrackStatusData = {
     earned_credits: 100,
     issuance_status: IssuanceStatus.APPROVED,
     bccr_trading_name: "Test Trading Name",
@@ -25,23 +21,11 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     directors_comments: "Test comments",
     analysts_comments: "Analyst's comments",
   };
-
-  it("renders with correct back URL", () => {
-    render(
-      <InternalTrackStatusOfIssuanceComponent
-        data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
-      />,
-    );
-
-    // Check if the component renders with the correct back URL
-    const buttons = screen.getByTestId("compliance-buttons");
-    expect(buttons).toHaveTextContent(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
-    );
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("renders FormBase with correct props", () => {
+  it("renders form fields and navigation buttons", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={mockData}
@@ -49,7 +33,39 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
       />,
     );
 
-    // Check if FormBase is rendered
-    expect(screen.getByTestId("form-base")).toBeVisible();
+    // Check form title
+    expect(screen.getByText("Track Status of Issuance")).toBeVisible();
+
+    // Check section headers
+    expect(screen.getByText("Earned Credits")).toBeVisible();
+
+    // Check field labels
+    expect(screen.getByText("Earned Credits:")).toBeVisible();
+    expect(screen.getByText("Status of Issuance:")).toBeVisible();
+    expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
+    expect(screen.getByText("BCCR Holding Account ID:")).toBeVisible();
+    expect(screen.getByText("Director's Comments:")).toBeVisible();
+
+    // Check navigation buttons
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
+  });
+
+  it("hanldes navigation button with correct props", () => {
+    render(
+      <InternalTrackStatusOfIssuanceComponent
+        data={mockData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    //Check the button states
+    const backButton = screen.getByRole("button", { name: "Back" });
+    expect(backButton).toBeVisible();
+
+    //Test back button navigation
+    fireEvent.click(backButton);
+    expect(mockPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+    );
   });
 });
