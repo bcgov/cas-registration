@@ -36,6 +36,8 @@ const ActionCell = (params: ActionCellProps) => {
         } else {
           basePath += "/request-issuance-review-summary";
         }
+      } else {
+        basePath += "/review-summary";
       }
       return basePath;
     },

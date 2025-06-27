@@ -73,7 +73,7 @@ describe("ActionCell", () => {
 
   it("displays 'View Details' when neither obligation_id nor earned credits status is present", () => {
     render(ActionCell(createMockParams(123, false)));
-    expectLink("View Details", "/compliance-summaries/123");
+    expectLink("View Details", "/compliance-summaries/123/review-summary");
   });
 
   it("prioritizes 'Manage Obligation' over 'Request Issuance' when both conditions are met", () => {
