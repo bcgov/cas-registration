@@ -18,6 +18,9 @@ import {
 const happoPlaywright = require("happo-playwright");
 const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR_1);
 
+// Use this locally
+// const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
+
 // https://github.com/bcgov/cas-registration/issues/3445
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
