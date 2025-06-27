@@ -122,16 +122,19 @@ class FacilityService:
         )
 
         # Numbers to add
+        # TODO - fix. One is type set[str] and the other is set[int]
         numbers_to_add = set(new_numbers) - existing_numbers_set
 
         # Add new numbers
         if numbers_to_add:
             for number in numbers_to_add:
+                # convert the number from a string to an integer (as the database expects)
                 facility.well_authorization_numbers.add(
-                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, number)
+                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, int(number))
                 )
 
         # Numbers to remove
+        # TODO - fix. One is type set[str] and the other is set[int]
         numbers_to_remove = existing_numbers_set - set(new_numbers)
 
         # Archive old numbers

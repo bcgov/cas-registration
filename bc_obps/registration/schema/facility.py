@@ -1,4 +1,5 @@
 from ninja import ModelSchema, Field
+from pydantic import computed_field
 from registration.models import Facility
 from uuid import UUID
 from typing import List, Optional
@@ -11,7 +12,7 @@ class FacilityIn(ModelSchema):
     province: Optional[str] = None
     postal_code: Optional[str] = None
     operation_id: UUID
-    well_authorization_numbers: List[int] = []
+    well_authorization_numbers: List[str] = []
     latitude_of_largest_emissions: Optional[decimal.Decimal] = None
     longitude_of_largest_emissions: Optional[decimal.Decimal] = None
 
@@ -35,16 +36,20 @@ class FacilityOut(ModelSchema):
     longitude_of_largest_emissions: Optional[float] = Field(None, alias="longitude_of_largest_emissions")
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
+    @computed_field
+    def well_numbers(self) -> List[str]:
+        return [str(wan) for wan in self.well_authorization_numbers]
+
     class Meta:
         model = Facility
         fields = [
             "id",
             "name",
             "type",
-            'well_authorization_numbers',
             "latitude_of_largest_emissions",
             "longitude_of_largest_emissions",
             "is_current_year",
             "starting_date",
+            "well_authorization_numbers",
         ]
         populate_by_name = True
