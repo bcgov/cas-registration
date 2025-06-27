@@ -84,3 +84,77 @@ class TestReportingDashboardService:
         assert op2_result["report_id"] is None
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
+
+    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_sorting_and_filtering(
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+        mock_get_all_operations_for_user: MagicMock | AsyncMock,
+    ):
+        user = user_baker()
+        mock_get_by_guid.return_value = user
+        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+
+        year = reporting_year_baker(reporting_year=5091)
+        operator = operator_baker()
+        operations = operation_baker(operator_id=operator.id, _quantity=5)
+
+        sort_field: Optional[str] = "name"
+        sort_order: Optional[str] = "asc"
+        
+
+        # r0 orginal, report_version_id=1
+        r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
+        r0_version1.status = "Submitted"
+        r0_version1.save()
+
+        # r0 supplementary, report_version_id=2
+        r0 = ReportVersion.objects.get(pk=r0_version1_id).report
+        latest_r0_revision = report_version_baker(report=r0)
+
+        # r1 original, report_version_id=3, not started
+        r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
+        r1_version1 = ReportVersion.objects.get(pk=r1_version1_id)
+        r1_version1.status = "Submitted" #brianna this one is meant to be not started
+        r1_version1.save()
+
+        # r2 original report_version_id=4
+        r2_version1_id = ReportService.create_report(operations[2].id, year.reporting_year)
+        r2_version1 = ReportVersion.objects.get(pk=r2_version1_id)
+
+        operations[0].status = Operation.Statuses.REGISTERED
+        operations[1].status = Operation.Statuses.REGISTERED
+        operations[2].status = Operation.Statuses.REGISTERED
+        operations[3].status = Operation.Statuses.NOT_STARTED
+        operations[4].registration_purpose = Operation.Purposes.POTENTIAL_REPORTING_OPERATION
+        for op in operations:
+            op.save()
+
+
+        draft_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(
+            report_status="draft")
+        ).values()
+        result_list = list(draft_filter_result)
+        statuses = [(item['report_status'], item['report_version_id']) for item in result_list]
+
+        assert statuses == [('Draft', 2), ('Draft', 4)]
+
+        draft_supplementary_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(
+            report_status="draft sup")
+        ).values()
+        result_list = list(draft_supplementary_filter_result)
+        assert len(result_list) == 1
+
+        not_started_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(
+            report_status="not st")
+        ).values()
+        result_list = list(not_started_filter_result)
+        assert len(result_list) == 1
+
+        
+        

@@ -5,6 +5,7 @@ import ActionCell from "@reporting/src/app/components/operations/cells/ActionCel
 import MoreActionsCell from "@reporting/src/app/components/operations/cells/MoreActionsCell";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
+import { rowSelectionStateInitializer } from "@mui/x-data-grid/internals";
 
 export const OPERATOR_COLUMN_INDEX = 1;
 const UpdatedAtCell = ({ row, value }: GridRenderCellParams) =>

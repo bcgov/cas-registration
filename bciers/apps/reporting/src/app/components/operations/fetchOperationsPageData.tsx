@@ -1,6 +1,7 @@
 import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 import { OperationsSearchParams } from "./types";
+import { transformStatus } from "./transformStatus";
 
 // 🛠️ Function to fetch operations
 export const fetchOperationsPageData = async (
@@ -13,8 +14,13 @@ export const fetchOperationsPageData = async (
     "GET",
     "",
   );
-  return {
+  const gridData = {
     rows: pageData.items,
     row_count: pageData.count,
   };
+  // const gridData = transformStatus({
+  //   rows: pageData.items,
+  //   row_count: pageData.count,
+  // });
+  return gridData;
 };

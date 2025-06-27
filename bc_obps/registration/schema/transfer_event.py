@@ -31,6 +31,7 @@ class TransferEventFilterSchema(FilterSchema):
     @staticmethod
     def filtering_including_not_applicable(field: str, value: str) -> Q:
         if value and re.search(value, 'n/a', re.IGNORECASE):
+            # We show "N/A" on the frontend if a field is null in the db.
             return Q(**{f"{field}__icontains": value}) | Q(**{f"{field}__isnull": True})
         return Q(**{f"{field}__icontains": value}) if value else Q()
 

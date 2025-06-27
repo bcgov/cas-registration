@@ -34,8 +34,19 @@ class ReportingDashboardService:
         sort_field = sort_field or "id"
         sort_order = sort_order or "asc"
         sort_direction = "-" if sort_order == "desc" else ""
-        sort_by = f"{sort_direction}{sort_field}"
-        report_version_subquery = (
+
+        sort_fields = [f"{sort_direction}{sort_field}"]
+
+        # On the frontend, we have two draft statuses ('Draft Supplementary Report' and 'Draft'). This ensures they order properly when sorting.
+        if sort_field == "report_status":
+            sort_fields.append(f"{sort_direction}report_version_id")
+
+        first_report_version_subquery = (
+            ReportVersion.objects.filter(report_id=OuterRef("id"))
+            .order_by("id")  # ascending → earliest version first
+            .values("id")[:1]
+        )
+        latest_report_version_subquery = (
             ReportVersion.objects.filter(report_id=OuterRef("id"))
             .order_by("-id")
             .annotate(full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")))[:1]
@@ -47,10 +58,11 @@ class ReportingDashboardService:
                 operation_id=OuterRef("id"),
                 reporting_year=reporting_year,
             )
-            .annotate(latest_version_id=report_version_subquery.values("id"))
-            .annotate(latest_version_status=report_version_subquery.values("status"))
-            .annotate(latest_version_updated_at=report_version_subquery.values("updated_at"))
-            .annotate(latest_version_updated_by=report_version_subquery.values("full_name"))
+            .annotate(latest_version_id=latest_report_version_subquery.values("id"))
+            .annotate(latest_version_status=latest_report_version_subquery.values("status"))
+            .annotate(latest_version_updated_at=latest_report_version_subquery.values("updated_at"))
+            .annotate(latest_version_updated_by=latest_report_version_subquery.values("full_name"))
+            .annotate(first_version_id=first_report_version_subquery.values("id"))
         )
         report_operation_name_subquery = ReportOperation.objects.filter(
             report_version__report__operation_id=OuterRef("id"),
@@ -64,11 +76,11 @@ class ReportingDashboardService:
             .annotate(
                 report_id=report_subquery.values("id"),
                 report_version_id=report_subquery.values("latest_version_id"),
+                first_report_version_id=report_subquery.values("first_version_id"),
                 report_status=report_subquery.values("latest_version_status"),
                 report_updated_at=report_subquery.values("latest_version_updated_at"),
                 report_submitted_by=report_subquery.values("latest_version_updated_by"),
                 operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
             )
         )
-
-        return filters.filter(queryset).order_by(sort_by)
+        return filters.filter(queryset).order_by(*sort_fields)
