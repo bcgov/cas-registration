@@ -7,10 +7,11 @@ import {
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
-import InternalDirectorReviewApprovalNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewApprovalNote";
+import InternalDirectorReviewAwaitingNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewAwaitingNote";
 import InternalDirectorReviewChangesNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewChangesNote";
 import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
 import { TextWidget } from "@bciers/components/form/widgets";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
   earned_credits_header: readOnlyObjectField("Earned Credits"),
@@ -67,17 +68,22 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
         },
       ],
     },
-    analyst_recommendation: {
+    issuance_status: {
       oneOf: [
         {
           properties: {
-            analyst_recommendation: { enum: ["ready_to_approve"] },
-            approval_note: readOnlyStringField(),
+            issuance_status: {
+              enum: [
+                IssuanceStatus.AWAITING_APPROVAL,
+                IssuanceStatus.ISSUANCE_REQUESTED,
+              ],
+            },
+            awaiting_note: readOnlyStringField(),
           },
         },
         {
           properties: {
-            analyst_recommendation: { enum: ["require_changes"] },
+            issuance_status: { enum: [IssuanceStatus.CHANGES_REQUIRED] },
             changes_note: readOnlyStringField(),
           },
         },
@@ -101,7 +107,7 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
     "director_header",
     "editable_director_comment",
     "readonly_director_comment",
-    "approval_note",
+    "awaiting_note",
     "changes_note",
     "analyst_recommendation",
     "read_only",
@@ -136,8 +142,8 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
   analyst_recommendation: {
     "ui:widget": "hidden",
   },
-  approval_note: {
-    "ui:widget": InternalDirectorReviewApprovalNote,
+  awaiting_note: {
+    "ui:widget": InternalDirectorReviewAwaitingNote,
     "ui:options": {
       label: false,
       inline: true,

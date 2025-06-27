@@ -105,8 +105,11 @@ export enum FormMode {
 }
 
 export enum IssuanceStatus {
+  ISSUANCE_REQUESTED = "Issuance Requested",
+  AWAITING_APPROVAL = "Awaiting Approval",
   APPROVED = "Approved",
-  AWAITING = "Awaiting Approval",
+  CREDITS_ISSUED = "Credits Issued in BCCR",
   DECLINED = "Declined",
+  CREDITS_NOT_ISSUED = "Credits Not Issued in BCCR",
   CHANGES_REQUIRED = "Changes Required",
 }
