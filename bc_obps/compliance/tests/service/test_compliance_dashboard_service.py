@@ -38,7 +38,7 @@ class TestComplianceDashboardService(TestCase):
     @patch(
         'compliance.service.compliance_report_version_service.ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations'
     )
-    def test_get_compliance_report_versions_for_dashboard(self, mock_previously_owned):
+    def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(self, mock_previously_owned):
         user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
         operation = make_recipe(
@@ -63,3 +63,80 @@ class TestComplianceDashboardService(TestCase):
         assert result.count() == 2
         assert result.first() == compliance_report_version
         assert result.last() == previous_compliance_report_version
+
+    @pytest.mark.django_db
+    def test_get_compliance_report_versions_for_dashboard_unions_results(self):
+
+        current_operator = make_recipe('registration.tests.utils.operator')
+        previous_operator = make_recipe('registration.tests.utils.operator')
+        current_user_operator = make_recipe(
+            'registration.tests.utils.approved_user_operator', operator=current_operator
+        )
+        make_recipe('registration.tests.utils.approved_user_operator', operator=previous_operator)
+        operation = make_recipe(
+            'registration.tests.utils.operation', operator=current_operator, status=Operation.Statuses.REGISTERED
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_period',
+            id=2025,
+            reporting_year_id=2025,
+            start_date='2025-01-01',
+            end_date='2025-12-31',
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_period',
+            id=2026,
+            reporting_year_id=2026,
+            start_date='2026-01-01',
+            end_date='2026-12-31',
+        )
+
+        # TRANSFERRED DATA
+        # Transferred reports should not be viewed by the current owning operator
+        xferred_operation = make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            start_date="2024-01-01 01:46:20.789146",
+            end_date="2026-02-27 01:46:20.789146",
+            operator=previous_operator,
+        )
+
+        xferred_emissions_report = make_recipe(
+            'reporting.tests.utils.report', reporting_year_id=2025, operation=xferred_operation.operation
+        )
+
+        xferred_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', compliance_period_id=2025, report=xferred_emissions_report
+        )
+
+        make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=xferred_compliance_report)
+
+        # ACTIVE DATA
+        active_operation = make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=operation,
+            end_date=None,
+        )
+
+        active_emissions_report = make_recipe(
+            'reporting.tests.utils.report',
+            reporting_year_id=2026,
+            operation=active_operation.operation,
+            operator=current_operator,
+        )
+
+        active_compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', compliance_period_id=2026, report=active_emissions_report
+        )
+
+        active_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=active_compliance_report
+        )
+
+        active_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=current_user_operator.user.user_guid
+        )
+
+        # Does not return the report associated to the previous owning operator
+        assert active_result.count() == 1
+        assert active_result.first() == active_compliance_report_version
