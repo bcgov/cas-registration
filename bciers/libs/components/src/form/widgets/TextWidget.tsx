@@ -63,18 +63,25 @@ const TextWidget: React.FC<WidgetProps> = ({
     width: "100%",
   };
 
-  // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     return (
       <NumberField.Root
         id={id}
         name={name}
         disabled={disabled || readonly}
-        value={value}
+        value={value ? Number(value) : value}
         onValueChange={handleNumberChange}
         max={maxNum}
         style={widthStyle}
-        format={{ maximumFractionDigits: 4 }}
+        format={{
+          // set the fraction digits based on how many decimal places that value returned from the API has. Lat/long can have up to 8, and some calculated values can have up to 4.
+          maximumFractionDigits: value
+            ? value.toString().split(".")[1]?.length
+            : 4,
+          minimumFractionDigits: value
+            ? value.toString().split(".")[1]?.length
+            : 0,
+        }}
       >
         <NumberField.Group>
           <NumberField.Input

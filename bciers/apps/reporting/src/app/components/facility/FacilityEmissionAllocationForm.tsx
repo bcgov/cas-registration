@@ -54,7 +54,6 @@ const validateEmissions = (formData: FormData): boolean => {
           FLOATING_POINT_PRECISION_FACTOR || 0), // we multiply by the factor when adding
       0,
     );
-
     const emissionTotal = parseFloat(allocation.emission_total.toString()) || 0;
 
     return (
@@ -160,13 +159,21 @@ export default function FacilityEmissionAllocationForm({
         .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
-      facility_total_emissions:
-        initialData.facility_total_emissions?.toString(),
-      products: initialData.report_product_emission_allocation_totals,
+      facility_total_emissions: initialData.facility_total_emissions
+        ? Number(initialData.facility_total_emissions)
+        : initialData.facility_total_emissions,
+      products:
+        initialData.report_product_emission_allocation_totals?.map(
+          (product: { [key: string]: any }) => ({
+            ...product,
+            allocated_quantity: product.allocated_quantity
+              ? Number(product.allocated_quantity)
+              : product.allocated_quantity,
+          }),
+        ) || [],
     },
   }));
   const [shouldReset, setShouldReset] = useState(false);
-
   // State for submit button disable
   const [errors, setErrors] = useState<string[] | undefined>();
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(true);
@@ -195,7 +202,6 @@ export default function FacilityEmissionAllocationForm({
       });
       setShouldReset(false);
     }
-
     if (formData.allocation_methodology === "Not Applicable") {
       removeProducts(formData);
       setShouldReset(true);
@@ -237,7 +243,7 @@ export default function FacilityEmissionAllocationForm({
             }
             return {
               ...product,
-              allocated_quantity: String(allocatedQuantity),
+              allocated_quantity: allocatedQuantity,
             };
           }),
         }))
@@ -250,10 +256,8 @@ export default function FacilityEmissionAllocationForm({
         updatedFormData.total_emission_allocations.products.map(
           (product: { report_product_id: number }) => ({
             ...product,
-            allocated_quantity: String(
-              parseFloat(
-                (productAllocations[product.report_product_id] || 0).toFixed(4),
-              ),
+            allocated_quantity: parseFloat(
+              (productAllocations[product.report_product_id] || 0).toFixed(4),
             ),
           }),
         );
@@ -282,15 +286,21 @@ export default function FacilityEmissionAllocationForm({
         formData?.allocation_methodology === "Not Applicable"
           ? []
           : [
-              ...formData.basic_emission_allocation_data.map((item: any) => ({
-                emission_total: item.emission_total,
-                emission_category_id: item.emission_category_id,
-                products: item.products.map((product: any) => ({
-                  report_product_id: product.report_product_id,
-                  product_name: product.product_name,
-                  allocated_quantity: parseFloat(product.allocated_quantity),
-                })),
-              })),
+              ...formData.basic_emission_allocation_data.map((item: any) => {
+                return {
+                  emission_total: item.emission_total,
+                  emission_category_id: item.emission_category_id,
+                  products: item.products.map((product: any) => {
+                    return {
+                      report_product_id: product.report_product_id,
+                      product_name: product.product_name,
+                      allocated_quantity: parseFloat(
+                        product.allocated_quantity,
+                      ),
+                    };
+                  }),
+                };
+              }),
               ...formData.fuel_excluded_emission_allocation_data.map(
                 (item: any) => ({
                   emission_total: item.emission_total,
