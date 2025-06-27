@@ -77,5 +77,5 @@ export const getComplianceSummary = async (
     total_amount: 91.55,
   };
 
-  return pageData;
+  return data;
 };

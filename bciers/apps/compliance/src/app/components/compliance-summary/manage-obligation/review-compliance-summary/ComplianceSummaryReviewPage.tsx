@@ -4,12 +4,7 @@ import {
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-<<<<<<< HEAD
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-=======
-import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/fetchComplianceSummaryReviewPageData";
-
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
 interface Props {
   compliance_summary_id: string;
 }
@@ -17,22 +12,12 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-<<<<<<< HEAD
   // TODO: Replace with actual data fetching logic post-refactoring #188 (use a single API call rather than multiple)
   // const { complianceSummary, paymentsData } = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   const appliedComplianceUnitsData =
     await getComplianceAppliedUnits(complianceSummaryId);
   const complianceSummaryData = {
     applied_compliance_units: {
-=======
-  // TODO: Replace with actual data fetching logic post-refactoring #188
-  // const { complianceSummary, paymentsData }
-
-  const test = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
-  console.log(test);
-  const complianceSummary = {
-    complianceUnits: {
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
       complianceSummaryId,
       appliedComplianceUnits: appliedComplianceUnitsData,
     },
@@ -62,11 +47,7 @@ export default async function ComplianceSummaryReviewPage({
     outstanding_balance_equivalent_value: "16000.00",
     penalty_status: "Accruing",
     penalty_type: "Automatic Overdue",
-<<<<<<< HEAD
     penalty_charge_rate: "0.38",
-=======
-    penalty_rate_daily: "0.38",
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     days_late: "3",
     accumulated_penalty: "91.2",
     accumulated_compounding: "0.35",
@@ -77,11 +58,7 @@ export default async function ComplianceSummaryReviewPage({
 
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-<<<<<<< HEAD
     complianceSummaryData.reporting_year,
-=======
-    complianceSummary.reporting_year,
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     ActivePage.ReviewComplianceSummary,
   );
 
