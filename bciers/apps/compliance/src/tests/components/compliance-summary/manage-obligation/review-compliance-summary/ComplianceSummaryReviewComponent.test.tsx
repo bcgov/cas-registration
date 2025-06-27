@@ -21,7 +21,11 @@ vi.mock(
 );
 
 const mockData = {
+<<<<<<< HEAD
   reporting_year: 2025,
+=======
+  reporting_year: "2025",
+>>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
   emissions_attributable_for_compliance: "1200.0000",
   emission_limit: "1000.0000",
   excess_emissions: "200.0000",
@@ -32,7 +36,11 @@ const mockData = {
   outstanding_balance_equivalent_value: "17000.00",
   penalty_status: "Accruing",
   penalty_type: "Automatic Overdue",
+<<<<<<< HEAD
   penalty_charge_rate: "0.38",
+=======
+  penalty_rate_daily: "0.38",
+>>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
   days_late: "3",
   accumulated_penalty: "91.5",
   accumulated_compounding: "0.35",
@@ -145,9 +153,8 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(mockWindowOpen).not.toHaveBeenCalled();
 
     const alerts = await screen.findAllByRole("alert");
-    const hasErrorText = alerts.some(
-      (el) =>
-        el.textContent?.toLowerCase().includes("unable to generate invoice"),
+    const hasErrorText = alerts.some((el) =>
+      el.textContent?.toLowerCase().includes("unable to generate invoice"),
     );
     expect(hasErrorText).toBe(true);
     expect(getGenerateButton()).toBeEnabled();
