@@ -6,9 +6,9 @@ from compliance.service.bc_carbon_registry.schema import FifteenDigitString
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import BCCR
-from compliance.service.bc_carbon_registry.bc_carbon_registry_service import BCCarbonRegistryService
+from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 
-bccr_service = BCCarbonRegistryService()
+bccr_service = BCCarbonRegistryAccountService()
 
 
 @router.get(

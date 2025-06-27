@@ -1,7 +1,7 @@
 import pytest
 from model_bakery import baker
 from unittest.mock import patch
-from compliance.service.bc_carbon_registry.bc_carbon_registry_service import BCCarbonRegistryService
+from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
 from registration.models.operation import Operation
 
@@ -16,7 +16,7 @@ def mock_api_client():
 
 @pytest.fixture
 def service(mock_api_client):
-    return BCCarbonRegistryService()
+    return BCCarbonRegistryAccountService()
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def compliance_report_instance():
     return compliance_report
 
 
-class TestBCCarbonRegistryService:
+class TestBCCarbonRegistryAccountService:
     def test_get_first_entity_with_valid_response(self, service):
         # Arrange
         response = {"entities": [{"entityId": "123", "tradingName": "Test Corp"}]}

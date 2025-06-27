@@ -2,12 +2,12 @@ from dataclasses import asdict
 from typing import Dict, List, Optional, Any
 from common.exceptions import UserError
 from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
-from compliance.service.bc_carbon_registry.bc_carbon_registry_service import BCCarbonRegistryService
+from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from decimal import Decimal
 
-bccr_service = BCCarbonRegistryService()
+bccr_service = BCCarbonRegistryAccountService()
 
 
 class ApplyComplianceUnitsService:

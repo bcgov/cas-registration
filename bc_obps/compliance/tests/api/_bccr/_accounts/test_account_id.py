@@ -7,7 +7,7 @@ from compliance.dataclass import BCCRAccountResponseDetails
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
 BCCR_SERVICE_PATH = (
-    "compliance.service.bc_carbon_registry.bc_carbon_registry_service.BCCarbonRegistryService.get_account_details"
+    "compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAccountService.get_account_details"
 )
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 
