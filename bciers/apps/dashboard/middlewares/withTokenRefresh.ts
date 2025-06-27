@@ -107,7 +107,7 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
             httpOnly: true,
             maxAge: 30 * 60, // 30 min to match KC
             secure: SESSION_SECURE,
-            sameSite: "strict",
+            sameSite: "lax",
           });
         });
       }
