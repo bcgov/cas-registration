@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 from compliance.models import ComplianceReportVersion, ElicensingPayment
 from service.data_access_service.user_service import UserDataAccessService
 from service.data_access_service.operation_service import OperationDataAccessService
-from registration.models import Operation
+from registration.models import Operation, UserOperator
 from typing import Optional
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.dataclass import PaymentDataWithFreshnessFlag
@@ -30,7 +30,8 @@ class ComplianceDashboardService:
 
         # Get all compliance report versions for the filtered operations
         compliance_report_versions = ComplianceReportVersion.objects.filter(
-            compliance_report__report__operation_id__in=operations
+            compliance_report__report__operation_id__in=operations,
+            compliance_report__report__operator=UserOperator.objects.get(user_id=user_guid).operator,
         ).select_related(
             'compliance_report__report__operation',
             'compliance_report__compliance_period',

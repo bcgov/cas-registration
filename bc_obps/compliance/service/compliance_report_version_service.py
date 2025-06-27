@@ -184,4 +184,4 @@ class ComplianceReportVersionService:
                 'compliance_earned_credits',
             )
             all_historical_report_versions.union(historical_report_versions)
-        return historical_report_versions
+        return all_historical_report_versions
