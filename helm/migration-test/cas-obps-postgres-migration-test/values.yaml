@@ -1,0 +1,5 @@
+# The chart name limits the length of the release name drastically, so we
+# override it here to be more accommodating for descriptive release names.
+fullnameOverride: pg-migration-test
+
+sourceNamespace: ~
