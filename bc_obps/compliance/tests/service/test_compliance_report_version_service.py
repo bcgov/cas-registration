@@ -71,7 +71,7 @@ class TestComplianceReportVersionService:
     def test_get_compliance_report_versions_for_previously_owned_operations(self):
         # Arrange
         operator = baker.make_recipe('registration.tests.utils.operator')
-        user_operator = baker.make_recipe('registration.tests.utils.user_operator', operator=operator)
+        user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
         baker.make_recipe(
             'compliance.tests.utils.compliance_period',
             id=2025,
@@ -108,8 +108,24 @@ class TestComplianceReportVersionService:
             'compliance.tests.utils.compliance_report_version', compliance_report=xferred_compliance_report
         )
 
+        xferred_operation_2 = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+            start_date="2024-01-01 01:46:20.789146",
+            end_date="2026-02-27 01:46:20.789146",
+            operator=operator,
+        )
+
+        xferred_emissions_report_2 = baker.make_recipe(
+            'reporting.tests.utils.report', reporting_year_id=2025, operation=xferred_operation_2.operation
+        )
+
+        xferred_compliance_report_2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', compliance_period_id=2025, report=xferred_emissions_report_2
+        )
+
         xferred_compliance_report_version_2 = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=xferred_compliance_report
+            'compliance.tests.utils.compliance_report_version', compliance_report=xferred_compliance_report_2
         )
 
         # OUT OF BOUNDS REPORTS
