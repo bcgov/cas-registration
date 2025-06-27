@@ -5,9 +5,7 @@ from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryErr
 from registration.utils import custom_reverse_lazy
 
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
-SERVICE_PATH = (
-    "compliance.service.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
-)
+SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent DB queries
