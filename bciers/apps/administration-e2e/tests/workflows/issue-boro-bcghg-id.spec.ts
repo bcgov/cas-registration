@@ -3,7 +3,7 @@ import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   AppRoute,
-  IssueIDValues,
+  IDE2EValue,
   SnackbarMessages,
 } from "@/administration-e2e/utils/enums";
 import { OperationPOM } from "@/administration-e2e/poms/operation";
@@ -16,7 +16,7 @@ import {
 } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
-const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR1);
+const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 
 // https://github.com/bcgov/cas-registration/issues/3445
 
@@ -27,29 +27,30 @@ test.describe("Issue BCGHG and BORO ID", () => {
     // 🛸 Navigate to administration/operations
     const operationPage = new OperationPOM(page);
     await operationPage.route();
-    await urlIsCorrect(page, AppRoute.OPERATIONS, true);
+    await urlIsCorrect(page, AppRoute.OPERATIONS);
 
     // Search the operation page by exact operation and operator name
-    await operationPage.searchOperationByName(
-      IssueIDValues.OPERATION_NAME,
-      IssueIDValues.OPERATOR_NAME,
+    const row = await operationPage.searchOperationByName(
+      IDE2EValue.OPERATION_NAME,
+      IDE2EValue.OPERATOR_NAME,
     );
 
-    await operationPage.goToOperation(IssueIDValues.OPERATION_NAME);
+    await operationPage.goToOperation(row);
+    await expect(page.getByText(IDE2EValue.OPERATION_NAME)).toBeVisible();
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: "No BORO ID and BCGHG ID issued",
+      component: "BORO ID and BCGHG ID not issued",
       variant: "default",
     });
 
     await clickButton(page, /issue bcghg id/i);
 
-    await expect(page.getByText(IssueIDValues.EXPECTED_BCGHG_ID)).toBeVisible();
+    await expect(page.getByText(IDE2EValue.EXPECTED_BCGHG_ID)).toBeVisible();
     await assertSuccessfulSnackbar(page, SnackbarMessages.ISSUED_BCGHG_ID);
 
     await clickButton(page, /issue boro id/i);
 
-    await expect(page.getByText(IssueIDValues.EXPECTED_BORO_ID)).toBeVisible();
+    await expect(page.getByText(IDE2EValue.EXPECTED_BORO_ID)).toBeVisible();
     await assertSuccessfulSnackbar(page, SnackbarMessages.ISSUED_BORO_ID);
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
