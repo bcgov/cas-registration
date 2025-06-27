@@ -190,7 +190,7 @@ export default function ApplyComplianceUnitsComponent({
         )}
         <FormAlerts errors={errors} />
         <ComplianceStepButtons
-          backButtonText="Cancel"
+          backButtonText={isSubmitted ? "Back" : "Cancel"}
           onBackClick={() =>
             router.push(
               `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,

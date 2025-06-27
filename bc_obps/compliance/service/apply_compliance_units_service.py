@@ -103,6 +103,7 @@ class ApplyComplianceUnitsService:
         Raises:
             UserError: If any unit has quantity_to_be_applied greater than quantity_available.
         """
+        # TODO: We need to implement a check to ensure the total amount of units being applied does not exceed 50% of the compliance outstanding balance. Ticket #207
         for unit in units:
             if unit.get("quantity_to_be_applied", 0) > unit.get("quantity_available", 0):
                 raise UserError(
