@@ -181,7 +181,7 @@ class ComplianceReportVersionService:
         for operation_ownership in previously_owned_operations:
             query |= (
                 Q(compliance_report__report__operation_id=operation_ownership.operation_id)
-                & Q(compliance_report__compliance_period__end_date__lte=operation_ownership.end_date)
+                & Q(compliance_report__compliance_period__end_date__lt=operation_ownership.end_date)
                 & Q(compliance_report__compliance_period__end_date__gte=operation_ownership.start_date)
             )
 
