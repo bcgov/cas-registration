@@ -4,7 +4,7 @@ import {
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-// import { fetchComplianceSummaryReviewPageData } from "./fetchComplianceSummaryReviewPageData";
+import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 interface Props {
   compliance_summary_id: string;
 }
@@ -12,17 +12,16 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  // TODO: Replace with actual data fetching logic post-refactoring #188
+  // TODO: Replace with actual data fetching logic post-refactoring #188 (use a single API call rather than multiple)
   // const { complianceSummary, paymentsData } = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
-  const complianceSummary = {
-    complianceUnits: {
+  const appliedComplianceUnitsData =
+    await getComplianceAppliedUnits(complianceSummaryId);
+  const complianceSummaryData = {
+    applied_compliance_units: {
       complianceSummaryId,
-      gridData: {
-        rows: [],
-        row_count: 0,
-      },
+      appliedComplianceUnits: appliedComplianceUnitsData,
     },
-    monetaryPayments: {
+    monetary_payments: {
       gridData: {
         rows: [
           {
@@ -37,29 +36,29 @@ export default async function ComplianceSummaryReviewPage({
         row_count: 1,
       },
     },
-    reportingYear: "2025",
-    emissionsAttributableForCompliance: "1200.0000",
-    emissionLimit: "1000.0000",
-    excessEmissions: "200.0000",
-    obligationId: "25-0001-1-1",
-    complianceChargeRate: "80.00",
-    equivalentValue: "16000.00",
-    outstandingBalance: "200.0000",
-    outstandingBalanceEquivalentValue: "16000.00",
-    penaltyStatus: "Accruing",
-    penaltyType: "Automatic Overdue",
-    penaltyChargeRate: "0.38",
-    daysLate: "3",
-    accumulatedPenalty: "91.2",
-    accumulatedCompounding: "0.35",
-    penaltyToday: "91.55",
-    faaInterest: "0.0",
-    totalAmount: "91.55",
+    reporting_year: "2025",
+    emissions_attributable_for_compliance: "1200.0000",
+    emission_limit: "1000.0000",
+    excess_emissions: "200.0000",
+    obligation_id: "25-0001-1-1",
+    compliance_charge_rate: "80.00",
+    equivalent_value: "16000.00",
+    outstanding_balance: "200.0000",
+    outstanding_balance_equivalent_value: "16000.00",
+    penalty_status: "Accruing",
+    penalty_type: "Automatic Overdue",
+    penalty_charge_rate: "0.38",
+    days_late: "3",
+    accumulated_penalty: "91.2",
+    accumulated_compounding: "0.35",
+    penalty_today: "91.55",
+    faa_interest: "0.0",
+    total_amount: "91.55",
   };
 
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-    complianceSummary.reportingYear,
+    complianceSummaryData.reporting_year,
     ActivePage.ReviewComplianceSummary,
   );
 
@@ -69,7 +68,7 @@ export default async function ComplianceSummaryReviewPage({
       complianceSummaryId={complianceSummaryId}
     >
       <ComplianceSummaryReviewComponent
-        data={complianceSummary}
+        data={complianceSummaryData}
         complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>

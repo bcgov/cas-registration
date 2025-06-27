@@ -28,7 +28,7 @@ class ComplianceEarnedCredit(TimeStampedModel):
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
         on_delete=models.CASCADE,
-        related_name="compliance_earned_credits",
+        related_name="compliance_earned_credit",
         db_comment="The compliance report version this earned_credit record belongs to",
     )
 

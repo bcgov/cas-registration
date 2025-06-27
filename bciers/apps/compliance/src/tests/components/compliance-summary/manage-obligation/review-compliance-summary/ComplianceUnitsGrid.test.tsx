@@ -1,6 +1,7 @@
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
+import { ComplianceUnitsProps } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -12,33 +13,26 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockValue = {
+const mockValue: ComplianceUnitsProps = {
   complianceSummaryId: "123",
-  gridData: {
-    rows: [
-      {
-        id: 1,
-        type: "Offset Units",
-        serialNumber: "BC-123-456",
-        vintageYear: "2024",
-        quantityApplied: "100",
-        equivalentEmissionReduced: "200",
-        equivalentValue: "8000",
-        status: "Applied",
-      },
-      {
-        id: 2,
-        type: "Earned Credits",
-        serialNumber: "BC-789-012",
-        vintageYear: "2023",
-        quantityApplied: "50",
-        equivalentEmissionReduced: "60",
-        equivalentValue: "4000",
-        status: "Applied",
-      },
-    ],
-    row_count: 2,
-  },
+  appliedComplianceUnits: [
+    {
+      id: "1",
+      type: "Offset Units",
+      serial_number: "BC-123-456",
+      vintage_year: "2024",
+      quantity_applied: 100,
+      equivalent_value: 8000,
+    },
+    {
+      id: "2",
+      type: "Earned Credits",
+      serial_number: "BC-789-012",
+      vintage_year: "2023",
+      quantity_applied: 50,
+      equivalent_value: 4000,
+    },
+  ],
 };
 
 describe("ComplianceUnitsGrid", () => {
@@ -67,41 +61,35 @@ describe("ComplianceUnitsGrid", () => {
       "Type",
       "Serial Number",
       "Vintage Year",
-      "Quantity Applied",
+      "Quantity",
       "Equivalent Emission Reduced",
       "Equivalent Value",
-      "Status",
     ];
     headers.forEach((header) => {
       expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
     });
 
-    // Verify search inputs are present
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(3);
-
     // Check grid data rows
     const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(4); // 1 header row + 1 filter row + 2 data rows
+    expect(rows).toHaveLength(3); // 1 header row + 2 data rows
 
     // Check first row content
-    const firstRow = rows[2];
+    const firstRow = rows[1];
     expect(within(firstRow).getByText("Offset Units")).toBeVisible();
     expect(within(firstRow).getByText("BC-123-456")).toBeVisible();
     expect(within(firstRow).getByText("2024")).toBeVisible();
     expect(within(firstRow).getByText("100")).toBeVisible();
-    expect(within(firstRow).getByText("200 tCO2e")).toBeVisible();
+    expect(within(firstRow).getByText("100 tCO2e")).toBeVisible();
     expect(within(firstRow).getByText("$8,000.00")).toBeVisible();
-    expect(within(firstRow).getByText("Applied")).toBeVisible();
 
     // Check second row content
-    const secondRow = rows[3];
+    const secondRow = rows[2];
     expect(within(secondRow).getByText("Earned Credits")).toBeVisible();
     expect(within(secondRow).getByText("BC-789-012")).toBeVisible();
     expect(within(secondRow).getByText("2023")).toBeVisible();
     expect(within(secondRow).getByText("50")).toBeVisible();
-    expect(within(secondRow).getByText("60 tCO2e")).toBeVisible();
+    expect(within(secondRow).getByText("50 tCO2e")).toBeVisible();
     expect(within(secondRow).getByText("$4,000.00")).toBeVisible();
-    expect(within(secondRow).getByText("Applied")).toBeVisible();
 
     // Check Apply Compliance Units button
     const applyButton = screen.getByRole("button", {

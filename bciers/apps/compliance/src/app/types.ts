@@ -125,3 +125,12 @@ export interface CreditsIssuanceRequestData {
   submited_at: string;
   analyst_recommendation?: string;
 }
+
+export interface ComplianceAppliedUnits {
+  id: string;
+  type: string;
+  serial_number: string;
+  vintage_year: string;
+  quantity_applied: number;
+  equivalent_value: number;
+}

@@ -219,6 +219,9 @@ describe("ApplyComplianceUnitsComponent", () => {
     const quantityInput = screen.getByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInput, { target: { value: "75" } });
 
+    // Before applying, the button is named `Cancel`
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
+
     const applyButton = screen.getByRole("button", { name: "Apply" });
     expect(applyButton).not.toBeDisabled();
     fireEvent.click(applyButton);
@@ -231,6 +234,8 @@ describe("ApplyComplianceUnitsComponent", () => {
         ),
       ).toBeVisible();
     });
+    // After applying, the button is named `Back`
+    expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
   });
 
   it("disables the apply button when selected units exceed 50% of the initial outstanding balance", async () => {

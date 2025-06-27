@@ -1,30 +1,17 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { Button, Link } from "@mui/material";
-import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import complianceUnitsColumns from "@/compliance/src/app/components/datagrid/models/compliance-units/complianceUnitsColumns";
-import complianceUnitsGroupColumns from "@/compliance/src/app/components/datagrid/models/compliance-units/complianceUnitsGroupColumns";
 import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import AlertNote from "@bciers/components/form/components/AlertNote";
+import { ComplianceAppliedUnits } from "@/compliance/src/app/types";
+import SimpleAccordion from "@bciers/components/accordion/SimpleAccordion";
 
-interface ComplianceUnitsProps {
+export interface ComplianceUnitsProps {
   complianceSummaryId: string;
-  gridData: {
-    rows: Array<{
-      id: number;
-      type: string;
-      serialNumber: string;
-      vintageYear: string;
-      quantityApplied: string;
-      equivalentEmissionReduced: string;
-      equivalentValue: string;
-      status: string;
-    }>;
-    row_count: number;
-  };
+  appliedComplianceUnits: Array<ComplianceAppliedUnits>;
 }
 
 export const ComplianceUnitsGrid = ({
@@ -32,15 +19,9 @@ export const ComplianceUnitsGrid = ({
 }: {
   value: ComplianceUnitsProps;
 }) => {
-  const { complianceSummaryId, gridData } = value;
+  const { complianceSummaryId, appliedComplianceUnits } = value;
 
   const router = useRouter();
-  const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
-
-  const SearchCell = useMemo(
-    () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
-    [lastFocusedField, setLastFocusedField],
-  );
 
   const handleApplyComplianceUnits = () =>
     router.push(
@@ -49,13 +30,8 @@ export const ComplianceUnitsGrid = ({
 
   const columns = complianceUnitsColumns();
 
-  const columnGroup = useMemo(
-    () => complianceUnitsGroupColumns(SearchCell),
-    [SearchCell],
-  );
-
   return (
-    <>
+    <SimpleAccordion title="Compliance Units Applied">
       <AlertNote>
         You may use compliance units (earned credits, offset units) you hold in
         the{" "}
@@ -71,8 +47,20 @@ export const ComplianceUnitsGrid = ({
       </AlertNote>
       <DataGrid
         columns={columns}
-        initialData={gridData}
-        columnGroupModel={columnGroup}
+        initialData={{
+          rows: appliedComplianceUnits,
+          row_count: appliedComplianceUnits.length,
+        }}
+        // Adjust the height of the grid and the overlay wrapper to fit the content
+        sx={{
+          "& .MuiDataGrid-virtualScroller": {
+            height: "fit-content",
+            minHeight: "10vh",
+          },
+          "& .MuiDataGrid-overlayWrapper": {
+            height: "0vh",
+          },
+        }}
       />
       <div className="flex justify-end mt-4">
         <Button
@@ -84,6 +72,6 @@ export const ComplianceUnitsGrid = ({
           Apply Compliance Units
         </Button>
       </div>
-    </>
+    </SimpleAccordion>
   );
 };
