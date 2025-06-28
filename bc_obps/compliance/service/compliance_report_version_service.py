@@ -1,5 +1,4 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from registration.models.operation import Operation
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
@@ -7,6 +6,14 @@ from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
 import logging
+from uuid import UUID
+from django.db.models import QuerySet, Q
+from service.data_access_service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineDataAccessService,
+)
+from registration.models import Operation
+from service.user_operator_service import UserOperatorService
+from service.data_access_service.user_service import UserDataAccessService
 
 logger = logging.getLogger(__name__)
 
@@ -151,3 +158,35 @@ class ComplianceReportVersionService:
     @staticmethod
     def get_obligation_by_compliance_report_version(compliance_report_version_id: int) -> ComplianceObligation:
         return ComplianceObligation.objects.get(compliance_report_version__id=compliance_report_version_id)
+
+    @classmethod
+    def get_compliance_report_versions_for_previously_owned_operations(
+        cls, user_guid: UUID
+    ) -> QuerySet[ComplianceReportVersion]:
+        """
+        Fetches all compliance report versions that a user should have access to based on historical operator -> operation ownership relationships
+        """
+        user = UserDataAccessService.get_by_guid(user_guid)
+        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator_id
+        previously_owned_operations = (
+            OperationDesignatedOperatorTimelineDataAccessService.get_previously_owned_operations_by_operator(
+                operator_id=operator_id
+            )
+        )
+
+        if not previously_owned_operations:
+            return ComplianceReportVersion.objects.none()
+
+        query = Q()
+        for operation_ownership in previously_owned_operations:
+            query |= (
+                Q(compliance_report__report__operation_id=operation_ownership.operation_id)
+                & Q(compliance_report__compliance_period__end_date__lt=operation_ownership.end_date)
+                & Q(compliance_report__compliance_period__end_date__gte=operation_ownership.start_date)
+            )
+
+        return ComplianceReportVersion.objects.filter(query).select_related(
+            'compliance_report__report__operation',
+            'compliance_report__compliance_period',
+            'compliance_earned_credit',
+        )

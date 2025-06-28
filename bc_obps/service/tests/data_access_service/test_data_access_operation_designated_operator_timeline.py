@@ -93,3 +93,31 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
         )
 
         assert timeline.count() == 21
+
+    @staticmethod
+    def test_get_previously_owned_operations_by_operator():
+
+        operator = baker.make_recipe('registration.tests.utils.operator')
+
+        # transferred operation
+        xferred_operation = baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe('registration.tests.utils.operation', status=Operation.Statuses.REGISTERED),
+            end_date="2024-02-27 01:46:20.789146+00:00",
+            operator=operator,
+        )
+
+        # active operation - should not be returned
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            operation=baker.make_recipe(
+                'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, operator=operator
+            ),
+            end_date=None,
+        )
+
+        result = OperationDesignatedOperatorTimelineDataAccessService.get_previously_owned_operations_by_operator(
+            operator_id=operator.id
+        )
+        assert result.count() == 1
+        assert result.first().operation == xferred_operation.operation
