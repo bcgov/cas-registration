@@ -555,6 +555,7 @@ export function getStorageStateForRole(role: string) {
   const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
   const processEnv = process.env[envKey];
 
+  console.log("CHESCA", processEnv as string);
   return JSON.parse(processEnv as string);
 }
 
