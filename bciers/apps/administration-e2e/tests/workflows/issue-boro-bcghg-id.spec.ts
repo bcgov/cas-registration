@@ -16,11 +16,6 @@ import {
 } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
-
-// This is only used in the CI - since we have cas_director being used in dashboard.spec.ts, in order to not disrupt other PRs we'll use this first
-// const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR_1);
-
-// Use this locally
 const test = setupBeforeAllTest(UserRole.CAS_DIRECTOR);
 
 // https://github.com/bcgov/cas-registration/issues/3445
