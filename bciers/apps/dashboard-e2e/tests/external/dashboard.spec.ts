@@ -134,7 +134,7 @@ userRoles.forEach((role) => {
           }
 
           // Say cheese!
-          component = `External user ${tile} Dashboard`;
+          component = `External user ${tile} Dashboard for role: ${role}`;
           await takeStabilizedScreenshot(happoPlaywright, page, {
             component: component,
             variant: "default",
