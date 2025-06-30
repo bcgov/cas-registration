@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0010_elicensing_invoice_last_refreshed'),
+        ('compliance', '0011_compliancereport_bccr_subaccount_id'),
     ]
 
     operations = [
