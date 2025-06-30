@@ -13,17 +13,13 @@ import { AutomaticOverduePenaltyAlertNote } from "@/compliance/src/app/component
 import { MonetaryPaymentsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid";
 
 export const createComplianceSummaryReviewSchema = (
-  reporting_year: number,
+  reportingYear: number,
 ): RJSFSchema => ({
   type: "object",
-  title: `Review ${reporting_year} Compliance Summary`,
+  title: `Review ${reportingYear} Compliance Summary`,
   properties: {
     // Summary Section
-<<<<<<< HEAD
     summary_header: readOnlyObjectField(`From ${reportingYear} Report`),
-=======
-    summary_header: readOnlyObjectField(`From ${reporting_year} Report`),
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     emissions_attributable_for_compliance: readOnlyStringField(
       "Emissions Attributable for Compliance:",
     ),
@@ -31,7 +27,6 @@ export const createComplianceSummaryReviewSchema = (
     excess_emissions: readOnlyStringField("Excess Emissions:"),
     // Obligation Section
     obligation_header: readOnlyObjectField(
-<<<<<<< HEAD
       `${reportingYear} Compliance Obligation`,
     ),
     obligation_id: readOnlyStringField("Obligation ID:"),
@@ -43,19 +38,6 @@ export const createComplianceSummaryReviewSchema = (
     applied_compliance_units: readOnlyStringField(),
     // Monetary Payments Section
     monetary_payments: readOnlyStringField(),
-=======
-      `${reporting_year} Compliance Obligation`,
-    ),
-    obligation_id: readOnlyStringField("Obligation ID:"),
-    compliance_charge_rate: readOnlyStringField(
-      `${reporting_year} Compliance Charge Rate:`,
-    ),
-    equivalent_value: readOnlyStringField("Equivalent Value:"),
-    // Compliance Units Section
-    compliance_units: readOnlyStringField("Compliance Units Applied"),
-    // Monetary Payments Section
-    monetary_payments: readOnlyStringField("Monetary Payments Made"),
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     // Outstanding Compliance Obligation Section
     outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
@@ -70,11 +52,7 @@ export const createComplianceSummaryReviewSchema = (
     penalty_alert: readOnlyStringField(),
     penalty_status: readOnlyStringField("Penalty Status:"),
     penalty_type: readOnlyStringField("Penalty Type:"),
-<<<<<<< HEAD
     penalty_charge_rate: readOnlyStringField("Penalty Rate (Daily):"),
-=======
-    penalty_rate_daily: readOnlyStringField("Penalty Rate (Daily):"),
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     days_late: readOnlyStringField("Days Late:"),
     accumulated_penalty: readOnlyStringField("Accumulated Penalty:"),
     accumulated_compounding: readOnlyStringField("Accumulated Compounding:"),
@@ -110,11 +88,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
       prefix: "$",
     },
   },
-<<<<<<< HEAD
   applied_compliance_units: {
-=======
-  compliance_units: {
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     "ui:widget": ComplianceUnitsGrid,
     "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
     "ui:FieldTemplate": FieldTemplate,
@@ -123,7 +97,6 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
       inline: true,
     },
   },
-<<<<<<< HEAD
   monetary_payments: {
     "ui:widget": MonetaryPaymentsGrid,
     "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
@@ -133,16 +106,6 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
       inline: true,
     },
   },
-=======
-  // monetary_payments: {
-  //   "ui:widget": MonetaryPaymentsGrid,
-  //   "ui:classNames": "text-bc-bg-blue mt-8 [&>label]:mb-2",
-  //   "ui:FieldTemplate": FieldTemplate,
-  //   "ui:options": {
-  //     inline: true,
-  //   },
-  // },
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
 
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
@@ -160,11 +123,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   },
   penalty_status: commonReadOnlyOptions,
   penalty_type: commonReadOnlyOptions,
-<<<<<<< HEAD
   penalty_charge_rate: {
-=======
-  penalty_rate_daily: {
->>>>>>> 9a5fa2ba9 (chore: update schema field names as model names)
     ...commonReadOnlyOptions,
     "ui:options": {
       suffix: "%",

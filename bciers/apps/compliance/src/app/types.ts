@@ -135,3 +135,13 @@ export interface ComplianceAppliedUnits {
   quantity_applied: number;
   equivalent_value: number;
 }
+
+export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
+  monetary_payments: {
+    gridData: PaymentsData;
+  };
+  compliance_units?: {
+    complianceSummaryId: string;
+    gridData: PaymentsData;
+  };
+}

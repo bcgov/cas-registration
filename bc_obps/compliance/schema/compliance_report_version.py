@@ -4,12 +4,35 @@ from ninja import ModelSchema, Field
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from registration.models import Operation
 
-# Constants for field aliases
+# report aliases
 OPERATOR_NAME_ALIAS = "compliance_report.report.operator.legal_name"
 OPERATION_NAME_ALIAS = "compliance_report.report.operation.name"
-REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.end_date.year"
+OPERATION_BCGHG_ID_ALIAS = "compliance_report.report.operation.bcghg_id.id"
+
+# reporting_year aliases
+REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.reporting_year.reporting_year"
+
+# compliance_charge_rate aliases
+CHARGE_RATE_ALIAS = "compliance_report.compliance_period.reporting_year.compliance_charge_rate.rate"
+
+# report_compliance_summary aliases
+EXCESS_EMISSIONS_ALIAS = "report_compliance_summary.excess_emissions"
+ATTRIBUTABLE_EMISSIONS_ALIAS = "report_compliance_summary.emissions_attributable_for_compliance"
+EMISSIONS_LIMIT_ALIAS = "report_compliance_summary.emissions_limit"
+CREDITED_EMISSIONS_ALIAS = "report_compliance_summary.credited_emissions"
+
+# obligation aliases
 OBLIGATION_ID_ALIAS = "obligation.obligation_id"
 
+OBLIGATION_PENALTY_STATUS_ALIAS = "obligation.penalty_status"
+
+# elicensing_invoice aliases
+OUTSTANDING_BALANCE_EQUIVALENT_ALIAS = (
+    "obligation.elicensing_invoice.outstanding_balance"
+)
+
+# compliance_earned_credits aliases
+ISSUANCE_STATUS_ALIAS = "compliance_earned_credit.issuance_status"
 
 class ComplianceReportVersionListOut(ModelSchema):
     operator_name: str = Field(..., alias=OPERATOR_NAME_ALIAS)
@@ -17,8 +40,9 @@ class ComplianceReportVersionListOut(ModelSchema):
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance: Optional[Decimal] = None
-    excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
-    issuance_status: Optional[str] = Field(None, alias="compliance_earned_credit.issuance_status")
+    excess_emissions: Decimal = Field(..., alias=EXCESS_EMISSIONS_ALIAS)
+    issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
+    penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
 
     class Meta:
         model = ComplianceReportVersion
@@ -27,16 +51,43 @@ class ComplianceReportVersionListOut(ModelSchema):
 
 class ComplianceReportVersionOut(ModelSchema):
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
-    operation_bcghg_id: Optional[str] = Field(None, alias="report_version.report.operation.bcghg_id.id")
+    operation_bcghg_id: Optional[str] = Field(None, alias=OPERATION_BCGHG_ID_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    excess_emissions: Decimal = Field(..., alias="report_compliance_summary.excess_emissions")
-    credited_emissions: Decimal = Field(..., alias="report_compliance_summary.credited_emissions")
-    outstanding_balance: Optional[Decimal] = None
+    excess_emissions: Decimal = Field(..., alias=EXCESS_EMISSIONS_ALIAS)
+    emissions_attributable_for_compliance: Decimal = Field(..., alias=ATTRIBUTABLE_EMISSIONS_ALIAS)
+    emissions_limit: Decimal = Field(..., alias=EMISSIONS_LIMIT_ALIAS)
+    credited_emissions: Decimal = Field(..., alias=CREDITED_EMISSIONS_ALIAS)
+    outstanding_balance_equivalent_value: Optional[Decimal] = Field(
+        None, alias=OUTSTANDING_BALANCE_EQUIVALENT_ALIAS
+    )  
+    penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
+    compliance_charge_rate: Optional[Decimal] = None 
 
+    # TODO
+    equivalent_value: Optional[Decimal] = None
+    outstanding_balance: Optional[Decimal] = None
+    penalty_type: Optional[str] = None
+    penalty_rate_daily: Optional[Decimal] = None
+    days_late: Optional[int] = None
+    accumulated_penalty: Optional[Decimal] = None
+    accumulated_compounding: Optional[Decimal] = None
+    penalty_today: Optional[Decimal] = None
+    faa_interest: Optional[Decimal] = None
+    total_amount: Optional[Decimal] = None
+    
     class Meta:
         model = ComplianceReportVersion
         fields = ['id', 'status']
+
+
+    @staticmethod
+    def resolve_compliance_charge_rate(obj: ComplianceReportVersion) -> Optional[Decimal]:
+        """Determine the charge_rate"""
+        reporting_year = obj.compliance_report.compliance_period.reporting_year
+        compliance_charge_rate_obj = reporting_year.compliance_charge_rate.first()
+        return compliance_charge_rate_obj.rate if compliance_charge_rate_obj else None
+
 
 
 # To be handled in issue #117
