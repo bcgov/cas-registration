@@ -5,6 +5,7 @@ import {
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
+import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/utils/fetchComplianceSummaryReviewPageData";
 interface Props {
   compliance_summary_id: string;
 }
@@ -12,6 +13,8 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
+  const test = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
+  console.log(test);
   // TODO: Replace with actual data fetching logic post-refactoring #188 (use a single API call rather than multiple)
   // const { complianceSummary, paymentsData } = await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   const appliedComplianceUnitsData =
@@ -22,20 +25,33 @@ export default async function ComplianceSummaryReviewPage({
       appliedComplianceUnits: appliedComplianceUnitsData,
     },
     monetary_payments: {
-      gridData: {
-        rows: [
-          {
-            id: 1,
-            paymentReceivedDate: "-",
-            paymentAmount: "-",
-            paymentMethod: "-",
-            transactionType: "-",
-            referenceNumber: "-",
-          },
-        ],
-        row_count: 1,
-      },
+      rows: [
+        {
+          id: 1,
+          received_date: "Jun 30, 2025",
+          amount: 21000,
+          payment_method: "-",
+          transaction_type: "-",
+          payment_object_id: "-",
+        },
+      ],
+      row_count: 1,
     },
+    // monetary_payments: {
+    //   gridData: {
+    //     rows: [
+    //       {
+    //         id: 1,
+    //         paymentReceivedDate: "-",
+    //         paymentAmount: "-",
+    //         paymentMethod: "-",
+    //         transactionType: "-",
+    //         referenceNumber: "-",
+    //       },
+    //     ],
+    //     row_count: 1,
+    //   },
+    // },
     reporting_year: "2025",
     emissions_attributable_for_compliance: "1200.0000",
     emission_limit: "1000.0000",
