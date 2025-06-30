@@ -60,10 +60,10 @@ export interface BccrUnit {
 
 export interface Payment {
   id: string | number;
-  paymentReceivedDate: string;
-  paymentAmountApplied: number;
-  paymentMethod: string;
-  transactionType: string;
+  received_date: string;
+  amount: number;
+  method: string;
+  type: string;
   receiptNumber: string;
 }
 
@@ -137,11 +137,9 @@ export interface ComplianceAppliedUnits {
 }
 
 export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
-  monetary_payments: {
-    gridData: PaymentsData;
-  };
-  compliance_units?: {
+  monetary_payments: PaymentsData;
+  applied_compliance_units: {
     complianceSummaryId: string;
-    gridData: PaymentsData;
+    appliedComplianceUnits: ComplianceAppliedUnits[];
   };
 }
