@@ -29,7 +29,6 @@ class ComplianceEarnedCreditTest(BaseTestCase):
 
 
 class ComplianceEarnedCreditTriggerTest(BaseTestCase):
-
     def test_create_with_null_bccr_trading_name_and_credits_not_issued_succeeds(self):
         earned_credit = make_recipe(
             "compliance.tests.utils.compliance_earned_credit",

@@ -1,7 +1,12 @@
-import { BccrAccountDetailsResponse, BccrComplianceAccountResponse } from "@/compliance/src/app/types";
+import {
+  BccrAccountDetailsResponse,
+  BccrComplianceAccountResponse,
+} from "@/compliance/src/app/types";
 import { actionHandler } from "@bciers/actions";
 
-export const getBccrAccountDetails = async (accountId: string): Promise<BccrAccountDetailsResponse> => {
+export const getBccrAccountDetails = async (
+  accountId: string,
+): Promise<BccrAccountDetailsResponse> => {
   const response = await actionHandler(
     `compliance/bccr/accounts/${accountId}`,
     "GET",
