@@ -31,7 +31,9 @@ describe("The withTokenRefresh middleware", () => {
     mockNextResponseNext.mockReturnValue({ test: 1 });
 
     const middlewareUnderTest = withTokenRefreshMiddleware(vi.fn());
-    const request = {};
+    const request = {
+      nextUrl: { pathname: "/some-path" },
+    };
 
     const response = await middlewareUnderTest(request as any, {} as any);
 
@@ -42,7 +44,9 @@ describe("The withTokenRefresh middleware", () => {
     mockNextResponseNext.mockReturnValue({ test: 2 });
 
     const middlewareUnderTest = withTokenRefreshMiddleware(vi.fn());
-    const request = {};
+    const request = {
+      nextUrl: { pathname: "/some-path" },
+    };
 
     const response = await middlewareUnderTest(request as any, {} as any);
 
@@ -73,6 +77,7 @@ describe("The withTokenRefresh middleware", () => {
             { name: "to-keep" },
           ]),
       },
+      nextUrl: { pathname: "/some-path" },
     };
 
     const response = await middlewareUnderTest(request as any, {} as any);
@@ -80,7 +85,7 @@ describe("The withTokenRefresh middleware", () => {
     // Temporary redirect
     expect(response?.status).toEqual(307);
     expect(response?.headers.get("Location")).toEqual(
-      "http://example.com/onboarding",
+      "http://example.com/auth/logout",
     );
   });
   it("Encodes a JWT with the new tokens", async () => {
@@ -103,7 +108,9 @@ describe("The withTokenRefresh middleware", () => {
     mockNextResponseNext.mockReturnValue(mockNextResponse);
 
     const middlewareUnderTest = withTokenRefreshMiddleware(vi.fn());
-    const request = {};
+    const request = {
+      nextUrl: { pathname: "/some-path" },
+    };
 
     const response = await middlewareUnderTest(request as any, {} as any);
 
@@ -120,7 +127,7 @@ describe("The withTokenRefresh middleware", () => {
       {
         httpOnly: true,
         maxAge: 1800,
-        sameSite: "strict",
+        sameSite: "lax",
         secure: undefined,
       },
     );
