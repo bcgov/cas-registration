@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import FormBase from "@bciers/components/form/FormBase";
 import {
   requestIssuanceOfEarnedCreditsSchema,
@@ -14,6 +14,9 @@ import {
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { IChangeEvent } from "@rjsf/core";
+import SubmitButton from "@bciers/components/button/SubmitButton";
+import { actionHandler } from "@bciers/actions";
+import { useRouter } from "next/navigation";
 
 interface Props {
   complianceSummaryId: string;
@@ -22,6 +25,7 @@ interface Props {
 const RequestIssuanceOfEarnedCreditsComponent = ({
   complianceSummaryId,
 }: Readonly<Props>) => {
+  const router = useRouter();
   const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
 
@@ -29,6 +33,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
     RequestIssuanceOfEarnedCreditsFormData | {}
   >({});
   const [errors, setErrors] = useState<string[] | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (
     e: IChangeEvent<RequestIssuanceOfEarnedCreditsFormData>,
@@ -49,12 +54,37 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
     setFormData(newFormData as RequestIssuanceOfEarnedCreditsFormData);
   };
 
-  const canSubmit = () => {
-    return (
+  const canSubmit = useMemo(() => {
+    return !!(
       (formData as RequestIssuanceOfEarnedCreditsFormData)?.bccr_trading_name &&
-      (!errors || errors.length === 0)
+      (formData as RequestIssuanceOfEarnedCreditsFormData)
+        ?.bccr_holding_account_id
     );
+  }, [formData]);
+
+  const handleSubmit = async (
+    e: IChangeEvent<RequestIssuanceOfEarnedCreditsFormData>,
+  ) => {
+    setIsSubmitting(true);
+    const response = await actionHandler(
+      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceSummaryId}/projects`,
+      "POST",
+      "",
+      {
+        body: JSON.stringify(e.formData),
+      },
+    );
+    setIsSubmitting(false);
+    if (!response || response.error) {
+      setErrors([response.error || "Failed to create project in BCCR"]);
+    } else {
+      setErrors(undefined);
+      router.push(saveAndContinueUrl);
+    }
   };
+  console.log({formData});
+  console.log({canSubmit});
+
 
   return (
     <FormBase
@@ -62,10 +92,11 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       uiSchema={requestIssuanceOfEarnedCreditsUiSchema}
       formData={formData}
       onChange={handleChange}
+      onSubmit={handleSubmit}
       formContext={{
         validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>
-          setFormData((prev: any) => ({
+          setFormData((prev: RequestIssuanceOfEarnedCreditsFormData) => ({
             ...prev,
             ...response,
           })),
@@ -75,13 +106,11 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
     >
       <div>
         <FormAlerts errors={errors} />
-        <ComplianceStepButtons
-          backUrl={backUrl}
-          continueUrl={saveAndContinueUrl}
-          submitButtonDisabled={!canSubmit()}
-          continueButtonText="Requests Issuance of Earned Credits"
-          className="mt-4"
-        />
+        <ComplianceStepButtons backUrl={backUrl} className="mt-4">
+          <SubmitButton isSubmitting={isSubmitting} disabled={!canSubmit}>
+            Requests Issuance of Earned Credits
+          </SubmitButton>
+        </ComplianceStepButtons>
       </div>
     </FormBase>
   );
