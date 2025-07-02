@@ -13,6 +13,7 @@ function shouldUpdateToken(token: JWT | null) {
   /***
    * Checks whether our refresh interval has expired
    */
+
   return Date.now() / 1000 > (token?.expires_at ?? 0);
 }
 
@@ -47,18 +48,12 @@ async function fetchNewAccessToken(refreshToken: string | undefined) {
   };
 }
 
-function signOut(request: NextRequest) {
+async function signOut(request: NextRequest) {
   /**
-   * Signs out the user by redirecting to the sign-in page
-   * and clearing the session cookies.
+   * Signs out the user by redirecting to the sign-out page
    */
-  const response = NextResponse.redirect(new URL("/onboarding", request.url));
 
-  request.cookies.getAll().forEach((cookie) => {
-    if (cookie.name.includes("next-auth")) response.cookies.delete(cookie.name);
-  });
-
-  return response;
+  return NextResponse.redirect(new URL("/auth/logout", request.url));
 }
 
 export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
@@ -74,8 +69,7 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
     })) as JWT | null;
 
     const response = NextResponse.next();
-
-    if (!jwt) return response;
+    if (request.nextUrl.pathname === "/auth/logout" || !jwt) return response;
 
     if (shouldUpdateToken(jwt)) {
       const newKcTokens = await fetchNewAccessToken(jwt.refresh_token);
