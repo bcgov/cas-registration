@@ -239,5 +239,11 @@ export const facilitiesLfoUiSchema = {
     postal_code: {
       "ui:widget": "PostalCodeWidget",
     },
+    latitude_of_largest_emissions: {
+      "ui:options": { decimalPoints: 8 },
+    },
+    longitude_of_largest_emissions: {
+      "ui:options": { decimalPoints: 8 },
+    },
   },
 };

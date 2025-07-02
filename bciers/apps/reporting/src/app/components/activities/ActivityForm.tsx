@@ -52,9 +52,39 @@ export default function ActivityForm({
   initialSelectedSourceTypeIds,
   gasTypes,
 }: Readonly<Props>) {
+  /**
+   * Transforms the `equivalentEmission` property in an object or array into a number (pydantic serializes Decimals to strings, https://github.com/pydantic/pydantic/issues/7120).
+   * Recursively processes nested objects and arrays because every activity form is different and can have nested structures.
+   * Returns the entire transformed form data object.
+   *
+   */
+  function transformEquivlantEmission(obj: { [key: string]: any }): {
+    [key: string]: any;
+  } {
+    if (Array.isArray(obj)) {
+      return obj.map(transformEquivlantEmission);
+    }
+
+    if (obj !== null && typeof obj === "object") {
+      const newObj: { [key: string]: any } = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (key === "equivalentEmission") {
+          newObj[key] = typeof value === "number" ? value : Number(value);
+        } else {
+          newObj[key] = transformEquivlantEmission(value);
+        }
+      }
+      return newObj;
+    }
+
+    return obj;
+  }
+
+  const transformedActivityFormData =
+    transformEquivlantEmission(activityFormData);
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
-  const [formState, setFormState] = useState(activityFormData);
+  const [formState, setFormState] = useState(transformedActivityFormData);
   const [jsonSchema, setJsonSchema] = useState(initialJsonSchema);
   const [selectedSourceTypeIds, setSelectedSourceTypeIds] = useState(
     initialSelectedSourceTypeIds,
@@ -74,7 +104,7 @@ export default function ActivityForm({
 
   useEffect(() => {
     setJsonSchema(initialJsonSchema);
-    setFormState(activityFormData);
+    setFormState(transformedActivityFormData);
     setSelectedSourceTypeIds(initialSelectedSourceTypeIds);
   }, [currentActivity]);
 
