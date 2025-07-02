@@ -164,7 +164,7 @@ class ProjectPayloadMixedUnit(BaseModel):
     country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
     environmental_category_id: Optional[FifteenDigitString] = "100000000000001"  # Carbon
     project_type_id: Optional[FifteenDigitString] = "140000000000002"  # OBPS
-    standard_id: Optional[FifteenDigitString] = "140000000000001"  # BC
+    standard_id: Optional[FifteenDigitString] = "140000000000001"  # BCE
     newRecord: Optional[bool] = True
 
     @model_validator(mode='after')
