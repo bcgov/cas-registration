@@ -18,11 +18,8 @@ export interface ComplianceSummary {
 }
 
 export interface BccrAccountDetailsResponse {
-  bccr_holding_account_id?: string;
   bccr_trading_name?: string | null;
   error?: string;
-  bccr_compliance_account_id?: string;
-  charge_rate: number;
 }
 
 export interface BccrComplianceAccountResponse {
