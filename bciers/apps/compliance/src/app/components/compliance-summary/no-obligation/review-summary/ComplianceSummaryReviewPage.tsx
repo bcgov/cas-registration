@@ -22,12 +22,12 @@ export default async function ComplianceSummaryReviewPage({
   const taskListElements: TaskListElement[] = [
     {
       type: "Section",
-      title: `${2024} Compliance Summary`,
+      title: `${complianceSummary.reporting_year} Compliance Summary`,
       isExpanded: true,
       elements: [
         {
           type: "Page" as const,
-          title: `Review ${2024} Compliance Summary`,
+          title: `Review ${complianceSummary.reporting_year} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/review-summary`,
           isActive: true,
         },
