@@ -7,7 +7,7 @@ from compliance.service.compliance_charge_rate_service import ComplianceChargeRa
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from decimal import Decimal
 
-bccr_service = BCCarbonRegistryAccountService()
+bccr_account_service = BCCarbonRegistryAccountService()
 
 
 class ApplyComplianceUnitsService:
@@ -63,7 +63,7 @@ class ApplyComplianceUnitsService:
         Returns:
             ComplianceUnitsPageData: Data for the Apply Compliance Units page.
         """
-        holding_account_details = bccr_service.get_account_details(account_id=account_id)
+        holding_account_details = bccr_account_service.get_account_details(account_id=account_id)
         # If no holding account details are found, exit early with None values
         if not holding_account_details:
             return ComplianceUnitsPageData(
@@ -78,10 +78,10 @@ class ApplyComplianceUnitsService:
             compliance_report_version_id
         )
         compliance_report = compliance_report_version.compliance_report
-        bccr_compliance_account = bccr_service.get_or_create_compliance_account(
+        bccr_compliance_account = bccr_account_service.get_or_create_compliance_account(
             holding_account_details=holding_account_details, compliance_report=compliance_report
         )
-        bccr_units = bccr_service.client.list_all_units(account_id=account_id)
+        bccr_units = bccr_account_service.client.list_all_units(account_id=account_id)
 
         return ComplianceUnitsPageData(
             bccr_trading_name=bccr_compliance_account.master_account_name,
@@ -134,7 +134,7 @@ class ApplyComplianceUnitsService:
                 if unit.get("quantity_to_be_applied") and unit["quantity_to_be_applied"] > 0
             ],
         )
-        bccr_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
+        bccr_account_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
 
     @classmethod
     def get_applied_compliance_units_data(cls, compliance_report_version_id: int) -> List[BCCRUnit]:
@@ -161,7 +161,9 @@ class ApplyComplianceUnitsService:
         # When fetching applied units, we have to use both ACTIVE and RETIRED states
         # ACTIVE units are those that are applied but not yet retired by industry users,
         # while RETIRED units are those that have been retired by industry users.
-        applied_units = bccr_service.client.list_all_units(account_id=bccr_subaccount_id, state_filter="ACTIVE,RETIRED")
+        applied_units = bccr_account_service.client.list_all_units(
+            account_id=bccr_subaccount_id, state_filter="ACTIVE,RETIRED"
+        )
         formatted_units = cls._format_bccr_units_for_grid_display(applied_units.get("entities", []))
 
         # Calculate equivalent_value for each unit based on charge rate
