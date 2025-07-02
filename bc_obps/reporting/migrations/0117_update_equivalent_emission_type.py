@@ -3,7 +3,6 @@
 
 import json
 import os
-import re
 from django.db import migrations
 
 
@@ -714,63 +713,6 @@ def reload_schemas_with_equivalent_emissions(apps, schema_monitor):
             valid_from_id=Configuration.objects.get(valid_from="2023-01-01").id,
             valid_to_id=Configuration.objects.get(valid_to="2099-12-31").id,
         ).update(json_schema=schema)
-
-    # the following code is for testing, will delete before merging
-    def find_equivalent_emission(data):
-        if isinstance(data, dict):
-            for key, value in data.items():
-                if key == "equivalentEmission":
-                    return value
-                result = find_equivalent_emission(value)
-                if result is not None:
-                    return result
-        elif isinstance(data, list):
-            for item in data:
-                result = find_equivalent_emission(item)
-                if result is not None:
-                    return result
-        return None
-
-    count = 0
-
-    for record in ActivitySourceTypeJsonSchema.objects.all():
-        equivalent_emission = find_equivalent_emission(record.json_schema)
-
-        if not equivalent_emission:
-            raise Exception('this updated a schema it should not have updated')
-
-        assert (
-            equivalent_emission.get("type") == "number"
-        ), f"Invalid type for equivalentEmission in record ID {record.id}: {equivalent_emission.get('type')}"
-        count += 1
-    print(f'----------------count is:{count}----------------')
-
-    def validate_path_tuple(item):
-        """
-        Validates that the last part of the path matches the source_name
-        and the second-to-last part of the path matches the activity_name,
-        replacing underscores with spaces for comparison.
-        """
-        path, activity_name, source_name = item
-        path_parts = path.strip('/').split('/')
-        if len(path_parts) < 2:
-            return False
-
-        clean_path_parts = clean_path_parts = [
-            re.sub(r'^\d+\s*', '', part.replace('_', ' ').replace('.json', '').lower())
-            for part in path_parts
-            # This loop checks if the activity_name and source_name in the tuple match the last two parts of the path. Many of the paths are shortened versions of the names, so won't match exactly.
-        ]
-        if activity_name.lower() != clean_path_parts[-2]:
-            print('------------')
-            print(f"Activity name mismatch: '{activity_name.lower()}' != '{clean_path_parts[-2]}'")
-
-        if source_name.lower() != clean_path_parts[-1].lower():
-            print(f"Source name mismatch: '{source_name.lower()}' != '{clean_path_parts[-1]}'")
-            print('------------')
-
-    for item in items:
-        validate_path_tuple(item)
 
 
 class Migration(migrations.Migration):
