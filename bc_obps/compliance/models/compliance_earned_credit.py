@@ -1,3 +1,4 @@
+import pgtrigger
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from simple_history.models import HistoricalRecords
@@ -86,5 +87,20 @@ class ComplianceEarnedCredit(TimeStampedModel):
         app_label = "compliance"
         db_table_comment = "A table to store BC earned credit compliance data. Earned credits are described in GGIRCA (https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/14029_01#division_d0e1496) Division 4"
         db_table = 'erc"."compliance_earned_credit'
+        triggers = [
+            *TimeStampedModel.Meta.triggers,
+            pgtrigger.Trigger(
+                name="restrict_bccr_trading_name_unless_not_issued",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__bccr_trading_name__isnull=True) | pgtrigger.Q(new__bccr_trading_name=""),
+                func="""
+                    if new.issuance_status != 'Credits Not Issued in BCCR' then
+                        raise exception 'bccr_trading_name cannot be empty unless issuance_status is "Credits Not Issued in BCCR"';
+                    end if;
+                    return new;
+                """,
+            ),
+        ]
 
     Rls = ComplianceEarnedCreditRls
