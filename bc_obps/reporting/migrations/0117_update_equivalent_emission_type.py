@@ -777,7 +777,7 @@ class Migration(migrations.Migration):
     dependencies = [
         (
             "reporting",
-            "0115_V3_8_1",
+            "0116_V3_9_0",
         ),
     ]
 
