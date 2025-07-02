@@ -10,9 +10,8 @@ import { useEffect } from "react";
 
 const logoutAction = async () => {
   const logoutUrl = await getLogoutUrl();
-  signOut({
-    redirect: true,
-    redirectTo: logoutUrl || "/onboarding",
+  await signOut({
+    callbackUrl: logoutUrl || "/onboarding",
   });
 };
 

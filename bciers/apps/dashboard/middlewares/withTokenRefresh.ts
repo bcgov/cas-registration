@@ -13,7 +13,6 @@ function shouldUpdateToken(token: JWT | null) {
   /***
    * Checks whether our refresh interval has expired
    */
-
   return Date.now() / 1000 > (token?.expires_at ?? 0);
 }
 
