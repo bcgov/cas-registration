@@ -6,7 +6,6 @@ import {
   readOnlyStringField,
   tco2eUiConfig,
   headerUiConfig,
-  currencyUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 import { AutomaticOverduePenaltyAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/AutomaticOverduePenaltyAlertNote";
@@ -23,7 +22,7 @@ export const createComplianceSummaryReviewSchema = (
     emissions_attributable_for_compliance: readOnlyStringField(
       "Emissions Attributable for Compliance:",
     ),
-    emission_limit: readOnlyStringField("Emissions Limit:"),
+    emissions_limit: readOnlyStringField("Emissions Limit:"),
     excess_emissions: readOnlyStringField("Excess Emissions:"),
     // Obligation Section
     obligation_header: readOnlyObjectField(
@@ -33,7 +32,7 @@ export const createComplianceSummaryReviewSchema = (
     compliance_charge_rate: readOnlyStringField(
       `${reportingYear} Compliance Charge Rate:`,
     ),
-    equivalent_value: readOnlyStringField("Equivalent Value:"),
+    fee_amount_dollars: readOnlyStringField("Equivalent Value:"),
     // Compliance Units Section
     applied_compliance_units: readOnlyStringField(),
     // Monetary Payments Section
@@ -43,8 +42,7 @@ export const createComplianceSummaryReviewSchema = (
       "Outstanding Compliance Obligation",
     ),
     outstanding_balance: readOnlyStringField("Outstanding Balance:"),
-    outstanding_balance_equivalent_value:
-      readOnlyStringField("Equivalent Value:"),
+    invoice_fee_balance: readOnlyStringField("Equivalent Value:"),
     // Penalty Section
     penalty_header: readOnlyObjectField(
       "Automatic Overdue Penalty (as of Today):",
@@ -69,7 +67,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   // Summary Section
   summary_header: headerUiConfig,
   emissions_attributable_for_compliance: tco2eUiConfig,
-  emission_limit: tco2eUiConfig,
+  emissions_limit: tco2eUiConfig,
   excess_emissions: tco2eUiConfig,
 
   // Obligation Section
@@ -82,11 +80,8 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
       suffix: "/tCO2e",
     },
   },
-  equivalent_value: {
-    ...commonReadOnlyOptions,
-    "ui:options": {
-      prefix: "$",
-    },
+  fee_amount_dollars: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
   },
   applied_compliance_units: {
     "ui:widget": ComplianceUnitsGrid,
@@ -110,7 +105,9 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
   outstanding_balance: tco2eUiConfig,
-  outstanding_balance_equivalent_value: currencyUiConfig,
+  invoice_fee_balance: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
 
   // Penalty Section
   penalty_header: headerUiConfig,
@@ -130,9 +127,19 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
     },
   },
   days_late: commonReadOnlyOptions,
-  accumulated_penalty: currencyUiConfig,
-  accumulated_compounding: currencyUiConfig,
-  penalty_today: currencyUiConfig,
-  faa_interest: currencyUiConfig,
-  total_amount: currencyUiConfig,
+  accumulated_penalty: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  accumulated_compounding: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  penalty_today: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  faa_interest: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  total_amount: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
 };

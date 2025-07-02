@@ -14,11 +14,11 @@ export default async function ObligationTrackPaymentsPayPage({
 }: Props) {
   // Mock data - replace with actual API call later
   const complianceSummary = {
-    reportingYear: "2024",
+    reportingYear: 2024,
     outstandingBalance: "0.00",
     equivalentValue: "0.00",
     paymentReceivedDate: "Dec 6, 2025",
-    paymentAmountReceived: "8,000.00",
+    paymentAmountReceived: "8000.00",
   };
 
   const taskListElements = generateManageObligationTaskList(
