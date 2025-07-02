@@ -6,7 +6,9 @@ from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryErr
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
 VALID_COMPLIANCE_REPORT_VERSION_ID = 1
-PROJECT_SERVICE_PATH = "compliance.service.bc_carbon_registry.project_service.BCCarbonRegistryProjectService.create_project"
+PROJECT_SERVICE_PATH = (
+    "compliance.service.bc_carbon_registry.project_service.BCCarbonRegistryProjectService.create_project"
+)
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 
 
@@ -122,4 +124,6 @@ class TestProjectsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid datab
 
         # Assert
         assert response.status_code == 400
-        assert response.json() == {"message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."}
+        assert response.json() == {
+            "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
+        }
