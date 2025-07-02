@@ -477,9 +477,9 @@ class TestBCCarbonRegistryProjectService:
         operation_name = sfo_operation.name
         compliance_period_end_date_year = compliance_report_version.compliance_report.compliance_period.end_date.year
         expected_description = f"""
-        The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), 
-        is a carbon pricing system that incentivizes emission reductions through performance-based targets. 
-        The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below 
+        The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA),
+        is a carbon pricing system that incentivizes emission reductions through performance-based targets.
+        The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below
         their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS).
         """
 
