@@ -348,7 +348,7 @@ class TestApplyComplianceUnitsService:
         assert call_args["mixedUnitList"] == []
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
-    @patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceReportVersionService')
     def test_get_applied_compliance_units_data_success(
         self, mock_report_version_service, mock_bccr_service, mock_compliance_charge_rate_service
     ):
@@ -395,7 +395,7 @@ class TestApplyComplianceUnitsService:
         assert result[0].equivalent_value == "4000.00"  # 50 * 80
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
-    @patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceReportVersionService')
     def test_get_applied_compliance_units_data_no_subaccount(self, mock_report_version_service, mock_bccr_service):
         # Arrange
         compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", bccr_subaccount_id=None)
@@ -411,7 +411,7 @@ class TestApplyComplianceUnitsService:
         assert result == []
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_service')
-    @patch('compliance.service.apply_compliance_units_service.ComplianceReportVersionService')
+    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceReportVersionService')
     def test_get_applied_compliance_units_data_bccr_error(self, mock_report_version_service, mock_bccr_service):
         # Arrange
         compliance_report = baker.make_recipe(
