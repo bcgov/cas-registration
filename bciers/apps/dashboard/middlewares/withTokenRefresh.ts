@@ -3,6 +3,7 @@ import { encode, getToken } from "next-auth/jwt";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { JWT } from "next-auth";
 import { OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS } from "../auth/auth.config";
+import isInAllowedPath from "@bciers/utils/src/isInAllowedList";
 
 export const SESSION_SECURE = process.env.AUTH_URL?.startsWith("https://");
 export const SESSION_COOKIE = SESSION_SECURE
@@ -61,14 +62,18 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
    * Huge thanks to the community: https://github.com/nextauthjs/next-auth/discussions/9715#discussioncomment-12818495
    */
   return async (request: NextRequest) => {
+    const response = NextResponse.next();
+    const { pathname } = request.nextUrl;
+    const unauthAllowedPaths = ["auth", "onboarding"];
+    if (isInAllowedPath(pathname, unauthAllowedPaths)) return response;
+
     // Casting to our augmented JWT type
     const jwt = (await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
     })) as JWT | null;
 
-    const response = NextResponse.next();
-    if (request.nextUrl.pathname === "/auth/logout" || !jwt) return response;
+    if (!jwt) return signOut(request);
 
     if (shouldUpdateToken(jwt)) {
       const newKcTokens = await fetchNewAccessToken(jwt.refresh_token);
