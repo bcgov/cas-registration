@@ -16,7 +16,7 @@ class TestComplianceEarnedCreditsService:
         earned_credits = make_recipe('compliance.tests.utils.compliance_earned_credit', earned_credits_amount=100)
 
         # Assert
-        result = ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version(
+        result = ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
             earned_credits.compliance_report_version_id
         )
         assert result.earned_credits_amount == 100

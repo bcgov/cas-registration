@@ -8,11 +8,11 @@ class ComplianceEarnedCreditsService:
     """
 
     @classmethod
-    def get_earned_credits_data_by_report_version(
+    def get_earned_credit_data_by_report_version(
         cls, compliance_report_version_id: int
     ) -> Optional[ComplianceEarnedCredit]:
         """
-        Fetches earned credits data for a specific compliance report version
+        Fetches earned credit data for a specific compliance report version
 
         Args:
             compliance_report_version_id: The ID of the compliance report version to retrieve earned credits data for
