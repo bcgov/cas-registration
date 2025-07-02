@@ -12,6 +12,7 @@ import { IChangeEvent } from "@rjsf/core";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
+import { transformToNumberOrUndefined } from "@bciers/components/form/widgets/TextWidget";
 
 // 📊 Interface for props passed to the component
 interface Props {
@@ -159,16 +160,16 @@ export default function FacilityEmissionAllocationForm({
         .filter((category: any) => category.category_type === "fuel_excluded")
         .map(calculateEmissionData),
     total_emission_allocations: {
-      facility_total_emissions: initialData.facility_total_emissions
-        ? Number(initialData.facility_total_emissions)
-        : initialData.facility_total_emissions,
+      facility_total_emissions: transformToNumberOrUndefined(
+        initialData.facility_total_emissions,
+      ),
       products:
         initialData.report_product_emission_allocation_totals?.map(
           (product: { [key: string]: any }) => ({
             ...product,
-            allocated_quantity: product.allocated_quantity
-              ? Number(product.allocated_quantity)
-              : product.allocated_quantity,
+            allocated_quantity: transformToNumberOrUndefined(
+              product.allocated_quantity,
+            ),
           }),
         ) || [],
     },
@@ -195,8 +196,9 @@ export default function FacilityEmissionAllocationForm({
             )
             .map(calculateEmissionData),
         total_emission_allocations: {
-          facility_total_emissions:
-            initialData.facility_total_emissions?.toString(),
+          facility_total_emissions: transformToNumberOrUndefined(
+            initialData.facility_total_emissions,
+          ),
           products: initialData.report_product_emission_allocation_totals,
         },
       });
