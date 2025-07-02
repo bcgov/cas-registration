@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent";
 import { useRouter } from "@bciers/testConfig/mocks";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import { actionHandler } from "@bciers/actions";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -11,6 +12,10 @@ useRouter.mockReturnValue({
 
 vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
   getBccrAccountDetails: vi.fn(),
+}));
+
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
 }));
 
 const TEST_COMPLIANCE_SUMMARY_ID = "123";
@@ -137,7 +142,8 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     expect(disabledContinueButton).toBeDisabled();
   });
 
-  it("navigates to correct URLs when buttons are clicked", async () => {
+  it("calls actionHandler with correct parameters when submitting and navigating to the next page", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({});
     await setupValidAccount();
 
     const backButton = screen.getByRole("button", { name: "Back" });
@@ -150,9 +156,27 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
       name: "Requests Issuance of Earned Credits",
     });
     fireEvent.click(continueButton);
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/track-status-of-issuance`,
-    );
+
+    // Verify that actionHandler was called with correct parameters
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_SUMMARY_ID}/projects`,
+        "POST",
+        "",
+        {
+          body: JSON.stringify({
+            bccr_holding_account_id: VALID_ACCOUNT_ID,
+            bccr_trading_name: MOCK_TRADING_NAME,
+          }),
+        },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(
+        `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/track-status-of-issuance`,
+      );
+    });
   });
 
   it("shows error message when validation fails", async () => {
@@ -170,6 +194,94 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Unknown error")).toBeVisible();
+    });
+  });
+
+  it("shows loading state when submitting form", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockImplementationOnce(
+      () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
+    );
+
+    await setupValidAccount();
+
+    const continueButton = screen.getByRole("button", {
+      name: "Requests Issuance of Earned Credits",
+    });
+    fireEvent.click(continueButton);
+
+    const spinner = screen.getByTestId("spinner");
+    expect(spinner).toBeVisible();
+    expect(continueButton).toBeDisabled();
+  });
+
+  it("handles submission error correctly", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Failed to create project in BCCR",
+    });
+
+    await setupValidAccount();
+
+    const continueButton = screen.getByRole("button", {
+      name: "Requests Issuance of Earned Credits",
+    });
+    fireEvent.click(continueButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Failed to create project in BCCR"),
+      ).toBeVisible();
+      // Submit button should be enabled again
+      expect(continueButton).not.toBeDisabled();
+    });
+  });
+
+  it("clears existing error when form data changes", async () => {
+    (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      error: "Failed to create project in BCCR",
+    });
+    await setupValidAccount();
+
+    const continueButton = screen.getByRole("button", {
+      name: "Requests Issuance of Earned Credits",
+    });
+    fireEvent.click(continueButton);
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Failed to create project in BCCR"),
+      ).toBeVisible();
+    });
+
+    // Change account ID to clear the error
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: "987654321098765" } });
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("Failed to create project in BCCR"),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("handles empty trading name from API response", async () => {
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: null,
+    });
+
+    render(
+      <RequestIssuanceOfEarnedCreditsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      />,
+    );
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: "Requests Issuance of Earned Credits",
+        }),
+      ).toBeDisabled();
     });
   });
 });
