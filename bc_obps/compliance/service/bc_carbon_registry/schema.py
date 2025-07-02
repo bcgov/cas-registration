@@ -154,10 +154,12 @@ class UnitDetailsResponse(PaginatedResponse):
 ########## Projects ##########
 class ProjectPayloadMixedUnit(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
-    city: str  # "City"
-    address_line_1: str  # "Line 1"
-    zipcode: str  # "H0H0H0"
-    province: str  # "BC"
+    city: Optional[str] = None  # "City"
+    address_line_1: Optional[str] = None  # "Line 1"
+    zipcode: Optional[str] = None  # "H0H0H0"
+    province: Optional[str] = None  # "BC"
+    latitude: Optional[float] = None  # Latitude of the largest emissions (for SFO)
+    longitude: Optional[float] = None  # Longitude of the largest emissions (for SFO)
     period_start_date: DateStringField  # "2025-01-01"
     period_end_date: DateStringField  # "2025-01-31"
     # Optional fields (Default based on the S&P API documentation)
