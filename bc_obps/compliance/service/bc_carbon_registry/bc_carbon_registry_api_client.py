@@ -295,7 +295,9 @@ class BCCarbonRegistryAPIClient:
                    'zipcode': 'H0H0H0',
                    'province': 'BC',
                    'period_start_date': '2025-03-01',
-                   'period_end_date': '2025-03-31'
+                   'period_end_date': '2025-03-31',
+                   'latitude': 49.2827,
+                   'longitude': -123.1207,
                 }
             ],
         }
