@@ -45,7 +45,7 @@ class ComplianceReportVersion(TimeStampedModel):
     status = models.CharField(
         max_length=100,
         choices=ComplianceStatus.choices,
-        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits]",
+        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits]",
     )
 
     class Meta(TimeStampedModel.Meta):

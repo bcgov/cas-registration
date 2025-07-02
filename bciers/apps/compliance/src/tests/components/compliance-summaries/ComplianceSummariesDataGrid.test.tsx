@@ -25,7 +25,7 @@ const mockResponse = {
       reporting_year: 2024,
       excess_emissions: 2000,
       outstanding_balance: 1500,
-      status: "Obligation fully met",
+      status: "No obligation or earned credits",
       penalty_status: "N/A",
       obligation_id: "24-0002-1-1",
     },
@@ -141,13 +141,15 @@ describe("ComplianceSummariesDataGrid component", () => {
       "/compliance-summaries/1/manage-obligation-review-summary",
     );
 
-    // Check second row - Obligation fully met
+    // Check second row - No obligation or earned credits
     const secondRow = summaryRows[3];
     expect(within(secondRow).getByText("Operation 2")).toBeVisible();
     expect(within(secondRow).getByText("2024")).toBeVisible();
     expect(within(secondRow).getByText("2000 tCO2e")).toBeVisible();
     expect(within(secondRow).getByText("1500 tCO2e")).toBeVisible();
-    expect(within(secondRow).getByText("Obligation fully met")).toBeVisible();
+    expect(
+      within(secondRow).getByText("No obligation or earned credits"),
+    ).toBeVisible();
     expect(within(secondRow).getByText("N/A")).toBeVisible();
     expect(within(secondRow).getByText("24-0002-1-1")).toBeVisible();
     expect(

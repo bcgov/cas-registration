@@ -621,7 +621,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
-      "name": "Compliance SFO - Obligation fully met",
+      "name": "Compliance SFO - No obligation or earned credits",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "bcghg_id": "13219990048",
