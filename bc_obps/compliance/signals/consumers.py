@@ -1,5 +1,6 @@
 from django.dispatch import receiver
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+from compliance.service.supplementary_version_service import SupplementaryVersionService
 from compliance.models import ComplianceReport, CompliancePeriod
 from reporting.models import ReportVersion
 from reporting.signals.signals import report_submitted
@@ -35,4 +36,13 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
                 compliance_period=CompliancePeriod.objects.get(reporting_year=report_version.report.reporting_year),
             )
         compliance_report = ComplianceReport.objects.get(report_id=report_version.report_id)
-        ComplianceReportVersionService.create_compliance_report_version(compliance_report, version_id)
+        # Handle supplementary logic if the emission report_version is supplementary
+        version_count = ReportVersion.objects.filter(report_id=report_version.report_id).count()
+        if version_count > 1:
+            SupplementaryVersionService.handle_supplementary_version(
+                compliance_report=compliance_report,
+                report_version=report_version,
+                version_count=version_count,
+            )
+        else:
+            ComplianceReportVersionService.create_compliance_report_version(compliance_report, version_id)
