@@ -31,7 +31,10 @@ class ComplianceDashboardService:
             'report_compliance_summary',
         )
 
-        if user.is_industry_user():
+        if user.is_irc_user():
+            # Get all compliance report versions for Internal Users
+            compliance_report_versions = compliance_report_version_queryset.all()
+        else:
             operations = (
                 OperationDataAccessService.get_all_operations_for_user(user)
                 .filter(status=Operation.Statuses.REGISTERED)
@@ -50,9 +53,6 @@ class ComplianceDashboardService:
                     user_guid=user_guid
                 )
             )
-        else:
-            # Get all compliance report versions for Internal Users
-            compliance_report_versions = compliance_report_version_queryset.all()
 
         for version in compliance_report_versions:
             version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
@@ -81,19 +81,15 @@ class ComplianceDashboardService:
             'report_compliance_summary',
         )
 
-        if user.is_industry_user():
-            # Get all operations the user has access to
-            operations = OperationDataAccessService.get_all_operations_for_user(user).filter(
-                status=Operation.Statuses.REGISTERED
-            )
-
-            # Get the compliance compliance_report_version if it belongs to one of the user's operations
-            compliance_report_version = compliance_report_version_queryset.get(
-                id=compliance_report_version_id, compliance_report__report__operation__in=operations
-            )
-        else:
-            # Get the compliance compliance_report_version if it belongs to one of the user's operations
+        if user.is_irc_user():
             compliance_report_version = compliance_report_version_queryset.get(id=compliance_report_version_id)
+        else:
+            compliance_report_version = compliance_report_version_queryset.get(
+                id=compliance_report_version_id,
+                compliance_report__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                    user
+                ).operator,
+            )
 
         # Calculate and attach the outstanding balance
         if compliance_report_version:
