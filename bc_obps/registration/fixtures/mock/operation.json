@@ -600,7 +600,7 @@
   },
   {
     "model": "registration.operation",
-    "pk": "a12bc34d-56ef-78ab-90cd-12ef3456ab78",
+    "pk": "84ea41f0-4039-44d8-9f91-0e1d5fd47930",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
