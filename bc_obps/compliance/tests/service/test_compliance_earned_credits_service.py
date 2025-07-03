@@ -72,7 +72,7 @@ class TestComplianceEarnedCreditsService:
             )
 
         # Act & Assert
-        with pytest.raises(UserError, match="Earned credit must be in 'Credits Not Issued in BCCR' state"):
+        with pytest.raises(UserError, match="This compliance report has already requested credits issuance."):
             ComplianceEarnedCreditsService.validate_earned_credit_for_bccr_project(
                 earned_credit.compliance_report_version_id
             )
@@ -111,7 +111,7 @@ class TestComplianceEarnedCreditsService:
                 )
 
             # Act & Assert
-            with pytest.raises(UserError, match="Earned credit must be in 'Credits Not Issued in BCCR' state"):
+            with pytest.raises(UserError, match="This compliance report has already requested credits issuance."):
                 ComplianceEarnedCreditsService.validate_earned_credit_for_bccr_project(
                     earned_credit.compliance_report_version_id
                 )
