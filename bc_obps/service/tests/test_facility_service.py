@@ -373,9 +373,11 @@ class TestUpdateFacility:
         # Assert Updated Optional Fields
         assert facility.is_current_year == payload.is_current_year
         assert facility.starting_date == payload.starting_date
+        # need to convert payload.well_authorization_numbers to int for comparison
+        # because well_authorization_number is an IntegerField in the model but a str in FacilityIn schema
         assert sorted(
             list(facility.well_authorization_numbers.values_list('well_authorization_number', flat=True))
-        ) == sorted(payload.well_authorization_numbers)
+        ) == sorted(list([int(number) for number in payload.well_authorization_numbers]))
         assert facility.address.street_address == payload.street_address
         assert facility.address.municipality == payload.municipality
         assert facility.address.province == payload.province
@@ -443,7 +445,7 @@ class TestUpdateFacility:
 
     @staticmethod
     def test_update_facility_update_well_authorization_numbers():
-        well_auth_numbers = [123, 9876]
+        well_auth_numbers = ["123", "9876"]
         user, owning_operation, facility = TestUpdateFacility._setup_facility(
             facility_well_authorization_numbers=well_auth_numbers
         )
