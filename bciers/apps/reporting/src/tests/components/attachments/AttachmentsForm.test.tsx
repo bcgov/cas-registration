@@ -229,6 +229,58 @@ describe("The attachments form", () => {
     expect(sentFormDataValues).toEqual([file, "verification_statement"]);
     expect(useRouter().push).toHaveBeenCalledWith("continue");
   });
+  it("shows an error if the verification statement must be submitted and supplementary report is true", async () => {
+    mockPostAttachments.mockReturnValue({});
+    render(
+      <AttachmentsForm
+        version_id={1}
+        navigationInformation={dummyNavigationInformation}
+        initialUploadedAttachments={{}}
+        isVerificationStatementMandatory={true}
+        isSupplementaryReport={true}
+      />,
+    );
+    mockAttachmentElement.mockClear();
+
+    // Make sure the supplementary report checkboxes are checked so we can submit
+    await act(() => {
+      fireEvent.click(
+        screen.getByRole("checkbox", {
+          name: /i confirm that I have uploaded any attachments that are required/i,
+        }),
+      );
+    });
+    await act(() => {
+      fireEvent.click(
+        screen.getByRole("checkbox", {
+          name: /i confirm that any previously uploaded attachments/i,
+        }),
+      );
+    });
+    mockAttachmentElement.mockClear();
+
+    // Click the save button
+    await act(() => {
+      fireEvent.click(screen.getByText("Save & Continue"));
+    });
+
+    expect(mockPostAttachments).not.toHaveBeenCalled();
+    // After re-render, we expect to see the error
+    expect(mockAttachmentElement).toHaveBeenNthCalledWith(
+      1,
+      {
+        error: "Verification statement is required",
+        fileId: undefined,
+        fileName: undefined,
+        isUploading: false,
+        onFileChange: expect.any(Function),
+        required: true,
+        title: "Verification Statement",
+        versionId: 1,
+      },
+      {},
+    );
+  });
 
   it("disables the submit button when supplementary report is true and confirmations are not checked", () => {
     render(

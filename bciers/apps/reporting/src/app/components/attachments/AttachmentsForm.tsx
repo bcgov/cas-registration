@@ -100,7 +100,7 @@ const AttachmentsForm: React.FC<Props> = ({
   };
 
   const handleSubmit = async (canContinue: boolean) => {
-    if (!isSupplementaryReport && !validateAttachments()) return;
+    if (!validateAttachments()) return;
 
     if (
       !isSupplementaryReport &&
