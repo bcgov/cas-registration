@@ -1,5 +1,5 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from reporting.models.report_compliance_summary import ReportComplianceSummary
+from reporting.models import ReportComplianceSummary, ReportVersion
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from django.db import transaction
@@ -14,6 +14,7 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 from registration.models import Operation
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_service import UserDataAccessService
+from compliance.service.supplementary_version_service import SupplementaryVersionService
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,12 @@ class ComplianceReportVersionService:
         with transaction.atomic():
             report_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version_id)
 
-            ## TODO: WILL NEED SUPPLEMENTARY REPORT HANDLING LOGIC HERE (issue pending) ##
+            # Handle supplementary logic if the emission report_version is supplementary
+            version_count = ReportVersion.objects.filter(report_id=report_compliance_summary.report_version.report_id).count()
+            if version_count > 1:
+                supplementary_compliance_report_version = SupplementaryVersionService.handle_supplementary_version(report_version=report_compliance_summary.report_version, version_count=version_count)
+                return supplementary_compliance_report_version
+
             credited_emissions = report_compliance_summary.credited_emissions
             excess_emissions = report_compliance_summary.excess_emissions
 
