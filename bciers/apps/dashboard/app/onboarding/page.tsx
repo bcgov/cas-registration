@@ -1,6 +1,7 @@
 "use client";
 
 // 🏷 import {named} can be significantly slower than import default
+import { useEffect } from "react";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid/Grid";
 import events from "@/dashboard/app/data/home/events.json";
@@ -11,6 +12,10 @@ import {
   bcObpsGuidanceLink,
   carbonTaxExemptionLink,
 } from "@bciers/utils/src/urls";
+
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
 /*
 📚
 In the app directory, nested folders are normally mapped to URL paths.
@@ -20,6 +25,41 @@ e.g. app\(onboarding)\home maps to route: http://localhost:3000/home
 */
 
 export default function Page() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  const paths = {
+    profile: "profile",
+    dashboard: "dashboard",
+    onboarding: "onboarding",
+    administration: "administration",
+  };
+
+  useEffect(() => {
+    if (status === "loading" || session === undefined) {
+      // Session is still loading, do nothing
+      return;
+    }
+    if (session && status === "authenticated") {
+      // Handle authenticated user without a role
+      if (!session.user.app_role || session.user.app_role === "") {
+        // 🛸 Redirect cross-zone from dashboard to admininistration
+        // For cross‐zone navigation, use a full page reload to avoid missing‐chunk errors.
+        // router.push would attempt to load “/administration/profile” from the dashboard chunk manifest,
+        // but since “profile” lives in the administration zone, those chunks don’t exist here.
+        // window.location.href forces a hard reload into the administration zone’s build.
+        window.location.href = `/${paths.administration}/${paths.profile}`;
+        return;
+      }
+      router.push(`/${paths.dashboard}`);
+      return;
+    } else if (status === "unauthenticated") {
+      // Handle unauthenticated user
+      router.push(`/${paths.onboarding}`);
+      return;
+    }
+  }, [router, session, status]);
+
   const headerStyle = "text-bc-bg-blue text-2xl";
   const tableBorder = "border border-solid border-bc-bg-dark-grey";
 
