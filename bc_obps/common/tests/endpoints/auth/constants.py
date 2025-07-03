@@ -344,11 +344,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_operation_by_compliance_report_version_id",
-            "kwargs": {"compliance_report_version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_apply_compliance_units_page_data",
             "kwargs": {
                 "account_id": MOCK_UUID,
@@ -558,6 +553,11 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_compliance_report_version_earned_credits",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_operation_by_compliance_report_version_id",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
     ],
