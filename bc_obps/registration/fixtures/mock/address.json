@@ -211,7 +211,7 @@
   },
   {
     "model": "registration.address",
-    "pk": 21,
+    "pk": 22,
     "fields": {
       "street_address": "Incomplete address",
       "municipality": "Grove"
