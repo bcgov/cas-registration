@@ -27,6 +27,12 @@ class TestReportingDashboardService:
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=5)
 
+        # Change operation names for clarity
+        operations[0].name = "a"
+        operations[1].name = "b"
+        operations[2].name = "c"
+        operations[3].name = "d"
+
         sort_field: Optional[str] = "name"
         sort_order: Optional[str] = "asc"
         filters = ReportingDashboardOperationFilterSchema()  # Provide actual test data
@@ -126,6 +132,11 @@ class TestReportingDashboardService:
         operations[1].status = Operation.Statuses.REGISTERED
         operations[2].status = Operation.Statuses.REGISTERED
         operations[3].status = Operation.Statuses.REGISTERED
+        # Change operation names so sorting by name produces consistent results
+        operations[0].name = "a"
+        operations[1].name = "b"
+        operations[2].name = "c"
+        operations[3].name = "d"
         for op in operations:
             op.save()
 
