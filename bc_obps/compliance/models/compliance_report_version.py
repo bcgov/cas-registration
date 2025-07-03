@@ -12,6 +12,7 @@ class ComplianceReportVersion(TimeStampedModel):
         OBLIGATION_NOT_MET = "Obligation not met"
         OBLIGATION_FULLY_MET = "Obligation fully met"
         EARNED_CREDITS = "Earned credits"
+        NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits"
 
     compliance_report = models.ForeignKey(
         ComplianceReport,
@@ -44,7 +45,7 @@ class ComplianceReportVersion(TimeStampedModel):
     status = models.CharField(
         max_length=100,
         choices=ComplianceStatus.choices,
-        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits]",
+        db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits]",
     )
 
     class Meta(TimeStampedModel.Meta):

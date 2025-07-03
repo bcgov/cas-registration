@@ -121,7 +121,7 @@ class ComplianceReportVersionService:
         elif credited_emissions > Decimal('0'):
             return ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         else:
-            return ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+            return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
     @staticmethod
     def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:

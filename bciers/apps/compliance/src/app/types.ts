@@ -84,6 +84,13 @@ export interface ComplianceSummaryReviewData {
   id: number;
 }
 
+export interface ComplianceSummaryReviewNoEmissionNoObligationData {
+  reporting_year: number;
+  emissions_attributable_for_compliance: string;
+  emission_limit: string;
+  excess_emissions: number;
+}
+
 export interface RequestIssuanceTrackStatusData {
   earned_credits: number;
   issuance_status: string;
