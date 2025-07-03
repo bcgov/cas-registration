@@ -82,9 +82,6 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       router.push(saveAndContinueUrl);
     }
   };
-  console.log({formData});
-  console.log({canSubmit});
-
 
   return (
     <FormBase
