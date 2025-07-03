@@ -47,8 +47,8 @@ class BCCarbonRegistryProjectService:
             if not all([facility.latitude_of_largest_emissions, facility.longitude_of_largest_emissions]):
                 raise UserError("Facility must have latitude and longitude for SFO operations.")
             address_related_fields = {
-                "latitude": facility.latitude_of_largest_emissions,
-                "longitude": facility.longitude_of_largest_emissions,
+                "latitude": str(facility.latitude_of_largest_emissions),
+                "longitude": str(facility.longitude_of_largest_emissions),
             }
         elif operation_type == Operation.Types.LFO:
             mailing_address = operation.operator.mailing_address
