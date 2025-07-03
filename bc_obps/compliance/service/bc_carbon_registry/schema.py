@@ -158,8 +158,8 @@ class ProjectPayloadMixedUnit(BaseModel):
     address_line_1: Optional[str] = None  # "Line 1"
     zipcode: Optional[str] = None  # "H0H0H0"
     province: Optional[str] = None  # "BC"
-    latitude: Optional[float] = None  # Latitude of the largest emissions (for SFO)
-    longitude: Optional[float] = None  # Longitude of the largest emissions (for SFO)
+    latitude: Optional[str] = None  # Latitude of the largest emissions (for SFO)
+    longitude: Optional[str] = None  # Longitude of the largest emissions (for SFO)
     period_start_date: DateStringField  # "2025-01-01"
     period_end_date: DateStringField  # "2025-01-31"
     # Optional fields (Default based on the S&P API documentation)
