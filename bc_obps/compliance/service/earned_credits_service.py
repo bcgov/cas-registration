@@ -63,9 +63,7 @@ class ComplianceEarnedCreditsService:
 
         # Validate that earned credit is in the correct state
         if earned_credit.issuance_status != ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
-            raise UserError(
-                f"Earned credit must be in '{ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED}' state. Current state: {earned_credit.issuance_status}"
-            )
+            raise UserError("This compliance report has already requested credits issuance.")
 
         # Validate that earned credit doesn't already have a bccr_trading_name
         if earned_credit.bccr_trading_name:

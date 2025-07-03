@@ -188,8 +188,8 @@ class TestBCCarbonRegistryProjectService:
         # Verify SFO-specific address fields
         assert "latitude" in call_args["mixedUnitList"][0]
         assert "longitude" in call_args["mixedUnitList"][0]
-        assert call_args["mixedUnitList"][0]["latitude"] == Decimal('49.2827')
-        assert call_args["mixedUnitList"][0]["longitude"] == Decimal('-123.1207')
+        assert call_args["mixedUnitList"][0]["latitude"] == '49.282700'  # Facility latitude forces 6 decimal places
+        assert call_args["mixedUnitList"][0]["longitude"] == '-123.120700'  # Facility longitude forces 6 decimal places
 
         # Verify earned credit update was called
         mock_update_earned_credit.assert_called_once_with(compliance_report_version.id, "Test Trading Company")
@@ -476,12 +476,7 @@ class TestBCCarbonRegistryProjectService:
 
         operation_name = sfo_operation.name
         compliance_period_end_date_year = compliance_report_version.compliance_report.compliance_period.end_date.year
-        expected_description = f"""
-        The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA),
-        is a carbon pricing system that incentivizes emission reductions through performance-based targets.
-        The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below
-        their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS).
-        """
+        expected_description = f"The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), is a carbon pricing system that incentivizes emission reductions through performance-based targets. The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS)."
 
         assert (
             description == expected_description
