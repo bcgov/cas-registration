@@ -193,7 +193,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
 
         assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
-        assert sorted(response_data['well_authorization_numbers']) == sorted(payload['well_authorization_numbers'])
+        assert sorted(response_data['well_authorization_numbers']) == sorted(list(int(number) for number in payload['well_authorization_numbers']))
         assert response_data.get('street_address') == payload.get('street_address')
         assert response_data.get('municipality') == payload.get('municipality')
         assert response_data.get('province') == payload.get('province')
@@ -289,7 +289,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
     def test_authorized_users_can_update_well_authorization_numbers(self):
         # Arrange
-        well_auth_numbers = [123456789, 987654321]
+        well_auth_numbers = ["123456789", "987654321"]
         _, owning_operation, facility = TestUtils.create_operator_operation_and_facility(
             self, authorize_user=True, facility_well_authorization_numbers=well_auth_numbers
         )
