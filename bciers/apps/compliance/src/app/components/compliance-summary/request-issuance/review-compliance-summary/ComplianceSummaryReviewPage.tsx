@@ -8,7 +8,7 @@ import {
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
-import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/utils/fetchComplianceSummaryReviewPageData";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
@@ -18,11 +18,11 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const complianceSummary =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
   const frontEndRole = await getSessionRole();
   const isCasStaff = frontEndRole.startsWith("cas_");
 
+  const complianceSummary =
+    await fetchComplianceSummaryReviewPageData(complianceSummaryId);
   const externalTaskListElements = generateRequestIssuanceTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,

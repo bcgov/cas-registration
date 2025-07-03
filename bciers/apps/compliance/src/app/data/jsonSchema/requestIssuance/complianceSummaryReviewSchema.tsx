@@ -9,6 +9,28 @@ import {
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 
+<<<<<<< HEAD
+=======
+// Section creators
+const createSummarySection = (
+  reportingYear: number,
+): RJSFSchema["properties"] => ({
+  summaryHeader: readOnlyObjectField(`From ${reportingYear} Report`),
+  emissions_attributable_for_compliance: readOnlyStringField(
+    "Emissions Attributable for Compliance:",
+  ),
+  emissions_limit: readOnlyStringField("Emissions Limit:"),
+  excess_emissions: readOnlyStringField("Excess Emissions:"),
+});
+
+const createEarnedCreditsSection = (): RJSFSchema["properties"] => ({
+  earnedCreditsHeader: readOnlyObjectField("Earned Credits"),
+  earnedCreditsAlert: readOnlyStringField(),
+  earned_credits_amount: readOnlyStringField("Earned Credits:"),
+  issuance_status: readOnlyStringField("Status of Issuance:"),
+});
+
+>>>>>>> 389db5be7 (chore: update fetch compliance summary from api)
 // Main schema creator
 export const createComplianceSummaryReviewSchema = (
   reportingYear: number,
@@ -40,7 +62,7 @@ export const complianceSummaryReviewUiSchema = (
   // Summary Section
   summary_header: headerUiConfig,
   emissions_attributable_for_compliance: tco2eUiConfig,
-  emission_limit: tco2eUiConfig,
+  emissions_limit: tco2eUiConfig,
   excess_emissions: tco2eUiConfig,
 
   // Earned Credits Section

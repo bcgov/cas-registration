@@ -6,10 +6,17 @@ import {
   complianceSummaryReviewUiSchema,
   createComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
+<<<<<<< HEAD
 import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
+=======
+import { ComplianceSummary } from "@/compliance/src/app/types";
+
+interface Props {
+  data: ComplianceSummary;
+>>>>>>> 389db5be7 (chore: update fetch compliance summary from api)
   complianceSummaryId: string;
   isCasStaff: boolean;
 }

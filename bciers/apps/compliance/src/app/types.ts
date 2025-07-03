@@ -15,6 +15,10 @@ export interface ComplianceSummary {
   penalty_status?: string;
   obligation_id?: string;
   issuance_status?: string;
+  emissions_attributable_for_compliance?: string;
+  emission_limit?: string;
+  earned_credits_amount?: number;
+  earned_credits_issued?: boolean;
 }
 
 export interface BccrAccountDetailsResponse {
@@ -57,11 +61,11 @@ export interface BccrUnit {
 
 export interface Payment {
   id: string | number;
-  paymentReceivedDate: string;
-  paymentAmountApplied: number;
-  paymentMethod: string;
-  transactionType: string;
-  receiptNumber: string;
+  received_date: string;
+  amount: number;
+  method: string;
+  type: string;
+  payment_object_id: string;
 }
 
 export interface PaymentsData {
@@ -127,6 +131,7 @@ export interface ComplianceAppliedUnits {
   quantity_applied: number;
   equivalent_value: number;
 }
+<<<<<<< HEAD
 
 export interface RequestIssuanceComplianceSummaryData {
   operation_name: string;
@@ -141,4 +146,18 @@ export interface RequestIssuanceComplianceSummaryData {
   bccr_trading_name: string;
   analyst_comment: string;
   director_comment: string;
+=======
+export interface ComplianceAppliedUnitsData {
+  rows: ComplianceAppliedUnits[];
+  row_count: number;
+}
+export interface ComplianceAppliedUnitsSummary {
+  compliance_report_version_id: string;
+  applied_compliance_units: ComplianceAppliedUnitsData;
+}
+
+export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
+  monetary_payments: PaymentsData;
+  applied_units_summary: ComplianceAppliedUnitsSummary;
+>>>>>>> 389db5be7 (chore: update fetch compliance summary from api)
 }
