@@ -34,6 +34,16 @@ The /api file structure is designed to self-document URLs. This means:
 
 - Most Endpoints leverage user data from the middleware (current_user) to identify the current user and their roles. This middleware looks for a user_guid in the request headers and sets the current user to the user with that guid. This way, we can have access to the user object wherever we have access to the request object.
 
+## Atomic Transactions
+
+An **atomic transaction** is a sequence of database operations (insert, update, delete) performed as a single, indivisible unit of work. If any operation fails, the entire transaction is rolled back, preventing partial updates to the database.
+
+In functions where >=2 DB inserts/updates/deletes happen, we must wrap the function in an atomic transaction so that a rollback happens if a previous DB operation fails (if this is required by app logic). For example, in our `create_contact` service, we create an Address record to attach to our Contact record. If the Address insert succeeds but the Contact one doesn't, we don't want an orphaned address record, so we've made the entire service function atomic.
+
+To make a function atomic, use the atomic decorator. Both `@transaction.atomic()` and `@transaction.atomic` work. DEV AGREEMENT: Services should be responsible for knowing whether they need a transaction or not. Try to keep transactions as small as possible, as per Django docs.
+
+Note: SELECT queries in Postgres aren't atomic. I.e., if you have multiple select queries consecutively, there's no guarantee that all the queries will happen on the same dataset, so if data is inserted in between queries, you'll get different results. Wrapping a GET query in our API with an atomic decorator won't have any effect (good or bad).
+
 ## Services
 
 We follow a service-oriented architecture, where every layer:
