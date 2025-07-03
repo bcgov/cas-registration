@@ -37,7 +37,12 @@ class FacilityOut(ModelSchema):
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     @computed_field
-    def well_numbers(self) -> List[str]:
+    def well_authorization_numbers_strs(self) -> List[str]:
+        """
+        Converts the list of well authorization numbers (as integers) to a list of strings.
+        This is necessary because the well_authorization_numbers field in the Facility model
+        is a list of integers, but we want to return them as strings in the API response.
+        """
         return [str(wan) for wan in self.well_authorization_numbers]
 
     class Meta:
