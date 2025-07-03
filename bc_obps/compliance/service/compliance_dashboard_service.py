@@ -22,31 +22,37 @@ class ComplianceDashboardService:
         Fetches all compliance summaries for the user's operations
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-
-        operations = (
-            OperationDataAccessService.get_all_operations_for_user(user)
-            .filter(status=Operation.Statuses.REGISTERED)
-            .values_list('id')
-        )
-
-        # Get all compliance report versions for the filtered operations
-        compliance_report_versions = ComplianceReportVersion.objects.filter(
-            compliance_report__report__operation_id__in=operations,
-            compliance_report__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
-                user
-            ).operator,
-        ).select_related(
+        compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
             'compliance_report__report__operation',
             'compliance_report__compliance_period',
+            'compliance_report__report__operator',
+            'obligation',
             'compliance_earned_credit',
+            'report_compliance_summary',
         )
 
-        compliance_report_versions = (
-            compliance_report_versions
-            | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
-                user_guid=user_guid
+        if user.is_irc_user():
+            # Get all compliance report versions for Internal Users
+            compliance_report_versions = compliance_report_version_queryset.all()
+        else:
+            operations = (
+                OperationDataAccessService.get_all_operations_for_user(user)
+                .filter(status=Operation.Statuses.REGISTERED)
+                .values_list('id')
             )
-        )
+            # Get all compliance report versions for the filtered operations
+            compliance_report_versions = compliance_report_version_queryset.filter(
+                compliance_report__report__operation_id__in=operations,
+                compliance_report__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                    user
+                ).operator,
+            )
+            compliance_report_versions = (
+                compliance_report_versions
+                | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
+                    user_guid=user_guid
+                )
+            )
 
         for version in compliance_report_versions:
             version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
@@ -68,21 +74,22 @@ class ComplianceDashboardService:
             The requested ComplianceReportVersion object or None if not found
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-
-        # Get all operations the user has access to
-        operations = OperationDataAccessService.get_all_operations_for_user(user).filter(
-            status=Operation.Statuses.REGISTERED
-        )
-
-        # Get the compliance compliance_report_version if it belongs to one of the user's operations
-        compliance_report_version = ComplianceReportVersion.objects.select_related(
-            'report_compliance_summary__report_version__report',
-            'report_compliance_summary__report_version__report__operation',
+        compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
+            'compliance_report__report__operation',
             'compliance_report__compliance_period',
             'obligation',
-        ).get(
-            id=compliance_report_version_id, report_compliance_summary__report_version__report__operation__in=operations
+            'report_compliance_summary',
         )
+
+        if user.is_irc_user():
+            compliance_report_version = compliance_report_version_queryset.get(id=compliance_report_version_id)
+        else:
+            compliance_report_version = compliance_report_version_queryset.get(
+                id=compliance_report_version_id,
+                compliance_report__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                    user
+                ).operator,
+            )
 
         # Calculate and attach the outstanding balance
         if compliance_report_version:
@@ -95,7 +102,7 @@ class ComplianceDashboardService:
         cls, compliance_report_version_id: int
     ) -> PaymentDataWithFreshnessFlag:
         """
-        Fetches a the monetary payments made towards a compliance obligation
+        Fetches the monetary payments made towards a compliance obligation
 
         Args:
             compliance_report_version_id: The ID of the compliance report version the obligation belongs to
