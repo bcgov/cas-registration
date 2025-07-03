@@ -110,7 +110,7 @@ class TestReportingDashboardService:
 
         # r0 supplementary, report_version_id=2, status draft (default)
         r0 = ReportVersion.objects.get(pk=r0_version1_id).report
-        report_version_baker(report=r0)  # latest_r0_revision
+        latest_r0_revision = report_version_baker(report=r0)
 
         # r1 original, report_version_id=3, status draft (default)
         r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
@@ -137,10 +137,9 @@ class TestReportingDashboardService:
         draft_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
             user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="draft")
         ).values()
-
         assert list(draft_filter_result.values_list('report_status', 'report_version_id')) == [
-            ('Draft', 2),
-            ('Draft', 3),
+            ('Draft', latest_r0_revision.id),
+            ('Draft', r1_version1_id),
         ]
 
         draft_supplementary_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
@@ -168,8 +167,8 @@ class TestReportingDashboardService:
         ).values()
 
         assert list(sorted_result.values_list('id', 'report_status', 'report_version_id')) == [
-            (operations[1].id, 'Draft', 3),
-            (operations[0].id, 'Draft', 2),
+            (operations[1].id, 'Draft', r1_version1_id),
+            (operations[0].id, 'Draft', latest_r0_revision.id),
             (operations[3].id, None, None),
-            (operations[2].id, 'Submitted', 4),
+            (operations[2].id, 'Submitted', r2_version1_id),
         ]
