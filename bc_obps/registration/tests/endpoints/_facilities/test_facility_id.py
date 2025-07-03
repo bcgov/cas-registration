@@ -193,7 +193,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
 
         assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
-        assert sorted(response_data['well_authorization_numbers']) == sorted(list(int(number) for number in payload['well_authorization_numbers']))
+        assert sorted(response_data['well_authorization_numbers_strs']) == sorted(payload['well_authorization_numbers'])
         assert response_data.get('street_address') == payload.get('street_address')
         assert response_data.get('municipality') == payload.get('municipality')
         assert response_data.get('province') == payload.get('province')
@@ -322,7 +322,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
 
         # Assert Updated Optional Fields
         assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
-        assert sorted(response_data['well_authorization_numbers']) == sorted(payload['well_authorization_numbers'])
+        assert sorted(response_data['well_authorization_numbers_strs']) == sorted(payload['well_authorization_numbers'])
 
         # Assert Updated State
         TestUtils.assert_facility_db_state(
