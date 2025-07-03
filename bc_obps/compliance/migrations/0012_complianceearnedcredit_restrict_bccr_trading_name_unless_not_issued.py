@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0011_compliancereport_bccr_subaccount_id'),
+        ('compliance', '0012_alter_compliancereportversion_status'),
     ]
 
     operations = [
