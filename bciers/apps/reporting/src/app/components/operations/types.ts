@@ -3,6 +3,8 @@ export interface OperationRow {
   bcghg_id: string;
   name: string;
   operator: string;
+  report_version_id: number;
+  report_status: string;
 }
 
 export interface OperationsSearchParams {
