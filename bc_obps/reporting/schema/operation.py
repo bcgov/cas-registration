@@ -12,7 +12,7 @@ from django.db.models import Q, F
 class ReportingDashboardOperationOut(ModelSchema):
     report_id: int | None
     report_version_id: int | None
-    first_report_version_id: int | None
+    first_report_version_id: Optional[int] = None
     report_status: str | None
     report_submitted_by: Optional[str] = None
     operation_name: Optional[str] = None
