@@ -290,7 +290,7 @@ class BCCarbonRegistryAPIClient:
             'project_description': 'Test Description - Billie Blue 10',
             'mixedUnitList': [
                 {
-                    'city': 'Vancouver',
+                   'city': 'Vancouver',
                    'address_line_1': 'Test - Billie Blue 10',
                    'zipcode': 'H0H0H0',
                    'province': 'BC',
