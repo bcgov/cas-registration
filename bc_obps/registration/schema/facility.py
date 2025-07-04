@@ -35,6 +35,7 @@ class FacilityOut(ModelSchema):
     latitude_of_largest_emissions: Optional[float] = Field(None, alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: Optional[float] = Field(None, alias="longitude_of_largest_emissions")
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+    well_authorization_numbers: Optional[List[int]] = Field(None, alias="well_authorization_numbers")
 
     @computed_field
     def well_authorization_numbers_strs(self) -> List[str]:
@@ -43,7 +44,7 @@ class FacilityOut(ModelSchema):
         This is necessary because the well_authorization_numbers field in the Facility model
         is a list of integers, but we want to return them as strings in the API response.
         """
-        return [str(wan) for wan in self.well_authorization_numbers]
+        return [str(wan) for wan in self.well_authorization_numbers or []]
 
     class Meta:
         model = Facility
@@ -55,6 +56,5 @@ class FacilityOut(ModelSchema):
             "longitude_of_largest_emissions",
             "is_current_year",
             "starting_date",
-            "well_authorization_numbers",
         ]
         populate_by_name = True
