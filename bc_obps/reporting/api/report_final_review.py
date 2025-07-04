@@ -16,7 +16,6 @@ from ..models import (
 )
 from ..schema.report_final_review import ReportVersionSchema
 from .router import router
-from reporting.api.permissions import approved_industry_user_report_version_composite_auth
 
 
 @router.get(
@@ -24,7 +23,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     response={200: ReportVersionSchema, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Fetch final review data for a given report version ID.",
-    auth=approved_industry_user_report_version_composite_auth,
+    # auth=approved_industry_user_report_version_composite_auth,
 )
 def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     report_version = (
