@@ -16,6 +16,7 @@ export default function StatusCell(params: GridRenderCellParams) {
       BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
     ],
     [ReportOperationStatus.SUBMITTED, BC_GOV_SEMANTICS_GREEN],
+    [ReportOperationStatus.SUBMITTED_SUPPLEMENTARY, BC_GOV_SEMANTICS_GREEN],
   ]);
   const status =
     params.row.report_version_id > params.row.first_report_version_id
