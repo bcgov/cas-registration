@@ -13,7 +13,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 
-function SourceTypeBoxTemplate({
+export function SourceTypeBoxTemplate({
   classNames,
   label,
   help,

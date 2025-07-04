@@ -10,6 +10,8 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
+import { ReportReview } from "@reporting/src/app/components/finalReview/FinalReviewPageNew";
+import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 
 export default async function FinalReviewPage({
   version_id,
@@ -48,9 +50,9 @@ export default async function FinalReviewPage({
   }
 
   const flowData = await getFlowData(version_id);
-  const finalReviewData = await reviewDataFactory(version_id, flowData);
+  const finalReviewData = await getFinalReviewData(version_id);
 
   return (
-    <FinalReviewForm navigationInformation={navInfo} data={finalReviewData} />
+    <ReportReview navigationInformation={navInfo} data={finalReviewData} />
   );
 }
