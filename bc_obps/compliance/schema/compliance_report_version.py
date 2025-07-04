@@ -60,28 +60,6 @@ class ComplianceReportVersionOut(ModelSchema):
         fields = ['id', 'status']
 
 
-# To be handled in issue #117
-
-# class ComplianceSummaryIssuanceOut(ModelSchema):
-#     """Schema for compliance summary issuance data"""
-
-#     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
-#     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-#     excess_emissions_percentage: Optional[Union[Decimal, int]] = None
-#     earned_credits: Optional[int]
-#     earned_credits_issued: bool
-#     issuance_status: str
-
-#     class Meta:
-#         model = ComplianceReportVersion
-#         fields = [
-#             'id',
-#             # 'emissions_attributable_for_compliance',
-#             # 'emissions_limit',
-#             # 'excess_emissions',
-#         ]
-
-
 class OperationByComplianceSummaryOut(ModelSchema):
     class Meta:
         model = Operation
