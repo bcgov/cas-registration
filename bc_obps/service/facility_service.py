@@ -110,7 +110,8 @@ class FacilityService:
         existing_numbers_set = set(
             facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
         )
-        new_numbers = payload.well_authorization_numbers
+        # Must convert each value in payload.well_authorization_numbers to an integer, as the database expects integers but the payload is a list of strings
+        new_numbers = [int(number) for number in payload.well_authorization_numbers]
 
         # Check for duplicates within the new_numbers
         if len(new_numbers) != len(set(new_numbers)):
@@ -122,7 +123,6 @@ class FacilityService:
         )
 
         # Numbers to add
-        # TODO - fix. One is type set[str] and the other is set[int]
         numbers_to_add = set(new_numbers) - existing_numbers_set
 
         # Add new numbers
@@ -134,7 +134,6 @@ class FacilityService:
                 )
 
         # Numbers to remove
-        # TODO - fix. One is type set[str] and the other is set[int]
         numbers_to_remove = existing_numbers_set - set(new_numbers)
 
         # Archive old numbers
