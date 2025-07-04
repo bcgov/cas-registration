@@ -27,7 +27,7 @@ class TestReportingDashboardService:
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=5)
 
-        # Change operation names for clarity
+        # Change operation names so alphabetical sorting produces consistent results
         operations[0].name = "a"
         operations[1].name = "b"
         operations[2].name = "c"
