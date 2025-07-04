@@ -98,7 +98,7 @@ class ContactService:
         # Prevent updating contact if the contact is an 'Operation Representative' and required address fields are missing
         cls._validate_operation_representative_address(contact_id, address_data)
 
-        # Prevent updating contact if the email is already in use by another contact
+        # Prevent updating contact if the email is already in use by another contact associated with the same operator
         operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
         email: str = contact_data['email']
         cls._validate_contact_email(contact_id, operator_id, email)
