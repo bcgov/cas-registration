@@ -146,18 +146,22 @@ class TestContactService:
     def test_validate_new_contact_email():
         # Setup: Create a contact
         email = "test1@email.ca"
-        baker.make_recipe('registration.tests.utils.contact', email=email)
+        contact = baker.make_recipe('registration.tests.utils.contact', email=email)
 
         with pytest.raises(
             Exception,
             match=f"A contact with the email '{email}' already exists. Please add a different contact or edit the existing contact.",
         ):
             # Attempt to validate the same email for a different contact
-            ContactService._validate_contact_email(contact_id=None, email=email)
+            ContactService._validate_contact_email(contact_id=None, operator_id=contact.operator.id, email=email)
 
         # Validating a different email should not raise an exception
         new_email = "test2@email.ca"
-        ContactService._validate_contact_email(contact_id=None, email=new_email)
+        ContactService._validate_contact_email(contact_id=None, operator_id=contact.operator.id, email=new_email)
+
+        # Validating the same email but with a different operator should not raise an exception
+        new_operator = baker.make_recipe('registration.tests.utils.operator')
+        ContactService._validate_contact_email(contact_id=None, operator_id=new_operator.id, email=email)
 
 
 class TestUpdateContactService:
@@ -173,6 +177,7 @@ class TestUpdateContactService:
             'registration.tests.utils.contact',
             business_role=BusinessRole.objects.get(role_name='Operation Representative'),
         )
+        baker.make_recipe('registration.tests.utils.user_operator', user=user, operator=contact.operator)
         payload = ContactIn(
             first_name="Updated",
             last_name="Contact",
@@ -215,6 +220,7 @@ class TestUpdateContactService:
         user = baker.make_recipe('registration.tests.utils.cas_admin')
         senior_officer_role = BusinessRole.objects.get(role_name='Senior Officer')
         contact = baker.make_recipe('registration.tests.utils.contact', business_role=senior_officer_role)
+        baker.make_recipe('registration.tests.utils.user_operator', user=user, operator=contact.operator)
         payload = ContactIn(
             first_name="Updated",
             last_name="Contact",
@@ -238,7 +244,7 @@ class TestUpdateContactService:
     def test_validate_contact_email_update():
         # Setup: Create two contact
         email = "test1@email.ca"
-        baker.make_recipe('registration.tests.utils.contact', email=email)
+        contact = baker.make_recipe('registration.tests.utils.contact', email=email)
 
         updating_contact = baker.make_recipe('registration.tests.utils.contact')
 
@@ -247,8 +253,20 @@ class TestUpdateContactService:
             Exception,
             match=f"The email '{email}' is in use by another contact. Please use a different email address.",
         ):
-            ContactService._validate_contact_email(contact_id=updating_contact.id, email=email)
+            ContactService._validate_contact_email(
+                contact_id=updating_contact.id, operator_id=contact.operator.id, email=email
+            )
 
         # Validating a different email should not raise an exception
         new_email = "test2@email.ca"
-        ContactService._validate_contact_email(contact_id=updating_contact.id, email=new_email)
+        ContactService._validate_contact_email(
+            contact_id=updating_contact.id, operator_id=contact.operator.id, email=new_email
+        )
+
+        # Validating the same email as a contact with a different operator should not raise an exception
+        email2 = "test2@email.con"
+        different_operator = baker.make_recipe('registration.tests.utils.operator')
+        baker.make_recipe('registration.tests.utils.contact', email=email2, operator=different_operator)
+        ContactService._validate_contact_email(
+            contact_id=updating_contact.id, operator_id=contact.operator.id, email=email2
+        )
