@@ -1,7 +1,10 @@
 import json
+from uuid import UUID
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from reporting.models.report_version import ReportVersion
 from service.report_service import ReportService
+from service.report_version_service import ReportVersionService
 
 
 class Command(BaseCommand):
@@ -47,7 +50,18 @@ class Command(BaseCommand):
         with open(reports_fixture) as f:
             reports = json.load(f)
             for report in reports:
-                ReportService.create_report(
+                created_report_version_id = ReportService.create_report(
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
+                # creating a supplementary reports
+                operation_ids_with_supplementary_reports = [
+                    UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
+                    UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+                ]
+                report_version = ReportVersion.objects.get(id=created_report_version_id)
+                for operation_id in operation_ids_with_supplementary_reports:
+                    if report_version.report.operation_id == operation_id:
+                        report_version.status = 'Submitted'
+                        report_version.save()
+                        ReportVersionService.create_report_version(report_version.report)

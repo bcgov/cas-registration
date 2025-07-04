@@ -27,6 +27,12 @@ class TestReportingDashboardService:
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=5)
 
+        # Change operation names so alphabetical sorting produces consistent results
+        operations[0].name = "a"
+        operations[1].name = "b"
+        operations[2].name = "c"
+        operations[3].name = "d"
+
         sort_field: Optional[str] = "name"
         sort_order: Optional[str] = "asc"
         filters = ReportingDashboardOperationFilterSchema()  # Provide actual test data
@@ -84,3 +90,96 @@ class TestReportingDashboardService:
         assert op2_result["report_id"] is None
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
+
+    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_sorting_and_filtering(
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+        mock_get_all_operations_for_user: MagicMock | AsyncMock,
+    ):
+
+        # SETUP
+        user = user_baker()
+        mock_get_by_guid.return_value = user
+        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+
+        year = reporting_year_baker(reporting_year=5091)
+        operator = operator_baker()
+        operations = operation_baker(operator_id=operator.id, _quantity=4)
+
+        # r0 orginal, report_version_id=1
+        r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
+        r0_version1.status = "Submitted"
+        r0_version1.save()
+
+        # r0 supplementary, report_version_id=2, status draft (default)
+        r0 = ReportVersion.objects.get(pk=r0_version1_id).report
+        latest_r0_revision = report_version_baker(report=r0)
+
+        # r1 original, report_version_id=3, status draft (default)
+        r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
+        ReportVersion.objects.get(pk=r1_version1_id)  # r1_version1
+
+        # r2 original report_version_id=4, status submitted
+        r2_version1_id = ReportService.create_report(operations[2].id, year.reporting_year)
+        r2_version1 = ReportVersion.objects.get(pk=r2_version1_id)
+        r2_version1.status = "Submitted"
+        r2_version1.save()
+
+        operations[0].status = Operation.Statuses.REGISTERED
+        operations[1].status = Operation.Statuses.REGISTERED
+        operations[2].status = Operation.Statuses.REGISTERED
+        operations[3].status = Operation.Statuses.REGISTERED
+        # Change operation names so sorting by name produces consistent results
+        operations[0].name = "a"
+        operations[1].name = "b"
+        operations[2].name = "c"
+        operations[3].name = "d"
+        for op in operations:
+            op.save()
+
+        sort_field: Optional[str] = "name"
+        sort_order: Optional[str] = "asc"
+
+        # ASSERTIONS FOR FILTERING
+        # Frontend status are Draft, Draft Supplementary, Not Started, Submitted
+        draft_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="draft")
+        ).values()
+        assert list(draft_filter_result.values_list('report_status', 'report_version_id')) == [
+            ('Draft', latest_r0_revision.id),
+            ('Draft', r1_version1_id),
+        ]
+
+        draft_supplementary_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="sup")
+        ).values()
+        assert len(draft_supplementary_filter_result) == 1
+
+        submitted_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="sub")
+        ).values()
+        # submitted reports don't show if there's a supplementary report, so we should only see the one for r2
+        assert len(submitted_filter_result) == 1
+
+        not_started_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="not")
+        ).values()
+        assert len(not_started_filter_result) == 1
+
+        # ASSERTIONS FOR SORTING
+        sort_field: Optional[str] = "report_status"
+        sort_order: Optional[str] = "asc"
+
+        sorted_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema()
+        ).values()
+
+        assert list(sorted_result.values_list('id', 'report_status', 'report_version_id')) == [
+            (operations[1].id, 'Draft', r1_version1_id),
+            (operations[0].id, 'Draft', latest_r0_revision.id),
+            (operations[3].id, None, None),
+            (operations[2].id, 'Submitted', r2_version1_id),
+        ]
