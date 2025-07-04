@@ -66,7 +66,7 @@ class ContactService:
         contact_data['business_role'] = BusinessRole.objects.get(role_name="Operation Representative")
         operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
         contact_data['operator_id'] = operator_id
-        cls._validate_contact_email(None, contact_data['email'])
+        cls._validate_contact_email(None, operator_id, contact_data['email'])
         contact: Contact
         contact = ContactDataAccessService.update_or_create(None, contact_data)
 
@@ -98,9 +98,10 @@ class ContactService:
         # Prevent updating contact if the contact is an 'Operation Representative' and required address fields are missing
         cls._validate_operation_representative_address(contact_id, address_data)
 
-        # Prevent updating contact if the email is already in use by another contact
+        # Prevent updating contact if the email is already in use by another contact associated with the same operator
+        operator_id = UserDataAccessService.get_user_operator_by_user(user_guid).operator.id
         email: str = contact_data['email']
-        cls._validate_contact_email(contact_id, email)
+        cls._validate_contact_email(contact_id, operator_id, email)
         # UPDATE CONTACT
 
         contact = ContactDataAccessService.update_or_create(contact_id, contact_data)
@@ -160,16 +161,16 @@ class ContactService:
             raise UserError("This contact is an 'Operation Representative' and must have all address-related fields.")
 
     @classmethod
-    def _validate_contact_email(cls, contact_id: Optional[int], email: str) -> None:
-        """Raises an exception if the contact email is already in use by another contact.
+    def _validate_contact_email(cls, contact_id: Optional[int], operator_id: UUID, email: str) -> None:
+        """Raises an exception if the contact email is already in use by another contact associated with the same operator.
         Slightly different error messages are raised depending on whether this is from an update or create.
         (contact_id is not None for update)
         """
 
-        qs = Contact.objects.filter(email=email)
+        contacts = Contact.objects.filter(email=email, operator_id=operator_id)
         if contact_id is not None:
-            qs = qs.exclude(id=contact_id)
-        if qs.exists():
+            contacts = contacts.exclude(id=contact_id)
+        if contacts.exists():
             message = (
                 f"A contact with the email '{email}' already exists. Please add a different contact or edit the existing contact."
                 if contact_id is None
