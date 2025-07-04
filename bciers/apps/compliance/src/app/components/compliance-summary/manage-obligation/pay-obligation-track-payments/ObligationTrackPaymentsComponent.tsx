@@ -6,9 +6,10 @@ import {
   createPayObligationTrackPaymentsSchema,
   payObligationTrackPaymentsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/payObligationTrackPaymentsSchema";
+import { PaymentsData } from "@/compliance/src/app/types";
 
 interface Props {
-  readonly data: any;
+  readonly data: PaymentsData;
   readonly complianceSummaryId: string;
 }
 

@@ -2,10 +2,10 @@ from django.db.models import Prefetch, QuerySet
 from typing import Dict, Any, List, Optional, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
 from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
-from compliance.models import ComplianceChargeRate
 from compliance.service.exceptions import ComplianceInvoiceError
 
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
@@ -91,14 +91,13 @@ class ComplianceInvoiceService:
             excess_emissions = report_compliance_summary.excess_emissions
 
             # Get charge_rate from
-            # ComplianceReportVersion → ComplianceReport → CompliancePeriod → ReportingYear → ComplianceChargeRate
-            charge_rate_decimal: Decimal = ComplianceChargeRate.objects.get(
-                reporting_year=compliance_report_version.compliance_report.compliance_period.reporting_year
-            ).rate
+            # ComplianceReportVersion → ComplianceReport → CompliancePeriod → ReportingYear
+            charge_rate: Decimal =ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.compliance_period.reporting_year)
+            
 
             # Format obligation amounts
             compliance_obligation_emissions = f"{excess_emissions} tCO₂e"
-            compliance_obligation_charge_rate = f"${charge_rate_decimal:,.2f} / tCO₂e"
+            compliance_obligation_charge_rate = f"${charge_rate:,.2f} / tCO₂e"
             compliance_obligation_fee_amount_dollars = f"${fee_amount_dollars:,.2f}"
 
             # Get reporting year

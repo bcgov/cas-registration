@@ -9,6 +9,7 @@ from typing import Optional
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 
 
 class ComplianceDashboardService:
@@ -55,8 +56,7 @@ class ComplianceDashboardService:
             )
 
         for version in compliance_report_versions:
-            version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
-
+            version.outstanding_balance_tco2e= ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
         return compliance_report_versions
 
     @classmethod
@@ -91,10 +91,13 @@ class ComplianceDashboardService:
                 ).operator,
             )
 
-        # Calculate and attach the outstanding balance
+        # Calculate equivilant values
         if compliance_report_version:
-            compliance_report_version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(compliance_report_version)  # type: ignore[attr-defined]
-
+            compliance_report_version.equivalent_value = (compliance_report_version.report_compliance_summary.excess_emissions * compliance_report_version.charge_rate)
+            compliance_report_version.outstanding_balance_equivalent_value = (
+                    compliance_report_version.obligation.elicensing_invoice.outstanding_balance * compliance_report_version.charge_rate
+                )           
+           
         return compliance_report_version
 
     @classmethod

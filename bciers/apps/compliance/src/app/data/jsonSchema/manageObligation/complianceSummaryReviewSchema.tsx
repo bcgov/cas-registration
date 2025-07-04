@@ -32,7 +32,7 @@ export const createComplianceSummaryReviewSchema = (
     compliance_charge_rate: readOnlyStringField(
       `${reportingYear} Compliance Charge Rate:`,
     ),
-    fee_amount_dollars: readOnlyStringField("Equivalent Value:"),
+    equivalent_value: readOnlyStringField("Equivalent Value:"),
     // Compliance Units Section
     applied_units_summary: readOnlyStringField(),
     // Monetary Payments Section
@@ -42,7 +42,8 @@ export const createComplianceSummaryReviewSchema = (
       "Outstanding Compliance Obligation",
     ),
     outstanding_balance: readOnlyStringField("Outstanding Balance:"),
-    invoice_fee_balance: readOnlyStringField("Equivalent Value:"),
+    outstanding_balance_equivalent_value:
+      readOnlyStringField("Equivalent Value:"),
     // TODO in #227
     // Penalty Section
     // penalty_header: readOnlyObjectField(
@@ -105,10 +106,9 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
 
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
-  outstanding_balance: tco2eUiConfig,
-  invoice_fee_balance: {
-    "ui:widget": "ReadOnlyCurrencyWidget",
-  },
+  outstanding_balance: readOnlyStringField("Outstanding Balance:"),
+  outstanding_balance_equivalent_value:
+    readOnlyStringField("Equivalent Value:"),
   // TODO in #227
   // Penalty Section
   // penalty_header: headerUiConfig,

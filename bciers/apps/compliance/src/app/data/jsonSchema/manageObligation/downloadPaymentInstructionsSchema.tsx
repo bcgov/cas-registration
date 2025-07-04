@@ -15,21 +15,21 @@ export const createDownloadPaymentInstructionsSchema = (): RJSFSchema => ({
   title: `Download Payment Instructions`,
   properties: {
     // Invoice Number
-    invoiceNumber: readOnlyStringField("Invoice #:"),
+    invoice_number: readOnlyStringField("Invoice #:"),
     // Payee Info
-    payeeHeader: readOnlyObjectField(`Payee Information`),
-    bankName: readOnlyStringField("Name of Bank:"),
-    bankTransitNumber: readOnlyStringField("Bank Transit Number:"),
-    institutionNumber: readOnlyStringField("Institution Number:"),
-    swiftCode: readOnlyStringField("Swift Code:"),
-    accountNumber: readOnlyStringField("Account Number:"),
-    accountName: readOnlyStringField("Account Name:"),
-    bankAddress: readOnlyStringField("Bank Address:"),
+    payee_header: readOnlyObjectField(`Payee Information`),
+    bank_name: readOnlyStringField("Name of Bank:"),
+    bank_transit_number: readOnlyStringField("Bank Transit Number:"),
+    institution_number: readOnlyStringField("Institution Number:"),
+    swift_code: readOnlyStringField("Swift Code:"),
+    account_number: readOnlyStringField("Account Number:"),
+    account_name: readOnlyStringField("Account Name:"),
+    bank_address: readOnlyStringField("Bank Address:"),
     // Payment Instructions
-    paymentHeader: readOnlyObjectField(`Payment Instructions`),
-    beforePayment: readOnlyStringField(),
+    payment_header: readOnlyObjectField(`Payment Instructions`),
+    before_payment: readOnlyStringField(),
     // Payment Remarks
-    remarksHeader: readOnlyObjectField(`Remarks`),
+    remarks_header: readOnlyObjectField(`Remarks`),
     remarks: readOnlyStringField(),
   },
 });
@@ -38,21 +38,21 @@ export const downloadPaymentInstructionsUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   // Invoice Number
-  invoiceNumber: commonReadOnlyOptions,
+  invoice_number: commonReadOnlyOptions,
 
   // Payee Info
-  payeeHeader: headerUiConfig,
-  bankName: commonReadOnlyOptions,
-  bankTransitNumber: commonReadOnlyOptions,
-  institutionNumber: commonReadOnlyOptions,
-  swiftCode: commonReadOnlyOptions,
-  accountNumber: commonReadOnlyOptions,
-  accountName: commonReadOnlyOptions,
-  bankAddress: commonReadOnlyOptions,
+  payee_header: headerUiConfig,
+  bank_name: commonReadOnlyOptions,
+  bank_transit_number: commonReadOnlyOptions,
+  institution_number: commonReadOnlyOptions,
+  swift_code: commonReadOnlyOptions,
+  account_number: commonReadOnlyOptions,
+  account_name: commonReadOnlyOptions,
+  bank_address: commonReadOnlyOptions,
 
   // Payment Instructions
-  paymentHeader: headerUiConfig,
-  beforePayment: {
+  payment_header: headerUiConfig,
+  before_payment: {
     "ui:widget": PaymentInstructionsDetails,
     "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
@@ -60,7 +60,7 @@ export const downloadPaymentInstructionsUiSchema: UiSchema = {
       label: false,
     },
   },
-  remarksHeader: headerUiConfig,
+  remarks_header: headerUiConfig,
   remarks: {
     "ui:widget": PaymentRemarks,
     "ui:FieldTemplate": FieldTemplate,

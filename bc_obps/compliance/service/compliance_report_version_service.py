@@ -14,6 +14,7 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 from registration.models import Operation
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_service import UserDataAccessService
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 
 logger = logging.getLogger(__name__)
 
@@ -123,6 +124,35 @@ class ComplianceReportVersionService:
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
+    @staticmethod
+    def calculate_outstanding_balance_tco2e(compliance_report_version: ComplianceReportVersion) -> Decimal:
+        """
+        Calculates the outstanding balance tCO₂e for a compliance report version.
+        The balance is equal to ElicensingInvoice.outstanding_balance / ComplianceChargeRate.rate
+
+        Args:
+            compliance_report_version (ComplianceReportVersion): The compliance report version record
+
+        Returns:
+            Decimal: The outstanding balance in tCO₂e
+        """
+        # Get obligation
+        compliance_obligation: ComplianceObligation = ComplianceReportVersionService.get_obligation_by_compliance_report_version(
+            compliance_report_version.id
+        )
+        # Get invoice and outstanding balance
+        invoice = compliance_obligation.elicensing_invoice
+        outstanding_balance = max(invoice.outstanding_balance or Decimal("0"), Decimal("0"))
+     
+        # Get charge rate      
+        charge_rate=ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.compliance_period.reporting_year)
+       
+        # Perform division
+        outstanding_balance_tco2e = outstanding_balance / charge_rate
+     
+        return outstanding_balance_tco2e
+
+    
     @staticmethod
     def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:
         """

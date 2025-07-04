@@ -24,7 +24,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
-      field: "outstanding_balance",
+      field: "outstanding_balance_tco2e",
       headerName: "Outstanding Balance",
       width: getColumnWidth(200, 170),
       valueFormatter: (params) => `${params.value} tCO2e`,

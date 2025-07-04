@@ -49,7 +49,7 @@ vi.mock(
 );
 
 const mockData = {
-  reportingYear: "2024",
+  reportingYear: 2024,
   outstandingBalance: "0",
   equivalentValue: "0.00",
   paymentReceivedDate: "Dec 6, 2025",

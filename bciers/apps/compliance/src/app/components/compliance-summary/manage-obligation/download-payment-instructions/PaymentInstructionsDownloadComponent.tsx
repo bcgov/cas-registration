@@ -24,14 +24,14 @@ export default function PaymentInstructionsDownloadComponent({
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {
     complianceReportVersionId,
-    invoiceNumber: invoiceID,
-    bankName: "Canadian Imperial Bank of Commerce",
-    bankTransitNumber: "00090",
-    institutionNumber: "010",
-    swiftCode: "CIBCCATT",
-    accountNumber: "09-70301",
-    accountName: "Province of British Columbia-OBPS-BCIERS",
-    bankAddress: "1175 DOUGLAS STREET, VICTORIA, BC V8W2E1",
+    invoice_number: invoiceID,
+    bank_name: "Canadian Imperial Bank of Commerce",
+    bank_transit_number: "00090",
+    institution_number: "010",
+    swift_code: "CIBCCATT",
+    account_number: "09-70301",
+    account_name: "Province of British Columbia-OBPS-BCIERS",
+    bank_address: "1175 DOUGLAS STREET, VICTORIA, BC V8W2E1",
   };
 
   // Borrowed logic from complianceSummaryReviewComponent

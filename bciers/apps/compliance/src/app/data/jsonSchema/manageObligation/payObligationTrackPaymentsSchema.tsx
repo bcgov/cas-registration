@@ -8,21 +8,21 @@ import {
   headerUiConfig,
   currencyUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { PaymentStatusNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNote";
-import { AutomaticOverduePenaltyNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
+import { PaymentStatusNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNote";
+import { AutomaticOverduePenaltyNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
 
 interface PayObligationTrackPaymentsFormData {
-  outstandingBalance: string;
-  equivalentValue: string;
-  paymentReceivedDate: string;
-  paymentAmountReceived: string;
+  outstanding_balance: string;
+  fee_amount_dollars: string;
+  received_date: string;
+  amount: string;
 }
 
 const PaymentStatusNoteWidget = ({
   formData,
 }: WidgetProps<PayObligationTrackPaymentsFormData>) => {
-  const outstandingBalance = parseFloat(formData?.outstandingBalance ?? "0");
-  return <PaymentStatusNote outstandingBalance={outstandingBalance} />;
+  const outstanding_balance = parseFloat(formData?.outstanding_balance ?? "0");
+  return <PaymentStatusNote outstandingBalance={outstanding_balance} />;
 };
 
 export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
@@ -30,20 +30,20 @@ export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
   title: "Pay Obligation and Track Payment(s)",
   properties: {
     // Outstanding Compliance Obligation Section
-    outstandingObligationHeader: readOnlyObjectField(
+    outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
     ),
-    paymentStatusNote: readOnlyStringField(),
-    outstandingBalance: readOnlyStringField("Outstanding Balance:"),
-    equivalentValue: readOnlyStringField("Equivalent Value:"),
+    payment_status_note: readOnlyStringField(),
+    outstanding_balance: readOnlyStringField("Outstanding Balance:"),
+    fee_amount_dollars: readOnlyStringField("Equivalent Value:"),
 
     // Payment Section
-    paymentHeader: readOnlyObjectField("Payment 1"),
-    paymentReceivedDate: readOnlyStringField("Payment Received Date:"),
-    paymentAmountReceived: readOnlyStringField("Payment Amount Received:"),
+    payment_header: readOnlyObjectField("Payment 1"),
+    received_date: readOnlyStringField("Payment Received Date:"),
+    amount: readOnlyStringField("Payment Amount Received:"),
 
     // Penalty Alert Section
-    penaltyAlert: readOnlyStringField(),
+    penalty_alert: readOnlyStringField(),
   },
 });
 
@@ -52,24 +52,24 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
   "ui:classNames": "form-heading-label",
 
   // Outstanding Compliance Obligation Section
-  outstandingObligationHeader: headerUiConfig,
-  paymentStatusNote: {
+  outstanding_obligation_header: headerUiConfig,
+  payment_status_note: {
     "ui:widget": PaymentStatusNoteWidget,
     "ui:options": {
       label: false,
       inline: true,
     },
   },
-  outstandingBalance: tco2eUiConfig,
-  equivalentValue: currencyUiConfig,
+  outstanding_balance: tco2eUiConfig,
+  fee_amount_dollars: currencyUiConfig,
 
   // Payment Section
-  paymentHeader: headerUiConfig,
-  paymentReceivedDate: commonReadOnlyOptions,
-  paymentAmountReceived: currencyUiConfig,
+  payment_header: headerUiConfig,
+  received_date: commonReadOnlyOptions,
+  amount: currencyUiConfig,
 
   // Penalty Alert Section
-  penaltyAlert: {
+  penalty_alert: {
     "ui:widget": AutomaticOverduePenaltyNote,
     "ui:options": {
       label: false,

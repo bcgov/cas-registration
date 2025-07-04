@@ -161,3 +161,7 @@ export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
   applied_units_summary: ComplianceAppliedUnitsSummary;
 >>>>>>> 389db5be7 (chore: update fetch compliance summary from api)
 }
+
+export interface Invoice {
+  invoice_number: string;
+}

@@ -47,7 +47,7 @@ export interface OperationInformationFormData {
   regulated_operation?: string;
   new_entrant_operation?: string;
   regulated_products?: number[];
-  forcasted_emmisions?: string;
+  forcasted_emissions?: string;
   opted_in_operation?: OptedInOperationFormData;
 }
 
@@ -70,7 +70,7 @@ export interface OperationInformationPartialFormData {
   regulated_operation?: string;
   new_entrant_operation?: string;
   regulated_products?: number[];
-  forcasted_emmisions?: string;
+  forcasted_emissions?: string;
   status?: string;
   new_entrant_application?: string;
   date_of_first_shipment?: string;

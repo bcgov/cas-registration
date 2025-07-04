@@ -4,6 +4,7 @@ import {
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
+import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 
 interface Props {
   compliance_summary_id: string;
@@ -11,13 +12,10 @@ interface Props {
 export default async function ApplyComplianceUnitsPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const complianceUnitsData = {
-    reportingYear: "2025",
-  };
-
+  const { reporting_year: reportingYear } = await getReportingYear();
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-    complianceUnitsData.reportingYear,
+    reportingYear,
     ActivePage.ApplyComplianceUnits,
   );
 
