@@ -97,6 +97,7 @@ export enum ReportOperationStatus {
   DRAFT = "Draft",
   SUBMITTED = "Submitted",
   DRAFT_SUPPLEMENTARY = "Draft Supplementary Report",
+  SUBMITTED_SUPPLEMENTARY = "Submitted Supplementary Report",
 }
 
 export enum FormMode {

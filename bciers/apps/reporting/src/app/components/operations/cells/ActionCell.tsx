@@ -77,7 +77,10 @@ const ActionCell = (params: GridRenderCellParams) => {
       buttonText = "Continue";
       buttonAction = async () =>
         router.push(`reports/${reportVersionId}/review-operation-information`);
-    } else if (reportStatus === ReportOperationStatus.SUBMITTED) {
+    } else if (
+      reportStatus === ReportOperationStatus.SUBMITTED ||
+      reportStatus === ReportOperationStatus.SUBMITTED_SUPPLEMENTARY
+    ) {
       buttonText = "View Details";
       buttonAction = async () =>
         router.push(`reports/${reportVersionId}/submitted`);
