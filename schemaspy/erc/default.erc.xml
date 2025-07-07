@@ -476,6 +476,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_report_updated_by_id_3aeb3d73_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="bccr_subaccount_id" nullable="true" remarks="The BCCR subaccount ID associated with this compliance report. This is nullable because not all compliance reports will have a BCCR subaccount to deal with the compliance units." size="15" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_report_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -510,7 +511,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="4" id="4" name="excess_emissions_delta_from_previous" nullable="false" remarks="The delta of the excess emissions reported in the compliance_summary for this version and the previous one" size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="4" id="5" name="credited_emissions_delta_from_previous" nullable="false" remarks="The delta of the credited emissions reported in the compliance_summary for this version and the previous one" size="20" type="numeric" typeCode="2"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="false" remarks="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits]" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="status" nullable="false" remarks="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits]" size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_report_ve_archived_by_id_312bb499_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
