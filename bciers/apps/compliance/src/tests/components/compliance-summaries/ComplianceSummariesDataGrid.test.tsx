@@ -78,8 +78,30 @@ const mockResponse2 = {
       obligation_id: null,
       issuance_status: "Credits Not Issued in BCCR",
     },
+    {
+      id: 4,
+      operation_name: "Operation 5",
+      reporting_year: 2024,
+      excess_emissions: 0,
+      outstanding_balance: 1,
+      status: "Earned credits",
+      penalty_status: "N/A",
+      obligation_id: undefined,
+      issuance_status: "Issuance Requested",
+    },
+    {
+      id: 5,
+      operation_name: "Operation 6",
+      reporting_year: 2024,
+      excess_emissions: 0,
+      outstanding_balance: 1,
+      status: "Earned credits",
+      penalty_status: "N/A",
+      obligation_id: undefined,
+      issuance_status: "Approved",
+    },
   ] as ComplianceSummary[],
-  row_count: 2,
+  row_count: 4,
 };
 
 describe("ComplianceSummariesDataGrid component", () => {
@@ -191,38 +213,27 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
   });
 
-  it("renders the ComplianceSummariesDataGrid with extra column name if isCasAllowed is set", async () => {
+  it("shows 'View Details' for external users once the request has been submitted", async () => {
     render(
       <ComplianceSummariesDataGrid
-        initialData={mockResponse}
-        isAllowedCas={true}
+        initialData={mockResponse2}
+        isAllowedCas={false}
       />,
     );
-
-    // Verify operator name is present
-    expect(
-      screen.getByRole("columnheader", { name: "Operator Name" }),
-    ).toBeVisible();
-
-    // Check third row - Earned credits to have different text
     const summaryRows = screen.getAllByRole("row");
-    const thirdRow = summaryRows[4];
+    const dataRow = summaryRows[5];
+
+    // Find the link within that row
     expect(
-      within(thirdRow).getByRole("link", {
-        name: "Review Credits Issuance Request",
-      }),
+      within(dataRow).getByRole("link", { name: "View Details" }),
     ).toBeVisible();
+
     expect(
-      within(thirdRow).getByRole("link", {
-        name: "Review Credits Issuance Request",
-      }),
-    ).toHaveAttribute(
-      "href",
-      "/compliance-summaries/3/review-credits-issuance-request",
-    );
+      within(dataRow).getByRole("link", { name: "View Details" }),
+    ).toHaveAttribute("href", "/compliance-summaries/4/review-summary");
   });
 
-  it("changes action cell if isCasAllowed is set and issuance_status is not 'Credits Not Issued in BCCR'", async () => {
+  it("shows 'Review Credits Issuance Request' for internal users when no decision has been made yet", async () => {
     render(
       <ComplianceSummariesDataGrid
         initialData={mockResponse2}
@@ -230,37 +241,44 @@ describe("ComplianceSummariesDataGrid component", () => {
       />,
     );
 
-    // Check second row - action cell to have different text
     const summaryRows = screen.getAllByRole("row");
-    const secondRow = summaryRows[3];
+    const dataRow = summaryRows[5];
+
+    // Find the link within that row
     expect(
-      within(secondRow).getByRole("link", {
+      within(dataRow).getByRole("link", {
         name: "Review Credits Issuance Request",
       }),
     ).toBeVisible();
+
     expect(
-      within(secondRow).getByRole("link", {
+      within(dataRow).getByRole("link", {
         name: "Review Credits Issuance Request",
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/2/review-credits-issuance-request",
+      "/compliance-summaries/4/request-issuance-review-summary",
+    );
+  });
+
+  it("shows 'View Details' for internal users when there's a final decision (APPROVED/DECLINED)", async () => {
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={mockResponse2}
+        isAllowedCas={true}
+      />,
     );
 
-    // Check third row - action cell to have request credits text
-    const thirdRow = summaryRows[4];
+    const summaryRows = screen.getAllByRole("row");
+    const dataRow = summaryRows[6];
+
+    // Find the link within that row
     expect(
-      within(thirdRow).getByRole("link", {
-        name: "Request Issuance of Credits",
-      }),
+      within(dataRow).getByRole("link", { name: "View Details" }),
     ).toBeVisible();
+
     expect(
-      within(thirdRow).getByRole("link", {
-        name: "Request Issuance of Credits",
-      }),
-    ).toHaveAttribute(
-      "href",
-      "/compliance-summaries/3/request-issuance-review-summary",
-    );
+      within(dataRow).getByRole("link", { name: "View Details" }),
+    ).toHaveAttribute("href", "/compliance-summaries/5/review-summary");
   });
 });
