@@ -12,7 +12,9 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   unit,
 }) => {
   const formattedValue =
-    typeof value === "boolean" ? (
+    value === null || value === undefined ? (
+      <span>N/A</span>
+    ) : typeof value === "boolean" ? (
       <span>{value ? "Yes" : "No"}</span>
     ) : typeof value === "string" && value.includes(";") ? (
       value.split(";").map((item, idx) => <div key={idx}>- {item.trim()}</div>)

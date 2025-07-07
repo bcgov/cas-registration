@@ -36,7 +36,6 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
       <div className="w-full form-group field field-object form-heading-label flex items-center">
         {title && (
           <div className="form-heading text-xl font-bold flex items-center">
-            {/* Show expand/collapse button only if expandable is true */}
             {expandable && (
               <button
                 onClick={() => setIsExpanded((prev) => !prev)}

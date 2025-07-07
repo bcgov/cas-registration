@@ -23,7 +23,7 @@ from reporting.api.permissions import approved_industry_user_report_version_comp
     tags=EMISSIONS_REPORT_TAGS,
     description="""Retrieves the data for product emissions allocations that have been saved for a facility""",
     exclude_none=True,
-    auth=approved_industry_user_report_version_composite_auth,
+    # auth=approved_industry_user_report_version_composite_auth,
 )
 def get_emission_allocations(
     request: HttpRequest, version_id: int, facility_id: UUID

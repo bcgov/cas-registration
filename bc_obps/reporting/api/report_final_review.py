@@ -25,7 +25,8 @@ from .router import router
     description="Fetch final review data for a given report version ID.",
     # auth=approved_industry_user_report_version_composite_auth,
 )
-def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
+def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple[Literal[200], dict]:
+    # Fetch the report version data
     report_version = (
         ReportVersion.objects.select_related(
             "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
@@ -36,7 +37,6 @@ def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple
             "report_compliance_summary",
             "report_products",
             "report_operation_representatives",
-            "reportemissionallocation_records",
             Prefetch(
                 "report_non_attributable_emissions",
                 queryset=ReportNonAttributableEmissions.objects.prefetch_related("emission_category", "gas_type"),
@@ -48,17 +48,6 @@ def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple
                         "reportactivity_records",
                         queryset=ReportActivity.objects.select_related("activity", "activity_base_schema"),
                     ),
-                    Prefetch(
-                        "reportemissionallocation_records",
-                        queryset=ReportEmissionAllocation.objects.prefetch_related(
-                            Prefetch(
-                                "reportproductemissionallocation_records",
-                                queryset=ReportProductEmissionAllocation.objects.select_related(
-                                    "report_product", "emission_category"
-                                ),
-                            )
-                        ),
-                    ),
                 ),
             ),
             Prefetch("report_operation__activities", queryset=Activity.objects.all()),
@@ -66,5 +55,4 @@ def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple
         )
         .get(id=version_id)
     )
-
     return 200, report_version

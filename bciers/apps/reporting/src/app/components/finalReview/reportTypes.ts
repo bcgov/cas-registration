@@ -110,8 +110,34 @@ export interface FacilityReport {
   report_products: ReportProduct[];
   reportnonattributableemissions_records: ReportNonAttributableEmission[];
   emission_summary: EmissionSummary;
+  report_emission_allocation: ReportEmissionAllocation;
+}
+export interface ReportProduct {
+  report_product_id: number;
+  product_name: string;
+  allocated_quantity: number;
 }
 
+export interface ReportProductEmissionAllocation {
+  emission_category_name: string;
+  emission_category_id: number;
+  category_type: string;
+  emission_total: number;
+  products: ReportProduct[];
+}
+export interface ReportProductEmissionAllocationTotal {
+  report_product_id: number;
+  product_name: string;
+  allocated_quantity: string;
+}
+
+export interface ReportEmissionAllocation {
+  report_emission_allocations: ReportProductEmissionAllocation[];
+  facility_total_emissions: string;
+  report_product_emission_allocation_totals: ReportProductEmissionAllocationTotal[];
+  allocation_methodology: string;
+  allocation_other_methodology_description: string;
+}
 export interface ReportData {
   report_operation: ReportOperation;
   report_person_responsible: ReportPersonResponsible;

@@ -132,12 +132,6 @@ export const ReportReview: React.FC<Props> = ({
   data,
 }) => {
   const router = useRouter();
-  const [isRedirecting, setIsRedirecting] = useState(false);
-
-  const submitHandler = async () => {
-    setIsRedirecting(true);
-    router.push(navigationInformation.continueUrl);
-  };
 
   return (
     <>
@@ -177,32 +171,42 @@ export const ReportReview: React.FC<Props> = ({
               >
                 <ActivitiesView activity_data={facilityReport.activity_data} />
 
-                {facilityReport.reportnonattributableemissions_records?.length >
-                  0 && (
+                {
                   <SectionReview
                     title="Non-Attributable Emissions"
                     data={{}}
                     fields={[]}
                   >
-                    {facilityReport.reportnonattributableemissions_records.map(
-                      (record, i) => (
-                        <div key={i} className="mb-4">
-                          {fieldOrder.map((key) => (
-                            <FieldDisplay
-                              key={key}
-                              label={fieldLabels[key]}
-                              value={record[key]}
-                            />
-                          ))}
-                          {i <
-                            facilityReport
-                              .reportnonattributableemissions_records.length -
-                              1 && <hr className="my-4" />}
-                        </div>
-                      ),
-                    )}
+                    <FieldDisplay
+                      label={
+                        "Did your non-attributable emissions exceed 100 tCO2e?"
+                      }
+                      value={
+                        facilityReport.reportnonattributableemissions_records
+                          ?.length > 0
+                      }
+                    />
+                    {facilityReport.reportnonattributableemissions_records
+                      ?.length > 0 &&
+                      facilityReport.reportnonattributableemissions_records.map(
+                        (record, i) => (
+                          <div key={i} className="mb-4">
+                            {fieldOrder.map((key) => (
+                              <FieldDisplay
+                                key={key}
+                                label={fieldLabels[key]}
+                                value={record[key as keyof typeof record]}
+                              />
+                            ))}
+                            {i <
+                              facilityReport
+                                .reportnonattributableemissions_records.length -
+                                1 && <hr className="my-4" />}
+                          </div>
+                        ),
+                      )}
                   </SectionReview>
-                )}
+                }
 
                 <SectionReview
                   title="Emissions Summary (in tCO2e)"
@@ -323,6 +327,11 @@ export const ReportReview: React.FC<Props> = ({
                     />
                   ))}
                 </SectionReview>
+                <SectionReview
+                  title={"Allocation of Emissions"}
+                  fields={[]}
+                  data={facilityReport.report_emission_allocation}
+                ></SectionReview>
               </SectionReview>
             ),
           )}
@@ -344,8 +353,6 @@ export const ReportReview: React.FC<Props> = ({
           <ReportingStepButtons
             backUrl={navigationInformation.backUrl}
             continueUrl={navigationInformation.continueUrl}
-            onSubmit={submitHandler}
-            isLoading={isRedirecting}
             buttonText={"Continue"}
             noSaveButton={true}
           />
