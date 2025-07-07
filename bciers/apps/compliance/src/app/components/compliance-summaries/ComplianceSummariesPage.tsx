@@ -10,7 +10,12 @@ export default async function ComplianceSummariesPage({
 }>) {
   const initialData = await fetchComplianceSummariesPageData(searchParams);
   const frontEndRole = await getSessionRole();
-  const isAllowedCas = ["cas_director", "cas_analyst"].includes(frontEndRole);
+  const isAllowedCas = [
+    "cas_director",
+    "cas_analyst",
+    "cas_admin",
+    "cas_view_only",
+  ].includes(frontEndRole);
 
   return (
     <ComplianceSummariesDataGrid
