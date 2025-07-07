@@ -15,7 +15,6 @@ import {
   FormField,
   MessageTextResponse,
 } from "@bciers/e2e/utils/enums";
-import { FrontendMessages } from "@bciers/utils/src/enums";
 import AxeBuilder from "@axe-core/playwright";
 
 // 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
@@ -559,10 +558,8 @@ export function getStorageStateForRole(role: string) {
   return JSON.parse(processEnv as string);
 }
 
-export async function assertSuccessfulSnackbar(page: Page) {
-  const snackbarLocator = page
-    .locator(".MuiSnackbar-root")
-    .getByText(FrontendMessages.SUBMIT_CONFIRMATION);
+export async function assertSuccessfulSnackbar(page: Page, message: string) {
+  const snackbarLocator = page.locator(".MuiSnackbar-root").getByText(message);
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
 }
@@ -580,4 +577,9 @@ export async function clickWithRetry(
       console.warn(`Click failed. Retrying... Attempt ${i}/${retries}`);
     }
   }
+}
+
+export async function urlIsCorrect(page: Page, expectedPath: string) {
+  const currentUrl = page.url();
+  await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
 }

@@ -131,3 +131,15 @@ export enum ContactE2EValue {
   PROVINCE = "Alberta",
   POSTAL_CODE = "X1X1X1",
 }
+
+export enum IDE2EValue {
+  OPERATION_NAME = "Brine LFO - Registered - No BORO and BCGHG ID",
+  OPERATOR_NAME = "Bravo Technologies - has parTNER operator",
+  EXPECTED_BCGHG_ID = "23251810001",
+  EXPECTED_BORO_ID = "25-0001",
+}
+
+export enum SnackbarMessages {
+  ISSUED_BCGHG_ID = "BCGHG ID issued successfully",
+  ISSUED_BORO_ID = "BORO ID issued successfully",
+}

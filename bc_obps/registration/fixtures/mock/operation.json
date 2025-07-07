@@ -254,13 +254,14 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-23T15:27:00.000Z",
-      "name": "Brine LFO - Draft",
+      "name": "Brine LFO - Registered - No BORO and BCGHG ID",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "regulated_products": [3],
-      "status": "Draft",
+      "status": "Registered",
       "activities": [1, 5],
-      "registration_purpose": "OBPS Regulated Operation"
+      "registration_purpose": "OBPS Regulated Operation",
+      "contacts": [4]
     }
   },
   {
