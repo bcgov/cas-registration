@@ -146,9 +146,6 @@ export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
                         : String(sourceTypeValue)}
                     </div>
                   }
-                  children={null}
-                  help={null}
-                  errors={null}
                   readonly={false}
                 />
               );

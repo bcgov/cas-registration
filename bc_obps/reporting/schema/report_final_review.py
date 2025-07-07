@@ -23,6 +23,8 @@ from reporting.models import (
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.service.compliance_service import ComplianceService, ComplianceData
 from reporting.service.emission_category_service import EmissionCategoryService
+from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService, \
+    ReportEmissionAllocationData
 
 
 class EmissionCategorySchema(ModelSchema):
@@ -182,7 +184,7 @@ class FacilityReportSchema(ModelSchema):
     report_products: List[ReportProductionDataSchema] = []
     reportnonattributableemissions_records: List[ReportNonAttributableEmissionSchema] = []
     emission_summary: Optional[Any] = None
-    reportemissionallocation_records: List[ReportEmissionAllocationSchema] = []
+    report_emission_allocation: Optional[Any] = None
 
     @staticmethod
     def resolve_activity_data(obj: FacilityReport) -> List[ReportRawActivityData]:
@@ -191,6 +193,10 @@ class FacilityReportSchema(ModelSchema):
     @staticmethod
     def resolve_emission_summary(obj: FacilityReport) -> Optional[Any]:
         return EmissionCategoryService.get_facility_emission_summary_form_data(obj.id)
+
+    @staticmethod
+    def resolve_report_emission_allocation(obj: FacilityReport) -> ReportEmissionAllocationData:
+        return ReportEmissionAllocationService.get_emission_allocation_data(obj.report_version.pk, obj.facility.pk)
 
     class Meta:
         model = FacilityReport

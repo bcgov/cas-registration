@@ -21,7 +21,7 @@ export function SourceTypeBoxTemplate({
   errors,
   children,
   readonly,
-}: FieldTemplateProps) {
+}: Partial<FieldTemplateProps>) {
   const [expand, setExpand] = useState(true);
   return (
     <Paper className={classNames} sx={{ marginBottom: "10px" }}>
