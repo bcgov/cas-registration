@@ -9,17 +9,18 @@ import {
   AppRoute,
   UserAccessRequestStatus,
   UserAccessRequestActions,
+  UserAndAccessRequestGridHeaders,
 } from "@/administration-e2e/utils/enums";
 // 🛠️ Helpers
 import {
   assertSpinnerIsDone,
   linkIsVisible,
   selectOptionFromCombobox,
+  stabilizeGrid,
+  tableColumnNamesAreCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
-/**
- * OperatorPOM provides interaction methods for Operator forms and related actions.
- */
+
 export class UsersAccessRequestPOM {
   readonly page: Page;
 
@@ -53,6 +54,7 @@ export class UsersAccessRequestPOM {
   }
 
   async goToUserAccessRequestPage() {
+    await this.route();
     const linkName = AdministrationTileText.ACCESS_REQUEST;
     const link = await linkIsVisible(this.page, linkName);
     await link.click();
@@ -113,6 +115,44 @@ export class UsersAccessRequestPOM {
     await this.assertCorrectStatus(row, action);
   }
 
+  async logOut() {
+    const logoutButton = this.page.getByRole("link", { name: "Log Out" });
+    await expect(logoutButton).toBeVisible();
+    await logoutButton.click();
+    await expect(this.page.getByText("You are logged out")).toBeVisible();
+  }
+
+  async logInAs(role: string) {
+    // Go to onboarding
+    await this.page.goto(this.url);
+    const loginButton = this.page.getByRole("button", {
+      name: /log in with business bceid/i,
+    });
+    await expect(loginButton).toBeVisible();
+    await loginButton.click();
+
+    // wait for form
+    await expect(this.page.getByText("Use a Business BCeID")).toBeVisible();
+
+    let username, password;
+    if (role === "industry_user") {
+      username = process.env.E2E_INDUSTRY_USER;
+      password = process.env.E2E_INDUSTRY_USER_PASSWORD;
+    } else if (role === "industry_user_admin") {
+      username = process.env.E2E_INDUSTRY_USER_ADMIN;
+      password = process.env.E2E_INDUSTRY_USER_ADMIN_PASSWORD;
+    }
+    await this.fieldUsername.fill(username);
+    await this.fieldPassword.fill(password);
+    await this.page
+      .getByRole("button", { name: /Continue/i })
+      .first()
+      .click();
+
+    // wait for dashboard
+    await this.page.waitForURL(/dashboard/i);
+  }
+
   // # Assertions
   async urlIsCorrect() {
     const path = this.userAccessRequestURL.toLowerCase();
@@ -151,39 +191,16 @@ export class UsersAccessRequestPOM {
     }
   }
 
-  async logInAs(role: string) {
-    const logoutButton = this.page.getByRole("link", { name: "Log Out" });
-    await expect(logoutButton).toBeVisible();
-    await logoutButton.click();
-    await expect(this.page.getByText("You are logged out")).toBeVisible();
-
-    // Go to onboarding
-    await this.page.goto(this.url);
-    const loginButton = this.page.getByRole("button", {
-      name: /log in with business bceid/i,
-    });
-    await expect(loginButton).toBeVisible();
-    await loginButton.click();
-
-    // wait for form
-    await expect(this.page.getByText("Use a Business BCeID")).toBeVisible();
-
-    let username, password;
-    if (role === "industry_user") {
-      username = process.env.E2E_INDUSTRY_USER;
-      password = process.env.E2E_INDUSTRY_USER_PASSWORD;
-    } else if (role === "industry_user_admin") {
-      username = process.env.E2E_INDUSTRY_USER_ADMIN;
-      password = process.env.E2E_INDUSTRY_USER_ADMIN_PASSWORD;
-    }
-    await this.fieldUsername.fill(username);
-    await this.fieldPassword.fill(password);
-    await this.page
-      .getByRole("button", { name: /Continue/i })
-      .first()
-      .click();
-
-    // wait for dashboard
-    await this.page.waitForURL(/dashboard/i);
+  async pageIsStable() {
+    await expect(
+      this.page.getByRole("heading", {
+        name: AdministrationTileText.ACCESS_REQUEST,
+      }),
+    ).toBeVisible();
+    await stabilizeGrid(this.page, 6);
+    await tableColumnNamesAreCorrect(
+      this.page,
+      Object.values(UserAndAccessRequestGridHeaders),
+    );
   }
 }

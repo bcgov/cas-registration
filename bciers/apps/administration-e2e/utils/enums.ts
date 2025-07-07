@@ -172,6 +172,13 @@ export enum UserAccessRequestRoles {
   NONE = "N/A",
 }
 
+export enum SecondaryUserOperatorFixtureFields {
+  USER = "279c80cf57814c28872740a133d17c0d",
+  OPERATOR = "4242ea9d-b917-4129-93c2-db00b7451051",
+  ROLE_PENDING = "pending",
+  STATUS_PENDING = "Pending",
+}
+
 export enum UserAccessRequestActions {
   APPROVE = "Approve",
   DECLINE = "Decline",
