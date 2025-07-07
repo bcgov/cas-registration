@@ -8,8 +8,6 @@ import {
   stabilizeGrid,
   assertSuccessfulSnackbar,
 } from "@bciers/e2e/utils/helpers";
-import { FrontendMessages } from "@bciers/utils/src/enums";
-
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 
