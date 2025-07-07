@@ -1,3 +1,16 @@
+# [3.10.0](https://github.com/bcgov/cas-registration/compare/v3.9.0...v3.10.0) (2025-07-07)
+
+### Bug Fixes
+
+- update CAS_PENDING role to include UPDATE operation ([668fde6](https://github.com/bcgov/cas-registration/commit/668fde695b0417f7a1a29fd72dcda511af6f854a))
+
+### Features
+
+- add bccr_subaccount_id field to compliance report model and tests ([75764c1](https://github.com/bcgov/cas-registration/commit/75764c14ce43c807791ba64474cedc1375ffe032))
+- add Draft Supplementary Report status on FE ([c7a6105](https://github.com/bcgov/cas-registration/commit/c7a61055b93febff0dea20183f2822634319d554))
+- add route to just view details with alert if compliance summary has no obligation or credit ([e5fbe82](https://github.com/bcgov/cas-registration/commit/e5fbe82bf0b8cb6b14b389b0dc8d0ae3414334eb))
+- implement track status of issuance page for internal user ([b246327](https://github.com/bcgov/cas-registration/commit/b246327ef8b5685f4f0a7bc59fd8663b2a68e681))
+
 # [3.9.0](https://github.com/bcgov/cas-registration/compare/v3.8.1...v3.9.0) (2025-06-26)
 
 ### Features
