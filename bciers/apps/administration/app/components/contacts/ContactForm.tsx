@@ -37,6 +37,8 @@ export default function ContactForm({
   const [isCreatingState, setIsCreatingState] = useState(isCreating);
   const [key, setKey] = useState(Math.random());
   const role = useSessionRole();
+  console.log("formData", formData);
+  console.log("formState", formState);
 
   return (
     <SingleStepTaskListForm

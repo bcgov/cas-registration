@@ -49,6 +49,7 @@ const SingleStepTaskListForm = ({
   showCancelOrBackButton = true,
   customButtonSection,
 }: SingleStepTaskListFormProps) => {
+  console.log("ins ginle step rawFormData", rawFormData);
   const hasFormData = Object.keys(rawFormData).length > 0;
   const formData = hasFormData ? createNestedFormData(rawFormData, schema) : {};
   const [formState, setFormState] = useState(formData);
@@ -58,6 +59,8 @@ const SingleStepTaskListForm = ({
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+  console.log("in SingleStepTaskListForm, formState", formState);
+  console.log("in SingleStepTaskListForm, formData", formData);
 
   const formSections = schema.properties as RJSFSchema;
   const formSectionList = Object.keys(formSections);
@@ -89,6 +92,8 @@ const SingleStepTaskListForm = ({
   const handleFormChange = (e: IChangeEvent) => {
     // ⚠️ Warning ⚠️ - be mindful of performance issues using this with complex forms
     // If onChange is provided, pass the event back to the parent component
+    console.log("in SingleStepTaskListForm, handleFormChange", e.formData);
+    console.log("do formdatas equal", e.formData === formData);
     if (onChange) onChange(e);
   };
 
