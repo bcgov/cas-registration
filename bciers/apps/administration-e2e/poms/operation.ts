@@ -50,12 +50,8 @@ export class OperationPOM {
     const viewOperation = await row.getByRole("link", {
       name: /view operation/i,
     });
-    // const viewOperation = await this.page
-    //   .getByRole("link", { name: /view operation/i })
-    //   .first();
     await expect(viewOperation).toBeVisible();
     await viewOperation.click();
-    // await expect(this.page.getByText(operation)).toBeVisible();
   }
 
   // ###  Assertions ###
