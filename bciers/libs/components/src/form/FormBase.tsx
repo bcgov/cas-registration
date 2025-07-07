@@ -66,8 +66,6 @@ const FormBase: React.FC<FormPropsWithTheme<any>> = (props) => {
   const Form = useMemo(() => withTheme(theme ?? formTheme), [theme, formTheme]);
   const [formState, setFormState] = useState(formData ?? {});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  console.log("FormBase formState", formState);
-  console.log("FormBase formData", formData);
 
   // Handling form state externally as RJSF was resetting the form data on submission and
   // creating buggy behaviour if there was an API error and the user attempted to resubmit

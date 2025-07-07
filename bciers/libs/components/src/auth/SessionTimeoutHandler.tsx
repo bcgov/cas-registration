@@ -133,7 +133,6 @@ const SessionTimeoutHandler: React.FC = () => {
         return; // Ignore when tab is hidden
 
       extendSessionChannelRef.current?.postMessage("extend-session");
-      console.log("about to refresh session due to user activity:", event.type);
       await refreshSession();
     };
 
