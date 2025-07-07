@@ -2,7 +2,14 @@ import json
 from uuid import UUID
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
+from reporting.schema.report_verification import ReportVerificationIn
+from reporting.service.report_attachment_service import ReportAttachmentService
+from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
+from reporting.service.report_submission_service import ReportSubmissionService
+from django.core.files.base import ContentFile
+from reporting.service.report_verification_service import ReportVerificationService
 from service.report_service import ReportService
 from service.report_version_service import ReportVersionService
 
@@ -50,18 +57,54 @@ class Command(BaseCommand):
         with open(reports_fixture) as f:
             reports = json.load(f)
             for report in reports:
-                created_report_version_id = ReportService.create_report(
+                ReportService.create_report(
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
-                # creating a supplementary reports
-                operation_ids_with_supplementary_reports = [
-                    UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
-                    UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
-                ]
-                report_version = ReportVersion.objects.get(id=created_report_version_id)
-                for operation_id in operation_ids_with_supplementary_reports:
-                    if report_version.report.operation_id == operation_id:
-                        report_version.status = 'Submitted'
-                        report_version.save()
-                        ReportVersionService.create_report_version(report_version.report)
+
+            # submit reports
+            operation_ids_to_submit = [
+                UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
+                UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+            ]
+
+            for operation_id in operation_ids_to_submit:
+                # set up required data for submission
+                report_version = ReportVersion.objects.get(report__operation_id=operation_id)
+                ReportVerificationService.save_report_verification(
+                    report_version.id,
+                    ReportVerificationIn(
+                        verification_conclusion='conclude',
+                    ),
+                )
+                ReportAttachmentService.set_attachment(
+                    report_version.id,
+                    'ba2ba62a-1218-42e0-942a-ab9e92ce8822',
+                    "verification_statement",
+                    ContentFile(b"data1", "file1.pdf"),
+                )
+                verification_statement = ReportAttachmentService.get_attachments(report_version.id).first()
+                verification_statement.status = 'Clean'
+                verification_statement.save()
+
+                # submit!
+                ReportSubmissionService.submit_report(
+                    report_version.id,
+                    UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'),
+                    ReportSignOffData(
+                        ReportSignOffAcknowledgements(
+                            acknowledgement_of_records=True,
+                            acknowledgement_of_review=True,
+                            acknowledgement_of_certification=True,
+                            acknowledgement_of_information=True,
+                            acknowledgement_of_possible_costs=True,
+                            acknowledgement_of_new_version=True,
+                            acknowledgement_of_corrections=True,
+                            acknowledgement_of_errors=True,
+                        ),
+                        signature='me',
+                    ),
+                )
+
+            # create supplmentary report
+            ReportVersionService.create_report_version(Report.objects.get(operation_id=operation_ids_to_submit[0]))
