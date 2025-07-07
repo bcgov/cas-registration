@@ -85,6 +85,10 @@ export default {
   callbacks: {
     async jwt({ token, account, profile, trigger }) {
       try {
+        console.log(
+          "--------------------------------------------in the callback trigger is",
+          trigger,
+        );
         // 🧩 custom properties are configured through module augmentation
         if (profile) {
           token.given_name = (profile as KeycloakProfile).given_name;
@@ -162,7 +166,16 @@ export default {
       // 🔒 return encrypted nextauth JWT
       return token;
     },
-    async session({ token, session }) {
+    async session({ token, session, trigger }) {
+      // this gets called on getSession according to docs
+      console.log(
+        "--------------------------------------------in the async session token",
+        token,
+      );
+      console.log(
+        "--------------------------------------------in the async session trigger",
+        trigger,
+      );
       // By default, for security, only a subset of the token is returned...
       //💡 if you want to make a nextauth JWT property available to the client session...
       // you have to explicitly forward it here to make it available to the client
