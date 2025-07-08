@@ -20,9 +20,6 @@ import {
   tableColumnNamesAreCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
-// import { getEnvValue } from "@bciers/actions";
-import * as dotenv from "dotenv";
-dotenv.config({ path: "bciers/.env" });
 
 export class UsersAccessRequestPOM {
   readonly page: Page;
@@ -116,54 +113,6 @@ export class UsersAccessRequestPOM {
     await assertSpinnerIsDone(row);
     await this.assertCorrectRole(row, newRole);
     await this.assertCorrectStatus(row, action);
-  }
-
-  async logOut() {
-    const logoutUrl = await process.env.SITEMINDER_KEYCLOAK_LOGOUT_URL;
-    console.log("chesca env value", logoutUrl);
-    // const value = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-    console.log("Type of value:", typeof logoutUrl);
-
-    // if (!logoutUrl) {
-    //   throw new Error(
-    //     "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
-    //   );
-    // }
-    // Instead of direct goto, simulate signOut redirect behavior by navigating to logoutUrl
-    await this.page.goto(logoutUrl, { timeout: 20000 });
-    // Wait for logout confirmation text
-    await expect(this.page.getByText("You are logged out")).toBeVisible();
-  }
-
-  async logInAs(role: string) {
-    // Go to onboarding
-    await this.page.goto(this.url);
-    const loginButton = this.page.getByRole("button", {
-      name: /log in with business bceid/i,
-    });
-    await expect(loginButton).toBeVisible();
-    await loginButton.click();
-
-    // wait for form
-    await expect(this.page.getByText("Use a Business BCeID")).toBeVisible();
-
-    let username, password;
-    if (role === "industry_user") {
-      username = process.env.E2E_INDUSTRY_USER;
-      password = process.env.E2E_INDUSTRY_USER_PASSWORD;
-    } else if (role === "industry_user_admin") {
-      username = process.env.E2E_INDUSTRY_USER_ADMIN;
-      password = process.env.E2E_INDUSTRY_USER_ADMIN_PASSWORD;
-    }
-    await this.fieldUsername.fill(username);
-    await this.fieldPassword.fill(password);
-    await this.page
-      .getByRole("button", { name: /Continue/i })
-      .first()
-      .click();
-
-    // wait for dashboard
-    await this.page.waitForURL(/dashboard/i);
   }
 
   // # Assertions
