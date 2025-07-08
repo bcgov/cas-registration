@@ -1,5 +1,4 @@
-from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from reporting.models import ReportComplianceSummary
+from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from django.db import transaction
@@ -65,6 +64,8 @@ class ComplianceReportVersionService:
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
+                from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
+
                 ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
             return compliance_report_version
