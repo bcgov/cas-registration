@@ -5,7 +5,7 @@ export async function getFinalReviewData(reportVersionId: number) {
   const response = await actionHandler(endpoint, "GET");
   if (response.error) {
     throw new Error(
-      `Failed to fetch the facility details for report version ${reportVersionId}.`,
+      `Failed to fetch final review data for report version ${reportVersionId}.`,
     );
   }
   return response;
