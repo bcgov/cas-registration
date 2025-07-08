@@ -2,37 +2,34 @@ import {
   generateRequestIssuanceTaskList,
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
-import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import TrackStatusOfIssuanceComponent from "./TrackStatusOfIssuanceComponent";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 interface Props {
-  readonly compliance_summary_id: string;
+  compliance_summary_id: string;
 }
 
 export default async function TrackStatusOfIssuancePage({
-  compliance_summary_id: complianceReportVersionId,
-}: Props) {
-  const data: RequestIssuanceTrackStatusData =
-    await getRequestIssuanceTrackStatusData(complianceReportVersionId);
-  const { reporting_year: reportingYear } = await getReportingYear();
+  compliance_summary_id: complianceSummaryId,
+}: Readonly<Props>) {
+  const pageData =
+    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
 
   const taskListElements = generateRequestIssuanceTaskList(
-    complianceReportVersionId,
-    reportingYear,
+    complianceSummaryId,
+    pageData.reporting_year,
     ActivePage.TrackStatusOfIssuance,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceReportVersionId}
+      complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     >
       <TrackStatusOfIssuanceComponent
-        data={data}
-        complianceSummaryId={complianceReportVersionId}
+        data={pageData}
+        complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
+import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import FormBase from "@bciers/components/form/FormBase";
 import {
@@ -9,14 +9,14 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/trackStatusOfIssuanceSchema";
 
 interface Props {
-  readonly data: RequestIssuanceTrackStatusData;
-  readonly complianceSummaryId: string;
+  data: RequestIssuanceComplianceSummaryData;
+  complianceSummaryId: string;
 }
 
 export default function TrackStatusOfIssuanceComponent({
   data,
   complianceSummaryId,
-}: Props) {
+}: Readonly<Props>) {
   const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
 
   return (
