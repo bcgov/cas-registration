@@ -1,7 +1,7 @@
 import {
-  generateRequestIssuanceTaskList,
+  generateIssuanceRequestTaskList,
   ActivePage,
-} from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
+} from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
@@ -20,18 +20,16 @@ export default async function ComplianceSummaryReviewPage({
 
   // Redirect the user to track status page if user already requested issuance or issuance is approved or declined
   if (
-    [
-      IssuanceStatus.ISSUANCE_REQUESTED,
-      IssuanceStatus.APPROVED,
-      IssuanceStatus.DECLINED,
-    ].includes(complianceSummary.issuance_status as IssuanceStatus)
+    [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
+      complianceSummary.issuance_status,
+    )
   ) {
     redirect(
       `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
     );
   }
 
-  const taskListElements = generateRequestIssuanceTaskList(
+  const taskListElements = generateIssuanceRequestTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,
