@@ -1,25 +1,16 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-
+import React from "react";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 
-import { SectionReview } from "./SectionReview";
-import ActivitiesView from "@reporting/src/app/components/finalReview/ActivityView";
-import { FieldDisplay } from "@reporting/src/app/components/finalReview/FieldDisplay";
+import { SectionReview } from "./templates/SectionReview";
+import ActivitiesView from "@reporting/src/app/components/finalReview/templates/ActivityView";
+import { FieldDisplay } from "@reporting/src/app/components/finalReview/templates/FieldDisplay";
 
-import {
-  FacilityReport,
-  ReportData,
-  ReportEmissionAllocation,
-} from "./reportTypes";
+import { FacilityReport, ReportData } from "./reportTypes";
 import type { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import {
-  EmissionAllocationView,
-  transformEmissionAllocationData,
-} from "@reporting/src/app/components/finalReview/EmissionAllocationView";
+import { EmissionAllocationView } from "@reporting/src/app/components/finalReview/templates/EmissionAllocationView";
 
 interface Props {
   data: ReportData;
@@ -135,12 +126,10 @@ const complianceSummaryFields = (products: any[] = []) => [
   ]) || []),
 ];
 
-export const ReportReview: React.FC<Props> = ({
+export const FinalReviewFormNew: React.FC<Props> = ({
   navigationInformation,
   data,
 }) => {
-  const router = useRouter();
-
   return (
     <>
       <div className="container mx-auto p-4" data-testid="facility-review">

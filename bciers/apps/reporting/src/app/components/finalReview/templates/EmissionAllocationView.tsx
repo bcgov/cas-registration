@@ -1,7 +1,10 @@
 import React from "react";
-import { ReportEmissionAllocation } from "@reporting/src/app/components/finalReview/reportTypes";
+import {
+  ReportEmissionAllocation,
+  ReportProduct,
+} from "@reporting/src/app/components/finalReview/reportTypes";
 import { calculateEmissionData } from "@reporting/src/app/components/facility/calculateEmissionsData";
-import { SectionReview } from "@reporting/src/app/components/finalReview/SectionReview";
+import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
 
 interface EmissionAllocationProps {
   data: ReportEmissionAllocation;
@@ -26,13 +29,39 @@ export const transformEmissionAllocationData = (
   },
 });
 
+const addEmissionAllocationFields = (
+  fields: any[],
+  data: any[],
+  dataKeyPrefix: string,
+) => {
+  data.forEach((category, categoryIndex) => {
+    fields.push({ heading: category.emission_category_name });
+    fields.push({
+      label: "Total Emissions",
+      key: `${dataKeyPrefix}.${categoryIndex}.emission_total`,
+    });
+
+    category.products.forEach(
+      (product: ReportProduct, productIndex: number) => {
+        fields.push({
+          label: product.product_name,
+          key: `${dataKeyPrefix}.${categoryIndex}.products.${productIndex}.allocated_quantity`,
+          showHr: false,
+        });
+      },
+    );
+
+    fields.push({
+      label: "Total Allocated",
+      key: `${dataKeyPrefix}.${categoryIndex}.products_emission_allocation_sum`,
+    });
+  });
+};
+
 export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
   data,
 }) => {
   const transformedData = transformEmissionAllocationData(data);
-
-  console.log("Transformed Emission Allocation Data:", transformedData);
-
   const fields: any[] = [
     { label: "Methodology", key: "allocation_methodology" },
     ...(transformedData.allocation_other_methodology_description && [
@@ -47,27 +76,10 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
     },
   ];
   // Fields for basic emission allocation data
-  transformedData.basic_emission_allocation_data.forEach(
-    (category, categoryIndex) => {
-      fields.push({ heading: category.emission_category_name });
-      fields.push({
-        label: "Total Emissions",
-        key: `basic_emission_allocation_data.${categoryIndex}.emission_total`,
-      });
-
-      category.products.forEach((product, productIndex) => {
-        fields.push({
-          label: product.product_name,
-          key: `basic_emission_allocation_data.${categoryIndex}.products.${productIndex}.allocated_quantity`,
-          showHr: false,
-        });
-      });
-
-      fields.push({
-        label: "Total Allocated",
-        key: `basic_emission_allocation_data.${categoryIndex}.products_emission_allocation_sum`,
-      });
-    },
+  addEmissionAllocationFields(
+    fields,
+    transformedData.basic_emission_allocation_data,
+    "basic_emission_allocation_data",
   );
 
   // Fields for fuel excluded emission allocation data
@@ -76,27 +88,10 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
       "Allocate the facility's total emissions, by emissions excluded by fuel type:",
   });
 
-  transformedData.fuel_excluded_emission_allocation_data.forEach(
-    (category, categoryIndex) => {
-      fields.push({ heading: category.emission_category_name });
-      fields.push({
-        label: "Total Emissions",
-        key: `fuel_excluded_emission_allocation_data.${categoryIndex}.emission_total`,
-      });
-
-      category.products.forEach((product, productIndex) => {
-        fields.push({
-          label: product.product_name,
-          key: `fuel_excluded_emission_allocation_data.${categoryIndex}.products.${productIndex}.allocated_quantity`,
-          showHr: false,
-        });
-      });
-
-      fields.push({
-        label: "Total Allocated",
-        key: `fuel_excluded_emission_allocation_data.${categoryIndex}.products_emission_allocation_sum`,
-      });
-    },
+  addEmissionAllocationFields(
+    fields,
+    transformedData.fuel_excluded_emission_allocation_data,
+    "fuel_excluded_emission_allocation_data",
   );
   // Fields for total emission allocations
   fields.push(
