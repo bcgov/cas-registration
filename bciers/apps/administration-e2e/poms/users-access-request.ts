@@ -121,11 +121,12 @@ export class UsersAccessRequestPOM {
   async logOut() {
     // Mimic handleLogout from SessionTimeoutHandler.tsx
     const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-    if (!logoutUrl) {
-      throw new Error(
-        "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
-      );
-    }
+    // console.log('chesca env value', logoutUrl);
+    // if (!logoutUrl) {
+    //   throw new Error(
+    //     "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
+    //   );
+    // }
     // Instead of direct goto, simulate signOut redirect behavior by navigating to logoutUrl
     await this.page.goto(logoutUrl, { timeout: 20000 });
     // Wait for logout confirmation text
