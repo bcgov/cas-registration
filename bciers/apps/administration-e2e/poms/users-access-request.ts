@@ -20,9 +20,9 @@ import {
   tableColumnNamesAreCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
-import { getEnvValue } from "@bciers/actions";
-// import dotenv from "dotenv";
-// dotenv.config();
+// import { getEnvValue } from "@bciers/actions";
+import * as dotenv from "dotenv";
+dotenv.config({ path: "bciers/.env" });
 
 export class UsersAccessRequestPOM {
   readonly page: Page;
@@ -119,9 +119,11 @@ export class UsersAccessRequestPOM {
   }
 
   async logOut() {
-    // Mimic handleLogout from SessionTimeoutHandler.tsx
-    const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-    // console.log('chesca env value', logoutUrl);
+    const logoutUrl = await process.env.SITEMINDER_KEYCLOAK_LOGOUT_URL;
+    console.log("chesca env value", logoutUrl);
+    // const value = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
+    console.log("Type of value:", typeof logoutUrl);
+
     // if (!logoutUrl) {
     //   throw new Error(
     //     "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
