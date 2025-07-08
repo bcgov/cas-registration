@@ -34,10 +34,10 @@ administrationFrontend:
 
   resources:
     limits:
-      memory: 256Mi
+      memory: 512Mi
     requests:
       cpu: 60m
-      memory: 128Mi
+      memory: 256Mi
 
   autoscaling:
     enabled: true
