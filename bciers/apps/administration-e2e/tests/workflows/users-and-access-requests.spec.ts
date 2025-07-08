@@ -4,6 +4,7 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
   getRowByUniqueCellValue,
+  openNewBrowserContextAs,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import {
@@ -57,11 +58,14 @@ test.describe("Approve External User", () => {
       variant: "filled",
     });
 
-    // Log in as bc-cas-dev-secondary
-    await accessRequestPage.logOut();
-    await accessRequestPage.logInAs(UserRole.INDUSTRY_USER);
+    // Instead of logging out and logging in, open a new browser context and use getStorageState to sign in as INDUSTRY_USER
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const newAccessRequestPage = new UsersAccessRequestPOM(newPage);
+    await newAccessRequestPage.route();
     await expect(
-      page.getByRole("link", { name: AdministrationTileText.ACCESS_REQUEST }),
+      newPage.getByRole("link", {
+        name: AdministrationTileText.ACCESS_REQUEST,
+      }),
     ).toBeHidden();
   });
 
@@ -82,11 +86,13 @@ test.describe("Approve External User", () => {
     await accessRequestPage.assignNewRole(row, "Admin");
     await assertSuccessfulSnackbar(page, /is now approved/i);
 
-    // Log in as bc-cas-dev-secondary
-    await accessRequestPage.logOut();
-    await accessRequestPage.logInAs(UserRole.INDUSTRY_USER);
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const newAccessRequestPage = new UsersAccessRequestPOM(newPage);
+    await newAccessRequestPage.route();
     await expect(
-      page.getByRole("link", { name: AdministrationTileText.ACCESS_REQUEST }),
+      newPage.getByRole("link", {
+        name: AdministrationTileText.ACCESS_REQUEST,
+      }),
     ).toBeVisible();
   });
 });

@@ -400,11 +400,7 @@ export async function tableHasExpectedRowCount(
   await expect(rows).toHaveCount(expectedRowCount);
 }
 
-// 🛠️ Function: calls api to seed database with data for workflow tests
-export async function setupTestEnvironment(
-  workFlow?: string,
-  truncateOnly?: boolean,
-) {
+export async function getBrowser() {
   let browser: Browser | null = null;
 
   // Attempt launching browsers in order of preference
@@ -434,7 +430,14 @@ export async function setupTestEnvironment(
   if (!browser) {
     throw new Error("No compatible browser found");
   }
-
+  return browser;
+}
+// 🛠️ Function: calls api to seed database with data for workflow tests
+export async function setupTestEnvironment(
+  workFlow?: string,
+  truncateOnly?: boolean,
+) {
+  const browser = await getBrowser();
   const context = await browser.newContext();
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
@@ -635,4 +638,13 @@ export async function selectOptionFromCombobox(
 export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+}
+
+export async function openNewBrowserContextAs(role: string) {
+  const browser = await getBrowser();
+  const storageState = getStorageStateForRole(role);
+  const context = await browser.newContext({ storageState });
+  const newPage = await context.newPage();
+
+  return newPage;
 }
