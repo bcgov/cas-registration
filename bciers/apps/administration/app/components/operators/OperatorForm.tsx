@@ -3,11 +3,11 @@
 import { useState } from "react";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { RJSFSchema } from "@rjsf/utils";
-import { actionHandler, getToken } from "@bciers/actions";
+import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
 import { FormMode } from "@bciers/utils/src/enums";
 import { useRouter } from "next/navigation";
-import { getSession, signIn } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 export interface OperatorFormData {
   [key: string]: any;
@@ -71,18 +71,7 @@ export default function OperatorForm({
         if (isCreatingState) {
           setIsCreatingState(false);
           // calling getSession updates the session, which will augment app_role to "industry_user_admin"
-          // brianna this didn't augment it
-          // const token = await getToken();
-          // const bri = await getSession();
-          // console.log("bri", bri.user);
-          // await signIn("keycloak", undefined, {
-          //   kc_idp_hint: "bceidbusiness",
-          //   callbackUrl: "/my-operator",
-          // });
-          const bri = await fetch("/api/auth/refresh-session"); // triggers jwt logic again
-          console.log("bri", bri);
-          const updatedSession = await getSession(); // reads updated values
-          console.log("updatedSession", updatedSession.user);
+          await getSession();
         }
       }}
       onCancel={() =>
