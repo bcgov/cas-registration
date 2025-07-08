@@ -4,12 +4,14 @@ interface FieldDisplayProps {
   label: string;
   value: any;
   unit?: string;
+  showHr?: boolean;
 }
 
 export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   label,
   value,
   unit,
+  showHr = true,
 }) => {
   const formattedValue =
     value === null || value === undefined ? (
@@ -42,14 +44,16 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
           <div />
         )}
       </div>
-      <hr
-        className="mt-5"
-        style={{
-          border: "none",
-          height: "1px",
-          backgroundColor: "#ECEAE8",
-        }}
-      />
+      {showHr && (
+        <hr
+          className="mt-5"
+          style={{
+            border: "none",
+            height: "1px",
+            backgroundColor: "#ECEAE8",
+          }}
+        />
+      )}
     </div>
   );
 };

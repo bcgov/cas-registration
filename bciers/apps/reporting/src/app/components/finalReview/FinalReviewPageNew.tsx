@@ -10,8 +10,16 @@ import { SectionReview } from "./SectionReview";
 import ActivitiesView from "@reporting/src/app/components/finalReview/ActivityView";
 import { FieldDisplay } from "@reporting/src/app/components/finalReview/FieldDisplay";
 
-import type { FacilityReport, ReportData } from "./reportTypes";
+import {
+  FacilityReport,
+  ReportData,
+  ReportEmissionAllocation,
+} from "./reportTypes";
 import type { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import {
+  EmissionAllocationView,
+  transformEmissionAllocationData,
+} from "@reporting/src/app/components/finalReview/EmissionAllocationView";
 
 interface Props {
   data: ReportData;
@@ -327,11 +335,9 @@ export const ReportReview: React.FC<Props> = ({
                     />
                   ))}
                 </SectionReview>
-                <SectionReview
-                  title={"Allocation of Emissions"}
-                  fields={[]}
+                <EmissionAllocationView
                   data={facilityReport.report_emission_allocation}
-                ></SectionReview>
+                />
               </SectionReview>
             ),
           )}
