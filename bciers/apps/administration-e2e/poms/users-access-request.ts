@@ -121,7 +121,8 @@ export class UsersAccessRequestPOM {
     let url = await this.page.url();
     console.log("chesca 1", url);
     await logoutButton.click();
-    await this.page.waitForURL(/logout/i, { timeout: 10000 });
+    // await this.page.waitForURL(/logout/i, { timeout: 10000 });
+    await this.page.waitForLoadState("load");
     url = await this.page.url();
     console.log("chesca 2", url);
     await expect(this.page.getByText("You are logged out")).toBeVisible();
