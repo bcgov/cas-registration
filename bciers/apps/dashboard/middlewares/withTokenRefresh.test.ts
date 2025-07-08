@@ -26,18 +26,22 @@ describe("The withTokenRefresh middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
-  it("Returns an unchanged NextResponse if no JWT", async () => {
+  it("Redirects to logout  if no JWT", async () => {
     mockGetToken.mockReturnValue(undefined);
     mockNextResponseNext.mockReturnValue({ test: 1 });
 
     const middlewareUnderTest = withTokenRefreshMiddleware(vi.fn());
     const request = {
       nextUrl: { pathname: "/some-path" },
+      url: "http://example.com/",
     };
 
     const response = await middlewareUnderTest(request as any, {} as any);
 
-    expect(response).toEqual({ test: 1 });
+    expect(response.status).toEqual(307);
+    expect(response.headers.get("Location")).toEqual(
+      "http://example.com/auth/logout",
+    );
   });
   it("Returns an unchanged NextResponse if the token doesn't need refreshing", async () => {
     mockGetToken.mockReturnValue({ expires_at: Date.now() / 1000 + 10000 });
