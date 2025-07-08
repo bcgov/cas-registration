@@ -116,15 +116,13 @@ export class UsersAccessRequestPOM {
   }
 
   async logOut() {
-    const logoutButton = await this.page.getByRole("link", { name: "Log Out" });
-    await expect(logoutButton).toBeVisible();
-    let url = await this.page.url();
-    console.log("chesca 1", url);
-    await logoutButton.click();
-    // await this.page.waitForURL(/logout/i, { timeout: 10000 });
-    await this.page.waitForLoadState("load");
-    url = await this.page.url();
-    console.log("chesca 2", url);
+    const logoutUrl = process.env.SITEMINDER_KEYCLOAK_LOGOUT_URL;
+    if (!logoutUrl) {
+      throw new Error(
+        "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
+      );
+    }
+    await this.page.goto(logoutUrl);
     await expect(this.page.getByText("You are logged out")).toBeVisible();
   }
 
