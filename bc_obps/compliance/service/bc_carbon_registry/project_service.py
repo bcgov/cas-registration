@@ -1,8 +1,7 @@
 from typing import Optional, Dict, Any
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
-from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from registration.models import Operation, Facility
 
 
@@ -10,29 +9,20 @@ class BCCarbonRegistryProjectService:
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
 
-    def create_project(self, account_id: str, compliance_report_version_id: int, payload: dict) -> None:
+    def create_project(self, account_id: str, compliance_report_version: ComplianceReportVersion) -> Dict:
         """
         Creates a project in the BC Carbon Registry (BCCR) for a compliance report version.
 
-        This method validates the earned credit state, creates a project in BCCR with appropriate
-        address information based on operation type (SFO/LFO), and updates the earned credits
-        record with the BCCR trading name.
+        This method creates a project in BCCR with appropriate address information based on operation type (SFO/LFO).
 
         Args:
             account_id: The BCCR account ID to associate with the project
-            compliance_report_version_id: The ID of the compliance report version
-            payload: Dictionary containing the request payload, must include 'bccr_trading_name'
+            compliance_report_version: The compliance report version
 
         Raises:
             UserError: If operation type is not SFO or LFO, project creation fails,
-                      or earned credit validation fails
         """
-        # Validate earned credit state before proceeding with project creation
-        ComplianceEarnedCreditsService.validate_earned_credit_for_bccr_project(compliance_report_version_id)
 
-        compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
-            compliance_report_version_id
-        )
         compliance_period = compliance_report_version.compliance_report.compliance_period
         operation = compliance_report_version.compliance_report.report.operation
         operation_type = operation.type
@@ -89,8 +79,4 @@ class BCCarbonRegistryProjectService:
         response = self.client.create_project(project_data=project_data)
         if not response.get("id"):  # make sure the project was created successfully
             raise UserError("Failed to create project in BCCR")
-
-        # Update earned credits with BCCR trading name and validate state
-        ComplianceEarnedCreditsService.update_earned_credit_for_bccr_project(
-            compliance_report_version_id, payload["bccr_trading_name"]
-        )
+        return response
