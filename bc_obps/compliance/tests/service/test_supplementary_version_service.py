@@ -66,6 +66,7 @@ class TestComplianceReportVersionService:
         assert result.report_compliance_summary_id == report_compliance_summary_2.id
         assert result.compliance_report_id == compliance_report.id
         assert result.excess_emissions_delta_from_previous == Decimal('300')
+        assert result.is_supplementary == True  # noqa: E712
         assert (
             ComplianceObligation.objects.get(compliance_report_version_id=result.id).fee_amount_dollars
             == Decimal('300') * ComplianceChargeRate.objects.get(reporting_year_id=2025).rate
