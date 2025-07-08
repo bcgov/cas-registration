@@ -12,9 +12,6 @@ OPERATION_BCGHG_ID_ALIAS = "compliance_report.report.operation.bcghg_id.id"
 # reporting_year aliases
 REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.reporting_year.reporting_year"
 
-# compliance_charge_rate aliases
-CHARGE_RATE_ALIAS = "compliance_report.compliance_period.reporting_year.compliance_charge_rate.rate"
-
 # report_compliance_summary aliases
 EXCESS_EMISSIONS_ALIAS = "report_compliance_summary.excess_emissions"
 ATTRIBUTABLE_EMISSIONS_ALIAS = "report_compliance_summary.emissions_attributable_for_compliance"
@@ -60,23 +57,13 @@ class ComplianceReportVersionOut(ModelSchema):
     outstanding_balance: Optional[Decimal] = Field(
         None, alias=OUTSTANDING_BALANCE_ALIAS
     )   
-    compliance_charge_rate: Decimal = Field(..., alias=CHARGE_RATE_ALIAS)
+    compliance_charge_rate: Optional[Decimal] = None 
     equivalent_value: Optional[Decimal] = None 
     outstanding_balance_equivalent_value: Optional[Decimal] = None 
    
     class Meta:
         model = ComplianceReportVersion
         fields = ['id', 'status']
-
-
-    @staticmethod
-    def resolve_compliance_charge_rate(obj: ComplianceReportVersion) -> Optional[Decimal]:
-        """Determine the charge_rate"""
-        reporting_year = obj.compliance_report.compliance_period.reporting_year
-        compliance_charge_rate_obj = reporting_year.compliance_charge_rate.first()
-        return compliance_charge_rate_obj.rate if compliance_charge_rate_obj else None
-
-
 
 # To be handled in issue #117
 

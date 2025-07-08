@@ -11,6 +11,7 @@ export interface ComplianceSummary {
   reporting_year: number;
   excess_emissions: number;
   outstanding_balance?: number;
+  outstanding_balance_tco2e?: number;
   status?: string;
   penalty_status?: string;
   obligation_id?: string;

@@ -45,7 +45,7 @@ describe("IssuanceStatusChangesRequiredNote", () => {
 
     const reportLink = screen.getByText("submit a supplementary report");
     expect(reportLink).toBeVisible();
-    expect(reportLink).toHaveAttribute("href", "#");
+    expect(reportLink).toHaveAttribute("href", "/reporting/reports");
   });
 
   it("includes the GHG Regulator email link with correct styles and href", () => {

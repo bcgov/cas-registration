@@ -82,7 +82,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
       suffix: "/tCO2e",
     },
   },
-  fee_amount_dollars: {
+  equivalent_value: {
     "ui:widget": "ReadOnlyCurrencyWidget",
   },
   applied_units_summary: {
@@ -106,9 +106,12 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
 
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
-  outstanding_balance: readOnlyStringField("Outstanding Balance:"),
-  outstanding_balance_equivalent_value:
-    readOnlyStringField("Equivalent Value:"),
+  outstanding_balance: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  outstanding_balance_equivalent_value: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
   // TODO in #227
   // Penalty Section
   // penalty_header: headerUiConfig,

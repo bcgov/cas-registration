@@ -12,12 +12,12 @@ interface Props {
 }
 
 export default async function ComplianceSummaryReviewPage({
-  compliance_summary_id: complianceSummaryId,
+  compliance_summary_id: complianceReportVersionId,
 }: Readonly<Props>) {
   const complianceSummaryData: ComplianceSummaryReviewPageData =
-    await fetchComplianceSummaryReviewPageData(complianceSummaryId);
+    await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     complianceSummaryData.reporting_year,
     ActivePage.ReviewComplianceSummary,
   );
@@ -25,11 +25,11 @@ export default async function ComplianceSummaryReviewPage({
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
-      complianceSummaryId={complianceSummaryId}
+      complianceSummaryId={complianceReportVersionId}
     >
       <ComplianceSummaryReviewComponent
         data={complianceSummaryData}
-        complianceSummaryId={complianceSummaryId}
+        complianceSummaryId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

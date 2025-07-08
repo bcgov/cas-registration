@@ -91,11 +91,13 @@ class ComplianceDashboardService:
                 ).operator,
             )
 
-        # Calculate equivilant values
+        # Calculated values
         if compliance_report_version:
-            compliance_report_version.equivalent_value = (compliance_report_version.report_compliance_summary.excess_emissions * compliance_report_version.charge_rate)
+            charge_rate = ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.compliance_period.reporting_year)
+            compliance_report_version.compliance_charge_rate = charge_rate
+            compliance_report_version.equivalent_value = (compliance_report_version.report_compliance_summary.excess_emissions * charge_rate)
             compliance_report_version.outstanding_balance_equivalent_value = (
-                    compliance_report_version.obligation.elicensing_invoice.outstanding_balance * compliance_report_version.charge_rate
+                    compliance_report_version.obligation.elicensing_invoice.outstanding_balance * charge_rate
                 )           
            
         return compliance_report_version

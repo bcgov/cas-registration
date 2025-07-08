@@ -124,33 +124,34 @@ class ComplianceReportVersionService:
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
+
     @staticmethod
     def calculate_outstanding_balance_tco2e(compliance_report_version: ComplianceReportVersion) -> Decimal:
         """
-        Calculates the outstanding balance tCO₂e for a compliance report version.
-        The balance is equal to ElicensingInvoice.outstanding_balance / ComplianceChargeRate.rate
+        Calculates the outstanding balance in tonnes of CO₂ equivalent (tCO₂e) for a given compliance report version.
 
-        Args:
-            compliance_report_version (ComplianceReportVersion): The compliance report version record
+        Converts the outstanding monetary balance from the associated eLicensing invoice 
+        into an emissions quantity by dividing it by the applicable compliance charge rate for the reporting year.
 
-        Returns:
-            Decimal: The outstanding balance in tCO₂e
+        The calculation is performed as:
+                outstanding_balance_tCO₂e = outstanding_balance / charge_rate      
         """
-        # Get obligation
-        compliance_obligation: ComplianceObligation = ComplianceReportVersionService.get_obligation_by_compliance_report_version(
-            compliance_report_version.id
+        obligation = ComplianceObligation.objects.filter(
+            compliance_report_version__id=compliance_report_version.id
+        ).select_related('elicensing_invoice').first()
+
+        if not obligation or not obligation.elicensing_invoice:
+            return Decimal("0")
+
+        outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))
+
+        charge_rate = ComplianceChargeRateService.get_rate_for_year(
+            compliance_report_version.compliance_report.compliance_period.reporting_year
         )
-        # Get invoice and outstanding balance
-        invoice = compliance_obligation.elicensing_invoice
-        outstanding_balance = max(invoice.outstanding_balance or Decimal("0"), Decimal("0"))
-     
-        # Get charge rate      
-        charge_rate=ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.compliance_period.reporting_year)
-       
-        # Perform division
-        outstanding_balance_tco2e = outstanding_balance / charge_rate
-     
-        return outstanding_balance_tco2e
+        if charge_rate == 0:
+            return Decimal("0")
+
+        return outstanding_balance / charge_rate
 
     
     @staticmethod

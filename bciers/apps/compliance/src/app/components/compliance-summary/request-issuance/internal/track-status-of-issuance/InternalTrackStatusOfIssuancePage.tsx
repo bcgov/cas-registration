@@ -20,9 +20,11 @@ const RESTRICTED_STATUSES = [
 ];
 
 export default async function InternalTrackStatusOfIssuancePage({
-  compliance_summary_id,
+  compliance_summary_id: complianceReportVersionId,
 }: Props) {
-  const data = await getRequestIssuanceTrackStatusData();
+  const data = await getRequestIssuanceTrackStatusData(
+    complianceReportVersionId,
+  );
 
   // Redirect to not found page if accessing track status of issuance page with restricted issuance status
   if (RESTRICTED_STATUSES.includes(data.issuance_status as IssuanceStatus)) {
@@ -31,18 +33,18 @@ export default async function InternalTrackStatusOfIssuancePage({
 
   const { reporting_year: reportingYear } = await getReportingYear();
   const taskListElements = generateIssuanceRequestTaskList(
-    compliance_summary_id,
+    complianceReportVersionId,
     reportingYear,
     ActivePage.TrackStatusOfIssuance,
   );
   return (
     <CompliancePageLayout
-      complianceSummaryId={compliance_summary_id}
+      complianceSummaryId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <InternalTrackStatusOfIssuanceComponent
         data={data}
-        complianceSummaryId={compliance_summary_id}
+        complianceSummaryId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );
