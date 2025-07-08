@@ -2,12 +2,12 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import LogoutWarningModal from "@bciers/components/auth/LogoutWarningModal";
-import { getEnvValue } from "@bciers/actions";
 import { Session } from "next-auth";
 import * as Sentry from "@sentry/nextjs";
 import { getSession, signOut, useSession } from "next-auth/react";
 import { BroadcastChannel } from "broadcast-channel";
 import createThrottledEventHandler from "./throttleEventsEffect";
+import getLogoutUrl from "./getLogoutUrl";
 
 export const ACTIVITY_THROTTLE_SECONDS = 30; // Seconds to throttle user activity
 export const MODAL_DISPLAY_SECONDS = 5 * 60; // Seconds before timeout to show logout warning modal (5 minutes);
@@ -29,15 +29,6 @@ const SessionTimeoutHandler: React.FC = () => {
   const isRefreshingRef = useRef(false); // Lock for preventing concurrent updates
   const logoutChannelRef = useRef<BroadcastChannel | null>(null);
   const extendSessionChannelRef = useRef<BroadcastChannel | null>(null);
-
-  const getLogoutUrl = async () => {
-    const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-    if (!logoutUrl) {
-      Sentry.captureException("Failed to fetch logout URL");
-      console.error("Failed to fetch logout URL");
-    }
-    return logoutUrl;
-  };
 
   const handleLogout = async () => {
     // broadcast logout to other browser tabs
