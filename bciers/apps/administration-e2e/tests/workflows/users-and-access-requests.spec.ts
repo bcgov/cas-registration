@@ -4,6 +4,7 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
   getRowByUniqueCellValue,
+  takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import {
   UserAndAccessRequestGridHeaders,
@@ -13,6 +14,7 @@ import { UsersAccessRequestPOM } from "@/administration-e2e/poms/users-access-re
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/enums";
+const happoPlaywright = require("happo-playwright");
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.beforeAll(async () => {
@@ -49,6 +51,11 @@ test.describe("Approve External User", () => {
     const originalRole = await userRoleCell.innerText();
     await accessRequestPage.approveRequest(row, originalRole);
     await assertSuccessfulSnackbar(page, /is now approved/i);
+
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "EXTERNAL: Approve a reporter",
+      variant: "filled",
+    });
 
     // Log in as bc-cas-dev-secondary
     await accessRequestPage.logOut();
