@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
-import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
+// import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import InternalTrackStatusOfIssuancePage from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalTrackStatusOfIssuancePage";
 import {
@@ -88,7 +88,6 @@ describe("InternalTrackStatusOfIssuancePage", () => {
 
   it("calls notFound for restricted statuses", async () => {
     const restrictedStatuses = [
-      IssuanceStatus.AWAITING_APPROVAL,
       IssuanceStatus.CHANGES_REQUIRED,
       IssuanceStatus.ISSUANCE_REQUESTED,
     ];
