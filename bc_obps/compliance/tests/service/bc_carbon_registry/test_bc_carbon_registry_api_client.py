@@ -122,7 +122,6 @@ def valid_issuance_payload():
                 "verificationStartDate": "2025-01-01",
                 "verificationEndDate": "2025-01-31",
                 "monitoringPeriod": "01/01/2025 - 31/01/2025",
-                "verifierId": "103100000028644",
                 "mixedUnits": [
                     {
                         "holding_quantity": 100,
