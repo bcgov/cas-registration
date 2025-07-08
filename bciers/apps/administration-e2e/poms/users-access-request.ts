@@ -119,7 +119,7 @@ export class UsersAccessRequestPOM {
     const logoutButton = this.page.getByRole("link", { name: "Log Out" });
     await expect(logoutButton).toBeVisible();
     await logoutButton.click();
-    await this.page.waitForURL(/logout/i);
+    await this.page.waitForURL(/logout/i, { timeout: 10000 });
     await expect(this.page.getByText("You are logged out")).toBeVisible();
   }
 
