@@ -125,12 +125,13 @@ class FacilityService:
         # Numbers to add
         numbers_to_add = set(new_numbers) - existing_numbers_set
 
+        # breakpoint()  # For debugging purposes, can be removed in production
+
         # Add new numbers
         if numbers_to_add:
             for number in numbers_to_add:
-                # convert the number from a string to an integer (as the database expects)
                 facility.well_authorization_numbers.add(
-                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, int(number))
+                    WellAuthorizationNumberDataAccessService.create_well_authorization_number(user_guid, number)
                 )
 
         # Numbers to remove
