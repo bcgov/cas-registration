@@ -95,9 +95,7 @@ class TestComplianceEarnedCreditsService:
         # Arrange
         invalid_statuses = [
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
-            ComplianceEarnedCredit.IssuanceStatus.AWAITING_APPROVAL,
             ComplianceEarnedCredit.IssuanceStatus.APPROVED,
-            ComplianceEarnedCredit.IssuanceStatus.CREDITS_ISSUED,
             ComplianceEarnedCredit.IssuanceStatus.DECLINED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
         ]
@@ -116,7 +114,7 @@ class TestComplianceEarnedCreditsService:
                     earned_credit.compliance_report_version_id
                 )
 
-    def test_update_earned_credit_for_bccr_project_success(self):
+    def test_update_earned_credit_success(self):
         # Arrange
         earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
@@ -125,7 +123,7 @@ class TestComplianceEarnedCreditsService:
         )
 
         # Act
-        ComplianceEarnedCreditsService.update_earned_credit_for_bccr_project(
+        ComplianceEarnedCreditsService.update_earned_credit(
             earned_credit.compliance_report_version_id, "New Trading Name"
         )
 
@@ -134,18 +132,16 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.bccr_trading_name == "New Trading Name"
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
 
-    def test_update_earned_credit_for_bccr_project_no_record_found(self):
+    def test_update_earned_credit_no_record_found(self):
         # Arrange
         compliance_report_version = make_recipe('compliance.tests.utils.compliance_report_version')
         # No earned credit record created
 
         # Act & Assert
         with pytest.raises(UserError, match="No earned credit record found for this compliance report version"):
-            ComplianceEarnedCreditsService.update_earned_credit_for_bccr_project(
-                compliance_report_version.id, "Test Trading Name"
-            )
+            ComplianceEarnedCreditsService.update_earned_credit(compliance_report_version.id, "Test Trading Name")
 
-    def test_update_earned_credit_for_bccr_project_preserves_other_fields(self):
+    def test_update_earned_credit_preserves_other_fields(self):
         # Arrange
         original_earned_credits_amount = 150
         original_issued_date = "2024-01-15"
@@ -159,7 +155,7 @@ class TestComplianceEarnedCreditsService:
         )
 
         # Act
-        ComplianceEarnedCreditsService.update_earned_credit_for_bccr_project(
+        ComplianceEarnedCreditsService.update_earned_credit(
             earned_credit.compliance_report_version_id, "New Trading Name"
         )
 

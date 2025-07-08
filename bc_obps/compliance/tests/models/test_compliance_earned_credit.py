@@ -23,8 +23,12 @@ class ComplianceEarnedCreditTest(BaseTestCase):
             ("issued_date", "issued date", None, None),
             ("issued_by", "issued by", None, None),
             ("bccr_trading_name", "bccr trading name", None, None),
+            ("bccr_holding_account_id", "bccr holding account ID", None, None),
+            ("analyst_submitted_date", "analyst submitted date", None, None),
+            ("analyst_submitted_by", "analyst submitted by", None, None),
             ("analyst_comment", "analyst comment", None, None),
             ("director_comment", "director comment", None, None),
+            ("analyst_suggestion", "analyst suggestion", None, None),
         ]
 
 

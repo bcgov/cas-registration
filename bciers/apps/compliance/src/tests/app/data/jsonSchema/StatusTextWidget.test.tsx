@@ -5,10 +5,6 @@ import { IssuanceStatus } from "@bciers/utils/src/enums";
 describe("StatusTextWidget", () => {
   const statusTestCases = [
     {
-      status: IssuanceStatus.AWAITING_APPROVAL,
-      expectedText: "Issuance requested, awaiting approval",
-    },
-    {
       status: IssuanceStatus.APPROVED,
       expectedText: "Approved, credits issued in BCCR",
     },
@@ -19,10 +15,6 @@ describe("StatusTextWidget", () => {
     {
       status: IssuanceStatus.CHANGES_REQUIRED,
       expectedText: "Changes required",
-    },
-    {
-      status: IssuanceStatus.CREDITS_ISSUED,
-      expectedText: "Approved, credits issued in BCCR",
     },
     {
       status: IssuanceStatus.CREDITS_NOT_ISSUED,

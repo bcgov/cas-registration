@@ -18,13 +18,16 @@ class ComplianceEarnedCredit(TimeStampedModel):
     """
 
     class IssuanceStatus(models.TextChoices):
-        ISSUANCE_REQUESTED = ('Issuance Requested',)
-        AWAITING_APPROVAL = ('Awaiting Approval',)
-        APPROVED = ('Approved',)
-        CREDITS_ISSUED = ('Credits Issued in BCCR',)
-        DECLINED = ('Declined',)
         CREDITS_NOT_ISSUED = ('Credits Not Issued in BCCR',)
-        CHANGES_REQUIRED = 'Changes Required'
+        ISSUANCE_REQUESTED = ('Issuance Requested',)
+        CHANGES_REQUIRED = ('Changes Required',)
+        APPROVED = ('Approved',)
+        DECLINED = ('Declined',)
+
+    class AnalystSuggestion(models.TextChoices):
+        READY_TO_APPROVE = ('Ready to approve',)
+        REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID = ('Requiring change of BCCR Holding Account ID',)
+        REQUIRING_SUPPLEMENTARY_REPORT = ('Requiring supplementary report',)
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
@@ -59,11 +62,40 @@ class ComplianceEarnedCredit(TimeStampedModel):
         db_comment="The user who issued the earned credits",
     )
 
+    analyst_submitted_date = models.DateField(
+        blank=True,
+        null=True,
+        db_comment="The date on which the analyst provided the suggestion",
+    )
+    analyst_submitted_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="compliance_earned_credits_analyst_submitted_by",
+        db_comment="The analyst who provided the suggestion",
+    )
+
+    bccr_holding_account_id = models.CharField(
+        max_length=15,
+        blank=True,
+        null=True,
+        db_comment="The BCCR holding account ID. This is the ID of the account holder in the BC Carbon Registry",
+    )
+
     bccr_trading_name = models.CharField(
         max_length=255,
         blank=True,
         null=True,
         db_comment="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry",
+    )
+
+    analyst_suggestion = models.CharField(
+        max_length=100,
+        choices=AnalystSuggestion.choices,
+        blank=True,
+        null=True,
+        db_comment="The suggestion from the analyst on whether or not to recommend issuance of the credits",
     )
 
     analyst_comment = models.TextField(
@@ -76,6 +108,12 @@ class ComplianceEarnedCredit(TimeStampedModel):
         blank=True,
         null=True,
         db_comment="Comments from the director. Made when deciding whether or not to issue the credits",
+    )
+
+    issuance_requested_date = models.DateField(
+        blank=True,
+        null=True,
+        db_comment="The date on which the earned credits were requested to be issued by the industry user",
     )
 
     history = HistoricalRecords(
@@ -98,6 +136,40 @@ class ComplianceEarnedCredit(TimeStampedModel):
                     if new.issuance_status != 'Credits Not Issued in BCCR' then
                         raise exception 'bccr_trading_name cannot be empty unless issuance_status is "Credits Not Issued in BCCR"';
                     end if;
+                    return new;
+                """,
+            ),
+            pgtrigger.Trigger(
+                name="populate_analyst_submission_info",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__analyst_comment__isnull=False) & ~pgtrigger.Q(new__analyst_comment=""),
+                func="""
+                    if new.analyst_comment is not null and new.analyst_comment != '' then
+                        new.analyst_submitted_date = current_date;
+                        new.analyst_submitted_by_id = (select nullif(current_setting('my.guid', true), ''));
+                    end if;
+                    return new;
+                """,
+            ),
+            pgtrigger.Trigger(
+                name="populate_issued_date_issued_by_when_approved",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__issuance_status="Approved"),
+                func="""
+                    new.issued_date = current_date;
+                    new.issued_by_id = (select nullif(current_setting('my.guid', true), ''));
+                    return new;
+                """,
+            ),
+            pgtrigger.Trigger(
+                name="populate_issuance_requested_date_when_requested",
+                when=pgtrigger.Before,
+                operation=pgtrigger.Insert | pgtrigger.Update,
+                condition=pgtrigger.Q(new__issuance_status="Issuance Requested"),
+                func="""
+                    new.issuance_requested_date = current_date;
                     return new;
                 """,
             ),
