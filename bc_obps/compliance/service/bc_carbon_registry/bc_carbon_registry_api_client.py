@@ -358,7 +358,6 @@ class BCCarbonRegistryAPIClient:
                     "verificationStartDate": "01/01/2025",
                     "verificationEndDate": "31/01/2025",
                     "monitoringPeriod": "01/01/2025 - 31/01/2025",
-                    "verifierId": "103100000028644",
                     "mixedUnits": [
                         {
                             "holding_quantity": 5,

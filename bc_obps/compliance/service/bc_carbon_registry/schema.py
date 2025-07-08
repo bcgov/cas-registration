@@ -235,7 +235,6 @@ class IssuancePayloadVerification(BaseModel):
     verificationStartDate: DateStringField  # "2025-01-01" - when director clicks approve
     verificationEndDate: DateStringField  # "2025-01-31" - when director clicks approve
     monitoringPeriod: str  # "01/01/2025 - 31/01/2025" - (verificationStartDate - verificationEndDate)
-    verifierId: FifteenDigitString  # "103100000028644" - S&P question
     mixedUnits: List[IssuancePayloadMixedUnit]
 
 
