@@ -28,14 +28,7 @@ const ActionCell = (params: ActionCellProps) => {
       if (p.row.obligation_id) {
         basePath += "/manage-obligation-review-summary";
       } else if (p.row.status === "Earned credits") {
-        if (
-          params.isAllowedCas &&
-          params.row.issuance_status !== "Credits Not Issued in BCCR"
-        ) {
-          basePath += "/review-credits-issuance-request";
-        } else {
-          basePath += "/request-issuance-review-summary";
-        }
+        basePath += "/request-issuance-review-summary";
       } else {
         basePath += "/review-summary";
       }
