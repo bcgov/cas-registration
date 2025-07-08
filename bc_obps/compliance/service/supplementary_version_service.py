@@ -19,6 +19,7 @@ class SupplementaryVersionService:
             report_compliance_summary=report_compliance_summary,
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
             excess_emissions_delta_from_previous=excess_emission_delta_from_previous,
+            is_supplementary=True,
         )
         obligation = ComplianceObligationService.create_compliance_obligation(
             compliance_report_version.id, excess_emission_delta_from_previous

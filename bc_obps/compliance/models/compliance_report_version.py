@@ -48,6 +48,11 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="The status of this compliance report version. Options: [Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits]",
     )
 
+    is_supplementary = models.BooleanField(
+        default=False,
+        db_comment="Boolean value identifies whether this record is the result of a supplementary emissions report version",
+    )
+
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "The compliance_report_version table records are generated from the compliance summary data when an emission report is submitted"
