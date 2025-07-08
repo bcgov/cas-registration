@@ -64,6 +64,7 @@ const NewOperationRepresentativeForm: FC<
           },
         ],
       });
+      setKey(Math.random()); // force re-render to handle blank fields in the new selected contact data
     } catch (err) {
       setError("Failed to fetch contact data!" as any);
     }
