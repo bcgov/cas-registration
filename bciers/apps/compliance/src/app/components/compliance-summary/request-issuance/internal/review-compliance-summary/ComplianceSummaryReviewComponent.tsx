@@ -18,12 +18,12 @@ const ComplianceSummaryReviewComponent = ({
   complianceSummaryId,
 }: Readonly<Props>) => {
   const backUrl = "/compliance-summaries";
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
 
   return (
     <FormBase
       schema={createComplianceSummaryReviewSchema(data.reporting_year)}
-      uiSchema={complianceSummaryReviewUiSchema(false)}
+      uiSchema={complianceSummaryReviewUiSchema(true)}
       formData={data}
       className="w-full"
     >
