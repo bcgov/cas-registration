@@ -223,7 +223,7 @@ export default function LFOFacilitiesForm({
           ))}
         </ul>
         <p>
-          If any of these faclities have an existing report, saving will delete
+          If any of these facilities have an existing report, saving will delete
           the facility{"'"}s report and any data previously entered will be
           lost.
           <br />
