@@ -18,7 +18,7 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
   title: "Track Status of Issuance",
   properties: {
     status_header: readOnlyObjectField("Status of Issuance"),
-    earned_credits: readOnlyStringField("Earned Credits:"),
+    earned_credits_amount: readOnlyStringField("Earned Credits:"),
     issuance_status: readOnlyStringField("Status of Issuance:"),
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
@@ -31,12 +31,6 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
             issuance_status: { enum: [IssuanceStatus.APPROVED] },
             approved_note: readOnlyStringField(),
             directors_comments: readOnlyStringField("Director's Comments:"),
-          },
-        },
-        {
-          properties: {
-            issuance_status: { enum: [IssuanceStatus.AWAITING_APPROVAL] },
-            awaiting_note: readOnlyStringField(),
           },
         },
         {
@@ -61,18 +55,6 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
 export const trackStatusOfIssuanceUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-  "ui:order": [
-    "status_header",
-    "approved_note",
-    "awaiting_note",
-    "declined_note",
-    "changes_required_note",
-    "earned_credits",
-    "issuance_status",
-    "bccr_trading_name",
-    "directors_comments",
-    "analysts_comments",
-  ],
   status_header: headerUiConfig,
   approved_note: {
     "ui:widget": IssuanceStatusApprovedNote,
@@ -90,11 +72,10 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
     "ui:widget": IssuanceStatusChangesRequiredNote,
     "ui:options": { label: false, inline: true },
   },
-  earned_credits: commonReadOnlyOptions,
+  earned_credits_amount: commonReadOnlyOptions,
   bccr_trading_name: commonReadOnlyOptions,
   directors_comments: commonReadOnlyOptions,
   analysts_comments: commonReadOnlyOptions,
-
   issuance_status: {
     "ui:widget": StatusTextWidget,
   },
