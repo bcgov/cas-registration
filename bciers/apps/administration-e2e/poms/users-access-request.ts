@@ -20,9 +20,9 @@ import {
   tableColumnNamesAreCorrect,
 } from "@bciers/e2e/utils/helpers";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
-import { getEnvValue } from "@bciers/actions";
-import dotenv from "dotenv";
-dotenv.config();
+// import { getEnvValue } from "@bciers/actions";
+// import dotenv from "dotenv";
+// dotenv.config();
 
 export class UsersAccessRequestPOM {
   readonly page: Page;
@@ -127,13 +127,19 @@ export class UsersAccessRequestPOM {
     //   await logOutButton.click();
     //   console.log("chesca 3 local", this.page.url());
     // } else {
-    const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-    if (!logoutUrl) {
-      throw new Error(
-        "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
-      );
-    }
-    await this.page.goto(logoutUrl);
+    // const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
+    // if (!logoutUrl) {
+    //   throw new Error(
+    //     "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
+    //   );
+    // }
+    // await this.page.goto(logoutUrl);
+    // const logoutLink = await this.page.getByRole("link", { name: "Log Out" });
+    // const href = await logoutLink.getAttribute("href");
+    // await this.page.goto(href);
+    const button = await this.page.getByRole("button", { name: /log out/i });
+    await button.click();
+
     await expect(this.page.getByText("You are logged out")).toBeVisible();
   }
 
