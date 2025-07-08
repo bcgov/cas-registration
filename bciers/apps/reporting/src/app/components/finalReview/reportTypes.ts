@@ -132,11 +132,11 @@ export interface ReportProductEmissionAllocationTotal {
 }
 
 export interface ReportEmissionAllocation {
-  report_emission_allocations: ReportProductEmissionAllocation[];
-  facility_total_emissions: string;
-  report_product_emission_allocation_totals: ReportProductEmissionAllocationTotal[];
   allocation_methodology: string;
   allocation_other_methodology_description: string;
+  facility_total_emissions: string;
+  report_product_emission_allocation_totals: ReportProductEmissionAllocationTotal[];
+  report_product_emission_allocations: ReportProductEmissionAllocation[];
 }
 export interface ReportData {
   report_operation: ReportOperation;

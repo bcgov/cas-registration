@@ -6,6 +6,7 @@ interface Field {
   key?: string;
   heading?: string;
   unit?: string;
+  showHr?: boolean; // make sure this is here
 }
 
 interface SectionProps {
@@ -61,7 +62,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
 
       {(!expandable || isExpanded) && (
         <>
-          {fields.map(({ label, key, heading, unit }, idx) => {
+          {fields.map(({ label, key, heading, unit, showHr }, idx) => {
             if (heading) {
               return (
                 <div
@@ -77,10 +78,11 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
 
             return (
               <FieldDisplay
-                key={key || `field-${idx}`}
+                key={`${key || "field"}-${idx}`}
                 label={label!}
                 value={value}
                 unit={unit}
+                showHr={showHr}
               />
             );
           })}
