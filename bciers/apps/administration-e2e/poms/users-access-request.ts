@@ -119,22 +119,21 @@ export class UsersAccessRequestPOM {
   }
 
   async logOut() {
-    if (process.env.NODE_ENV !== "production") {
-      console.log("chesca 3 local");
-      const logOutButton = await this.page.getByRole("link", {
-        name: "Log Out",
-      });
-      await logOutButton.click();
-      console.log("chesca 3 local", this.page.url());
-    } else {
-      const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
-      if (!logoutUrl) {
-        throw new Error(
-          "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
-        );
-      }
-      await this.page.goto(logoutUrl);
+    // if (process.env.NODE_ENV !== "production") {
+    //   console.log("chesca 3 local");
+    //   const logOutButton = await this.page.getByRole("link", {
+    //     name: "Log Out",
+    //   });
+    //   await logOutButton.click();
+    //   console.log("chesca 3 local", this.page.url());
+    // } else {
+    const logoutUrl = await getEnvValue("SITEMINDER_KEYCLOAK_LOGOUT_URL");
+    if (!logoutUrl) {
+      throw new Error(
+        "SITEMINDER_KEYCLOAK_LOGOUT_URL environment variable is not set",
+      );
     }
+    await this.page.goto(logoutUrl);
     await expect(this.page.getByText("You are logged out")).toBeVisible();
   }
 
