@@ -366,14 +366,6 @@ ENDPOINTS = {
             },
         },
         {
-            "method": "post",
-            "endpoint_name": "create_bccr_project",
-            "kwargs": {
-                "account_id": MOCK_UUID,
-                "compliance_report_version_id": MOCK_INT,
-            },
-        },
-        {
             "method": "get",
             "endpoint_name": "get_obligation_by_compliance_report_version_id",
             "kwargs": {
@@ -562,6 +554,13 @@ ENDPOINTS = {
         },
     ],
     "authorized_irc_user_and_industry_admin_user": [],
+    "cas_director_analyst_and_approved_industry_user": [
+        {
+            "method": "put",
+            "endpoint_name": "update_compliance_report_version_earned_credit",
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
+        },
+    ],
     "cas_director": [
         {
             "method": "patch",
