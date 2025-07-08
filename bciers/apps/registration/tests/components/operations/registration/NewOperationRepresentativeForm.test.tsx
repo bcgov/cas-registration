@@ -232,6 +232,74 @@ describe("the NewOperationRepresentativeForm component", () => {
     checkEmptyOperationRepresentativeForm();
   });
 
+  it("render the NewOperationRepresentativeForm component and select and then change the rep", async () => {
+    render(
+      <NewOperationRepresentativeForm
+        formData={{}}
+        operation={operationId}
+        step={5}
+        existingOperationRepresentatives={existingOperationRepresentativesMock}
+        contacts={contactsMock}
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("button", {
+        name: /add new operation representative/i,
+      }),
+    );
+    await userEvent.click(
+      screen.getByRole("combobox", {
+        name: /select existing contact \(optional\)/i,
+      }),
+    );
+    // Mock the getContact function before selecting an existing contact
+    actionHandler.mockReturnValueOnce({
+      id: 1,
+      first_name: "Henry",
+      last_name: "Ives",
+      position_title: "Senior Officer",
+      email: "henry.ives@email.com",
+      phone_number: "+16044011234",
+      street_address: "123 Main St",
+    });
+    await userEvent.click(
+      screen.getByRole("option", {
+        name: /henry ives/i,
+      }),
+    );
+
+    // check for the form to be filled with the selected contact address info
+    expect(screen.getByLabelText(/Business mailing address+/i)).toHaveValue(
+      "123 Main St",
+    );
+
+    // change the contact to another existing contact
+    await userEvent.click(
+      screen.getByRole("combobox", {
+        name: /select existing contact \(optional\)/i,
+      }),
+    );
+
+    // Mock the getContact function before selecting another existing contact
+    actionHandler.mockReturnValueOnce({
+      id: 2,
+      first_name: "Samantha",
+      last_name: "Garcia",
+      position_title: "Manager",
+      email: "samantha.garcia@email.com",
+      phone_number: "+16044011235",
+      street_address: "",
+    });
+    await userEvent.click(
+      screen.getByRole("option", {
+        name: /Samantha Garcia/i,
+      }),
+    );
+    // check for the form to be filled with the selected contact address info
+    expect(screen.getByLabelText(/Business mailing address+/i)).toHaveValue("");
+  });
+
   it(
     "render the NewOperationRepresentativeForm component WITHOUT an existing operation representative",
     async () => {
