@@ -1,3 +1,4 @@
+from typing import Literal, Tuple
 from uuid import UUID
 from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
 from reporting.schema.report_sign_off import ReportSignOffIn
@@ -18,7 +19,7 @@ from .router import router
     description="""Submits a report version""",
     auth=approved_industry_user_report_version_composite_auth,
 )
-def submit_report_version(request: HttpRequest, version_id: int, payload: ReportSignOffIn) -> int:
+def submit_report_version(request: HttpRequest, version_id: int, payload: ReportSignOffIn) -> Tuple[Literal[200], int]:
     user_guid: UUID = get_current_user_guid(request)
     data = ReportSignOffData(
         acknowledgements=ReportSignOffAcknowledgements(
@@ -33,6 +34,5 @@ def submit_report_version(request: HttpRequest, version_id: int, payload: Report
         ),
         signature=payload.signature,
     )
-    ReportSubmissionService.submit_report(version_id, user_guid, data)
-    raise Exception("This is a test exception to check if the transaction is atomic.")
-    return version_id
+
+    return 200, ReportSubmissionService.submit_report(version_id, user_guid, data).id
