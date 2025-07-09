@@ -64,6 +64,8 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
   return async (request: NextRequest) => {
     const response = NextResponse.next();
     const { pathname } = request.nextUrl;
+
+    // Keycloak redirects to the dashboard, so we need to allow it before next-auth builds the JWT
     const unauthAllowedPaths = ["auth", "onboarding", "dashboard"];
     if (isInAllowedPath(pathname, unauthAllowedPaths)) return response;
 
@@ -74,7 +76,7 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
     })) as JWT | null;
 
     if (!jwt) {
-      console.error("No JWT found in request , ", pathname);
+      console.error("No JWT found in request: ", pathname);
       return signOut(request);
     }
 
@@ -83,7 +85,7 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
 
       if (!newKcTokens) {
         // There was an error refreshing the tokens
-        console.error("Failed to refresh access token , ", pathname);
+        console.error("Failed to refresh access token: ", pathname);
         return signOut(request);
       }
 
