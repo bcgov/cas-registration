@@ -1,5 +1,4 @@
 from ninja import ModelSchema, Field
-from pydantic import computed_field
 from registration.models import Facility
 from uuid import UUID
 from typing import List, Optional
@@ -35,10 +34,10 @@ class FacilityOut(ModelSchema):
     latitude_of_largest_emissions: Optional[float] = Field(None, alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: Optional[float] = Field(None, alias="longitude_of_largest_emissions")
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-    # well_authorization_numbers: List[int] = Field(None, alias="well_authorization_numbers")
+    well_authorization_numbers: List[str]
 
-    @computed_field
-    def well_authorization_numbers_strs(self, obj: Facility) -> List[str]:
+    @staticmethod
+    def resolve_well_authorization_numbers(obj: Facility) -> List[str]:
         """
         Converts the list of well authorization numbers (as integers) to a list of strings.
         This is necessary because the well_authorization_numbers field in the Facility model
