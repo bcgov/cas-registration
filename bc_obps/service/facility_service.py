@@ -125,8 +125,6 @@ class FacilityService:
         # Numbers to add
         numbers_to_add = set(new_numbers) - existing_numbers_set
 
-        # breakpoint()  # For debugging purposes, can be removed in production
-
         # Add new numbers
         if numbers_to_add:
             for number in numbers_to_add:
@@ -230,6 +228,7 @@ class FacilityService:
         cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
         # Return the updated facility instance
+        # print(f"returning updated facility in FacilityService: {facility}")
         return facility
 
     @classmethod
