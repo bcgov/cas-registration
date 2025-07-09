@@ -386,8 +386,8 @@ class TestComplianceSummaryService(TestCase):
         fog_allocated_emissions = ComplianceService.get_fog_emissions(report_version.id)
         assert fog_allocated_emissions == Decimal("22")
 
-    def test_get_emission_limit(self):
-        emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
+    def test_get_emissions_limit(self):
+        emissions_limit_for_test = ComplianceService.calculate_product_emissions_limit(
             pwaei=Decimal("0.5"),
             apr_dec_production=Decimal("20000"),
             allocated_industrial_process=Decimal("5000"),
@@ -399,7 +399,7 @@ class TestComplianceSummaryService(TestCase):
         )
 
         # CALCULATION DEFINITION
-        # product_emission_limit = (apr_dec_production * pwaei) * (
+        # product_emissions_limit = (apr_dec_production * pwaei) * (
         #     reduction_factor
         #     - (
         #         (Decimal('1') - (allocated_industrial_process / allocated_for_compliance))
@@ -412,10 +412,10 @@ class TestComplianceSummaryService(TestCase):
         #  = 10000 * (0.65 - 0.075)
         #  = 10000 * 0.575
         #  = 5750
-        assert emission_limit_for_test == Decimal("5750")
+        assert emissions_limit_for_test == Decimal("5750")
 
-    def test_get_emission_limit_handles_divide_by_zero(self):
-        emission_limit_for_test = ComplianceService.calculate_product_emission_limit(
+    def test_get_emissions_limit_handles_divide_by_zero(self):
+        emissions_limit_for_test = ComplianceService.calculate_product_emissions_limit(
             pwaei=Decimal("0.5"),
             apr_dec_production=Decimal("20000"),
             allocated_industrial_process=Decimal("5000"),
@@ -427,7 +427,7 @@ class TestComplianceSummaryService(TestCase):
         )
 
         # CALCULATION DEFINITION
-        # product_emission_limit = (apr_dec_production * pwaei) * (
+        # product_emissions_limit = (apr_dec_production * pwaei) * (
         #     reduction_factor
         #     - (
         #         (Decimal('1') - (allocated_industrial_process / allocated_for_compliance))
@@ -440,4 +440,4 @@ class TestComplianceSummaryService(TestCase):
         #  = 10000 * (0.65 - 0.1)
         #  = 10000 * 0.55
         #  = 5500
-        assert emission_limit_for_test == Decimal("5500")
+        assert emissions_limit_for_test == Decimal("5500")

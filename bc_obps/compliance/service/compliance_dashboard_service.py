@@ -93,12 +93,23 @@ class ComplianceDashboardService:
 
         # Calculated values
         if compliance_report_version:
-            charge_rate = ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.compliance_period.reporting_year)
-            compliance_report_version.compliance_charge_rate = charge_rate
-            compliance_report_version.equivalent_value = (compliance_report_version.report_compliance_summary.excess_emissions * charge_rate)
-            compliance_report_version.outstanding_balance_equivalent_value = (
-                    compliance_report_version.obligation.elicensing_invoice.outstanding_balance * charge_rate
-                )           
+            report = compliance_report_version.compliance_report
+            if report and report.compliance_period:
+                reporting_year = report.compliance_period.reporting_year
+                charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
+                compliance_report_version.compliance_charge_rate = charge_rate
+
+            summary = compliance_report_version.report_compliance_summary
+            if summary and summary.excess_emissions is not None:
+                compliance_report_version.equivalent_value = summary.excess_emissions * charge_rate
+
+            obligation = getattr(compliance_report_version, "obligation", None)
+            if obligation and obligation.elicensing_invoice and obligation.elicensing_invoice.outstanding_balance is not None:
+                compliance_report_version.outstanding_balance_equivalent_value = (
+                    obligation.elicensing_invoice.outstanding_balance * charge_rate
+                )
+
+                  
            
         return compliance_report_version
 

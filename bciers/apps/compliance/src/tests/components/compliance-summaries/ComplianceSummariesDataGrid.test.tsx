@@ -26,8 +26,8 @@ const mockResponse = {
       excess_emissions: 2000,
       outstanding_balance_tco2e: 1500,
       status: "No obligation or earned credits",
-      penalty_status: "N/A",
-      obligation_id: "24-0002-1-1",
+      penalty_status: null,
+      obligation_id: null,
     },
     {
       id: 3,
@@ -36,7 +36,7 @@ const mockResponse = {
       excess_emissions: 0,
       outstanding_balance_tco2e: 1,
       status: "Earned credits",
-      penalty_status: "N/A",
+      penalty_status: null,
       obligation_id: null,
       issuance_status: "Credits Issued",
     },
@@ -150,17 +150,18 @@ describe("ComplianceSummariesDataGrid component", () => {
     expect(
       within(secondRow).getByText("No obligation or earned credits"),
     ).toBeVisible();
-    expect(within(secondRow).getByText("N/A")).toBeVisible();
-    expect(within(secondRow).getByText("24-0002-1-1")).toBeVisible();
+    expect(within(secondRow).getAllByRole("gridcell")[5]).toHaveTextContent(
+      "N/A",
+    );
+    expect(within(secondRow).getAllByRole("gridcell")[6]).toHaveTextContent(
+      "N/A",
+    );
     expect(
-      within(secondRow).getByRole("link", { name: "Manage Obligation" }),
+      within(secondRow).getByRole("link", { name: "View Details" }),
     ).toBeVisible();
     expect(
-      within(secondRow).getByRole("link", { name: "Manage Obligation" }),
-    ).toHaveAttribute(
-      "href",
-      "/compliance-summaries/2/manage-obligation-review-summary",
-    );
+      within(secondRow).getByRole("link", { name: "View Details" }),
+    ).toHaveAttribute("href", "/compliance-summaries/2/review-summary");
 
     // Check third row - Earned credits
     const thirdRow = summaryRows[4];
@@ -169,7 +170,12 @@ describe("ComplianceSummariesDataGrid component", () => {
     expect(within(thirdRow).getByText("0 tCO2e")).toBeVisible();
     expect(within(thirdRow).getByText("1 tCO2e")).toBeVisible();
     expect(within(thirdRow).getByText("Earned credits")).toBeVisible();
-    expect(within(thirdRow).getByText("N/A")).toBeVisible();
+    expect(within(thirdRow).getAllByRole("gridcell")[5]).toHaveTextContent(
+      "N/A",
+    );
+    expect(within(thirdRow).getAllByRole("gridcell")[6]).toHaveTextContent(
+      "N/A",
+    );
     expect(
       within(thirdRow).getByRole("link", {
         name: "Request Issuance of Credits",

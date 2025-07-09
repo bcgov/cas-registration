@@ -82,7 +82,7 @@ class ComplianceReportVersionOut(ModelSchema):
 #         fields = [
 #             'id',
 #             # 'emissions_attributable_for_compliance',
-#             # 'emission_limit',
+#             # 'emissions_limit',
 #             # 'excess_emissions',
 #         ]
 

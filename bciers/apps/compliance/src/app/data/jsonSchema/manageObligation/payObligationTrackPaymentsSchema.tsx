@@ -6,7 +6,6 @@ import {
   readOnlyStringField,
   tco2eUiConfig,
   headerUiConfig,
-  currencyUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { PaymentStatusNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNote";
 import { AutomaticOverduePenaltyNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
@@ -61,13 +60,16 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
     },
   },
   outstanding_balance: tco2eUiConfig,
-  fee_amount_dollars: currencyUiConfig,
+  fee_amount_dollars: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
 
   // Payment Section
   payment_header: headerUiConfig,
   received_date: commonReadOnlyOptions,
-  amount: currencyUiConfig,
-
+  amount: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
   // Penalty Alert Section
   penalty_alert: {
     "ui:widget": AutomaticOverduePenaltyNote,

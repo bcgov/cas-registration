@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import userEvent from "@testing-library/user-event";
+import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 
 // Mocks
 const mockWindowOpen = vi.fn();
@@ -20,20 +21,25 @@ vi.mock(
   }),
 );
 
-const mockData = {
-  id: 1,
+const mockData: ComplianceSummaryReviewPageData = {
+  id: 2,
+  obligation_id: "24-0019-3-3",
+  operation_name: "Compliance SFO - Obligation not met",
+  operation_bcghg_id: "13219990046",
   reporting_year: 2025,
-  excess_emissions: 0,
-  earned_credits_amount: 10,
-  issuance_status: "Not Issued",
-  operation_name: "Mock Operation",
-  emissions_attributable_for_compliance: "100.0",
-  emission_limit: "90.0",
-  earned_credits_issued: false,
+  excess_emissions: 5264.635,
+  emissions_attributable_for_compliance: 5500.0,
+  emissions_limit: 235.365,
+  credited_emissions: 0.0,
+  outstanding_balance: 421170.8,
+  compliance_charge_rate: 80.0,
+  equivalent_value: 421170.8,
+  outstanding_balance_equivalent_value: 33693664.0,
+  status: "Obligation not met",
   monetary_payments: { rows: [], row_count: 0 },
   applied_units_summary: {
-    compliance_report_version_id: "123",
-    applied_compliance_units: [],
+    compliance_report_version_id: "2",
+    applied_compliance_units: { rows: [], row_count: 0 },
   },
 };
 

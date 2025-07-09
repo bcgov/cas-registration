@@ -51,7 +51,7 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
     issuance_status: "Not Issued",
     operation_name: "Mock Operation",
     emissions_attributable_for_compliance: "100.0",
-    emission_limit: "90.0",
+    emissions_limit: "90.0",
     earned_credits_issued: false,
     monetary_payments: { rows: [], row_count: 0 },
     applied_units_summary: {

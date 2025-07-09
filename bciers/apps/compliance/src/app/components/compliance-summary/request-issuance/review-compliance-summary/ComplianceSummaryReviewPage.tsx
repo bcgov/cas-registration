@@ -7,7 +7,7 @@ import {
   ActivePage as InternalActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
+import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
 import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/utils/fetchComplianceSummaryReviewPageData";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 

@@ -7,19 +7,24 @@ export interface DataGridSearchParams {
 
 export interface ComplianceSummary {
   id: number;
+  operation_bcghg_id?: string;
   operation_name: string;
   reporting_year: number;
   excess_emissions: number;
   outstanding_balance?: number;
   outstanding_balance_tco2e?: number;
+  equivalent_value?: number;
+  outstanding_balance_equivalent_value?: number;
+  compliance_charge_rate?: number;
   status?: string;
   penalty_status?: string;
   obligation_id?: string;
   issuance_status?: string;
-  emissions_attributable_for_compliance?: string;
-  emission_limit?: string;
+  emissions_attributable_for_compliance?: number;
+  emissions_limit?: number;
   earned_credits_amount?: number;
   earned_credits_issued?: boolean;
+  credited_emissions?: number;
 }
 
 export interface BccrAccountDetailsResponse {
@@ -77,7 +82,7 @@ export interface PaymentsData {
 export interface ComplianceSummaryReviewNoEmissionNoObligationData {
   reporting_year: number;
   emissions_attributable_for_compliance: string;
-  emission_limit: string;
+  emissions_limit: string;
   excess_emissions: number;
 }
 
@@ -132,13 +137,12 @@ export interface ComplianceAppliedUnits {
   quantity_applied: number;
   equivalent_value: number;
 }
-<<<<<<< HEAD
 
 export interface RequestIssuanceComplianceSummaryData {
   operation_name: string;
   reporting_year: number;
   emissions_attributable_for_compliance: number;
-  emission_limit: number;
+  emissions_limit: number;
   excess_emissions: number;
   earned_credits_issued: boolean;
   id: number;
@@ -147,7 +151,8 @@ export interface RequestIssuanceComplianceSummaryData {
   bccr_trading_name: string;
   analyst_comment: string;
   director_comment: string;
-=======
+}
+
 export interface ComplianceAppliedUnitsData {
   rows: ComplianceAppliedUnits[];
   row_count: number;
@@ -160,7 +165,6 @@ export interface ComplianceAppliedUnitsSummary {
 export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
   monetary_payments: PaymentsData;
   applied_units_summary: ComplianceAppliedUnitsSummary;
->>>>>>> 389db5be7 (chore: update fetch compliance summary from api)
 }
 
 export interface Invoice {

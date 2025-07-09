@@ -161,7 +161,7 @@ class ComplianceService:
         return fog_allocated_amount
 
     @staticmethod
-    def calculate_product_emission_limit(
+    def calculate_product_emissions_limit(
         pwaei: Decimal,
         apr_dec_production: Decimal,
         allocated_industrial_process: Decimal,
@@ -176,7 +176,7 @@ class ComplianceService:
         if allocated_for_compliance > 0:
             industrial_process_compliance_allocated_division = allocated_industrial_process / allocated_for_compliance
 
-        product_emission_limit = (apr_dec_production * pwaei) * (
+        product_emissions_limit = (apr_dec_production * pwaei) * (
             reduction_factor
             - (
                 (Decimal("1") - (industrial_process_compliance_allocated_division))
@@ -184,7 +184,7 @@ class ComplianceService:
                 * (compliance_period - initial_compliance_period)
             )
         )
-        return product_emission_limit
+        return product_emissions_limit
 
     @classmethod
     def get_calculated_compliance_data(cls, report_version_id: int) -> ComplianceData:
@@ -243,7 +243,7 @@ class ComplianceService:
                     * Decimal(production_totals["apr_dec"])
                 )
             )
-            product_emission_limit = ComplianceService.calculate_product_emission_limit(
+            product_emissions_limit = ComplianceService.calculate_product_emissions_limit(
                 pwaei=ei,
                 apr_dec_production=Decimal(production_totals["apr_dec"]),
                 allocated_industrial_process=Decimal(industrial_process),
@@ -257,7 +257,7 @@ class ComplianceService:
             total_allocated_reporting_only += allocated_reporting_only
             total_allocated_for_compliance += allocated_for_compliance
             total_allocated_for_compliance_2024 += allocated_for_compliance_2024
-            emissions_limit_total += product_emission_limit
+            emissions_limit_total += product_emissions_limit
 
             # Add product to list of products
             compliance_product_list.append(
