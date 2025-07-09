@@ -25,7 +25,7 @@ const ComplianceSummaryReviewComponent = ({
       schema={createComplianceSummaryReviewSchema(data.reporting_year)}
       uiSchema={complianceSummaryReviewUiSchema(true)}
       formData={data}
-      className="w-full"
+      className="w-full min-h-[62vh] flex flex-col justify-between"
     >
       <ComplianceStepButtons
         backUrl={backUrl}
