@@ -34,4 +34,5 @@ def submit_report_version(request: HttpRequest, version_id: int, payload: Report
         signature=payload.signature,
     )
     ReportSubmissionService.submit_report(version_id, user_guid, data)
+    raise Exception("This is a test exception to check if the transaction is atomic.")
     return version_id
