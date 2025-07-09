@@ -64,7 +64,7 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
   return async (request: NextRequest) => {
     const response = NextResponse.next();
     const { pathname } = request.nextUrl;
-    const unauthAllowedPaths = ["auth", "onboarding"];
+    const unauthAllowedPaths = ["auth", "onboarding", "dashboard"];
     if (isInAllowedPath(pathname, unauthAllowedPaths)) return response;
 
     // Casting to our augmented JWT type
@@ -73,13 +73,17 @@ export const withTokenRefreshMiddleware: MiddlewareFactory = () => {
       secret: process.env.NEXTAUTH_SECRET,
     })) as JWT | null;
 
-    if (!jwt) return signOut(request);
+    if (!jwt) {
+      console.error("No JWT found in request , ", pathname);
+      return signOut(request);
+    }
 
     if (shouldUpdateToken(jwt)) {
       const newKcTokens = await fetchNewAccessToken(jwt.refresh_token);
 
       if (!newKcTokens) {
         // There was an error refreshing the tokens
+        console.error("Failed to refresh access token , ", pathname);
         return signOut(request);
       }
 
