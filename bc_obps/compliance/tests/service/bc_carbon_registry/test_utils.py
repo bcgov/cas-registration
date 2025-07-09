@@ -25,7 +25,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify error was logged
-        mock_logger.error.assert_called_once_with("Error message from response: %s", "Test error message")
+        mock_logger.error.assert_called_once_with("BCCR Error message from response: %s", "Test error message")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_no_response_attribute(self, mock_logger):
@@ -38,20 +38,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("Exception has no response attribute")
-
-    @patch('compliance.service.bc_carbon_registry.utils.logger')
-    def test_log_error_message_with_empty_response(self, mock_logger):
-        """Test logging when exception has empty response."""
-        # Create mock exception with empty response
-        mock_exception = Mock()
-        mock_exception.response = None
-
-        # Call the function
-        log_error_message(mock_exception)
-
-        # Verify debug was logged
-        mock_logger.debug.assert_called_with("Exception response is empty")
+        mock_logger.info.assert_called_with("Exception has no response attribute")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_response_no_content(self, mock_logger):
@@ -68,7 +55,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("Response has no _content attribute")
+        mock_logger.info.assert_called_with("Response has no _content attribute")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_empty_content(self, mock_logger):
@@ -85,7 +72,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("Response _content is empty")
+        mock_logger.info.assert_called_with("Response content is empty or None")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_invalid_json(self, mock_logger):
@@ -102,7 +89,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged for JSON decode error
-        mock_logger.debug.assert_called_with(
+        mock_logger.info.assert_called_with(
             "Error parsing exception response: %s", "Expecting value: line 1 column 1 (char 0)"
         )
 
@@ -121,7 +108,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("Response does not contain a valid error array")
+        mock_logger.info.assert_called_with("Response does not contain a valid error array")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_empty_list_response(self, mock_logger):
@@ -138,7 +125,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("Response does not contain a valid error array")
+        mock_logger.info.assert_called_with("Response does not contain a valid error array")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_non_dict_first_item(self, mock_logger):
@@ -155,7 +142,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("First error item is not a dictionary")
+        mock_logger.info.assert_called_with("First error item is not a dictionary")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_no_error_message_key(self, mock_logger):
@@ -172,7 +159,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("No errorMessage found in response")
+        mock_logger.info.assert_called_with("No errorMessage found in response")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_empty_error_message(self, mock_logger):
@@ -189,7 +176,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify debug was logged
-        mock_logger.debug.assert_called_with("No errorMessage found in response")
+        mock_logger.info.assert_called_with("No errorMessage found in response")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_multiple_errors(self, mock_logger):
@@ -208,7 +195,7 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(mock_exception)
 
         # Verify only first error was logged
-        mock_logger.error.assert_called_once_with("Error message from response: %s", "First error")
+        mock_logger.error.assert_called_once_with("BCCR Error message from response: %s", "First error")
 
     @patch('compliance.service.bc_carbon_registry.utils.logger')
     def test_log_error_message_with_real_exception(self, mock_logger):
@@ -230,4 +217,4 @@ class TestLogErrorMessage(SimpleTestCase):
         log_error_message(exception)
 
         # Verify error was logged
-        mock_logger.error.assert_called_once_with("Error message from response: %s", "Real exception error")
+        mock_logger.error.assert_called_once_with("BCCR Error message from response: %s", "Real exception error")

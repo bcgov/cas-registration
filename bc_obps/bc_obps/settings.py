@@ -272,3 +272,71 @@ CACHES = {
         "TIMEOUT": None,
     },
 }
+
+# Logging configuration
+# Logging Levels (from lowest to highest priority):
+# DEBUG   - Detailed information for debugging
+# INFO    - General information about program execution
+# WARNING - Something unexpected happened, but the program can continue
+# ERROR   - A more serious problem occurred
+# CRITICAL - A critical problem that may prevent the program from running
+LOGGING = {
+    'version': 1,
+    # Whether to disable existing loggers from other Django apps
+    'disable_existing_loggers': False,
+    # Formatters define how log messages are displayed
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} | {module} | {message}',
+            'style': '{',
+            'datefmt': '%H:%M:%S',  # Just time, not full date
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    # Handlers define where log messages are sent (console, file, email, etc.)
+    'handlers': {
+        # Console handler: outputs logs to terminal/console
+        'console': {
+            'class': 'logging.StreamHandler',  # Python's built-in console handler
+            'formatter': 'verbose',  # Use the verbose formatter defined above
+        },
+        # We could add a file handler here if we wanted to log to a file
+        # 'file': {
+        #     'class': 'logging.FileHandler',
+        #     'filename': 'django.log',
+        #     'formatter': 'verbose',
+        # },
+    },
+    # Root logger: the default logger that all other loggers inherit from
+    'root': {
+        'handlers': ['console'],  # Send all root logs to console
+        'level': 'DEBUG' if DEBUG else 'WARNING',  # Show DEBUG in local, WARNING+ in other environments
+    },
+    # Specific loggers for different parts of the application
+    'loggers': {
+        # Django framework logger: controls Django's own logging
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Only show INFO and above from Django framework
+            'propagate': False,  # Don't pass messages up to parent (root) logger
+        },
+        # Specific logger for our BCCR utils module
+        'compliance.service.bc_carbon_registry.utils': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Show all DEBUG messages from this specific module
+            'propagate': False,
+        },
+        # Add more specific loggers here
+    },
+}
+
+# Add Silk logger only when DEBUG is True (local development)
+if DEBUG:
+    LOGGING['loggers']['silk'] = {  # type: ignore[index]
+        'handlers': ['console'],
+        'level': 'WARNING',  # Only show WARNING and above from Silk
+        'propagate': False,  # Don't pass messages up to parent logger
+    }
