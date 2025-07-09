@@ -228,7 +228,6 @@ export class OperatorPOM {
   async fillFields(fieldLabels: string[], values: { [key: string]: string }) {
     for (const labelText of fieldLabels) {
       // Get all matching input fields for the current field label
-      console.log(`Filling field: ${labelText}`);
       const inputFields = await this.page.getByLabel(labelText);
       const inputField = inputFields.nth((await inputFields.count()) - 1);
 
