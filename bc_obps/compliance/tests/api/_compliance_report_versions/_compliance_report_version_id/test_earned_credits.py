@@ -7,7 +7,7 @@ from compliance.models import ComplianceEarnedCredit
 
 class TestComplianceReportVersionEarnedCreditsEndpoint(CommonTestSetup):
     @patch(
-        "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version"
+        "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version"
     )
     def test_get_earned_credits_success(self, mock_get_earned_credits):
         # Arrange

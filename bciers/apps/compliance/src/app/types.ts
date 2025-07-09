@@ -18,11 +18,8 @@ export interface ComplianceSummary {
 }
 
 export interface BccrAccountDetailsResponse {
-  bccr_holding_account_id?: string;
   bccr_trading_name?: string | null;
   error?: string;
-  bccr_compliance_account_id?: string;
-  charge_rate: number;
 }
 
 export interface BccrComplianceAccountResponse {
@@ -72,18 +69,6 @@ export interface PaymentsData {
   row_count: number;
 }
 
-export interface ComplianceSummaryReviewData {
-  operation_name: string;
-  reporting_year: number;
-  emissions_attributable_for_compliance: string;
-  emission_limit: string;
-  excess_emissions: number;
-  earned_credits_amount: number;
-  issuance_status: string;
-  earned_credits_issued: boolean;
-  id: number;
-}
-
 export interface ComplianceSummaryReviewNoEmissionNoObligationData {
   reporting_year: number;
   emissions_attributable_for_compliance: string;
@@ -129,8 +114,8 @@ export interface CreditsIssuanceRequestData {
   bccr_trading_name: string;
   holding_account_id: string;
   analyst_comment: string;
-  submited_by: string;
-  submited_at: string;
+  submitted_by: string;
+  submitted_at: string;
   analyst_recommendation?: string;
 }
 
@@ -141,4 +126,19 @@ export interface ComplianceAppliedUnits {
   vintage_year: string;
   quantity_applied: number;
   equivalent_value: number;
+}
+
+export interface RequestIssuanceComplianceSummaryData {
+  operation_name: string;
+  reporting_year: number;
+  emissions_attributable_for_compliance: number;
+  emission_limit: number;
+  excess_emissions: number;
+  earned_credits_issued: boolean;
+  id: number;
+  earned_credits_amount: number;
+  issuance_status: string;
+  bccr_trading_name: string;
+  analyst_comment: string;
+  director_comment: string;
 }

@@ -1,12 +1,17 @@
-import { BccrComplianceAccountResponse } from "@/compliance/src/app/types";
+import {
+  BccrAccountDetailsResponse,
+  BccrComplianceAccountResponse,
+} from "@/compliance/src/app/types";
 import { actionHandler } from "@bciers/actions";
 
-export const getBccrAccountDetails = async (accountId: string) => {
+export const getBccrAccountDetails = async (
+  accountId: string,
+): Promise<BccrAccountDetailsResponse> => {
   const response = await actionHandler(
     `compliance/bccr/accounts/${accountId}`,
     "GET",
   );
-  if (!response || response.error) {
+  if (!response || response?.error) {
     throw new Error(response.error || "Failed to fetch BCCR account details");
   }
   return response;

@@ -6,9 +6,7 @@ from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccou
 T = TypeVar('T', bound=Dict[str, Any])
 
 
-class BCCarbonRegistryService:
-    """Service layer for BC Carbon Registry operations."""
-
+class BCCarbonRegistryAccountService:
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
 

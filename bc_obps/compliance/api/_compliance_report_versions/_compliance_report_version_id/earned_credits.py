@@ -21,7 +21,7 @@ from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsO
 def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
 ) -> Tuple[int, Optional[ComplianceEarnedCredit]]:
-    compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credits_data_by_report_version(
+    compliance_earned_credits = ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version(
         compliance_report_version_id
     )
     return 200, compliance_earned_credits

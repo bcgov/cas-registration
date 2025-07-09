@@ -621,7 +621,7 @@
     "model": "registration.facility",
     "pk": "9f7b0848-021e-4d08-9852-10524c4e5477",
     "fields": {
-      "operation": "a12bc34d-56ef-78ab-90cd-12ef3456ab78",
+      "operation": "84ea41f0-4039-44d8-9f91-0e1d5fd47930",
       "created_by": "00000000-0000-0000-0000-000000000001",
       "created_at": "2024-06-05T23:18:07.664Z",
       "name": "Compliance Facility - Earned credits",

@@ -1,7 +1,7 @@
 import pytest
 from model_bakery import baker
 from unittest.mock import patch
-from compliance.service.bc_carbon_registry.bc_carbon_registry_service import BCCarbonRegistryService
+from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
 from registration.models.operation import Operation
 
@@ -10,13 +10,16 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def mock_api_client():
-    with patch('compliance.service.bc_carbon_registry.bc_carbon_registry_service.BCCarbonRegistryAPIClient') as mock:
-        yield mock.return_value
+    with patch('compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient') as mock:
+        yield mock
 
 
 @pytest.fixture
 def service(mock_api_client):
-    return BCCarbonRegistryService()
+    service_instance = BCCarbonRegistryAccountService()
+    # Replace the client instance with our mock
+    service_instance.client = mock_api_client
+    return service_instance
 
 
 @pytest.fixture
@@ -30,7 +33,7 @@ def compliance_report_instance():
     return compliance_report
 
 
-class TestBCCarbonRegistryService:
+class TestBCCarbonRegistryAccountService:
     def test_get_first_entity_with_valid_response(self, service):
         # Arrange
         response = {"entities": [{"entityId": "123", "tradingName": "Test Corp"}]}
@@ -75,6 +78,7 @@ class TestBCCarbonRegistryService:
         result = service.get_account_details("123")
 
         # Assert
+        mock_api_client.get_account_details.assert_called_once_with(account_id="123")
         assert isinstance(result, BCCRAccountResponseDetails)
         assert result.entity_id == "123"
         assert result.organization_classification_id == "456"

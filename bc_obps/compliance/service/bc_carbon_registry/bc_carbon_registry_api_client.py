@@ -290,12 +290,14 @@ class BCCarbonRegistryAPIClient:
             'project_description': 'Test Description - Billie Blue 10',
             'mixedUnitList': [
                 {
-                    'city': 'Vancouver',
+                   'city': 'Vancouver',
                    'address_line_1': 'Test - Billie Blue 10',
                    'zipcode': 'H0H0H0',
                    'province': 'BC',
                    'period_start_date': '2025-03-01',
-                   'period_end_date': '2025-03-31'
+                   'period_end_date': '2025-03-31',
+                   'latitude': 49.2827,
+                   'longitude': -123.1207,
                 }
             ],
         }

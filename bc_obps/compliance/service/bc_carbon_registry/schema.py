@@ -154,17 +154,19 @@ class UnitDetailsResponse(PaginatedResponse):
 ########## Projects ##########
 class ProjectPayloadMixedUnit(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)  # Allow extra fields for API flexibility
-    city: str  # "City"
-    address_line_1: str  # "Line 1"
-    zipcode: str  # "H0H0H0"
-    province: str  # "BC"
+    city: Optional[str] = None  # "City"
+    address_line_1: Optional[str] = None  # "Line 1"
+    zipcode: Optional[str] = None  # "H0H0H0"
+    province: Optional[str] = None  # "BC"
+    latitude: Optional[str] = None  # Latitude of the largest emissions (for SFO)
+    longitude: Optional[str] = None  # Longitude of the largest emissions (for SFO)
     period_start_date: DateStringField  # "2025-01-01"
     period_end_date: DateStringField  # "2025-01-31"
     # Optional fields (Default based on the S&P API documentation)
     country_id: Optional[FifteenDigitString] = "100000000000003"  # Canada
     environmental_category_id: Optional[FifteenDigitString] = "100000000000001"  # Carbon
     project_type_id: Optional[FifteenDigitString] = "140000000000002"  # OBPS
-    standard_id: Optional[FifteenDigitString] = "140000000000001"  # BC
+    standard_id: Optional[FifteenDigitString] = "140000000000001"  # BCE
     newRecord: Optional[bool] = True
 
     @model_validator(mode='after')

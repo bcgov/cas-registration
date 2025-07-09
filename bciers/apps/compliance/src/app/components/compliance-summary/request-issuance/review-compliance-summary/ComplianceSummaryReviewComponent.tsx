@@ -6,10 +6,10 @@ import {
   complianceSummaryReviewUiSchema,
   createComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
-import { ComplianceSummaryReviewData } from "@/compliance/src/app/types";
+import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 
 interface Props {
-  data: ComplianceSummaryReviewData;
+  data: RequestIssuanceComplianceSummaryData;
   complianceSummaryId: string;
   isCasStaff: boolean;
 }
