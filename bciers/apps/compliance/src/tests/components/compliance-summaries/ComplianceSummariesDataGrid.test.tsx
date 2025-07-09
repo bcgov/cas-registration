@@ -200,17 +200,14 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
     expect(
       within(thirdRow).getByRole("link", {
-        name: "Request Issuance of Credits",
+        name: "View Details",
       }),
     ).toBeVisible();
     expect(
       within(thirdRow).getByRole("link", {
-        name: "Request Issuance of Credits",
+        name: "View Details",
       }),
-    ).toHaveAttribute(
-      "href",
-      "/compliance-summaries/3/request-issuance-review-summary",
-    );
+    ).toHaveAttribute("href", "/compliance-summaries/3/review-summary");
   });
 
   it("shows 'View Details' for external users once the request has been submitted", async () => {
