@@ -26,6 +26,20 @@ describe("The withTokenRefresh middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+  it("Passes through if the request is to an allowed path", async () => {
+    mockNextResponseNext.mockReturnValue({ test: 1 });
+
+    const middlewareUnderTest = withTokenRefreshMiddleware(vi.fn());
+
+    for (const path of ["/auth", "/onboarding", "/dashboard"]) {
+      const request = {
+        nextUrl: { pathname: path },
+      };
+      const response = await middlewareUnderTest(request as any, {} as any);
+
+      expect(response).toEqual({ test: 1 });
+    }
+  });
   it("Redirects to logout  if no JWT", async () => {
     mockGetToken.mockReturnValue(undefined);
     mockNextResponseNext.mockReturnValue({ test: 1 });
