@@ -35,16 +35,18 @@ class FacilityOut(ModelSchema):
     latitude_of_largest_emissions: Optional[float] = Field(None, alias="latitude_of_largest_emissions")
     longitude_of_largest_emissions: Optional[float] = Field(None, alias="longitude_of_largest_emissions")
     bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
-    well_authorization_numbers: Optional[List[int]] = Field(None, alias="well_authorization_numbers")
+    # well_authorization_numbers: List[int] = Field(None, alias="well_authorization_numbers")
 
     @computed_field
-    def well_authorization_numbers_strs(self) -> List[str]:
+    def well_authorization_numbers_strs(self, obj: Facility) -> List[str]:
         """
         Converts the list of well authorization numbers (as integers) to a list of strings.
         This is necessary because the well_authorization_numbers field in the Facility model
         is a list of integers, but we want to return them as strings in the API response.
         """
-        return [str(wan) for wan in self.well_authorization_numbers or []]
+        print("\n\n\n\n\n")
+        print(f"in FacilityOut: {obj.well_authorization_numbers}")
+        return [str(wan.well_authorization_number) for wan in obj.well_authorization_numbers.all()]
 
     class Meta:
         model = Facility
@@ -56,5 +58,6 @@ class FacilityOut(ModelSchema):
             "longitude_of_largest_emissions",
             "is_current_year",
             "starting_date",
+            # "well_authorization_numbers",
         ]
         populate_by_name = True
