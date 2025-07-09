@@ -26,8 +26,8 @@ const ActionCell = (params: ActionCellProps) => {
       IssuanceStatus.APPROVED,
       IssuanceStatus.DECLINED,
     ].includes(issuanceStatus as IssuanceStatus);
-    const isIssuanceRequested =
-      issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED;
+    const isIssuanceRequestSubmitted =
+      issuanceStatus !== IssuanceStatus.CREDITS_NOT_ISSUED;
 
     // for internal user: if was made final decision show View Details,
     // else show Review Credits Issuance Request
@@ -42,7 +42,7 @@ const ActionCell = (params: ActionCellProps) => {
     } else {
       // For external users: Show "Request Issuance of Credits"
       // until request has been submitted, then "View Details"
-      if (isIssuanceRequested) {
+      if (isIssuanceRequestSubmitted) {
         cellText = "View Details";
         basePath += "/review-summary";
       } else {

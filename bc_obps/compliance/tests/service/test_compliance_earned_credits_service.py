@@ -20,7 +20,7 @@ class TestComplianceEarnedCreditsService:
             earned_credits.compliance_report_version_id
         )
         assert result.earned_credits_amount == 100
-        assert result.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
+        assert result.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
 
     def test_create_earned_credits_record(self):
         report_compliance_summary = make_recipe(
