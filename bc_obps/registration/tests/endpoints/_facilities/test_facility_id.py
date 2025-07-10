@@ -359,6 +359,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
 
         # Assert
+        print(f"Response: {response.content}")
         assert response.status_code == 200
         response_data = response.json()
 

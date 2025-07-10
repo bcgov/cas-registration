@@ -179,6 +179,9 @@ class FacilityService:
 
         cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
+        # Must refresh facility when well numbers are changed
+        facility.refresh_from_db()
+
         return facility
 
     @classmethod
@@ -227,8 +230,9 @@ class FacilityService:
         # Process well authorization numbers and link them to the facility
         cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
-        # Return the updated facility instance
-        # print(f"returning updated facility in FacilityService: {facility}")
+        # Must refresh facility when well numbers are changed
+        facility.refresh_from_db()
+
         return facility
 
     @classmethod
