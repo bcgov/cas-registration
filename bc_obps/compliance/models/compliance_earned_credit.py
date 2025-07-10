@@ -142,12 +142,15 @@ class ComplianceEarnedCredit(TimeStampedModel):
             pgtrigger.Trigger(
                 name="populate_analyst_submission_info",
                 when=pgtrigger.Before,
-                operation=pgtrigger.Insert | pgtrigger.Update,
+                operation=pgtrigger.Update,
                 condition=pgtrigger.Q(new__analyst_comment__isnull=False) & ~pgtrigger.Q(new__analyst_comment=""),
                 func="""
                     if new.analyst_comment is not null and new.analyst_comment != '' then
-                        new.analyst_submitted_date = current_date;
-                        new.analyst_submitted_by_id = (select nullif(current_setting('my.guid', true), ''));
+                        -- Only populate submission info if the comment content has changed
+                        if old.analyst_comment is distinct from new.analyst_comment then
+                            new.analyst_submitted_date = current_date;
+                            new.analyst_submitted_by_id = (select nullif(current_setting('my.guid', true), ''));
+                        end if;
                     end if;
                     return new;
                 """,
