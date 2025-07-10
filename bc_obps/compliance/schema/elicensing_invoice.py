@@ -7,9 +7,11 @@ class ElicensingInvoiceOut(ModelSchema):
 
     class Meta:
         model = ElicensingInvoice
-        fields = ['id',
-                  'invoice_number',
-                  'invoice_fee_balance',
-                  'invoice_interest_balance',
-                  'outstanding_balance',
-                  'due_date']
+        fields = [
+            'id',
+            'invoice_number',
+            'invoice_fee_balance',
+            'invoice_interest_balance',
+            'outstanding_balance',
+            'due_date',
+        ]

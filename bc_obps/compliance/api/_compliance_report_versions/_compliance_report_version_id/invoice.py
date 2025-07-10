@@ -10,6 +10,7 @@ from compliance.constants import COMPLIANCE
 from compliance.schema.elicensing_invoice import ElicensingInvoiceOut
 from compliance.models.elicensing_invoice import ElicensingInvoice
 
+
 @router.get(
     "/compliance-report-versions/{compliance_report_version_id}/invoice/pdf",
     response={200: None, custom_codes_4xx: Message},
@@ -66,5 +67,5 @@ def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> Elic
     invoice = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
         compliance_report_version_id
     ).invoice
-    
+
     return 200, invoice

@@ -56,7 +56,7 @@ class ComplianceDashboardService:
             )
 
         for version in compliance_report_versions:
-            version.outstanding_balance_tco2e= ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
+            version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
         return compliance_report_versions
 
     @classmethod
@@ -104,14 +104,18 @@ class ComplianceDashboardService:
                 compliance_report_version.equivalent_value = summary.excess_emissions * charge_rate
 
             obligation = getattr(compliance_report_version, "obligation", None)
-            if obligation and obligation.elicensing_invoice and obligation.elicensing_invoice.outstanding_balance is not None:
+            if (
+                obligation
+                and obligation.elicensing_invoice
+                and obligation.elicensing_invoice.outstanding_balance is not None
+            ):
                 ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=compliance_report_version_id
-        )
+                    compliance_report_version_id=compliance_report_version_id
+                )
                 compliance_report_version.outstanding_balance_equivalent_value = (
                     obligation.elicensing_invoice.outstanding_balance * charge_rate
                 )
-                            
+
         return compliance_report_version
 
     @classmethod

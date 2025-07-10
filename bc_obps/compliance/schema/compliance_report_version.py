@@ -26,9 +26,8 @@ OBLIGATION_PENALTY_STATUS_ALIAS = "obligation.penalty_status"
 ISSUANCE_STATUS_ALIAS = "compliance_earned_credit.issuance_status"
 
 # elicensing_invoice aliases
-OUTSTANDING_BALANCE_ALIAS = (
-    "obligation.elicensing_invoice.outstanding_balance"
-)
+OUTSTANDING_BALANCE_ALIAS = "obligation.elicensing_invoice.outstanding_balance"
+
 
 class ComplianceReportVersionListOut(ModelSchema):
     operator_name: str = Field(..., alias=OPERATOR_NAME_ALIAS)
@@ -54,16 +53,15 @@ class ComplianceReportVersionOut(ModelSchema):
     emissions_attributable_for_compliance: Decimal = Field(..., alias=ATTRIBUTABLE_EMISSIONS_ALIAS)
     emissions_limit: Decimal = Field(..., alias=EMISSIONS_LIMIT_ALIAS)
     credited_emissions: Decimal = Field(..., alias=CREDITED_EMISSIONS_ALIAS)
-    outstanding_balance: Optional[Decimal] = Field(
-        None, alias=OUTSTANDING_BALANCE_ALIAS
-    )   
-    compliance_charge_rate: Optional[Decimal] = None 
-    equivalent_value: Optional[Decimal] = None 
-    outstanding_balance_equivalent_value: Optional[Decimal] = None 
-   
+    outstanding_balance: Optional[Decimal] = Field(None, alias=OUTSTANDING_BALANCE_ALIAS)
+    compliance_charge_rate: Optional[Decimal] = None
+    equivalent_value: Optional[Decimal] = None
+    outstanding_balance_equivalent_value: Optional[Decimal] = None
+
     class Meta:
         model = ComplianceReportVersion
         fields = ['id', 'status']
+
 
 # To be handled in issue #117
 

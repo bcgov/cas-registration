@@ -54,7 +54,7 @@ class TestComplianceInvoiceService:
     @patch(
         "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
     )
-    @patch("compliance.service.compliance_invoice_service.ComplianceChargeRate.objects.get")
+    @patch("compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year")
     @patch(
         "compliance.service.compliance_invoice_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
     )

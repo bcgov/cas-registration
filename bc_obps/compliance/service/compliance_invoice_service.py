@@ -92,8 +92,9 @@ class ComplianceInvoiceService:
 
             # Get charge_rate from
             # ComplianceReportVersion → ComplianceReport → CompliancePeriod → ReportingYear
-            charge_rate: Decimal =ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.compliance_period.reporting_year)
-            
+            charge_rate: Decimal = ComplianceChargeRateService.get_rate_for_year(
+                compliance_report_version.compliance_report.compliance_period.reporting_year
+            )
 
             # Format obligation amounts
             compliance_obligation_emissions = f"{excess_emissions} tCO₂e"

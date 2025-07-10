@@ -87,7 +87,8 @@ class ApplyComplianceUnitsService:
             bccr_trading_name=bccr_compliance_account.master_account_name,
             bccr_compliance_account_id=bccr_compliance_account.entity_id,
             charge_rate=ComplianceChargeRateService.get_rate_for_year(compliance_report.report.reporting_year),
-            outstanding_balance=compliance_report_version.obligation.elicensing_invoice.outstanding_balance,
+            # TODO: This value is hardcoded for now, We need to implement the logic to fetch the actual outstanding balance in ticket #193
+            outstanding_balance="16000",
             bccr_units=cls._format_bccr_units_for_grid_display(bccr_units.get("entities", [])),
         )
 

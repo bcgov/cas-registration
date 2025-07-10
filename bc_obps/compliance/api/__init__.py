@@ -16,5 +16,4 @@ from ._bccr._accounts._account_id._compliance_report_versions._compliance_report
     compliance_units,
     projects,
 )
-from ._bccr._accounts._account_id._compliance_report_versions._compliance_report_version_id import compliance_units
 from ._compliance_report_versions._compliance_report_version_id._obligation import payments

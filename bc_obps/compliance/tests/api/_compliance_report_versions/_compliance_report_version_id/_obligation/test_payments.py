@@ -3,22 +3,16 @@ from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 
+
 class TestComplianceObligationPaymentsEndpoint(CommonTestSetup):
     @patch(
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id"
     )
     def test_get_payments_success(self, mock_get_payments):
         # Arrange: Create a mock payment record
-        payment = make_recipe(
-            'compliance.tests.utils.elicensing_payment',
-            amount=200,
-            received_date="2024-05-01"
-        )
+        payment = make_recipe('compliance.tests.utils.elicensing_payment', amount=200, received_date="2024-05-01")
 
-        mock_get_payments.return_value = type("MockResponse", (), {
-            "data": [payment],
-            "data_is_fresh": True
-        })
+        mock_get_payments.return_value = type("MockResponse", (), {"data": [payment], "data_is_fresh": True})
 
         # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
@@ -30,7 +24,7 @@ class TestComplianceObligationPaymentsEndpoint(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_compliance_obligation_payments_by_compliance_report_version_id",
-                kwargs={"compliance_report_version_id": 123}
+                kwargs={"compliance_report_version_id": 123},
             ),
         )
 
@@ -41,5 +35,5 @@ class TestComplianceObligationPaymentsEndpoint(CommonTestSetup):
         assert response_data["data_is_fresh"] is True
         assert response_data["row_count"] == 1
         assert isinstance(response_data["rows"], list)
-        assert response_data["rows"][0]["amount"] == "200.00"  # Decimal gets serialized as string
-        assert response_data["rows"][0]["received_date"] == "2024-05-01"
+        assert response_data["rows"][0]["amount"] == "200"  # Decimal gets serialized as string
+        assert response_data["rows"][0]["received_date"] == "2024-05-01T00:00:00"

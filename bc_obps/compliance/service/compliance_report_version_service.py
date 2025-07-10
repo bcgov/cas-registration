@@ -124,21 +124,22 @@ class ComplianceReportVersionService:
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
 
-
     @staticmethod
     def calculate_outstanding_balance_tco2e(compliance_report_version: ComplianceReportVersion) -> Decimal:
         """
         Calculates the outstanding balance in tonnes of CO₂ equivalent (tCO₂e) for a given compliance report version.
 
-        Converts the outstanding monetary balance from the associated eLicensing invoice 
+        Converts the outstanding monetary balance from the associated eLicensing invoice
         into an emissions quantity by dividing it by the applicable compliance charge rate for the reporting year.
 
         The calculation is performed as:
-                outstanding_balance_tCO₂e = outstanding_balance / charge_rate      
+                outstanding_balance_tCO₂e = outstanding_balance / charge_rate
         """
-        obligation = ComplianceObligation.objects.filter(
-            compliance_report_version__id=compliance_report_version.id
-        ).select_related('elicensing_invoice').first()
+        obligation = (
+            ComplianceObligation.objects.filter(compliance_report_version__id=compliance_report_version.id)
+            .select_related('elicensing_invoice')
+            .first()
+        )
 
         if not obligation or not obligation.elicensing_invoice:
             return Decimal("0")
@@ -153,7 +154,6 @@ class ComplianceReportVersionService:
 
         return outstanding_balance / charge_rate
 
-    
     @staticmethod
     def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:
         """
