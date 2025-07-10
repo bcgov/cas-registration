@@ -257,6 +257,10 @@ class TestReportEmissionAllocationService(TestCase):
         for allocation, expected in zip(
             report_product_emission_allocations.order_by('report_product__product_id'), expected_data
         ):
+            print("\n\n\n\n\n")
+            print(f"Allocation: {allocation}")
+            print(f"Expected: {expected}")
+            print("\n\n\n\n")
             self.assertEqual(
                 allocation.report_version_id, expected["report_version_id"], "Mismatched report version ID"
             )
