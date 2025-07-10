@@ -147,7 +147,7 @@ def standard_payload():
 
 class TestBCCarbonRegistryProjectService:
     @patch.object(ComplianceEarnedCreditsService, 'validate_earned_credit_for_bccr_project')
-    @patch.object(ComplianceEarnedCreditsService, 'update_earned_credit_for_bccr_project')
+    @patch.object(ComplianceEarnedCreditsService, 'update_earned_credit')
     def test_create_project_sfo_operation_success(
         self,
         mock_update_earned_credit,
@@ -195,7 +195,7 @@ class TestBCCarbonRegistryProjectService:
         mock_update_earned_credit.assert_called_once_with(compliance_report_version.id, "Test Trading Company")
 
     @patch.object(ComplianceEarnedCreditsService, 'validate_earned_credit_for_bccr_project')
-    @patch.object(ComplianceEarnedCreditsService, 'update_earned_credit_for_bccr_project')
+    @patch.object(ComplianceEarnedCreditsService, 'update_earned_credit')
     def test_create_project_lfo_operation_success(
         self,
         mock_update_earned_credit,
@@ -447,7 +447,7 @@ class TestBCCarbonRegistryProjectService:
         mock_api_client.create_project.assert_not_called()
 
     @patch.object(ComplianceEarnedCreditsService, 'validate_earned_credit_for_bccr_project')
-    @patch.object(ComplianceEarnedCreditsService, 'update_earned_credit_for_bccr_project')
+    @patch.object(ComplianceEarnedCreditsService, 'update_earned_credit')
     def test_project_description_format(
         self,
         mock_update_earned_credit,

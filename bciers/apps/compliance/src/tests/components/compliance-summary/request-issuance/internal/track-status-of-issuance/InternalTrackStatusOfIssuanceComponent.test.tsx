@@ -18,8 +18,8 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     issuance_status: IssuanceStatus.APPROVED,
     bccr_trading_name: "Test Trading Name",
     holding_account_id: "123456789",
-    directors_comments: "Test comments",
-    analysts_comments: "Analyst's comments",
+    director_comment: "Test comments",
+    analyst_comment: "Analyst's comment",
   };
   beforeEach(() => {
     vi.clearAllMocks();
@@ -44,7 +44,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     expect(screen.getByText("Status of Issuance:")).toBeVisible();
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText("BCCR Holding Account ID:")).toBeVisible();
-    expect(screen.getByText("Director's Comments:")).toBeVisible();
+    expect(screen.getByText("Director's Comment:")).toBeVisible();
 
     // Check navigation buttons
     expect(screen.getByRole("button", { name: "Back" })).toBeVisible();

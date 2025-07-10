@@ -11,15 +11,20 @@ useRouter.mockReturnValue({
 
 const mockComplianceSummaryId = "123";
 const mockData = {
-  operation_name: "Test Operation",
   reporting_year: 2024,
   excess_emissions: -15.0,
-  emissions_limit: "100.0",
-  emissions_attributable_for_compliance: "85.0",
+  emission_limit: 100.0,
+  emissions_attributable_for_compliance: 85.0,
   earned_credits_amount: 15,
   issuance_status: "Issuance not requested",
-  earned_credits_issued: false,
-  id: 123,
+  bccr_trading_name: "Test Trading Name",
+  analyst_suggestion: "Ready to Approve",
+  analyst_comment: "Test analyst comment",
+  director_comment: "Test director comment",
+  analyst_submitted_date: "2024-01-01",
+  analyst_submitted_by: "Test Analyst",
+  director_submitted_date: "2024-01-01",
+  director_submitted_by: "Test Director",
 };
 
 describe("ComplianceSummaryReviewComponent", () => {

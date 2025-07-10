@@ -16,8 +16,8 @@ vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
     issuance_status: "approved",
     bccr_trading_name: "Test Trading Name",
     holding_account_id: "123456789",
-    directors_comments: "Director's test comments",
-    analysts_comments: "Analyst's test comments",
+    director_comment: "Director's test comments",
+    analyst_comment: "Analyst's test comments",
   }),
 }));
 
@@ -67,8 +67,8 @@ describe("InternalTrackStatusOfIssuancePage", () => {
       issuance_status: "approved",
       bccr_trading_name: "Test Trading Name",
       holding_account_id: "123456789",
-      directors_comments: "Test comments",
-      analysts_comments: "Test comments",
+      director_comment: "Test comments",
+      analyst_comment: "Test comments",
     });
 
     const Page = await InternalTrackStatusOfIssuancePage({
@@ -102,8 +102,8 @@ describe("InternalTrackStatusOfIssuancePage", () => {
         issuance_status: status,
         bccr_trading_name: "Test Trading Name",
         holding_account_id: "123456789",
-        directors_comments: "Test comments",
-        analysts_comments: "Test comments",
+        director_comment: "Test comments",
+        analyst_comment: "Test comments",
       });
 
       await InternalTrackStatusOfIssuancePage({
