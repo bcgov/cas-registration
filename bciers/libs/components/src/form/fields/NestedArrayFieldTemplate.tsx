@@ -21,7 +21,7 @@ const NestedArrayFieldTemplate = ({
 
   const customTitleName = uiSchema?.["ui:options"]?.title as string;
   const bgColor = (uiSchema?.["ui:options"]?.bgColor as string) || "#f2f2f2";
-  const showHr = uiSchema?.["ui:options"]?.showHr ?? false;
+  const showSeparator = uiSchema?.["ui:options"]?.showSeparator ?? false;
   const padding = uiSchema?.["ui:options"]?.padding;
   const verticalBorder = uiSchema?.["ui:options"]?.verticalBorder
     ? {
@@ -82,7 +82,7 @@ const NestedArrayFieldTemplate = ({
                 },
               }}
             </div>
-            {showHr && (
+            {showSeparator && (
               <hr
                 style={{ color: BC_GOV_BACKGROUND_COLOR_GREY, margin: "1px 0" }}
               />

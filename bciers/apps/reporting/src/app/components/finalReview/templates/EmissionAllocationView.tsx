@@ -46,7 +46,7 @@ const addEmissionAllocationFields = (
         fields.push({
           label: product.product_name,
           key: `${dataKeyPrefix}.${categoryIndex}.products.${productIndex}.allocated_quantity`,
-          showHr: false,
+          showSeparator: false,
         });
       },
     );
@@ -108,7 +108,7 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
       fields.push({
         label: product.product_name,
         key: `total_emission_allocations.products.${productIndex}.allocated_quantity`,
-        showHr: false,
+        showSeparator: false,
       });
     },
   );

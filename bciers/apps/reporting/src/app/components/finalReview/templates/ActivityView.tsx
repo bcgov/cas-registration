@@ -1,16 +1,21 @@
 import React from "react";
 import SourceTypeBoxTemplate from "@bciers/components/form/fields/SourceTypeBoxTemplate";
+import {
+  BC_GOV_BACKGROUND_COLOR_GREY,
+  BC_GOV_PRIMARY_BRAND_COLOR_BLUE,
+  WHITE,
+} from "@bciers/styles";
 
 const styles = {
   sourceCard: {
-    backgroundColor: "white",
+    backgroundColor: WHITE,
     padding: "16px",
     marginBottom: "20px",
     borderRadius: "8px",
     boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
   },
   dataCard: {
-    backgroundColor: "#f2f2f2",
+    backgroundColor: BC_GOV_BACKGROUND_COLOR_GREY,
     padding: "12px",
     marginTop: "10px",
     borderRadius: "6px",
@@ -18,7 +23,7 @@ const styles = {
 };
 
 const verticalBorder = {
-  borderLeft: "6px solid #003366",
+  borderLeft: `6px solid ${BC_GOV_PRIMARY_BRAND_COLOR_BLUE}`,
   marginLeft: "1rem",
   paddingLeft: "1rem",
   height: "50%",
@@ -48,6 +53,12 @@ interface ActivitiesViewProps {
 
 const excludedKeys = ["units", "fuels", "emissions", "fuel type"];
 
+/**
+ * Recursively renders an object or array into React nodes.
+ * @param obj - The object or array to render.
+ * @param labelPrefix - Optional prefix for labels.
+ * @returns React nodes representing the object structure.
+ */
 function renderObject(obj: unknown, labelPrefix = ""): React.ReactNode {
   if (Array.isArray(obj)) {
     return obj.map((item, index) => {
@@ -93,6 +104,11 @@ function renderObject(obj: unknown, labelPrefix = ""): React.ReactNode {
 
   return <span>{String(obj)}</span>;
 }
+/**
+ * ActivitiesView component renders a list of activities and their associated source types.
+ * @param activity_data - Array of activity items containing activity name and source types.
+ * @returns JSX element representing the activities view.
+ */
 
 export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
   return (

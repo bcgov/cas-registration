@@ -51,11 +51,11 @@ export interface ReportComplianceSummary {
 
 export interface ComplianceProduct {
   name: string;
-  annual_production: string;
-  apr_dec_production: string;
-  emission_intensity: string;
-  allocated_industrial_process_emissions: string;
-  allocated_compliance_emissions: string;
+  annual_production: number;
+  apr_dec_production: number;
+  emission_intensity: number;
+  allocated_industrial_process_emissions: number;
+  allocated_compliance_emissions: number;
 }
 export interface ReportProduct {
   product: string;
@@ -128,13 +128,13 @@ export interface ReportProductEmissionAllocation {
 export interface ReportProductEmissionAllocationTotal {
   report_product_id: number;
   product_name: string;
-  allocated_quantity: string;
+  allocated_quantity: number;
 }
 
 export interface ReportEmissionAllocation {
   allocation_methodology: string;
   allocation_other_methodology_description: string;
-  facility_total_emissions: string;
+  facility_total_emissions: number;
   report_product_emission_allocation_totals: ReportProductEmissionAllocationTotal[];
   report_product_emission_allocations: ReportProductEmissionAllocation[];
 }
@@ -144,6 +144,4 @@ export interface ReportData {
   report_additional_data: ReportAdditionalData;
   report_compliance_summary: ReportComplianceSummary;
   facility_reports: FacilityReport[];
-
-  // add more sections as needed
 }

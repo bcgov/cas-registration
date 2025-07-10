@@ -27,7 +27,7 @@ const uiSchema = {
       arrayAddLabel: "Add Unit",
       title: "Unit",
       bgColor: "#f2f2f2",
-      showHr: true, // set to true to test the horizontal rule rendering
+      showSeparator: true, // set to true to test the horizontal rule rendering
       padding: "p-2",
       verticalBorder: true,
     },
@@ -122,7 +122,7 @@ describe("NestedArrayFieldTemplate in FormBase", () => {
     expect(screen.getByText("Unit 2")).toBeInTheDocument();
   });
 
-  it("renders a horizontal rule when showHr is true", () => {
+  it("renders a horizontal rule when showSeparator is true", () => {
     render(
       <FormBase
         schema={schema}
