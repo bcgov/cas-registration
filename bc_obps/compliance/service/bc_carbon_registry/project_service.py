@@ -66,7 +66,8 @@ class BCCarbonRegistryProjectService:
         project_description = f"The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), is a carbon pricing system that incentivizes emission reductions through performance-based targets. The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS)."
         project_data = {
             "account_id": account_id,
-            "project_name": f"{operation_name} {compliance_period_end_date_year}",
+            # using compliance_report_version.id to prevent duplicate project names for the same operation in the same year but as a new compliance report version(supplementary report)
+            "project_name": f"{operation_name} {compliance_period_end_date_year} - {compliance_report_version.id}",
             "project_description": project_description,
             "mixedUnitList": [
                 {
