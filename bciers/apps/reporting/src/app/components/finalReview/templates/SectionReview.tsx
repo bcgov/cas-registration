@@ -6,7 +6,7 @@ interface Field {
   key?: string;
   heading?: string;
   unit?: string;
-  showHr?: boolean; // make sure this is here
+  showSeparator?: boolean;
 }
 
 interface SectionProps {
@@ -62,7 +62,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
 
       {(!expandable || isExpanded) && (
         <>
-          {fields.map(({ label, key, heading, unit, showHr }, idx) => {
+          {fields.map(({ label, key, heading, unit, showSeparator }, idx) => {
             if (heading) {
               return (
                 <div
@@ -82,7 +82,7 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
                 label={label!}
                 value={value}
                 unit={unit}
-                showHr={showHr}
+                showSeparator={showSeparator}
               />
             );
           })}

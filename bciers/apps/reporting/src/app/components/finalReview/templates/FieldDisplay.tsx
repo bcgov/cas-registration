@@ -1,17 +1,22 @@
 import React from "react";
+import { LIGHT_GREY_BG_COLOR } from "@bciers/styles";
 
 interface FieldDisplayProps {
   label: string;
   value: any;
   unit?: string;
-  showHr?: boolean;
+  showSeparator?: boolean;
 }
 
+/**
+ * FieldDisplay component is used to display a label, value, and optional unit in a structured format.
+ * The `showSeparator` prop determines whether a horizontal separator should be displayed below the field.
+ */
 export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   label,
   value,
   unit,
-  showHr = true,
+  showSeparator = true,
 }) => {
   const formattedValue =
     value === null || value === undefined ? (
@@ -44,13 +49,13 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
           <div />
         )}
       </div>
-      {showHr && (
+      {showSeparator && (
         <hr
           className="mt-5"
           style={{
             border: "none",
             height: "1px",
-            backgroundColor: "#ECEAE8",
+            backgroundColor: LIGHT_GREY_BG_COLOR,
           }}
         />
       )}

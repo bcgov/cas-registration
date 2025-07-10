@@ -37,7 +37,7 @@ export const nonAttributableEmissionUiSchema = {
       padding: "p-2",
       label: false,
       bgColor: "white",
-      showHr: true,
+      showSeparator: true,
     },
     items: {
       "ui:order": ["activity", "source_type", "emission_category", "gas_type"],
