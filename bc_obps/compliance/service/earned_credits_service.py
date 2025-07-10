@@ -58,13 +58,17 @@ class ComplianceEarnedCreditsService:
         """
         Handles the update of earned credits by an industry user
         """
+        if not update_payload.bccr_trading_name or not update_payload.bccr_holding_account_id:
+            raise UserError("BCCR Trading Name and Holding Account ID are required to update earned credits")
 
         industry_allowed_statuses = [
             ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
         ]
         if earned_credit.issuance_status not in industry_allowed_statuses:
-            raise UserError("Credits can only be updated by industry users when the user has requested issuance")
+            raise UserError(
+                "Credits can only be updated by industry users when the user has requested issuance or changes are required"
+            )
 
         earned_credit.bccr_trading_name = update_payload.bccr_trading_name
         earned_credit.bccr_holding_account_id = update_payload.bccr_holding_account_id
@@ -108,8 +112,8 @@ class ComplianceEarnedCreditsService:
         """
         Handles the update of earned credits by a CAS director
         """
-        if not earned_credit.bccr_holding_account_id:  # to make mypy happy
-            raise UserError("BCCR Holding Account ID is required to issue credits")
+        if not earned_credit.bccr_trading_name or not earned_credit.bccr_holding_account_id:
+            raise UserError("BCCR Trading Name and Holding Account ID are required to update earned credits")
 
         if earned_credit.analyst_suggestion != ComplianceEarnedCredit.AnalystSuggestion.READY_TO_APPROVE:
             raise UserError("Credits cannot be issued until analyst has reviewed and approved")
