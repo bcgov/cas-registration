@@ -29,7 +29,7 @@ vi.mock(
   "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId",
   () => ({
     default: () => {
-      return { invoiceNumber: 1 };
+      return { invoice_number: 1 };
     },
   }),
 );

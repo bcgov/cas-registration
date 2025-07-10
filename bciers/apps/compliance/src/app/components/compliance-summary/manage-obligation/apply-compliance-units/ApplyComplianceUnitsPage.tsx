@@ -26,6 +26,7 @@ export default async function ApplyComplianceUnitsPage({
     >
       <ApplyComplianceUnitsComponent
         complianceSummaryId={complianceSummaryId}
+        reportingYear={reportingYear}
       />
     </CompliancePageLayout>
   );

@@ -8,9 +8,10 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceSummaryReviewSchema";
 import { FormBase } from "@bciers/components/form";
 import FormAlerts from "@bciers/components/form/FormAlerts";
-import { ComplianceSummary } from "@/compliance/src/app/types";
+import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
+
 interface Props {
-  data: ComplianceSummary;
+  data: ComplianceSummaryReviewPageData;
   complianceSummaryId: string;
 }
 

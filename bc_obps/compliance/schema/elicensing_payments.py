@@ -3,7 +3,7 @@ from compliance.models.elicensing_payment import ElicensingPayment
 from ninja import Schema, ModelSchema
 
 
-class PaymentOut(ModelSchema):
+class ElicensingPaymentOut(ModelSchema):
     """Schema for a single payment record"""
 
     class Meta:
@@ -13,5 +13,5 @@ class PaymentOut(ModelSchema):
 
 class ElicensingPaymentListOut(Schema):
     data_is_fresh: bool
-    rows: List[PaymentOut]
+    rows: List[ElicensingPaymentOut]
     row_count: int
