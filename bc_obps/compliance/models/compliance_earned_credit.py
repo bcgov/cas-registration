@@ -128,13 +128,22 @@ class ComplianceEarnedCredit(TimeStampedModel):
         triggers = [
             *TimeStampedModel.Meta.triggers,
             pgtrigger.Trigger(
-                name="restrict_bccr_trading_name_unless_not_issued",
+                name="restrict_bccr_fields_unless_not_issued",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Insert | pgtrigger.Update,
-                condition=pgtrigger.Q(new__bccr_trading_name__isnull=True) | pgtrigger.Q(new__bccr_trading_name=""),
+                condition=(pgtrigger.Q(new__bccr_trading_name__isnull=True) | pgtrigger.Q(new__bccr_trading_name=""))
+                | (
+                    pgtrigger.Q(new__bccr_holding_account_id__isnull=True)
+                    | pgtrigger.Q(new__bccr_holding_account_id="")
+                ),
                 func="""
                     if new.issuance_status != 'Credits Not Issued in BCCR' then
-                        raise exception 'bccr_trading_name cannot be empty unless issuance_status is "Credits Not Issued in BCCR"';
+                        if (new.bccr_trading_name is null or new.bccr_trading_name = '') then
+                            raise exception 'bccr_trading_name cannot be empty unless issuance_status is "Credits Not Issued in BCCR"';
+                        end if;
+                        if (new.bccr_holding_account_id is null or new.bccr_holding_account_id = '') then
+                            raise exception 'bccr_holding_account_id cannot be empty unless issuance_status is "Credits Not Issued in BCCR"';
+                        end if;
                     end if;
                     return new;
                 """,
@@ -143,23 +152,20 @@ class ComplianceEarnedCredit(TimeStampedModel):
                 name="populate_analyst_submission_info",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Update,
-                condition=pgtrigger.Q(new__analyst_comment__isnull=False) & ~pgtrigger.Q(new__analyst_comment=""),
                 func="""
-                    if new.analyst_comment is not null and new.analyst_comment != '' then
-                        -- Only populate submission info if the comment content has changed
-                        if old.analyst_comment is distinct from new.analyst_comment then
-                            new.analyst_submitted_date = current_date;
-                            new.analyst_submitted_by_id = (select nullif(current_setting('my.guid', true), ''));
-                        end if;
+                    -- Populate submission info whenever the analyst comment changes
+                    if old.analyst_comment is distinct from new.analyst_comment then
+                        new.analyst_submitted_date = current_date;
+                        new.analyst_submitted_by_id = (select nullif(current_setting('my.guid', true), ''));
                     end if;
                     return new;
                 """,
             ),
             pgtrigger.Trigger(
-                name="populate_issued_date_issued_by_when_approved",
+                name="populate_issued_date_issued_by_on_decision",
                 when=pgtrigger.Before,
-                operation=pgtrigger.Insert | pgtrigger.Update,
-                condition=pgtrigger.Q(new__issuance_status="Approved"),
+                operation=pgtrigger.Update,
+                condition=pgtrigger.Q(new__issuance_status__in=["Approved", "Declined"]),
                 func="""
                     new.issued_date = current_date;
                     new.issued_by_id = (select nullif(current_setting('my.guid', true), ''));
@@ -169,7 +175,7 @@ class ComplianceEarnedCredit(TimeStampedModel):
             pgtrigger.Trigger(
                 name="populate_issuance_requested_date_when_requested",
                 when=pgtrigger.Before,
-                operation=pgtrigger.Insert | pgtrigger.Update,
+                operation=pgtrigger.Update,
                 condition=pgtrigger.Q(new__issuance_status="Issuance Requested"),
                 func="""
                     new.issuance_requested_date = current_date;
