@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0012_alter_compliancereportversion_status'),
+        ('compliance', '0013_alter_compliancereportversion_status'),
     ]
 
     operations = [
