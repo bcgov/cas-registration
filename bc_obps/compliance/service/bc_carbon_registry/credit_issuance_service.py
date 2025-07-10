@@ -5,7 +5,6 @@ from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 
 
 class BCCarbonRegistryCreditIssuanceService:
-
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
 
@@ -25,8 +24,14 @@ class BCCarbonRegistryCreditIssuanceService:
                 information, project ID, and location details.
         """
         compliance_period = earned_credit.compliance_report_version.compliance_report.compliance_period
-        verification_date_end = compliance_period.end_date.strftime("%d/%m/%Y")
-        verification_date_start = compliance_period.start_date.strftime("%d/%m/%Y")
+
+        # Vintage Period End must be on or before the Verification Period End
+        # Vintage Period Start must be on or after the Verification Period Start
+        compliance_period_start_date = compliance_period.start_date
+        compliance_period_end_date = compliance_period.end_date
+        verification_date_start = compliance_period_start_date.strftime("%d/%m/%Y")
+        verification_date_end = compliance_period_end_date.strftime("%d/%m/%Y")
+
         mixed_unit_data = bccr_project_data["mixedUnitList"][0]
         credits_issuance_payload = {
             "account_id": earned_credit.bccr_holding_account_id,
@@ -40,8 +45,8 @@ class BCCarbonRegistryCreditIssuanceService:
                     "mixedUnits": [
                         {
                             "holding_quantity": earned_credit.earned_credits_amount,
-                            "vintage_start": compliance_period.start_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                            "vintage_end": compliance_period.end_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                            "vintage_start": compliance_period_start_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                            "vintage_end": compliance_period_end_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                             "city": mixed_unit_data["city"],
                             "address_line_1": mixed_unit_data["address_line_1"],
                             "zipcode": mixed_unit_data["zipcode"],
