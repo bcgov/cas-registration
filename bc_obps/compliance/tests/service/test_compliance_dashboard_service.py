@@ -2,7 +2,7 @@ from django.test import TestCase
 from unittest.mock import patch
 import pytest
 from model_bakery.baker import make_recipe
-from compliance.service.elicensing.elicensing_data_refresh_service import RefreshWrapperReturn
+from compliance.dataclass import RefreshWrapperReturn
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from compliance.models import ComplianceReportVersion
 from registration.models import Operation

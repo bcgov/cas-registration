@@ -5,12 +5,12 @@ import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import monetaryPaymentsColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsColumns";
 import monetaryPaymentsGroupColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsGroupColumns";
-import { PaymentsData } from "@/compliance/src/app/types";
+import { PaymentData } from "@/compliance/src/app/types";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import SimpleAccordion from "@bciers/components/accordion/SimpleAccordion";
 
 interface MonetaryPaymentsProps {
-  gridData: PaymentsData;
+  gridData: PaymentData;
 }
 
 export const MonetaryPaymentsGrid = ({
