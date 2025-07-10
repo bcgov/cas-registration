@@ -38,7 +38,9 @@ def get_compliance_report_version_earned_credits(
 )
 def update_compliance_report_version_earned_credit(
     request: HttpRequest, compliance_report_version_id: int, payload: ComplianceEarnedCreditsIn
-) -> Tuple[int, Optional[ComplianceEarnedCredit]]:
+) -> Tuple[int, ComplianceEarnedCredit]:
     user = get_current_user(request)
-    ComplianceEarnedCreditsService.update_earned_credit(compliance_report_version_id, payload.model_dump(), user)
-    return 200, None
+    earned_credit = ComplianceEarnedCreditsService.update_earned_credit(
+        compliance_report_version_id, payload.model_dump(), user
+    )
+    return 200, earned_credit

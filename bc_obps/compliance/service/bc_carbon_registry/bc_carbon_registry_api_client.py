@@ -366,6 +366,8 @@ class BCCarbonRegistryAPIClient:
                             "city": "Vancouver",
                             "address_line_1": "Test - Billie Blue 3",
                             "zipcode": "H0H0H0",
+                            "latitude": 49.2827,
+                            "longitude": -123.1207,
                             "defined_unit_id": "103200000392481",
                             "project_type_id": "140000000000002"
                         }

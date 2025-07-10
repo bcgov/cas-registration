@@ -219,9 +219,11 @@ class IssuancePayloadMixedUnit(BaseModel):
     holding_quantity: PositiveInt  # 100
     vintage_start: DateTimeStringField  # "2025-01-01T00:00:00Z" - CompliancePeriod start date
     vintage_end: DateTimeStringField  # "2025-01-31T00:00:00Z" - CompliancePeriod end date
-    city: str  # "City" - from project->mixedUnitList[0].city
-    address_line_1: str  # "Line 1" - from project->mixedUnitList[0].address_line_1
-    zipcode: str  # "H0H0H0" - from project->mixedUnitList[0].zipcode
+    city: Optional[str]  # "City" - from project->mixedUnitList[0].city
+    address_line_1: Optional[str]  # "Line 1" - from project->mixedUnitList[0].address_line_1
+    zipcode: Optional[str]  # "H0H0H0" - from project->mixedUnitList[0].zipcode
+    latitude: Optional[str]  # "49.2827" - from project->mixedUnitList[0].latitude
+    longitude: Optional[str]  # "-123.1207" - from project->mixedUnitList[0].longitude
     defined_unit_id: FifteenDigitString  # "103000000392535" - project->mixedUnitList[0].id
     project_type_id: FifteenDigitString  # "140000000000002"  # project->mixedUnitList[0].project_type_id
     # Default Fields (based on the S&P API documentation)
@@ -244,9 +246,10 @@ class IssuancePayload(BaseModel):
     issuance_requested_date: DateTimeStringField  # "2025-01-24T13:13:28.547Z" - as soon as user request the issuance
     project_id: FifteenDigitString  # "104000000036500"
     verifications: List[IssuancePayloadVerification]
-    # Optional fields
+    # Hardcoded fields based on the S&P API documentation
     unit_type_id: Optional[FifteenDigitString] = "140000000000001"  # "140000000000001" - BCE
     system_state: Optional[str] = "CUSTOMER_INITIATED"
+    newRecord: Optional[bool] = True
 
 
 ####### SubAccount ########
