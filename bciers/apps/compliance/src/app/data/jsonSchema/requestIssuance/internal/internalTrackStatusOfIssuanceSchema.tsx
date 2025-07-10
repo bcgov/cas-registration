@@ -16,10 +16,11 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
   title: "Track Status of Issuance",
   properties: {
     status_header: readOnlyObjectField("Earned Credits"),
-    earned_credits: readOnlyStringField("Earned Credits:"),
+    earned_credits_amount: readOnlyStringField("Earned Credits:"),
     issuance_status: readOnlyStringField("Status of Issuance:"),
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
-    holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
+    bccr_holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
+    director_comment: readOnlyStringField("Director's Comment:"),
   },
 
   dependencies: {
@@ -28,22 +29,17 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
         {
           properties: {
             issuance_status: {
-              enum: [IssuanceStatus.APPROVED, IssuanceStatus.CREDITS_ISSUED],
+              enum: [IssuanceStatus.APPROVED],
             },
             approved_note: readOnlyStringField(),
-            directors_comments: readOnlyStringField("Director's Comments:"),
           },
         },
         {
           properties: {
             issuance_status: {
-              enum: [
-                IssuanceStatus.DECLINED,
-                IssuanceStatus.CREDITS_NOT_ISSUED,
-              ],
+              enum: [IssuanceStatus.DECLINED],
             },
             declined_note: readOnlyStringField(),
-            directors_comments: readOnlyStringField("Director's Comments:"),
           },
         },
       ],
@@ -54,18 +50,19 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
 export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  // need this because we don't control the order of the fields in the dependencies
   "ui:order": [
     "status_header",
     "approved_note",
     "declined_note",
-    "earned_credits",
+    "earned_credits_amount",
     "issuance_status",
     "bccr_trading_name",
-    "holding_account_id",
-    "directors_comments",
-    "analysts_comments",
+    "bccr_holding_account_id",
+    "director_comment",
   ],
   status_header: headerUiConfig,
+  earned_credits_amount: commonReadOnlyOptions,
   approved_note: {
     "ui:widget": InternalIssuanceStatusApprovedNote,
     "ui:options": { label: false, inline: true },
@@ -75,11 +72,10 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
     "ui:options": { label: false, inline: true },
   },
   earned_credits: commonReadOnlyOptions,
-  bccr_trading_name: commonReadOnlyOptions,
-  holding_account_id: commonReadOnlyOptions,
-  directors_comments: commonReadOnlyOptions,
-  analysts_comments: commonReadOnlyOptions,
   issuance_status: {
     "ui:widget": StatusTextWidget,
   },
+  bccr_trading_name: commonReadOnlyOptions,
+  bccr_holding_account_id: commonReadOnlyOptions,
+  director_comment: commonReadOnlyOptions,
 };

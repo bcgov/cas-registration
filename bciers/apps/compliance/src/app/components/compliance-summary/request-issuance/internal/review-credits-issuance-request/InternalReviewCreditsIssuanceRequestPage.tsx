@@ -4,21 +4,33 @@ import {
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import InternalReviewCreditsIssuanceRequestComponent from "./InternalReviewCreditsIssuanceRequestComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import { getCreditsIssuanceRequestData } from "@/compliance/src/app/utils/getCreditsIssuanceRequestData";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { redirect } from "next/navigation";
 
 interface Props {
-  readonly compliance_summary_id: string;
+  compliance_summary_id: string;
 }
 
 export default async function InternalReviewCreditsIssuanceRequestPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const complianceSummary =
-    await getCreditsIssuanceRequestData(complianceSummaryId);
+  const pageData =
+    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+
+  if (
+    [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
+      pageData.issuance_status as IssuanceStatus,
+    )
+  ) {
+    redirect(
+      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+    );
+  }
 
   const taskListElements = generateIssuanceRequestTaskList(
     complianceSummaryId,
-    complianceSummary.reporting_year,
+    pageData.reporting_year,
     ActivePage.ReviewCreditsIssuanceRequest,
   );
 
@@ -28,7 +40,7 @@ export default async function InternalReviewCreditsIssuanceRequestPage({
       taskListElements={taskListElements}
     >
       <InternalReviewCreditsIssuanceRequestComponent
-        initialFormData={complianceSummary}
+        initialFormData={pageData}
         complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>

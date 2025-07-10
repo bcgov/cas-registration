@@ -30,21 +30,27 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
           properties: {
             issuance_status: { enum: [IssuanceStatus.APPROVED] },
             approved_note: readOnlyStringField(),
-            directors_comments: readOnlyStringField("Director's Comments:"),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
         {
           properties: {
             issuance_status: { enum: [IssuanceStatus.DECLINED] },
             declined_note: readOnlyStringField(),
-            directors_comments: readOnlyStringField("Director's Comments:"),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
         {
           properties: {
             issuance_status: { enum: [IssuanceStatus.CHANGES_REQUIRED] },
             changes_required_note: readOnlyStringField(),
-            analysts_comments: readOnlyStringField("Analyst’s Comments:"),
+            analyst_comment: readOnlyStringField("Analyst’s Comment:"),
+          },
+        },
+        {
+          properties: {
+            issuance_status: { enum: [IssuanceStatus.ISSUANCE_REQUESTED] },
+            awaiting_note: readOnlyStringField(),
           },
         },
       ],
@@ -55,6 +61,19 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
 export const trackStatusOfIssuanceUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  // need this because we don't control the order of the fields in the dependencies
+  "ui:order": [
+    "status_header",
+    "approved_note",
+    "awaiting_note",
+    "declined_note",
+    "changes_required_note",
+    "earned_credits_amount",
+    "issuance_status",
+    "bccr_trading_name",
+    "director_comment",
+    "analyst_comment",
+  ],
   status_header: headerUiConfig,
   approved_note: {
     "ui:widget": IssuanceStatusApprovedNote,
@@ -74,8 +93,8 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
   },
   earned_credits_amount: commonReadOnlyOptions,
   bccr_trading_name: commonReadOnlyOptions,
-  directors_comments: commonReadOnlyOptions,
-  analysts_comments: commonReadOnlyOptions,
+  director_comment: commonReadOnlyOptions,
+  analyst_comment: commonReadOnlyOptions,
   issuance_status: {
     "ui:widget": StatusTextWidget,
   },
