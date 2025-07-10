@@ -12,7 +12,7 @@ vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
     earned_credits: 100,
     issuance_status: "approved",
     bccr_trading_name: "Test Trading Name",
-    directors_comments: "Director's test comments",
+    director_comment: "Director's test comments",
   }),
 }));
 
