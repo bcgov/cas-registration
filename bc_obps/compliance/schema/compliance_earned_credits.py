@@ -39,8 +39,10 @@ class ComplianceEarnedCreditsOut(ModelSchema):
 class ComplianceEarnedCreditsIn(Schema):
     """Schema for compliance earned credits data"""
 
-    bccr_trading_name: str
-    bccr_holding_account_id: FifteenDigitString
+    bccr_trading_name: Optional[str] = None  # Only required for industry users - we enforce this in the service layer
+    bccr_holding_account_id: Optional[
+        FifteenDigitString
+    ] = None  # Only required for industry users - we enforce this in the service layer
     analyst_suggestion: Optional[
         Literal["Ready to approve", "Requiring change of BCCR Holding Account ID", "Requiring supplementary report"]
     ] = None
