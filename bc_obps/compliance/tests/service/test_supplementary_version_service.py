@@ -11,7 +11,7 @@ from registration.models import Operation
 pytestmark = pytest.mark.django_db(transaction=True)  # This is used to mark a test function as requiring the database
 
 
-class TestComplianceReportVersionService:
+class TestSupplementaryVersionService:
     @patch(
         'compliance.service.compliance_report_version_service.ComplianceReportVersionService._process_obligation_integration'
     )
