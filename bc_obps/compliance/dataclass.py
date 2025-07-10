@@ -98,6 +98,17 @@ class TransferComplianceUnitsPayload:
 
 
 @dataclass
+class ObligationData:
+    """Data model for essential obligation information without payments"""
+
+    reporting_year: int
+    outstanding_balance: Decimal
+    equivalent_value: Decimal
+    obligation_id: str
+    data_is_fresh: bool
+
+
+@dataclass
 class ComplianceInvoiceContext:
     invoice_number: str
     invoice_date: str

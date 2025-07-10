@@ -6,9 +6,10 @@ import {
   createPayObligationTrackPaymentsSchema,
   payObligationTrackPaymentsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/payObligationTrackPaymentsSchema";
+import { PayObligationTrackPaymentsFormData } from "@/compliance/src/app/types";
 
 interface Props {
-  readonly data: any;
+  readonly data: PayObligationTrackPaymentsFormData;
   readonly complianceSummaryId: string;
 }
 
@@ -24,6 +25,7 @@ export function ObligationTrackPaymentsComponent({
       schema={createPayObligationTrackPaymentsSchema()}
       uiSchema={payObligationTrackPaymentsUiSchema}
       formData={data}
+      formContext={data}
       className="w-full"
     >
       <ComplianceStepButtons

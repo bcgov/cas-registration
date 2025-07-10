@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { MonetaryPaymentsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid";
-import { PaymentsData } from "@/compliance/src/app/types";
+import { PaymentData } from "@/compliance/src/app/types";
 import { useSearchParams } from "@bciers/testConfig/mocks";
 
 useSearchParams.mockReturnValue({
@@ -9,26 +9,27 @@ useSearchParams.mockReturnValue({
 
 const mockValue = {
   gridData: {
+    data_is_fresh: true,
     rows: [
       {
         id: 1,
-        paymentReceivedDate: "2024-03-15",
-        paymentAmountApplied: 8000,
-        paymentMethod: "Bank Transfer",
-        transactionType: "Payment",
-        receiptNumber: "REF-123",
+        received_date: "2024-03-15",
+        amount: 8000,
+        payment_method: "Bank Transfer",
+        transaction_type: "Payment",
+        payment_object_id: "REF-123",
       },
       {
         id: 2,
-        paymentReceivedDate: "2024-03-16",
-        paymentAmountApplied: 4000,
-        paymentMethod: "Credit Card",
-        transactionType: "Payment",
-        receiptNumber: "REF-124",
+        received_date: "2024-03-16",
+        amount: 4000,
+        payment_method: "Credit Card",
+        transaction_type: "Payment",
+        payment_object_id: "REF-124",
       },
     ],
     row_count: 2,
-  } as PaymentsData,
+  } as PaymentData,
 };
 
 describe("MonetaryPaymentsGrid", () => {
@@ -81,9 +82,10 @@ describe("MonetaryPaymentsGrid", () => {
   it("shows alert when no payments are made", () => {
     const emptyGridData = {
       gridData: {
+        data_is_fresh: true,
         rows: [],
         row_count: 0,
-      } as PaymentsData,
+      } as PaymentData,
     };
 
     render(<MonetaryPaymentsGrid value={emptyGridData} />);
