@@ -6,132 +6,90 @@ import {
   internalReviewCreditsIssuanceRequestUiSchema,
   internalReviewCreditsIssuanceRequestSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalReviewCreditsIssuanceRequestSchema";
-import { CreditsIssuanceRequestData } from "@/compliance/src/app/types";
-import AttachmentsElement from "./AttachmentsElement";
+import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
 import { useRouter } from "next/navigation";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
-
+import { FrontEndRoles } from "@bciers/utils/src/enums";
+import { actionHandler } from "@bciers/actions";
+import FormAlerts from "@bciers/components/form/FormAlerts";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 interface Props {
-  initialFormData: CreditsIssuanceRequestData;
+  initialFormData: RequestIssuanceComplianceSummaryData;
   complianceSummaryId: string;
 }
 
 const InternalReviewCreditsIssuanceRequestComponent = ({
   initialFormData,
   complianceSummaryId,
-}: Props) => {
+}: Readonly<Props>) => {
   const userRole = useSessionRole();
-  const isCasStaff = userRole.startsWith("cas_");
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/${
-    isCasStaff ? "request-issuance-review-summary" : "review-compliance-summary"
-  }`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
   const router = useRouter();
+  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`;
+  const continueUrl = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
 
-  const isReadOnly = userRole !== "cas_analyst";
+  const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;
+  const [errors, setErrors] = useState<string[] | undefined>();
+  const [formData, setFormState] = useState<
+    RequestIssuanceComplianceSummaryData | undefined
+  >(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const [formData, setFormState] = useState(initialFormData);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleFormChange = (e: IChangeEvent) => {
+  const handleFormChange = (
+    e: IChangeEvent<RequestIssuanceComplianceSummaryData>,
+  ) => {
     setFormState(e.formData);
   };
 
-  const handleAddFiles = (newFiles: File[]) => {
-    // Separate duplicates from unique files
-    const { duplicates, uniqueFiles } = newFiles.reduce(
-      (acc, file) => {
-        const isDuplicate = uploadedFiles.some(
-          (existingFile) =>
-            existingFile.name.toLowerCase() === file.name.toLowerCase(),
-        );
-
-        if (isDuplicate) {
-          acc.duplicates.push(file);
-        } else {
-          acc.uniqueFiles.push(file);
-        }
-        return acc;
-      },
-      { duplicates: [] as File[], uniqueFiles: [] as File[] },
-    );
-
-    if (duplicates.length > 0) {
-      const fileNames = duplicates.map((f) => `"${f.name}"`).join(", ");
-      setError(
-        `Skipped duplicate file${
-          duplicates.length > 1 ? "s" : ""
-        }: ${fileNames}`,
-      );
+  const handleSubmit = async () => {
+    // if the user is not a CAS Analyst, redirect to the continue url
+    // this is to prevent the user from submitting the form if they are not a CAS Analyst
+    if (!isCasAnalyst) {
+      router.push(continueUrl);
+      return;
     }
-
-    if (uniqueFiles.length > 0) {
-      setUploadedFiles((prev) => [...prev, ...uniqueFiles]);
+    setIsSubmitting(true);
+    const endpoint = `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`;
+    const pathToRevalidate = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
+    const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
+      body: JSON.stringify(formData),
+    });
+    if (response && !response.error) {
+      router.push(continueUrl);
+    } else {
+      setErrors([response.error || "Failed to submit request"]);
     }
-  };
-
-  const handleRemoveFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
-    setError(null);
-  };
-
-  const handleContinue = async () => {
-    try {
-      setIsUploading(true);
-      if (uploadedFiles.length > 0) {
-        // TBD: Implement file upload logic when the API endpoint is available (Ticket #166)
-        // Example implementation:
-        // const formData = new FormData();
-        // uploadedFiles.forEach((file, index) => {
-        //   formData.append(`file_${index}`, file);
-        // });
-        // await uploadFiles(formData);
-      }
-
-      // TBD: Submit the form data to the API when the endpoint is ready (Ticket #166)
-      // await submitFormData(complianceSummaryId, formData);
-
-      // Navigate to the next page on success
-      router.push(saveAndContinueUrl);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "An error occurred during submission",
-      );
-    } finally {
-      setIsUploading(false);
-    }
+    setIsSubmitting(false);
   };
 
   return (
     <FormBase
-      schema={internalReviewCreditsIssuanceRequestSchema}
-      uiSchema={internalReviewCreditsIssuanceRequestUiSchema(isReadOnly)}
+      schema={internalReviewCreditsIssuanceRequestSchema(isCasAnalyst)}
+      uiSchema={internalReviewCreditsIssuanceRequestUiSchema(
+        formData?.analyst_submitted_date,
+        formData?.analyst_submitted_by,
+      )}
+      readonly={!isCasAnalyst}
+      disabled={isSubmitting}
       formData={formData}
       onChange={handleFormChange}
-      formContext={{
-        creditsIssuanceRequestData: formData,
-      }}
-      className="w-full"
+      onSubmit={handleSubmit}
+      className="w-full min-h-[62vh] flex flex-col justify-between"
     >
-      <AttachmentsElement
-        title="Attachments:"
-        onRemoveFile={handleRemoveFile}
-        onAddFiles={handleAddFiles}
-        isUploading={isUploading}
-        error={error}
-        uploadedFiles={uploadedFiles}
-        readOnly={isReadOnly}
-      />
+      <FormAlerts errors={errors} />
       <ComplianceStepButtons
         backUrl={backUrl}
-        onContinueClick={handleContinue}
-      />
+        submitButtonDisabled={isSubmitting}
+        className="mt-8"
+      >
+        <SubmitButton
+          isSubmitting={isSubmitting}
+          disabled={!formData?.analyst_suggestion}
+        >
+          Continue
+        </SubmitButton>
+      </ComplianceStepButtons>
     </FormBase>
   );
 };

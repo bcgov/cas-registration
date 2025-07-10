@@ -8,90 +8,118 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalReviewByDirectorSchema";
 import { useState } from "react";
 import { IChangeEvent } from "@rjsf/core";
-import { DirectorReviewData } from "@/compliance/src/app/types";
+import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { useRouter } from "next/navigation";
+import {
+  AnalystSuggestion,
+  FrontEndRoles,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
+import FormAlerts from "@bciers/components/form/FormAlerts";
+import { actionHandler } from "@bciers/actions";
+import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface Props {
-  initialFormData: DirectorReviewData;
+  data: RequestIssuanceComplianceSummaryData;
   complianceSummaryId: string;
 }
 
 const InternalReviewByDirectorComponent = ({
-  initialFormData,
+  data,
   complianceSummaryId,
 }: Props) => {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
   const router = useRouter();
-
   const userRole = useSessionRole();
-  const isReadOnly = userRole !== "cas_director";
-  const isActionDisabled =
-    isReadOnly || initialFormData?.analyst_recommendation === "require_changes";
+  const continueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
 
-  const data = {
-    ...initialFormData,
-    read_only: isReadOnly,
-    editable_director_comment: initialFormData.director_comment,
-    readonly_director_comment: initialFormData.director_comment,
-  };
+  let backUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
+  if (
+    [IssuanceStatus.DECLINED].includes(data.issuance_status as IssuanceStatus)
+  ) {
+    backUrl = "/compliance-summaries";
+  }
+
   const [formData, setFormState] = useState(data);
+  const [errors, setErrors] = useState<string[] | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  const isCasDirector = userRole === FrontEndRoles.CAS_DIRECTOR;
+
+  const isActionEnabled =
+    isCasDirector &&
+    data?.analyst_suggestion === AnalystSuggestion.READY_TO_APPROVE;
+
+  const isActionVisible =
+    isCasDirector &&
+    [
+      IssuanceStatus.ISSUANCE_REQUESTED,
+      IssuanceStatus.CHANGES_REQUIRED,
+    ].includes(data?.issuance_status as IssuanceStatus);
 
   const handleFormChange = (e: IChangeEvent) => {
     setFormState(e.formData);
   };
 
-  const handleApprove = async () => {
-    try {
-      if (formData.analyst_recommendation === "require_changes") {
-        return;
-      }
-
-      // TBD: Implement API integration for approval submission (Ticket #166)
-      // await submitDirectorDecision(complianceSummaryId, updatedFormData, "approved");
-
-      router.push(saveAndContinueUrl);
-    } catch (error) {
-      throw new Error(`Error approving request: ${error}`);
+  const handleSubmit = async (decision: "Approved" | "Declined") => {
+    if (!isCasDirector) {
+      setErrors(["You are not authorized to submit this request"]);
+      return;
     }
+    setIsSubmitting(true);
+    const payload = {
+      ...formData,
+      director_decision: decision,
+    };
+    const endpoint = `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`;
+    const pathToRevalidate = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
+    const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
+      body: JSON.stringify(payload),
+    });
+    if (response && !response.error) {
+      router.push(continueUrl);
+    } else {
+      setErrors([response.error || "Failed to submit request"]);
+    }
+    setIsSubmitting(false);
   };
 
-  const handleDecline = async () => {
-    try {
-      if (formData.analyst_recommendation === "require_changes") {
-        return;
-      }
-
-      // TBD: API integration for decline submission (Ticket #166)
-      // await submitDirectorDecision(complianceSummaryId, updatedFormData, "declined");
-
-      router.push(saveAndContinueUrl);
-    } catch (error) {
-      throw new Error(`Error declining request: ${error}`);
-    }
-  };
+  const isReadOnly =
+    !isCasDirector ||
+    data?.analyst_suggestion !== AnalystSuggestion.READY_TO_APPROVE;
 
   return (
     <FormBase
       schema={internalReviewByDirectorSchema}
-      uiSchema={internalReviewByDirectorUiSchema}
+      uiSchema={internalReviewByDirectorUiSchema(isCasDirector)}
+      readonly={isReadOnly}
+      disabled={isSubmitting}
       formData={formData}
       onChange={handleFormChange}
-      formContext={{
-        creditsIssuanceRequestData: formData,
-      }}
-      className="w-full"
+      className="w-full min-h-[62vh] flex flex-col justify-between"
     >
-      <ComplianceStepButtons
-        onMiddleButtonClick={handleDecline}
-        onContinueClick={handleApprove}
-        backUrl={backUrl}
-        middleButtonText="Decline"
-        continueButtonText="Approve"
-        middleButtonDisabled={isActionDisabled}
-        submitButtonDisabled={isActionDisabled}
-      />
+      <FormAlerts errors={errors} />
+      <ComplianceStepButtons backUrl={backUrl} className="mt-8">
+        {isActionVisible && (
+          <>
+            <SubmitButton
+              isSubmitting={isSubmitting}
+              variant="outlined"
+              onClick={() => handleSubmit("Declined")}
+              disabled={!isActionEnabled || isSubmitting}
+            >
+              Decline
+            </SubmitButton>
+            <SubmitButton
+              isSubmitting={isSubmitting}
+              onClick={() => handleSubmit("Approved")}
+              disabled={!isActionEnabled || isSubmitting}
+            >
+              Approve
+            </SubmitButton>
+          </>
+        )}
+      </ComplianceStepButtons>
     </FormBase>
   );
 };

@@ -57,8 +57,8 @@ export interface RequestIssuanceTrackStatusData {
   issuance_status: string;
   bccr_trading_name: string;
   holding_account_id: string;
-  directors_comments: string;
-  analysts_comments: string;
+  director_comment: string;
+  analyst_comment: string;
 }
 
 export interface ComplianceAppliedUnits {

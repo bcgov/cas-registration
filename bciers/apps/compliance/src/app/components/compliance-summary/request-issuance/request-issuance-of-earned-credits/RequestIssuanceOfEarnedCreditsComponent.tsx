@@ -67,20 +67,20 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
   ) => {
     setIsSubmitting(true);
     const response = await actionHandler(
-      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceSummaryId}/projects`,
-      "POST",
+      `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`,
+      "PUT",
       "",
       {
         body: JSON.stringify(e.formData),
       },
     );
-    setIsSubmitting(false);
-    if (!response || response.error) {
-      setErrors([response.error || "Failed to create project in BCCR"]);
-    } else {
+    if (response && !response.error) {
       setErrors(undefined);
       router.push(saveAndContinueUrl);
+    } else {
+      setErrors([response.error || "Failed to submit request"]);
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -90,6 +90,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       formData={formData}
       onChange={handleChange}
       onSubmit={handleSubmit}
+      disabled={isSubmitting}
       formContext={{
         validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>

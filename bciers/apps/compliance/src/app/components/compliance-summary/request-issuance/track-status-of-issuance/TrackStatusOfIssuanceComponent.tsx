@@ -7,6 +7,7 @@ import {
   trackStatusOfIssuanceSchema,
   trackStatusOfIssuanceUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/trackStatusOfIssuanceSchema";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
@@ -17,7 +18,16 @@ export default function TrackStatusOfIssuanceComponent({
   data,
   complianceSummaryId,
 }: Readonly<Props>) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  let backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  if (
+    [
+      IssuanceStatus.ISSUANCE_REQUESTED,
+      IssuanceStatus.APPROVED,
+      IssuanceStatus.DECLINED,
+    ].includes(data.issuance_status as IssuanceStatus)
+  ) {
+    backUrl = "/compliance-summaries";
+  }
 
   return (
     <FormBase

@@ -7,7 +7,7 @@ import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 
 export const IssuanceStatusAwaitingNote = () => {
   return (
-    <AlertNote icon={<TimeIcon fill={BC_GOV_YELLOW} width="20" height="20" />}>
+    <AlertNote icon={<TimeIcon fill={BC_GOV_YELLOW} width="25" height="25" />}>
       Your request has been submitted successfully. Once your request is
       approved, the earned credits will be issued to your holding account as
       identified below in the{" "}
