@@ -7,7 +7,7 @@ import { actionHandler } from "@bciers/actions";
 import { operatorUiSchema } from "../../data/jsonSchema/operator";
 import { FormMode } from "@bciers/utils/src/enums";
 import { useRouter } from "next/navigation";
-import { getSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 export interface OperatorFormData {
   [key: string]: any;
@@ -70,8 +70,12 @@ export default function OperatorForm({
         }
         if (isCreatingState) {
           setIsCreatingState(false);
-          // calling getSession updates the session, which will augment app_role to "industry_user_admin"
-          await getSession();
+          // we sign the user in again to augment the app_role to "industry_user_admin" (we don't use next-auth's `useSession.update` because if we have useSession in this component, the SessionTimeoutHandler's refreshSession wipes the form data every time it refreshes)
+          signIn(
+            "keycloak",
+            { redirect: true, redirectTo: "/administration/my-operator" },
+            { kc_idp_hint: "bceidbusiness" },
+          );
         }
       }}
       onCancel={() =>

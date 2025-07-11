@@ -34,6 +34,7 @@ const useSession = vi.fn();
 const getSessionRole = vi.fn();
 const getSession = vi.fn();
 const useSessionRole = vi.fn();
+const signIn = vi.fn();
 const useContext = vi.fn();
 const auth = vi.fn();
 const fetchTransferEventsPageData = vi.fn();
@@ -82,4 +83,5 @@ export {
   getSession,
   useContext,
   captureException,
+  signIn,
 };

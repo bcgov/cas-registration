@@ -5,7 +5,7 @@ import {
   useRouter,
   getBusinessStructures,
   useSessionRole,
-  getSession,
+  signIn,
 } from "@bciers/testConfig/mocks";
 
 import OperatorForm from "apps/administration/app/components/operators/OperatorForm";
@@ -17,7 +17,6 @@ import expectHeader from "@bciers/testConfig/helpers/expectHeader";
 import { FrontendMessages } from "@bciers/utils/src/enums";
 import { createOperatorSchema } from "@/administration/app/data/jsonSchema/operator";
 
-getSession.mockReturnValue("industry_user");
 const mockReplace = vi.fn();
 const mockRouterBack = vi.fn();
 const mockRouterPush = vi.fn();
@@ -382,7 +381,7 @@ describe("OperatorForm component", () => {
 
     // Ensure the session is updated by calling the update function
     await waitFor(() => {
-      expect(getSession).toHaveBeenCalled();
+      expect(signIn).toHaveBeenCalled();
     });
 
     // Check for the success message after submission
