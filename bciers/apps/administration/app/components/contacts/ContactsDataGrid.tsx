@@ -9,6 +9,8 @@ import fetchContactsPageData from "./fetchContactsPageData";
 import contactColumns from "../datagrid/models/contacts/contactColumns";
 import contactGroupColumns from "../datagrid/models/contacts/contactGroupColumns";
 import { GridRenderCellParams } from "@mui/x-data-grid";
+import SnackBar from "@bciers/components/form/components/SnackBar";
+import { useSearchParams } from "next/navigation";
 
 const ContactsActionCell = ActionCellFactory({
   generateHref: (params: GridRenderCellParams) => {
@@ -27,6 +29,14 @@ const ContactsDataGrid = ({
     row_count: number;
   };
 }) => {
+  const searchParams = useSearchParams();
+  const isRedirectedFromDeletion = Boolean(
+    searchParams.get("from_deletion") ?? false,
+  );
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(
+    isRedirectedFromDeletion,
+  );
+
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -52,14 +62,21 @@ const ContactsDataGrid = ({
     return row.id + operator;
   }
   return (
-    <DataGrid
-      columns={columns}
-      columnGroupModel={columnGroup}
-      fetchPageData={fetchContactsPageData}
-      paginationMode="server"
-      initialData={initialData}
-      getRowId={getRowId}
-    />
+    <>
+      <DataGrid
+        columns={columns}
+        columnGroupModel={columnGroup}
+        fetchPageData={fetchContactsPageData}
+        paginationMode="server"
+        initialData={initialData}
+        getRowId={getRowId}
+      />
+      <SnackBar
+        isSnackbarOpen={isSnackbarOpen}
+        message={"Contact deleted"}
+        setIsSnackbarOpen={setIsSnackbarOpen}
+      />
+    </>
   );
 };
 

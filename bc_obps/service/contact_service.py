@@ -177,3 +177,10 @@ class ContactService:
                 else f"The email '{email}' is in use by another contact. Please use a different email address."
             )
             raise UserError(message)
+
+    @classmethod
+    def archive_contact(cls, user_guid: UUID, contact_id: int) -> None:
+        """Archives a contact if the user has appropriate permissions."""
+        contact = cls.get_if_authorized(user_guid, contact_id)
+        if contact is not None:
+            contact.set_archive(user_guid)

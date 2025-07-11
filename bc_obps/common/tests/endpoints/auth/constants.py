@@ -433,6 +433,7 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_current_user_operator_access_requests",
         },
+        {"method": "patch", "endpoint_name": "archive_contact", "kwargs": {"contact_id": MOCK_UUID}},
     ],
     "authorized_irc_user": [
         {"method": "get", "endpoint_name": "list_operators"},
