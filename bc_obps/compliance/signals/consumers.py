@@ -39,7 +39,7 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
         # Handle supplementary logic if the emission report_version is supplementary
         version_count = ReportVersion.objects.filter(report_id=report_version.report_id).count()
         if version_count > 1:
-            SupplementaryVersionService.handle_supplementary_version(
+            SupplementaryVersionService().handle_supplementary_version(
                 compliance_report=compliance_report,
                 report_version=report_version,
                 version_count=version_count,
