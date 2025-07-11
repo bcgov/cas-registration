@@ -148,7 +148,7 @@ test.describe("Approve External User", () => {
       true,
     );
 
-    await takeStabilizedScreenshot(happoPlaywright, newPage, {
+    await takeStabilizedScreenshot(happoPlaywright, selectOperatorPage.page, {
       component: "User is rejected access to operator",
       variant: "default",
     });
