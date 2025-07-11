@@ -17,4 +17,5 @@ class ComplianceReportVersionTest(BaseTestCase):
             ("status", "status", None, None),
             ("compliance_earned_credit", "compliance earned credit", None, None),
             ("obligation", "compliance obligation", None, None),
+            ("is_supplementary", "is supplementary", None, None),
         ]

@@ -1,5 +1,5 @@
 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
-from reporting.models.report_compliance_summary import ReportComplianceSummary
+from reporting.models import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from django.db import transaction
@@ -40,7 +40,6 @@ class ComplianceReportVersionService:
         with transaction.atomic():
             report_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version_id)
 
-            ## TODO: WILL NEED SUPPLEMENTARY REPORT HANDLING LOGIC HERE (issue pending) ##
             credited_emissions = report_compliance_summary.credited_emissions
             excess_emissions = report_compliance_summary.excess_emissions
 
