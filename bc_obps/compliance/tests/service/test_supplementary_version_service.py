@@ -1,6 +1,6 @@
 from decimal import Decimal
 from reporting.models import ReportVersion
-from compliance.service.supplementary_version_service import SupplementaryVersionService
+from compliance.service.supplementary_version_service import SupplementaryVersionService, IncreasedObligationHandler
 import pytest
 from unittest.mock import patch
 from compliance.models import ComplianceReportVersion, ComplianceObligation, ComplianceChargeRate
@@ -57,7 +57,7 @@ class TestSupplementaryVersionService:
         )
 
         # Act
-        result = SupplementaryVersionService.handle_supplementary_version(compliance_report, report_version_2, 2)
+        result = SupplementaryVersionService().handle_supplementary_version(compliance_report, report_version_2, 2)
 
         # Assert
         mock_integration.assert_called_once()
@@ -71,3 +71,35 @@ class TestSupplementaryVersionService:
             ComplianceObligation.objects.get(compliance_report_version_id=result.id).fee_amount_dollars
             == Decimal('300') * ComplianceChargeRate.objects.get(reporting_year_id=2025).rate
         )
+
+    def test_increased_obligation_handler(self):
+        report_compliance_summary_1 = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('500'),
+            credited_emissions=0,
+        )
+        report_compliance_summary_2 = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('100'),
+            credited_emissions=0,
+        )
+        report_compliance_summary_3 = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('100'),
+            credited_emissions=0,
+        )
+        # Increased Obligation Handler cannot handle a decreased obligation
+        decrease_result = IncreasedObligationHandler().can_handle(
+            report_compliance_summary_2, report_compliance_summary_1
+        )
+        assert decrease_result == False  # noqa: E712
+        # Increased Obligation Handler cannot handle a static obligation
+        decrease_result = IncreasedObligationHandler().can_handle(
+            report_compliance_summary_2, report_compliance_summary_3
+        )
+        assert decrease_result == False  # noqa: E712
+        # Increased Obligation Handler can handle an increased obligation
+        decrease_result = IncreasedObligationHandler().can_handle(
+            report_compliance_summary_1, report_compliance_summary_2
+        )
+        assert decrease_result == True  # noqa: E712
