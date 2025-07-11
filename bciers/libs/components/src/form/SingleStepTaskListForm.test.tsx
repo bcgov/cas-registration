@@ -56,7 +56,7 @@ const section3: RJSFSchema = {
   well_authorization_numbers: {
     type: "array",
     items: {
-      type: "number",
+      type: "string",
     },
     title: "Well Authorization Number(s)",
   },

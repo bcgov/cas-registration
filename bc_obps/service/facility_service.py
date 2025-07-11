@@ -110,7 +110,8 @@ class FacilityService:
         existing_numbers_set = set(
             facility.well_authorization_numbers.values_list('well_authorization_number', flat=True)
         )
-        new_numbers = payload.well_authorization_numbers
+        # Must convert each value in payload.well_authorization_numbers to an integer, as the database expects integers but the payload is a list of strings
+        new_numbers = [int(number) for number in payload.well_authorization_numbers]
 
         # Check for duplicates within the new_numbers
         if len(new_numbers) != len(set(new_numbers)):
@@ -178,6 +179,9 @@ class FacilityService:
 
         cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
+        # Must refresh facility when well numbers are changed
+        facility.refresh_from_db()
+
         return facility
 
     @classmethod
@@ -226,7 +230,9 @@ class FacilityService:
         # Process well authorization numbers and link them to the facility
         cls.handle_well_authorization_numbers(user_guid, payload, facility)
 
-        # Return the updated facility instance
+        # Must refresh facility when well numbers are changed
+        facility.refresh_from_db()
+
         return facility
 
     @classmethod
