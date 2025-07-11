@@ -445,9 +445,7 @@ export async function openNewBrowserContextAs(role: string) {
   const browser = await getBrowser();
   const storageState = await getStorageStateForRole(role);
   const context = await browser.newContext({ storageState });
-  const newPage = await context.newPage();
-
-  return newPage;
+  return context;
 }
 
 // 🛠️ Function: calls api to seed database with data for workflow tests

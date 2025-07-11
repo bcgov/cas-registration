@@ -21,8 +21,8 @@ import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/enums";
 import { OperatorPOM } from "@/administration-e2e/poms/operator";
-const happoPlaywright = require("happo-playwright");
 
+const happoPlaywright = require("happo-playwright");
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
 test.beforeAll(async () => {
   /**
@@ -39,7 +39,7 @@ test.beforeAll(async () => {
 
 // 🏷 Annotate test suite as serial so to use 1 worker- prevents failure in setupTestEnvironment
 test.describe.configure({ mode: "serial" });
-test.describe("Approve External User", () => {
+test.describe("External User", () => {
   test("Approve a reporter", async ({ page }) => {
     // 🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
@@ -64,7 +64,9 @@ test.describe("Approve External User", () => {
       variant: "filled",
     });
 
-    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const newPage = await context.newPage();
+
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
     await expect(
@@ -95,7 +97,9 @@ test.describe("Approve External User", () => {
       variant: "default",
     });
 
-    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const newPage = await context.newPage();
+
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
     await expect(
@@ -126,11 +130,12 @@ test.describe("Approve External User", () => {
       variant: "default",
     });
 
-    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    const dashboardPage = new DashboardPOM(newPage);
-    await dashboardPage.route();
+    const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+
+    await happoPlaywright.init(context);
 
     // Verify Select an operator is visible
+    const newPage = await context.newPage();
     const selectOperatorPage = new OperatorPOM(newPage);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
@@ -147,9 +152,9 @@ test.describe("Approve External User", () => {
       MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
       true,
     );
-
-    await takeStabilizedScreenshot(happoPlaywright, selectOperatorPage.page, {
-      component: "User is rejected access to operator",
+    let selector = await selectOperatorPage.page.locator("html");
+    await happoPlaywright.screenshot(newPage, selector, {
+      component: "Decline a user operator request",
       variant: "default",
     });
   });
