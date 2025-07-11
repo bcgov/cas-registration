@@ -30,7 +30,9 @@ const ContactsDataGrid = ({
   };
 }) => {
   const searchParams = useSearchParams();
-  const isRedirectedFromDeletion = searchParams.get("from_deletion") as string;
+  const isRedirectedFromDeletion = Boolean(
+    searchParams.get("from_deletion") ?? false,
+  );
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(
     isRedirectedFromDeletion,
   );
