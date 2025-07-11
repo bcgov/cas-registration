@@ -151,22 +151,15 @@ class TestUtils:
         """
 
         assert facility.address == expect_address
-        print("address ok")
-        print(f"facility well auth numbers count: {facility.well_authorization_numbers.count()}")
-        print(f"expect_well_authorization_numbers: {expect_well_authorization_numbers}")
         assert facility.well_authorization_numbers.count() == (
             expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
         )
 
-        print("well auth ok")
         assert Facility.objects.count() == 1
-        print("facility count ok")
         assert Address.objects.count() == (2 if expect_address else 1)  # 1 for the operator; 0-1 for the facility
-        print("address count ok")
         assert WellAuthorizationNumber.objects.count() == (
             expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
         )
-        print("well auth count ok")
 
     @staticmethod
     def mock_postal_code():

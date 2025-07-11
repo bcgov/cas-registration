@@ -43,8 +43,6 @@ class FacilityOut(ModelSchema):
         This is necessary because the well_authorization_numbers field in the Facility model
         is a list of integers, but we want to return them as strings in the API response.
         """
-        print("\n\n\n\n\n")
-        print(f"in FacilityOut: {obj.well_authorization_numbers}")
         return [str(wan.well_authorization_number) for wan in obj.well_authorization_numbers.all()]
 
     class Meta:
@@ -57,6 +55,5 @@ class FacilityOut(ModelSchema):
             "longitude_of_largest_emissions",
             "is_current_year",
             "starting_date",
-            # "well_authorization_numbers",
         ]
         populate_by_name = True
