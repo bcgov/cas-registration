@@ -37,7 +37,9 @@ describe("IssuanceRequestStatusTextWidget", () => {
   );
 
   it("should render empty span for unknown status", () => {
-    const { container } = render(<IssuanceRequestStatusTextWidget value="UNKNOWN_STATUS" />);
+    const { container } = render(
+      <IssuanceRequestStatusTextWidget value="UNKNOWN_STATUS" />,
+    );
     const span = container.querySelector("span");
     expect(span).toBeInTheDocument();
     expect(span).toHaveTextContent("");
