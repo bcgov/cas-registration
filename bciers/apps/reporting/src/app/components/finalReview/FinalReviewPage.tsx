@@ -1,15 +1,14 @@
 import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTypes";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
-import FinalReviewForm from "@reporting/src/app/components/finalReview/FinalReviewForm";
-import reviewDataFactory from "@reporting/src/app/components/finalReview/reviewDataFactory/factory";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getOperationFacilitiesList } from "@reporting/src/app/utils/getOperationFacilitiesList";
 import {
   HeaderStep,
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
-import { getFlowData } from "@reporting/src/app/components/taskList/reportingFlows";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
+import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
+import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
 
 export default async function FinalReviewPage({
   version_id,
@@ -44,11 +43,10 @@ export default async function FinalReviewPage({
 
   // If number of facilities is >40, we don't fetch the report data
   if (selectedFacilitiesCount > 40) {
-    return <FinalReviewForm navigationInformation={navInfo} data={[]} />;
+    return <FinalReviewForm navigationInformation={navInfo} data={null} />;
   }
 
-  const flowData = await getFlowData(version_id);
-  const finalReviewData = await reviewDataFactory(version_id, flowData);
+  const finalReviewData = await getFinalReviewData(version_id);
 
   return (
     <FinalReviewForm navigationInformation={navInfo} data={finalReviewData} />
