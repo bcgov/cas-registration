@@ -441,11 +441,21 @@ export function getStorageStateForRole(role: string) {
 }
 
 // Open a new browser context instead of logging out and logging in as a new user
-export async function openNewBrowserContextAs(role: string) {
+export async function openNewBrowserContextAs(
+  role: string,
+  happoPlaywright?: any,
+) {
   const browser = await getBrowser();
   const storageState = await getStorageStateForRole(role);
   const context = await browser.newContext({ storageState });
-  return context;
+
+  // To take a screenshot in the new browserContext, we first need to close the current context for the screenshot to be saved properly, then re-initialize using the new browserContext
+  if (happoPlaywright) {
+    await happoPlaywright.finish();
+    await happoPlaywright.init(context);
+  }
+  const newPage = await context.newPage();
+  return newPage;
 }
 
 // 🛠️ Function: calls api to seed database with data for workflow tests

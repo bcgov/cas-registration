@@ -64,8 +64,7 @@ test.describe("External User", () => {
       variant: "filled",
     });
 
-    const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    const newPage = await context.newPage();
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
 
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
@@ -97,8 +96,9 @@ test.describe("External User", () => {
       variant: "default",
     });
 
-    const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    const newPage = await context.newPage();
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    // const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    // const newPage = await context.newPage();
 
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
@@ -130,12 +130,12 @@ test.describe("External User", () => {
       variant: "default",
     });
 
-    const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-
-    await happoPlaywright.init(context);
+    const newPage = await openNewBrowserContextAs(
+      UserRole.INDUSTRY_USER,
+      happoPlaywright,
+    );
 
     // Verify Select an operator is visible
-    const newPage = await context.newPage();
     const selectOperatorPage = new OperatorPOM(newPage);
     await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
     await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
