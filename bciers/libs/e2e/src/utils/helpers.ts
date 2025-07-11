@@ -432,6 +432,24 @@ export async function getBrowser() {
   }
   return browser;
 }
+
+export function getStorageStateForRole(role: string) {
+  const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
+  const processEnv = process.env[envKey];
+
+  return JSON.parse(processEnv as string);
+}
+
+// Open a new browser context instead of logging out and logging in as a new user
+export async function openNewBrowserContextAs(role: string) {
+  const browser = await getBrowser();
+  const storageState = await getStorageStateForRole(role);
+  const context = await browser.newContext({ storageState });
+  const newPage = await context.newPage();
+
+  return newPage;
+}
+
 // 🛠️ Function: calls api to seed database with data for workflow tests
 export async function setupTestEnvironment(
   workFlow?: string,
@@ -579,13 +597,6 @@ export async function stabilizeAccordion(
   await waitForElementToStabilize(page, "section");
 }
 
-export function getStorageStateForRole(role: string) {
-  const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
-  const processEnv = process.env[envKey];
-
-  return JSON.parse(processEnv as string);
-}
-
 export async function assertSuccessfulSnackbar(
   page: Page,
   message: string | RegExp,
@@ -610,10 +621,13 @@ export async function clickWithRetry(
   }
 }
 
-export async function linkIsVisible(page: Page, linkName: string | RegExp) {
-  const link = page.getByRole("link", { name: linkName });
-  await expect(link).toBeVisible();
-
+export async function linkIsVisible(
+  page: Page,
+  text: string,
+  visible: boolean,
+) {
+  const link = await page.getByRole("link", { name: text }).first();
+  await expect(link).toBeVisible({ visible: visible });
   return link;
 }
 
@@ -638,13 +652,4 @@ export async function selectOptionFromCombobox(
 export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
-}
-
-export async function openNewBrowserContextAs(role: string) {
-  const browser = await getBrowser();
-  const storageState = getStorageStateForRole(role);
-  const context = await browser.newContext({ storageState });
-  const newPage = await context.newPage();
-
-  return newPage;
 }
