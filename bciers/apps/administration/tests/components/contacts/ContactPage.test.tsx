@@ -67,6 +67,9 @@ describe("Contact component", () => {
         "Once added, this new contact can be selected wherever needed or applicable.",
       ),
     ).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: /delete contact/i }),
+    ).not.toBeInTheDocument();
   });
   it("renders the Contact component in readonly mode(Contact details)", async () => {
     getContact.mockReturnValueOnce(contactFormData);
@@ -80,6 +83,9 @@ describe("Contact component", () => {
     // Note component
     expect(
       screen.getByText("View or update information of this contact here."),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("button", { name: /delete contact/i }),
     ).toBeVisible();
   });
 });
