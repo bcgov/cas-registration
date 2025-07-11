@@ -112,8 +112,8 @@ class ComplianceDashboardService:
                 ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
                     compliance_report_version_id=compliance_report_version_id
                 )
-                result = obligation.elicensing_invoice.outstanding_balance * charge_rate
-                compliance_report_version.outstanding_balance_equivalent_value = result  # type: ignore[attr-defined]
+                compliance_report_version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)  # type: ignore[attr-defined]
+                compliance_report_version.outstanding_balance_equivalent_value = obligation.elicensing_invoice.outstanding_balance  # type: ignore[attr-defined]
 
         return compliance_report_version
 

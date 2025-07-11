@@ -46,7 +46,7 @@ export interface BccrUnit {
 export interface ComplianceSummaryReviewNoEmissionNoObligationData {
   reporting_year: number;
   emissions_attributable_for_compliance: string;
-  emission_limit: string;
+  emissions_limit: string;
   excess_emissions: number;
 }
 
@@ -97,7 +97,7 @@ export interface RequestIssuanceComplianceSummaryData {
   operation_name: string;
   reporting_year: number;
   emissions_attributable_for_compliance: number;
-  emission_limit: number;
+  emissions_limit: number;
   excess_emissions: number;
   earned_credits_issued: boolean;
   id: number;

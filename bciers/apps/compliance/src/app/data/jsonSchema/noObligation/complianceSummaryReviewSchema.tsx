@@ -19,7 +19,7 @@ export const complianceSummaryReviewSchema = (
     emissions_attributable_for_compliance: readOnlyStringField(
       "Emissions Attributable for Compliance:",
     ),
-    emission_limit: readOnlyStringField("Emissions Limit:"),
+    emissions_limit: readOnlyStringField("Emissions Limit:"),
     excess_emissions: readOnlyStringField("Excess Emissions:"),
     // Compliance Status Section
     compliance_status_header: readOnlyObjectField("Compliance Status"),
@@ -36,7 +36,7 @@ export const complianceSummaryReviewUiSchema = (
   // Summary Section
   summary_header: headerUiConfig,
   emissions_attributable_for_compliance: tco2eUiConfig,
-  emission_limit: tco2eUiConfig,
+  emissions_limit: tco2eUiConfig,
   excess_emissions: tco2eUiConfig,
 
   // Compliance Status Section

@@ -4,6 +4,7 @@ import ComplianceSummariesDataGrid from "@/compliance/src/app/components/complia
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 export default async function ComplianceSummariesPage({
   searchParams,
@@ -13,8 +14,10 @@ export default async function ComplianceSummariesPage({
   const { reporting_year: reportingYear } = await getReportingYear();
   const initialData = await fetchComplianceSummariesPageData(searchParams);
   const frontEndRole = await getSessionRole();
-  const isAllowedCas = ["cas_director", "cas_analyst"].includes(frontEndRole);
-
+  const isAllowedCas = [
+    FrontEndRoles.CAS_DIRECTOR,
+    FrontEndRoles.CAS_ANALYST,
+  ].includes(frontEndRole);
   return (
     <>
       <div className="mb-5">

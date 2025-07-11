@@ -128,7 +128,7 @@ class ComplianceReportVersionService:
         """
         Calculates the outstanding balance in tonnes of CO₂ equivalent (tCO₂e) for a given compliance report version.
 
-        Converts the outstanding monetary balance from the associated eLicensing invoice
+        Converts the outstanding balance from the associated eLicensing invoice
         into an emissions quantity by dividing it by the applicable compliance charge rate for the reporting year.
 
         The calculation is performed as:

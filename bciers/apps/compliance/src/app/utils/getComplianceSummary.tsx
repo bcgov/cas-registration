@@ -15,7 +15,7 @@ export interface ComplianceSummary {
   operation_name: string;
   reporting_year: number;
   emissions_attributable_for_compliance: number;
-  emission_limit: number;
+  emissions_limit: number;
   excess_emissions: number;
   obligation_id: string;
   compliance_charge_rate: number;
@@ -60,7 +60,7 @@ export const getComplianceSummary = async (
     emissions_attributable_for_compliance: parseDecimal(
       data.emissions_attributable_for_compliance,
     ),
-    emission_limit: parseDecimal(data.emission_limit),
+    emissions_limit: parseDecimal(data.emissions_limit),
     excess_emissions: parseDecimal(data.excess_emissions),
     obligation_id: data.obligation_id,
     compliance_charge_rate: chargeRate,

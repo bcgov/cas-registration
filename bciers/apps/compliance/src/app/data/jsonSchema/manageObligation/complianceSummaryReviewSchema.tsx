@@ -41,7 +41,7 @@ export const createComplianceSummaryReviewSchema = (
     outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
     ),
-    outstanding_balance: readOnlyStringField("Outstanding Balance:"),
+    outstanding_balance_tco2e: readOnlyStringField("Outstanding Balance:"),
     outstanding_balance_equivalent_value:
       readOnlyStringField("Equivalent Value:"),
     // TODO in #227
@@ -106,9 +106,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
 
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
-  outstanding_balance: {
-    "ui:widget": "ReadOnlyCurrencyWidget",
-  },
+  outstanding_balance_tco2e: tco2eUiConfig,
   outstanding_balance_equivalent_value: {
     "ui:widget": "ReadOnlyCurrencyWidget",
   },
