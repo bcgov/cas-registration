@@ -1,0 +1,184 @@
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "cas-obps-backend-migration-test.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "cas-obps-backend-migration-test.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "cas-obps-backend-migration-test.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Gets the prefix of the namespace. (<openshift_nameplate>, ... )
+*/}}
+{{- define "cas-obps-backend-migration-test.namespacePrefix" }}
+{{- (split "-" .Release.Namespace)._0 | trim -}}
+{{- end }}
+
+{{/*
+Gets the suffix of the namespace. (-dev, -tools, ... )
+*/}}
+{{- define "cas-obps-backend-migration-test.namespaceSuffix" }}
+{{- (split "-" .Release.Namespace)._1 | trim -}}
+{{- end }}
+
+{{/*
+Create an app-name appended with environment. (app-name-dev, app-name-tools, ... )
+*/}}
+{{- define "cas-obps-backend-migration-test.nameWithEnvironment" }}
+{{- printf "%s-%s" .Chart.Name  (split "-" .Release.Namespace)._1 }}
+{{- end }}
+
+{{/*
+Common labels
+*/}}
+{{- define "cas-obps-backend-migration-test.labels" -}}
+helm.sh/chart: {{ include "cas-obps-backend-migration-test.chart" . }}
+{{ include "cas-obps-backend-migration-test.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "cas-obps-backend-migration-test.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "cas-obps-backend-migration-test.fullname" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "cas-obps-backend-migration-test.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create }}
+{{- default (include "cas-obps-backend-migration-test.fullname" .) .Values.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+Define environment variables for the application.
+*/}}
+{{- define "cas-obps-backend-migration-test.backendEnvVars" -}}
+- name: DJANGO_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      key: django-secret-key
+      name: {{ include "cas-obps-backend-migration-test.fullname" . }}-backend
+- name: CHES_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      key: clientSecret
+      name: ches-integration
+- name: CHES_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      key: clientId
+      name: ches-integration
+- name: CHES_TOKEN_ENDPOINT
+  valueFrom:
+    secretKeyRef:
+      key: tokenEndpoint
+      name: ches-integration
+- name: CHES_API_URL
+  valueFrom:
+    secretKeyRef:
+      key: apiUrl
+      name: ches-integration
+- name: ELICENSING_API_URL
+  valueFrom:
+    secretKeyRef:
+      key: apiUrl
+      name: elicensing-integration
+- name: ELICENSING_AUTH_TOKEN
+  valueFrom:
+    secretKeyRef:
+      key: authToken
+      name: elicensing-integration
+- name: BCCR_API_URL
+  valueFrom:
+    secretKeyRef:
+      key: apiUrl
+      name: bccr-integration
+- name: BCCR_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      key: clientId
+      name: bccr-integration
+- name: BCCR_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      key: clientSecret
+      name: bccr-integration
+- name: DB_USER
+  valueFrom:
+    secretKeyRef:
+      key: user
+      name: {{ .Values.dbShortName }}-pguser-registration
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      key: password
+      name: {{ .Values.dbShortName }}-pguser-registration
+- name: DB_NAME
+  valueFrom:
+    secretKeyRef:
+      key: dbname
+      name: {{ .Values.dbShortName }}-pguser-registration
+- name: DB_PORT
+  valueFrom:
+    secretKeyRef:
+      key: port
+      name: {{ .Values.dbShortName }}-pguser-registration
+- name: DB_HOST
+  valueFrom:
+    secretKeyRef:
+      key: host
+      name: {{ .Values.dbShortName }}-pguser-registration
+- name: ALLOWED_HOSTS
+  value: '*'
+- name: GS_UNSCANNED_BUCKET_NAME
+  value: {{ .Release.Namespace }}-bciers-attach-unscanned
+- name: GS_CLEAN_BUCKET_NAME
+  value: {{ .Release.Namespace }}-bciers-attach-clean
+- name: GS_QUARANTINED_BUCKET_NAME
+  value: {{ .Release.Namespace }}-bciers-attach-quarantined
+- name: ENVIRONMENT
+  value: {{ .Values.backend.environment }}
+{{- end }}
+
+
+{{/*
+PostgresDB Selector labels
+*/}}
+{{- define "cas-obps-backend-migration-test.postgresSelectorLabels" -}}
+app.kubernetes.io/name: {{ .Values.backend.database.appName }}
+app.kubernetes.io/instance: {{ .Values.backend.database.releaseName }}
+{{- end }}
