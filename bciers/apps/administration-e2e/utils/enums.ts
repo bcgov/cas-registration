@@ -96,8 +96,10 @@ export enum MessageTextOperatorSelect {
   // This shortened string works consistently.
   REQUEST_ACCESS_CONFIRMED = "Your access request has been sent to the Administrator",
   REQUEST_ACCESS_ADMIN_CONFIRMED = "Your access request as administrator",
+  REQUEST_ACCESS_DECLINED = "Your access request was declined",
   SELECT_OPERATOR = "Which operator would you like to log in to?",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
+  SELECT_ANOTHER_OPERATOR = "Select another operator",
 }
 
 export enum ContactButtonText {

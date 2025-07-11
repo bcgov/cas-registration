@@ -4,17 +4,23 @@ import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   assertSuccessfulSnackbar,
   getRowByUniqueCellValue,
+  linkIsVisible,
   openNewBrowserContextAs,
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import {
+  AppRoute,
+  MessageTextOperatorSelect,
+  OperatorE2EValue,
   UserAndAccessRequestGridHeaders,
   UserAndAccessRequestValues,
 } from "@/administration-e2e/utils/enums";
 import { UsersAccessRequestPOM } from "@/administration-e2e/poms/users-access-request";
+import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import { AdministrationTileText } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { SecondaryUserOperatorFixtureFields } from "@/administration-e2e/utils/enums";
+import { OperatorPOM } from "@/administration-e2e/poms/operator";
 const happoPlaywright = require("happo-playwright");
 
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
@@ -58,10 +64,9 @@ test.describe("Approve External User", () => {
       variant: "filled",
     });
 
-    // Instead of logging out and logging in, open a new browser context and use getStorageState to sign in as INDUSTRY_USER
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    const newAccessRequestPage = new UsersAccessRequestPOM(newPage);
-    await newAccessRequestPage.route();
+    const dashboardPage = new DashboardPOM(newPage);
+    await dashboardPage.route();
     await expect(
       newPage.getByRole("link", {
         name: AdministrationTileText.ACCESS_REQUEST,
@@ -80,19 +85,72 @@ test.describe("Approve External User", () => {
       UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
       UserAndAccessRequestValues.EMAIL,
     );
-    // await expect(row).toBeVisible();
 
     await accessRequestPage.editRequest(row);
     await accessRequestPage.assignNewRole(row, "Admin");
     await assertSuccessfulSnackbar(page, /is now approved/i);
 
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "EXTERNAL: Approve an administrator",
+      variant: "default",
+    });
+
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    const newAccessRequestPage = new UsersAccessRequestPOM(newPage);
-    await newAccessRequestPage.route();
+    const dashboardPage = new DashboardPOM(newPage);
+    await dashboardPage.route();
     await expect(
       newPage.getByRole("link", {
         name: AdministrationTileText.ACCESS_REQUEST,
       }),
     ).toBeVisible();
+  });
+
+  test("Reject a request", async ({ page }) => {
+    // 🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
+
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+
+    await accessRequestPage.editRequest(row);
+    await accessRequestPage.declineRequest(row);
+    await assertSuccessfulSnackbar(page, /is now declined/i);
+
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "EXTERNAL: Decline a user operator request",
+      variant: "default",
+    });
+
+    const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
+    const dashboardPage = new DashboardPOM(newPage);
+    await dashboardPage.route();
+
+    // Verify Select an operator is visible
+    const selectOperatorPage = new OperatorPOM(newPage);
+    await selectOperatorPage.route(AppRoute.OPERATOR_SELECT);
+    await selectOperatorPage.urlIsCorrect(AppRoute.OPERATOR_SELECT);
+
+    // 👉 Action search by legal name
+    await selectOperatorPage.selectByLegalName(
+      OperatorE2EValue.SEARCH_LEGAL_NAME,
+      "Bravo Technologies - has parTNER operator",
+    );
+
+    await selectOperatorPage.msgRequestAccessDeclinedIsVisible();
+    await linkIsVisible(
+      selectOperatorPage.page,
+      MessageTextOperatorSelect.SELECT_ANOTHER_OPERATOR,
+      true,
+    );
+
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: "User is rejected access to operator",
+      variant: "default",
+    });
   });
 });

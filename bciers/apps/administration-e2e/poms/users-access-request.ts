@@ -56,7 +56,7 @@ export class UsersAccessRequestPOM {
   async goToUserAccessRequestPage() {
     await this.route();
     const linkName = AdministrationTileText.ACCESS_REQUEST;
-    const link = await linkIsVisible(this.page, linkName);
+    const link = await linkIsVisible(this.page, linkName, true);
     await link.click();
     await this.urlIsCorrect();
   }
