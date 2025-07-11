@@ -16,27 +16,27 @@ vi.mock("next/navigation", () => ({
 }));
 
 const mockSummaryData = {
-  emissions_attributable_for_reporting: "1000",
-  reporting_only_emissions: "1000",
-  emissions_attributable_for_compliance: "1000",
-  emissions_limit: "1000",
-  excess_emissions: "1000",
-  credited_emissions: "1000",
+  emissions_attributable_for_reporting: "1000.5",
+  reporting_only_emissions: "2000.75",
+  emissions_attributable_for_compliance: "3000.25",
+  emissions_limit: "4000",
+  excess_emissions: "5000.5",
+  credited_emissions: "6000.75",
   regulatory_values: {
-    reduction_factor: "1000",
-    tightening_rate: "1000",
-    initial_compliance_period: "1000",
-    compliance_period: "1000",
+    reduction_factor: "7000.1",
+    tightening_rate: "8000.2",
+    initial_compliance_period: "2024",
+    compliance_period: "2024",
   },
   products: [
     {
       name: "Pucks",
       customUnit: "Goals",
-      annual_production: "1000",
-      apr_dec_production: "1000",
-      emission_intensity: "1000",
-      allocated_industrial_process_emissions: "1000",
-      allocated_compliance_emissions: "1000",
+      annual_production: "11000.5",
+      apr_dec_production: "12000.6",
+      emission_intensity: "13000.7",
+      allocated_industrial_process_emissions: "14000.8",
+      allocated_compliance_emissions: "15000.9",
     },
   ],
 };
@@ -65,13 +65,13 @@ describe("ComplianceSummaryForm", () => {
 
     expect(
       screen.getByLabelText("Emissions attributable for reporting").value,
-    ).toBe("1000");
+    ).toBe("1,000.5");
     expect(screen.getByLabelText("Reporting-only emissions").value).toBe(
-      "1000",
+      "2,000.75",
     );
-    expect(screen.getByLabelText("Emissions limit").value).toBe("1000");
-    expect(screen.getByLabelText("Excess emissions").value).toBe("1000");
-    expect(screen.getByLabelText("Credited emissions").value).toBe("1000");
+    expect(screen.getByLabelText("Emissions limit").value).toBe("4,000");
+    expect(screen.getByLabelText("Excess emissions").value).toBe("5,000.5");
+    expect(screen.getByLabelText("Credited emissions").value).toBe("6,000.75");
   });
 
   it("should render the regulatory values summary data", async () => {
@@ -82,12 +82,12 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Reduction factor").value).toBe("1000");
-    expect(screen.getByLabelText("Tightening rate").value).toBe("1000");
+    expect(screen.getByLabelText("Reduction factor").value).toBe("7,000.1");
+    expect(screen.getByLabelText("Tightening rate").value).toBe("8,000.2");
     expect(screen.getByLabelText("Initial compliance period").value).toBe(
-      "1000",
+      "2024",
     );
-    expect(screen.getByLabelText("Compliance period").value).toBe("1000");
+    expect(screen.getByLabelText("Compliance period").value).toBe("2024");
   });
 
   it("should render the production summary data", async () => {
@@ -98,18 +98,18 @@ describe("ComplianceSummaryForm", () => {
       />,
     );
 
-    expect(screen.getByLabelText("Annual production").value).toBe("1000");
+    expect(screen.getByLabelText("Annual production").value).toBe("11,000.5");
     expect(
       screen.getByLabelText("Production-weighted average emission intensity")
         .value,
-    ).toBe("1000");
+    ).toBe("13,000.7");
     expect(
       screen.getByLabelText("Allocated industrial process emissions").value,
-    ).toBe("1000");
+    ).toBe("14,000.8");
     expect(
       screen.getByLabelText("Allocated Emissions attributable to compliance")
         .value,
-    ).toBe("1000");
+    ).toBe("15,000.9");
   });
 
   it("should render a back button that navigates to the additional information page", async () => {

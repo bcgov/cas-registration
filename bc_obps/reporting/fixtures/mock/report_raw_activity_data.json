@@ -26,8 +26,7 @@
                           "methodology": "Default EF",
                           "unitFuelCo2DefaultEf": 1,
                           "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
-                        },
-                        "equivalentEmission": "Value will be computed upon saving"
+                        }
                       }
                     ],
                     "fuelDescription": "Diesel fuel",
@@ -76,8 +75,7 @@
                           "methodology": "Default EF",
                           "unitFuelCo2DefaultEf": 1,
                           "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
-                        },
-                        "equivalentEmission": "Value will be computed upon saving"
+                        }
                       }
                     ],
                     "fuelDescription": "Diesel fuel",
@@ -126,8 +124,7 @@
                           "methodology": "Default EF",
                           "unitFuelCo2DefaultEf": 1,
                           "unitFuelCo2DefaultEfFieldUnits": "kg/fuel units"
-                        },
-                        "equivalentEmission": "Value will be computed upon saving"
+                        }
                       }
                     ],
                     "fuelDescription": "Diesel fuel",
