@@ -11,7 +11,7 @@ import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/comp
 import { IssuanceStatusDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusDeclinedNote";
 import { IssuanceStatusChangesRequiredNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusChangesRequiredNote";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 
 export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
@@ -96,6 +96,6 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
   director_comment: commonReadOnlyOptions,
   analyst_comment: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
 };

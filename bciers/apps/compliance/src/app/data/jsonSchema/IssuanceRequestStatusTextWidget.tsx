@@ -8,7 +8,7 @@ const STATUS_TEXTS = {
   CHANGES_REQUIRED: "Changes required",
 };
 
-export const StatusTextWidget = (props: any) => {
+export const IssuanceRequestStatusTextWidget = (props: any) => {
   const { value } = props;
 
   const statusTextMap = {

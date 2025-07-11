@@ -8,7 +8,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import InternalDirectorReviewAwaitingNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewAwaitingNote";
 import InternalDirectorReviewChangesNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewChangesNote";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { InternalIssuanceDeclinedStatusNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-by-director/InternalIssuanceDeclinedStatusNote";
 
@@ -62,9 +62,7 @@ export const internalReviewByDirectorSchema: RJSFSchema = {
   },
 };
 
-export const internalReviewByDirectorUiSchema = (
-  isCasDirector: boolean,
-): UiSchema => ({
+export const internalReviewByDirectorUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
@@ -85,7 +83,7 @@ export const internalReviewByDirectorUiSchema = (
   earned_credits_header: headerUiConfig,
   earned_credits_amount: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
   bccr_trading_name: commonReadOnlyOptions,
   bccr_holding_account_id: commonReadOnlyOptions,
@@ -124,4 +122,4 @@ export const internalReviewByDirectorUiSchema = (
       inline: true,
     },
   },
-});
+};

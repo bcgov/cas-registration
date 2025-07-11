@@ -9,7 +9,7 @@ import {
 import { InternalIssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusApprovedNote";
 import { InternalIssuanceStatusDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusDeclinedNote";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 
 export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
@@ -73,7 +73,7 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
   },
   earned_credits: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
   bccr_trading_name: commonReadOnlyOptions,
   bccr_holding_account_id: commonReadOnlyOptions,

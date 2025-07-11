@@ -8,7 +8,7 @@ import {
   tco2eUiConfig,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 
 // Main schema creator
 export const createComplianceSummaryReviewSchema = (
@@ -55,6 +55,6 @@ export const complianceSummaryReviewUiSchema = (
   },
   earned_credits_amount: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
 });

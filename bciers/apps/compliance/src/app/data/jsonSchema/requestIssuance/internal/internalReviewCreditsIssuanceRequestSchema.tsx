@@ -7,7 +7,7 @@ import {
   commonReadOnlyOptions,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 import { AnalystSuggestion } from "@bciers/utils/src/enums";
 
 export const internalReviewCreditsIssuanceRequestSchema = (
@@ -82,7 +82,7 @@ export const internalReviewCreditsIssuanceRequestUiSchema = (
   section_header: headerUiConfig,
   earned_credits_amount: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
   bccr_trading_name: commonReadOnlyOptions,
   bccr_holding_account_id: commonReadOnlyOptions,
