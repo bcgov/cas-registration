@@ -6,7 +6,7 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
     id: 1,
     reporting_year: 2024,
     emissions_attributable_for_compliance: "0",
-    emission_limit: "0",
+    emissions_limit: "0",
     excess_emissions: "0",
   }),
 }));

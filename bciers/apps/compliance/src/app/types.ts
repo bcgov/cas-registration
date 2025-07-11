@@ -5,18 +5,6 @@ export interface DataGridSearchParams {
   sortOrder?: "asc" | "desc";
 }
 
-export interface ComplianceSummary {
-  id: number;
-  operation_name: string;
-  reporting_year: number;
-  excess_emissions: number;
-  outstanding_balance?: number;
-  status?: string;
-  penalty_status?: string;
-  obligation_id?: string;
-  issuance_status?: string;
-}
-
 export interface BccrAccountDetailsResponse {
   bccr_trading_name?: string | null;
   error?: string;
@@ -55,15 +43,6 @@ export interface BccrUnit {
   equivalent_value: number;
 }
 
-export interface Payment {
-  id: string | number;
-  received_date: string;
-  amount: number;
-  payment_method: string;
-  transaction_type: string;
-  payment_object_id: string;
-}
-
 export interface ComplianceSummaryReviewNoEmissionNoObligationData {
   reporting_year: number;
   emissions_attributable_for_compliance: string;
@@ -78,15 +57,6 @@ export interface RequestIssuanceTrackStatusData {
   holding_account_id: string;
   directors_comments: string;
   analysts_comments: string;
-}
-
-export interface PaymentSummary {
-  compliance_year: number;
-  operation_name: string;
-  payment_towards: string;
-  invoice_number: string;
-  payment_amount: number;
-  outstanding_balance: number;
 }
 
 export interface DirectorReviewData {
@@ -138,6 +108,31 @@ export interface RequestIssuanceComplianceSummaryData {
   director_comment: string;
 }
 
+export interface PaymentSummary {
+  compliance_year: number;
+  operation_name: string;
+  payment_towards: string;
+  invoice_number: string;
+  payment_amount: number;
+  outstanding_balance: number;
+}
+
+export interface Payment {
+  id: string | number;
+  received_date: string;
+  amount: number;
+  payment_method: string;
+  transaction_type: string;
+  payment_object_id: string;
+  payment_header?: string;
+}
+
+export interface PaymentData {
+  data_is_fresh?: boolean;
+  rows: Payment[];
+  row_count: number;
+}
+
 export interface ObligationData {
   reporting_year: number;
   outstanding_balance: number;
@@ -146,32 +141,43 @@ export interface ObligationData {
   payments: PaymentData;
 }
 
-export interface PaymentData {
-  data_is_fresh: boolean;
-  rows: Array<{
-    id: number;
-    amount: number;
-    received_date: string;
-    payment_method: string;
-    transaction_type: string;
-    payment_object_id: string;
-  }>;
-  row_count: number;
-}
-
-export interface PaymentRecordData {
-  id: number;
-  amount: number;
-  received_date: string;
-  payment_method: string;
-  transaction_type: string;
-  payment_object_id: string;
-  payment_header: string;
-}
-
 export interface PayObligationTrackPaymentsFormData {
   outstanding_balance: number;
   equivalent_value: number;
-  payments: PaymentRecordData[];
+  payments: Payment[];
   reporting_year: number;
+}
+
+export interface ComplianceSummary {
+  id: number;
+  operation_name: string;
+  reporting_year: number;
+  excess_emissions: number;
+  outstanding_balance?: number;
+  status?: string;
+  penalty_status?: string;
+  obligation_id?: string;
+  issuance_status?: string;
+  compliance_charge_rate?: number;
+  outstanding_balance_tco2e?: number;
+  equivalent_value?: number;
+  outstanding_balance_equivalent_value?: number;
+}
+
+export interface ComplianceAppliedUnitsData {
+  rows: ComplianceAppliedUnits[];
+  row_count: number;
+}
+export interface ComplianceAppliedUnitsSummary {
+  compliance_report_version_id: string;
+  applied_compliance_units: ComplianceAppliedUnitsData;
+}
+
+export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
+  monetary_payments: PaymentData;
+  applied_units_summary: ComplianceAppliedUnitsSummary;
+}
+
+export interface Invoice {
+  invoice_number: string;
 }

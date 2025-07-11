@@ -12,25 +12,25 @@ interface Props {
 }
 
 export default async function TrackStatusOfIssuancePage({
-  compliance_summary_id,
+  compliance_summary_id: complianceReportVersionId,
 }: Props) {
   const data = await getRequestIssuanceTrackStatusData();
   const { reporting_year: reportingYear } = await getReportingYear();
 
   const taskListElements = generateRequestIssuanceTaskList(
-    compliance_summary_id,
+    complianceReportVersionId,
     reportingYear,
     ActivePage.TrackStatusOfIssuance,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={compliance_summary_id}
+      complianceSummaryId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <TrackStatusOfIssuanceComponent
         data={data}
-        complianceSummaryId={compliance_summary_id}
+        complianceSummaryId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

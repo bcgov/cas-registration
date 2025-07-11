@@ -7,7 +7,6 @@ from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
 from compliance.service.exceptions import ComplianceInvoiceError
-from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
@@ -93,7 +92,9 @@ class ComplianceInvoiceService:
 
             # Get charge_rate from
             # ComplianceReportVersion → ComplianceReport → CompliancePeriod → ReportingYear → ComplianceChargeRate
-            charge_rate_decimal: Decimal = ComplianceChargeRateService.get_rate_for_year(compliance_report_version.compliance_report.report.reporting_year)
+            charge_rate_decimal: Decimal = ComplianceChargeRate.objects.get(
+                reporting_year=compliance_report_version.compliance_report.compliance_period.reporting_year
+            ).rate
 
             # Format obligation amounts
             compliance_obligation_emissions = f"{excess_emissions} tCO₂e"
