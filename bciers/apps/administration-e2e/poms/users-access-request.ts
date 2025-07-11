@@ -115,6 +115,12 @@ export class UsersAccessRequestPOM {
     await this.assertCorrectStatus(row, action);
   }
 
+  async getCurrentStatus(row: Locator) {
+    const statusCell = row.locator('[data-field="status"]');
+    const statusText = await statusCell.textContent();
+    return statusText;
+  }
+
   // # Assertions
   async urlIsCorrect() {
     const path = this.userAccessRequestURL.toLowerCase();
@@ -143,8 +149,7 @@ export class UsersAccessRequestPOM {
   }
 
   async assertCorrectStatus(row: Locator, action: string) {
-    const statusCell = row.locator('[data-field="status"]');
-    const statusText = await statusCell.textContent();
+    const statusText = await this.getCurrentStatus(row);
 
     if (action === UserAccessRequestActions.APPROVE) {
       expect(statusText).toMatch(UserAccessRequestStatus.APPROVED);

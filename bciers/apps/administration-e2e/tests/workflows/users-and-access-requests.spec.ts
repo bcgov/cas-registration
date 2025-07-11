@@ -53,6 +53,8 @@ test.describe("External User", () => {
       UserAndAccessRequestValues.EMAIL,
     );
     await expect(row).toBeVisible();
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
 
     const userRoleCell = row.getByRole("combobox");
     const originalRole = await userRoleCell.innerText();
@@ -87,6 +89,9 @@ test.describe("External User", () => {
       UserAndAccessRequestValues.EMAIL,
     );
 
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
+
     await accessRequestPage.editRequest(row);
     await accessRequestPage.assignNewRole(row, "Admin");
     await assertSuccessfulSnackbar(page, /is now approved/i);
@@ -120,6 +125,9 @@ test.describe("External User", () => {
       UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
       UserAndAccessRequestValues.EMAIL,
     );
+
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
 
     await accessRequestPage.editRequest(row);
     await accessRequestPage.declineRequest(row);
