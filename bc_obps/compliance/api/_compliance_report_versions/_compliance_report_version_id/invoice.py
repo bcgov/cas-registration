@@ -1,6 +1,5 @@
 import json
 from django.http import HttpRequest, StreamingHttpResponse
-from compliance.service.elicensing.schema import InvoiceGetResponse
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
 from common.permissions import authorize
@@ -8,6 +7,8 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
+from compliance.schema.elicensing_invoice import ElicensingInvoiceOut
+from compliance.models.elicensing_invoice import ElicensingInvoice
 
 
 @router.get(
@@ -47,12 +48,12 @@ def generate_compliance_report_version_invoice(
 
 @router.get(
     "/compliance-report-versions/{compliance_report_version_id}/invoice",
-    response={200: InvoiceGetResponse, custom_codes_4xx: Message},
+    response={200: ElicensingInvoiceOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Returns invoice info for a compliance report version id",
     auth=authorize("approved_industry_user"),
 )
-def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> InvoiceGetResponse:
+def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> ElicensingInvoice:
     """
     Returns invoice info for a given compliance report version id.
 
@@ -63,13 +64,8 @@ def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> Invo
     Returns:
         Invoice information
     """
-    invoice_response = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+    invoice = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
         compliance_report_version_id
     ).invoice
-    return InvoiceGetResponse(
-        invoiceNumber=invoice_response.invoice_number,
-        invoiceFeeBalance=invoice_response.invoice_fee_balance,
-        invoiceInterestBalance=invoice_response.invoice_interest_balance,
-        invoiceOutstandingBalance=invoice_response.outstanding_balance,
-        invoicePaymentDueDate=invoice_response.due_date,
-    )
+
+    return 200, invoice

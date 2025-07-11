@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.test import TestCase
 from unittest.mock import patch
 import pytest
@@ -165,6 +166,17 @@ class TestComplianceDashboardService(TestCase):
         )
         compliance_report_version_2 = make_recipe(
             'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report_2
+        )
+
+        make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=compliance_report_version_1.compliance_report.compliance_period.reporting_year,
+            rate=Decimal("50.00"),
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=compliance_report_version_2.compliance_report.compliance_period.reporting_year,
+            rate=Decimal("50.00"),
         )
 
         # Test CAS director can see all compliance report versions

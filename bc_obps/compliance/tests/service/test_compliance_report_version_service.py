@@ -172,3 +172,36 @@ class TestComplianceReportVersionService:
         assert result.count() == 2
         assert result.first() == xferred_compliance_report_version
         assert result.last() == xferred_compliance_report_version_2
+
+    def test_calculate_outstanding_balance_tco2e(self):
+        # Arrange
+        # Create compliance report version with a linked compliance period and reporting year
+        compliance_report_version = baker.make_recipe('compliance.tests.utils.compliance_report_version')
+
+        # Create a ComplianceChargeRate for the same reporting year
+        reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
+        charge_rate = baker.make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=reporting_year,
+            rate=Decimal("50.00"),
+        )
+
+        # Create a ComplianceObligation linked to the compliance_report_version
+        obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=compliance_report_version,
+        )
+
+        # Link an ElicensingInvoice with an outstanding balance
+        invoice = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            outstanding_balance=Decimal("100.00"),
+        )
+        obligation.elicensing_invoice = invoice
+        obligation.save()
+
+        # Act
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
+
+        # Assert
+        assert result == Decimal("2.0")  # 100.00 / 50.00

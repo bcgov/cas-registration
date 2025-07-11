@@ -1,6 +1,6 @@
 from ninja import ModelSchema, Schema
 from compliance.models.compliance_obligation import ComplianceObligation
-from compliance.schema.payments import ElicensingPaymentListOut
+from compliance.schema.elicensing_payments import ElicensingPaymentListOut
 from decimal import Decimal
 
 
