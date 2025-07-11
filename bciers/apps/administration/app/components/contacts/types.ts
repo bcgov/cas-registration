@@ -32,6 +32,11 @@ export interface ContactFormData {
   municipality?: string;
   province?: string;
   postal_code?: string;
+  places_assigned?: {
+    operation_id: UUID;
+    operation_name: string;
+    role_name: string;
+  }[];
 }
 
 export interface UserOperatorUser {

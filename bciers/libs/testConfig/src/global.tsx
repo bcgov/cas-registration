@@ -30,6 +30,7 @@ import {
   getSession,
   useContext,
   captureException,
+  archiveContact,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -86,6 +87,10 @@ vi.mock("@bciers/utils/src/sessionUtils", () => ({
 vi.mock("@bciers/actions", () => ({
   actionHandler,
   getToken,
+}));
+
+vi.mock("libs/actions/src/api/archiveContact", () => ({
+  default: archiveContact,
 }));
 
 vi.mock("libs/actions/src/api/getOperation", () => ({

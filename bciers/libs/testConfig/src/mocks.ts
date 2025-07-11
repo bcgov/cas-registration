@@ -51,6 +51,7 @@ const getFacility = vi.fn();
 const getCurrentUsersOperations = vi.fn();
 const handleInternalAccessRequest = vi.fn();
 const captureException = vi.fn();
+const archiveContact = vi.fn();
 
 export {
   actionHandler,
@@ -82,4 +83,5 @@ export {
   getSession,
   useContext,
   captureException,
+  archiveContact,
 };
