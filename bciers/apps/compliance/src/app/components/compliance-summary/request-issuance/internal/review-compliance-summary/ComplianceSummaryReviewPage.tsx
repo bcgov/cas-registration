@@ -3,10 +3,10 @@ import {
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
+import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
 
 interface Props {
   compliance_summary_id: string;
