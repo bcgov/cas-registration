@@ -35,7 +35,11 @@ class BCCarbonRegistryCreditIssuanceService:
         mixed_unit_data = bccr_project_data["mixedUnitList"][0]
         credits_issuance_payload = {
             "account_id": earned_credit.bccr_holding_account_id,
-            "issuance_requested_date": earned_credit.issuance_requested_date.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+            "issuance_requested_date": (
+                earned_credit.issuance_requested_date.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                if earned_credit.issuance_requested_date
+                else None
+            ),
             "project_id": str(bccr_project_data["id"]),
             "verifications": [
                 {

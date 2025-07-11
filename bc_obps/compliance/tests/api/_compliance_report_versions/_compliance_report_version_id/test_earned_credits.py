@@ -5,9 +5,13 @@ from registration.utils import custom_reverse_lazy
 from compliance.models import ComplianceEarnedCredit
 
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
-GET_SERVICE_PATH = "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version"
+GET_SERVICE_PATH = (
+    "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version"
+)
 UPDATE_SERVICE_PATH = "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.update_earned_credit"
-GET_CURRENT_USER_PATH = "compliance.api._compliance_report_versions._compliance_report_version_id.earned_credits.get_current_user"
+GET_CURRENT_USER_PATH = (
+    "compliance.api._compliance_report_versions._compliance_report_version_id.earned_credits.get_current_user"
+)
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent DB queries
@@ -44,7 +48,9 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
             "issued_date": kwargs.get('issued_date', None),
             "issued_by": kwargs.get('issued_by', None),
             "issuance_requested_date": kwargs.get('issuance_requested_date', None),
-            "compliance_report_version.compliance_report.compliance_period.end_date.year": kwargs.get('reporting_year', 2025),
+            "compliance_report_version.compliance_report.compliance_period.end_date.year": kwargs.get(
+                'reporting_year', 2025
+            ),
         }
 
     @patch(GET_SERVICE_PATH)
