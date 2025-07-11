@@ -68,4 +68,4 @@ def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> Elic
         compliance_report_version_id
     ).invoice
 
-    return 200, invoice
+    return invoice

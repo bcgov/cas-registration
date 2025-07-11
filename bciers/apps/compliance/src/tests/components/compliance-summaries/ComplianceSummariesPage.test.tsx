@@ -1,50 +1,65 @@
 import { render, screen } from "@testing-library/react";
 import ComplianceSummariesPage from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesPage";
 import * as fetchModule from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
+import { DataGridSearchParams } from "@/compliance/src/app/types";
+import * as reportingYearModule from "@reporting/src/app/utils/getReportingYear";
+// --- Mocks ---
 
-// Mocking the child component until this issue is fixed: https://github.com/testing-library/react-testing-library/issues/1209#issuecomment-1673372612
 vi.mock(
   "apps/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid",
-  () => {
-    return {
-      default: () => <div>mocked child component</div>,
-    };
-  },
+  () => ({
+    default: () => <div>mocked child component</div>,
+  }),
 );
+
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
   getSessionRole: vi.fn(() => "cas_admin"),
 }));
 
-// Spy on fetchComplianceSummariesPageData
+// --- Test Setup ---
+
+const mockSearchParams: DataGridSearchParams = { page: "1" };
+const mockFetchResponse = { rows: [], row_count: 0 };
+
 const fetchSpy = vi.spyOn(fetchModule, "fetchComplianceSummariesPageData");
 
-describe("ComplianceSummariesPage", () => {
-  const mockSearchParams = { page: "1", limit: "10" };
-  const mockFetchResponse = {
-    rows: [],
-    row_count: 0,
-  };
+const renderPage = async () => {
+  return render(
+    await ComplianceSummariesPage({ searchParams: mockSearchParams }),
+  );
+};
 
+// --- Tests ---
+
+describe("ComplianceSummariesPage", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     fetchSpy.mockResolvedValue(mockFetchResponse);
+
+    vi.spyOn(reportingYearModule, "getReportingYear").mockResolvedValue({
+      reporting_year: 2024,
+      report_due_date: "2025-03-31",
+      reporting_window_end: "2025-03-31",
+    });
   });
 
   it("renders the grid component", async () => {
-    render(
-      await ComplianceSummariesPage({
-        searchParams: mockSearchParams,
-      }),
-    );
+    await renderPage();
     expect(screen.getByText("mocked child component")).toBeVisible();
   });
 
-  it("calls fetchComplianceSummariesPageData", async () => {
-    render(
-      await ComplianceSummariesPage({
-        searchParams: mockSearchParams,
-      }),
-    );
+  it("calls fetchComplianceSummariesPageData with search params", async () => {
+    await renderPage();
     expect(fetchSpy).toHaveBeenCalledWith(mockSearchParams);
+  });
+
+  it("renders alert message with dynamic reporting year", async () => {
+    await renderPage();
+    expect(
+      screen.getByText(
+        /Your compliance obligation for the 2024 reporting year is/i,
+      ),
+    ).toBeVisible();
+    expect(screen.getByText(/due on November 30, 2025/i)).toBeVisible();
   });
 });

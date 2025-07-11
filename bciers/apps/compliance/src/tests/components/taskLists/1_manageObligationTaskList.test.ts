@@ -5,7 +5,7 @@ import {
 
 describe("generateManageObligationTaskList", () => {
   const mockComplianceSummaryId = "123";
-  const mockReportingYear = "2024";
+  const mockReportingYear = 2024;
 
   it("generates task list with correct structure when not in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(

@@ -8,9 +8,10 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/complianceSummaryReviewSchema";
 import { FormBase } from "@bciers/components/form";
 import FormAlerts from "@bciers/components/form/FormAlerts";
+import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 
 interface Props {
-  data: any; // TODO: Replace with the correct type once doing the refactoring #188
+  data: ComplianceSummaryReviewPageData;
   complianceSummaryId: string;
 }
 

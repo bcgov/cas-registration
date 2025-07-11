@@ -180,7 +180,7 @@ class TestComplianceReportVersionService:
 
         # Create a ComplianceChargeRate for the same reporting year
         reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
-        charge_rate = baker.make_recipe(
+        baker.make_recipe(
             'compliance.tests.utils.compliance_charge_rate',
             reporting_year=reporting_year,
             rate=Decimal("50.00"),

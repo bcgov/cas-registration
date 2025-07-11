@@ -97,11 +97,11 @@ class ComplianceDashboardService:
             if report and report.compliance_period:
                 reporting_year = report.compliance_period.reporting_year
                 charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
-                compliance_report_version.compliance_charge_rate = charge_rate
+                compliance_report_version.compliance_charge_rate = charge_rate  # type: ignore[attr-defined]
 
             summary = compliance_report_version.report_compliance_summary
             if summary and summary.excess_emissions is not None:
-                compliance_report_version.equivalent_value = summary.excess_emissions * charge_rate
+                compliance_report_version.equivalent_value = summary.excess_emissions * charge_rate  # type: ignore[attr-defined]
 
             obligation = getattr(compliance_report_version, "obligation", None)
             if (
@@ -112,12 +112,11 @@ class ComplianceDashboardService:
                 ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
                     compliance_report_version_id=compliance_report_version_id
                 )
-                compliance_report_version.outstanding_balance_equivalent_value = (
-                    obligation.elicensing_invoice.outstanding_balance * charge_rate
-                )
+                result = obligation.elicensing_invoice.outstanding_balance * charge_rate
+                compliance_report_version.outstanding_balance_equivalent_value = result  # type: ignore[attr-defined]
 
         return compliance_report_version
-    
+
     @classmethod
     def get_compliance_obligation_payments_by_compliance_report_version_id(
         cls, compliance_report_version_id: int
