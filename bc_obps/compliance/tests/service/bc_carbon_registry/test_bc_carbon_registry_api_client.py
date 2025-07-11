@@ -117,12 +117,12 @@ def valid_issuance_payload():
         "issuance_requested_date": "2025-01-24T13:13:28.547Z",
         "project_id": "104000000036500",
         "unit_type_id": "140000000000001",
+        "newRecord": True,
         "verifications": [
             {
                 "verificationStartDate": "2025-01-01",
                 "verificationEndDate": "2025-01-31",
                 "monitoringPeriod": "01/01/2025 - 31/01/2025",
-                "verifierId": "103100000028644",
                 "mixedUnits": [
                     {
                         "holding_quantity": 100,

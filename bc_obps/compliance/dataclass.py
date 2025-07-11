@@ -1,6 +1,6 @@
 from decimal import Decimal
 from dataclasses import dataclass
-from typing import Optional, List
+from typing import Literal, Optional, List
 from django.db.models import QuerySet
 from compliance.models import ElicensingPayment, ElicensingInvoice
 
@@ -126,3 +126,19 @@ class ComplianceInvoiceContext:
     billing_items: List[dict]
     total_amount_due: str
     logo_base64: str
+
+
+@dataclass
+class ComplianceEarnedCreditsUpdate:
+    """Data model for the BCCR earned credits update API payload"""
+
+    bccr_trading_name: Optional[str] = None  # Only required for industry users - we enforce this in the service layer
+    bccr_holding_account_id: Optional[
+        str
+    ] = None  # Only required for industry users - we enforce this in the service layer
+    analyst_suggestion: Optional[
+        Literal["Ready to approve", "Requiring change of BCCR Holding Account ID", "Requiring supplementary report"]
+    ] = None
+    analyst_comment: Optional[str] = None
+    director_comment: Optional[str] = None
+    director_decision: Optional[Literal["Approved", "Declined"]] = None

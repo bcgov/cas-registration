@@ -2,32 +2,26 @@ import {
   generateIssuanceRequestTaskList,
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
-import InternalReviewByDirectorComponent from "./InternalReviewByDirectorComponent";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
+import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
 
 interface Props {
   compliance_summary_id: string;
 }
 
-export default async function InternalReviewByDirectorPage({
+export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const pageData =
+  const complianceSummary =
     await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
 
-  // If the analyst hasn't reviewed the credits issuance request, redirect to the review page
-  if (!pageData?.analyst_suggestion) {
-    redirect(
-      `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`,
-    );
-  }
-
+  // Redirect the user to track status page if user already requested issuance or issuance is approved or declined
   if (
     [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
-      pageData.issuance_status as IssuanceStatus,
+      complianceSummary.issuance_status,
     )
   ) {
     redirect(
@@ -37,8 +31,8 @@ export default async function InternalReviewByDirectorPage({
 
   const taskListElements = generateIssuanceRequestTaskList(
     complianceSummaryId,
-    pageData.reporting_year,
-    ActivePage.ReviewByDirector,
+    complianceSummary.reporting_year,
+    ActivePage.ReviewComplianceSummary,
   );
 
   return (
@@ -46,9 +40,9 @@ export default async function InternalReviewByDirectorPage({
       complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     >
-      <InternalReviewByDirectorComponent
-        data={pageData}
+      <ComplianceSummaryReviewComponent
         complianceSummaryId={complianceSummaryId}
+        data={complianceSummary}
       />
     </CompliancePageLayout>
   );

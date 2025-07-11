@@ -117,6 +117,10 @@ def get_permission_configs(
             "authorized_app_roles": ["cas_director", "cas_analyst", "industry_user"],
             "authorized_user_operator_roles": ["admin"],
         },
+        "cas_director_analyst_and_approved_industry_user": {
+            "authorized_app_roles": ["cas_director", "cas_analyst", "industry_user"],
+            "authorized_user_operator_roles": ["admin"],
+        },
         "cas_analyst": {
             "authorized_app_roles": list(
                 AppRole.objects.filter(role_name="cas_analyst").values_list("role_name", flat=True)
@@ -156,6 +160,7 @@ def authorize(
         "cas_director",
         "cas_director_analyst_and_industry_admin_user",
         "authorized_irc_user_and_industry_admin_user",
+        "cas_director_analyst_and_approved_industry_user",
         "cas_analyst",
         "cas_admin",
     ],

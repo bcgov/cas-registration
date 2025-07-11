@@ -7,31 +7,31 @@ import {
   createComplianceSummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
 import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
   complianceSummaryId: string;
-  isCasStaff: boolean;
 }
 
 const ComplianceSummaryReviewComponent = ({
   data,
   complianceSummaryId,
-  isCasStaff,
-}: Props) => {
+}: Readonly<Props>) => {
+  const isCasStaff = useSessionRole().includes("cas_");
   const backUrl = "/compliance-summaries";
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/${
-    isCasStaff
-      ? "review-credits-issuance-request"
-      : "request-issuance-of-earned-credits"
-  }`;
+
+  let saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  if (isCasStaff) {
+    saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
+  }
 
   return (
     <FormBase
       schema={createComplianceSummaryReviewSchema(data.reporting_year)}
       uiSchema={complianceSummaryReviewUiSchema(isCasStaff)}
       formData={data}
-      className="w-full"
+      className="w-full min-h-[62vh] flex flex-col justify-between"
     >
       <ComplianceStepButtons
         backUrl={backUrl}

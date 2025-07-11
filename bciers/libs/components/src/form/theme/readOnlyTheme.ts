@@ -35,6 +35,7 @@ const readOnlyTheme = {
     RadioWidget: ReadOnlyRadioWidget,
     SelectWidget: ReadOnlyWidget,
     TextWidget: ReadOnlyWidget,
+    TextAreaWidget: ReadOnlyWidget,
     ToggleWidget: ReadOnlyBooleanWidget,
     URLWidget: ReadOnlyWidget,
     BoroIdWidget: BoroIdWidget,

@@ -1,21 +1,27 @@
 import { render, screen } from "@testing-library/react";
-import RequestIssuanceOfEarnedCreditsPage from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsPage";
+import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-compliance-summary/ComplianceSummaryReviewPage";
 import {
   ActivePage,
-  generateRequestIssuanceTaskList,
-} from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
+  generateIssuanceRequestTaskList,
+} from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { redirect } from "next/navigation";
 
+// Mock the compliance summary data function
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    getRequestIssuanceComplianceSummaryData: vi.fn(),
+  }),
+);
+
 // Mock the task list generator
 vi.mock(
-  "@/compliance/src/app/components/taskLists/requestIssuanceTaskList",
+  "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList",
   () => ({
-    generateRequestIssuanceTaskList: vi.fn(),
-    ActivePage: {
-      RequestIssuanceOfEarnedCredits: "RequestIssuanceOfEarnedCredits",
-    },
+    generateIssuanceRequestTaskList: vi.fn(),
+    ActivePage: { ReviewComplianceSummary: "ReviewComplianceSummary" },
   }),
 );
 
@@ -26,19 +32,11 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   ),
 }));
 
-// Mock the request issuance component
+// Mock the review component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/RequestIssuanceOfEarnedCreditsComponent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent",
   () => ({
-    default: () => <div>Mock Request Issuance Component</div>,
-  }),
-);
-
-// Mock the compliance summary data function
-vi.mock(
-  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
-  () => ({
-    getRequestIssuanceComplianceSummaryData: vi.fn(),
+    default: () => <div>Mock Review Component</div>,
   }),
 );
 
@@ -47,22 +45,17 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-describe("RequestIssuanceOfEarnedCreditsPage", () => {
+describe("Internal ComplianceSummaryReviewPage", () => {
   const mockComplianceSummaryId = "123";
   const mockData = {
-    id: "123",
+    id: 1,
     reporting_year: 2024,
-    earned_credits_amount: 100,
+    earned_credits_amount: 15,
     issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
-    bccr_trading_name: "Test Trading Name",
-    bccr_holding_account_id: "123456789",
-    analyst_comment: "Test comment",
-    analyst_suggestion: "ready_to_approve",
-    analyst_submitted_date: "2024-01-01",
-    analyst_submitted_by: "Test Analyst",
-    director_comment: "Test director comment",
-    director_submitted_date: "2024-01-01",
-    director_submitted_by: "Test Director",
+    operation_name: "Test Operation",
+    emissions_attributable_for_compliance: "85.0",
+    emission_limit: "100.0",
+    excess_emissions: "-15.0",
   };
 
   beforeEach(() => {
@@ -74,35 +67,20 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
 
   it("renders with correct content and generates task list", async () => {
     render(
-      await RequestIssuanceOfEarnedCreditsPage({
+      await ComplianceSummaryReviewPage({
         compliance_summary_id: mockComplianceSummaryId,
       }),
     );
 
     // Check content is rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(screen.getByText("Mock Request Issuance Component")).toBeVisible();
+    expect(screen.getByText("Mock Review Component")).toBeVisible();
 
     // Verify task list generation
-    expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
+    expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
       mockComplianceSummaryId,
       2024,
-      ActivePage.RequestIssuanceOfEarnedCredits,
-    );
-  });
-
-  it("redirects to track status page when issuance status is ISSUANCE_REQUESTED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
-    });
-
-    await RequestIssuanceOfEarnedCreditsPage({
-      compliance_summary_id: mockComplianceSummaryId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      ActivePage.ReviewComplianceSummary,
     );
   });
 
@@ -112,7 +90,7 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
       issuance_status: IssuanceStatus.APPROVED,
     });
 
-    await RequestIssuanceOfEarnedCreditsPage({
+    await ComplianceSummaryReviewPage({
       compliance_summary_id: mockComplianceSummaryId,
     });
 
@@ -127,13 +105,29 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
       issuance_status: IssuanceStatus.DECLINED,
     });
 
-    await RequestIssuanceOfEarnedCreditsPage({
+    await ComplianceSummaryReviewPage({
       compliance_summary_id: mockComplianceSummaryId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
       `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
     );
+  });
+
+  it("does not redirect when issuance status is ISSUANCE_REQUESTED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
+    });
+
+    render(
+      await ComplianceSummaryReviewPage({
+        compliance_summary_id: mockComplianceSummaryId,
+      }),
+    );
+
+    expect(redirect).not.toHaveBeenCalled();
+    expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 
   it("does not redirect when issuance status is CREDITS_NOT_ISSUED", async () => {
@@ -143,23 +137,7 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     });
 
     render(
-      await RequestIssuanceOfEarnedCreditsPage({
-        compliance_summary_id: mockComplianceSummaryId,
-      }),
-    );
-
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
-  });
-
-  it("does not redirect when issuance status is CHANGES_REQUIRED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
-    });
-
-    render(
-      await RequestIssuanceOfEarnedCreditsPage({
+      await ComplianceSummaryReviewPage({
         compliance_summary_id: mockComplianceSummaryId,
       }),
     );

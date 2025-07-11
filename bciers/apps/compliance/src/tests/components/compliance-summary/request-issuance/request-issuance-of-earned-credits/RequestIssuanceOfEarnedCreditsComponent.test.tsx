@@ -63,7 +63,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     ).toBeVisible();
   });
 
-  it("shows BCCR account input field with help text", () => {
+  it("shows BCCR account input field", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
@@ -160,8 +160,8 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     // Verify that actionHandler was called with correct parameters
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_SUMMARY_ID}/projects`,
-        "POST",
+        `compliance/compliance-report-versions/${TEST_COMPLIANCE_SUMMARY_ID}/earned-credits`,
+        "PUT",
         "",
         {
           body: JSON.stringify({

@@ -1,9 +1,12 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import InternalReviewCreditsIssuanceRequestComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-credits-issuance-request/InternalReviewCreditsIssuanceRequestComponent";
+import { IssuanceStatus, AnalystSuggestion } from "@bciers/utils/src/enums";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import { actionHandler } from "@bciers/actions";
 
 // Mock useSessionRole
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  useSessionRole: vi.fn().mockReturnValue("cas_analyst"),
+  useSessionRole: vi.fn(),
 }));
 
 // Mock the router
@@ -14,26 +17,36 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+// Mock actionHandler
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
+}));
+
 describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   const mockFormData = {
-    id: "123",
     reporting_year: 2023,
+    emissions_attributable_for_compliance: 85,
+    emission_limit: 100,
+    excess_emissions: -15,
     earned_credits_amount: 100,
-    issuance_status: "approved",
+    issuance_status: IssuanceStatus.APPROVED,
     bccr_trading_name: "Test Company",
-    holding_account_id: "123456789012345",
+    bccr_holding_account_id: "123456789012345",
     analyst_comment: "Test comment",
-    submitted_by: "Test User",
-    submitted_at: "2023-01-01",
-    analyst_recommendation: "ready_to_approve",
+    director_comment: "Director comment",
+    analyst_submitted_by: "Test User",
+    analyst_submitted_date: "2023-01-01",
+    analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
   };
   const mockComplianceSummaryId = "123";
 
   beforeEach(() => {
     vi.clearAllMocks();
+    (useSessionRole as any).mockReturnValue("cas_analyst");
+    (actionHandler as any).mockResolvedValue({ error: null });
   });
 
-  it("renders form fields, section headers, and navigation buttons", () => {
+  it("renders form with correct title, section headers, and field labels for CAS Analyst", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
@@ -56,12 +69,27 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     expect(screen.getByText("Analyst's Suggestion:")).toBeVisible();
     expect(screen.getByText("Analyst's Comment:")).toBeVisible();
 
+    // Check field values
+    expect(screen.getByText("100")).toBeVisible();
+    expect(screen.getByText("Approved, credits issued in BCCR")).toBeVisible();
+    expect(screen.getByText("Test Company")).toBeVisible();
+    expect(screen.getByText("123456789012345")).toBeVisible();
+    expect(screen.getByText("Ready to approve")).toBeVisible();
+    expect(screen.getByText("Test comment")).toBeVisible();
+
+    // Check submission info
+    expect(
+      screen.getByText("Submitted by Test User on January 1, 2023"),
+    ).toBeVisible();
+
     // Check navigation buttons
     expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Continue" })).toBeVisible();
   });
 
-  it("handles navigation buttons with correct states", () => {
+  it("check non cas analyst can't edit the analyst suggestion and comment", () => {
+    (useSessionRole as any).mockReturnValue("cas_director");
+
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
@@ -69,23 +97,147 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
       />,
     );
 
-    // Check button states
-    const backButton = screen.getByRole("button", { name: "Back" });
-    const continueButton = screen.getByRole("button", { name: "Continue" });
+    // check there is no radio button for analyst suggestion
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
 
-    expect(backButton).toBeVisible();
-    expect(continueButton).toBeVisible();
+    // check there is no text area for analyst comment
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+  });
 
-    // Test back button navigation
-    fireEvent.click(backButton);
-    expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-review-summary`,
+  it("handles form submission for CAS Analyst", async () => {
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={mockFormData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
     );
 
-    // Test continue button navigation
-    fireEvent.click(continueButton);
+    const submitButton = screen.getByRole("button", { name: "Continue" });
+    expect(submitButton).not.toBeDisabled();
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        "compliance/compliance-report-versions/123/earned-credits",
+        "PUT",
+        "/compliance-summaries/123/review-by-director",
+        {
+          body: JSON.stringify({
+            analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
+            analyst_comment: "Test comment",
+          }),
+        },
+      );
+    });
+
     expect(mockPush).toHaveBeenCalledWith(
       `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
     );
+  });
+
+  it("redirects non-CAS Analyst without submitting", async () => {
+    (useSessionRole as any).mockReturnValue("cas_director");
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={mockFormData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Continue" });
+    fireEvent.click(submitButton);
+
+    expect(mockPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+    );
+    expect(actionHandler).not.toHaveBeenCalled();
+  });
+
+  it("disables submit button when analyst suggestion is missing", () => {
+    const formDataWithoutSuggestion = {
+      ...mockFormData,
+      analyst_suggestion: undefined as any,
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithoutSuggestion}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Continue" });
+    expect(submitButton).toBeDisabled();
+  });
+
+  it("handles submission errors", async () => {
+    (actionHandler as any).mockResolvedValue({ error: "Submission failed" });
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={mockFormData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const submitButton = screen.getByRole("button", { name: "Continue" });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(screen.getByText("Submission failed")).toBeVisible();
+    });
+
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(submitButton).not.toBeDisabled();
+  });
+
+  it("handles back button navigation", () => {
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={mockFormData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const backButton = screen.getByRole("button", { name: "Back" });
+    fireEvent.click(backButton);
+
+    expect(mockPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-review-summary`,
+    );
+  });
+
+  it("displays submission info without analyst name when not provided", () => {
+    const formDataWithoutAnalyst = {
+      ...mockFormData,
+      analyst_submitted_by: undefined as any,
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithoutAnalyst}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    expect(screen.getByText("Submitted on January 1, 2023")).toBeVisible();
+  });
+
+  it("displays submission info without date when not provided", () => {
+    const formDataWithoutDate = {
+      ...mockFormData,
+      analyst_submitted_date: undefined as any,
+    };
+
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={formDataWithoutDate}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    expect(screen.getByText("Submitted by Test User")).toBeVisible();
   });
 });
