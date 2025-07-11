@@ -50,10 +50,15 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       return;
     }
     setIsSubmitting(true);
+    // only send the data that is needed for the update by the analyst
+    const payload = {
+      analyst_suggestion: formData?.analyst_suggestion,
+      analyst_comment: formData?.analyst_comment,
+    };
     const endpoint = `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`;
     const pathToRevalidate = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
     if (response && !response.error) {
       router.push(continueUrl);

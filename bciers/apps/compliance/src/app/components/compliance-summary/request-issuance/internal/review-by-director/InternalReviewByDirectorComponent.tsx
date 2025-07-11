@@ -67,8 +67,9 @@ const InternalReviewByDirectorComponent = ({
       return;
     }
     setIsSubmitting(true);
+    // only send the data that is needed for the update by the director
     const payload = {
-      ...formData,
+      director_comment: formData?.director_comment,
       director_decision: decision,
     };
     const endpoint = `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`;
@@ -91,7 +92,7 @@ const InternalReviewByDirectorComponent = ({
   return (
     <FormBase
       schema={internalReviewByDirectorSchema}
-      uiSchema={internalReviewByDirectorUiSchema(isCasDirector)}
+      uiSchema={internalReviewByDirectorUiSchema}
       readonly={isReadOnly}
       disabled={isSubmitting}
       formData={formData}
