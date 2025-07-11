@@ -661,3 +661,13 @@ export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
 }
+
+// 🛠️ Function: checks if the breadcrumb contains the specified text using getByText
+export async function checkBreadcrumbText(
+  page: Page,
+  expectedText: string | RegExp,
+) {
+  const breadcrumbLocator = page.locator('nav[aria-label="breadcrumbs"]');
+  const textLocator = breadcrumbLocator.getByText(expectedText);
+  await expect(textLocator).toBeVisible();
+}

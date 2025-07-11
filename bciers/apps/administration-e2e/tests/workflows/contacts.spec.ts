@@ -82,6 +82,7 @@ test.describe("Test add/edit contact", () => {
 
     // Verify that fields were updated
     await contactsPage.contactInformation("read");
+    await contactsPage.assertBreadcrumbIsCorrect();
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Contact form",
       variant: "filled",

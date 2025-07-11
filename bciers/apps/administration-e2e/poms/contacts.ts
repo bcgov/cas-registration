@@ -15,6 +15,7 @@ import {
 import {
   fillRequiredFormFields,
   clickWithRetry,
+  checkBreadcrumbText,
 } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -107,6 +108,11 @@ export class ContactsPOM {
       requiredValues,
       mode,
     );
+  }
+
+  async assertBreadcrumbIsCorrect() {
+    const text = `${ContactE2EValue.FIRST_NAME} ${ContactE2EValue.LAST_NAME}`;
+    await checkBreadcrumbText(this.page, text);
   }
 
   async searchContactsGrid(email: string) {
