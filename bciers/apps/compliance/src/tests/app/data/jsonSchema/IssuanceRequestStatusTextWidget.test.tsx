@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 
-describe("StatusTextWidget", () => {
+describe("IssuanceRequestStatusTextWidget", () => {
   const statusTestCases = [
     {
       status: IssuanceStatus.APPROVED,
@@ -29,7 +29,7 @@ describe("StatusTextWidget", () => {
   it.each(statusTestCases)(
     "should render '$expectedText' for status '$status'",
     ({ status, expectedText }) => {
-      render(<StatusTextWidget value={status} />);
+      render(<IssuanceRequestStatusTextWidget value={status} />);
       const element = screen.getByText(expectedText);
       expect(element).toBeVisible();
       expect(element.tagName).toBe("SPAN");
@@ -37,7 +37,7 @@ describe("StatusTextWidget", () => {
   );
 
   it("should render empty span for unknown status", () => {
-    const { container } = render(<StatusTextWidget value="UNKNOWN_STATUS" />);
+    const { container } = render(<IssuanceRequestStatusTextWidget value="UNKNOWN_STATUS" />);
     const span = container.querySelector("span");
     expect(span).toBeInTheDocument();
     expect(span).toHaveTextContent("");
