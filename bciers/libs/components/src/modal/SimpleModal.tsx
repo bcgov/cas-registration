@@ -10,6 +10,7 @@ interface Props extends React.PropsWithChildren {
   onConfirm: () => void;
   confirmText?: string;
   cancelText?: string;
+  showConfirmButton?: boolean;
   textComponentType?: "p" | "span" | "div";
   dialogContentClassName?: string;
   isSubmitting?: boolean;
@@ -22,6 +23,7 @@ const SimpleModal: React.FC<Props> = ({
   onConfirm,
   confirmText = "Confirm",
   cancelText = "Cancel",
+  showConfirmButton = true,
   textComponentType = "p",
   children,
   dialogContentClassName,
@@ -39,9 +41,11 @@ const SimpleModal: React.FC<Props> = ({
         <Button variant="outlined" color="primary" onClick={onCancel}>
           {cancelText}
         </Button>
-        <SubmitButton isSubmitting={isSubmitting} onClick={onConfirm}>
-          {confirmText}
-        </SubmitButton>
+        {showConfirmButton && (
+          <SubmitButton isSubmitting={isSubmitting} onClick={onConfirm}>
+            {confirmText}
+          </SubmitButton>
+        )}
       </DialogActions>
     </Modal>
   );

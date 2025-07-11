@@ -2,6 +2,7 @@
 
 import { createRef, useState } from "react";
 import { Alert, Button } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
@@ -13,6 +14,7 @@ import {
 import { FormMode, FrontendMessages } from "@bciers/utils/src/enums";
 import SnackBar from "@bciers/components/form/components/SnackBar";
 import SubmitButton from "@bciers/components/button/SubmitButton";
+import { BC_GOV_SEMANTICS_RED } from "@bciers/styles";
 
 interface SingleStepTaskListFormProps {
   disabled?: boolean;
@@ -29,6 +31,9 @@ interface SingleStepTaskListFormProps {
   formContext?: { [key: string]: any };
   showTasklist?: boolean;
   showCancelOrBackButton?: boolean;
+  showDeleteButton?: boolean;
+  handleDelete?: () => void;
+  deleteButtonText?: string;
   customButtonSection?: React.ReactNode;
 }
 
@@ -38,6 +43,7 @@ const SingleStepTaskListForm = ({
   onChange,
   onCancel,
   onSubmit,
+  handleDelete,
   schema,
   uiSchema,
   error,
@@ -47,6 +53,8 @@ const SingleStepTaskListForm = ({
   formContext,
   showTasklist = true,
   showCancelOrBackButton = true,
+  showDeleteButton = false,
+  deleteButtonText = "Delete",
   customButtonSection,
 }: SingleStepTaskListFormProps) => {
   const hasFormData = Object.keys(rawFormData).length > 0;
@@ -128,43 +136,57 @@ const SingleStepTaskListForm = ({
           <div className="min-h-6">
             {error && <Alert severity="error">{error}</Alert>}
           </div>
-          {customButtonSection || (
-            <div className="w-full flex justify-start mt-8">
-              {showCancelOrBackButton && (
-                <Button
-                  className="mr-4"
-                  variant="outlined"
-                  type="button"
-                  onClick={onCancel}
-                >
-                  {modeState === FormMode.EDIT ? "Cancel" : "Back"}
-                </Button>
-              )}
-              {allowEdit && (
-                <>
-                  {isDisabled ? (
-                    <Button
-                      variant="contained"
-                      onClick={() => {
-                        setIsDisabled(false);
-                        setIsSnackbarOpen(false);
-                        setModeState(FormMode.EDIT);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  ) : (
-                    <SubmitButton
-                      disabled={isSubmitting}
-                      isSubmitting={isSubmitting}
-                    >
-                      Save
-                    </SubmitButton>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+          <div className="w-full flex justify-between items-center mt-8">
+            {customButtonSection || (
+              <div className="flex items-center">
+                {showCancelOrBackButton && (
+                  <Button
+                    className="mr-4"
+                    variant="outlined"
+                    type="button"
+                    onClick={onCancel}
+                  >
+                    {modeState === FormMode.EDIT ? "Cancel" : "Back"}
+                  </Button>
+                )}
+                {allowEdit && (
+                  <>
+                    {isDisabled ? (
+                      <Button
+                        variant="contained"
+                        onClick={() => {
+                          setIsDisabled(false);
+                          setIsSnackbarOpen(false);
+                          setModeState(FormMode.EDIT);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    ) : (
+                      <SubmitButton
+                        disabled={isSubmitting}
+                        isSubmitting={isSubmitting}
+                      >
+                        Save
+                      </SubmitButton>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
+            {showDeleteButton && (
+              <Button
+                variant="outlined"
+                color="error"
+                style={{ color: BC_GOV_SEMANTICS_RED }}
+                startIcon={<DeleteOutlineIcon />}
+                onClick={handleDelete}
+              >
+                {deleteButtonText}
+              </Button>
+            )}
+          </div>
         </FormBase>
       </div>
     </div>
