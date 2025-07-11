@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0012_alter_compliancereportversion_status'),
+        ('compliance', '0013_complianceearnedcredit_restrict_bccr_trading_name_unless_not_issued'),
     ]
 
     operations = [
