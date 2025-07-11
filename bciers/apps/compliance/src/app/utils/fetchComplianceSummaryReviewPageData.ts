@@ -6,23 +6,23 @@ import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 export async function fetchComplianceSummaryReviewPageData(
   complianceReportVersionId: string,
 ): Promise<ComplianceSummaryReviewPageData> {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   const [
-    compliance_report_version,
-    monetary_payments,
-    applied_compliance_units_data,
+    complianceReportVersion,
+    monetaryPayments,
+    appliedComplianceUnitsData,
   ] = await Promise.all([
     getComplianceSummary(complianceReportVersionId),
     getComplianceSummaryPayments(complianceReportVersionId),
     getComplianceAppliedUnits(complianceReportVersionId),
   ]);
-  const compliance_report_version_id = complianceReportVersionId;
 
   return {
-    ...compliance_report_version,
-    monetary_payments,
+    ...complianceReportVersion,
+    monetary_payments: monetaryPayments,
     applied_units_summary: {
-      compliance_report_version_id,
-      applied_compliance_units: applied_compliance_units_data,
+      compliance_report_version_id: complianceReportVersionId,
+      applied_compliance_units: appliedComplianceUnitsData,
     },
   };
 }

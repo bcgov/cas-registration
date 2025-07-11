@@ -16,7 +16,7 @@ vi.mock(
       issuance_status: "Issuance not requested",
       operation_name: "Test Operation",
       emissions_attributable_for_compliance: "85.0",
-      emission_limit: "100.0",
+      emissions_limit: "100.0",
       excess_emissions: "-15.0",
     }),
   }),

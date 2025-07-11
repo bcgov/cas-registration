@@ -17,7 +17,6 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
             report_compliance_summary__credited_emissions=Decimal("25.0000"),
             status="Obligation not met",
         )
-        compliance_report_version.outstanding_balance = Decimal("100.0000")
         mock_get_version.return_value = compliance_report_version
 
         # Mock authorization
@@ -45,4 +44,3 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
         )
         assert Decimal(response_data["excess_emissions"]) == Decimal("50.0000")
         assert Decimal(response_data["credited_emissions"]) == Decimal("25.0000")
-        assert Decimal(response_data["outstanding_balance"]) == Decimal("100.0000")

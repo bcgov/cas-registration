@@ -6,26 +6,25 @@ import { Button, Link } from "@mui/material";
 import complianceUnitsColumns from "@/compliance/src/app/components/datagrid/models/compliance-units/complianceUnitsColumns";
 import { bcCarbonRegistryLink } from "@bciers/utils/src/urls";
 import AlertNote from "@bciers/components/form/components/AlertNote";
-import { ComplianceAppliedUnits } from "@/compliance/src/app/types";
 import SimpleAccordion from "@bciers/components/accordion/SimpleAccordion";
-
-export interface ComplianceUnitsProps {
-  complianceSummaryId: string;
-  appliedComplianceUnits: Array<ComplianceAppliedUnits>;
-}
+import { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
 
 export const ComplianceUnitsGrid = ({
   value,
 }: {
-  value: ComplianceUnitsProps;
+  value: ComplianceAppliedUnitsSummary;
 }) => {
-  const { complianceSummaryId, appliedComplianceUnits } = value;
+  // Destructure to camelCase variable names
+  const {
+    compliance_report_version_id: complianceReportVersionId,
+    applied_compliance_units: appliedComplianceUnits,
+  } = value;
 
   const router = useRouter();
 
   const handleApplyComplianceUnits = () =>
     router.push(
-      `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
+      `/compliance-summaries/${complianceReportVersionId}/apply-compliance-units`,
     );
 
   const columns = complianceUnitsColumns();
@@ -47,11 +46,7 @@ export const ComplianceUnitsGrid = ({
       </AlertNote>
       <DataGrid
         columns={columns}
-        initialData={{
-          rows: appliedComplianceUnits,
-          row_count: appliedComplianceUnits.length,
-        }}
-        // Adjust the height of the grid and the overlay wrapper to fit the content
+        initialData={appliedComplianceUnits}
         sx={{
           "& .MuiDataGrid-virtualScroller": {
             height: "fit-content",

@@ -10,7 +10,7 @@ OPERATION_NAME_ALIAS = "compliance_report.report.operation.name"
 OPERATION_BCGHG_ID_ALIAS = "compliance_report.report.operation.bcghg_id.id"
 
 # reporting_year aliases
-REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.reporting_year.reporting_year"
+REPORTING_YEAR_ALIAS = "compliance_report.compliance_period.end_date.year"
 
 # report_compliance_summary aliases
 EXCESS_EMISSIONS_ALIAS = "report_compliance_summary.excess_emissions"
@@ -24,9 +24,6 @@ OBLIGATION_PENALTY_STATUS_ALIAS = "obligation.penalty_status"
 
 # compliance_earned_credits aliases
 ISSUANCE_STATUS_ALIAS = "compliance_earned_credit.issuance_status"
-
-# elicensing_invoice aliases
-OUTSTANDING_BALANCE_ALIAS = "obligation.elicensing_invoice.outstanding_balance"
 
 
 class ComplianceReportVersionListOut(ModelSchema):
@@ -53,9 +50,9 @@ class ComplianceReportVersionOut(ModelSchema):
     emissions_attributable_for_compliance: Decimal = Field(..., alias=ATTRIBUTABLE_EMISSIONS_ALIAS)
     emissions_limit: Decimal = Field(..., alias=EMISSIONS_LIMIT_ALIAS)
     credited_emissions: Decimal = Field(..., alias=CREDITED_EMISSIONS_ALIAS)
-    outstanding_balance: Optional[Decimal] = Field(None, alias=OUTSTANDING_BALANCE_ALIAS)
     compliance_charge_rate: Optional[Decimal] = None
     equivalent_value: Optional[Decimal] = None
+    outstanding_balance_tco2e: Optional[Decimal] = None
     outstanding_balance_equivalent_value: Optional[Decimal] = None
 
     class Meta:

@@ -1,11 +1,9 @@
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import type { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
+import { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
 
-// Mocks
 const mockRouterPush = vi.fn();
-
 useRouter.mockReturnValue({
   query: {},
   push: mockRouterPush,
@@ -15,29 +13,34 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
+// Use camelCase variable names
+const complianceReportVersionId = "123";
+const appliedComplianceUnits = {
+  row_count: 2,
+  rows: [
+    {
+      id: "1",
+      type: "Offset Units",
+      serial_number: "BC-123-456",
+      vintage_year: "2024",
+      quantity_applied: 100,
+      equivalent_value: 8000,
+    },
+    {
+      id: "2",
+      type: "Earned Credits",
+      serial_number: "BC-789-012",
+      vintage_year: "2023",
+      quantity_applied: 50,
+      equivalent_value: 4000,
+    },
+  ],
+};
+
+// Object keys remain in snake_case to match the expected type
 const mockValue: ComplianceAppliedUnitsSummary = {
-  compliance_report_version_id: "123",
-  applied_compliance_units: {
-    row_count: 2,
-    rows: [
-      {
-        id: "1",
-        type: "Offset Units",
-        serial_number: "BC-123-456",
-        vintage_year: "2024",
-        quantity_applied: 100,
-        equivalent_value: 8000,
-      },
-      {
-        id: "2",
-        type: "Earned Credits",
-        serial_number: "BC-789-012",
-        vintage_year: "2023",
-        quantity_applied: 50,
-        equivalent_value: 4000,
-      },
-    ],
-  },
+  compliance_report_version_id: complianceReportVersionId,
+  applied_compliance_units: appliedComplianceUnits,
 };
 
 describe("ComplianceUnitsGrid", () => {
@@ -45,17 +48,21 @@ describe("ComplianceUnitsGrid", () => {
     vi.clearAllMocks();
   });
 
-  it("renders alert note and data grid", () => {
+  it("renders the grid with compliance units data", () => {
     render(<ComplianceUnitsGrid value={mockValue} />);
 
-    // Alert note
-    const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent("You may use compliance units");
+    const alertNote = screen.getByRole("alert");
+    expect(alertNote).toBeVisible();
+    expect(alertNote).toHaveTextContent("You may use compliance units");
     expect(
-      within(alert).getByRole("link", { name: /b\.c\. carbon registry/i }),
+      within(alertNote).getByRole("link", {
+        name: "B.C. Carbon Registry (BCCR)",
+      }),
     ).toBeVisible();
+    expect(alertNote).toHaveTextContent(
+      "You may use compliance units (earned credits, offset units) you hold in the B.C. Carbon Registry (BCCR) to meet up to 50% of the compliance obligation below. The remaining balance must be met with monetary payment(s)",
+    );
 
-    // Headers
     const headers = [
       "Type",
       "Serial Number",
@@ -65,38 +72,41 @@ describe("ComplianceUnitsGrid", () => {
       "Equivalent Value",
     ];
     headers.forEach((header) => {
-      expect(
-        screen.getByRole("columnheader", { name: header }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
     });
 
-    // Data rows
     const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(3); // header + 2 data rows
+    expect(rows).toHaveLength(3);
 
-    const [_, firstRow, secondRow] = rows;
+    const firstRow = rows[1];
+    expect(within(firstRow).getByText("Offset Units")).toBeVisible();
+    expect(within(firstRow).getByText("BC-123-456")).toBeVisible();
+    expect(within(firstRow).getByText("2024")).toBeVisible();
+    expect(within(firstRow).getByText("100")).toBeVisible();
+    expect(within(firstRow).getByText("100 tCO2e")).toBeVisible();
+    expect(within(firstRow).getByText("$8,000.00")).toBeVisible();
 
-    within(firstRow).getByText("Offset Units");
-    within(firstRow).getByText("BC-123-456");
-    within(firstRow).getByText("2024");
-    within(firstRow).getByText("100");
-    within(firstRow).getByText("100 tCO2e");
-    within(firstRow).getByText("$8,000.00");
+    const secondRow = rows[2];
+    expect(within(secondRow).getByText("Earned Credits")).toBeVisible();
+    expect(within(secondRow).getByText("BC-789-012")).toBeVisible();
+    expect(within(secondRow).getByText("2023")).toBeVisible();
+    expect(within(secondRow).getByText("50")).toBeVisible();
+    expect(within(secondRow).getByText("50 tCO2e")).toBeVisible();
+    expect(within(secondRow).getByText("$4,000.00")).toBeVisible();
 
-    within(secondRow).getByText("Earned Credits");
-    within(secondRow).getByText("BC-789-012");
-    within(secondRow).getByText("2023");
-    within(secondRow).getByText("50");
-    within(secondRow).getByText("50 tCO2e");
-    within(secondRow).getByText("$4,000.00");
+    const applyButton = screen.getByRole("button", {
+      name: "Apply Compliance Units",
+    });
+    expect(applyButton).toBeVisible();
+    expect(applyButton).toBeEnabled();
   });
 
-  it("navigates to apply page when button is clicked", () => {
+  it("navigates to apply compliance units page when button is clicked", () => {
     render(<ComplianceUnitsGrid value={mockValue} />);
-    const applyButton = screen.getByRole("button", {
-      name: /apply compliance units/i,
-    });
 
+    const applyButton = screen.getByRole("button", {
+      name: "Apply Compliance Units",
+    });
     fireEvent.click(applyButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
@@ -104,17 +114,18 @@ describe("ComplianceUnitsGrid", () => {
     );
   });
 
-  it("renders the BCCR link correctly", () => {
+  it("renders BCCR link with correct attributes", () => {
     render(<ComplianceUnitsGrid value={mockValue} />);
-    const link = screen.getByRole("link", {
-      name: /b\.c\. carbon registry/i,
-    });
 
-    expect(link).toHaveAttribute(
+    const bccrLink = screen.getByRole("link", {
+      name: "B.C. Carbon Registry (BCCR)",
+    });
+    expect(bccrLink).toBeVisible();
+    expect(bccrLink).toHaveAttribute(
       "href",
       "https://carbonregistry.gov.bc.ca/bccarbonregistry",
     );
-    expect(link).toHaveAttribute("target", "_blank");
-    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    expect(bccrLink).toHaveAttribute("target", "_blank");
+    expect(bccrLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 });

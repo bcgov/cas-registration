@@ -1,9 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import ComplianceSummariesPage from "@/compliance/src/app/components/compliance-summaries/ComplianceSummariesPage";
 import * as fetchModule from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
+import * as sessionUtils from "@bciers/utils/src/sessionUtils";
 import { DataGridSearchParams } from "@/compliance/src/app/types";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 import * as reportingYearModule from "@reporting/src/app/utils/getReportingYear";
-// --- Mocks ---
+
+// --- Component Mocks ---
 
 vi.mock(
   "apps/compliance/src/app/components/compliance-summaries/ComplianceSummariesDataGrid",
@@ -12,16 +15,33 @@ vi.mock(
   }),
 );
 
+// --- Utility Mocks ---
+
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  getSessionRole: vi.fn(() => "cas_admin"),
+  getSessionRole: vi.fn(() => FrontEndRoles.CAS_ADMIN),
 }));
 
-// --- Test Setup ---
+// --- Constants ---
 
 const mockSearchParams: DataGridSearchParams = { page: "1" };
-const mockFetchResponse = { rows: [], row_count: 0 };
+const mockFetchResponse = {
+  rows: [
+    {
+      id: 1,
+      operation_name: "Test Operation",
+      reporting_year: 2024,
+      excess_emissions: 0,
+    },
+  ],
+  row_count: 1,
+};
+
+// --- Spies ---
 
 const fetchSpy = vi.spyOn(fetchModule, "fetchComplianceSummariesPageData");
+const roleSpy = vi.spyOn(sessionUtils, "getSessionRole");
+
+// --- Helpers ---
 
 const renderPage = async () => {
   return render(
@@ -35,7 +55,7 @@ describe("ComplianceSummariesPage", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     fetchSpy.mockResolvedValue(mockFetchResponse);
-
+    roleSpy.mockResolvedValue(FrontEndRoles.CAS_ADMIN);
     vi.spyOn(reportingYearModule, "getReportingYear").mockResolvedValue({
       reporting_year: 2024,
       report_due_date: "2025-03-31",
