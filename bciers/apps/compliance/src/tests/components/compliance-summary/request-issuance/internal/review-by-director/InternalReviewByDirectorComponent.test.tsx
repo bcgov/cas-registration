@@ -1,5 +1,8 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import InternalReviewByDirectorComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-by-director/InternalReviewByDirectorComponent";
+import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import { actionHandler } from "@bciers/actions";
 
 // Mock the router
 const mockPush = vi.fn();
@@ -11,81 +14,299 @@ vi.mock("next/navigation", () => ({
 
 // Mock useSessionRole
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  useSessionRole: vi.fn().mockReturnValue("cas_director"),
+  useSessionRole: vi.fn(),
+}));
+
+vi.mock("@bciers/actions", () => ({
+  actionHandler: vi.fn(),
 }));
 
 describe("InternalReviewByDirectorComponent", () => {
-  const mockFormData = {
-    id: "123",
+  const mockData = {
     reporting_year: 2023,
+    emissions_attributable_for_compliance: 85,
+    emission_limit: 100,
+    excess_emissions: -15,
     earned_credits_amount: 100,
-    issuance_status: "approved",
+    issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
     bccr_trading_name: "Test Trading Co",
-    holding_account_id: "123456789012345",
+    bccr_holding_account_id: "123456789012345",
     analyst_comment: "Analyst's review comment",
-    analyst_recommendation: "ready_to_approve",
     director_comment: "",
+    analyst_submitted_date: "2024-01-15",
+    analyst_submitted_by: "Test Analyst",
+    analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
   };
 
   const mockComplianceSummaryId = "123";
 
   beforeEach(() => {
     vi.clearAllMocks();
+    (useSessionRole as any).mockReturnValue("cas_director");
+    (actionHandler as any).mockResolvedValue({ error: null });
   });
 
-  it("renders form fields, section headers, and navigation buttons", () => {
+  it("renders form fields, section headers, and navigation buttons for director", () => {
     render(
       <InternalReviewByDirectorComponent
-        initialFormData={mockFormData}
+        data={mockData}
         complianceSummaryId={mockComplianceSummaryId}
       />,
     );
 
-    // Check section headers
     expect(screen.getByText("Earned Credits")).toBeVisible();
     expect(screen.getByText("Reviewed by Analyst")).toBeVisible();
-
-    // Check field labels
+    expect(screen.queryAllByText("Review by Director")).toHaveLength(2); // one for the page title and one for the input label
     expect(screen.getByText("Earned Credits:")).toBeVisible();
     expect(screen.getByText("Status of Issuance:")).toBeVisible();
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText("BCCR Holding Account ID:")).toBeVisible();
     expect(screen.getByText("Analyst's Comment:")).toBeVisible();
     expect(screen.getByText("Director's Comment:")).toBeVisible();
+    expect(screen.getByText("100")).toBeVisible(); // earned_credits_amount
+    expect(screen.getByText("Test Trading Co")).toBeVisible(); // bccr_trading_name
+    expect(screen.getByText("123456789012345")).toBeVisible(); // bccr_holding_account_id
+    expect(screen.getByText("Analyst's review comment")).toBeVisible(); // analyst_comment
 
     // Check navigation buttons
     expect(screen.getByRole("button", { name: "Back" })).toBeVisible();
+    // Check that action buttons are visible
     expect(screen.getByRole("button", { name: "Decline" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Approve" })).toBeVisible();
   });
 
-  it("handles navigation and action buttons with correct states", () => {
+  it("renders form without action buttons when user is not CAS director", () => {
+    (useSessionRole as any).mockReturnValue("cas_analyst");
+
     render(
       <InternalReviewByDirectorComponent
-        initialFormData={mockFormData}
+        data={mockData}
         complianceSummaryId={mockComplianceSummaryId}
       />,
     );
 
-    // Check button states
-    const backButton = screen.getByRole("button", { name: "Back" });
-    const declineButton = screen.getByRole("button", { name: "Decline" });
-    const approveButton = screen.getByRole("button", { name: "Approve" });
+    // Action buttons should not be visible
+    expect(
+      screen.queryByRole("button", { name: "Decline" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Approve" }),
+    ).not.toBeInTheDocument();
+  });
 
-    expect(backButton).toBeVisible();
-    expect(declineButton).toBeVisible();
-    expect(approveButton).toBeVisible();
+  it("disables action buttons when analyst suggestion is not ready to approve", () => {
+    const dataWithDifferentSuggestion = {
+      ...mockData,
+      analyst_suggestion:
+        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+    };
 
-    // Test back button navigation
+    render(
+      <InternalReviewByDirectorComponent
+        data={dataWithDifferentSuggestion}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    // Action buttons should be disabled
+    expect(screen.getByRole("button", { name: "Decline" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+  });
+
+  it("hides action buttons when issuance status is not actionable", () => {
+    const dataWithDifferentStatus = {
+      ...mockData,
+      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+    };
+
+    render(
+      <InternalReviewByDirectorComponent
+        data={dataWithDifferentStatus}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    // Action buttons should not be visible
+    expect(
+      screen.queryByRole("button", { name: "Decline" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Approve" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("handles back navigation correctly for normal status", () => {
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const backButton = screen.getByText("Back");
     fireEvent.click(backButton);
+
     expect(mockPush).toHaveBeenCalledWith(
       `/compliance-summaries/${mockComplianceSummaryId}/review-credits-issuance-request`,
     );
+  });
 
-    // Test approve button click (navigation not implemented yet)
+  it("handles back navigation correctly for declined status", () => {
+    const declinedData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+    };
+
+    render(
+      <InternalReviewByDirectorComponent
+        data={declinedData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const backButton = screen.getByText("Back");
+    fireEvent.click(backButton);
+
+    expect(mockPush).toHaveBeenCalledWith("/compliance-summaries");
+  });
+
+  it("handles approve submission successfully", async () => {
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const approveButton = screen.getByRole("button", { name: "Approve" });
     fireEvent.click(approveButton);
 
-    // Test decline button click (navigation not implemented yet)
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        `compliance/compliance-report-versions/${mockComplianceSummaryId}/earned-credits`,
+        "PUT",
+        `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+        {
+          body: JSON.stringify({
+            director_comment: "",
+            director_decision: "Approved",
+          }),
+        },
+      );
+    });
+
+    expect(mockPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+    );
+  });
+
+  it("handles decline submission successfully", async () => {
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const declineButton = screen.getByRole("button", { name: "Decline" });
     fireEvent.click(declineButton);
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalledWith(
+        `compliance/compliance-report-versions/${mockComplianceSummaryId}/earned-credits`,
+        "PUT",
+        `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+        {
+          body: JSON.stringify({
+            director_comment: "",
+            director_decision: "Declined",
+          }),
+        },
+      );
+    });
+
+    expect(mockPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+    );
+  });
+
+  it("handles submission error and displays error message", async () => {
+    (actionHandler as any).mockResolvedValue({ error: "Submission failed" });
+
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    const approveButton = screen.getByRole("button", { name: "Approve" });
+    fireEvent.click(approveButton);
+
+    await waitFor(() => {
+      expect(actionHandler).toHaveBeenCalled();
+    });
+
+    // Should not navigate on error
+    expect(mockPush).not.toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+    );
+
+    expect(screen.getByText("Submission failed")).toBeVisible();
+  });
+
+  it("displays awaiting note when issuance status is issuance requested", () => {
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Once the issuance request is approved, the earned credits will be issued to the holding account as identified above in B.C. Carbon Registry.",
+      ),
+    ).toBeVisible();
+  });
+
+  it("displays changes note when issuance status is changes required", () => {
+    const changesRequiredData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
+    };
+
+    render(
+      <InternalReviewByDirectorComponent
+        data={changesRequiredData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Change of BCCR Holding Account ID was required in the previous step. You cannot approve or decline this request until industry user has updated their BCCR Holding Account ID.",
+      ),
+    ).toBeVisible();
+  });
+
+  it("displays declined note when issuance status is declined", () => {
+    const declinedData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+    };
+
+    render(
+      <InternalReviewByDirectorComponent
+        data={declinedData}
+        complianceSummaryId={mockComplianceSummaryId}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Supplementary report was required in the previous step, this request has been declined automatically.",
+      ),
+    ).toBeVisible();
   });
 });

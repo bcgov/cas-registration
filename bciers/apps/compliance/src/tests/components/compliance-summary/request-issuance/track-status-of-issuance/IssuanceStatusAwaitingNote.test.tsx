@@ -36,8 +36,8 @@ describe("IssuanceStatusAwaitingNote", () => {
 
     const awaitingNoteTimeIcon = screen.getByTestId("time-icon");
     expect(awaitingNoteTimeIcon).toBeVisible();
-    expect(awaitingNoteTimeIcon).toHaveAttribute("width", "20");
-    expect(awaitingNoteTimeIcon).toHaveAttribute("height", "20");
+    expect(awaitingNoteTimeIcon).toHaveAttribute("width", "25");
+    expect(awaitingNoteTimeIcon).toHaveAttribute("height", "25");
   });
 
   it("includes the correct BCCR link", () => {

@@ -15,10 +15,9 @@ describe("InternalDirectorReviewChangesNote", () => {
     render(<InternalDirectorReviewChangesNote />);
 
     const changesNoteTextPatterns = [
-      /Changes were required in the previous step/i,
-      /You may not decline or approve the request/i,
-      /until the supplementary report is submitted/i,
-      /and the earned credits are adjusted accordingly/i,
+      /Change of BCCR Holding Account ID was required in the previous step/i,
+      /You cannot approve or decline this request until industry user has updated/i,
+      /their BCCR Holding Account ID/i,
     ];
 
     for (const textPattern of changesNoteTextPatterns) {

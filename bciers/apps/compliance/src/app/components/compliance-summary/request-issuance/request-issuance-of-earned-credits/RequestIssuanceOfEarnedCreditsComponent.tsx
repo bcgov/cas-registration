@@ -90,7 +90,6 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       formData={formData}
       onChange={handleChange}
       onSubmit={handleSubmit}
-      disabled={isSubmitting}
       formContext={{
         validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>

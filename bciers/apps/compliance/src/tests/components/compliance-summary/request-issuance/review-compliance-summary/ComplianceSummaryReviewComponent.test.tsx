@@ -1,13 +1,20 @@
 import { render, screen, fireEvent, within } from "@testing-library/react";
 import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
-import { useRouter, useSessionRole } from "@bciers/testConfig/mocks";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import { IssuanceStatus, AnalystSuggestion } from "@bciers/utils/src/enums";
+
+// Mock useSessionRole
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  useSessionRole: vi.fn(),
+}));
 
 // Mock the router
 const mockRouterPush = vi.fn();
-useRouter.mockReturnValue({
-  query: {},
-  push: mockRouterPush,
-});
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: mockRouterPush,
+  }),
+}));
 
 const mockComplianceSummaryId = "123";
 const mockData = {
@@ -16,9 +23,10 @@ const mockData = {
   emission_limit: 100.0,
   emissions_attributable_for_compliance: 85.0,
   earned_credits_amount: 15,
-  issuance_status: "Issuance not requested",
+  issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
   bccr_trading_name: "Test Trading Name",
-  analyst_suggestion: "Ready to Approve",
+  bccr_holding_account_id: "123456789012345",
+  analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
   analyst_comment: "Test analyst comment",
   director_comment: "Test director comment",
   analyst_submitted_date: "2024-01-01",
@@ -30,7 +38,7 @@ const mockData = {
 describe("ComplianceSummaryReviewComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    useSessionRole.mockReturnValue("industry_user");
+    (useSessionRole as any).mockReturnValue("industry_user");
   });
 
   it("renders the form with correct schema fields and headers", () => {
@@ -38,7 +46,6 @@ describe("ComplianceSummaryReviewComponent", () => {
       <ComplianceSummaryReviewComponent
         complianceSummaryId={mockComplianceSummaryId}
         data={mockData}
-        isCasStaff={false}
       />,
     );
 
@@ -50,10 +57,10 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(
       screen.getByText("Emissions Attributable for Compliance:"),
     ).toBeVisible();
-    expect(screen.getByText("85.0")).toBeVisible();
+    expect(screen.getByText("85")).toBeVisible();
     expect(screen.getAllByText("tCO2e")[0]).toBeVisible();
     expect(screen.getByText("Emissions Limit:")).toBeVisible();
-    expect(screen.getByText("100.0")).toBeVisible();
+    expect(screen.getByText("100")).toBeVisible();
     expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
     expect(screen.getByText("Excess Emissions:")).toBeVisible();
     expect(screen.getByText(-15.0)).toBeVisible();
@@ -84,16 +91,14 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(bccrLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders navigation buttons with correct urls", () => {
+  it("renders navigation buttons with correct functionality", () => {
     render(
       <ComplianceSummaryReviewComponent
         complianceSummaryId={mockComplianceSummaryId}
         data={mockData}
-        isCasStaff={false}
       />,
     );
 
-    // Check button text and states
     const backButton = screen.getByRole("button", { name: "Back" });
     expect(backButton).toBeVisible();
     expect(backButton).not.toBeDisabled();
@@ -102,13 +107,62 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(continueButton).toBeVisible();
     expect(continueButton).not.toBeDisabled();
 
-    // Verify router push is called with correct URLs when buttons are clicked
     fireEvent.click(backButton);
     expect(mockRouterPush).toHaveBeenCalledWith("/compliance-summaries");
 
     fireEvent.click(continueButton);
     expect(mockRouterPush).toHaveBeenCalledWith(
-      "/compliance-summaries/123/request-issuance-of-earned-credits",
+      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+    );
+  });
+
+  it("does not render EarnedCreditsAlertNote for internal users", () => {
+    (useSessionRole as any).mockReturnValue("cas_analyst");
+
+    render(
+      <ComplianceSummaryReviewComponent
+        complianceSummaryId={mockComplianceSummaryId}
+        data={mockData}
+      />,
+    );
+
+    const alertNote = screen.queryByRole("alert");
+    expect(alertNote).toBeNull();
+  });
+
+  it("navigates to request-issuance-of-earned-credits for industry users", () => {
+    (useSessionRole as any).mockReturnValue("industry_user");
+
+    render(
+      <ComplianceSummaryReviewComponent
+        complianceSummaryId={mockComplianceSummaryId}
+        data={mockData}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    fireEvent.click(continueButton);
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+    );
+  });
+
+  it("navigates to review-credits-issuance-request for CAS staff", () => {
+    (useSessionRole as any).mockReturnValue("cas_analyst");
+
+    render(
+      <ComplianceSummaryReviewComponent
+        complianceSummaryId={mockComplianceSummaryId}
+        data={mockData}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    fireEvent.click(continueButton);
+
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/review-credits-issuance-request`,
     );
   });
 });
