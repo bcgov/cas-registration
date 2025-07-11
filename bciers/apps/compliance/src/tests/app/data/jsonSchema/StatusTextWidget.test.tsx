@@ -18,7 +18,7 @@ describe("StatusTextWidget", () => {
     },
     {
       status: IssuanceStatus.CREDITS_NOT_ISSUED,
-      expectedText: "Declined, credits not issued in BCCR",
+      expectedText: "Issuance not requested",
     },
     {
       status: IssuanceStatus.ISSUANCE_REQUESTED,

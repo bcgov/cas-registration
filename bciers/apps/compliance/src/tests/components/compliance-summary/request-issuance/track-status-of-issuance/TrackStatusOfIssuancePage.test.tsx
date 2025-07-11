@@ -4,17 +4,17 @@ import {
   ActivePage,
   generateRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { redirect } from "next/navigation";
 
-// Mock the track status data function
-vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
-  getRequestIssuanceTrackStatusData: vi.fn().mockResolvedValue({
-    operation_name: "Test Operation",
-    earned_credits: 100,
-    issuance_status: "approved",
-    bccr_trading_name: "Test Trading Name",
-    director_comment: "Director's test comments",
+// Mock the compliance summary data function
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    getRequestIssuanceComplianceSummaryData: vi.fn(),
   }),
-}));
+);
 
 // Mock the reporting year utility
 vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
@@ -35,16 +35,6 @@ vi.mock(
   }),
 );
 
-// Mock the reporting year utility
-vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
-  __esModule: true,
-  getReportingYear: vi.fn().mockResolvedValue({
-    reporting_year: 2024,
-    report_due_date: "2025-03-31",
-    reporting_window_end: "2025-03-31",
-  }),
-}));
-
 // Mock the layout component
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   default: ({ children }: { children: React.ReactNode }) => (
@@ -60,14 +50,30 @@ vi.mock(
   }),
 );
 
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn(),
+}));
+
 describe("TrackStatusOfIssuancePage", () => {
   const mockComplianceSummaryId = "123";
+  const mockData = {
+    operation_name: "Test Operation",
+    earned_credits: 100,
+    issuance_status: IssuanceStatus.APPROVED,
+    bccr_trading_name: "Test Trading Name",
+    director_comment: "Director's test comments",
+    reporting_year: 2024,
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(
+      mockData,
+    );
   });
 
-  it("renders with correct content and generates task list", async () => {
+  it("renders with correct content and generates task list when status is approved", async () => {
     render(
       await TrackStatusOfIssuancePage({
         compliance_summary_id: mockComplianceSummaryId,
@@ -84,5 +90,51 @@ describe("TrackStatusOfIssuancePage", () => {
       2024,
       ActivePage.TrackStatusOfIssuance,
     );
+  });
+
+  it("redirects to request issuance page when status is CREDITS_NOT_ISSUED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+    });
+
+    await TrackStatusOfIssuancePage({
+      compliance_summary_id: mockComplianceSummaryId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+    );
+  });
+
+  it("redirects to request issuance page when status is CHANGES_REQUIRED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
+    });
+
+    await TrackStatusOfIssuancePage({
+      compliance_summary_id: mockComplianceSummaryId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+    );
+  });
+
+  it("does not redirect when status is APPROVED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.APPROVED,
+    });
+
+    render(
+      await TrackStatusOfIssuancePage({
+        compliance_summary_id: mockComplianceSummaryId,
+      }),
+    );
+
+    expect(redirect).not.toHaveBeenCalled();
+    expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 });
