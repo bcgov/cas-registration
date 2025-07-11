@@ -176,7 +176,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
 
         # Assert
-        print(f"Response: {response.content}")
         assert response.status_code == 200
         response_data = response.json()
 
@@ -206,8 +205,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             expect_address=Facility.objects.first().address,
             expect_well_authorization_numbers=len(response_data.get('well_authorization_numbers')),
         )
-
-        print("everything ok")
 
     def test_authorized_users_can_update_address(self):
         # Arrange
@@ -359,7 +356,6 @@ class TestFacilityIdEndpoint(CommonTestSetup):
         )
 
         # Assert
-        print(f"Response: {response.content}")
         assert response.status_code == 200
         response_data = response.json()
 
