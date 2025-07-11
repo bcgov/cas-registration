@@ -1,3 +1,4 @@
+from uuid import uuid4
 from common.tests.utils.helpers import BaseTestCase
 from registration.models import (
     User,
@@ -5,6 +6,8 @@ from registration.models import (
 )
 from django.core.exceptions import ValidationError
 from registration.tests.constants import DOCUMENT_FIXTURE, TIMESTAMP_COMMON_FIELDS, USER_FIXTURE
+from model_bakery import baker
+from rls.tests.helpers import test_policies_for_cas_roles, test_policies_for_industry_user
 
 
 class UserModelTest(BaseTestCase):
@@ -53,9 +56,9 @@ class UserModelTest(BaseTestCase):
             ("multipleoperator_created", "multiple operator", None, None),
             ("multipleoperator_updated", "multiple operator", None, None),
             ("multipleoperator_archived", "multiple operator", None, None),
-            ("parentoperator_created", "parent operator", None, None),
-            ("parentoperator_updated", "parent operator", None, None),
-            ("parentoperator_archived", "parent operator", None, None),
+            ("User_created", "parent operator", None, None),
+            ("User_updated", "parent operator", None, None),
+            ("User_archived", "parent operator", None, None),
             ("partneroperator_created", "partner operator", None, None),
             ("partneroperator_updated", "partner operator", None, None),
             ("partneroperator_archived", "partner operator", None, None),
@@ -261,3 +264,73 @@ class UserModelTest(BaseTestCase):
     def test_get_user_full_name(self):
         user = User.objects.first()
         self.assertEqual(user.get_full_name(), f"{user.first_name} {user.last_name}")
+
+
+# RLS tests
+class TestUserRls(BaseTestCase):
+    def test_user_rls_industry_user(self):
+
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        random_approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        assert User.objects.count() == 3  # 1 user created by test_policies_for_cas_roles, 2 from the bakers above
+
+        def select_function(cursor):
+            assert User.objects.count() == 1  # User should only see their own user
+
+        def insert_function(cursor):
+            User.objects.create(
+                first_name="John",
+                last_name="Doe",
+                position_title="Manager",
+                email="johndoe@example.com",
+                phone_number="+16044011234",
+                user_guid=uuid4(),
+                business_guid=uuid4(),
+                bceid_business_name="John's Business",
+                app_role=AppRole.objects.get(role_name="industry_user"),
+            )
+            assert User.objects.filter(first_name='John').exists()
+
+        def update_function(cursor):
+            User.objects.update(first_name='Updated Name')
+            assert User.objects.filter(first_name='Dae').count() == 1
+
+        test_policies_for_industry_user(
+            User,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+        )
+
+    def test_user_rls_cas_users(self):
+        baker.make_recipe('registration.tests.utils.industry_operator_user', _quantity=5)
+        # brianna these numbers are weird, going to have to refactor the helper I think
+        def select_function(cursor):
+            breakpoint()
+            assert User.objects.count() == 6  # 1 user created by test_policies_for_cas_roles, 5 from the bakers above
+
+        def insert_function(cursor):
+            User.objects.create(
+                first_name="John",
+                last_name="Doe",
+                position_title="Manager",
+                email="johndoe@example.com",
+                phone_number="+16044011234",
+                user_guid=uuid4(),
+                business_guid=uuid4(),
+                bceid_business_name="John's Business",
+                app_role=AppRole.objects.get(role_name="industry_user"),
+            )
+            assert User.objects.filter(first_name='John').exists()
+
+        def update_function(cursor):
+            User.objects.update(first_name='Updated Name')
+            breakpoint()
+            assert User.objects.filter(first_name='Updated Name').count() == 5
+
+        test_policies_for_cas_roles(
+            User, select_function=select_function, insert_function=insert_function, update_function=update_function
+        )
