@@ -12,6 +12,7 @@ from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
 from django.db.models import QuerySet
+from ninja.types import DictStrAny
 
 
 @router.get(
@@ -44,3 +45,15 @@ def list_contacts(
 )
 def create_contact(request: HttpRequest, payload: ContactIn) -> Tuple[Literal[201], Contact]:
     return 201, ContactService.create_contact(get_current_user_guid(request), payload)
+
+
+@router.patch(
+    "/contacts/{contact_id}",
+    response={200: DictStrAny, custom_codes_4xx: Message},
+    tags=CONTACT_TAGS,
+    description="""Archives a contact by its ID. The user must be authorized to perform this action.""",
+    auth=authorize("approved_industry_admin_user"),
+)
+def archive_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], DictStrAny]:
+    ContactService.archive_contact(get_current_user_guid(request), contact_id)
+    return 200, {"success": True}
