@@ -9,6 +9,7 @@ from typing import Optional
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
+from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 
 
 class ComplianceDashboardService:
@@ -55,8 +56,7 @@ class ComplianceDashboardService:
             )
 
         for version in compliance_report_versions:
-            version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(version)  # type: ignore[attr-defined]
-
+            version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
         return compliance_report_versions
 
     @classmethod
@@ -91,9 +91,29 @@ class ComplianceDashboardService:
                 ).operator,
             )
 
-        # Calculate and attach the outstanding balance
+        # Calculated values
         if compliance_report_version:
-            compliance_report_version.outstanding_balance = ComplianceReportVersionService.calculate_outstanding_balance(compliance_report_version)  # type: ignore[attr-defined]
+            report = compliance_report_version.compliance_report
+            if report and report.compliance_period:
+                reporting_year = report.compliance_period.reporting_year
+                charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
+                compliance_report_version.compliance_charge_rate = charge_rate  # type: ignore[attr-defined]
+
+            summary = compliance_report_version.report_compliance_summary
+            if summary and summary.excess_emissions is not None:
+                compliance_report_version.equivalent_value = summary.excess_emissions * charge_rate  # type: ignore[attr-defined]
+
+            obligation = getattr(compliance_report_version, "obligation", None)
+            if (
+                obligation
+                and obligation.elicensing_invoice
+                and obligation.elicensing_invoice.outstanding_balance is not None
+            ):
+                ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+                    compliance_report_version_id=compliance_report_version_id
+                )
+                compliance_report_version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)  # type: ignore[attr-defined]
+                compliance_report_version.outstanding_balance_equivalent_value = obligation.elicensing_invoice.outstanding_balance  # type: ignore[attr-defined]
 
         return compliance_report_version
 

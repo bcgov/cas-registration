@@ -8,7 +8,7 @@ from compliance.service.compliance_obligation_service import ComplianceObligatio
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from compliance.api.router import router
-from compliance.schema.payments import ElicensingPaymentListOut
+from compliance.schema.elicensing_payments import ElicensingPaymentListOut
 from compliance.schema.compliance_obligation import ObligationWithPaymentsOut
 
 

@@ -6,7 +6,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from compliance.api.router import router
-from compliance.schema.payments import ElicensingPaymentListOut
+from compliance.schema.elicensing_payments import ElicensingPaymentListOut
 
 
 @router.get(

@@ -14,12 +14,10 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         version1 = make_recipe('compliance.tests.utils.compliance_report_version')
         version1.report_compliance_summary.excess_emissions = Decimal("50.0000")
         version1.report_compliance_summary.save()
-        version1.outstanding_balance = Decimal("100.0000")
 
         version2 = make_recipe('compliance.tests.utils.compliance_report_version')
         version2.report_compliance_summary.excess_emissions = Decimal("75.0000")
         version2.report_compliance_summary.save()
-        version2.outstanding_balance = Decimal("200.0000")
 
         # Mock the service to return both versions
         mock_get_versions.return_value = [version1, version2]
@@ -49,7 +47,6 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         assert items[0]["status"] == version1.status
         assert items[0]["operation_name"] == version1.compliance_report.report.operation.name
         assert items[0]["reporting_year"] == version1.compliance_report.compliance_period.end_date.year
-        assert Decimal(items[0]["outstanding_balance"]) == Decimal("100.0000")
         assert Decimal(items[0]["excess_emissions"]) == Decimal("50.0000")
 
         # Verify second version
@@ -57,5 +54,4 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         assert items[1]["status"] == version2.status
         assert items[1]["operation_name"] == version2.compliance_report.report.operation.name
         assert items[1]["reporting_year"] == version2.compliance_report.compliance_period.end_date.year
-        assert Decimal(items[1]["outstanding_balance"]) == Decimal("200.0000")
         assert Decimal(items[1]["excess_emissions"]) == Decimal("75.0000")

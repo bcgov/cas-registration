@@ -5,12 +5,13 @@ import { WidgetProps } from "@rjsf/utils";
 export const ApplyComplianceUnitsSuccessAlertNote = ({
   formContext,
 }: WidgetProps) => {
-  const { isSubmitted } = formContext;
+  const { isSubmitted, reportingYear } = formContext;
   if (!isSubmitted) return null;
   return (
     <AlertNote icon={<CheckCircleIcon />}>
       The compliance unit(s) have been applied towards the compliance obligation
-      successfully. You may go back to view the updated 2024 Compliance Summary.
+      successfully. You may go back to view the updated {reportingYear ?? ""}{" "}
+      Compliance Summary.
     </AlertNote>
   );
 };

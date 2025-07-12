@@ -1,8 +1,5 @@
 import { actionHandler } from "@bciers/actions";
-
-interface Invoice {
-  invoiceNumber: string;
-}
+import { Invoice } from "@/compliance/src/app/types";
 
 const getInvoiceByComplianceReportVersionId = async (
   complianceReportVersionId: string,

@@ -6,31 +6,33 @@ import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/ge
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import TrackStatusOfIssuanceComponent from "./TrackStatusOfIssuanceComponent";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
 
 interface Props {
   readonly compliance_summary_id: string;
 }
 
 export default async function TrackStatusOfIssuancePage({
-  compliance_summary_id,
+  compliance_summary_id: complianceReportVersionId,
 }: Props) {
-  const data = await getRequestIssuanceTrackStatusData();
+  const data: RequestIssuanceTrackStatusData =
+    await getRequestIssuanceTrackStatusData(complianceReportVersionId);
   const { reporting_year: reportingYear } = await getReportingYear();
 
   const taskListElements = generateRequestIssuanceTaskList(
-    compliance_summary_id,
+    complianceReportVersionId,
     reportingYear,
     ActivePage.TrackStatusOfIssuance,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={compliance_summary_id}
+      complianceSummaryId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <TrackStatusOfIssuanceComponent
         data={data}
-        complianceSummaryId={compliance_summary_id}
+        complianceSummaryId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

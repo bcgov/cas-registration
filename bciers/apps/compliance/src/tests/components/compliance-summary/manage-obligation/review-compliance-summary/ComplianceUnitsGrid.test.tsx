@@ -1,7 +1,7 @@
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import { ComplianceUnitsGrid } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
-import { ComplianceUnitsProps } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid";
+import { ComplianceAppliedUnitsSummary } from "@/compliance/src/app/types";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -13,9 +13,11 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-const mockValue: ComplianceUnitsProps = {
-  complianceSummaryId: "123",
-  appliedComplianceUnits: [
+// Use camelCase variable names
+const complianceReportVersionId = "123";
+const appliedComplianceUnits = {
+  row_count: 2,
+  rows: [
     {
       id: "1",
       type: "Offset Units",
@@ -35,6 +37,12 @@ const mockValue: ComplianceUnitsProps = {
   ],
 };
 
+// Object keys remain in snake_case to match the expected type
+const mockValue: ComplianceAppliedUnitsSummary = {
+  compliance_report_version_id: complianceReportVersionId,
+  applied_compliance_units: appliedComplianceUnits,
+};
+
 describe("ComplianceUnitsGrid", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -43,7 +51,6 @@ describe("ComplianceUnitsGrid", () => {
   it("renders the grid with compliance units data", () => {
     render(<ComplianceUnitsGrid value={mockValue} />);
 
-    // Check alert note content
     const alertNote = screen.getByRole("alert");
     expect(alertNote).toBeVisible();
     expect(alertNote).toHaveTextContent("You may use compliance units");
@@ -56,7 +63,6 @@ describe("ComplianceUnitsGrid", () => {
       "You may use compliance units (earned credits, offset units) you hold in the B.C. Carbon Registry (BCCR) to meet up to 50% of the compliance obligation below. The remaining balance must be met with monetary payment(s)",
     );
 
-    // Check grid headers
     const headers = [
       "Type",
       "Serial Number",
@@ -69,11 +75,9 @@ describe("ComplianceUnitsGrid", () => {
       expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
     });
 
-    // Check grid data rows
     const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(3); // 1 header row + 2 data rows
+    expect(rows).toHaveLength(3);
 
-    // Check first row content
     const firstRow = rows[1];
     expect(within(firstRow).getByText("Offset Units")).toBeVisible();
     expect(within(firstRow).getByText("BC-123-456")).toBeVisible();
@@ -82,7 +86,6 @@ describe("ComplianceUnitsGrid", () => {
     expect(within(firstRow).getByText("100 tCO2e")).toBeVisible();
     expect(within(firstRow).getByText("$8,000.00")).toBeVisible();
 
-    // Check second row content
     const secondRow = rows[2];
     expect(within(secondRow).getByText("Earned Credits")).toBeVisible();
     expect(within(secondRow).getByText("BC-789-012")).toBeVisible();
@@ -91,7 +94,6 @@ describe("ComplianceUnitsGrid", () => {
     expect(within(secondRow).getByText("50 tCO2e")).toBeVisible();
     expect(within(secondRow).getByText("$4,000.00")).toBeVisible();
 
-    // Check Apply Compliance Units button
     const applyButton = screen.getByRole("button", {
       name: "Apply Compliance Units",
     });

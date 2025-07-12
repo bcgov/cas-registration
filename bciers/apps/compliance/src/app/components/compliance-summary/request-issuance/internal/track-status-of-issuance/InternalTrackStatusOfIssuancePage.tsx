@@ -8,6 +8,7 @@ import InternalTrackStatusOfIssuanceComponent from "./InternalTrackStatusOfIssua
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { notFound } from "next/navigation";
+import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
 
 interface Props {
   readonly compliance_summary_id: string;
@@ -20,10 +21,10 @@ const RESTRICTED_STATUSES = [
 ];
 
 export default async function InternalTrackStatusOfIssuancePage({
-  compliance_summary_id,
+  compliance_summary_id: complianceReportVersionId,
 }: Props) {
-  const data = await getRequestIssuanceTrackStatusData();
-
+  const data: RequestIssuanceTrackStatusData =
+    await getRequestIssuanceTrackStatusData(complianceReportVersionId);
   // Redirect to not found page if accessing track status of issuance page with restricted issuance status
   if (RESTRICTED_STATUSES.includes(data.issuance_status as IssuanceStatus)) {
     notFound();
@@ -31,18 +32,18 @@ export default async function InternalTrackStatusOfIssuancePage({
 
   const { reporting_year: reportingYear } = await getReportingYear();
   const taskListElements = generateIssuanceRequestTaskList(
-    compliance_summary_id,
+    complianceReportVersionId,
     reportingYear,
     ActivePage.TrackStatusOfIssuance,
   );
   return (
     <CompliancePageLayout
-      complianceSummaryId={compliance_summary_id}
+      complianceSummaryId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <InternalTrackStatusOfIssuanceComponent
         data={data}
-        complianceSummaryId={compliance_summary_id}
+        complianceSummaryId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );
