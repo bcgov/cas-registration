@@ -7,9 +7,10 @@ import {
   ActivePage as InternalActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
-import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
+import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
+import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 
 interface Props {
   compliance_summary_id: string;
@@ -18,7 +19,7 @@ interface Props {
 export default async function ComplianceSummaryReviewPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const complianceSummary =
+  const complianceSummary: RequestIssuanceComplianceSummaryData =
     await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
   const frontEndRole = await getSessionRole();
   const isCasStaff = frontEndRole.startsWith("cas_");

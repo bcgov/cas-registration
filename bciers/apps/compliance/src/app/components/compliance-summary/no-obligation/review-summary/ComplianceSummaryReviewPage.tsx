@@ -15,7 +15,7 @@ export default async function ComplianceSummaryReviewPage({
     reporting_year: complianceSummary.reporting_year,
     emissions_attributable_for_compliance:
       complianceSummary.emissions_attributable_for_compliance.toString(),
-    emission_limit: complianceSummary.emission_limit.toString(),
+    emissions_limit: complianceSummary.emissions_limit.toString(),
     excess_emissions: complianceSummary.excess_emissions,
   };
 

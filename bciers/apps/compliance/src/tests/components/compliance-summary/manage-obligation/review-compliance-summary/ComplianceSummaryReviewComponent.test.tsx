@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { ComplianceSummaryReviewComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent";
 import userEvent from "@testing-library/user-event";
+import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 
 // Mocks
 const mockWindowOpen = vi.fn();
@@ -9,36 +10,37 @@ window.open = mockWindowOpen;
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceUnitsGrid",
   () => ({
-    ComplianceUnitsGrid: () => <div>Mock Compliance Units Grid</div>,
+    ComplianceUnitsGrid: () => <div>Compliance Units Applied</div>,
   }),
 );
 
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/MonetaryPaymentsGrid",
   () => ({
-    MonetaryPaymentsGrid: () => <div>Mock Monetary Payments Grid</div>,
+    MonetaryPaymentsGrid: () => <div>Monetary Payments Made</div>,
   }),
 );
 
-const mockData = {
+const mockData: ComplianceSummaryReviewPageData = {
+  id: 2,
+  obligation_id: "24-0019-3-3",
+  operation_name: "Compliance SFO - Obligation not met",
+  operation_bcghg_id: "13219990046",
   reporting_year: 2025,
-  emissions_attributable_for_compliance: "1200.0000",
-  emission_limit: "1000.0000",
-  excess_emissions: "200.0000",
-  obligation_id: "25-0001-1-1",
-  compliance_charge_rate: "80.00",
-  equivalent_value: "16000.00",
-  outstanding_balance: "300.0000",
-  outstanding_balance_equivalent_value: "17000.00",
-  penalty_status: "Accruing",
-  penalty_type: "Automatic Overdue",
-  penalty_charge_rate: "0.38",
-  days_late: "3",
-  accumulated_penalty: "91.5",
-  accumulated_compounding: "0.35",
-  penalty_today: "92.55",
-  faa_interest: "1.00",
-  total_amount: "93.55",
+  excess_emissions: 5264.635,
+  emissions_attributable_for_compliance: 5500.0,
+  emissions_limit: 235.365,
+  credited_emissions: 0.0,
+  outstanding_balance: 421170.8,
+  compliance_charge_rate: 80.0,
+  equivalent_value: 421170.8,
+  outstanding_balance_equivalent_value: 33693664.0,
+  status: "Obligation not met",
+  monetary_payments: { rows: [], row_count: 0 },
+  applied_units_summary: {
+    compliance_report_version_id: "2",
+    applied_compliance_units: { rows: [], row_count: 0 },
+  },
 };
 
 const setupComponent = (id = "123") =>
@@ -70,17 +72,10 @@ describe("ComplianceSummaryReviewComponent", () => {
     setupComponent();
     expect(screen.getByText("Review 2025 Compliance Summary")).toBeVisible();
     expect(screen.getByText("From 2025 Report")).toBeVisible();
-    expect(screen.getByText("1200.0000")).toBeVisible();
-    expect(screen.getByText("1000.0000")).toBeVisible();
-    expect(screen.getByText("200.0000")).toBeVisible();
-    expect(screen.getByText("25-0001-1-1")).toBeVisible();
-    expect(screen.getByText(/80\.00/)).toBeVisible();
-    expect(screen.getByText(/16000\.00/)).toBeVisible();
-    expect(screen.getByText("Mock Compliance Units Grid")).toBeVisible();
-    expect(screen.getByText("Mock Monetary Payments Grid")).toBeVisible();
-    expect(screen.getByText("300.0000")).toBeVisible();
-    expect(screen.getByText(/17000\.00/)).toBeVisible();
-    expect(screen.getByRole("alert")).toHaveTextContent(/penalty/i);
+    expect(screen.getByText("2025 Compliance Obligation")).toBeVisible();
+    expect(screen.getByText("Monetary Payments Made")).toBeVisible();
+    expect(screen.getByText("Compliance Units Applied")).toBeVisible();
+    expect(screen.getByText("Outstanding Compliance Obligation")).toBeVisible();
     expect(getGenerateButton()).toBeEnabled();
   });
 

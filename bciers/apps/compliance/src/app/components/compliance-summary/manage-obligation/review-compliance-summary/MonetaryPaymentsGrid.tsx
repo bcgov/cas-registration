@@ -3,22 +3,14 @@
 import { useState, useMemo } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import monetaryPaymentsColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsColumns";
-import monetaryPaymentsGroupColumns from "@/compliance/src/app/components/datagrid/models/manetary-payments/monetaryPaymentsGroupColumns";
+import monetaryPaymentsColumns from "@/compliance/src/app/components/datagrid/models/monetary-payments/monetaryPaymentsColumns";
+import monetaryPaymentsGroupColumns from "@/compliance/src/app/components/datagrid/models/monetary-payments/monetaryPaymentsGroupColumns";
 import { PaymentData } from "@/compliance/src/app/types";
 import AlertNote from "@bciers/components/form/components/AlertNote";
 import SimpleAccordion from "@bciers/components/accordion/SimpleAccordion";
 
-interface MonetaryPaymentsProps {
-  gridData: PaymentData;
-}
-
-export const MonetaryPaymentsGrid = ({
-  value,
-}: {
-  value: MonetaryPaymentsProps;
-}) => {
-  const { gridData } = value;
+export const MonetaryPaymentsGrid = ({ value }: { value: PaymentData }) => {
+  const payments = value;
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
@@ -33,7 +25,7 @@ export const MonetaryPaymentsGrid = ({
     [SearchCell],
   );
 
-  const showAlert = gridData.rows.length === 0;
+  const showAlert = payments.row_count === 0;
 
   return (
     <SimpleAccordion title="Monetary Payments Made">
@@ -42,7 +34,7 @@ export const MonetaryPaymentsGrid = ({
       )}
       <DataGrid
         columns={columns}
-        initialData={gridData}
+        initialData={payments}
         columnGroupModel={columnGroup}
       />
     </SimpleAccordion>

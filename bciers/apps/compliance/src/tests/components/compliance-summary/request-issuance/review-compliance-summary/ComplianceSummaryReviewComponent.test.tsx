@@ -14,7 +14,7 @@ const mockData = {
   operation_name: "Test Operation",
   reporting_year: 2024,
   excess_emissions: -15.0,
-  emission_limit: "100.0",
+  emissions_limit: "100.0",
   emissions_attributable_for_compliance: "85.0",
   earned_credits_amount: 15,
   issuance_status: "Issuance not requested",

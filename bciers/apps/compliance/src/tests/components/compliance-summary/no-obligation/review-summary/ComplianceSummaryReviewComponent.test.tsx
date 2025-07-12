@@ -12,7 +12,7 @@ useRouter.mockReturnValue({
 const mockData = {
   reporting_year: 2024,
   excess_emissions: 0,
-  emission_limit: "0",
+  emissions_limit: "0",
   emissions_attributable_for_compliance: "0",
   id: 123,
 };

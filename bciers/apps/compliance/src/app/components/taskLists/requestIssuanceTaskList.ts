@@ -8,17 +8,17 @@ export enum ActivePage {
 
 export const generateRequestIssuanceTaskList: (
   complianceSummaryId: string,
-  reporting_year: number,
+  reportingYear: number,
   activePage?: string,
 ) => TaskListElement[] = (
   complianceSummaryId,
-  reporting_year,
+  reportingYear,
   activePage = ActivePage.ReviewComplianceSummary,
 ) => {
   const taskItems = [
     {
       type: "Page" as const,
-      title: `Review ${reporting_year} Compliance Summary`,
+      title: `Review ${reportingYear} Compliance Summary`,
       link: `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`,
       isActive: activePage === ActivePage.ReviewComplianceSummary,
     },
@@ -39,7 +39,7 @@ export const generateRequestIssuanceTaskList: (
   return [
     {
       type: "Section",
-      title: `${reporting_year} Compliance Summary`,
+      title: `${reportingYear} Compliance Summary`,
       isExpanded: true,
       elements: taskItems,
     },

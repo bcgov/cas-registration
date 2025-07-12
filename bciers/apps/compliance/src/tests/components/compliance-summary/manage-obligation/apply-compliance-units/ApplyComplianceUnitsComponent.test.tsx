@@ -199,13 +199,14 @@ describe("ApplyComplianceUnitsComponent", () => {
       ).toBeVisible();
       expect(screen.getAllByText("75")).toHaveLength(2);
       expect(screen.getByText("Total Equivalent Value:")).toBeVisible();
-      expect(screen.getByText("$3,750.00")).toBeVisible();
+      expect(screen.getAllByText("$3,750.00")[0]).toBeVisible();
+
       expect(
         screen.getByText(
           "Outstanding Balance after Applying Compliance Units:",
         ),
       ).toBeVisible();
-      expect(screen.getByText("12250")).toBeVisible();
+      expect(screen.getAllByText("$12,250.00")[0]).toBeVisible();
     });
   });
 
@@ -417,7 +418,7 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await waitFor(() => {
       // Should calculate outstanding balance as: 16000 - (100 * 50) = 11000
-      expect(screen.getByText("11000")).toBeVisible();
+      expect(screen.getAllByText("$11,000.00")[0]).toBeVisible();
     });
   });
 });

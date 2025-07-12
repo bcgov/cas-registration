@@ -21,7 +21,7 @@ export const createComplianceSummaryReviewSchema = (
     emissions_attributable_for_compliance: readOnlyStringField(
       "Emissions Attributable for Compliance:",
     ),
-    emission_limit: readOnlyStringField("Emissions Limit:"),
+    emissions_limit: readOnlyStringField("Emissions Limit:"),
     excess_emissions: readOnlyStringField("Excess Emissions:"),
     // Earned Credits Section
     earned_credits_header: readOnlyObjectField("Earned Credits"),
@@ -40,7 +40,7 @@ export const complianceSummaryReviewUiSchema = (
   // Summary Section
   summary_header: headerUiConfig,
   emissions_attributable_for_compliance: tco2eUiConfig,
-  emission_limit: tco2eUiConfig,
+  emissions_limit: tco2eUiConfig,
   excess_emissions: tco2eUiConfig,
 
   // Earned Credits Section

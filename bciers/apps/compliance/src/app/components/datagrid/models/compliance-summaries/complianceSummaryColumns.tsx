@@ -1,5 +1,12 @@
-import { GridColDef } from "@mui/x-data-grid";
+import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
+
+const PenaltyStatusCell = ({ row }: GridRenderCellParams) => {
+  return row.penalty_status ? row.penalty_status : "N/A";
+};
+const ObligationIDCell = ({ row }: GridRenderCellParams) => {
+  return row.obligation_id ? row.obligation_id : "N/A";
+};
 
 const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
   // Adjust widths based on whether we have the extra operator column
@@ -24,7 +31,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       valueFormatter: (params) => `${params.value} tCO2e`,
     },
     {
-      field: "outstanding_balance",
+      field: "outstanding_balance_tco2e",
       headerName: "Outstanding Balance",
       width: getColumnWidth(200, 170),
       valueFormatter: (params) => `${params.value} tCO2e`,
@@ -37,11 +44,13 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
     {
       field: "penalty_status",
       headerName: "Penalty Status",
+      renderCell: PenaltyStatusCell,
       width: getColumnWidth(150, 120),
     },
     {
       field: "obligation_id",
       headerName: "Obligation ID",
+      renderCell: ObligationIDCell,
       width: 140,
     },
     {

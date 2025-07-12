@@ -45,7 +45,7 @@ def compliance_summary_baker(**kwargs) -> ComplianceSummary:
         "emissions_attributable_for_reporting": Decimal("100.0"),
         "reporting_only_emissions": Decimal("10.0"),
         "emissions_attributable_for_compliance": Decimal("90.0"),
-        "emission_limit": Decimal("80.0"),
+        "emissions_limit": Decimal("80.0"),
         "excess_emissions": Decimal("10.0"),
         "credited_emissions": Decimal("0.0"),
         "reduction_factor": Decimal("0.95"),

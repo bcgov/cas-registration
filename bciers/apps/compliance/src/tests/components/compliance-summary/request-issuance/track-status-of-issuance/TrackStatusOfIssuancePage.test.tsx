@@ -16,6 +16,16 @@ vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
   }),
 }));
 
+// Mock the reporting year utility
+vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
+  __esModule: true,
+  getReportingYear: vi.fn().mockResolvedValue({
+    reporting_year: 2024,
+    report_due_date: "2025-03-31",
+    reporting_window_end: "2025-03-31",
+  }),
+}));
+
 // Mock the task list generator
 vi.mock(
   "@/compliance/src/app/components/taskLists/requestIssuanceTaskList",

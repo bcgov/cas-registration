@@ -22,12 +22,14 @@ import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface ApplyComplianceUnitsComponentProps {
   complianceSummaryId: string;
+  reportingYear: number;
 }
 
 export type ComplianceLimitStatus = "EXCEEDS" | "EQUALS" | "BELOW";
 
 export default function ApplyComplianceUnitsComponent({
   complianceSummaryId,
+  reportingYear,
 }: Readonly<ApplyComplianceUnitsComponentProps>) {
   const router = useRouter();
   const [formData, setFormData] = useState<ApplyComplianceUnitsFormData | {}>(
@@ -164,6 +166,7 @@ export default function ApplyComplianceUnitsComponent({
       onChange={handleChange}
       onSubmit={handleSubmit}
       formContext={{
+        reportingYear,
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
         validateBccrAccount: (accountId: string) =>
           getBccrComplianceUnitsAccountDetails(accountId, complianceSummaryId),

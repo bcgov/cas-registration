@@ -4,7 +4,6 @@ import HiddenFieldTemplate from "@bciers/components/form/fields/HiddenFieldTempl
 import { ReadOnlyWidget } from "@bciers/components/form/widgets/readOnly";
 import {
   commonReadOnlyOptions,
-  currencyUiConfig,
   headerUiConfig,
   readOnlyNumberField,
   readOnlyObjectField,
@@ -123,6 +122,10 @@ export const applyComplianceUnitsUiSchema: UiSchema = {
   summary_header: headerUiConfig,
   total_quantity_to_be_applied: commonReadOnlyOptions,
   total_equivalent_emission_reduced: tco2eUiConfig,
-  total_equivalent_value: currencyUiConfig,
-  outstanding_balance: currencyUiConfig,
+  total_equivalent_value: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  outstanding_balance: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
 };

@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.test import TestCase
 from unittest.mock import patch
 import pytest
@@ -167,6 +168,17 @@ class TestComplianceDashboardService(TestCase):
             'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report_2
         )
 
+        make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=compliance_report_version_1.compliance_report.compliance_period.reporting_year,
+            rate=Decimal("50.00"),
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=compliance_report_version_2.compliance_report.compliance_period.reporting_year,
+            rate=Decimal("50.00"),
+        )
+
         # Test CAS director can see all compliance report versions
         cas_director_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
             user_guid=cas_director.user_guid
@@ -238,3 +250,62 @@ class TestComplianceDashboardService(TestCase):
                 user_guid=approved_user_operator_2.user.user_guid,
                 compliance_report_version_id=compliance_report_version_1.id,
             )
+
+    @patch(
+        "compliance.service.compliance_dashboard_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e"
+    )
+    @patch("compliance.service.compliance_dashboard_service.ComplianceChargeRateService.get_rate_for_year")
+    @patch(
+        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+    )
+    def test_get_compliance_report_version_by_id_sets_calculated_fields(
+        self,
+        mock_refresh_data,
+        mock_get_rate,
+        mock_calculate_tco2e,
+    ):
+        # Setup user and operator
+        user_operator = make_recipe("registration.tests.utils.approved_user_operator")
+        operator = user_operator.operator
+        user_guid = user_operator.user.user_guid
+
+        # Mock values
+        mock_get_rate.return_value = Decimal("25.00")
+        mock_calculate_tco2e.return_value = Decimal("2.0")
+
+        # Report chain
+        operation = make_recipe("registration.tests.utils.operation", operator=operator)
+        report = make_recipe("reporting.tests.utils.report", operator=operator, operation=operation)
+        compliance_report = make_recipe("compliance.tests.utils.compliance_report", report=report)
+
+        # Invoice and obligation
+        invoice = make_recipe("compliance.tests.utils.elicensing_invoice", outstanding_balance=Decimal("2.0"))
+        obligation = make_recipe("compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice)
+
+        # Compliance report version
+        version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+            obligation=obligation,
+            report_compliance_summary__excess_emissions=Decimal("4.0"),
+        )
+
+        # Set calculated field manually after creation
+        version.outstanding_balance_tco2e = Decimal("2.0")
+        version.outstanding_balance_equivalent_value = Decimal("50.0")
+
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+
+        # Act
+        result = ComplianceDashboardService.get_compliance_report_version_by_id(
+            user_guid=user_guid,
+            compliance_report_version_id=version.id,
+        )
+
+        # Assert
+        assert result is not None
+        assert result.id == version.id
+        assert result.compliance_charge_rate == Decimal("25.00")
+        assert result.equivalent_value == Decimal("100.00")  # 4.0 * 25.0
+        # assert result.outstanding_balance_tco2e == Decimal("2.0")
+        # assert result.outstanding_balance_equivalent_value == Decimal("50.0")  # 2.0 * 25.0

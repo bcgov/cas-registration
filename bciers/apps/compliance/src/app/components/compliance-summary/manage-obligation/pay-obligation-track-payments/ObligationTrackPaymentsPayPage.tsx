@@ -27,7 +27,7 @@ export default async function ObligationTrackPaymentsPayPage({
 
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    data.reporting_year.toString(),
+    data.reporting_year,
     ActivePage.PayObligationTrackPayments,
   );
 

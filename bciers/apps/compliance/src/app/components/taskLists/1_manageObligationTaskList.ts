@@ -9,7 +9,7 @@ export enum ActivePage {
 
 export const generateManageObligationTaskList: (
   complianceSummaryId: string,
-  reportingYear: string,
+  reportingYear: number,
   activeIndex?: ActivePage,
 ) => TaskListElement[] = (
   complianceSummaryId,

@@ -1,51 +1,93 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewPage";
-import {
-  generateManageObligationTaskList,
-  ActivePage,
-} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
-// Mock the task list generator
+// Mocks
 vi.mock(
-  "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
+  "@/compliance/src/app/utils/fetchComplianceSummaryReviewPageData",
   () => ({
-    generateManageObligationTaskList: vi.fn(),
-    ActivePage: { ReviewComplianceSummary: 3 },
+    fetchComplianceSummaryReviewPageData: vi.fn(),
   }),
 );
 
-// Mock the layout component
+vi.mock(
+  "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
+  () => ({
+    generateManageObligationTaskList: vi.fn(() => ["mock-task"]),
+    ActivePage: {
+      ReviewComplianceSummary: "ReviewComplianceSummary",
+    },
+  }),
+);
+
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
+  __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
     <div>Mock Layout {children}</div>
   ),
 }));
 
-// Mock the review component
 vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent",
   () => ({
-    ComplianceSummaryReviewComponent: () => <div>Mock Review Component</div>,
+    __esModule: true,
+    ComplianceSummaryReviewComponent: ({ complianceSummaryId, data }: any) => (
+      <div>
+        Mock Review Component - {complianceSummaryId} - {data.operation_name}
+      </div>
+    ),
   }),
 );
 
-describe("ComplianceSummaryReviewPage", () => {
+import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/utils/fetchComplianceSummaryReviewPageData";
+import { generateManageObligationTaskList } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+
+describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
+  const mockComplianceSummaryId = "123";
+  const mockData = {
+    id: 1,
+    reporting_year: 2025,
+    excess_emissions: 0,
+    earned_credits_amount: 10,
+    issuance_status: "Not Issued",
+    operation_name: "Mock Operation",
+    emissions_attributable_for_compliance: "100.0",
+    emissions_limit: "90.0",
+    earned_credits_issued: false,
+    monetary_payments: { rows: [], row_count: 0 },
+    applied_units_summary: {
+      compliance_report_version_id: "123",
+      applied_compliance_units: [],
+    },
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    (fetchComplianceSummaryReviewPageData as vi.Mock).mockResolvedValue(
+      mockData,
+    );
   });
 
-  it("renders with correct content and generates task list", async () => {
-    render(await ComplianceSummaryReviewPage({ compliance_summary_id: "123" }));
+  it("fetches data, generates task list, and renders layout with review component", async () => {
+    render(
+      await ComplianceSummaryReviewPage({
+        compliance_summary_id: mockComplianceSummaryId,
+      }),
+    );
 
-    // Check content is rendered
-    expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(screen.getByText("Mock Review Component")).toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByText("Mock Layout")).toBeInTheDocument();
+      expect(
+        screen.getByText("Mock Review Component - 123 - Mock Operation"),
+      ).toBeInTheDocument();
+    });
 
-    // Verify task list generation
+    expect(fetchComplianceSummaryReviewPageData).toHaveBeenCalledWith(
+      mockComplianceSummaryId,
+    );
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      "123",
-      "2025",
-      ActivePage.ReviewComplianceSummary,
+      mockComplianceSummaryId,
+      2025,
+      "ReviewComplianceSummary",
     );
   });
 });
