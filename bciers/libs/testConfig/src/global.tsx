@@ -30,6 +30,7 @@ import {
   getSession,
   useContext,
   captureException,
+  signIn,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -62,6 +63,7 @@ vi.mock("next-auth/react", async () => ({
   SessionProvider: ({ children }: { children: React.ReactNode }) => children,
   useSession,
   getSession,
+  signIn,
 }));
 
 vi.mock("next-auth", () => ({
