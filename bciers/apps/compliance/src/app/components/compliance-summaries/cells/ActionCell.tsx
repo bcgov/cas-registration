@@ -50,6 +50,9 @@ const ActionCell = (params: ActionCellProps) => {
         basePath += "/request-issuance-review-summary";
       }
     }
+  } else {
+    cellText = "View Details";
+    basePath += "/review-summary";
   }
 
   const cell = ActionCellFactory({
