@@ -8,17 +8,27 @@ import {
 } from "@reporting/src/data/jsonSchema/changeReview/changeReview";
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import ReviewChanges from "@reporting/src/app/components/changeReview/ReviewChanges";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 
 interface ChangeReviewProps {
   versionId: number;
   initialFormData: any;
   navigationInformation: NavigationInformation;
+  changes: ChangeItem[];
+}
+
+interface ChangeItem {
+  field: string;
+  old_value: any;
+  new_value: any;
 }
 
 export default function ChangeReviewForm({
   versionId,
   initialFormData,
   navigationInformation,
+  changes,
 }: ChangeReviewProps) {
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<string[]>();
@@ -39,7 +49,7 @@ export default function ChangeReviewForm({
   };
 
   return (
-    <MultiStepFormWithTaskList
+    <MultiStepWrapperWithTaskList
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
@@ -53,6 +63,8 @@ export default function ChangeReviewForm({
       onSubmit={(data: any) => handleSubmit(data.formData)}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
-    />
+    >
+      <ReviewChanges changes={changes} />
+    </MultiStepWrapperWithTaskList>
   );
 }
