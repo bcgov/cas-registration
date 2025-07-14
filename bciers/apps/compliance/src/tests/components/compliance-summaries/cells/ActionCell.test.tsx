@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 import { ComplianceSummary } from "@/compliance/src/app/types";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 describe("ActionCell", () => {
   interface ActionCellParams extends GridRenderCellParams {
@@ -31,52 +32,88 @@ describe("ActionCell", () => {
     expect(link).toHaveAttribute("href", href);
   };
 
-  it("displays 'Manage Obligation' when obligation_id is present", () => {
-    render(
-      ActionCell(
-        createMockParams(123, false, "24-0001-1-1", undefined, undefined),
-      ),
-    );
-    expectLink(
-      "Manage Obligation",
-      "/compliance-summaries/123/manage-obligation-review-summary",
-    );
-  });
-
-  it("displays 'Request Issuance of Credits' when status is 'Earned credits'", () => {
-    render(
-      ActionCell(
-        createMockParams(
-          123,
-          false,
-          undefined,
-          "Earned credits",
-          "Credits Not Issued in BCCR",
+  // Test cases for obligation rows
+  describe("Obligation Flow", () => {
+    it("displays 'Manage Obligation' when obligation_id is present", () => {
+      render(
+        ActionCell(
+          createMockParams(123, false, "24-0001-1-1", undefined, undefined),
         ),
-      ),
-    );
-    expectLink(
-      "Request Issuance of Credits",
-      "/compliance-summaries/123/request-issuance-review-summary",
-    );
+      );
+      expectLink(
+        "Manage Obligation",
+        "/compliance-summaries/123/manage-obligation-review-summary",
+      );
+    });
   });
 
-  it("displays 'Review Credits Issuance Request' when status is 'Earned credits', user is cas staff and earned credits is not actioned", () => {
-    render(
-      ActionCell(createMockParams(555, true, undefined, "Earned credits")),
-    );
-    expectLink(
-      "Review Credits Issuance Request",
-      "/compliance-summaries/555/review-credits-issuance-request",
-    );
+  // Test cases for earned credits flow
+  describe("Earned Credits Flow", () => {
+    it("displays 'Review Credits Issuance Request' for CAS user when no final decision", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            true,
+            undefined,
+            "Earned credits",
+            IssuanceStatus.ISSUANCE_REQUESTED,
+          ),
+        ),
+      );
+      expectLink(
+        "Review Credits Issuance Request",
+        "/compliance-summaries/123/request-issuance-review-summary",
+      );
+    });
+
+    it("displays 'View Details' for internal user when approved", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            true,
+            undefined,
+            "Earned credits",
+            IssuanceStatus.APPROVED,
+          ),
+        ),
+      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
+    });
+
+    it("displays 'View Details' for internal user when declined", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            true,
+            undefined,
+            "Earned credits",
+            IssuanceStatus.DECLINED,
+          ),
+        ),
+      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
+    });
+
+    it("displays 'View Details' for external user when request is submitted", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            false,
+            undefined,
+            "Earned credits",
+            IssuanceStatus.ISSUANCE_REQUESTED,
+          ),
+        ),
+      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
+    });
   });
 
-  it("displays 'View Details' when neither obligation_id nor earned credits status is present", () => {
-    render(ActionCell(createMockParams(123, false)));
-    expectLink("View Details", "/compliance-summaries/123/review-summary");
-  });
-
-  it("prioritizes 'Manage Obligation' over 'Request Issuance' when both conditions are met", () => {
+  it("prioritizes 'Manage Obligation' over other conditions", () => {
     render(
       ActionCell(
         createMockParams(
@@ -84,7 +121,7 @@ describe("ActionCell", () => {
           false,
           "24-0001-1-1",
           "Earned credits",
-          "Credits Not Issued in BCCR",
+          IssuanceStatus.ISSUANCE_REQUESTED,
         ),
       ),
     );

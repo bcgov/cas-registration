@@ -17,6 +17,8 @@ export default async function ComplianceSummariesPage({
   const isAllowedCas = [
     FrontEndRoles.CAS_DIRECTOR,
     FrontEndRoles.CAS_ANALYST,
+    FrontEndRoles.CAS_ADMIN,
+    FrontEndRoles.CAS_VIEW_ONLY,
   ].includes(frontEndRole);
   return (
     <>

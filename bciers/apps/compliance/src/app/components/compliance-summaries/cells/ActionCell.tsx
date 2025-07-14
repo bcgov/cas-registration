@@ -1,47 +1,63 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { ComplianceSummary } from "@/compliance/src/app/types";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
-interface ActionCellProps extends GridRenderCellParams {
+interface ActionCellProps extends GridRenderCellParams<ComplianceSummary> {
   isAllowedCas?: boolean;
 }
 
 const ActionCell = (params: ActionCellProps) => {
+  const {
+    obligation_id: obligationId,
+    status,
+    issuance_status: issuanceStatus,
+    id,
+  } = params.row;
+  let basePath = `/compliance-summaries/${id}`;
   let cellText = "View Details";
-  if (params.row.obligation_id) {
+
+  // if we have obligationId should show the Manage Obligation text in the cell
+  if (obligationId && !params.isAllowedCas) {
     cellText = "Manage Obligation";
-  } else if (params.row.status === "Earned credits") {
-    if (
-      params.isAllowedCas &&
-      params.row.issuance_status !== "Credits Not Issued in BCCR"
-    ) {
-      cellText = "Review Credits Issuance Request";
+    basePath += "/manage-obligation-review-summary";
+  } else if (status === "Earned credits") {
+    const hasFinalDecision = [
+      IssuanceStatus.APPROVED,
+      IssuanceStatus.DECLINED,
+    ].includes(issuanceStatus as IssuanceStatus);
+    const isIssuanceRequestSubmitted =
+      issuanceStatus !== IssuanceStatus.CREDITS_NOT_ISSUED;
+
+    // for internal user: if was made final decision show View Details,
+    // else show Review Credits Issuance Request
+    if (params.isAllowedCas) {
+      if (hasFinalDecision) {
+        cellText = "View Details";
+        basePath += "/review-summary";
+      } else {
+        cellText = "Review Credits Issuance Request";
+        basePath += "/request-issuance-review-summary";
+      }
     } else {
-      cellText = "Request Issuance of Credits";
+      // For external users: Show "Request Issuance of Credits"
+      // until request has been submitted, then "View Details"
+      if (isIssuanceRequestSubmitted) {
+        cellText = "View Details";
+        basePath += "/review-summary";
+      } else {
+        cellText = "Request Issuance of Credits";
+        basePath += "/request-issuance-review-summary";
+      }
     }
+  } else {
+    cellText = "View Details";
+    basePath += "/review-summary";
   }
 
   const cell = ActionCellFactory({
-    generateHref: (p: { row: ComplianceSummary }) => {
-      let basePath = `/compliance-summaries/${p.row.id}`;
-
-      if (p.row.obligation_id) {
-        basePath += "/manage-obligation-review-summary";
-      } else if (p.row.status === "Earned credits") {
-        if (
-          params.isAllowedCas &&
-          params.row.issuance_status !== "Credits Not Issued in BCCR"
-        ) {
-          basePath += "/review-credits-issuance-request";
-        } else {
-          basePath += "/request-issuance-review-summary";
-        }
-      } else {
-        basePath += "/review-summary";
-      }
-      return basePath;
-    },
-    cellText: cellText,
+    generateHref: () => basePath,
+    cellText,
   });
 
   return cell(params);
