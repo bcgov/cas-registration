@@ -7,6 +7,9 @@ from service.data_access_service.facility_service import FacilityDataAccessServi
 from reporting.models import ReportOperationRepresentative
 from django.db.models import Min, F
 from dataclasses import dataclass
+from django.db.models import Prefetch
+from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
+from registration.models import Activity, RegulatedProduct
 
 
 @dataclass
@@ -132,3 +135,39 @@ class ReportVersionService:
 
         # Return whether this is the first report version
         return is_initial_report_version
+
+    @staticmethod
+    def fetch_full_report_version(version_id: int) -> ReportVersion:
+        """
+        Fetch a ReportVersion object with all related data for serialization (shared by final review and diff endpoints).
+        """
+
+        return (
+            ReportVersion.objects.select_related(
+                "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
+            )
+            .prefetch_related(
+                "report_electricity_import_data",
+                "report_new_entrant",
+                "report_compliance_summary",
+                "report_products",
+                "report_operation_representatives",
+                Prefetch(
+                    "report_non_attributable_emissions",
+                    queryset=ReportNonAttributableEmissions.objects.prefetch_related("emission_category", "gas_type"),
+                ),
+                Prefetch(
+                    "facility_reports",
+                    queryset=FacilityReport.objects.prefetch_related(
+                        Prefetch(
+                            "reportactivity_records",
+                            queryset=ReportActivity.objects.select_related("activity", "activity_base_schema"),
+                        ),
+                    ),
+                ),
+                Prefetch("report_operation__activities", queryset=Activity.objects.all()),
+                Prefetch("report_operation__regulated_products", queryset=RegulatedProduct.objects.all()),
+            )
+            .get(id=version_id)
+        )
+

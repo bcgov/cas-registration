@@ -322,10 +322,10 @@ class ReportElectricityImportDataSchema(ModelSchema):
 
 
 class ReportVersionSchema(ModelSchema):
-    report_operation: ReportOperationSchema
+    report_operation: Optional[ReportOperationSchema]= None
     report_person_responsible: Optional[ReportPersonResponsibleOut] = None
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
-    report_electricity_import_data: List[ReportElectricityImportDataSchema]
+    report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
     facility_reports: List[FacilityReportSchema] = []
     report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
