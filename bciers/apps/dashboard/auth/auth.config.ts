@@ -104,6 +104,11 @@ export default {
           token.user_guid = account.providerAccountId.split("@")[0];
 
           token.identity_provider = account.providerAccountId.split("@")[1];
+
+          token.access_token = account.access_token;
+          token.refresh_token = account.refresh_token;
+          token.expires_at =
+            Date.now() / 1000 + OAUTH_TOKEN_ROTATION_INTERVAL_SECONDS;
         }
         if (!token.full_name) {
           // 🚀 API call: Get user name from user table
