@@ -162,48 +162,48 @@ class TestReportActivitySaveService(TestCase):
             "test_emission_bool": True,
             "test_emission_str": "test",
             "emission": 1,
-            "equivalentEmission": '28.0000',
+            "equivalentEmission": 28.0000,
         }
         assert report_emissions[0].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[0].gas_type == GasType.objects.get(chemical_formula='CH4')
         assert report_emissions[0].report_fuel == get_report_fuel_by_index(report_activity, 0, 0, 0)
 
-        assert report_emissions[1].json_data == {"emission": 1, "equivalentEmission": "1.0000"}
+        assert report_emissions[1].json_data == {"emission": 1, "equivalentEmission": 1.0000}
         assert report_emissions[1].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[1].gas_type == GasType.objects.get(chemical_formula='CO2')
         assert report_emissions[1].report_fuel == get_report_fuel_by_index(report_activity, 1, 0, 0)
 
-        assert report_emissions[2].json_data == {"emission": 1, "equivalentEmission": "265.0000"}
+        assert report_emissions[2].json_data == {"emission": 1, "equivalentEmission": 265.0000}
         assert report_emissions[2].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[2].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[2].report_fuel == get_report_fuel_by_index(report_activity, 1, 0, 0)
 
-        assert report_emissions[3].json_data == {"emission": 1, "equivalentEmission": "1.0000"}
+        assert report_emissions[3].json_data == {"emission": 1, "equivalentEmission": 1.0000}
         assert report_emissions[3].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[3].gas_type == GasType.objects.get(chemical_formula='CO2')
         assert report_emissions[3].report_fuel == get_report_fuel_by_index(report_activity, 1, 0, 1)
 
-        assert report_emissions[4].json_data == {"emission": 1, "equivalentEmission": "265.0000"}
+        assert report_emissions[4].json_data == {"emission": 1, "equivalentEmission": 265.0000}
         assert report_emissions[4].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[4].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[4].report_fuel == get_report_fuel_by_index(report_activity, 1, 0, 1)
 
-        assert report_emissions[5].json_data == {"emission": 1, "equivalentEmission": "1.0000"}
+        assert report_emissions[5].json_data == {"emission": 1, "equivalentEmission": 1.0000}
         assert report_emissions[5].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[5].gas_type == GasType.objects.get(chemical_formula='CO2')
         assert report_emissions[5].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 0)
 
-        assert report_emissions[6].json_data == {"emission": 1, "equivalentEmission": "265.0000"}
+        assert report_emissions[6].json_data == {"emission": 1, "equivalentEmission": 265.0000}
         assert report_emissions[6].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[6].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[6].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 0)
 
-        assert report_emissions[7].json_data == {"emission": 1, "equivalentEmission": "1.0000"}
+        assert report_emissions[7].json_data == {"emission": 1, "equivalentEmission": 1.0000}
         assert report_emissions[7].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[7].gas_type == GasType.objects.get(chemical_formula='CO2')
         assert report_emissions[7].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 1)
 
-        assert report_emissions[8].json_data == {"emission": 1, "equivalentEmission": "265.0000"}
+        assert report_emissions[8].json_data == {"emission": 1, "equivalentEmission": 265.0000}
         assert report_emissions[8].report_version == test_infrastructure.facility_report.report_version
         assert report_emissions[8].gas_type == GasType.objects.get(chemical_formula='N2O')
         assert report_emissions[8].report_fuel == get_report_fuel_by_index(report_activity, 1, 1, 1)

@@ -1,5 +1,5 @@
 import { NumberField } from "@base-ui-components/react/number-field";
-import { transformToNumberOrUndefined } from "@bciers/components/form/widgets/TextWidget";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { FieldProps } from "@rjsf/utils";
 
 export default function FinalReviewStringField(props: FieldProps) {

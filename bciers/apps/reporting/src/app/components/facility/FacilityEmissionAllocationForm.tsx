@@ -12,7 +12,7 @@ import { IChangeEvent } from "@rjsf/core";
 import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
-import { transformToNumberOrUndefined } from "@bciers/components/form/widgets/TextWidget";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 
 // 📊 Interface for props passed to the component
 interface Props {

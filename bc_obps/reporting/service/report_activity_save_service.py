@@ -22,7 +22,6 @@ from reporting.service.emission_category_mapping_service import (
     EmissionCategoryMappingService,
 )
 from reporting.models.report_raw_activity_data import ReportRawActivityData
-from decimal import Decimal
 
 
 class ReportActivitySaveService:
@@ -240,8 +239,8 @@ class ReportActivitySaveService:
         json_data = exclude_keys(emission_data, ["gasType", "id", "methodology"])
         gas_type = GasType.objects.get(chemical_formula=emission_data["gasType"])
         # Set equivalent emission value (emission * gwp)
-        equivalent_emission = round(Decimal(json_data["emission"]) * gas_type.gwp, 4)
-        json_data["equivalentEmission"] = str(equivalent_emission)
+        equivalent_emission = round(json_data["emission"] * gas_type.gwp, 4)
+        json_data["equivalentEmission"] = equivalent_emission
 
         report_emission_id = emission_data.get("id")
         if "methodology" not in emission_data:

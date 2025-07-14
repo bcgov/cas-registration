@@ -1,4 +1,4 @@
-import { transformToNumberOrUndefined } from "@bciers/components/form/widgets/TextWidget";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { EmissionAllocationData } from "./types";
 
 // Function that makes sure the percentage does not show 100 when it is not exactly 100

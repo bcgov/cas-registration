@@ -126,7 +126,7 @@ class TestSaveReportEmission(TestCase):
         assert return_value.json_data == {
             "test_emission_prop": "something",
             "emission": 1,
-            "equivalentEmission": "100.0000",
+            "equivalentEmission": 100.0000,
         }
         assert return_value.report_source_type == report_source_type
         assert return_value.report_fuel == report_fuel
@@ -219,7 +219,7 @@ class TestSaveReportEmission(TestCase):
         assert updated_return_value.json_data == {
             "test_emission_prop": "new something",
             "emission": 2,
-            "equivalentEmission": "200.0000",
+            "equivalentEmission": 200.0000,
         }
         assert updated_return_value.gas_type == GasType.objects.get(chemical_formula="BCOBPS")
 
@@ -270,7 +270,7 @@ class TestSaveReportEmission(TestCase):
             {
                 "test_emission_prop": "something",
                 "gasType": "GGIRCA",
-                "emission": "1.00123399",
+                "emission": 1.00123399,
                 "methodology": {
                     "id": 9003,
                     "methodology": "Default EF",
@@ -281,4 +281,4 @@ class TestSaveReportEmission(TestCase):
         )
 
         # Rounds to 4 decimal places and returns correct equivalentEmission value
-        assert return_value.json_data["equivalentEmission"] == "100.1234"
+        assert return_value.json_data["equivalentEmission"] == 100.1234

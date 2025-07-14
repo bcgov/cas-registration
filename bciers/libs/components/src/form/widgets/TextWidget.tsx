@@ -8,6 +8,7 @@ import {
   BC_GOV_SEMANTICS_RED,
   BC_GOV_LINKS_COLOR,
 } from "@bciers/styles/colors";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 
 /**
  * Transforms the given value into a number if it is defined. Handles 0s.
@@ -16,12 +17,6 @@ import {
  * @returns The numeric representation of the value if it is defined,
  *          or `undefined` if the value is falsy (but not 0).
  */
-export const transformToNumberOrUndefined = (
-  value: any,
-): number | undefined => {
-  if (value === 0) return 0;
-  return value ? Number(value) : undefined;
-};
 
 const TextWidget: React.FC<WidgetProps> = ({
   disabled,
