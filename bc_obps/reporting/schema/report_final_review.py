@@ -17,14 +17,16 @@ from reporting.models import (
     ReportEmissionAllocation,
     ReportProductEmissionAllocation,
     EmissionCategory,
-    ReportOperationRepresentative,
     SourceType,
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.service.compliance_service import ComplianceService, ComplianceData
 from reporting.service.emission_category_service import EmissionCategoryService
-from reporting.service.report_emission_allocation_service import ReportEmissionAllocationService, \
-    ReportEmissionAllocationData
+from reporting.service.report_emission_allocation_service import (
+    ReportEmissionAllocationService,
+    ReportEmissionAllocationData,
+)
+from service.report_version_service import ReportVersionService
 
 
 class EmissionCategorySchema(ModelSchema):
@@ -98,10 +100,7 @@ class ReportOperationSchema(ModelSchema):
 
     @staticmethod
     def resolve_representatives(obj: ReportOperation) -> str:
-        return "; ".join(
-            rep.representative_name
-            for rep in ReportOperationRepresentative.objects.filter(report_version__report_operation=obj)
-        )
+        return "; ".join(rep.representative_name for rep in obj.report_version.report_operation_representatives.all())
 
     @staticmethod
     def resolve_activities(obj: ReportOperation) -> str:
@@ -280,10 +279,15 @@ class ReportVersionSchema(ModelSchema):
     report_new_entrant: List[ReportNewEntrantSchema] = []
     facility_reports: List[FacilityReportSchema] = []
     report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
+    is_supplementary_report: Optional[bool] = None
 
     @staticmethod
     def resolve_report_compliance_summary(obj: ReportVersion) -> ComplianceData:
         return ComplianceService.get_calculated_compliance_data(obj.id)
+
+    @staticmethod
+    def resolve_is_supplementary_report(obj: ReportVersion) -> bool:
+        return not ReportVersionService.is_initial_report_version(obj.id)
 
     class Meta:
         model = ReportVersion

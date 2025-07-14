@@ -144,4 +144,5 @@ export interface ReportData {
   report_additional_data: ReportAdditionalData;
   report_compliance_summary: ReportComplianceSummary;
   facility_reports: FacilityReport[];
+  is_supplementary_report: boolean;
 }

@@ -126,6 +126,94 @@ const complianceSummaryFields = (products: any[] = []) => [
   ]) || []),
 ];
 
+const emissionsSummaryFields = [
+  {
+    label: "Emissions attributable for reporting",
+    key: "attributable_for_reporting",
+  },
+  {
+    label: "Emissions attributable for reporting threshold",
+    key: "attributable_for_reporting_threshold",
+  },
+  { heading: "Emission Categories" },
+  { label: "Flaring emissions", key: "emission_categories.flaring" },
+  { label: "Fugitive emissions", key: "emission_categories.fugitive" },
+  {
+    label: "Industrial process emissions",
+    key: "emission_categories.industrial_process",
+  },
+  {
+    label: "On-site transportation emissions",
+    key: "emission_categories.onsite_transportation",
+  },
+  {
+    label: "Stationary fuel combustion emissions",
+    key: "emission_categories.stationary_combustion",
+  },
+  {
+    label: "Venting emissions - useful",
+    key: "emission_categories.venting_useful",
+  },
+  {
+    label: "Venting emissions - non-useful",
+    key: "emission_categories.venting_non_useful",
+  },
+  { label: "Emissions from waste", key: "emission_categories.waste" },
+  { label: "Emissions from wastewater", key: "emission_categories.wastewater" },
+  { heading: "Emissions excluded by fuel type" },
+  {
+    label: "CO2 emissions from excluded woody biomass",
+    key: "fuel_excluded.woody_biomass",
+  },
+  {
+    label: "Other emissions from excluded biomass",
+    key: "fuel_excluded.excluded_biomass",
+  },
+  {
+    label: "Emissions from excluded non-biomass",
+    key: "fuel_excluded.excluded_non_biomass",
+  },
+  { heading: "Other emissions excluded" },
+  {
+    label:
+      "Emissions from line tracing and non-processing and non-compression activities",
+    key: "other_excluded.lfo_excluded",
+  },
+];
+
+const productionDataFields = (product: any) => [
+  { heading: product.product },
+  { label: "Unit", key: "unit" },
+  { label: "Annual Production", key: "annual_production" },
+  {
+    label: "Production Data for Apr 1 - Dec 31 2024",
+    key: "production_data_apr_dec",
+  },
+  {
+    label: "Production Quantification Methodology",
+    key: "production_methodology",
+  },
+  {
+    label:
+      "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
+    key: "storage_quantity_start_of_period",
+  },
+  {
+    label:
+      "Quantity in storage at the end of the compliance period [Dec 31], if applicable",
+    key: "storage_quantity_end_of_period",
+  },
+  {
+    label:
+      "Quantity sold during compliance period [Jan 1 - Dec 31], if applicable",
+    key: "quantity_sold_during_period",
+  },
+  {
+    label:
+      "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
+    key: "quantity_throughput_during_period",
+  },
+];
 export const FinalReviewForm: React.FC<Props> = ({
   navigationInformation,
   data,
@@ -147,6 +235,18 @@ export const FinalReviewForm: React.FC<Props> = ({
         <div>
           {data ? (
             <>
+              {data.is_supplementary_report && (
+                <SectionReview
+                  title="Reason for Edits"
+                  data={data}
+                  fields={[
+                    {
+                      label: "Reason for submitting supplementary report",
+                      key: "reason_for_change",
+                    },
+                  ]}
+                />
+              )}
               <SectionReview
                 title="Review Operation Information"
                 data={data.report_operation}
@@ -214,73 +314,7 @@ export const FinalReviewForm: React.FC<Props> = ({
                     <SectionReview
                       title="Emissions Summary (in tCO2e)"
                       data={facilityReport.emission_summary}
-                      fields={[
-                        {
-                          label: "Emissions attributable for reporting",
-                          key: "attributable_for_reporting",
-                        },
-                        {
-                          label:
-                            "Emissions attributable for reporting threshold",
-                          key: "attributable_for_reporting_threshold",
-                        },
-                        { heading: "Emission Categories" },
-                        {
-                          label: "Flaring emissions",
-                          key: "emission_categories.flaring",
-                        },
-                        {
-                          label: "Fugitive emissions",
-                          key: "emission_categories.fugitive",
-                        },
-                        {
-                          label: "Industrial process emissions",
-                          key: "emission_categories.industrial_process",
-                        },
-                        {
-                          label: "On-site transportation emissions",
-                          key: "emission_categories.onsite_transportation",
-                        },
-                        {
-                          label: "Stationary fuel combustion emissions",
-                          key: "emission_categories.stationary_combustion",
-                        },
-                        {
-                          label: "Venting emissions - useful",
-                          key: "emission_categories.venting_useful",
-                        },
-                        {
-                          label: "Venting emissions - non-useful",
-                          key: "emission_categories.venting_non_useful",
-                        },
-                        {
-                          label: "Emissions from waste",
-                          key: "emission_categories.waste",
-                        },
-                        {
-                          label: "Emissions from wastewater",
-                          key: "emission_categories.wastewater",
-                        },
-                        { heading: "Emissions excluded by fuel type" },
-                        {
-                          label: "CO2 emissions from excluded woody biomass",
-                          key: "fuel_excluded.woody_biomass",
-                        },
-                        {
-                          label: "Other emissions from excluded biomass",
-                          key: "fuel_excluded.excluded_biomass",
-                        },
-                        {
-                          label: "Emissions from excluded non-biomass",
-                          key: "fuel_excluded.excluded_non_biomass",
-                        },
-                        { heading: "Other emissions excluded" },
-                        {
-                          label:
-                            "Emissions from line tracing and non-processing and non-compression activities",
-                          key: "other_excluded.lfo_excluded",
-                        },
-                      ]}
+                      fields={emissionsSummaryFields}
                     />
 
                     <SectionReview
@@ -292,42 +326,7 @@ export const FinalReviewForm: React.FC<Props> = ({
                         <SectionReview
                           key={product.report_product_id}
                           data={product}
-                          fields={[
-                            { heading: product.product },
-                            { label: "Unit", key: "unit" },
-                            {
-                              label: "Annual Production",
-                              key: "annual_production",
-                            },
-                            {
-                              label: "Production Data for Apr 1 - Dec 31 2024",
-                              key: "production_data_apr_dec",
-                            },
-                            {
-                              label: "Production Quantification Methodology",
-                              key: "production_methodology",
-                            },
-                            {
-                              label:
-                                "Quantity in storage at the beginning of the compliance period [Jan 1], if applicable",
-                              key: "storage_quantity_start_of_period",
-                            },
-                            {
-                              label:
-                                "Quantity in storage at the end of the compliance period [Dec 31], if applicable",
-                              key: "storage_quantity_end_of_period",
-                            },
-                            {
-                              label:
-                                "Quantity sold during compliance period [Jan 1 - Dec 31], if applicable",
-                              key: "quantity_sold_during_period",
-                            },
-                            {
-                              label:
-                                "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
-                              key: "quantity_throughput_during_period",
-                            },
-                          ]}
+                          fields={productionDataFields(product)}
                         />
                       ))}
                     </SectionReview>

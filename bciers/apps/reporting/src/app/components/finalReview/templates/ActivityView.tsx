@@ -97,7 +97,7 @@ function renderObject(obj: unknown, labelPrefix = ""): React.ReactNode {
         )}
         {typeof value === "object" && value !== null
           ? renderObject(value, key)
-          : String(value)}
+          : ` ${String(value)}`}
       </div>
     ));
   }
@@ -113,8 +113,8 @@ function renderObject(obj: unknown, labelPrefix = ""): React.ReactNode {
 export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
   return (
     <div>
-      {activity_data.map((activityItem, i) => (
-        <section key={i} style={{ marginBottom: 30 }}>
+      {activity_data.map((activityItem, activityIndex) => (
+        <section key={activityIndex} style={{ marginBottom: 30 }}>
           <h2 className={"py-2 w-full font-bold text-bc-bg-blue mb-4"}>
             {activityItem.activity}
           </h2>
@@ -124,10 +124,10 @@ export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
               if (keyB.toLowerCase().includes("emissions")) return -1;
               return 0;
             })
-            .map(([sourceTypeName, sourceTypeValue], j) => {
+            .map(([sourceTypeName, sourceTypeValue], sourceTypeIndex) => {
               if (sourceTypeName.toLowerCase().includes("fuels")) {
                 return (
-                  <div key={j} style={styles.dataCard}>
+                  <div key={sourceTypeIndex} style={styles.dataCard}>
                     {Object.entries(sourceTypeValue).map(([key, value]) => {
                       if (
                         key.toLowerCase() === "fuel name" ||
@@ -152,7 +152,7 @@ export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
 
               return (
                 <SourceTypeBoxTemplate
-                  key={j}
+                  key={sourceTypeIndex}
                   classNames="source-type-box"
                   label={sourceTypeName}
                   description={

@@ -24,11 +24,14 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
     ) : typeof value === "boolean" ? (
       <span>{value ? "Yes" : "No"}</span>
     ) : typeof value === "string" && value.includes(";") ? (
-      value.split(";").map((item, idx) => <div key={idx}>- {item.trim()}</div>)
+      <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0 }}>
+        {value.split(";").map((item, idx) => (
+          <li key={idx}>- {item.trim()}</li>
+        ))}
+      </ul>
     ) : (
       <span>{value}</span>
     );
-
   return (
     <div className="w-full my-3">
       <div
