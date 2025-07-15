@@ -32,7 +32,7 @@ class ApplyComplianceUnitsOut(Schema):
     bccr_trading_name: Optional[str] = None
     bccr_compliance_account_id: Optional[str] = None
     charge_rate: Optional[Decimal] = None
-    outstanding_balance: Optional[str] = None
+    outstanding_balance: Optional[Decimal] = None
     bccr_units: List[BCCRUnit] = []
 
 

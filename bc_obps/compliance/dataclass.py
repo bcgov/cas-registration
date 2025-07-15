@@ -44,7 +44,7 @@ class ComplianceUnitsPageData:
     bccr_trading_name: Optional[str]
     bccr_compliance_account_id: Optional[str]
     charge_rate: Optional[Decimal]
-    outstanding_balance: Optional[str]
+    outstanding_balance: Optional[Decimal]
     bccr_units: List[BCCRUnit]
 
 

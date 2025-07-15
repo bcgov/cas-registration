@@ -50,7 +50,7 @@ vi.mock(
 
 const mockData = {
   reporting_year: "2024",
-  outstanding_balance: "0.0000 tCO2e",
+  outstanding_balance: 0.0,
   equivalent_value: "$0.00",
   payments: [
     {

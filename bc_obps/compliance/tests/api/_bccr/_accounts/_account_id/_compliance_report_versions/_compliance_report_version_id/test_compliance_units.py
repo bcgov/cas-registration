@@ -35,7 +35,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             bccr_trading_name="Test Company",
             bccr_compliance_account_id=VALID_ACCOUNT_ID,
             charge_rate=Decimal("40.00"),
-            outstanding_balance="16000",
+            outstanding_balance=Decimal("30000.00"),
             bccr_units=[
                 BCCRUnit(
                     id="1",
@@ -55,8 +55,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         response_data = response.json()
         assert response_data["bccr_trading_name"] == "Test Company"
         assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
-        assert response_data["charge_rate"] == "40.00"
-        assert response_data["outstanding_balance"] == "16000"
+        assert Decimal(response_data["charge_rate"]) == Decimal("40.00")
+        assert Decimal(response_data["outstanding_balance"]) == Decimal("30000.00")
         assert len(response_data["bccr_units"]) == 1
         assert response_data["bccr_units"][0]["type"] == "Earned Credits"
         assert response_data["bccr_units"][0]["serial_number"] == "BCE-2023-0001"
@@ -109,7 +109,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             bccr_trading_name="Test Company",
             bccr_compliance_account_id=VALID_ACCOUNT_ID,
             charge_rate=Decimal("40.00"),
-            outstanding_balance="16000",
+            outstanding_balance=Decimal("25000.00"),
             bccr_units=[],
         )
 
@@ -121,8 +121,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         response_data = response.json()
         assert response_data["bccr_trading_name"] == "Test Company"
         assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
-        assert response_data["charge_rate"] == "40.00"
-        assert response_data["outstanding_balance"] == "16000"
+        assert Decimal(response_data["charge_rate"]) == Decimal("40.00")
+        assert Decimal(response_data["outstanding_balance"]) == Decimal("25000.00")
         assert response_data["bccr_units"] == []
 
 

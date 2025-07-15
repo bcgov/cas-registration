@@ -21,11 +21,14 @@ from compliance.constants import COMPLIANCE
 )
 def get_apply_compliance_units_page_data(
     request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
-) -> Tuple[Literal[200], DictStrAny]:
+) -> Tuple[Literal[200], ApplyComplianceUnitsOut]:
     apply_compliance_units_page_data = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
         account_id=account_id, compliance_report_version_id=compliance_report_version_id
     )
-    return 200, asdict(apply_compliance_units_page_data)
+
+    response = ApplyComplianceUnitsOut(**asdict(apply_compliance_units_page_data))
+
+    return 200, response
 
 
 @router.post(
