@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
@@ -11,9 +11,11 @@ import { FieldDisplay } from "@reporting/src/app/components/finalReview/template
 import { FacilityReport, ReportData } from "./reportTypes";
 import type { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { EmissionAllocationView } from "@reporting/src/app/components/finalReview/templates/EmissionAllocationView";
+import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
+import Loading from "@bciers/components/loading/SkeletonForm";
 
 interface Props {
-  data: ReportData | null;
+  version_id: any;
   navigationInformation: NavigationInformation;
 }
 
@@ -215,9 +217,20 @@ const productionDataFields = (product: any) => [
   },
 ];
 export const FinalReviewForm: React.FC<Props> = ({
+  version_id,
   navigationInformation,
-  data,
 }) => {
+  const [data, setData] = useState<ReportData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const finalReviewData = await getFinalReviewData(version_id);
+      setData(finalReviewData);
+      setLoading(false);
+    }
+    fetchData();
+  }, [version_id]);
   return (
     <>
       <div className="container mx-auto p-4" data-testid="facility-review">
@@ -233,7 +246,7 @@ export const FinalReviewForm: React.FC<Props> = ({
         </div>
 
         <div>
-          {data ? (
+          {!loading && data ? (
             <>
               {data.is_supplementary_report && (
                 <SectionReview
@@ -350,22 +363,17 @@ export const FinalReviewForm: React.FC<Props> = ({
                   data.report_compliance_summary?.products,
                 )}
               />
+
+              <ReportingStepButtons
+                backUrl={navigationInformation.backUrl}
+                continueUrl={navigationInformation.continueUrl}
+                buttonText={"Continue"}
+                noSaveButton={true}
+              />
             </>
           ) : (
-            <p>
-              The system is unable to display a large amount of facility
-              reports. This issue will be fixed in a future version of the
-              system. To review your facility reports, please return to report
-              information.
-            </p>
+            <Loading />
           )}
-
-          <ReportingStepButtons
-            backUrl={navigationInformation.backUrl}
-            continueUrl={navigationInformation.continueUrl}
-            buttonText={"Continue"}
-            noSaveButton={true}
-          />
         </div>
       </div>
     </>
