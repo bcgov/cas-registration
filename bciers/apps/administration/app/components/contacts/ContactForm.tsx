@@ -60,6 +60,7 @@ export default function ContactForm({
       return;
     }
     router.push("/contacts?from_deletion=true");
+    return;
   };
 
   const hasPlacesAssigned =
