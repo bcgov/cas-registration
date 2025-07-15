@@ -8,6 +8,15 @@ import {
   BC_GOV_SEMANTICS_RED,
   BC_GOV_LINKS_COLOR,
 } from "@bciers/styles/colors";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
+
+/**
+ * Transforms the given value into a number if it is defined. Handles 0s.
+ *
+ * @param value - The value to be transformed. Can be of any type.
+ * @returns The numeric representation of the value if it is defined,
+ *          or `undefined` if the value is falsy (but not 0).
+ */
 
 const TextWidget: React.FC<WidgetProps> = ({
   disabled,
@@ -22,11 +31,16 @@ const TextWidget: React.FC<WidgetProps> = ({
   name,
 }) => {
   const type = schema.type === "number" ? "number" : "text";
+
   const max =
     uiSchema?.["ui:options"]?.max && Number(uiSchema?.["ui:options"]?.max);
   const maxNumDbLimit = Number.MAX_SAFE_INTEGER;
 
   const maxNum = max || maxNumDbLimit;
+
+  const decimalPoints =
+    uiSchema?.["ui:options"]?.decimalPoints &&
+    Number(uiSchema?.["ui:options"]?.decimalPoints);
 
   const handleChange = (e: { target: { value: string } }) => {
     const val = e.target.value;
@@ -63,18 +77,20 @@ const TextWidget: React.FC<WidgetProps> = ({
     width: "100%",
   };
 
-  // const name = uiSchema?.["ui:options"]?.title || "";
   if (type === "number") {
     return (
       <NumberField.Root
         id={id}
         name={name}
         disabled={disabled || readonly}
-        value={value}
+        value={transformToNumberOrUndefined(value)}
         onValueChange={handleNumberChange}
         max={maxNum}
         style={widthStyle}
-        format={{ maximumFractionDigits: 4 }}
+        format={{
+          maximumFractionDigits: decimalPoints || 4,
+          minimumFractionDigits: 0,
+        }}
       >
         <NumberField.Group>
           <NumberField.Input

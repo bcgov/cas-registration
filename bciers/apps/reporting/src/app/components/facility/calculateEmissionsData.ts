@@ -1,3 +1,4 @@
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { EmissionAllocationData } from "./types";
 
 // Function that makes sure the percentage does not show 100 when it is not exactly 100
@@ -42,6 +43,12 @@ export const calculateEmissionData = (category: EmissionAllocationData) => {
             4,
           )}`
         : `${percentage.toFixed(2)}%`,
-    emission_total: category.emission_total.toString(),
+    emission_total: transformToNumberOrUndefined(category.emission_total),
+    products: category.products.map((product) => ({
+      ...product,
+      allocated_quantity: transformToNumberOrUndefined(
+        product.allocated_quantity,
+      ),
+    })),
   };
 };

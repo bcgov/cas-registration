@@ -158,7 +158,6 @@ const createActivityData = (reportVersion, facility) => {
                     {
                       gasType: "CO2",
                       emission: 45,
-                      equivalentEmission: "Value will be computed upon saving",
                       methodology: {
                         methodology: "Replacement Methodology",
                         description: "test description",

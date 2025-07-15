@@ -222,7 +222,6 @@ class TestReportActivityJsonValidator:
                                         {
                                             "gasType": "CH4",
                                             "emission": 777,
-                                            "equivalentEmission": "Value will be computed upon saving",
                                             "methodology": {
                                                 "methodology": "Default EF",
                                                 "unitFuelCh4DefaultEf": 888,
@@ -257,7 +256,6 @@ class TestReportActivityJsonValidator:
                                         {
                                             "gasType": "N2O",
                                             "emission": 4444,
-                                            "equivalentEmission": "Value will be computed upon saving",
                                             "methodology": {
                                                 "methodology": "Heat Input/Default EF",
                                                 "unitFuelHeatInput": 5555,

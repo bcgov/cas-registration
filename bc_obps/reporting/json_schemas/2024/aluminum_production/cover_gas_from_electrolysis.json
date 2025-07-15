@@ -21,9 +21,9 @@
           },
           "equivalentEmission": {
             "title": "Equivalent emissions (tC02e)",
-            "type": "string",
+            "type": "number",
             "readOnly": true,
-            "default": "Value will be computed upon saving"
+            "description": "Computed upon saving"
           }
         }
       }

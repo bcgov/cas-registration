@@ -7,35 +7,35 @@ export const complianceSummarySchema: RJSFSchema = {
   title: "Compliance Summary",
   properties: {
     emissions_attributable_for_reporting: {
-      type: "string",
+      type: "number",
       title: "Emissions attributable for reporting",
     },
     reporting_only_emissions: {
-      type: "string",
+      type: "number",
       title: "Reporting-only emissions",
     },
     emissions_attributable_for_compliance: {
-      type: "string",
+      type: "number",
       title: "Emissions attributable for compliance",
     },
     emissions_limit: {
-      type: "string",
+      type: "number",
       title: "Emissions limit",
     },
     excess_emissions: {
-      type: "string",
+      type: "number",
       title: "Excess emissions",
     },
     credited_emissions: {
-      type: "string",
+      type: "number",
       title: "Credited emissions",
     },
     regulatory_values: {
       type: "object",
       title: "Regulatory values",
       properties: {
-        reduction_factor: { type: "string", title: "Reduction factor" },
-        tightening_rate: { type: "string", title: "Tightening rate" },
+        reduction_factor: { type: "number", title: "Reduction factor" },
+        tightening_rate: { type: "number", title: "Tightening rate" },
         initial_compliance_period: {
           type: "string",
           title: "Initial compliance period",
@@ -53,26 +53,26 @@ export const complianceSummarySchema: RJSFSchema = {
         type: "object",
         properties: {
           name: {
-            type: "string",
+            type: "number",
           },
           annual_production: {
-            type: "string",
+            type: "number",
             title: "Annual production",
           },
           apr_dec_production: {
-            type: "string",
+            type: "number",
             title: "Production data for Apr 1 - Dec 31 2024",
           },
           emission_intensity: {
-            type: "string",
+            type: "number",
             title: "Production-weighted average emission intensity",
           },
           allocated_industrial_process_emissions: {
-            type: "string",
+            type: "number",
             title: "Allocated industrial process emissions",
           },
           allocated_compliance_emissions: {
-            type: "string",
+            type: "number",
             title: "Allocated Emissions attributable to compliance",
           },
         },
