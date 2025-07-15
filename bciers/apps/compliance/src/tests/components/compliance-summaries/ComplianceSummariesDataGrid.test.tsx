@@ -207,7 +207,10 @@ describe("ComplianceSummariesDataGrid component", () => {
       within(thirdRow).getByRole("link", {
         name: "View Details",
       }),
-    ).toHaveAttribute("href", "/compliance-summaries/3/review-summary");
+    ).toHaveAttribute(
+      "href",
+      "/compliance-summaries/3/request-issuance-review-summary",
+    );
   });
 
   it("shows 'View Details' for external users once the request has been submitted", async () => {
@@ -227,7 +230,10 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     expect(
       within(dataRow).getByRole("link", { name: "View Details" }),
-    ).toHaveAttribute("href", "/compliance-summaries/4/review-summary");
+    ).toHaveAttribute(
+      "href",
+      "/compliance-summaries/4/request-issuance-review-summary",
+    );
   });
 
   it("shows 'Review Credits Issuance Request' for internal users when no decision has been made yet", async () => {
@@ -276,6 +282,9 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     expect(
       within(dataRow).getByRole("link", { name: "View Details" }),
-    ).toHaveAttribute("href", "/compliance-summaries/5/review-summary");
+    ).toHaveAttribute(
+      "href",
+      "/compliance-summaries/5/request-issuance-review-summary",
+    );
   });
 });

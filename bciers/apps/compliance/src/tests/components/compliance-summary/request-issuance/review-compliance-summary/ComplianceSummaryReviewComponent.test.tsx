@@ -20,7 +20,7 @@ const mockComplianceSummaryId = "123";
 const mockData = {
   reporting_year: 2024,
   excess_emissions: -15.0,
-  emission_limit: 100.0,
+  emissions_limit: 100.0,
   emissions_attributable_for_compliance: 85.0,
   earned_credits_amount: 15,
   issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
@@ -60,7 +60,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(screen.getByText("85")).toBeVisible();
     expect(screen.getAllByText("tCO2e")[0]).toBeVisible();
     expect(screen.getByText("Emissions Limit:")).toBeVisible();
-    expect(screen.getByText("100")).toBeVisible();
+    expect(screen.getByText(100.0)).toBeVisible();
     expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
     expect(screen.getByText("Excess Emissions:")).toBeVisible();
     expect(screen.getByText(-15.0)).toBeVisible();
