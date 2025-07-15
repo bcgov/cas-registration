@@ -9,7 +9,6 @@ import {
   assertSuccessfulSnackbar,
 } from "@bciers/e2e/utils/helpers";
 import { FrontendMessages } from "@bciers/utils/src/enums";
-
 import { ContactsPOM } from "@/administration-e2e/poms/contacts";
 
 const happoPlaywright = require("happo-playwright");
@@ -83,6 +82,7 @@ test.describe("Test add/edit contact", () => {
 
     // Verify that fields were updated
     await contactsPage.contactInformation("read");
+    await contactsPage.assertBreadcrumbIsCorrect();
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "Contact form",
       variant: "filled",

@@ -32,7 +32,8 @@ const operationColumns = (
           case !!boroId:
             return boroId; // Return 'boroId' if it exists
           case regulatedOperationPurposes.includes(purpose):
-            return "Pending"; // Return "Pending" if 'purpose' is in the list
+            return "Pendings"; // Return "Pending" if 'purpose' is in the list
+          // chesca again
           default:
             return "N/A"; // Default case
         }
