@@ -8,6 +8,7 @@ import { SectionReview } from "@reporting/src/app/components/finalReview/templat
 
 interface EmissionAllocationProps {
   data: ReportEmissionAllocation;
+  isDeleted?: boolean;
 }
 
 export const transformEmissionAllocationData = (
@@ -64,6 +65,7 @@ const addEmissionAllocationFields = (
 
 export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
   data,
+  isDeleted = false,
 }) => {
   // Early return if data is undefined or null
   if (!data) {
@@ -134,6 +136,7 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
       title="Allocation of Emissions"
       data={transformedData}
       fields={fields}
+      isDeleted={isDeleted}
     />
   );
 };

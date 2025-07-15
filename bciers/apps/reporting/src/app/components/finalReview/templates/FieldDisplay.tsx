@@ -11,6 +11,10 @@ interface FieldDisplayProps {
   unit?: string;
   showSeparator?: boolean;
   isDate?: boolean;
+  isDeleted?: boolean;
+  isAdded?: boolean;
+  oldValue?: any;
+  changeType?: "modified" | "added" | "removed";
 }
 
 /**
@@ -23,23 +27,40 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   unit,
   showSeparator = true,
   isDate = false,
+  isDeleted = false,
+  isAdded = false,
+  oldValue,
+  changeType,
 }) => {
-  const formattedValue =
-    value === null || value === undefined ? (
-      <span>N/A</span>
-    ) : isDate ? (
-      <span>{formatDate(value, "MMM DD, YYYY")}</span>
-    ) : typeof value === "boolean" ? (
-      <span>{value ? "Yes" : "No"}</span>
-    ) : typeof value === "string" && value.includes(";") ? (
-      <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0 }}>
-        {value.split(";").map((item, idx) => (
-          <li key={idx}>- {item.trim()}</li>
-        ))}
-      </ul>
-    ) : (
-      <span>{value}</span>
-    );
+  const formatValue = (val: any) => {
+    if (val === null || val === undefined) {
+      return <span>N/A</span>;
+    }
+    if (isDate) {
+      return <span>{formatDate(val, "MMM DD, YYYY")}</span>;
+    }
+    if (typeof val === "boolean") {
+      return <span>{val ? "Yes" : "No"}</span>;
+    }
+    if (typeof val === "string" && val.includes(";")) {
+      return (
+        <ul style={{ listStyleType: "none", paddingLeft: 0, margin: 0 }}>
+          {val.split(";").map((item, idx) => (
+            <li key={idx}>- {item.trim()}</li>
+          ))}
+        </ul>
+      );
+    }
+    return <span>{val}</span>;
+  };
+
+  // Common styles for deleted items - only apply to values, not labels
+  const deletedValueStyles = isDeleted
+    ? {
+        textDecoration: "line-through",
+        color: "#666",
+      }
+    : {};
 
   return (
     <div className="w-full my-3">
@@ -62,14 +83,35 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
             }}
           >
             <NumberField.Group>
-              <NumberField.Input style={numberStyles} name={label} />
+              <NumberField.Input
+                style={{
+                  ...numberStyles,
+                  ...deletedValueStyles,
+                }}
+                name={label}
+              />
             </NumberField.Group>
           </NumberField.Root>
+        ) : changeType === "modified" ? (
+          <>
+            <span style={{ textDecoration: "line-through", color: "#666" }}>
+              {formatValue(oldValue)}
+              {unit && ` ${unit}`}
+            </span>
+            <span className="mx-2">→</span>
+            <span>
+              {formatValue(value)}
+              {unit && ` ${unit}`}
+            </span>
+          </>
         ) : (
-          <div>{formattedValue}</div>
+          <div style={deletedValueStyles}>{formatValue(value)}</div>
         )}
         {unit ? (
-          <div className="text-bc-bg-blue relative flex items-center">
+          <div
+            className="text-bc-bg-blue relative flex items-center"
+            style={deletedValueStyles}
+          >
             {unit}
           </div>
         ) : (
