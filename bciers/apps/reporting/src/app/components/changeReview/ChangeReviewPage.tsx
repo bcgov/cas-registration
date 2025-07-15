@@ -34,7 +34,6 @@ export default async function ChangeReviewPage({
       skipChangeReview: !isSupplementaryReport,
     },
   );
-  console.log("changes", changes);
 
   return (
     <>

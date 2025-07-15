@@ -1,8 +1,6 @@
 from django.db import transaction
-from reporting.models.facility_report import FacilityReport
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
-from reporting.models.report_version import ReportVersion
 from service.data_access_service.facility_service import FacilityDataAccessService
 from reporting.models import ReportOperationRepresentative
 from django.db.models import Min, F
@@ -170,4 +168,3 @@ class ReportVersionService:
             )
             .get(id=version_id)
         )
-
