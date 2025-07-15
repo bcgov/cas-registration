@@ -49,10 +49,7 @@ export default function ContactForm({
 
   const handleArchiveContact = async () => {
     setIsSubmitting(true);
-    const response = await archiveContact(
-      params.contactId as string,
-      "/contacts",
-    );
+    const response = await archiveContact(params.contactId as string);
     if (response?.error) {
       setError(response.error as any);
       setModalOpen(false);

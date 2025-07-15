@@ -520,7 +520,6 @@ describe("ContactForm component", () => {
     });
     expect(deleteButton).toBeVisible(); //  delete button on the contact form
     await userEvent.click(deleteButton);
-    // brianna maybe a waitfor
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -545,7 +544,6 @@ describe("ContactForm component", () => {
     });
     expect(deleteButton).toBeVisible(); //  delete button on the contact form
     await userEvent.click(deleteButton);
-    // brianna maybe a waitfor
     const modal = screen.getByRole("dialog");
     expect(modal).toBeVisible();
 

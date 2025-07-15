@@ -179,15 +179,15 @@ class TestContactsEndpoint(CommonTestSetup):
         assert contact.archived_at is not None
 
     def test_patch_archive_contact_fail(self):
-        contact = baker.make_recipe(
+        random_contact = baker.make_recipe(
             "registration.tests.utils.contact",
         )
-        TestUtils.authorize_current_user_as_operator_user(self, contact.operator)
+        TestUtils.authorize_current_user_as_operator_user(self, baker.make_recipe("registration.tests.utils.operator"))
         patch_response = TestUtils.mock_patch_with_auth_role(
             self,
             "industry_user",
             self.content_type,
             {},
-            custom_reverse_lazy("archive_contact", kwargs={"contact_id": 999}),
+            custom_reverse_lazy("archive_contact", kwargs={"contact_id": random_contact.id}),
         )
         assert patch_response.status_code == 401
