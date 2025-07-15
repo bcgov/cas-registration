@@ -5,6 +5,7 @@ from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComp
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+from compliance.service.compliance_obligation_service import ComplianceObligationService
 from decimal import Decimal
 
 bccr_account_service = BCCarbonRegistryAccountService()
@@ -83,12 +84,16 @@ class ApplyComplianceUnitsService:
         )
         bccr_units = bccr_account_service.client.list_all_units(account_id=account_id)
 
+        obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(
+            compliance_report_version_id
+        )
+        outstanding_balance = obligation_data.equivalent_value
+
         return ComplianceUnitsPageData(
             bccr_trading_name=bccr_compliance_account.master_account_name,
             bccr_compliance_account_id=bccr_compliance_account.entity_id,
             charge_rate=ComplianceChargeRateService.get_rate_for_year(compliance_report.report.reporting_year),
-            # TODO: This value is hardcoded for now, We need to implement the logic to fetch the actual outstanding balance in ticket #193
-            outstanding_balance="16000",
+            outstanding_balance=outstanding_balance,
             bccr_units=cls._format_bccr_units_for_grid_display(bccr_units.get("entities", [])),
         )
 

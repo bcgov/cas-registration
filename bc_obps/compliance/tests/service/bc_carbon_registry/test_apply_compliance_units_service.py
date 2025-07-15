@@ -3,9 +3,10 @@ from unittest.mock import patch, Mock
 from model_bakery import baker
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
-from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData
+from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, ObligationData
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.models.operation import Operation
+from decimal import Decimal
 
 pytestmark = pytest.mark.django_db
 
@@ -28,6 +29,14 @@ def mock_compliance_report_version_service():
 def mock_compliance_charge_rate_service():
     with patch(
         'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceChargeRateService'
+    ) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_compliance_obligation_service():
+    with patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceObligationService'
     ) as mock:
         yield mock
 
@@ -77,6 +86,7 @@ class TestApplyComplianceUnitsService:
         mock_bccr_service,
         mock_compliance_report_version_service,
         mock_compliance_charge_rate_service,
+        mock_compliance_obligation_service,
     ):
         # Arrange
         mock_bccr_service.get_account_details.return_value = Mock(
@@ -111,7 +121,17 @@ class TestApplyComplianceUnitsService:
         mock_compliance_report_version_service.get_compliance_report_version.return_value = baker.make_recipe(
             "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
         )
-        mock_compliance_charge_rate_service.get_rate_for_year.return_value = "75.00"
+        mock_compliance_charge_rate_service.get_rate_for_year.return_value = Decimal("75.00")
+
+        # Mock the obligation data with outstanding balance
+        mock_obligation_data = ObligationData(
+            reporting_year=2023,
+            outstanding_balance=Decimal("400.00"),  # tCO2e equivalent
+            equivalent_value=Decimal("30000.00"),  # dollars
+            obligation_id="23-0001-1-1",
+            data_is_fresh=True,
+        )
+        mock_compliance_obligation_service.get_obligation_data_by_report_version.return_value = mock_obligation_data
 
         # Act
         result = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
@@ -123,11 +143,14 @@ class TestApplyComplianceUnitsService:
         assert isinstance(result, ComplianceUnitsPageData)
         assert result.bccr_trading_name == "Test Corp Compliance"
         assert result.bccr_compliance_account_id == "789"
-        assert result.charge_rate == "75.00"
-        assert result.outstanding_balance == "16000"
+        assert result.charge_rate == Decimal("75.00")
+        assert result.outstanding_balance == Decimal("30000.00")
         assert len(result.bccr_units) == 1
         assert result.bccr_units[0].type == "Earned Credits"
         assert result.bccr_units[0].serial_number == "BCE-2023-0001"
+
+        # Verify the obligation service was called correctly
+        mock_compliance_obligation_service.get_obligation_data_by_report_version.assert_called_once_with(1)
 
     def test_get_apply_compliance_units_page_data_no_holding_account(
         self,
@@ -372,7 +395,7 @@ class TestApplyComplianceUnitsService:
                 }
             ]
         }
-        mock_compliance_charge_rate_service.get_rate_for_year.return_value = 80
+        mock_compliance_charge_rate_service.get_rate_for_year.return_value = Decimal("80.00")
 
         # Act
         result = ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
