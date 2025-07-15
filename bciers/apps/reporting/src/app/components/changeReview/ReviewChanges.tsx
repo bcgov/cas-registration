@@ -1,12 +1,5 @@
-// filepath: /Users/ayeshaayesha/Ayesha/cas-registration/bciers/apps/reporting/src/app/components/reviewChanges/index.tsx
 import React from "react";
 import { Box, Typography, Paper, Divider, Grid } from "@mui/material";
-import {
-  ReportOperation,
-  ReportPersonResponsible,
-  ReportAdditionalData,
-  ReportComplianceSummary,
-} from "../finalReview/reportTypes";
 
 interface ChangeItem {
   field: string;
@@ -18,9 +11,7 @@ interface ReviewChangesProps {
   changes: ChangeItem[];
 }
 
-// Helper to get a user-friendly label from a field path
 const fieldLabelMap: Record<string, string> = {
-  // Add more mappings as needed
   "root['report_operation']['regulated_products']": "Regulated Products",
   "root['report_person_responsible']['street_address']": "Street Address",
   "root['report_person_responsible']['municipality']": "Municipality",
@@ -72,7 +63,6 @@ const ValueBox = ({ value }: { value: any }) => (
 
 const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
   console.log("ReviewChanges changes:", changes);
-  // Group changes by section
   const sectioned: Record<string, ChangeItem[]> = {};
   changes.forEach((change) => {
     const section = getSection(change.field);
