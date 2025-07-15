@@ -169,7 +169,6 @@ class TestReportFinalReview(CommonTestSetup):
                 == self.report_version.report_person_responsible.first_name
             )
 
-        # Assert ReportAdditionalData (can be None)
         if self.report_version.report_additional_data:
             assert "report_additional_data" in response_data
             assert (
@@ -202,14 +201,14 @@ class TestReportFinalReview(CommonTestSetup):
                 original_fr = original_facilities[i]
                 assert facility_response["facility_name"] == original_fr.facility_name
 
-                assert "raw_activity_data" in facility_response
-                assert isinstance(facility_response["raw_activity_data"], list)
-                assert len(facility_response["raw_activity_data"]) == original_fr.reportrawactivitydata_records.count()
-                if facility_response["raw_activity_data"]:
-                    assert "activity" in facility_response["raw_activity_data"][0]
+                assert "activity_data" in facility_response
+                assert isinstance(facility_response["activity_data"], list)
+                assert len(facility_response["activity_data"]) == original_fr.reportrawactivitydata_records.count()
+                if facility_response["activity_data"]:
+                    assert "activity" in facility_response["activity_data"][0]
                     assert (
                         original_fr.reportrawactivitydata_records.first().activity.name
-                        in facility_response["raw_activity_data"][0]["activity"]
+                        in facility_response["activity_data"][0]["activity"]
                     )
 
                 assert "report_products" in facility_response
@@ -218,28 +217,28 @@ class TestReportFinalReview(CommonTestSetup):
                 if facility_response["report_products"]:
                     assert "product" in facility_response["report_products"][0]
 
-                assert "reportnonattributableemissions_records" in facility_response
-                assert isinstance(facility_response["reportnonattributableemissions_records"], list)
-                if original_fr.reportnonattributableemissions_records.exists():
-                    assert (
-                        len(facility_response["reportnonattributableemissions_records"])
-                        == original_fr.reportnonattributableemissions_records.count()
-                    )
+                assert "report_emission_allocation" in facility_response
+                assert isinstance(facility_response["report_emission_allocation"], dict)
 
-                assert "emission_summary" in facility_response
-
-                assert "reportemissionallocation_records" in facility_response
-                assert isinstance(facility_response["reportemissionallocation_records"], list)
+                assert "allocation_methodology" in facility_response["report_emission_allocation"]
                 assert (
-                    len(facility_response["reportemissionallocation_records"])
-                    == original_fr.reportemissionallocation_records.count()
+                    facility_response["report_emission_allocation"]["allocation_methodology"]
+                    == self.report_emission_allocation.allocation_methodology
                 )
-                if facility_response["reportemissionallocation_records"]:
-                    first_allocation = facility_response["reportemissionallocation_records"][0]
-                    assert "allocation_methodology" in first_allocation
-                    assert "reportproductemissionallocation_records" in first_allocation
-                    assert isinstance(first_allocation["reportproductemissionallocation_records"], list)
-                    assert (
-                        len(first_allocation["reportproductemissionallocation_records"])
-                        == self.report_emission_allocation.reportproductemissionallocation_records.count()
-                    )
+
+                assert "report_product_emission_allocations" in facility_response["report_emission_allocation"]
+                assert isinstance(
+                    facility_response["report_emission_allocation"]["report_product_emission_allocations"], list
+                )
+
+                for emission_allocation in facility_response["report_emission_allocation"][
+                    "report_product_emission_allocations"
+                ]:
+                    assert "emission_category_name" in emission_allocation
+                    assert "products" in emission_allocation
+                    assert isinstance(emission_allocation["products"], list)
+
+                    for product in emission_allocation["products"]:
+                        assert "report_product_id" in product
+                        assert "product_name" in product
+                        assert "allocated_quantity" in product

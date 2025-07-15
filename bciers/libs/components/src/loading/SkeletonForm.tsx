@@ -4,7 +4,7 @@ import Stack from "@mui/material/Stack";
 export default function SkeletonForm() {
   // Simulate loading by rendering Skeleton components
   return (
-    <Stack spacing={1}>
+    <Stack spacing={1} data-testid="loading">
       {/* For variant="text", adjust the height via font-size */}
       <Skeleton variant="text" sx={{ fontSize: "1rem" }} />
 

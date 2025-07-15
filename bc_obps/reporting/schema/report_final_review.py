@@ -17,11 +17,16 @@ from reporting.models import (
     ReportEmissionAllocation,
     ReportProductEmissionAllocation,
     EmissionCategory,
-    ReportOperationRepresentative,
+    SourceType,
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.service.compliance_service import ComplianceService, ComplianceData
 from reporting.service.emission_category_service import EmissionCategoryService
+from reporting.service.report_emission_allocation_service import (
+    ReportEmissionAllocationService,
+    ReportEmissionAllocationData,
+)
+from service.report_version_service import ReportVersionService
 
 
 class EmissionCategorySchema(ModelSchema):
@@ -67,35 +72,47 @@ class ReportEmissionAllocationSchema(ModelSchema):
 
 class ReportRawActivityDataSchema(ModelSchema):
     activity: str
+    source_types: dict
 
     @staticmethod
     def resolve_activity(obj: ReportRawActivityData) -> Optional[str]:
         return obj.activity.name if obj.activity else None
 
+    @staticmethod
+    def resolve_source_types(obj: ReportRawActivityData) -> dict:
+        source_types = obj.json_data.get("sourceTypes", {})
+        resolved_source_types = {}
+        for key, value in source_types.items():
+            source_type = SourceType.objects.filter(json_key=key).first()
+            resolved_source_types[source_type.name if source_type else key] = value
+        return resolved_source_types
+
     class Meta:
         model = ReportRawActivityData
-        fields = ['activity', 'json_data']
+        fields = ['activity']
 
 
 class ReportOperationSchema(ModelSchema):
     activities: str
     regulated_products: str
     representatives: str
+    report_type: str
 
     @staticmethod
     def resolve_representatives(obj: ReportOperation) -> str:
-        return ", ".join(
-            rep.representative_name
-            for rep in ReportOperationRepresentative.objects.filter(report_version__report_operation=obj)
-        )
+        return "; ".join(rep.representative_name for rep in obj.report_version.report_operation_representatives.all())
 
     @staticmethod
     def resolve_activities(obj: ReportOperation) -> str:
-        return ", ".join(activity.name for activity in obj.activities.all())
+        return "; ".join(activity.name for activity in obj.activities.all())
 
     @staticmethod
     def resolve_regulated_products(obj: ReportOperation) -> str:
-        return ", ".join(product.name for product in obj.regulated_products.all())
+        return "; ".join(product.name for product in obj.regulated_products.all())
+
+    @staticmethod
+    def resolve_report_type(obj: ReportOperation) -> str:
+        return obj.report_version.report_type if obj.report_version else ""
 
     class Meta:
         model = ReportOperation
@@ -112,10 +129,15 @@ class ReportOperationSchema(ModelSchema):
 
 class ReportProductionDataSchema(ModelSchema):
     product: str
+    unit: str
 
     @staticmethod
     def resolve_product(obj: ReportProduct) -> Optional[str]:
         return obj.product.name if obj.product else None
+
+    @staticmethod
+    def resolve_unit(obj: ReportProduct) -> Optional[str]:
+        return obj.product.unit if obj.product else None
 
     class Meta:
         model = ReportProduct
@@ -157,19 +179,23 @@ class ReportNonAttributableEmissionSchema(ModelSchema):
 
 
 class FacilityReportSchema(ModelSchema):
-    raw_activity_data: List[ReportRawActivityDataSchema] = []
+    activity_data: List[ReportRawActivityDataSchema] = []
     report_products: List[ReportProductionDataSchema] = []
     reportnonattributableemissions_records: List[ReportNonAttributableEmissionSchema] = []
     emission_summary: Optional[Any] = None
-    reportemissionallocation_records: List[ReportEmissionAllocationSchema] = []
+    report_emission_allocation: Optional[Any] = None
 
     @staticmethod
-    def resolve_raw_activity_data(obj: FacilityReport) -> List[ReportRawActivityData]:
+    def resolve_activity_data(obj: FacilityReport) -> List[ReportRawActivityData]:
         return list(obj.reportrawactivitydata_records.all())
 
     @staticmethod
     def resolve_emission_summary(obj: FacilityReport) -> Optional[Any]:
         return EmissionCategoryService.get_facility_emission_summary_form_data(obj.id)
+
+    @staticmethod
+    def resolve_report_emission_allocation(obj: FacilityReport) -> ReportEmissionAllocationData:
+        return ReportEmissionAllocationService.get_emission_allocation_data(obj.report_version.pk, obj.facility.pk)
 
     class Meta:
         model = FacilityReport
@@ -253,11 +279,15 @@ class ReportVersionSchema(ModelSchema):
     report_new_entrant: List[ReportNewEntrantSchema] = []
     facility_reports: List[FacilityReportSchema] = []
     report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
-    reportemissionallocation_records: List[ReportEmissionAllocationSchema] = []
+    is_supplementary_report: Optional[bool] = None
 
     @staticmethod
     def resolve_report_compliance_summary(obj: ReportVersion) -> ComplianceData:
         return ComplianceService.get_calculated_compliance_data(obj.id)
+
+    @staticmethod
+    def resolve_is_supplementary_report(obj: ReportVersion) -> bool:
+        return not ReportVersionService.is_initial_report_version(obj.id)
 
     class Meta:
         model = ReportVersion
