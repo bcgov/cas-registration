@@ -67,14 +67,19 @@ describe("ActionCell", () => {
       );
     });
 
-    it("displays 'Review Credits Issuance Request' when status is 'Earned credits', user is cas staff and earned credits is not actioned", () => {
+    it("displays 'View Details' for internal user when approved", () => {
       render(
-        ActionCell(createMockParams(555, true, undefined, "Earned credits")),
+        ActionCell(
+          createMockParams(
+            123,
+            true,
+            undefined,
+            "Earned credits",
+            IssuanceStatus.APPROVED,
+          ),
+        ),
       );
-      expectLink(
-        "Review Credits Issuance Request",
-        "/compliance-summaries/555/request-issuance-review-summary",
-      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
     });
 
     it("displays 'View Details' for internal user when declined", () => {
@@ -89,10 +94,7 @@ describe("ActionCell", () => {
           ),
         ),
       );
-      expectLink(
-        "View Details",
-        "/compliance-summaries/123/request-issuance-review-summary",
-      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
     });
 
     it("displays 'View Details' for external user when request is submitted", () => {
@@ -107,10 +109,7 @@ describe("ActionCell", () => {
           ),
         ),
       );
-      expectLink(
-        "View Details",
-        "/compliance-summaries/123/request-issuance-review-summary",
-      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
     });
   });
 

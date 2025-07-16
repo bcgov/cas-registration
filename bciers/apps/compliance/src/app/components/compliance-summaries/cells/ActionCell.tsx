@@ -56,19 +56,8 @@ const ActionCell = (params: ActionCellProps) => {
   }
 
   const cell = ActionCellFactory({
-    generateHref: (p: { row: ComplianceSummary }) => {
-      let basePath = `/compliance-summaries/${p.row.id}`;
-
-      if (p.row.obligation_id) {
-        basePath += "/manage-obligation-review-summary";
-      } else if (p.row.status === "Earned credits") {
-        basePath += "/request-issuance-review-summary";
-      } else {
-        basePath += "/review-summary";
-      }
-      return basePath;
-    },
-    cellText: cellText,
+    generateHref: () => basePath,
+    cellText,
   });
 
   return cell(params);
