@@ -71,7 +71,7 @@ export default function ContactForm({
         onCancel={() => setModalOpen(false)}
         onConfirm={handleArchiveContact}
         confirmText="Delete Contact"
-        cancelText={hasPlacesAssigned ? "Cancel" : "Back"}
+        cancelText={hasPlacesAssigned ? "Back" : "Cancel"}
         showConfirmButton={!hasPlacesAssigned}
         isSubmitting={isSubmitting}
       >

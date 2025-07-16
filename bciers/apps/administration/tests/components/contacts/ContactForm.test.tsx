@@ -527,7 +527,7 @@ describe("ContactForm component", () => {
         ),
       ).toBeVisible();
     });
-    expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
+    expect(screen.getByRole("button", { name: /back/i })).toBeVisible();
   });
 
   it("allows deletion of contact if they are not assigned anywhere", async () => {
@@ -553,7 +553,9 @@ describe("ContactForm component", () => {
       ),
     ).toBeVisible();
 
-    expect(within(modal).getByRole("button", { name: /back/i })).toBeVisible();
+    expect(
+      within(modal).getByRole("button", { name: /cancel/i }),
+    ).toBeVisible();
 
     const modalDeleteButton = within(modal).getByRole("button", {
       name: /delete contact/i,
