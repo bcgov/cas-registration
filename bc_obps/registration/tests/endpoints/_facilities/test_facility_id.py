@@ -192,7 +192,7 @@ class TestFacilityIdEndpoint(CommonTestSetup):
             "%Y-%m-%dT%H:%M:%S.%fZ" if "." in payload.get('starting_date') else "%Y-%m-%dT%H:%M:%SZ",
         )
 
-        # assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
+        assert len(response_data.get('well_authorization_numbers')) == len(payload.get('well_authorization_numbers'))
         assert sorted(response_data['well_authorization_numbers']) == sorted(payload['well_authorization_numbers'])
         assert response_data.get('street_address') == payload.get('street_address')
         assert response_data.get('municipality') == payload.get('municipality')
