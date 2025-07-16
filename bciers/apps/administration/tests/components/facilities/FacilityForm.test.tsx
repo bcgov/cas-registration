@@ -193,9 +193,10 @@ export const editFormFields = async (schema: RJSFSchema) => {
 
   if (isLfoFacility) {
     // edit the well authorization number
-    const firstWellAuthInput = screen.getByRole("textbox", {
-      name: "well_authorization_numbers-0",
-    });
+    // const firstWellAuthInput = screen.getByRole("textbox", {
+    //   name: /Well Authorization Numbers+/i,
+    // });
+    const firstWellAuthInput = screen.getByDisplayValue("24546");
     await userEvent.clear(firstWellAuthInput); // clear the existing value
     fireEvent.change(firstWellAuthInput, {
       target: { value: defaultUpdateFormValues.well_authorization_numbers },
