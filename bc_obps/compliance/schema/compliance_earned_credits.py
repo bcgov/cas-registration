@@ -1,6 +1,7 @@
-from typing import Optional
+from typing import Literal, Optional
 from decimal import Decimal
-from ninja import ModelSchema, Field
+from compliance.service.bc_carbon_registry.schema import FifteenDigitString
+from ninja import ModelSchema, Field, Schema
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 
 OPERATION_NAME_ALIAS = "compliance_report_version.compliance_report.report.operation.name"
@@ -15,25 +16,36 @@ EXCESS_EMISSIONS_ALIAS = "compliance_report_version.report_compliance_summary.ex
 class ComplianceEarnedCreditsOut(ModelSchema):
     """Schema for compliance earned credits data"""
 
-    operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     emissions_attributable_for_compliance: Optional[Decimal] = Field(None, alias=EMISSIONS_ATTRIBUTABLE_ALIAS)
     emissions_limit: Optional[Decimal] = Field(None, alias=EMISSIONS_LIMIT_ALIAS)
     excess_emissions: Optional[Decimal] = Field(None, alias=EXCESS_EMISSIONS_ALIAS)
-    earned_credits_issued: bool = False
+    analyst_submitted_by: Optional[str] = Field(None, alias="analyst_submitted_by.get_full_name")
 
     class Meta:
         model = ComplianceEarnedCredit
         fields = [
-            "id",
             "earned_credits_amount",
             "issuance_status",
             "bccr_trading_name",
+            "bccr_holding_account_id",
             "analyst_comment",
             "director_comment",
+            "analyst_submitted_date",
+            "analyst_suggestion",
         ]
 
-    @staticmethod
-    def resolve_earned_credits_issued(obj: ComplianceEarnedCredit) -> bool:
-        """Determine if earned credits have been issued"""
-        return obj.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_ISSUED
+
+class ComplianceEarnedCreditsIn(Schema):
+    """Schema for compliance earned credits data"""
+
+    bccr_trading_name: Optional[str] = None  # Only required for industry users - we enforce this in the service layer
+    bccr_holding_account_id: Optional[
+        FifteenDigitString
+    ] = None  # Only required for industry users - we enforce this in the service layer
+    analyst_suggestion: Optional[
+        Literal["Ready to approve", "Requiring change of BCCR Holding Account ID", "Requiring supplementary report"]
+    ] = None
+    analyst_comment: Optional[str] = None
+    director_comment: Optional[str] = None
+    director_decision: Optional[Literal["Approved", "Declined"]] = None

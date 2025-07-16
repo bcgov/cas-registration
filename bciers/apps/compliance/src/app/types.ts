@@ -1,3 +1,5 @@
+import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
+
 export interface DataGridSearchParams {
   page?: string;
   pageSize?: string;
@@ -55,33 +57,8 @@ export interface RequestIssuanceTrackStatusData {
   issuance_status: string;
   bccr_trading_name: string;
   holding_account_id: string;
-  directors_comments: string;
-  analysts_comments: string;
-}
-
-export interface DirectorReviewData {
-  id: string;
-  reporting_year: number;
-  earned_credits_amount: number;
-  issuance_status: string;
-  bccr_trading_name: string;
-  holding_account_id: string;
+  director_comment: string;
   analyst_comment: string;
-  analyst_recommendation?: string;
-  director_comment?: string;
-}
-
-export interface CreditsIssuanceRequestData {
-  id: string;
-  reporting_year: number;
-  earned_credits_amount: number;
-  issuance_status: string;
-  bccr_trading_name: string;
-  holding_account_id: string;
-  analyst_comment: string;
-  submitted_by: string;
-  submitted_at: string;
-  analyst_recommendation?: string;
 }
 
 export interface ComplianceAppliedUnits {
@@ -94,18 +71,28 @@ export interface ComplianceAppliedUnits {
 }
 
 export interface RequestIssuanceComplianceSummaryData {
-  operation_name: string;
   reporting_year: number;
   emissions_attributable_for_compliance: number;
   emissions_limit: number;
   excess_emissions: number;
-  earned_credits_issued: boolean;
-  id: number;
   earned_credits_amount: number;
-  issuance_status: string;
+  issuance_status: IssuanceStatus;
   bccr_trading_name: string;
+  bccr_holding_account_id: string;
   analyst_comment: string;
   director_comment: string;
+  analyst_submitted_date: string;
+  analyst_submitted_by: string;
+  analyst_suggestion: AnalystSuggestion;
+}
+
+export interface ComplianceEarnedCreditData {
+  bccr_holding_account_id?: string;
+  bccr_trading_name?: string;
+  analyst_comment?: string;
+  analyst_suggestion?: AnalystSuggestion;
+  director_comment?: string;
+  director_decision?: "Approved" | "Declined";
 }
 
 export interface PaymentSummary {

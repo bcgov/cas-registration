@@ -1,94 +1,107 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
+  readOnlyNumberField,
   readOnlyStringField,
   readOnlyObjectField,
   commonReadOnlyOptions,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import CommentWidget from "@/compliance/src/app/data/jsonSchema/CommentWidget";
-import { AnnualEmissionsReportButtonField } from "@/compliance/src/app/data/jsonSchema/AnnualEmissionsReportButton";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
+import { AnalystSuggestion } from "@bciers/utils/src/enums";
 
-const createCreditsIssuanceRequestSection = (): RJSFSchema["properties"] => ({
-  section_header: readOnlyObjectField("Earned Credits"),
-  earned_credits_amount: readOnlyStringField("Earned Credits:"),
-  issuance_status: readOnlyStringField("Status of Issuance:"),
-  bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
-  holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
-});
-
-const createAnalystReviewSection = (): RJSFSchema["properties"] => ({
-  analyst_header: readOnlyObjectField("Review by Analyst"),
-  analyst_recommendation: {
-    type: "string",
-    title: "Analyst's Suggestion:",
-    oneOf: [
-      {
-        const: "ready_to_approve",
-        title: "Ready to approve",
-      },
-      {
-        const: "require_changes",
-        title: "Require changes",
-      },
-    ],
-  },
-  analyst_comment: {
-    type: "string",
-    title: "Analyst's Comment:",
-  },
-});
-
-export const internalReviewCreditsIssuanceRequestSchema: RJSFSchema = {
+export const internalReviewCreditsIssuanceRequestSchema = (
+  isCasAnalyst: boolean,
+): RJSFSchema => ({
   type: "object",
   title: "Review Credits Issuance Request",
   properties: {
-    view_annual_report_button: readOnlyObjectField(),
-    ...createCreditsIssuanceRequestSection(),
-    ...createAnalystReviewSection(),
+    section_header: readOnlyObjectField("Earned Credits"),
+    earned_credits_amount: readOnlyNumberField("Earned Credits:"),
+    issuance_status: readOnlyStringField("Status of Issuance:"),
+    bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
+    bccr_holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
+    analyst_header: readOnlyObjectField("Review by Analyst"),
+    analyst_suggestion: {
+      type: "string",
+      title: "Analyst's Suggestion:",
+      enum: [
+        AnalystSuggestion.READY_TO_APPROVE,
+        AnalystSuggestion.REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID,
+        AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+      ],
+      default: isCasAnalyst ? AnalystSuggestion.READY_TO_APPROVE : undefined,
+    },
+    analyst_comment: {
+      type: "string",
+      title: "Analyst's Comment:",
+    },
   },
+});
+
+const getAnalystSubmissionInfoElement = (
+  analystSubmittedBy?: string,
+  analystSubmittedDate?: string,
+) => {
+  if (!analystSubmittedBy && !analystSubmittedDate) return null;
+
+  const formatDate = (dateString: string) => {
+    try {
+      // Parse the date string as local date to avoid timezone issues
+      const [year, month, day] = dateString.split("-").map(Number);
+      const date = new Date(year, month - 1, day); // month is 0-indexed
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (error) {
+      // Fallback to original format if parsing fails
+      return dateString;
+    }
+  };
+
+  const formattedDate = analystSubmittedDate
+    ? formatDate(analystSubmittedDate)
+    : "";
+
+  return (
+    <small className="m-0">
+      Submitted{analystSubmittedBy ? ` by ${analystSubmittedBy}` : ""}
+      {formattedDate ? ` on ${formattedDate}` : ""}
+    </small>
+  );
 };
 
 export const internalReviewCreditsIssuanceRequestUiSchema = (
-  isReadOnly: boolean,
+  analystSubmittedDate?: string,
+  analystSubmittedBy?: string,
 ): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-
-  view_annual_report_button: {
-    "ui:field": AnnualEmissionsReportButtonField,
-    "ui:options": {
-      label: false,
-    },
-  },
-
   section_header: headerUiConfig,
   earned_credits_amount: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
   bccr_trading_name: commonReadOnlyOptions,
-  holding_account_id: commonReadOnlyOptions,
-
+  bccr_holding_account_id: commonReadOnlyOptions,
   analyst_header: headerUiConfig,
-  analyst_recommendation: {
+  analyst_suggestion: {
     "ui:widget": "RadioWidget",
-    "ui:classNames":
-      "[&>div>label]:text-[16px] [&>div:first-child]:w-[240px] [&>div:last-child]:w-auto [&>div:last-child]:ml-[10px] ",
+    // to make the radio buttons full width and align the label to the top
+    "ui:classNames": "md:gap-16 [&>div:nth-child(2)]:w-full",
     "ui:options": {
-      inline: true,
-      required: false,
+      inline: false,
     },
-    "ui:readonly": isReadOnly,
   },
   analyst_comment: {
-    "ui:widget": CommentWidget,
-    "ui:classNames":
-      "[&>div>label]:text-[16px] [&>div:first-child]:min-w-[240px] [&>div:last-child]:w-full [&>div:last-child]:ml-[10px] [&>div:last-child>div]:w-full [&>div:last-child>div>div]:w-full [&]:items-start",
-    "ui:readonly": isReadOnly,
-    "ui:options": {
-      showSubmissionInfo: true,
-    },
+    "ui:widget": "TextAreaWidget",
+    // to make the textarea full width and align the label to the top
+    "ui:classNames": "md:gap-16 [&>div:last-child]:w-full",
+    "ui:help": getAnalystSubmissionInfoElement(
+      analystSubmittedBy,
+      analystSubmittedDate,
+    ),
   },
 });

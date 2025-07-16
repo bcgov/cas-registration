@@ -15,7 +15,7 @@ from registration.schema.generic import Message
     response={200: OperationByComplianceSummaryOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Get the operation associated with a compliance report version.",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 def get_operation_by_compliance_report_version_id(
     request: HttpRequest, compliance_report_version_id: int

@@ -2,48 +2,47 @@ import {
   generateIssuanceRequestTaskList,
   ActivePage,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
-import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import InternalTrackStatusOfIssuanceComponent from "./InternalTrackStatusOfIssuanceComponent";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { notFound } from "next/navigation";
-import { RequestIssuanceTrackStatusData } from "@/compliance/src/app/types";
+import { redirect } from "next/navigation";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 interface Props {
-  readonly compliance_summary_id: string;
+  compliance_summary_id: string;
 }
 
 const RESTRICTED_STATUSES = [
-  IssuanceStatus.AWAITING_APPROVAL,
   IssuanceStatus.CHANGES_REQUIRED,
   IssuanceStatus.ISSUANCE_REQUESTED,
 ];
 
 export default async function InternalTrackStatusOfIssuancePage({
-  compliance_summary_id: complianceReportVersionId,
-}: Props) {
-  const data: RequestIssuanceTrackStatusData =
-    await getRequestIssuanceTrackStatusData(complianceReportVersionId);
-  // Redirect to not found page if accessing track status of issuance page with restricted issuance status
-  if (RESTRICTED_STATUSES.includes(data.issuance_status as IssuanceStatus)) {
-    notFound();
+  compliance_summary_id: complianceSummaryId,
+}: Readonly<Props>) {
+  let pageData =
+    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+
+  // Redirect to the previous page if the user is not authorized to view this page
+  if (
+    RESTRICTED_STATUSES.includes(pageData.issuance_status as IssuanceStatus)
+  ) {
+    redirect(`/compliance-summaries/${complianceSummaryId}/review-by-director`);
   }
 
-  const { reporting_year: reportingYear } = await getReportingYear();
   const taskListElements = generateIssuanceRequestTaskList(
-    complianceReportVersionId,
-    reportingYear,
+    complianceSummaryId,
+    pageData.reporting_year,
     ActivePage.TrackStatusOfIssuance,
   );
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceReportVersionId}
+      complianceSummaryId={complianceSummaryId}
       taskListElements={taskListElements}
     >
       <InternalTrackStatusOfIssuanceComponent
-        data={data}
-        complianceSummaryId={complianceReportVersionId}
+        data={pageData}
+        complianceSummaryId={complianceSummaryId}
       />
     </CompliancePageLayout>
   );

@@ -11,14 +11,14 @@ import { IssuanceStatusAwaitingNote } from "@/compliance/src/app/components/comp
 import { IssuanceStatusDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusDeclinedNote";
 import { IssuanceStatusChangesRequiredNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/track-status-of-issuance/IssuanceStatusChangesRequiredNote";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { StatusTextWidget } from "@/compliance/src/app/data/jsonSchema/StatusTextWidget";
+import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 
 export const trackStatusOfIssuanceSchema: RJSFSchema = {
   type: "object",
   title: "Track Status of Issuance",
   properties: {
     status_header: readOnlyObjectField("Status of Issuance"),
-    earned_credits: readOnlyStringField("Earned Credits:"),
+    earned_credits_amount: readOnlyStringField("Earned Credits:"),
     issuance_status: readOnlyStringField("Status of Issuance:"),
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
@@ -30,27 +30,27 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
           properties: {
             issuance_status: { enum: [IssuanceStatus.APPROVED] },
             approved_note: readOnlyStringField(),
-            directors_comments: readOnlyStringField("Director's Comments:"),
-          },
-        },
-        {
-          properties: {
-            issuance_status: { enum: [IssuanceStatus.AWAITING_APPROVAL] },
-            awaiting_note: readOnlyStringField(),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
         {
           properties: {
             issuance_status: { enum: [IssuanceStatus.DECLINED] },
             declined_note: readOnlyStringField(),
-            directors_comments: readOnlyStringField("Director's Comments:"),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
         {
           properties: {
             issuance_status: { enum: [IssuanceStatus.CHANGES_REQUIRED] },
             changes_required_note: readOnlyStringField(),
-            analysts_comments: readOnlyStringField("Analyst’s Comments:"),
+            analyst_comment: readOnlyStringField("Analyst’s Comment:"),
+          },
+        },
+        {
+          properties: {
+            issuance_status: { enum: [IssuanceStatus.ISSUANCE_REQUESTED] },
+            awaiting_note: readOnlyStringField(),
           },
         },
       ],
@@ -61,17 +61,18 @@ export const trackStatusOfIssuanceSchema: RJSFSchema = {
 export const trackStatusOfIssuanceUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  // need this because we don't control the order of the fields in the dependencies
   "ui:order": [
     "status_header",
     "approved_note",
     "awaiting_note",
     "declined_note",
     "changes_required_note",
-    "earned_credits",
+    "earned_credits_amount",
     "issuance_status",
     "bccr_trading_name",
-    "directors_comments",
-    "analysts_comments",
+    "director_comment",
+    "analyst_comment",
   ],
   status_header: headerUiConfig,
   approved_note: {
@@ -90,12 +91,11 @@ export const trackStatusOfIssuanceUiSchema: UiSchema = {
     "ui:widget": IssuanceStatusChangesRequiredNote,
     "ui:options": { label: false, inline: true },
   },
-  earned_credits: commonReadOnlyOptions,
+  earned_credits_amount: commonReadOnlyOptions,
   bccr_trading_name: commonReadOnlyOptions,
-  directors_comments: commonReadOnlyOptions,
-  analysts_comments: commonReadOnlyOptions,
-
+  director_comment: commonReadOnlyOptions,
+  analyst_comment: commonReadOnlyOptions,
   issuance_status: {
-    "ui:widget": StatusTextWidget,
+    "ui:widget": IssuanceRequestStatusTextWidget,
   },
 };

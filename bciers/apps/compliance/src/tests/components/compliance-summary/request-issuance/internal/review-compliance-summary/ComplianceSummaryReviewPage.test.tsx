@@ -1,21 +1,27 @@
 import { render, screen } from "@testing-library/react";
-import InternalReviewCreditsIssuanceRequestPage from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-credits-issuance-request/InternalReviewCreditsIssuanceRequestPage";
+import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-compliance-summary/ComplianceSummaryReviewPage";
 import {
-  generateIssuanceRequestTaskList,
   ActivePage,
+  generateIssuanceRequestTaskList,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { redirect } from "next/navigation";
+
+// Mock the compliance summary data function
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    getRequestIssuanceComplianceSummaryData: vi.fn(),
+  }),
+);
 
 // Mock the task list generator
 vi.mock(
   "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList",
   () => ({
     generateIssuanceRequestTaskList: vi.fn(),
-    ActivePage: {
-      ReviewCreditsIssuanceRequest: "ReviewCreditsIssuanceRequest",
-    },
+    ActivePage: { ReviewComplianceSummary: "ReviewComplianceSummary" },
   }),
 );
 
@@ -28,17 +34,9 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 
 // Mock the review component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-credits-issuance-request/InternalReviewCreditsIssuanceRequestComponent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent",
   () => ({
     default: () => <div>Mock Review Component</div>,
-  }),
-);
-
-// Mock the getRequestIssuanceComplianceSummaryData utility
-vi.mock(
-  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
-  () => ({
-    getRequestIssuanceComplianceSummaryData: vi.fn(),
   }),
 );
 
@@ -47,34 +45,29 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
-describe("InternalReviewCreditsIssuanceRequestPage", () => {
+describe("Internal ComplianceSummaryReviewPage", () => {
   const mockComplianceSummaryId = "123";
-  const mockPageData = {
-    id: "123",
-    reporting_year: 2023,
-    earned_credits_amount: 100,
-    issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
-    bccr_trading_name: "Test Company",
-    bccr_holding_account_id: "123456789012345",
-    analyst_comment: "Test comment",
-    analyst_suggestion: "ready_to_approve",
-    analyst_submitted_date: "2023-01-01",
-    analyst_submitted_by: "Test Analyst",
-    director_comment: "Test director comment",
-    director_submitted_date: "2023-01-01",
-    director_submitted_by: "Test Director",
+  const mockData = {
+    id: 1,
+    reporting_year: 2024,
+    earned_credits_amount: 15,
+    issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+    operation_name: "Test Operation",
+    emissions_attributable_for_compliance: "85.0",
+    emission_limit: "100.0",
+    excess_emissions: "-15.0",
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(
-      mockPageData,
+      mockData,
     );
   });
 
   it("renders with correct content and generates task list", async () => {
     render(
-      await InternalReviewCreditsIssuanceRequestPage({
+      await ComplianceSummaryReviewPage({
         compliance_summary_id: mockComplianceSummaryId,
       }),
     );
@@ -86,18 +79,18 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
     // Verify task list generation
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
       mockComplianceSummaryId,
-      2023,
-      ActivePage.ReviewCreditsIssuanceRequest,
+      2024,
+      ActivePage.ReviewComplianceSummary,
     );
   });
 
   it("redirects to track status page when issuance status is APPROVED", async () => {
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
+      ...mockData,
       issuance_status: IssuanceStatus.APPROVED,
     });
 
-    await InternalReviewCreditsIssuanceRequestPage({
+    await ComplianceSummaryReviewPage({
       compliance_summary_id: mockComplianceSummaryId,
     });
 
@@ -108,11 +101,11 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
 
   it("redirects to track status page when issuance status is DECLINED", async () => {
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
+      ...mockData,
       issuance_status: IssuanceStatus.DECLINED,
     });
 
-    await InternalReviewCreditsIssuanceRequestPage({
+    await ComplianceSummaryReviewPage({
       compliance_summary_id: mockComplianceSummaryId,
     });
 
@@ -121,14 +114,14 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
     );
   });
 
-  it("does not redirect to track status page when issuance status is ISSUANCE_REQUESTED", async () => {
+  it("does not redirect when issuance status is ISSUANCE_REQUESTED", async () => {
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
+      ...mockData,
       issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
     });
 
     render(
-      await InternalReviewCreditsIssuanceRequestPage({
+      await ComplianceSummaryReviewPage({
         compliance_summary_id: mockComplianceSummaryId,
       }),
     );
@@ -137,14 +130,14 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
     expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 
-  it("does not redirect to track status page when issuance status is CREDITS_NOT_ISSUED", async () => {
+  it("does not redirect when issuance status is CREDITS_NOT_ISSUED", async () => {
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
+      ...mockData,
       issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
     });
 
     render(
-      await InternalReviewCreditsIssuanceRequestPage({
+      await ComplianceSummaryReviewPage({
         compliance_summary_id: mockComplianceSummaryId,
       }),
     );

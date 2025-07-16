@@ -358,7 +358,6 @@ class BCCarbonRegistryAPIClient:
                     "verificationStartDate": "01/01/2025",
                     "verificationEndDate": "31/01/2025",
                     "monitoringPeriod": "01/01/2025 - 31/01/2025",
-                    "verifierId": "103100000028644",
                     "mixedUnits": [
                         {
                             "holding_quantity": 5,
@@ -367,6 +366,8 @@ class BCCarbonRegistryAPIClient:
                             "city": "Vancouver",
                             "address_line_1": "Test - Billie Blue 3",
                             "zipcode": "H0H0H0",
+                            "latitude": 49.2827,
+                            "longitude": -123.1207,
                             "defined_unit_id": "103200000392481",
                             "project_type_id": "140000000000002"
                         }

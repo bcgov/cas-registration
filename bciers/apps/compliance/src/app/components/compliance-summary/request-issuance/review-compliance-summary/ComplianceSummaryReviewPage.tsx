@@ -1,16 +1,13 @@
 import {
   generateRequestIssuanceTaskList,
-  ActivePage as ExternalActivePage,
+  ActivePage,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
-import {
-  generateIssuanceRequestTaskList,
-  ActivePage as InternalActivePage,
-} from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { redirect } from "next/navigation";
 
 interface Props {
   compliance_summary_id: string;
@@ -21,31 +18,34 @@ export default async function ComplianceSummaryReviewPage({
 }: Readonly<Props>) {
   const complianceSummary: RequestIssuanceComplianceSummaryData =
     await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
-  const frontEndRole = await getSessionRole();
-  const isCasStaff = frontEndRole.startsWith("cas_");
 
-  const externalTaskListElements = generateRequestIssuanceTaskList(
+  // Redirect the user to track status page if user already requested issuance or issuance is approved or declined
+  if (
+    [
+      IssuanceStatus.ISSUANCE_REQUESTED,
+      IssuanceStatus.APPROVED,
+      IssuanceStatus.DECLINED,
+    ].includes(complianceSummary.issuance_status as IssuanceStatus)
+  ) {
+    redirect(
+      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+    );
+  }
+
+  const taskListElements = generateRequestIssuanceTaskList(
     complianceSummaryId,
     complianceSummary.reporting_year,
-    ExternalActivePage.ReviewComplianceSummary,
-  );
-  const internalTaskListElements = generateIssuanceRequestTaskList(
-    complianceSummaryId,
-    complianceSummary.reporting_year,
-    InternalActivePage.ReviewComplianceSummary,
+    ActivePage.ReviewComplianceSummary,
   );
 
   return (
     <CompliancePageLayout
       complianceSummaryId={complianceSummaryId}
-      taskListElements={
-        isCasStaff ? internalTaskListElements : externalTaskListElements
-      }
+      taskListElements={taskListElements}
     >
       <ComplianceSummaryReviewComponent
         complianceSummaryId={complianceSummaryId}
         data={complianceSummary}
-        isCasStaff={isCasStaff}
       />
     </CompliancePageLayout>
   );

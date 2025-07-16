@@ -107,11 +107,14 @@ export enum FormMode {
 }
 
 export enum IssuanceStatus {
-  ISSUANCE_REQUESTED = "Issuance Requested",
-  AWAITING_APPROVAL = "Awaiting Approval",
-  APPROVED = "Approved",
-  CREDITS_ISSUED = "Credits Issued in BCCR",
-  DECLINED = "Declined",
   CREDITS_NOT_ISSUED = "Credits Not Issued in BCCR",
+  ISSUANCE_REQUESTED = "Issuance Requested",
   CHANGES_REQUIRED = "Changes Required",
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+}
+export enum AnalystSuggestion {
+  READY_TO_APPROVE = "Ready to approve",
+  REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID = "Requiring change of BCCR Holding Account ID",
+  REQUIRING_SUPPLEMENTARY_REPORT = "Requiring supplementary report",
 }

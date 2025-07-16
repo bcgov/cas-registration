@@ -194,6 +194,7 @@ class UserModelTest(BaseTestCase):
             ("complianceearnedcredit_updated", "compliance earned credit", None, None),
             ("complianceearnedcredit_archived", "compliance earned credit", None, None),
             ("compliance_earned_credits_issued_by", "compliance earned credit", None, None),
+            ("compliance_earned_credits_analyst_submitted_by", "compliance earned credit", None, None),
             ("elicensingclientoperator_created", "elicensing client operator", None, None),
             ("elicensingclientoperator_updated", "elicensing client operator", None, None),
             ("elicensingclientoperator_archived", "elicensing client operator", None, None),
