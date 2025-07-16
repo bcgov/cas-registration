@@ -24,8 +24,8 @@ export const PaymentStatusNote = ({
   return (
     <AlertNote icon={<TimeIcon fill={BC_GOV_YELLOW} width="20" height="20" />}>
       Please pay the outstanding compliance obligation following the payment
-      instructions. Once your payments are received and applied, the outstanding
-      compliance obligation balance will be updated below.
+      instructions. Once your payment(s) are received and applied, the
+      outstanding compliance obligation balance will be updated below.
     </AlertNote>
   );
 };

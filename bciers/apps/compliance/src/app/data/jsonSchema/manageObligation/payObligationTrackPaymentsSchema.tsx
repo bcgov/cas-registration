@@ -1,13 +1,11 @@
 import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import FieldTemplate from "@bciers/components/form/fields/FieldTemplate";
 import {
-  commonReadOnlyOptions,
   readOnlyObjectField,
   readOnlyStringField,
   readOnlyNumberField,
   tco2eUiConfig,
   headerUiConfig,
-  currencyUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { PaymentStatusNoteWidget } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNoteWidget";
 import { AutomaticOverduePenaltyNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
@@ -25,7 +23,7 @@ const PaymentHeaderWidget = (props: WidgetProps) => {
 
 export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
   type: "object",
-  title: "Pay Obligation and Track Payments",
+  title: "Pay Obligation and Track Payment(s)",
   properties: {
     // Outstanding Compliance Obligation Section
     outstanding_obligation_header: readOnlyObjectField(
@@ -67,10 +65,13 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
     },
   },
   outstanding_balance: tco2eUiConfig,
-  equivalent_value: currencyUiConfig,
+  equivalent_value: {
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
 
   // Payments Section
   payments: {
+    "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       orderable: false,
       addable: false,
@@ -85,8 +86,12 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
           label: false,
         },
       },
-      received_date: commonReadOnlyOptions,
-      amount: currencyUiConfig,
+      received_date: {
+        "ui:widget": "ReadOnlyDateWidget",
+      },
+      amount: {
+        "ui:widget": "ReadOnlyCurrencyWidget",
+      },
     },
   },
 

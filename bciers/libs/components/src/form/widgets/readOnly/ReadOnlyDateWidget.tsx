@@ -8,7 +8,7 @@ const formatDate = (value: string) => {
   return null;
 };
 
-const ReadOnlyWidget: React.FC<WidgetProps> = ({ id, value }) => {
+const ReadOnlyDateWidget: React.FC<WidgetProps> = ({ id, value }) => {
   const formattedDate = formatDate(value);
 
   return (
@@ -17,4 +17,4 @@ const ReadOnlyWidget: React.FC<WidgetProps> = ({ id, value }) => {
     </div>
   );
 };
-export default ReadOnlyWidget;
+export default ReadOnlyDateWidget;
