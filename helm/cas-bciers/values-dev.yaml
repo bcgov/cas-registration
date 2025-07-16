@@ -1,6 +1,7 @@
 # Development environment values for cas-bciers.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
+environment: dev
 
 backend:
   replicaCount: 1

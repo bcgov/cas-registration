@@ -1,4 +1,6 @@
 
+environment: test
+
 backend:
   replicaCount: 2
 
