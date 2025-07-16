@@ -357,11 +357,12 @@ class ELicensingAPIClient:
             clientObjectId=json_response['clientObjectId'], clientGUID=json_response['clientGUID'], fees=fees
         )
 
-    def adjust_fees(self, adjustment_data: Dict[str, Any]) -> Dict[str, Any]:
+    def adjust_fees(self, client_object_id: int, adjustment_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Adjusts fees for a client.
 
         Args:
+            client_object_id: The client object ID
             adjustment_data: Adjustment data according to the API specification
 
         Returns:
@@ -372,7 +373,7 @@ class ELicensingAPIClient:
             ValueError: If the response format is invalid
             requests.HTTPError: If the API returns an error response
         """
-        endpoint = "/fees/adjust"
+        endpoint = f"/client/{client_object_id}/adjust"
 
         response = self._make_request(endpoint, method='POST', data=adjustment_data)
 

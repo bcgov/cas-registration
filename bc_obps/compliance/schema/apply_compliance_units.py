@@ -42,3 +42,4 @@ class ApplyComplianceUnitsIn(Schema):
     bccr_holding_account_id: FifteenDigitString
     bccr_compliance_account_id: FifteenDigitString
     bccr_units: List[BCCRUnit] = []
+    total_equivalent_value: Decimal
