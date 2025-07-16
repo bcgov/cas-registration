@@ -1,3 +1,69 @@
+const emissionCategories = [
+  { label: "Flaring emissions", key: "emission_categories.flaring" },
+  { label: "Fugitive emissions", key: "emission_categories.fugitive" },
+  {
+    label: "Industrial process emissions",
+    key: "emission_categories.industrial_process",
+  },
+  {
+    label: "On-site transportation emissions",
+    key: "emission_categories.onsite_transportation",
+  },
+  {
+    label: "Stationary fuel combustion emissions",
+    key: "emission_categories.stationary_combustion",
+  },
+  {
+    label: "Venting emissions - useful",
+    key: "emission_categories.venting_useful",
+  },
+  {
+    label: "Venting emissions - non-useful",
+    key: "emission_categories.venting_non_useful",
+  },
+  { label: "Emissions from waste", key: "emission_categories.waste" },
+  { label: "Emissions from wastewater", key: "emission_categories.wastewater" },
+];
+
+const fuelExcludedEmissions = [
+  {
+    label: "CO2 emissions from excluded woody biomass",
+    key: "fuel_excluded.woody_biomass",
+  },
+  {
+    label: "Other emissions from excluded biomass",
+    key: "fuel_excluded.excluded_biomass",
+  },
+  {
+    label: "Emissions from excluded non-biomass",
+    key: "fuel_excluded.excluded_non_biomass",
+  },
+];
+
+const otherExcludedEmissions = [
+  {
+    label:
+      "Emissions from line tracing and non-processing and non-compression activities",
+    key: "other_excluded.lfo_excluded",
+  },
+];
+
+const electricityFields = (
+  type: "import" | "export",
+  sources: "specified" | "unspecified",
+) => [
+  {
+    label: `Amount of ${type}ed electricity - ${sources} sources`,
+    key: `${type}_${sources}_electricity`,
+    unit: "GWh",
+  },
+  {
+    label: `Emissions from ${sources} ${type}s`,
+    key: `${type}_${sources}_emissions`,
+    unit: "tCO₂e",
+  },
+];
+
 export const operationFields = (isEIO: boolean) => [
   { label: "Report Type", key: "report_type" },
   { label: "Operation Representatives", key: "representatives" },
@@ -47,47 +113,10 @@ export const additionalDataFields = [
 ];
 
 export const eioFields = [
-  {
-    label: "Amount of imported electricity - specified sources",
-    key: "import_specified_electricity",
-    unit: "GWh",
-  },
-  {
-    label: "Emissions from specified imports",
-    key: "import_specified_emissions",
-    unit: "tCO₂e",
-  },
-  {
-    label: "Amount of imported electricity - unspecified sources",
-    key: "import_unspecified_electricity",
-    unit: "GWh",
-  },
-  {
-    label: "Emissions from unspecified imports",
-    key: "import_unspecified_emissions",
-    unit: "tCO₂e",
-  },
-  {
-    label: "Amount of exported electricity - specified sources",
-    key: "export_specified_electricity",
-    unit: "GWh",
-  },
-  {
-    label: "Emissions from specified exports",
-    key: "export_specified_emissions",
-    unit: "tCO₂e",
-  },
-  {
-    label: "Amount of exported electricity - unspecified sources",
-    key: "export_unspecified_electricity",
-    unit: "GWh",
-  },
-  {
-    label: "Emissions from unspecified exports",
-    key: "export_unspecified_emissions",
-    unit: "tCO₂e",
-  },
-  { heading: "Canadian Entitlement Power" },
+  ...electricityFields("import", "specified"),
+  ...electricityFields("import", "unspecified"),
+  ...electricityFields("export", "specified"),
+  ...electricityFields("export", "unspecified"),
   {
     label: "Amount of electricity categorized as Canadian Entitlement Power",
     key: "canadian_entitlement_electricity",
@@ -106,10 +135,10 @@ export const reportNewEntrantFields = (
   const basicEmissions = reportNewEntrantEmission.filter(
     (emission) => emission.category_type === "basic",
   );
-  const fuelExcludedEmissions = reportNewEntrantEmission.filter(
+  const fuelExcludedEmissionsFields = reportNewEntrantEmission.filter(
     (emission) => emission.category_type === "fuel_excluded",
   );
-  const otherExcludedEmissions = reportNewEntrantEmission.filter(
+  const otherExcludedEmissionsFields = reportNewEntrantEmission.filter(
     (emission) => emission.category_type === "other_excluded",
   );
 
@@ -150,19 +179,19 @@ export const reportNewEntrantFields = (
         key: `report_new_entrant_emission.${index}.emission`,
       },
     ]) || []),
-    ...(fuelExcludedEmissions.length > 0
+    ...(fuelExcludedEmissionsFields.length > 0
       ? [{ heading: "Emissions excluded by fuel type" }]
       : []),
-    ...(fuelExcludedEmissions.flatMap((emission, index) => [
+    ...(fuelExcludedEmissionsFields.flatMap((emission, index) => [
       {
         label: emission.emission_category,
         key: `report_new_entrant_emission.${index}.emission`,
       },
     ]) || []),
-    ...(otherExcludedEmissions.length > 0
+    ...(otherExcludedEmissionsFields.length > 0
       ? [{ heading: "Other emissions" }]
       : []),
-    ...(otherExcludedEmissions.flatMap((emission, index) => [
+    ...(otherExcludedEmissionsFields.flatMap((emission, index) => [
       {
         label: emission.emission_category,
         key: `report_new_entrant_emission.${index}.emission`,
@@ -238,49 +267,11 @@ export const emissionsSummaryFields = [
     key: "attributable_for_reporting_threshold",
   },
   { heading: "Emission Categories" },
-  { label: "Flaring emissions", key: "emission_categories.flaring" },
-  { label: "Fugitive emissions", key: "emission_categories.fugitive" },
-  {
-    label: "Industrial process emissions",
-    key: "emission_categories.industrial_process",
-  },
-  {
-    label: "On-site transportation emissions",
-    key: "emission_categories.onsite_transportation",
-  },
-  {
-    label: "Stationary fuel combustion emissions",
-    key: "emission_categories.stationary_combustion",
-  },
-  {
-    label: "Venting emissions - useful",
-    key: "emission_categories.venting_useful",
-  },
-  {
-    label: "Venting emissions - non-useful",
-    key: "emission_categories.venting_non_useful",
-  },
-  { label: "Emissions from waste", key: "emission_categories.waste" },
-  { label: "Emissions from wastewater", key: "emission_categories.wastewater" },
+  ...emissionCategories,
   { heading: "Emissions excluded by fuel type" },
-  {
-    label: "CO2 emissions from excluded woody biomass",
-    key: "fuel_excluded.woody_biomass",
-  },
-  {
-    label: "Other emissions from excluded biomass",
-    key: "fuel_excluded.excluded_biomass",
-  },
-  {
-    label: "Emissions from excluded non-biomass",
-    key: "fuel_excluded.excluded_non_biomass",
-  },
+  ...fuelExcludedEmissions,
   { heading: "Other emissions excluded" },
-  {
-    label:
-      "Emissions from line tracing and non-processing and non-compression activities",
-    key: "other_excluded.lfo_excluded",
-  },
+  ...otherExcludedEmissions,
 ];
 
 export const productionDataFields = (product: any) => [
@@ -327,43 +318,9 @@ export const operationEmissionSummaryFields = [
     key: "attributable_for_reporting_threshold",
   },
   { heading: "Emission Categories" },
-  { label: "Flaring emissions", key: "emission_categories.flaring" },
-  { label: "Fugitive emissions", key: "emission_categories.fugitive" },
-  {
-    label: "Industrial process emissions",
-    key: "emission_categories.industrial_process",
-  },
-  {
-    label: "On-site transportation emissions",
-    key: "emission_categories.onsite_transportation",
-  },
-  {
-    label: "Stationary fuel combustion emissions",
-    key: "emission_categories.stationary_combustion",
-  },
-  {
-    label: "Venting emissions - useful",
-    key: "emission_categories.venting_useful",
-  },
-  {
-    label: "Venting emissions - non-useful",
-    key: "emission_categories.venting_non_useful",
-  },
-  { label: "Emissions from waste", key: "emission_categories.waste" },
-  { label: "Emissions from wastewater", key: "emission_categories.wastewater" },
+  ...emissionCategories,
   { heading: "Emissions excluded by fuel type" },
-  {
-    label: "CO2 emissions from excluded woody biomass",
-    key: "fuel_excluded.woody_biomass",
-  },
-  {
-    label: "Other emissions from excluded biomass",
-    key: "fuel_excluded.excluded_biomass",
-  },
+  ...fuelExcludedEmissions,
   { heading: "Other emissions excluded" },
-  {
-    label:
-      "Emissions from line tracing and non-processing and non-compression activities",
-    key: "other_excluded.lfo_excluded",
-  },
+  ...otherExcludedEmissions,
 ];
