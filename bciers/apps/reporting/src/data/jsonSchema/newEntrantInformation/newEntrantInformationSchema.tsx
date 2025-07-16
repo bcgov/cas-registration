@@ -59,7 +59,7 @@ export const newEntrantSchema: RJSFSchema = {
           title: "Unit",
         },
         production_amount: {
-          type: "string",
+          type: "number",
           title: "Production after new entrant period began",
         },
       },
@@ -87,7 +87,7 @@ export const newEntrantSchema: RJSFSchema = {
           type: "string",
         },
         emission: {
-          type: "string",
+          type: "number",
         },
       },
     },
