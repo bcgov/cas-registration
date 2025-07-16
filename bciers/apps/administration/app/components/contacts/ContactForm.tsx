@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { ContactFormData } from "./types";
-import { FormMode } from "@bciers/utils/src/enums";
+import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import Link from "next/link";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
@@ -91,7 +91,9 @@ export default function ContactForm({
         inlineMessage={
           isCreatingState && !role.includes("cas") && <NewOperationMessage />
         }
-        showDeleteButton={!isCreatingState && !role.includes("cas")}
+        showDeleteButton={
+          !isCreatingState && role === FrontEndRoles.INDUSTRY_USER_ADMIN
+        }
         handleDelete={handleClickDelete}
         deleteButtonText="Delete Contact"
         onSubmit={async (data: { formData?: any }) => {
