@@ -122,14 +122,16 @@ const DynamicLabelProductAllocation: React.FC<FieldTemplateProps> = ({
     formContext.facility_emission_data,
   );
   return (
-    <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
-      <div className="flex flex-col md:flex-row items-start md:items-center w-full">
-        <div className="w-full md:w-3/12 mb-2 md:mb-0">
+    <div className={`mb-4 md:mb-2  ${classNames}`}>
+      <div className="flex flex-col md:flex-row items-start md:items-center">
+        <div className="w-full lg:w-3/12">
           <label htmlFor={id} className="font-bold">
             {productName}
           </label>
         </div>
-        <div>{children}</div>
+        <div className={`relative flex items-center w-full lg:w-4/12`}>
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -145,14 +147,16 @@ const DynamicLabelTotalProductAllocation: React.FC<FieldTemplateProps> = ({
     formContext.total_emission_allocations,
   );
   return (
-    <div className={`mb-4 md:mb-2 w-full ${classNames}`}>
-      <div className="flex flex-col md:flex-row items-start md:items-center w-full">
-        <div className="w-full md:w-3/12 mb-2 md:mb-0">
+    <div className={`mb-4 md:mb-2  ${classNames}`}>
+      <div className="flex flex-col md:flex-row items-start md:items-center">
+        <div className="w-full lg:w-3/12">
           <label htmlFor={id} className="font-bold">
             {productName}
           </label>
         </div>
-        <div>{children}</div>
+        <div className={`relative flex items-center w-full lg:w-4/12`}>
+          {children}
+        </div>
       </div>
     </div>
   );
