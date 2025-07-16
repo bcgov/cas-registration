@@ -196,7 +196,6 @@ export const editFormFields = async (
 
   if (isLfoFacility) {
     // edit the well authorization number
-    // const firstWellAuthInput = screen.getByDisplayValue("24546");
     const firstWellAuthInput =
       container?.querySelector("input[name='well_authorization_numbers-0']") ||
       document.querySelector("input[name='well_authorization_numbers-0']");

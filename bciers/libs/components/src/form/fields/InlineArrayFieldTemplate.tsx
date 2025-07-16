@@ -57,7 +57,6 @@ const InlineArrayFieldTemplate = ({
             <div className="min-w-full flex my-4">
               {{
                 ...item.children,
-                // {...(itemAriaLabel ? { "aria-label": itemAriaLabel } : {})},
                 props: {
                   ...item.children.props,
                   uiSchema: {
