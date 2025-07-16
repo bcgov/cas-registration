@@ -7,6 +7,7 @@ interface Field {
   heading?: string;
   unit?: string;
   showSeparator?: boolean;
+  isDate?: boolean;
 }
 
 interface SectionProps {
@@ -62,30 +63,33 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
 
       {(!expandable || isExpanded) && (
         <>
-          {fields.map(({ label, key, heading, unit, showSeparator }, idx) => {
-            if (heading) {
+          {fields.map(
+            ({ label, key, heading, unit, showSeparator, isDate }, idx) => {
+              if (heading) {
+                return (
+                  <div
+                    key={`heading-${idx}`}
+                    className="py-2 w-full font-bold text-bc-bg-blue mb-4"
+                  >
+                    {heading}
+                  </div>
+                );
+              }
+
+              const value = getNestedValue(data, key);
+
               return (
-                <div
-                  key={`heading-${idx}`}
-                  className="py-2 w-full font-bold text-bc-bg-blue mb-4"
-                >
-                  {heading}
-                </div>
+                <FieldDisplay
+                  key={`${key || "field"}-${idx}`}
+                  label={label!}
+                  value={value}
+                  unit={unit}
+                  showSeparator={showSeparator}
+                  isDate={isDate}
+                />
               );
-            }
-
-            const value = getNestedValue(data, key);
-
-            return (
-              <FieldDisplay
-                key={`${key || "field"}-${idx}`}
-                label={label!}
-                value={value}
-                unit={unit}
-                showSeparator={showSeparator}
-              />
-            );
-          })}
+            },
+          )}
 
           {children}
         </>

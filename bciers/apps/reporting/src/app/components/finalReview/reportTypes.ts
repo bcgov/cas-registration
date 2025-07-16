@@ -75,30 +75,35 @@ export interface ReportNonAttributableEmission {
   source_type: string;
 }
 
+export interface EmissionCategories {
+  flaring: number;
+  fugitive: number;
+  industrial_process: number;
+  onsite_transportation: number;
+  stationary_combustion: number;
+  venting_useful: number;
+  venting_non_useful: number;
+  waste: number;
+  wastewater: number;
+}
+
+export interface FuelExcluded {
+  woody_biomass: number;
+  excluded_biomass: number;
+  excluded_non_biomass: number;
+}
+export interface OtherExcluded {
+  lfo_excluded: number;
+  fog_excluded: number;
+}
+
 export interface EmissionSummary {
   attributable_for_reporting: string;
   attributable_for_reporting_threshold: string;
   reporting_only_emission: string;
-  emission_categories: {
-    flaring: number;
-    fugitive: number;
-    industrial_process: number;
-    onsite_transportation: number;
-    stationary_combustion: number;
-    venting_useful: number;
-    venting_non_useful: number;
-    waste: number;
-    wastewater: number;
-  };
-  fuel_excluded: {
-    woody_biomass: number;
-    excluded_biomass: number;
-    excluded_non_biomass: number;
-  };
-  other_excluded: {
-    lfo_excluded: number;
-    fog_excluded: number;
-  };
+  emission_categories: EmissionCategories;
+  fuel_excluded: FuelExcluded;
+  other_excluded: OtherExcluded;
 }
 
 export interface FacilityReport {
@@ -131,6 +136,15 @@ export interface ReportProductEmissionAllocationTotal {
   allocated_quantity: number;
 }
 
+export interface ReportNewEntrant {
+  authorization_date: string;
+  first_shipment_date: string;
+  new_entrant_period_start: string;
+  assertion_statement: boolean;
+  report_new_entrant_emission: [];
+  productions: [];
+}
+
 export interface ReportEmissionAllocation {
   allocation_methodology: string;
   allocation_other_methodology_description: string;
@@ -138,11 +152,33 @@ export interface ReportEmissionAllocation {
   report_product_emission_allocation_totals: ReportProductEmissionAllocationTotal[];
   report_product_emission_allocations: ReportProductEmissionAllocation[];
 }
+export interface ReportElectricityImportData {
+  import_specified_electricity: number;
+  import_specified_emissions: number;
+  import_unspecified_electricity: number;
+  import_unspecified_emissions: number | null;
+  export_specified_electricity: number | null;
+  export_specified_emissions: number | null;
+  export_unspecified_electricity: number | null;
+  export_unspecified_emissions: number | null;
+  canadian_entitlement_electricity: number | null;
+  canadian_entitlement_emissions: number | null;
+}
+export interface OperationEmissionSummary {
+  attributable_for_reporting: number;
+  attributable_for_reporting_threshold: string;
+  emission_categories: EmissionCategories;
+  fuel_excluded: FuelExcluded;
+  other_excluded: OtherExcluded;
+}
 export interface ReportData {
   report_operation: ReportOperation;
   report_person_responsible: ReportPersonResponsible;
   report_additional_data: ReportAdditionalData;
   report_compliance_summary: ReportComplianceSummary;
+  operation_emission_summary: OperationEmissionSummary;
   facility_reports: FacilityReport[];
   is_supplementary_report: boolean;
+  report_new_entrant: ReportNewEntrant[];
+  report_electricity_import_data: ReportElectricityImportData[];
 }
