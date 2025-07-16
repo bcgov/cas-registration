@@ -561,6 +561,6 @@ describe("ContactForm component", () => {
     expect(modalDeleteButton).toBeVisible();
 
     await userEvent.click(modalDeleteButton);
-    expect(archiveContact).toHaveBeenCalledWith("123", "/contacts");
+    expect(archiveContact).toHaveBeenCalledWith("123");
   });
 });
