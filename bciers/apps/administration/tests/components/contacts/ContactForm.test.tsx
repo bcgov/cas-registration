@@ -523,7 +523,7 @@ describe("ContactForm component", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          /Before you can delete this contact, please replace them in the places they are assigned with another contact first/i,
+          /Before you can delete this contact, please remove them from the places they are assigned. If you are the only one assigned, you must replace them with another contact in the assigned place./i,
         ),
       ).toBeVisible();
     });

@@ -76,7 +76,7 @@ export default function ContactForm({
         isSubmitting={isSubmitting}
       >
         {hasPlacesAssigned
-          ? "Before you can delete this contact, please replace them in the places they are assigned with another contact first."
+          ? "Before you can delete this contact, please remove them from the places they are assigned. If you are the only one assigned, you must replace them with another contact in the assigned place."
           : "Please confirm that you would like to delete this contact."}
       </SimpleModal>
       <SingleStepTaskListForm
