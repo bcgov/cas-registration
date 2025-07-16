@@ -228,6 +228,7 @@ export const facilitiesLfoUiSchema = {
       "ui:ArrayFieldTemplate": InlineArrayFieldTemplate,
       "ui:options": {
         arrayAddLabel: "Add Well Authorization Number",
+        ariaLabel: "Well Authorization Numbers",
       },
     },
     bcghg_id: {

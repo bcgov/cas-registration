@@ -39,8 +39,17 @@ const InlineArrayFieldTemplate = ({
   return (
     <div className="flex min-w-full flex-col">
       {items?.map((item, i: number) => {
+        const ariaLabelBase = uiSchema?.["ui:options"]?.ariaLabel;
+        const itemAriaLabel = ariaLabelBase
+          ? `${ariaLabelBase}-${i}`
+          : undefined;
+
         return (
-          <div key={item.key} className="min-w-full flex flex-col">
+          <div
+            key={item.key}
+            className="min-w-full flex flex-col"
+            {...(itemAriaLabel ? { "aria-label": itemAriaLabel } : {})}
+          >
             <div className="text-bc-bg-blue text-lg flex align-center">
               {customTitleName && (
                 <span>
