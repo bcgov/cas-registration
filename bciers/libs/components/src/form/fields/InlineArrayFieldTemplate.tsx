@@ -45,11 +45,7 @@ const InlineArrayFieldTemplate = ({
           : undefined;
 
         return (
-          <div
-            key={item.key}
-            className="min-w-full flex flex-col"
-            {...(itemAriaLabel ? { "aria-label": itemAriaLabel } : {})}
-          >
+          <div key={item.key} className="min-w-full flex flex-col">
             <div className="text-bc-bg-blue text-lg flex align-center">
               {customTitleName && (
                 <span>
@@ -61,6 +57,7 @@ const InlineArrayFieldTemplate = ({
             <div className="min-w-full flex my-4">
               {{
                 ...item.children,
+                // {...(itemAriaLabel ? { "aria-label": itemAriaLabel } : {})},
                 props: {
                   ...item.children.props,
                   uiSchema: {
@@ -68,6 +65,7 @@ const InlineArrayFieldTemplate = ({
                     "ui:FieldTemplate": BasicFieldTemplate,
                     "ui:options": {
                       label: false,
+                      "aria-label": itemAriaLabel ? itemAriaLabel : undefined,
                     },
                   },
                 },

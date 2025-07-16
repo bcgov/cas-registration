@@ -175,7 +175,10 @@ const checkOptionalFieldValues = (
 };
 
 // ⛏️ Helper function to edit form fields
-export const editFormFields = async (schema: RJSFSchema) => {
+export const editFormFields = async (
+  schema: RJSFSchema,
+  container?: Element,
+) => {
   const isLfoFacility = schema === facilitiesLfoSchema;
   if (isLfoFacility) {
     // edit the facility name
@@ -193,14 +196,17 @@ export const editFormFields = async (schema: RJSFSchema) => {
 
   if (isLfoFacility) {
     // edit the well authorization number
-    // const firstWellAuthInput = screen.getByRole("textbox", {
-    //   name: /Well Authorization Numbers+/i,
-    // });
-    const firstWellAuthInput = screen.getByDisplayValue("24546");
-    await userEvent.clear(firstWellAuthInput); // clear the existing value
-    fireEvent.change(firstWellAuthInput, {
-      target: { value: defaultUpdateFormValues.well_authorization_numbers },
-    }); // enter the new value
+    // const firstWellAuthInput = screen.getByDisplayValue("24546");
+    const firstWellAuthInput =
+      container?.querySelector("input[name='well_authorization_numbers-0']") ||
+      document.querySelector("input[name='well_authorization_numbers-0']");
+    if (firstWellAuthInput) {
+      await userEvent.clear(firstWellAuthInput); // clear the existing value
+      await userEvent.type(
+        firstWellAuthInput,
+        defaultUpdateFormValues.well_authorization_numbers[0],
+      );
+    }
   }
 
   await userEvent.clear(screen.getByLabelText(/Street address+/i));
@@ -266,17 +272,19 @@ const fillMandatoryFields = async (schema: RJSFSchema) => {
 };
 
 // ⛏️ Helper function to fill optional fields
-const fillOptionalFields = async (schema: RJSFSchema) => {
+const fillOptionalFields = async (schema: RJSFSchema, container?: Element) => {
   if (schema === facilitiesLfoSchema) {
     // fill well authorization numbers
     await userEvent.click(screen.getByText("Add Well Authorization Number"));
-    const firstWellAuthInput = screen.getByRole("textbox", {
-      name: "well_authorization_numbers-0",
-    });
-    // have to use fireEvent for number fields
-    fireEvent.change(firstWellAuthInput, {
-      target: { value: defaultFillFormValues.well_authorization_numbers },
-    });
+    const firstWellAuthInput =
+      container?.querySelector("input[name='well_authorization_numbers-0']") ||
+      document.querySelector("input[name='well_authorization_numbers-0']");
+    if (firstWellAuthInput) {
+      await userEvent.type(
+        firstWellAuthInput,
+        defaultFillFormValues.well_authorization_numbers[0],
+      );
+    }
   }
   // fill year and starting date
   const year = screen.getByLabelText(/Did this facility begin operations+/i);
