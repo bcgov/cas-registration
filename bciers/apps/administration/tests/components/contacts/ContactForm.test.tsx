@@ -154,7 +154,7 @@ describe("ContactForm component", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("loads existing readonly contact form data for an external user", async () => {
+  it("loads existing readonly contact form data for an external admin user", async () => {
     useSessionRole.mockReturnValue("industry_user_admin");
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     const { container } = render(
@@ -562,5 +562,14 @@ describe("ContactForm component", () => {
 
     await userEvent.click(modalDeleteButton);
     expect(archiveContact).toHaveBeenCalledWith("123");
+  });
+
+  it("does not allow deletion if industry user is a reporter", async () => {
+    vi.clearAllMocks();
+    useSessionRole.mockReturnValue("industry_user");
+    const deleteButton = screen.queryByRole("button", {
+      name: /delete contact/i,
+    });
+    expect(deleteButton).not.toBeInTheDocument();
   });
 });
