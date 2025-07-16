@@ -4,6 +4,7 @@ from registration.tests.utils.bakers import contact_baker, operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from model_bakery.recipe import seq
+from model_bakery import baker
 from itertools import cycle
 
 
@@ -157,3 +158,36 @@ class TestContactsEndpoint(CommonTestSetup):
         assert created_contact.address.street_address == mock_contact.get(
             'street_address'
         )  # confirm that an address was created(even with only street_address)
+
+    # PATCH
+    def test_patch_archive_contact(self):
+        contact = baker.make_recipe(
+            "registration.tests.utils.contact",
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, contact.operator)
+        patch_response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {},
+            custom_reverse_lazy("archive_contact", kwargs={"contact_id": contact.id}),
+        )
+        assert patch_response.status_code == 200
+        response_json = patch_response.json()
+        assert response_json.get("success") is True
+        contact.refresh_from_db()
+        assert contact.archived_at is not None
+
+    def test_patch_archive_contact_fail(self):
+        random_contact = baker.make_recipe(
+            "registration.tests.utils.contact",
+        )
+        TestUtils.authorize_current_user_as_operator_user(self, baker.make_recipe("registration.tests.utils.operator"))
+        patch_response = TestUtils.mock_patch_with_auth_role(
+            self,
+            "industry_user",
+            self.content_type,
+            {},
+            custom_reverse_lazy("archive_contact", kwargs={"contact_id": random_contact.id}),
+        )
+        assert patch_response.status_code == 401

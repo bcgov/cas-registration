@@ -9,6 +9,7 @@ from registration.api.router import router
 from service.contact_service import ContactService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema import ContactWithPlacesAssigned
+from ninja.types import DictStrAny
 
 
 @router.get(
@@ -33,3 +34,15 @@ def get_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], Op
 )
 def update_contact(request: HttpRequest, contact_id: int, payload: ContactIn) -> Tuple[Literal[200], Contact]:
     return 200, ContactService.update_contact(get_current_user_guid(request), contact_id, payload)
+
+
+@router.patch(
+    "/contacts/{contact_id}",
+    response={200: DictStrAny, custom_codes_4xx: Message},
+    tags=CONTACT_TAGS,
+    description="""Archives a contact by its ID. The user must be authorized to perform this action.""",
+    auth=authorize("approved_industry_admin_user"),
+)
+def archive_contact(request: HttpRequest, contact_id: int) -> Tuple[Literal[200], DictStrAny]:
+    ContactService.archive_contact(get_current_user_guid(request), contact_id)
+    return 200, {"success": True}

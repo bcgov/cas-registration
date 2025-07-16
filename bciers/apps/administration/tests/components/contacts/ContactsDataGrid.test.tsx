@@ -13,8 +13,9 @@ import extractParams from "@bciers/testConfig/helpers/extractParams";
 
 const mockReplace = vi.spyOn(global.history, "replaceState");
 
+const mockGetSearchParams = vi.fn();
 useSearchParams.mockReturnValue({
-  get: vi.fn(),
+  get: mockGetSearchParams,
 } as QueryParams);
 
 const mockExternalResponse = {
@@ -222,5 +223,25 @@ describe("ContactsDataGrid component", () => {
         "john",
       );
     });
+  });
+  it("shows the snackbar when being redirected from a contact deletion", async () => {
+    mockGetSearchParams.mockReturnValue({ from_deletion: true });
+    render(
+      <ContactsDataGrid
+        isExternalUser={true}
+        initialData={mockInternalResponse}
+      />,
+    );
+    expect(screen.getByText("Contact deleted")).toBeVisible();
+  });
+  it("does not show the snackbar if not redirected from a contact deletion", async () => {
+    mockGetSearchParams.mockReturnValue(undefined);
+    render(
+      <ContactsDataGrid
+        isExternalUser={true}
+        initialData={mockInternalResponse}
+      />,
+    );
+    expect(screen.queryByText("Contact deleted")).not.toBeInTheDocument();
   });
 });

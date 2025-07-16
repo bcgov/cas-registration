@@ -1,9 +1,12 @@
-import { render, screen, act, waitFor } from "@testing-library/react";
+import { render, screen, act, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   actionHandler,
+  archiveContact,
   useRouter,
   useSessionRole,
+  useSearchParams,
+  useParams,
 } from "@bciers/testConfig/mocks";
 import {
   contactsSchema,
@@ -14,9 +17,15 @@ import { createContactSchema } from "apps/administration/app/components/contacts
 import { FrontendMessages } from "@bciers/utils/src/enums";
 
 const mockReplace = vi.fn();
+const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
   query: {},
   replace: mockReplace,
+  push: mockRouterPush,
+});
+useSearchParams.mockReturnValue({ from_deletion: true });
+useParams.mockReturnValue({
+  contactId: "123",
 });
 
 const contactFormData = {
@@ -140,8 +149,12 @@ describe("ContactForm component", () => {
     // Buttons
     expect(screen.getByRole("button", { name: /save/i })).toBeEnabled();
     expect(screen.getByRole("button", { name: /back/i })).toBeEnabled();
+    expect(
+      screen.queryByRole("button", { name: /delete contact/i }),
+    ).not.toBeInTheDocument();
   });
-  it("loads existing readonly contact form data for an internal user", async () => {
+
+  it("loads existing readonly contact form data for an external user", async () => {
     useSessionRole.mockReturnValue("industry_user_admin");
     const readOnlyContactSchema = createContactSchema(contactsSchema, false);
     const { container } = render(
@@ -151,8 +164,6 @@ describe("ContactForm component", () => {
         isCreating={false}
       />,
     );
-
-    checkInlineMessage(false);
 
     expect(
       container.querySelector("#root_section1_first_name"),
@@ -198,7 +209,32 @@ describe("ContactForm component", () => {
     ).toHaveTextContent("A1B 2C3");
 
     expect(screen.getByRole("button", { name: /edit/i })).toBeEnabled();
+    expect(
+      screen.queryByRole("button", { name: /delete contact/i }),
+    ).toBeVisible();
   });
+  it("renders the form for an internal user", async () => {
+    useSessionRole.mockReturnValue("cas_admin");
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
+    render(
+      <ContactForm
+        schema={readOnlyContactSchema}
+        formData={contactFormData}
+        isCreating={false}
+        allowEdit={false}
+      />,
+    );
+
+    checkInlineMessage(false);
+
+    expect(
+      screen.queryByRole("button", { name: /edit/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /delete contact/i }),
+    ).not.toBeInTheDocument();
+  });
+
   it("does not allow new contact form submission if there are validation errors (empty form data)", async () => {
     render(
       <ContactForm
@@ -213,6 +249,7 @@ describe("ContactForm component", () => {
     });
     expect(screen.getAllByText(/^.* is required/i)).toHaveLength(9);
   });
+
   it(
     "fills the mandatory form fields, creates new contact, and redirects on success",
     {
@@ -468,5 +505,62 @@ describe("ContactForm component", () => {
     expect(
       screen.queryByRole("button", { name: /remove item/i }),
     ).not.toBeInTheDocument();
+  });
+  it("does not allow deletion of contact if the contact is asssigned to places", async () => {
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
+    render(
+      <ContactForm
+        schema={readOnlyContactSchema}
+        formData={contactFormData}
+        allowEdit
+      />,
+    );
+    const deleteButton = screen.getByRole("button", {
+      name: /delete contact/i,
+    });
+    expect(deleteButton).toBeVisible(); //  delete button on the contact form
+    await userEvent.click(deleteButton);
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /Before you can delete this contact, please replace them in the places they are assigned with another contact first/i,
+        ),
+      ).toBeVisible();
+    });
+    expect(screen.getByRole("button", { name: /cancel/i })).toBeVisible();
+  });
+
+  it("allows deletion of contact if they are not assigned anywhere", async () => {
+    const readOnlyContactSchema = createContactSchema(contactsSchema, false);
+    render(
+      <ContactForm
+        schema={readOnlyContactSchema}
+        formData={{ ...contactFormData, places_assigned: [] }}
+        allowEdit
+      />,
+    );
+    const deleteButton = screen.getByRole("button", {
+      name: /delete contact/i,
+    });
+    expect(deleteButton).toBeVisible(); //  delete button on the contact form
+    await userEvent.click(deleteButton);
+    const modal = screen.getByRole("dialog");
+    expect(modal).toBeVisible();
+
+    expect(
+      within(modal).getByText(
+        /Please confirm that you would like to delete this contact./i,
+      ),
+    ).toBeVisible();
+
+    expect(within(modal).getByRole("button", { name: /back/i })).toBeVisible();
+
+    const modalDeleteButton = within(modal).getByRole("button", {
+      name: /delete contact/i,
+    });
+    expect(modalDeleteButton).toBeVisible();
+
+    await userEvent.click(modalDeleteButton);
+    expect(archiveContact).toHaveBeenCalledWith("123");
   });
 });

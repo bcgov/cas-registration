@@ -262,5 +262,33 @@
       "phone_number": "+16044011249",
       "operator_id": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12"
     }
+  },
+  {
+    "model": "registration.contact",
+    "pk": 20,
+    "fields": {
+      "business_role": "Operation Representative",
+      "first_name": "bc-cas-dev",
+      "last_name": "Industry User",
+      "position_title": "Manager",
+      "address": 17,
+      "email": "bc-cas-dev@email.com",
+      "phone_number": "+16044011249",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
+    }
+  },
+  {
+    "model": "registration.contact",
+    "pk": 21,
+    "fields": {
+      "business_role": "Operation Representative",
+      "first_name": "bc-cas-dev-secondary",
+      "last_name": "Industry User",
+      "position_title": "Manager",
+      "address": 17,
+      "email": "email2@email.com",
+      "phone_number": "+16044011249",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051"
+    }
   }
 ]
