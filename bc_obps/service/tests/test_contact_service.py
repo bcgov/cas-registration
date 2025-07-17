@@ -270,3 +270,22 @@ class TestUpdateContactService:
         ContactService._validate_contact_email(
             contact_id=updating_contact.id, operator_id=contact.operator.id, email=email2
         )
+
+    @staticmethod
+    def test_validate_contact_email_case_insensitive():
+        # Setup: Create a contact with a specific email
+        email = "TestEmail1@email.ca"
+        contact = baker.make_recipe('registration.tests.utils.contact', email=email)
+
+        # Attempt to validate the same email with different case for the same operator
+        with pytest.raises(
+            Exception,
+            match=f"A contact with the email '{email.lower()}' already exists. Please add a different contact or edit the existing contact.",
+        ):
+            ContactService._validate_contact_email(
+                contact_id=None, operator_id=contact.operator.id, email=email.lower()
+            )
+
+        other_operator = baker.make_recipe('registration.tests.utils.operator')
+        # Validating the same email with different case for a different operator should not raise an exception
+        ContactService._validate_contact_email(contact_id=None, operator_id=other_operator.id, email=email.lower())
