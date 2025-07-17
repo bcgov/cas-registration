@@ -28,12 +28,12 @@ export const applyComplianceUnitsSchema: RJSFSchema = {
   dependencies: {
     bccr_trading_name: {
       oneOf: [
-        // If the BCCR Trading Name is not set, we don't want to show compliance account ID, units, or summary
+        // If the BCCR Trading Name is "-", we don't want to show compliance account ID, units, or summary
         {
           properties: {
             bccr_trading_name: {
               type: "string",
-              maxLength: 0,
+              enum: ["-"],
             },
           },
         },
@@ -41,7 +41,7 @@ export const applyComplianceUnitsSchema: RJSFSchema = {
           properties: {
             bccr_trading_name: {
               type: "string",
-              minLength: 1,
+              not: { enum: ["-"] },
             },
             bccr_compliance_account_id: readOnlyStringField(
               "BCCR Compliance Account ID:",
@@ -106,8 +106,11 @@ export const applyComplianceUnitsUiSchema: UiSchema = {
     },
   },
   bccr_trading_name: {
-    "ui:FieldTemplate": HiddenFieldTemplate,
     "ui:widget": ReadOnlyWidget,
+    "ui:classNames": "[&>div:first-child]:w-1/3", // modify the width of the label
+    "ui:options": {
+      inline: true,
+    },
   },
   bccr_compliance_account_id: {
     "ui:widget": ReadOnlyWidget,

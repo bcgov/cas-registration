@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
-import { getBccrComplianceUnitsAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { actionHandler } from "@bciers/actions";
 
@@ -15,7 +15,7 @@ useRouter.mockReturnValue({
 });
 
 vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
-  getBccrComplianceUnitsAccountDetails: vi.fn(),
+  getBccrAccountDetails: vi.fn(),
 }));
 
 vi.mock("@bciers/actions", () => ({
@@ -40,9 +40,7 @@ const MOCK_UNITS = [
 ];
 
 const setupValidAccount = async () => {
-  (
-    getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
-  ).mockResolvedValueOnce({
+  (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
     bccr_trading_name: MOCK_TRADING_NAME,
     bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
     bccr_units: MOCK_UNITS,
@@ -101,10 +99,7 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("validates account and displays compliance details on success", async () => {
     await setupValidAccount();
 
-    expect(getBccrComplianceUnitsAccountDetails).toHaveBeenCalledWith(
-      VALID_ACCOUNT_ID,
-      TEST_COMPLIANCE_SUMMARY_ID,
-    );
+    expect(getBccrAccountDetails).toHaveBeenCalledWith(VALID_ACCOUNT_ID);
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
     expect(screen.getByText("BCCR Compliance Account ID:")).toBeVisible();
@@ -123,9 +118,9 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("does not show compliance details when account is invalid", async () => {
-    (
-      getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
-    ).mockRejectedValueOnce(new Error("Unknown error"));
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error("Unknown error"),
+    );
 
     render(
       <ApplyComplianceUnitsComponent
@@ -160,9 +155,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     const { container } = await setupValidAccount();
 
     // Change to a different valid account
-    (
-      getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
-    ).mockResolvedValueOnce({
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       bccr_trading_name: "New Company",
       bccr_compliance_account_id: "COMP456",
       charge_rate: MOCK_CHARGE_RATE,
@@ -391,9 +384,9 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("shows error message when validation fails", async () => {
-    (
-      getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
-    ).mockRejectedValueOnce(new Error("Unknown error"));
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error("Unknown error"),
+    );
 
     render(
       <ApplyComplianceUnitsComponent
