@@ -8,6 +8,8 @@ interface Field {
   unit?: string;
   showSeparator?: boolean;
   isDate?: boolean;
+  isDecimal?: boolean;
+  decimalPlaces?: number;
 }
 
 interface SectionProps {
@@ -64,7 +66,19 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
       {(!expandable || isExpanded) && (
         <>
           {fields.map(
-            ({ label, key, heading, unit, showSeparator, isDate }, idx) => {
+            (
+              {
+                label,
+                key,
+                heading,
+                unit,
+                showSeparator,
+                isDate,
+                isDecimal,
+                decimalPlaces,
+              },
+              idx,
+            ) => {
               if (heading) {
                 return (
                   <div
@@ -86,6 +100,8 @@ export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({
                   unit={unit}
                   showSeparator={showSeparator}
                   isDate={isDate}
+                  isDecimal={isDecimal}
+                  decimalPlaces={decimalPlaces}
                 />
               );
             },
