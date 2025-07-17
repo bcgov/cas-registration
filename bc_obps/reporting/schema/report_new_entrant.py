@@ -9,7 +9,8 @@ from reporting.models.emission_category import EmissionCategory
 
 
 class RegulatedProductForNewEntrant(ModelSchema):
-    production_amount: Optional[Decimal]
+    # In the db the type is Decimal, but without conversion here, that would show up as a string in the frontend.
+    production_amount: Optional[float] = None
 
     class Meta:
         model = RegulatedProduct
@@ -17,7 +18,7 @@ class RegulatedProductForNewEntrant(ModelSchema):
 
 
 class EmissionCategoryForNewEntrant(ModelSchema):
-    emission: Optional[Decimal]
+    emission: Optional[float] = None
 
     class Meta:
         model = EmissionCategory
