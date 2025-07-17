@@ -167,7 +167,7 @@ class ContactService:
         (contact_id is not None for update)
         """
 
-        contacts = Contact.objects.filter(email=email, operator_id=operator_id)
+        contacts = Contact.objects.filter(email__iexact=email, operator_id=operator_id)
         if contact_id is not None:
             contacts = contacts.exclude(id=contact_id)
         if contacts.exists():
