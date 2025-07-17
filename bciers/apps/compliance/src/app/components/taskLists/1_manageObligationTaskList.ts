@@ -1,27 +1,28 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { generateAutomaticOverduePenaltyTaskList } from "./automaticOverduePenaltyTaskList";
 
 export enum ActivePage {
-  "ReviewComplianceSummary" = 0,
-  "ApplyComplianceUnits",
-  "DownloadPaymentInstructions",
-  "PayObligationTrackPayments",
-  "ReviewPenaltySummary",
+  ReviewComplianceSummary = "ReviewComplianceSummary",
+  ApplyComplianceUnits = "ApplyComplianceUnits",
+  DownloadPaymentObligationInstructions = "DownloadPaymentObligationInstructions",
+  PayObligationTrackPayments = "PayObligationTrackPayments",
 }
 
 export const generateManageObligationTaskList: (
   complianceSummaryId: string,
-  reportingYear: number,
-  defaultActiveIndex?: ActivePage,
-  penaltyStatus?: string,
+  data: any,
+  activePage?: ActivePage | null,
 ) => TaskListElement[] = (
   complianceSummaryId,
-  reportingYear,
-  defaultActiveIndex,
-  penaltyStatus,
+  data,
+  activePage = ActivePage.ReviewComplianceSummary,
 ) => {
-  const activeIndex = defaultActiveIndex ?? 0;
-  const taskItems: TaskListElement[] = [
-    activeIndex === ActivePage.ApplyComplianceUnits
+  const {
+    reporting_year: reportingYear,
+    outstanding_balance: outstandingBalance,
+  } = data;
+  const taskItems = [
+    activePage === ActivePage.ApplyComplianceUnits
       ? {
           type: "Subsection",
           title: `Review ${reportingYear} Compliance Summary`,
@@ -40,33 +41,23 @@ export const generateManageObligationTaskList: (
           type: "Page",
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
-          isActive: activeIndex === ActivePage.ReviewComplianceSummary,
+          isActive: activePage === ActivePage.ReviewComplianceSummary,
         },
     {
       type: "Page",
       title: "Download Payment Instructions",
       link: `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`,
-      isActive: activeIndex === ActivePage.DownloadPaymentInstructions,
+      isActive: activePage === ActivePage.DownloadPaymentObligationInstructions,
     },
     {
       type: "Page",
       title: "Pay Obligation and Track Payment(s)",
       link: `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`,
-      isActive: activeIndex === ActivePage.PayObligationTrackPayments,
+      isActive: activePage === ActivePage.PayObligationTrackPayments,
     },
   ];
 
-  // Conditionally add the Review Penalty Summary page
-  if (penaltyStatus === "ACCRUING") {
-    taskItems.push({
-      type: "Page",
-      title: "Review Penalty Summary",
-      link: `/compliance-summaries/${complianceSummaryId}/review-penalty-summary`,
-      isActive: activeIndex === ActivePage.ReviewPenaltySummary,
-    });
-  }
-
-  return [
+  const sections: TaskListElement[] = [
     {
       type: "Section",
       title: `${reportingYear} Compliance Summary`,
@@ -74,4 +65,19 @@ export const generateManageObligationTaskList: (
       elements: taskItems,
     },
   ];
+
+  if (
+    activePage === ActivePage.PayObligationTrackPayments &&
+    outstandingBalance === 0
+  ) {
+    const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
+      complianceSummaryId,
+      data.reporting_year,
+      null,
+    )[1];
+
+    sections.push({ ...automaticPenaltySection, isExpanded: false });
+  }
+
+  return sections;
 };

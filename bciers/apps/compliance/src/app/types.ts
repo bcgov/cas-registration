@@ -167,3 +167,16 @@ export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
 export interface Invoice {
   invoice_number: string;
 }
+
+export interface AutomaticOverduePenalty {
+  penalty_status: string;
+  penalty_type: string;
+  days_late: number;
+  penalty_charge_rate: string;
+  accumulated_penalty: string;
+  accumulated_compounding: string;
+  penalty_today: string;
+  faa_interest: string;
+  total_amount: string;
+  penalty_amount: string;
+}

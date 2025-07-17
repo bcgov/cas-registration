@@ -20,15 +20,6 @@ export interface ComplianceSummary {
   obligation_id: string;
   compliance_charge_rate: number;
   equivalent_value: number;
-  penalty_status?: string;
-  penalty_type?: string;
-  penalty_rate_daily?: number;
-  days_late?: number;
-  accumulated_penalty?: number;
-  accumulated_compounding?: number;
-  penalty_today?: number;
-  faa_interest?: number;
-  total_amount?: number;
   compliance_status: string;
 }
 
@@ -66,15 +57,6 @@ export const getComplianceSummary = async (
     compliance_charge_rate: chargeRate,
     equivalent_value: parseDecimal(data.excess_emissions) * chargeRate,
     outstanding_balance: parseDecimal(data.excess_emissions),
-    penalty_status: "Accruing",
-    penalty_type: "Automatic Overdue",
-    penalty_rate_daily: 0.38,
-    days_late: 3,
-    accumulated_penalty: 91.2,
-    accumulated_compounding: 0.35,
-    penalty_today: 91.55,
-    faa_interest: 0.0,
-    total_amount: 91.55,
   };
 
   return pageData;
