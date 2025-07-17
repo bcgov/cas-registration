@@ -3,7 +3,7 @@
 import { useState } from "react";
 import SingleStepTaskListForm from "@bciers/components/form/SingleStepTaskListForm";
 import { ContactFormData } from "./types";
-import { FormMode } from "@bciers/utils/src/enums";
+import { FormMode, FrontEndRoles } from "@bciers/utils/src/enums";
 import { contactsUiSchema } from "@/administration/app/data/jsonSchema/contact";
 import Link from "next/link";
 import SimpleModal from "@bciers/components/modal/SimpleModal";
@@ -71,12 +71,12 @@ export default function ContactForm({
         onCancel={() => setModalOpen(false)}
         onConfirm={handleArchiveContact}
         confirmText="Delete Contact"
-        cancelText={hasPlacesAssigned ? "Cancel" : "Back"}
+        cancelText={hasPlacesAssigned ? "Back" : "Cancel"}
         showConfirmButton={!hasPlacesAssigned}
         isSubmitting={isSubmitting}
       >
         {hasPlacesAssigned
-          ? "Before you can delete this contact, please replace them in the places they are assigned with another contact first."
+          ? "Before you can delete this contact, please remove them from the places they are assigned. If you are the only one assigned, you must replace them with another contact in the assigned place."
           : "Please confirm that you would like to delete this contact."}
       </SimpleModal>
       <SingleStepTaskListForm
@@ -91,7 +91,9 @@ export default function ContactForm({
         inlineMessage={
           isCreatingState && !role.includes("cas") && <NewOperationMessage />
         }
-        showDeleteButton={!isCreatingState && !role.includes("cas")}
+        showDeleteButton={
+          !isCreatingState && role === FrontEndRoles.INDUSTRY_USER_ADMIN
+        }
         handleDelete={handleClickDelete}
         deleteButtonText="Delete Contact"
         onSubmit={async (data: { formData?: any }) => {
