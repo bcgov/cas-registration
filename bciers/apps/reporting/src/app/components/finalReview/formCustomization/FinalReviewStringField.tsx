@@ -2,16 +2,16 @@ import { NumberField } from "@base-ui-components/react/number-field";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
 import { FieldProps } from "@rjsf/utils";
 
-export default function FinalReviewStringField(props: FieldProps) {
-  const numberStyles = {
-    font: "inherit",
-    width: "100%",
-    border: "none",
-    backgroundColor: "transparent",
-    color: "inherit",
-    padding: 0,
-  };
+export const numberStyles = {
+  font: "inherit",
+  width: "100%",
+  border: "none",
+  backgroundColor: "transparent",
+  color: "inherit",
+  padding: 0,
+};
 
+export default function FinalReviewStringField(props: FieldProps) {
   const decimalPoints =
     props.uiSchema?.["ui:options"]?.decimalPoints &&
     Number(props.uiSchema?.["ui:options"]?.decimalPoints);
@@ -33,6 +33,5 @@ export default function FinalReviewStringField(props: FieldProps) {
       </NumberField.Root>
     );
   }
-  // return <div>finalreviewstringdfield {props.formData}</div>;
   return <div>{props.formData}</div>;
 }

@@ -1,6 +1,9 @@
 import React from "react";
 import { LIGHT_GREY_BG_COLOR } from "@bciers/styles";
 import { formatDate } from "@reporting/src/app/utils/formatDate";
+import { NumberField } from "@base-ui-components/react/number-field";
+import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
+import { numberStyles } from "../formCustomization/FinalReviewStringField";
 
 interface FieldDisplayProps {
   label: string;
@@ -49,7 +52,22 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
         }}
       >
         <label className="font-semibold">{label}</label>
-        <div>{formattedValue}</div>
+        {typeof value === "number" ? (
+          <NumberField.Root
+            name={label}
+            disabled
+            value={transformToNumberOrUndefined(value)}
+            format={{
+              maximumFractionDigits: 4,
+            }}
+          >
+            <NumberField.Group>
+              <NumberField.Input style={numberStyles} name={label} />
+            </NumberField.Group>
+          </NumberField.Root>
+        ) : (
+          <div>{formattedValue}</div>
+        )}
         {unit ? (
           <div className="text-bc-bg-blue relative flex items-center">
             {unit}
