@@ -17,8 +17,7 @@ def handle_emissions(apps, emissions_list):
 
         emission_value = e.get("emission")
         if emission_value is not None and gas_type is not None:
-            equivalent_emission = round(Decimal(emission_value) * gas_type.gwp, 4)
-            e["equivalentEmission"] = str(equivalent_emission)
+            e["equivalentEmission"] = round(Decimal(emission_value) * gas_type.gwp, 4)
         else:
             e["equivalentEmission"] = None
 
@@ -45,7 +44,7 @@ def migrate_json_data(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("reporting", "0113_V3_7_0"),
+        ("reporting", "0118_update_equivalent_emission_type"),
     ]
 
     operations = [
