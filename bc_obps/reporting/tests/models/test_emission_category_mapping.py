@@ -53,8 +53,8 @@ class TestInitialData(TestCase):
 
         # BASIC
         self.assertEqual(flaring_count, 13)
-        self.assertEqual(fugitive_count, 41)
-        self.assertEqual(industrial_process_count, 26)
+        self.assertEqual(fugitive_count, 42)
+        self.assertEqual(industrial_process_count, 27)
         self.assertEqual(onsite_count, 1)
         self.assertEqual(stationary_count, 8)
         self.assertEqual(venting_useful_count, 20)
