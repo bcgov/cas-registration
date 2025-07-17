@@ -246,6 +246,9 @@ class ReportActivitySaveService:
         equivalent_emission = round(json_data["emission"] * gas_type.gwp, 4)
         json_data["equivalentEmission"] = equivalent_emission
 
+        # updated emission_data to include the calculated equivalent emission
+        emission_data["equivalentEmission"] = equivalent_emission
+
         report_emission_id = emission_data.get("id")
         if "methodology" not in emission_data:
             raise ValueError("Emission is expecting methodology data")
