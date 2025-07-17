@@ -118,7 +118,7 @@ class SupplementaryVersionService:
     def handle_supplementary_version(
         self, compliance_report: ComplianceReport, report_version: ReportVersion, version_count: int
     ) -> Optional[ComplianceReportVersion]:
-        report_versions = ReportVersion.objects.filter(report_id=report_version.report_id).order_by('-created_at')
+        report_versions = ReportVersion.objects.filter(report_id=report_version.report_id).order_by('-id')
         previous_version = report_versions[1]
         new_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version.id)
         previous_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=previous_version.id)
