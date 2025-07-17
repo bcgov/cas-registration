@@ -4,7 +4,18 @@ import { FieldTemplate } from "@bciers/components/form/fields";
 export const eioSchema: RJSFSchema = {
   title: "Electricity Import Data",
   type: "object",
-  required: ["import_specified_electricity"],
+  required: [
+    "import_specified_electricity",
+    "import_specified_emissions",
+    "import_unspecified_electricity",
+    "import_unspecified_emissions",
+    "export_specified_electricity",
+    "export_specified_emissions",
+    "export_unspecified_electricity",
+    "export_unspecified_emissions",
+    "canadian_entitlement_electricity",
+    "canadian_entitlement_emissions",
+  ],
   properties: {
     import_specified_electricity: {
       title: "Amount of imported electricity - specified sources",

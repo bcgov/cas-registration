@@ -64,7 +64,18 @@ describe("ElectricityInformationForm Component", () => {
     render(
       <ElectricityInformationForm
         versionId={mockVersionId}
-        initialFormData={{}}
+        initialFormData={{
+          import_specified_electricity: 0,
+          import_specified_emissions: 0,
+          import_unspecified_electricity: 0,
+          import_unspecified_emissions: 0,
+          export_specified_electricity: 0,
+          export_specified_emissions: 0,
+          export_unspecified_electricity: 0,
+          export_unspecified_emissions: 0,
+          canadian_entitlement_electricity: 0,
+          canadian_entitlement_emissions: 0,
+        }}
         navigationInformation={{
           ...dummyNavigationInformation,
           continueUrl: "/next-page",
