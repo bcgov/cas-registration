@@ -156,13 +156,13 @@ export interface ReportElectricityImportData {
   import_specified_electricity: number;
   import_specified_emissions: number;
   import_unspecified_electricity: number;
-  import_unspecified_emissions: number | null;
-  export_specified_electricity: number | null;
-  export_specified_emissions: number | null;
-  export_unspecified_electricity: number | null;
-  export_unspecified_emissions: number | null;
-  canadian_entitlement_electricity: number | null;
-  canadian_entitlement_emissions: number | null;
+  import_unspecified_emissions: number;
+  export_specified_electricity: number;
+  export_specified_emissions: number;
+  export_unspecified_electricity: number;
+  export_unspecified_emissions: number;
+  canadian_entitlement_electricity: number;
+  canadian_entitlement_emissions: number;
 }
 export interface OperationEmissionSummary {
   attributable_for_reporting: number;
