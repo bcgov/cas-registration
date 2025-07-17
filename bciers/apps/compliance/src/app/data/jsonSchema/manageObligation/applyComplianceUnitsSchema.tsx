@@ -11,8 +11,9 @@ import {
   tco2eUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { ApplyComplianceUnitsSuccessAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsSuccessAlertNote";
-
-export const applyComplianceUnitsSchema: RJSFSchema = {
+import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
+// Base schema for initial and confirmation phases
+export const applyComplianceUnitsBaseSchema: RJSFSchema = {
   type: "object",
   title: "Apply Compliance Units",
   required: ["bccr_holding_account_id"],
@@ -25,64 +26,65 @@ export const applyComplianceUnitsSchema: RJSFSchema = {
     },
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
-  dependencies: {
-    bccr_trading_name: {
-      oneOf: [
-        // If the BCCR Trading Name is not set, we don't want to show compliance account ID, units, or summary
-        {
-          properties: {
-            bccr_trading_name: {
-              type: "string",
-              maxLength: 0,
-            },
-          },
+};
+
+// Confirmation phase schema (extends base with checkbox)
+export const applyComplianceUnitsConfirmationSchema: RJSFSchema = {
+  ...applyComplianceUnitsBaseSchema,
+  required: [
+    ...(applyComplianceUnitsBaseSchema.required || []),
+    "confirmation_checkbox",
+  ],
+  properties: {
+    ...applyComplianceUnitsBaseSchema.properties,
+    confirmation_checkbox: {
+      type: "boolean",
+      title: "I confirm the accuracy of the information above.",
+    },
+  },
+};
+
+// Compliance data phase schema (extends base with all compliance fields)
+export const applyComplianceUnitsDataSchema: RJSFSchema = {
+  ...applyComplianceUnitsBaseSchema,
+  properties: {
+    ...applyComplianceUnitsBaseSchema.properties,
+    bccr_compliance_account_id: readOnlyStringField(
+      "BCCR Compliance Account ID:",
+    ),
+    bccr_units: {
+      type: "array",
+      title: "Indicate compliance units to be applied",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          type: { type: "string" },
+          serial_number: { type: "string" },
+          vintage_year: { type: "number" },
+          quantity_available: { type: "number" },
+          quantity_to_be_applied: { type: "number" },
         },
-        {
-          properties: {
-            bccr_trading_name: {
-              type: "string",
-              minLength: 1,
-            },
-            bccr_compliance_account_id: readOnlyStringField(
-              "BCCR Compliance Account ID:",
-            ),
-            bccr_units: {
-              type: "array",
-              title: "Indicate compliance units to be applied",
-              items: {
-                type: "object",
-                properties: {
-                  id: { type: "string" },
-                  type: { type: "string" },
-                  serial_number: { type: "string" },
-                  vintage_year: { type: "number" },
-                  quantity_available: { type: "number" },
-                  quantity_to_be_applied: { type: "number" },
-                },
-              },
-            },
-            summary_header: readOnlyStringField("Summary"),
-            total_quantity_to_be_applied: {
-              ...readOnlyNumberField("Total Quantity to be Applied:"),
-              default: 0,
-            },
-            total_equivalent_emission_reduced: {
-              ...readOnlyNumberField("Total Equivalent Emission Reduced:"),
-              default: 0,
-            },
-            total_equivalent_value: {
-              ...readOnlyNumberField("Total Equivalent Value:"),
-              default: 0,
-            },
-            outstanding_balance: {
-              ...readOnlyNumberField(
-                "Outstanding Balance after Applying Compliance Units:",
-              ),
-              default: 0,
-            },
-          },
-        },
-      ],
+      },
+    },
+    summary_header: readOnlyStringField("Summary"),
+    total_quantity_to_be_applied: {
+      ...readOnlyNumberField("Total Quantity to be Applied:"),
+      default: 0,
+    },
+    total_equivalent_emission_reduced: {
+      ...readOnlyNumberField("Total Equivalent Emission Reduced:"),
+      default: 0,
+    },
+    total_equivalent_value: {
+      ...readOnlyNumberField("Total Equivalent Value:"),
+      default: 0,
+    },
+    outstanding_balance: {
+      ...readOnlyNumberField(
+        "Outstanding Balance after Applying Compliance Units:",
+      ),
+      default: 0,
     },
   },
 };
@@ -129,5 +131,20 @@ export const applyComplianceUnitsUiSchema: UiSchema = {
   outstanding_balance: {
     ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
+  },
+  confirmation_checkbox: {
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:widget": CheckboxWidgetLeft,
+    "ui:help": (
+      <small>
+        By checking off the box above, you confirm that the B.C. Carbon Registry
+        Holding Account was entered accurately and the Trading Name displays
+        correctly. Your confirmation will initiate the creation of a compliance
+        account for Pink Operation.
+      </small>
+    ),
+    "ui:options": {
+      label: false,
+    },
   },
 };

@@ -36,6 +36,7 @@ export interface ApplyComplianceUnitsFormData
   total_equivalent_emission_reduced: number;
   total_equivalent_value: number;
   outstanding_balance: number;
+  confirmation_checkbox?: boolean;
 }
 
 export interface BccrUnit {

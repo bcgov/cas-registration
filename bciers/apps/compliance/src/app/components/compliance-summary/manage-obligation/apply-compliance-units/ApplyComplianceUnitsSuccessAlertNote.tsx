@@ -5,8 +5,8 @@ import { WidgetProps } from "@rjsf/utils";
 export const ApplyComplianceUnitsSuccessAlertNote = ({
   formContext,
 }: WidgetProps) => {
-  const { isSubmitted, reportingYear } = formContext;
-  if (!isSubmitted) return null;
+  const { isApplied, reportingYear } = formContext;
+  if (!isApplied) return null;
   return (
     <AlertNote icon={<CheckCircleIcon />}>
       The compliance unit(s) have been applied towards the compliance obligation

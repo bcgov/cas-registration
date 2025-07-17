@@ -5,10 +5,12 @@ import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
-  applyComplianceUnitsSchema,
+  applyComplianceUnitsBaseSchema,
+  applyComplianceUnitsConfirmationSchema,
+  applyComplianceUnitsDataSchema,
   applyComplianceUnitsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/applyComplianceUnitsSchema";
-import { getBccrComplianceUnitsAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import {
   BccrComplianceAccountResponse,
   ApplyComplianceUnitsFormData,
@@ -35,9 +37,13 @@ export default function ApplyComplianceUnitsComponent({
   const [formData, setFormData] = useState<ApplyComplianceUnitsFormData | {}>(
     {},
   );
+  type Status = "idle" | "submitting" | "submitted" | "applying" | "applied";
+
+  const [currentPhase, setCurrentPhase] = useState<
+    "initial" | "confirmation" | "compliance_data"
+  >("initial");
   const [errors, setErrors] = useState<string[] | undefined>();
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<Status>("idle");
   // Keep track of the initial outstanding balance from the API
   const [initialOutstandingBalance, setInitialOutstandingBalance] =
     useState<number>(0);
@@ -86,10 +92,32 @@ export default function ApplyComplianceUnitsComponent({
       setFormData({
         bccr_holding_account_id: newAccountId,
       });
+      setCurrentPhase("initial");
       return;
     }
 
-    // Calculate summary values if we have units
+    if (currentPhase === "compliance_data") {
+      // Only update if we have units with meaningful changes (quantity_to_be_applied changes)
+      if (
+        newFormData &&
+        Array.isArray(newFormData.bccr_units) &&
+        newFormData.bccr_units.length > 0
+      ) {
+        const summaryValues = calculateSummaryValues(
+          newFormData.charge_rate,
+          newFormData.bccr_units,
+        );
+
+        setFormData({
+          ...newFormData,
+          ...summaryValues,
+        });
+      }
+      // Don't update form data if we don't have valid units in compliance phase
+      return;
+    }
+
+    // For initial and confirmation phases, handle normally
     if (
       newFormData &&
       Array.isArray(newFormData.bccr_units) &&
@@ -111,28 +139,90 @@ export default function ApplyComplianceUnitsComponent({
     }
   };
 
+  // First submission: Get compliance data and display it
   const handleSubmit = async (
     e: IChangeEvent<ApplyComplianceUnitsFormData>,
   ) => {
-    setIsSubmitting(true);
+    setStatus("submitting");
     const response = await actionHandler(
       `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
       "POST",
       "",
-      {
-        body: JSON.stringify(e.formData),
-      },
     );
-    setIsSubmitting(false);
     if (!response || response.error) {
-      setErrors([response.error || "Failed to apply compliance units"]);
+      setStatus("idle");
+      setErrors([response.error || "Failed to get compliance units data"]);
     } else {
-      setIsSubmitted(true);
+      // Set the outstanding balance from the response
+      setInitialOutstandingBalance(response.outstanding_balance || 0);
+
+      // Update form data with the full compliance data from the response
+      setFormData((prev: ApplyComplianceUnitsFormData) => {
+        // Create a clean data object for the compliance phase
+        const cleanFormData = {
+          bccr_holding_account_id: prev.bccr_holding_account_id,
+          bccr_trading_name: prev.bccr_trading_name,
+          ...response,
+        };
+
+        setCurrentPhase("compliance_data");
+        return cleanFormData;
+      });
+
+      setStatus("submitted");
       setErrors(undefined);
     }
   };
 
-  // Check if the selected units exceed or equal 50% of the initial outstanding balance
+  // Second submission: Apply the compliance units
+  const handleApply = async () => {
+    setStatus("applying");
+    const response = await actionHandler(
+      `compliance/bccr/accounts/${(formData as ApplyComplianceUnitsFormData)
+        ?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
+      "POST",
+      "",
+      {
+        body: JSON.stringify(formData),
+      },
+    );
+    if (!response || response.error) {
+      setStatus("submitted");
+      setErrors([response.error || "Failed to apply compliance units"]);
+    } else {
+      setStatus("applied");
+      setErrors(undefined);
+    }
+  };
+
+  // Check if we should show the Submit button (when trading name is received)
+  const shouldShowSubmitButton = useMemo(() => {
+    const data = formData as ApplyComplianceUnitsFormData;
+    return !!(
+      data?.bccr_trading_name &&
+      (status === "idle" || status === "submitting")
+    );
+  }, [formData, status]);
+
+  // Check if Submit button should be enabled (when checkbox is checked)
+  const canSubmit = useMemo(() => {
+    const data = formData as ApplyComplianceUnitsFormData;
+    return !!(shouldShowSubmitButton && data?.confirmation_checkbox);
+  }, [formData, shouldShowSubmitButton]);
+
+  // Check if we should show the Apply button (after data is loaded)
+  const shouldShowApplyButton = useMemo(() => {
+    const data = formData as ApplyComplianceUnitsFormData;
+    const result = !!(
+      status === "submitted" &&
+      data?.bccr_units &&
+      data?.bccr_units.length > 0
+    );
+
+    return result;
+  }, [formData, status]);
+
+  // Calculate compliance limit status for Apply button enablement
   const complianceLimitStatus = useMemo((): ComplianceLimitStatus => {
     const totalValue = (formData as ApplyComplianceUnitsFormData)
       .total_equivalent_value;
@@ -146,21 +236,33 @@ export default function ApplyComplianceUnitsComponent({
     return "BELOW";
   }, [formData, initialOutstandingBalance]);
 
-  const canSubmit = useMemo(() => {
+  // Check if Apply button should be enabled
+  const canApply = useMemo(() => {
+    const data = formData as ApplyComplianceUnitsFormData;
     return !!(
-      (formData as ApplyComplianceUnitsFormData)?.bccr_holding_account_id &&
-      (formData as ApplyComplianceUnitsFormData)
-        ?.total_quantity_to_be_applied &&
-      (formData as ApplyComplianceUnitsFormData)?.total_quantity_to_be_applied >
-        0 &&
+      shouldShowApplyButton &&
+      data?.total_quantity_to_be_applied &&
+      data?.total_quantity_to_be_applied > 0 &&
       complianceLimitStatus !== "EXCEEDS"
     );
-  }, [formData, complianceLimitStatus]);
+  }, [formData, shouldShowApplyButton, complianceLimitStatus]);
+
+  // Select the appropriate schema based on current phase
+  const currentSchema = useMemo(() => {
+    switch (currentPhase) {
+      case "confirmation":
+        return applyComplianceUnitsConfirmationSchema;
+      case "compliance_data":
+        return applyComplianceUnitsDataSchema;
+      default:
+        return applyComplianceUnitsBaseSchema;
+    }
+  }, [currentPhase]);
 
   return (
     <FormBase
-      readonly={isSubmitted}
-      schema={applyComplianceUnitsSchema}
+      readonly={status === "applied"}
+      schema={currentSchema}
       uiSchema={applyComplianceUnitsUiSchema}
       formData={formData}
       onChange={handleChange}
@@ -168,35 +270,29 @@ export default function ApplyComplianceUnitsComponent({
       formContext={{
         reportingYear,
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
-        validateBccrAccount: (accountId: string) =>
-          getBccrComplianceUnitsAccountDetails(
-            accountId,
-            complianceReportVersionId,
-          ),
+        validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
-          if (response?.outstanding_balance) {
-            setInitialOutstandingBalance(response.outstanding_balance);
-          }
           setFormData((prev: ApplyComplianceUnitsFormData) => ({
             ...prev,
             ...response,
           }));
+          setCurrentPhase("confirmation");
         },
         onError: setErrors,
         complianceLimitStatus,
-        isSubmitted,
+        isApplied: status === "applied",
       }}
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
       <div>
-        {canSubmit && !isSubmitted && (
+        <FormAlerts errors={errors} />
+        {canApply && status !== "applied" && (
           <div className="mt-8">
             <ApplyComplianceUnitsAlertNote />
           </div>
         )}
-        <FormAlerts errors={errors} />
         <ComplianceStepButtons
-          backButtonText={isSubmitted ? "Back" : "Cancel"}
+          backButtonText={status === "applied" ? "Back" : "Cancel"}
           onBackClick={() =>
             router.push(
               `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`,
@@ -204,8 +300,20 @@ export default function ApplyComplianceUnitsComponent({
           }
           className="mt-8"
         >
-          {!isSubmitted && (
-            <SubmitButton isSubmitting={isSubmitting} disabled={!canSubmit}>
+          {status !== "applied" && shouldShowSubmitButton && (
+            <SubmitButton
+              isSubmitting={status === "submitting"}
+              disabled={!canSubmit}
+            >
+              Submit
+            </SubmitButton>
+          )}
+          {status !== "applied" && shouldShowApplyButton && (
+            <SubmitButton
+              isSubmitting={status === "applying"}
+              disabled={!canApply}
+              onClick={handleApply}
+            >
               Apply
             </SubmitButton>
           )}
