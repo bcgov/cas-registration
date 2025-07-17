@@ -1,11 +1,13 @@
 import React from "react";
 import { LIGHT_GREY_BG_COLOR } from "@bciers/styles";
+import { formatDate } from "@reporting/src/app/utils/formatDate";
 
 interface FieldDisplayProps {
   label: string;
   value: any;
   unit?: string;
   showSeparator?: boolean;
+  isDate?: boolean;
 }
 
 /**
@@ -17,10 +19,13 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   value,
   unit,
   showSeparator = true,
+  isDate = false,
 }) => {
   const formattedValue =
     value === null || value === undefined ? (
       <span>N/A</span>
+    ) : isDate ? (
+      <span>{formatDate(value, "MMM DD, YYYY")}</span>
     ) : typeof value === "boolean" ? (
       <span>{value ? "Yes" : "No"}</span>
     ) : typeof value === "string" && value.includes(";") ? (
@@ -32,12 +37,13 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
     ) : (
       <span>{value}</span>
     );
+
   return (
     <div className="w-full my-3">
       <div
         className="grid"
         style={{
-          gridTemplateColumns: "300px 300px 220px",
+          gridTemplateColumns: "400px 200px 300px",
           columnGap: "3rem",
           alignItems: "start",
         }}

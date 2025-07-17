@@ -1,5 +1,7 @@
 from typing import List, Optional, Any
 from ninja import ModelSchema
+
+from registration.models import Operation
 from reporting.models import (
     ReportVersion,
     FacilityReport,
@@ -18,8 +20,11 @@ from reporting.models import (
     ReportProductEmissionAllocation,
     EmissionCategory,
     SourceType,
+    ReportNewEntrantEmission,
+    ReportNewEntrantProduction,
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
+from reporting.schema.emission_category import EmissionSummarySchemaOut
 from reporting.service.compliance_service import ComplianceService, ComplianceData
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_emission_allocation_service import (
@@ -242,6 +247,40 @@ class ReportAdditionalDataSchema(ModelSchema):
         ]
 
 
+class ReportNewEntrantEmissionSchema(ModelSchema):
+    emission_category: str
+    category_type: str
+
+    @staticmethod
+    def resolve_emission_category(obj: ReportNewEntrantEmission) -> Optional[str]:
+        return obj.emission_category.category_name if obj.emission_category else None
+
+    @staticmethod
+    def resolve_category_type(obj: ReportNewEntrantEmission) -> Optional[str]:
+        return obj.emission_category.category_type if obj.emission_category else None
+
+    class Meta:
+        model = ReportNewEntrantEmission
+        fields = ['emission_category', 'emission']
+
+
+class ReportProductionSchema(ModelSchema):
+    product: str
+    unit: str
+
+    @staticmethod
+    def resolve_product(obj: ReportNewEntrantProduction) -> Optional[str]:
+        return obj.product.name if obj.product else None
+
+    @staticmethod
+    def resolve_unit(obj: ReportNewEntrantProduction) -> Optional[str]:
+        return obj.product.unit if obj.product else None
+
+    class Meta:
+        model = ReportNewEntrantProduction
+        fields = ['product', 'production_amount']
+
+
 class ReportComplianceSummaryProductSchema(ModelSchema):
     class Meta:
         model = ReportComplianceSummaryProduct
@@ -249,9 +288,20 @@ class ReportComplianceSummaryProductSchema(ModelSchema):
 
 
 class ReportNewEntrantSchema(ModelSchema):
+    report_new_entrant_emission: list[ReportNewEntrantEmissionSchema] = []
+    productions: list[ReportProductionSchema] = []
+
+    @staticmethod
+    def resolve_report_new_entrant_emission(obj: ReportNewEntrant) -> List[ReportNewEntrantEmission]:
+        return list(obj.report_new_entrant_emission.all())
+
+    @staticmethod
+    def resolve_productions(obj: ReportNewEntrant) -> List[ReportNewEntrantProduction]:
+        return list(obj.productions.all())
+
     class Meta:
         model = ReportNewEntrant
-        fields = "__all__"
+        fields = ['authorization_date', 'first_shipment_date', 'new_entrant_period_start', 'assertion_statement']
 
 
 class ReportElectricityImportDataSchema(ModelSchema):
@@ -279,11 +329,28 @@ class ReportVersionSchema(ModelSchema):
     report_new_entrant: List[ReportNewEntrantSchema] = []
     facility_reports: List[FacilityReportSchema] = []
     report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
+    operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
 
     @staticmethod
-    def resolve_report_compliance_summary(obj: ReportVersion) -> ComplianceData:
+    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceData]:
+        if (
+            hasattr(obj, 'report_operation')
+            and obj.report_operation
+            and obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        ):
+            return None
         return ComplianceService.get_calculated_compliance_data(obj.id)
+
+    @staticmethod
+    def resolve_operation_emission_summary(obj: ReportVersion) -> Optional[dict]:
+        if (
+            hasattr(obj, 'report_operation')
+            and obj.report_operation
+            and obj.report_operation.operation_type == Operation.Types.LFO
+        ):
+            return EmissionCategoryService.get_operation_emission_summary_form_data(obj.id)
+        return None
 
     @staticmethod
     def resolve_is_supplementary_report(obj: ReportVersion) -> bool:

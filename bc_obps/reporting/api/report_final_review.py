@@ -12,6 +12,7 @@ from ..models import (
     FacilityReport,
     ReportActivity,
     ReportNonAttributableEmissions,
+    ReportNewEntrant,
 )
 from ..schema.report_final_review import ReportVersionSchema
 from .router import router
@@ -32,10 +33,13 @@ def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple
         )
         .prefetch_related(
             "report_electricity_import_data",
-            "report_new_entrant",
             "report_compliance_summary",
             "report_products",
             "report_operation_representatives",
+            Prefetch(
+                "report_new_entrant",
+                queryset=ReportNewEntrant.objects.prefetch_related("report_new_entrant_emission", "productions"),
+            ),
             Prefetch(
                 "report_non_attributable_emissions",
                 queryset=ReportNonAttributableEmissions.objects.prefetch_related("emission_category", "gas_type"),
