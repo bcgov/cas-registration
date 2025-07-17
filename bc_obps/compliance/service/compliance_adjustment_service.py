@@ -23,13 +23,11 @@ class ComplianceAdjustmentService:
         Creates fee adjustment connecting with elicensing service.
 
         Args:
-            compliance_report_version_id: The reporting year to get the rate for
+            compliance_report_version_id: ID of the compliance report version to which the adjustment applies
+            adjustment_total: Total amount of the adjustment to be applied
 
         Returns:
-
-
-        Raises:
-            ComplianceChargeRate.DoesNotExist:
+            None
         """
 
         # Get the compliance obligation from the compliance report version

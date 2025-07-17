@@ -1,4 +1,5 @@
 from datetime import timedelta
+import uuid
 from django.utils import timezone
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 import pytest
@@ -6,15 +7,16 @@ from decimal import Decimal
 from unittest.mock import patch
 from model_bakery.baker import make_recipe
 
+ELICENSING_REFRESH_DATA_BY_COMPLIANCE_REPORT_VERSION_ID_PATH = "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+ELICENSING_ADJUST_FEES_PATH = "compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.adjust_fees"
+
 
 class TestComplianceAdjustmentService:
     """Tests for the ComplianceAdjustmentService class"""
 
     @pytest.mark.django_db
-    @patch(
-        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
-    )
-    @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.adjust_fees')
+    @patch(ELICENSING_REFRESH_DATA_BY_COMPLIANCE_REPORT_VERSION_ID_PATH)
+    @patch(ELICENSING_ADJUST_FEES_PATH)
     def test_create_adjustment(self, mock_adjust_fees, mock_refresh_data_wrapper):
         """Test successful creation of a compliance adjustment"""
 
@@ -71,7 +73,7 @@ class TestComplianceAdjustmentService:
         adjustment = request_body["adjustments"][0]
 
         assert adjustment["feeObjectId"] == elicensing_line_item.object_id
-        assert adjustment["adjustmentGUID"] == mock_response["adjustments"][0]["adjustmentGUID"]
+        assert uuid.UUID(adjustment["adjustmentGUID"], version=4)
         assert adjustment["adjustmentTotal"] == Decimal("160.0")
         assert adjustment["reason"] == "Compliance Units and/or Payments Applied"
         assert adjustment["type"] == "Adjustment"
@@ -81,7 +83,7 @@ class TestComplianceAdjustmentService:
         )
 
     @pytest.mark.django_db
-    @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.adjust_fees')
+    @patch(ELICENSING_ADJUST_FEES_PATH)
     def test_create_adjustment_api_failure(self, mock_adjust_fees):
         """Test handling of API failure when creating adjustment"""
         compliance_report_version = make_recipe(

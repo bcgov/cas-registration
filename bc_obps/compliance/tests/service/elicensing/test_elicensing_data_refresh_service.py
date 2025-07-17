@@ -11,12 +11,17 @@ from model_bakery.baker import make_recipe
 from django.utils import timezone
 from datetime import timedelta
 
+ELICENSING_QUERY_INVOICE_PATH = "compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_invoice"
+ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = (
+    "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice"
+)
+
 
 class TestElicensingOperatorService:
     """Tests for the ElicensingDataRefreshService class"""
 
     @pytest.mark.django_db
-    @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_invoice')
+    @patch(ELICENSING_QUERY_INVOICE_PATH)
     def test_refreshes_data_from_elicensing(self, mock_query_invoice):
         """Test sync_client_with_elicensing successfully creates a new client"""
         # Setup mocks
@@ -90,9 +95,7 @@ class TestElicensingOperatorService:
         assert adjustment.amount == Decimal('10.11')
 
     @pytest.mark.django_db
-    @patch(
-        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
-    )
+    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
     def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
@@ -106,9 +109,7 @@ class TestElicensingOperatorService:
         assert returned_data.invoice == invoice
 
     @pytest.mark.django_db
-    @patch(
-        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
-    )
+    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
     def test_compliance_report_version_id_wrapper_successful_refresh(self, mock_refresh):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
@@ -122,9 +123,7 @@ class TestElicensingOperatorService:
         assert returned_data.invoice == invoice
 
     @pytest.mark.django_db
-    @patch(
-        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
-    )
+    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
     def test_compliance_report_version_id_wrapper_skips_refresh(self, mock_refresh):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(seconds=30)
@@ -138,9 +137,7 @@ class TestElicensingOperatorService:
         assert returned_data.invoice == invoice
 
     @pytest.mark.django_db
-    @patch(
-        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
-    )
+    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
     def test_force_refresh_data(self, mock_refresh):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(minutes=300)
@@ -150,5 +147,5 @@ class TestElicensingOperatorService:
             compliance_report_version_id=obligation.compliance_report_version_id,
             force_refresh=True,  # should bypass last_refresh
         )
-        mock_refresh.assert_to_be_called()
+        mock_refresh.assert_called_once()
         assert returned_data.data_is_fresh == True  # noqa: E712
