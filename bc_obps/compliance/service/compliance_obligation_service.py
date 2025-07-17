@@ -243,5 +243,6 @@ class ComplianceObligationService:
             outstanding_balance=outstanding_balance_tco2e,
             equivalent_value=outstanding_balance_dollars,
             obligation_id=obligation.obligation_id,
+            penalty_status=obligation.penalty_status,
             data_is_fresh=refreshed_data.data_is_fresh,
         )
