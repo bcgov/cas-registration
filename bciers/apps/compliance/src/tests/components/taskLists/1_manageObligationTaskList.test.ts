@@ -2,17 +2,28 @@ import {
   ActivePage,
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+import { generateAutomaticOverduePenaltyTaskList } from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
+
+// Mock the automaticOverduePenaltyTaskList
+vi.mock(
+  "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList",
+  () => ({
+    generateAutomaticOverduePenaltyTaskList: vi.fn().mockReturnValue([
+      { type: "Section", title: "Compliance Obligation", isExpanded: false },
+      { type: "Section", title: "Automatic Overdue Penalty", isExpanded: true },
+    ]),
+  }),
+);
 
 describe("generateManageObligationTaskList", () => {
-  const mockComplianceReportVersionId = 123;
-  const mockReportingYear = 2024;
+  const mockComplianceReportVersionId = "123";
+  const data = { reporting_year: "2024" };
 
   it("generates task list with correct structure when not in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
-      mockReportingYear,
+      data,
     );
-
     // Check the outer section
     expect(taskList).toHaveLength(1);
     expect(taskList[0].type).toBe("Section");
@@ -51,7 +62,7 @@ describe("generateManageObligationTaskList", () => {
   it("generates task list with subsection when in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
-      mockReportingYear,
+      data,
       ActivePage.ApplyComplianceUnits,
     );
 
@@ -85,7 +96,7 @@ describe("generateManageObligationTaskList", () => {
     // Test Review Summary page
     const reviewList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
-      mockReportingYear,
+      data,
       ActivePage.ReviewComplianceSummary,
     );
     expect(reviewList[0].elements?.[0].isActive).toBe(true);
@@ -95,8 +106,8 @@ describe("generateManageObligationTaskList", () => {
     // Test Download Instructions page
     const downloadList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
-      mockReportingYear,
-      ActivePage.DownloadPaymentInstructions,
+      data,
+      ActivePage.DownloadPaymentObligationInstructions,
     );
     expect(downloadList[0].elements?.[0].isActive).toBe(false);
     expect(downloadList[0].elements?.[1].isActive).toBe(true);
@@ -104,8 +115,8 @@ describe("generateManageObligationTaskList", () => {
 
     // Test Pay and Track page
     const payList = generateManageObligationTaskList(
-      mockComplianceReportVersionId,
-      mockReportingYear,
+      mockComplianceSummaryId,
+      data,
       ActivePage.PayObligationTrackPayments,
     );
     expect(payList[0].elements?.[0].isActive).toBe(false);
@@ -113,41 +124,30 @@ describe("generateManageObligationTaskList", () => {
     expect(payList[0].elements?.[2].isActive).toBe(true);
   });
 
-  it("adds 'Review Penalty Summary' page when penaltyStatus is 'ACCRUING'", () => {
+  it("adds automatic penalty section when on PayObligationTrackPayments page with zero balance", () => {
+    // Create data with outstanding_balance = 0
+    const dataWithZeroBalance = {
+      reporting_year: "2024",
+      outstanding_balance: 0,
+    };
+
+    // Generate task list with PayObligationTrackPayments active page and zero balance
     const taskList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
-      mockReportingYear,
-      ActivePage.ReviewPenaltySummary,
-      "ACCRUING",
+      dataWithZeroBalance,
+      ActivePage.PayObligationTrackPayments,
     );
 
-    const section = taskList[0];
-    expect(section.type).toBe("Section");
-
-    const taskItems = section.elements;
-    expect(Array.isArray(taskItems)).toBe(true);
-    expect(taskItems).toHaveLength(4);
-
-    const lastItem = taskItems[3];
-    expect(lastItem).toEqual({
-      type: "Page",
-      title: "Review Penalty Summary",
-      link: `/compliance-summaries/${mockComplianceReportVersionId}/review-penalty-summary`,
-      isActive: true,
-    });
-  });
-
-  it("does NOT add 'Review Penalty Summary' page when penaltyStatus is NOT 'ACCRUING'", () => {
-    const taskList = generateManageObligationTaskList(
+    // Verify that generateAutomaticOverduePenaltyTaskList was called
+    expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
-      mockReportingYear,
-      ActivePage.ReviewPenaltySummary,
-      "NONE",
+      "2024",
+      null,
     );
 
-    const taskItems = taskList[0].elements ?? [];
-    const titles = taskItems.map((item) => item.title);
-    expect(titles).not.toContain("Review Penalty Summary");
-    expect(taskItems).toHaveLength(3);
+    // Verify that the automatic penalty section was added
+    expect(taskList).toHaveLength(2);
+    expect(taskList[0].title).toBe("2024 Compliance Summary");
+    expect(taskList[1].title).toBe("Automatic Overdue Penalty");
   });
 });

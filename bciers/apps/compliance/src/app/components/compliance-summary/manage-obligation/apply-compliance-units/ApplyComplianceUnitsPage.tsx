@@ -10,10 +10,10 @@ import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 export default async function ApplyComplianceUnitsPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
-  const { reporting_year: reportingYear } = await getReportingYear();
+  const reportingYearData = await getReportingYear();
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYear,
+    reportingYearData,
     ActivePage.ApplyComplianceUnits,
   );
 
@@ -24,7 +24,7 @@ export default async function ApplyComplianceUnitsPage({
     >
       <ApplyComplianceUnitsComponent
         complianceReportVersionId={complianceReportVersionId}
-        reportingYear={reportingYear}
+        reportingYear={reportingYearData.reporting_year}
       />
     </CompliancePageLayout>
   );

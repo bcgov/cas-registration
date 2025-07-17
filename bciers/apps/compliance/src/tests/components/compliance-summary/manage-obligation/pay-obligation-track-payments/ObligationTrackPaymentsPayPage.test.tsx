@@ -95,8 +95,8 @@ describe("ObligationTrackPaymentsPayPage", () => {
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      123,
-      2024,
+      "123",
+      expect.objectContaining({ reporting_year: 2024 }),
       ActivePage.PayObligationTrackPayments,
       "NONE",
     );

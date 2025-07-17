@@ -11,11 +11,11 @@ import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 export default async function PaymentInstructionsDownloadPage({
   compliance_report_version_id: complianceReportVersionId,
 }: HasComplianceReportVersion) {
-  const { reporting_year: reportingYear } = await getReportingYear();
+  const reportingYearData = await getReportingYear();
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYear,
-    ActivePage.DownloadPaymentInstructions,
+    reportingYearData,
+    ActivePage.DownloadPaymentObligationInstructions,
   );
 
   const invoice = await getInvoiceByComplianceReportVersionId(
