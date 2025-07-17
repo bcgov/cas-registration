@@ -8,6 +8,8 @@ interface FieldDisplayProps {
   unit?: string;
   showSeparator?: boolean;
   isDate?: boolean;
+  isDecimal?: boolean;
+  decimalPlaces?: number;
 }
 
 /**
@@ -20,6 +22,8 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   unit,
   showSeparator = true,
   isDate = false,
+  isDecimal = false,
+  decimalPlaces,
 }) => {
   const formattedValue =
     value === null || value === undefined ? (
@@ -34,6 +38,10 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
           <li key={idx}>- {item.trim()}</li>
         ))}
       </ul>
+    ) : typeof value === "number" && isDecimal ? (
+      <span>
+        {value.toFixed(decimalPlaces !== undefined ? decimalPlaces : 2)}
+      </span>
     ) : (
       <span>{value}</span>
     );

@@ -56,11 +56,15 @@ const electricityFields = (
     label: `Amount of ${type}ed electricity - ${sources} sources`,
     key: `${type}_${sources}_electricity`,
     unit: "GWh",
+    isDecimal: true,
+    decimalPlaces: 3,
   },
   {
     label: `Emissions from ${sources} ${type}s`,
     key: `${type}_${sources}_emissions`,
     unit: "tCO₂e",
+    isDecimal: true,
+    decimalPlaces: 1,
   },
 ];
 
@@ -121,11 +125,15 @@ export const eioFields = [
     label: "Amount of electricity categorized as Canadian Entitlement Power",
     key: "canadian_entitlement_electricity",
     unit: "GWh",
+    isDecimal: true,
+    decimalPlaces: 3,
   },
   {
     label: "Emissions from Canadian Entitlement Power",
     key: "canadian_entitlement_emissions",
     unit: "tCO₂e",
+    isDecimal: true,
+    decimalPlaces: 1,
   },
 ];
 export const reportNewEntrantFields = (
