@@ -56,7 +56,7 @@ class ComplianceAdjustmentService:
                 "adjustmentGUID": str(uuid.uuid4()),
                 "adjustmentTotal": float(adjustment_total),
                 "date": datetime.now().strftime("%Y-%m-%d"),
-                "reason": "Applied compliance units, obligation is reduced",
+                "reason": "Compliance Units and/or Payments Applied",
                 "type": "Adjustment",
             }
         ]
@@ -73,7 +73,6 @@ class ComplianceAdjustmentService:
         except Exception as e:
             logger.error(f"Failed to adjust fees: {str(e)}")
             raise ValueError("Failed to adjust fees")
-
         # Force refresh local wrapper to ensure local tables are up-to-date
         if response.get("clientObjectId"):
             ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(

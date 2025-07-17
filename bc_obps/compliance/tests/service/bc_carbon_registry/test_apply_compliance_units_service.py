@@ -219,7 +219,9 @@ class TestApplyComplianceUnitsService:
             ApplyComplianceUnitsService._validate_quantity_limits(units)
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_account_service')
-    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment')
+    @patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment'
+    )
     def test_apply_compliance_units_success(self, mock_create_adjustment, mock_bccr_service):
         # Arrange
         compliance_report_version = baker.make_recipe(
@@ -272,7 +274,9 @@ class TestApplyComplianceUnitsService:
         assert unit2["id"] == "unit-2"
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_account_service')
-    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment')
+    @patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment'
+    )
     def test_apply_compliance_units_filters_zero_quantities(self, mock_create_adjustment, mock_bccr_service):
         # Arrange
         account_id = "123"
@@ -327,7 +331,9 @@ class TestApplyComplianceUnitsService:
         assert "BCE-2023-0002" not in serial_numbers
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_account_service')
-    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment')
+    @patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment'
+    )
     def test_apply_compliance_units_validation_error(self, mock_create_adjustment, mock_bccr_service):
         # Arrange
         account_id = "123"
@@ -354,7 +360,9 @@ class TestApplyComplianceUnitsService:
         mock_create_adjustment.assert_not_called()
 
     @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_account_service')
-    @patch('compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment')
+    @patch(
+        'compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment'
+    )
     def test_apply_compliance_units_all_zero_quantities(self, mock_create_adjustment, mock_bccr_service):
         # Arrange
         account_id = "123"

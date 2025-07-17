@@ -136,3 +136,19 @@ class TestElicensingOperatorService:
         mock_refresh.assert_not_called()
         assert returned_data.data_is_fresh == True  # noqa: E712
         assert returned_data.invoice == invoice
+
+    @pytest.mark.django_db
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
+    )
+    def test_force_refresh_data(self, mock_refresh):
+        invoice = make_recipe(
+            'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(minutes=300)
+        )
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id,
+            force_refresh=True,  # should bypass last_refresh
+        )
+        mock_refresh.assert_to_be_called()
+        assert returned_data.data_is_fresh == True  # noqa: E712

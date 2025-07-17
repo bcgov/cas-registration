@@ -9,9 +9,7 @@ VALID_ACCOUNT_ID = "123456789012345"
 VALID_COMPLIANCE_REPORT_VERSION_ID = 1
 APPLY_COMPLIANCE_UNITS_SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_apply_compliance_units_page_data"
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
-APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.apply_compliance_units"
-)
+APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.apply_compliance_units"
 CREATE_ADJUSTMENT_PATH = (
     "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment"
 )
