@@ -125,14 +125,13 @@ export interface ObligationData {
   outstanding_balance: number;
   equivalent_value: number;
   obligation_id: string;
-  payments: PaymentData;
+  payment_data: PaymentData;
+  penalty_status?: string;
+  data_is_fresh?: string;
 }
 
-export interface PayObligationTrackPaymentsFormData {
-  outstanding_balance: number;
-  equivalent_value: number;
+export interface PayObligationTrackPaymentsFormData extends ObligationData {
   payments: Payment[];
-  reporting_year: number;
 }
 
 export interface ComplianceSummary {

@@ -34,6 +34,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             outstanding_balance=Decimal("1000.00"),
             equivalent_value=Decimal("40000.00"),
             obligation_id="23-0001-1-1",
+            penalty_status="NONE",
             data_is_fresh=True,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
@@ -60,9 +61,9 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         assert response_data["equivalent_value"] == "40000.00"
         assert response_data["obligation_id"] == "23-0001-1-1"
         assert response_data["data_is_fresh"] is True
-        assert response_data["payments"]["data_is_fresh"] is True
-        assert response_data["payments"]["rows"] == []
-        assert response_data["payments"]["row_count"] == 0
+        assert response_data["payment_data"]["data_is_fresh"] is True
+        assert response_data["payment_data"]["rows"] == []
+        assert response_data["payment_data"]["row_count"] == 0
 
         # Verify services were called with correct parameters
         mock_get_obligation_data.assert_called_once_with(compliance_report_version.id)
@@ -87,6 +88,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             outstanding_balance=Decimal("0.00"),
             equivalent_value=Decimal("0.00"),
             obligation_id="23-0001-1-1",
+            penalty_status="NONE",
             data_is_fresh=True,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
@@ -132,6 +134,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             outstanding_balance=Decimal("999999.99"),
             equivalent_value=Decimal("39999999.60"),
             obligation_id="24-0999-999-999",
+            penalty_status="NONE",
             data_is_fresh=True,
         )
         mock_get_obligation_data.return_value = mock_obligation_data

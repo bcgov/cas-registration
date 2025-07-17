@@ -15,7 +15,7 @@ export const PaymentStatusNote = ({
   if (isPaid) {
     return (
       <AlertNote icon={<Check width={20} height={20} />}>
-        Your payments have been received and applied successfully. Your
+        Your payment(s) have been received and applied successfully. Your
         compliance obligation has been fully met.
       </AlertNote>
     );

@@ -26,20 +26,20 @@ def get_obligation_by_compliance_report_version_id(
     Get obligation data with payments for a compliance report version.
     Returns: outstanding balance, reporting year, tCO2e equivalent, obligation ID, and payments.
     """
-    obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(compliance_report_version_id)
-    payment_data = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
+    payments = ComplianceDashboardService.get_compliance_obligation_payments_by_compliance_report_version_id(
         compliance_report_version_id=compliance_report_version_id
     )
+    obligation_data = ComplianceObligationService.get_obligation_data_by_report_version(compliance_report_version_id)
 
-    payment_list = ElicensingPaymentListOut(
-        data_is_fresh=payment_data.data_is_fresh,
-        rows=list(payment_data.data),  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
-        row_count=len(payment_data.data),
+    payment_data = ElicensingPaymentListOut(
+        data_is_fresh=payments.data_is_fresh,
+        rows=list(payments.data),  # type: ignore [arg-type] # Mypy does not recognize queryset as iterable. Function is working as expected
+        row_count=len(payments.data),
     )
 
     response = ObligationWithPaymentsOut(
         **asdict(obligation_data),
-        payments=payment_list,
+        payment_data=payment_data,
     )
 
     return 200, response

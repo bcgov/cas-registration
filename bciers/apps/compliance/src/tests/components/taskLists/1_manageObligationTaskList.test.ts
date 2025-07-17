@@ -112,4 +112,42 @@ describe("generateManageObligationTaskList", () => {
     expect(payList[0].elements?.[1].isActive).toBe(false);
     expect(payList[0].elements?.[2].isActive).toBe(true);
   });
+
+  it("adds 'Review Penalty Summary' page when penaltyStatus is 'ACCRUING'", () => {
+    const taskList = generateManageObligationTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+      ActivePage.ReviewPenaltySummary,
+      "ACCRUING",
+    );
+
+    const section = taskList[0];
+    expect(section.type).toBe("Section");
+
+    const taskItems = section.elements;
+    expect(Array.isArray(taskItems)).toBe(true);
+    expect(taskItems).toHaveLength(4);
+
+    const lastItem = taskItems[3];
+    expect(lastItem).toEqual({
+      type: "Page",
+      title: "Review Penalty Summary",
+      link: `/compliance-summaries/${mockComplianceSummaryId}/review-penalty-summary`,
+      isActive: true,
+    });
+  });
+
+  it("does NOT add 'Review Penalty Summary' page when penaltyStatus is NOT 'ACCRUING'", () => {
+    const taskList = generateManageObligationTaskList(
+      mockComplianceSummaryId,
+      mockReportingYear,
+      ActivePage.ReviewPenaltySummary,
+      "NONE",
+    );
+
+    const taskItems = taskList[0].elements ?? [];
+    const titles = taskItems.map((item) => item.title);
+    expect(titles).not.toContain("Review Penalty Summary");
+    expect(taskItems).toHaveLength(3);
+  });
 });

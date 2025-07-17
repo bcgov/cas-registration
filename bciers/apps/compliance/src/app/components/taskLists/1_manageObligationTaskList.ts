@@ -5,27 +5,31 @@ export enum ActivePage {
   "ApplyComplianceUnits",
   "DownloadPaymentInstructions",
   "PayObligationTrackPayments",
+  "ReviewPenaltySummary",
 }
 
 export const generateManageObligationTaskList: (
   complianceSummaryId: string,
   reportingYear: number,
-  activeIndex?: ActivePage,
+  defaultActiveIndex?: ActivePage,
+  penaltyStatus?: string,
 ) => TaskListElement[] = (
   complianceSummaryId,
   reportingYear,
-  activeIndex = 0,
+  defaultActiveIndex,
+  penaltyStatus,
 ) => {
-  const taskItems = [
+  const activeIndex = defaultActiveIndex ?? 0;
+  const taskItems: TaskListElement[] = [
     activeIndex === ActivePage.ApplyComplianceUnits
       ? {
-          type: "Subsection" as const,
+          type: "Subsection",
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isExpanded: true,
           elements: [
             {
-              type: "Page" as const,
+              type: "Page",
               title: "Apply Compliance Units",
               link: `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
               isActive: true,
@@ -33,24 +37,34 @@ export const generateManageObligationTaskList: (
           ],
         }
       : {
-          type: "Page" as const,
+          type: "Page",
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isActive: activeIndex === ActivePage.ReviewComplianceSummary,
         },
     {
-      type: "Page" as const,
+      type: "Page",
       title: "Download Payment Instructions",
       link: `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`,
       isActive: activeIndex === ActivePage.DownloadPaymentInstructions,
     },
     {
-      type: "Page" as const,
+      type: "Page",
       title: "Pay Obligation and Track Payment(s)",
       link: `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`,
       isActive: activeIndex === ActivePage.PayObligationTrackPayments,
     },
   ];
+
+  // Conditionally add the Review Penalty Summary page
+  if (penaltyStatus === "ACCRUING") {
+    taskItems.push({
+      type: "Page",
+      title: "Review Penalty Summary",
+      link: `/compliance-summaries/${complianceSummaryId}/review-penalty-summary`,
+      isActive: activeIndex === ActivePage.ReviewPenaltySummary,
+    });
+  }
 
   return [
     {

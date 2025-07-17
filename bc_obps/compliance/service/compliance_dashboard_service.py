@@ -132,7 +132,7 @@ class ComplianceDashboardService:
         """
 
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=compliance_report_version_id
+            compliance_report_version_id=compliance_report_version_id, force_refresh=True
         )
         payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
 
