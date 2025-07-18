@@ -154,6 +154,7 @@ class TestUtils:
         assert facility.well_authorization_numbers.count() == (
             expect_well_authorization_numbers if expect_well_authorization_numbers is not None else 0
         )
+
         assert Facility.objects.count() == 1
         assert Address.objects.count() == (2 if expect_address else 1)  # 1 for the operator; 0-1 for the facility
         assert WellAuthorizationNumber.objects.count() == (
