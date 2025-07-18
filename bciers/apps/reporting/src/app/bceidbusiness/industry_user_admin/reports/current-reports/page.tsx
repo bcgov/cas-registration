@@ -1,8 +1,8 @@
 import { generateMetadata } from "@bciers/components/layout/RootLayout";
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
-import PastReportsPage from "@reporting/src/app/components/operations/PastReportsPage";
+import OperationsPage from "@reporting/src/app/components/operations/OperationsPage";
 import ReportsBasePage from "@reporting/src/app/components/operations/ReportsBasePage";
-import { PastReportsSearchParams } from "@reporting/src/app/components/operations/types";
+import { OperationsSearchParams } from "@reporting/src/app/components/operations/types";
 
 const title = "Reports";
 export const metadata = generateMetadata(title);
@@ -10,12 +10,12 @@ export const metadata = generateMetadata(title);
 function ReportsPage({
   searchParams,
 }: {
-  searchParams: PastReportsSearchParams;
+  searchParams: OperationsSearchParams;
 }) {
   return (
-    <ReportsBasePage activeTab={1}>
+    <ReportsBasePage activeTab={0}>
       <div className="flex flex-col">
-        <PastReportsPage searchParams={searchParams || {}} />
+        <OperationsPage searchParams={searchParams || {}} />
       </div>
     </ReportsBasePage>
   );

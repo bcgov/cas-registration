@@ -17,17 +17,25 @@ class ReportingDashboardOperationOut(ModelSchema):
     report_submitted_by: Optional[str] = None
     operation_name: Optional[str] = None
     report_updated_at: Optional[datetime] = None
-    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
 
     class Meta:
         model = Operation
         fields = ["id", "name"]
 
 
+class ReportingDashboardCurrentOperationOut(ReportingDashboardOperationOut):
+    bcghg_id: Optional[str] = Field(None, alias="bcghg_id.id")
+
+
+class ReportingDashboardPastOperationOut(ReportingDashboardOperationOut):
+    reporting_year_id: Optional[int] = Field(None, alias="reporting_year_id.reporting_year")
+
+
 class ReportingDashboardOperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
     operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
     report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})
+    reporting_year_id: Optional[int] = Field(None, json_schema_extra={'q': 'report__reporting_year__icontains'})
 
     def filter_report_status(self, value: str) -> Q:
         """

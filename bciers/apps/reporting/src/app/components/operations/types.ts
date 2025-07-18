@@ -10,6 +10,7 @@ export interface OperationRow {
 export interface OperationsSearchParams {
   [key: string]: string | number | undefined;
   bcghg_id?: string;
+  reporting_year_id?: number;
   name?: string;
   page?: number;
   sort_field?: string;
@@ -33,4 +34,25 @@ export interface ContactRow {
   first_name: string;
   last_name: string;
   email: string;
+}
+
+export interface PastReportsSearchParams {
+  [key: string]: string | number | undefined;
+  reporting_year_id?: number;
+  operation_name?: string;
+  page?: number;
+  sort_field?: string;
+  sort_order?: string;
+  report_status?: string;
+  report_updated_at?: string;
+  report_submitted_by?: string;
+}
+
+export interface PastReportsRow {
+  id: number;
+  reporting_year_id: number;
+  operation_name: string;
+  report_updated_at: string;
+  report_submitted_by: string;
+  report_status: string;
 }
