@@ -8,7 +8,7 @@ import {
   applyComplianceUnitsSchema,
   applyComplianceUnitsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/applyComplianceUnitsSchema";
-import { getBccrComplianceUnitsAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
+import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import {
   BccrComplianceAccountResponse,
   ApplyComplianceUnitsFormData,
@@ -32,9 +32,9 @@ export default function ApplyComplianceUnitsComponent({
   reportingYear,
 }: Readonly<ApplyComplianceUnitsComponentProps>) {
   const router = useRouter();
-  const [formData, setFormData] = useState<ApplyComplianceUnitsFormData | {}>(
-    {},
-  );
+  const [formData, setFormData] = useState<ApplyComplianceUnitsFormData | {}>({
+    bccr_trading_name: "-",
+  });
   const [errors, setErrors] = useState<string[] | undefined>();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,10 +81,11 @@ export default function ApplyComplianceUnitsComponent({
       ?.bccr_holding_account_id;
     const newAccountId = newFormData?.bccr_holding_account_id;
 
-    // If account ID changed, clear everything except the account ID
+    // If account ID changed, clear everything except the account ID and reset trading name to "-"
     if (prevAccountId !== newAccountId) {
       setFormData({
         bccr_holding_account_id: newAccountId,
+        bccr_trading_name: "-",
       });
       return;
     }
@@ -168,12 +169,9 @@ export default function ApplyComplianceUnitsComponent({
       formContext={{
         reportingYear,
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
-        validateBccrAccount: (accountId: string) =>
-          getBccrComplianceUnitsAccountDetails(accountId, complianceSummaryId),
+        validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
-          if (response?.outstanding_balance) {
-            setInitialOutstandingBalance(response.outstanding_balance);
-          }
+          setInitialOutstandingBalance(response?.outstanding_balance || 0);
           setFormData((prev: ApplyComplianceUnitsFormData) => ({
             ...prev,
             ...response,
