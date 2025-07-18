@@ -16,6 +16,7 @@ export default async function Operations({
   if (!operations) {
     return <div>No operations data in database.</div>;
   }
+  console.log("Operations data fetched:", operations);
   // Render the DataGrid component
   return (
     <div className="mt-5">

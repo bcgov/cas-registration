@@ -69,7 +69,7 @@ class OperationDataAccessService:
         return operation
 
     @classmethod
-    def get_all_operations_for_user(cls, user: User) -> QuerySet[Operation]:
+    def get_all_current_operations_for_user(cls, user: User) -> QuerySet[Operation]:
         if user.is_irc_user():
             # IRC users can see all operations except ones with status of "Not Started" or "Draft"
             return (
@@ -88,3 +88,14 @@ class OperationDataAccessService:
             .filter(operator_id=user_operator.operator_id)
             .only("id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id")
         )
+
+    # @classmethod
+    # def get_all_operations_for_operator(cls, operator_id: UUID) -> QuerySet[Operation]:
+    #     """
+    #     Returns all operations for a given operator.
+    #     """
+    #     return (
+    #         Operation.objects.select_related("operator", "bc_obps_regulated_operation")
+    #         .filter(operator_id=operator_id)
+    #         .only("id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id")
+    #     )
