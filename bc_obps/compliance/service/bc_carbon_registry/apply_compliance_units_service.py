@@ -1,5 +1,6 @@
 from dataclasses import asdict
 from typing import Dict, List, Optional, Any
+from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from common.exceptions import UserError
 from compliance.dataclass import ComplianceUnitsPageData, BCCRUnit, TransferComplianceUnitsPayload, MixedUnit
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
@@ -116,12 +117,15 @@ class ApplyComplianceUnitsService:
                 )
 
     @classmethod
-    def apply_compliance_units(cls, account_id: str, payload: Dict[str, Any]) -> None:
+    def apply_compliance_units(
+        cls, account_id: str, compliance_report_version_id: int, payload: Dict[str, Any]
+    ) -> None:
         """
         Applies compliance units to a BCCR compliance account. (Transfers units from holding account to compliance account)
 
         Args:
             account_id (str): BCCR holding account ID.
+            compliance_report_version_id (int): Compliance report version ID.
             payload (Dict[str, Any]): Data model for the Apply Compliance Units page data as dictionary.
         """
         cls._validate_quantity_limits(payload["bccr_units"])
@@ -139,7 +143,12 @@ class ApplyComplianceUnitsService:
                 if unit.get("quantity_to_be_applied") and unit["quantity_to_be_applied"] > 0
             ],
         )
-        bccr_account_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
+        response = bccr_account_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
+        if response.get("success"):
+            ComplianceAdjustmentService.create_adjustment(
+                compliance_report_version_id=compliance_report_version_id,
+                adjustment_total=Decimal(payload["total_equivalent_value"]),
+            )
 
     @classmethod
     def get_applied_compliance_units_data(cls, compliance_report_version_id: int) -> List[BCCRUnit]:

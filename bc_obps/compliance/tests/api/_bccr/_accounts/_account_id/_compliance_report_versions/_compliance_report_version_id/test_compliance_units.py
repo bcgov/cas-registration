@@ -10,6 +10,9 @@ VALID_COMPLIANCE_REPORT_VERSION_ID = 1
 APPLY_COMPLIANCE_UNITS_SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_apply_compliance_units_page_data"
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.apply_compliance_units"
+CREATE_ADJUSTMENT_PATH = (
+    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment"
+)
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent database queries
@@ -142,10 +145,12 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_apply_compliance_units_success(self, mock_permission, mock_apply_compliance_units):
+    @patch(CREATE_ADJUSTMENT_PATH)
+    def test_apply_compliance_units_success(self, mock_create_adjustment, mock_permission, mock_apply_compliance_units):
         # Arrange
         mock_permission.return_value = True
         mock_apply_compliance_units.return_value = None
+        mock_create_adjustment.return_value = None
 
         # Create test data
         test_units = [
@@ -171,6 +176,7 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
             "bccr_holding_account_id": VALID_ACCOUNT_ID,
             "bccr_compliance_account_id": "987654321098765",
             "bccr_units": test_units,
+            "total_equivalent_value": Decimal("80.00"),
         }
 
         # Act
@@ -188,15 +194,20 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
         # Verify service was called with correct parameters
         mock_apply_compliance_units.assert_called_once_with(
             account_id=VALID_ACCOUNT_ID,
+            compliance_report_version_id=VALID_COMPLIANCE_REPORT_VERSION_ID,
             payload=payload,
         )
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_apply_compliance_units_with_units_having_zero_quantity(self, mock_permission, mock_apply_compliance_units):
+    @patch(CREATE_ADJUSTMENT_PATH)
+    def test_apply_compliance_units_with_units_having_zero_quantity(
+        self, mock_create_adjustment, mock_permission, mock_apply_compliance_units
+    ):
         # Arrange
         mock_permission.return_value = True
         mock_apply_compliance_units.return_value = None
+        mock_create_adjustment.return_value = None
 
         test_units = [
             {
@@ -229,6 +240,7 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
             "bccr_holding_account_id": VALID_ACCOUNT_ID,
             "bccr_compliance_account_id": "987654321098765",
             "bccr_units": test_units,
+            "total_equivalent_value": Decimal("80.00"),
         }
 
         # Act
@@ -246,6 +258,7 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
         # Verify service was called with units having zero/None quantities
         mock_apply_compliance_units.assert_called_once_with(
             account_id=VALID_ACCOUNT_ID,
+            compliance_report_version_id=VALID_COMPLIANCE_REPORT_VERSION_ID,
             payload=payload,
         )
 

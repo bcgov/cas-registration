@@ -27,7 +27,7 @@ class ElicensingDataRefreshService:
 
     @classmethod
     def refresh_data_wrapper_by_compliance_report_version_id(
-        cls, compliance_report_version_id: int
+        cls, compliance_report_version_id: int, force_refresh: bool = False
     ) -> RefreshWrapperReturn:
         data_is_fresh = True
         invoice = ComplianceObligation.objects.get(
@@ -36,7 +36,11 @@ class ElicensingDataRefreshService:
         if not invoice:
             raise ValidationError(f"No related invoice found for report version ID: {compliance_report_version_id}")
         # Limit calls successive calls to refresh an invoice from the elicensing API to once per 15mins
-        if invoice.last_refreshed is not None and invoice.last_refreshed > timezone.now() - timedelta(seconds=900):
+        if (
+            invoice.last_refreshed is not None
+            and (invoice.last_refreshed > timezone.now() - timedelta(seconds=900))
+            and not force_refresh
+        ):
             return RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
         try:
             ElicensingDataRefreshService.refresh_data_by_invoice(

@@ -44,5 +44,7 @@ def apply_compliance_units(
     compliance_report_version_id: int,
     payload: ApplyComplianceUnitsIn,
 ) -> Tuple[Literal[200], DictStrAny]:
-    ApplyComplianceUnitsService.apply_compliance_units(account_id=account_id, payload=payload.model_dump())
+    ApplyComplianceUnitsService.apply_compliance_units(
+        account_id=account_id, compliance_report_version_id=compliance_report_version_id, payload=payload.model_dump()
+    )
     return 200, {"success": True}
