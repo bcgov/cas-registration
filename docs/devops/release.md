@@ -15,7 +15,7 @@ To make this process easy, we use [`release-it`](https://github.com/release-it/r
 When you're ready to make a release, apply the following steps:
 
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
-2. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. This ensures no other changes are made to the `develop` branch while the release is in progress.
+2. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
 3. create a `chore/release` branch and create the upstream
 4. reset database with `make reset_db` (from `cas-registration/bc_obps`) for proper creation of migration files
 5. run `make release` (from `cas-registration`) and follow the prompts - This will:
@@ -23,7 +23,8 @@ When you're ready to make a release, apply the following steps:
    - bump the version number
    - generate a change log
 6. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, common, and RLS)
-7. once the pull request is approved and merged, and all required checks on the merge commit have passed:
+7. once the pull request is approved, if you disabled merging to `develop`, temporarily re-enable merging so you can merge the release PR, and then disable merging again
+8. once all required checks on the merge commit have passed:
 
 - update your local develop branch
 - fast-forward the `main` branch using:
