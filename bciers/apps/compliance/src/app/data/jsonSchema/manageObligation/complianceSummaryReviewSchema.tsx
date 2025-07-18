@@ -83,6 +83,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
     },
   },
   equivalent_value: {
+    ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
   },
   applied_units_summary: {
@@ -108,6 +109,7 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   outstanding_obligation_header: headerUiConfig,
   outstanding_balance_tco2e: tco2eUiConfig,
   outstanding_balance_equivalent_value: {
+    ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
   },
   // TODO in #227
@@ -130,18 +132,23 @@ export const complianceSummaryReviewUiSchema: UiSchema = {
   // },
   // days_late: commonReadOnlyOptions,
   // accumulated_penalty: {
+  //   ...commonReadOnlyOptions,
   //   "ui:widget": "ReadOnlyCurrencyWidget",
   // },
   // accumulated_compounding: {
+  //   ...commonReadOnlyOptions,
   //   "ui:widget": "ReadOnlyCurrencyWidget",
   // },
   // penalty_today: {
+  //   ...commonReadOnlyOptions,
   //   "ui:widget": "ReadOnlyCurrencyWidget",
   // },
   // faa_interest: {
+  //   ...commonReadOnlyOptions,
   //   "ui:widget": "ReadOnlyCurrencyWidget",
   // },
   // total_amount: {
+  //   ...commonReadOnlyOptions,
   //   "ui:widget": "ReadOnlyCurrencyWidget",
   // },
 };

@@ -33,7 +33,7 @@ describe("PaymentStatusNote", () => {
     const alertNote = screen.getByTestId("alert-note");
     expect(alertNote).toBeVisible();
     expect(alertNote).toHaveTextContent(
-      "Your payments have been received and applied successfully. Your compliance obligation has been fully met.",
+      "Your payment(s) have been received and applied successfully. Your compliance obligation has been fully met.",
     );
 
     const checkIcon = screen.getByTestId("check-icon");
@@ -48,7 +48,7 @@ describe("PaymentStatusNote", () => {
     const alertNote = screen.getByTestId("alert-note");
     expect(alertNote).toBeVisible();
     expect(alertNote).toHaveTextContent(
-      "Please pay the outstanding compliance obligation following the payment instructions. Once your payments are received and applied, the outstanding compliance obligation balance will be updated below.",
+      "Please pay the outstanding compliance obligation following the payment instructions. Once your payment(s) are received and applied, the outstanding compliance obligation balance will be updated below.",
     );
 
     expect(screen.queryByTestId("check-icon")).not.toBeInTheDocument();
@@ -60,7 +60,7 @@ describe("PaymentStatusNote", () => {
     const alertNote = screen.getByTestId("alert-note");
     expect(alertNote).toBeVisible();
     expect(alertNote).toHaveTextContent(
-      "Please pay the outstanding compliance obligation following the payment instructions. Once your payments are received and applied, the outstanding compliance obligation balance will be updated below.",
+      "Please pay the outstanding compliance obligation following the payment instructions. Once your payment(s) are received and applied, the outstanding compliance obligation balance will be updated below.",
     );
   });
 });

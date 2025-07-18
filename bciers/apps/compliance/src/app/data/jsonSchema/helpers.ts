@@ -60,10 +60,3 @@ export const tco2eUiConfig = {
     suffix: "\u00A0tCO2e",
   },
 };
-
-export const currencyUiConfig = {
-  ...commonReadOnlyOptions,
-  "ui:options": {
-    prefix: "$",
-  },
-};

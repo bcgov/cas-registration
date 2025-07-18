@@ -15,7 +15,7 @@ export const PaymentStatusNote = ({
   if (isPaid) {
     return (
       <AlertNote icon={<Check width={20} height={20} />}>
-        Your payments have been received and applied successfully. Your
+        Your payment(s) have been received and applied successfully. Your
         compliance obligation has been fully met.
       </AlertNote>
     );
@@ -24,8 +24,8 @@ export const PaymentStatusNote = ({
   return (
     <AlertNote icon={<TimeIcon fill={BC_GOV_YELLOW} width="20" height="20" />}>
       Please pay the outstanding compliance obligation following the payment
-      instructions. Once your payments are received and applied, the outstanding
-      compliance obligation balance will be updated below.
+      instructions. Once your payment(s) are received and applied, the
+      outstanding compliance obligation balance will be updated below.
     </AlertNote>
   );
 };

@@ -123,9 +123,11 @@ export const applyComplianceUnitsUiSchema: UiSchema = {
   total_quantity_to_be_applied: commonReadOnlyOptions,
   total_equivalent_emission_reduced: tco2eUiConfig,
   total_equivalent_value: {
+    ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
   },
   outstanding_balance: {
+    ...commonReadOnlyOptions,
     "ui:widget": "ReadOnlyCurrencyWidget",
   },
 };

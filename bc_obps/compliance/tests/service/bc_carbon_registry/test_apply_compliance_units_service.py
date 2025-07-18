@@ -139,6 +139,7 @@ class TestApplyComplianceUnitsService:
             outstanding_balance=Decimal("400.00"),  # tCO2e equivalent
             equivalent_value=Decimal("30000.00"),  # dollars
             obligation_id="23-0001-1-1",
+            penalty_status="NONE",
             data_is_fresh=True,
         )
         mock_compliance_obligation_service.get_obligation_data_by_report_version.return_value = mock_obligation_data

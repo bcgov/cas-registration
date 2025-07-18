@@ -7,10 +7,9 @@ import {
   readOnlyNumberField,
   tco2eUiConfig,
   headerUiConfig,
-  currencyUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { PaymentStatusNoteWidget } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNoteWidget";
-import { AutomaticOverduePenaltyNote } from "../../../components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
+import { PaymentStatusNoteWidget } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/PaymentStatusNoteWidget";
+import { AutomaticOverduePenaltyNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/AutomaticOverduePenaltyNote";
 import { WidgetProps } from "@rjsf/utils";
 
 // Custom widget for payment headers
@@ -25,8 +24,14 @@ const PaymentHeaderWidget = (props: WidgetProps) => {
 
 export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
   type: "object",
-  title: "Pay Obligation and Track Payments",
+  title: "Pay Obligation and Track Payment(s)",
   properties: {
+    // This will be used internally but hidden from the UI
+    penalty_status: {
+      type: "string",
+      enum: ["NONE", "ACCRUING", "PAID"],
+    },
+
     // Outstanding Compliance Obligation Section
     outstanding_obligation_header: readOnlyObjectField(
       "Outstanding Compliance Obligation",
@@ -47,16 +52,32 @@ export const createPayObligationTrackPaymentsSchema = (): RJSFSchema => ({
         },
       },
     },
-
-    // Penalty Alert Section
-    penalty_alert: readOnlyStringField(),
   },
+
+  allOf: [
+    {
+      if: {
+        properties: {
+          penalty_status: { const: "ACCRUING" },
+        },
+        required: ["penalty_status"],
+      },
+      then: {
+        properties: {
+          penalty_alert: readOnlyStringField(),
+        },
+        required: ["penalty_alert"],
+      },
+    },
+  ],
 });
 
 export const payObligationTrackPaymentsUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
-
+  penalty_status: {
+    "ui:widget": "hidden",
+  },
   // Outstanding Compliance Obligation Section
   outstanding_obligation_header: headerUiConfig,
   payment_status_note: {
@@ -67,10 +88,14 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
     },
   },
   outstanding_balance: tco2eUiConfig,
-  equivalent_value: currencyUiConfig,
+  equivalent_value: {
+    ...commonReadOnlyOptions,
+    "ui:widget": "ReadOnlyCurrencyWidget",
+  },
 
   // Payments Section
   payments: {
+    "ui:FieldTemplate": FieldTemplate,
     "ui:options": {
       orderable: false,
       addable: false,
@@ -85,8 +110,14 @@ export const payObligationTrackPaymentsUiSchema: UiSchema = {
           label: false,
         },
       },
-      received_date: commonReadOnlyOptions,
-      amount: currencyUiConfig,
+      received_date: {
+        ...commonReadOnlyOptions,
+        "ui:widget": "ReadOnlyDateWidget",
+      },
+      amount: {
+        ...commonReadOnlyOptions,
+        "ui:widget": "ReadOnlyCurrencyWidget",
+      },
     },
   },
 

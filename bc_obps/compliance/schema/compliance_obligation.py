@@ -21,5 +21,6 @@ class ObligationWithPaymentsOut(Schema):
     outstanding_balance: Decimal
     equivalent_value: Decimal
     obligation_id: str
+    penalty_status: str
     data_is_fresh: bool
-    payments: ElicensingPaymentListOut
+    payment_data: ElicensingPaymentListOut

@@ -1,23 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { ObligationTrackPaymentsComponent } from "@/compliance/src/app/components/compliance-summary/manage-obligation/pay-obligation-track-payments/ObligationTrackPaymentsComponent";
 
-// Mock the FormBase component
-vi.mock("@bciers/components/form", () => ({
-  FormBase: ({
-    children,
-    formData,
-  }: {
-    children: React.ReactNode;
-    formData: any;
-  }) => (
-    <div data-testid="form-base">
-      <div data-testid="form-data">{JSON.stringify(formData)}</div>
-      {children}
-    </div>
-  ),
-}));
-
-// Mock the ComplianceStepButtons component
 vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
   default: ({
     backUrl,
@@ -37,21 +20,24 @@ vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
   ),
 }));
 
-// Mock the schema creation functions
 vi.mock(
   "@/compliance/src/app/data/jsonSchema/manageObligation/payObligationTrackPaymentsSchema",
-  () => ({
-    createPayObligationTrackPaymentsSchema: vi
-      .fn()
-      .mockReturnValue({ type: "object" }),
-    payObligationTrackPaymentsUiSchema: {},
-  }),
+  async () => {
+    const actual = await vi.importActual<
+      typeof import("@/compliance/src/app/data/jsonSchema/manageObligation/payObligationTrackPaymentsSchema")
+    >(
+      "@/compliance/src/app/data/jsonSchema/manageObligation/payObligationTrackPaymentsSchema",
+    );
+    return {
+      ...actual,
+    };
+  },
 );
 
 const mockData = {
   reporting_year: "2024",
   outstanding_balance: 0.0,
-  equivalent_value: "$0.00",
+  equivalent_value: 0.0,
   payments: [
     {
       id: 1,
@@ -75,11 +61,24 @@ describe("ObligationTrackPaymentsComponent", () => {
       />,
     );
 
-    const formBase = screen.getByTestId("form-base");
-    expect(formBase).toBeVisible();
+    // Check that the main form label is present
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Pay Obligation and Track Payment(s)",
+    );
 
-    const formData = screen.getByTestId("form-data");
-    expect(formData).toHaveTextContent(JSON.stringify(mockData));
+    // Check Outstanding Balance label and value
+    expect(screen.getByText("Outstanding Balance:")).toBeVisible();
+    expect(screen.getByText("0")).toBeVisible();
+
+    // Check Equivalent Value label and value
+    expect(screen.getByText("Equivalent Value:")).toBeVisible();
+    expect(screen.getByText("$0.00")).toBeVisible();
+
+    // Check a known payment header is rendered
+    expect(screen.getByText("Payment 1")).toBeVisible();
+
+    // Check the payment received date from mockData
+    expect(screen.getByText("2025-12-06")).toBeVisible();
   });
 
   it("renders step buttons with correct URLs", () => {
@@ -90,18 +89,51 @@ describe("ObligationTrackPaymentsComponent", () => {
       />,
     );
 
-    const backButton = screen.getByTestId("back-button");
-    expect(backButton).toBeVisible();
-    expect(backButton).toHaveAttribute(
+    expect(screen.getByTestId("back-button")).toHaveAttribute(
       "data-url",
       "/compliance-summaries/123/manage-obligation-review-summary",
     );
-
-    const continueButton = screen.getByTestId("continue-button");
-    expect(continueButton).toBeVisible();
-    expect(continueButton).toHaveAttribute(
+    expect(screen.getByTestId("continue-button")).toHaveAttribute(
       "data-url",
       "/compliance-summaries/123/automatic-overdue-penalty",
     );
+  });
+
+  it("does not render the automatic penalty alert when penalty_status is NONE", () => {
+    // Clone mockData but explicitly set penalty_status to "NONE"
+    const mockDataNoPenalty = { ...mockData, penalty_status: "NONE" };
+
+    render(
+      <ObligationTrackPaymentsComponent
+        data={mockDataNoPenalty}
+        complianceSummaryId="789"
+      />,
+    );
+
+    // Assert the penalty message is NOT in the document
+    const penaltyMessage =
+      /You have an automatic administrative penalty because the compliance obligation was fully met after the compliance obligation deadline/i;
+    expect(screen.queryByText(penaltyMessage)).not.toBeInTheDocument();
+  });
+
+  it("renders the automatic penalty alert when penalty_status is ACCRUING", () => {
+    // Clone mockData but explicitly set penalty_status to "ACCRUING"
+    const mockDataWithPenalty = {
+      ...mockData,
+      penalty_status: "ACCRUING",
+    };
+
+    render(
+      <ObligationTrackPaymentsComponent
+        data={mockDataWithPenalty}
+        complianceSummaryId="456"
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        /You have an automatic administrative penalty because the compliance obligation was fully met after the compliance obligation deadline/i,
+      ),
+    ).toBeVisible();
   });
 });
