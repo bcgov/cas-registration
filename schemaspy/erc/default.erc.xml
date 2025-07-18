@@ -346,9 +346,19 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_earned_cr_updated_by_id_f6a9a453_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="analyst_submitted_by_id" nullable="true" remarks="The analyst who provided the suggestion" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_earned_cr_analyst_submitted_by_c46cf48d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="16" name="analyst_submitted_date" nullable="true" remarks="The date on which the analyst provided the suggestion" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="analyst_suggestion" nullable="true" remarks="The suggestion from the analyst on whether or not to recommend issuance of the credits" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="bccr_holding_account_id" nullable="true" remarks="The BCCR holding account ID. This is the ID of the account holder in the BC Carbon Registry" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="issuance_requested_date" nullable="true" remarks="The date on which the earned credits were requested to be issued by the industry user" size="13" type="date" typeCode="91"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_earned_credit_pkey" unique="true">
             <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_earned_credit_analyst_submitted_by_id_c46cf48d" unique="false">
+            <column ascending="true" name="analyst_submitted_by_id"/>
          </index>
          <index name="compliance_earned_credit_archived_by_id_a803aa95" unique="false">
             <column ascending="true" name="archived_by_id"/>
@@ -527,6 +537,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_report_ve_updated_by_id_6679f933_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="is_supplementary" nullable="false" remarks="Boolean value identifies whether this record is the result of a supplementary emissions report version" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_report_version_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -3694,6 +3705,7 @@
             <child column="archived_by_id" foreignKey="compliance_charge_ra_archived_by_id_682fc47c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
             <child column="created_by_id" foreignKey="compliance_charge_rate_created_by_id_0d4d0951_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
             <child column="updated_by_id" foreignKey="compliance_charge_rate_updated_by_id_365b2139_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_charge_rate"/>
+            <child column="analyst_submitted_by_id" foreignKey="compliance_earned_cr_analyst_submitted_by_c46cf48d_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credit"/>
             <child column="archived_by_id" foreignKey="compliance_earned_cr_archived_by_id_a803aa95_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credit"/>
             <child column="created_by_id" foreignKey="compliance_earned_cr_created_by_id_8fb422d1_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credit"/>
             <child column="issued_by_id" foreignKey="compliance_earned_cr_issued_by_id_9802049c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credit"/>

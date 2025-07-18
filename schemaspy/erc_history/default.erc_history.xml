@@ -225,9 +225,17 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="issued_by_id" nullable="true" remarks="The user who issued the earned credits" size="2147483647" type="uuid" typeCode="1111"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="analyst_submitted_by_id" nullable="true" remarks="The analyst who provided the suggestion" size="2147483647" type="uuid" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="analyst_submitted_date" nullable="true" remarks="The date on which the analyst provided the suggestion" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="analyst_suggestion" nullable="true" remarks="The suggestion from the analyst on whether or not to recommend issuance of the credits" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="bccr_holding_account_id" nullable="true" remarks="The BCCR holding account ID. This is the ID of the account holder in the BC Carbon Registry" size="15" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="issuance_requested_date" nullable="true" remarks="The date on which the earned credits were requested to be issued by the industry user" size="13" type="date" typeCode="91"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="compliance_earned_credit_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>
+         </index>
+         <index name="compliance_earned_credit_h_analyst_submitted_by_id_d141e266" unique="false">
+            <column ascending="true" name="analyst_submitted_by_id"/>
          </index>
          <index name="compliance_earned_credit_h_compliance_report_version__071ef9bb" unique="false">
             <column ascending="true" name="compliance_report_version_id"/>

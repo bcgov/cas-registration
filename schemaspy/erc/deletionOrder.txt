@@ -6,6 +6,7 @@ user_operator
 report_person_responsible
 report_methodology
 report_compliance_summary_product
+compliance_earned_credit
 report_verification
 report_raw_activity_data
 report_operation_representative
@@ -16,7 +17,6 @@ operation_designated_operator_timeline
 facility_designated_operation_timeline
 document
 compliance_obligation
-compliance_earned_credit
 report_sign_off
 report_electricity_import_data
 report_attachment_confirmation
