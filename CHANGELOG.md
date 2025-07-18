@@ -1,3 +1,25 @@
+# [3.11.0](https://github.com/bcgov/cas-registration/compare/v3.10.0...v3.11.0) (2025-07-18)
+
+### Bug Fixes
+
+- corrected typo in ReviewFacilitiesForm.tsx ([#3554](https://github.com/bcgov/cas-registration/issues/3554)) ([68e0de3](https://github.com/bcgov/cas-registration/commit/68e0de3bfa692d6eca35b10b922c540523bec4f2))
+- if report submit has error, report does not submit ([74db33b](https://github.com/bcgov/cas-registration/commit/74db33baaa57b0df40e6e267dbcaf6eeae9d8969))
+- when changing between existing operation reps, address fields now update successfully ([23c97b3](https://github.com/bcgov/cas-registration/commit/23c97b35fef0171d807c68f93329d18f17024a53))
+
+### Features
+
+- add supplementary_version_service to handle supplementary logic ([7ce38ad](https://github.com/bcgov/cas-registration/commit/7ce38ad51c19a7a55350a7395added274eb9116c))
+- implement BCCR project creation endpoint ([60fc399](https://github.com/bcgov/cas-registration/commit/60fc3991f5a62600b7e684e044c7ce91fa7047cf))
+- internal user can issue earned credits ([0104f37](https://github.com/bcgov/cas-registration/commit/0104f37ef30ddc9ec2e537f493d39fa6a4db2e7e))
+- middleware to allow keycloak token rotation ([e0397c9](https://github.com/bcgov/cas-registration/commit/e0397c922810cde7e37da684848c422d8b7dbfde))
+- update compliance action cell logic and navigation based on issuance status ([613359a](https://github.com/bcgov/cas-registration/commit/613359a1bd142eb6dc22074784d9fb16b573e6c3))
+- user can archive contacts ([9e82be5](https://github.com/bcgov/cas-registration/commit/9e82be503c6dc92920e212abaa14bd024a238c43))
+
+### Reverts
+
+- Revert "chore: spec work that does not work" ([d93cd30](https://github.com/bcgov/cas-registration/commit/d93cd30026e7c9e44f834dfd72b14e316c2955be))
+- Revert "chore: spec work, not working" ([f3698b9](https://github.com/bcgov/cas-registration/commit/f3698b9b9fe384ae83a098f1aaf8dc296e370efd))
+
 # [3.10.0](https://github.com/bcgov/cas-registration/compare/v3.9.0...v3.10.0) (2025-07-07)
 
 ### Bug Fixes
