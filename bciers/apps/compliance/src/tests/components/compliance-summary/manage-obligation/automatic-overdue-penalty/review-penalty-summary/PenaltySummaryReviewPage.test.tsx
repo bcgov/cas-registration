@@ -67,7 +67,7 @@ describe("PenaltySummaryReviewPage", () => {
     // Verify task list generation
     expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
       "123",
-      "2025",
+      2025,
       ActivePage.ReviewPenaltySummary,
     );
   });

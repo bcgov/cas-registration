@@ -19,7 +19,7 @@ export default async function PenaltySummaryReviewPage({
 
   const taskListElements = generateAutomaticOverduePenaltyTaskList(
     complianceSummaryId,
-    reportingYear.toString(),
+    reportingYear,
     ActivePage.ReviewPenaltySummary,
   );
 

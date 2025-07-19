@@ -11,26 +11,27 @@ export enum ActivePage {
 export const generateManageObligationTaskList: (
   complianceSummaryId: string,
   data: any,
-  activePage?: ActivePage | null,
-) => TaskListElement[] = (
-  complianceSummaryId,
-  data,
-  activePage = ActivePage.ReviewComplianceSummary,
-) => {
+  defaultActiveIndex?: ActivePage | null,
+) => TaskListElement[] = (complianceSummaryId, data, defaultActiveIndex) => {
+  const activePage =
+    defaultActiveIndex === undefined
+      ? ActivePage.ReviewComplianceSummary
+      : defaultActiveIndex;
   const {
     reporting_year: reportingYear,
+    penalty_status: penaltyStatus,
     outstanding_balance: outstandingBalance,
   } = data;
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
       ? {
-          type: "Subsection",
+          type: "Subsection" as const,
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isExpanded: true,
           elements: [
             {
-              type: "Page",
+              type: "Page" as const,
               title: "Apply Compliance Units",
               link: `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
               isActive: true,
@@ -38,19 +39,19 @@ export const generateManageObligationTaskList: (
           ],
         }
       : {
-          type: "Page",
+          type: "Page" as const,
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isActive: activePage === ActivePage.ReviewComplianceSummary,
         },
     {
-      type: "Page",
+      type: "Page" as const,
       title: "Download Payment Instructions",
       link: `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`,
       isActive: activePage === ActivePage.DownloadPaymentObligationInstructions,
     },
     {
-      type: "Page",
+      type: "Page" as const,
       title: "Pay Obligation and Track Payment(s)",
       link: `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`,
       isActive: activePage === ActivePage.PayObligationTrackPayments,
@@ -68,6 +69,7 @@ export const generateManageObligationTaskList: (
 
   if (
     activePage === ActivePage.PayObligationTrackPayments &&
+    penaltyStatus === "ACCRUING" &&
     outstandingBalance === 0
   ) {
     const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
