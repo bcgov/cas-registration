@@ -14,11 +14,11 @@ interface Props {
 export default async function PaymentInstructionsDownloadPage({
   compliance_summary_id: complianceSummaryId,
 }: Props) {
-  const { reporting_year: reportingYear } = await getReportingYear();
+  const reportingYearData = await getReportingYear();
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-    reportingYear,
-    ActivePage.DownloadPaymentInstructions,
+    reportingYearData,
+    ActivePage.DownloadPaymentObligationInstructions,
   );
 
   const invoice =

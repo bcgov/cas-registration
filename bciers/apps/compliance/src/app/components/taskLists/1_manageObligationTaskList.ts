@@ -1,35 +1,37 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { generateAutomaticOverduePenaltyTaskList } from "./automaticOverduePenaltyTaskList";
 
 export enum ActivePage {
-  "ReviewComplianceSummary" = 0,
-  "ApplyComplianceUnits",
-  "DownloadPaymentInstructions",
-  "PayObligationTrackPayments",
-  "ReviewPenaltySummary",
+  ReviewComplianceSummary = "ReviewComplianceSummary",
+  ApplyComplianceUnits = "ApplyComplianceUnits",
+  DownloadPaymentObligationInstructions = "DownloadPaymentObligationInstructions",
+  PayObligationTrackPayments = "PayObligationTrackPayments",
 }
 
 export const generateManageObligationTaskList: (
   complianceSummaryId: string,
-  reportingYear: number,
-  defaultActiveIndex?: ActivePage,
-  penaltyStatus?: string,
-) => TaskListElement[] = (
-  complianceSummaryId,
-  reportingYear,
-  defaultActiveIndex,
-  penaltyStatus,
-) => {
-  const activeIndex = defaultActiveIndex ?? 0;
-  const taskItems: TaskListElement[] = [
-    activeIndex === ActivePage.ApplyComplianceUnits
+  data: any,
+  defaultActiveIndex?: ActivePage | null,
+) => TaskListElement[] = (complianceSummaryId, data, defaultActiveIndex) => {
+  const activePage =
+    defaultActiveIndex === undefined
+      ? ActivePage.ReviewComplianceSummary
+      : defaultActiveIndex;
+  const {
+    reporting_year: reportingYear,
+    penalty_status: penaltyStatus,
+    outstanding_balance: outstandingBalance,
+  } = data;
+  const taskItems = [
+    activePage === ActivePage.ApplyComplianceUnits
       ? {
-          type: "Subsection",
+          type: "Subsection" as const,
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
           isExpanded: true,
           elements: [
             {
-              type: "Page",
+              type: "Page" as const,
               title: "Apply Compliance Units",
               link: `/compliance-summaries/${complianceSummaryId}/apply-compliance-units`,
               isActive: true,
@@ -37,36 +39,26 @@ export const generateManageObligationTaskList: (
           ],
         }
       : {
-          type: "Page",
+          type: "Page" as const,
           title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
-          isActive: activeIndex === ActivePage.ReviewComplianceSummary,
+          isActive: activePage === ActivePage.ReviewComplianceSummary,
         },
     {
-      type: "Page",
+      type: "Page" as const,
       title: "Download Payment Instructions",
       link: `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`,
-      isActive: activeIndex === ActivePage.DownloadPaymentInstructions,
+      isActive: activePage === ActivePage.DownloadPaymentObligationInstructions,
     },
     {
-      type: "Page",
+      type: "Page" as const,
       title: "Pay Obligation and Track Payment(s)",
       link: `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`,
-      isActive: activeIndex === ActivePage.PayObligationTrackPayments,
+      isActive: activePage === ActivePage.PayObligationTrackPayments,
     },
   ];
 
-  // Conditionally add the Review Penalty Summary page
-  if (penaltyStatus === "ACCRUING") {
-    taskItems.push({
-      type: "Page",
-      title: "Review Penalty Summary",
-      link: `/compliance-summaries/${complianceSummaryId}/review-penalty-summary`,
-      isActive: activeIndex === ActivePage.ReviewPenaltySummary,
-    });
-  }
-
-  return [
+  const sections: TaskListElement[] = [
     {
       type: "Section",
       title: `${reportingYear} Compliance Summary`,
@@ -74,4 +66,20 @@ export const generateManageObligationTaskList: (
       elements: taskItems,
     },
   ];
+
+  if (
+    activePage === ActivePage.PayObligationTrackPayments &&
+    penaltyStatus === "ACCRUING" &&
+    outstandingBalance === 0
+  ) {
+    const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
+      complianceSummaryId,
+      data.reporting_year,
+      null,
+    )[1];
+
+    sections.push({ ...automaticPenaltySection, isExpanded: false });
+  }
+
+  return sections;
 };

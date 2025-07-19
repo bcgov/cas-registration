@@ -12,10 +12,10 @@ interface Props {
 export default async function ApplyComplianceUnitsPage({
   compliance_summary_id: complianceSummaryId,
 }: Readonly<Props>) {
-  const { reporting_year: reportingYear } = await getReportingYear();
+  const reportingYearData = await getReportingYear();
   const taskListElements = generateManageObligationTaskList(
     complianceSummaryId,
-    reportingYear,
+    reportingYearData,
     ActivePage.ApplyComplianceUnits,
   );
 
@@ -26,7 +26,7 @@ export default async function ApplyComplianceUnitsPage({
     >
       <ApplyComplianceUnitsComponent
         complianceSummaryId={complianceSummaryId}
-        reportingYear={reportingYear}
+        reportingYear={reportingYearData.reporting_year}
       />
     </CompliancePageLayout>
   );
