@@ -127,8 +127,9 @@ describe("generateManageObligationTaskList", () => {
   it("adds automatic penalty section when on PayObligationTrackPayments page with zero balance", () => {
     // Create data with outstanding_balance = 0
     const dataWithZeroBalance = {
-      reporting_year: "2024",
+      reporting_year: 2024,
       outstanding_balance: 0,
+      penalty_status: "ACCRUING",
     };
 
     // Generate task list with PayObligationTrackPayments active page and zero balance
@@ -141,7 +142,7 @@ describe("generateManageObligationTaskList", () => {
     // Verify that generateAutomaticOverduePenaltyTaskList was called
     expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
-      "2024",
+      2024,
       null,
     );
 

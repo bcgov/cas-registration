@@ -30,7 +30,6 @@ export default async function ObligationTrackPaymentsPayPage({
     complianceReportVersionId,
     data,
     ActivePage.PayObligationTrackPayments,
-    data.penalty_status,
   );
 
   return (

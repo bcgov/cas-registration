@@ -9,7 +9,7 @@ export enum ActivePage {
 
 export const generateAutomaticOverduePenaltyTaskList: (
   complianceSummaryId: string,
-  reporting_year: string,
+  reporting_year: number,
   activePage?: ActivePage | null,
 ) => TaskListElement[] = (
   complianceSummaryId,
