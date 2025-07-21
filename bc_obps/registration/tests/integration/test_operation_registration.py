@@ -86,7 +86,7 @@ class TestOperationRegistration(CommonTestSetup):
                 "latitude_of_largest_emissions": "5",
                 "longitude_of_largest_emissions": "5",
                 "operation_id": self.operation.id,
-                "well_authorization_numbers": [12345, 654321],
+                "well_authorization_numbers": ["12345", "654321"],
             },
         ]
         response = TestUtils.mock_post_with_auth_role(

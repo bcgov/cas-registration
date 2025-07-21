@@ -111,6 +111,9 @@ class Facility(TimeStampedModel):
 
     Rls = FacilityRls
 
+    def __str__(self) -> str:
+        return f"{self.name} - {self.type}. Operation {self.operation.name}. Address: {self.address.street_address if self.address else 'No address'}. BCGHG ID: {self.bcghg_id.id if self.bcghg_id else 'No BCGHG ID'}. SWRS Facility ID: {self.swrs_facility_id if self.swrs_facility_id else 'No SWRS Facility ID'}. Well Authorization Numbers: {', '.join(str(wan.well_authorization_number) for wan in self.well_authorization_numbers.all()) if self.well_authorization_numbers.exists() else 'No Well Authorization Numbers'}"
+
     def generate_unique_bcghg_id(self, user_guid: uuid.UUID) -> None:
         from registration.models.utils import generate_unique_bcghg_id_for_operation_or_facility
 

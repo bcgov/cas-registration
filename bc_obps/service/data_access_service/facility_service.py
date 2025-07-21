@@ -14,7 +14,7 @@ class FacilityDataAccessService:
 
     @classmethod
     def get_by_id(cls, facility_id: UUID) -> Facility:
-        return Facility.objects.get(id=facility_id)
+        return Facility.objects.prefetch_related("well_authorization_numbers").get(id=facility_id)
 
     @classmethod
     def create_facility(
