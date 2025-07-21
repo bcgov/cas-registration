@@ -159,7 +159,9 @@ export interface ComplianceSummary {
 export interface ComplianceAppliedUnitsData {
   rows: ComplianceAppliedUnits[];
   row_count: number;
+  can_apply_units: boolean;
 }
+
 export interface ComplianceAppliedUnitsSummary {
   compliance_report_version_id: number;
   applied_compliance_units: ComplianceAppliedUnitsData;

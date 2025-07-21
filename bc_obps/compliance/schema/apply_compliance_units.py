@@ -25,6 +25,11 @@ class AppliedComplianceUnit(Schema):
     quantity_applied: Optional[str] = None
     equivalent_value: Optional[str] = None
 
+class AppliedComplianceUnitsOut(Schema):
+    """Wrapper schema for applied units and credit cap metadata."""
+
+    applied_compliance_units: List[AppliedComplianceUnit]
+    can_apply_units: bool
 
 class ApplyComplianceUnitsOut(Schema):
     """Schema for showing all the data on the Apply Compliance Units page"""

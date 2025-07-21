@@ -8,11 +8,62 @@ from compliance.service.compliance_charge_rate_service import ComplianceChargeRa
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from decimal import Decimal
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 
 bccr_account_service = BCCarbonRegistryAccountService()
 
 
 class ApplyComplianceUnitsService:
+
+    @classmethod
+    def _can_apply_units(cls, compliance_report_version_id: int) -> bool:
+        """
+        Returns True if user is allowed to apply compliance units.
+        Conditions:
+        - Outstanding balance must be > 0
+        - Total adjustments must be <= 50% of the original obligation fee
+        """
+        print(f"[DEBUG] Checking if user can apply units for ComplianceReportVersion ID: {compliance_report_version_id}")
+
+        obligation = ComplianceObligationService.get_obligation_for_report_version(
+            compliance_report_version_id
+        )
+
+        if not obligation:
+            print("[WARNING] No obligation found.")
+            return False
+
+        fee_amount_dollars = obligation.fee_amount_dollars or Decimal("0")
+        if fee_amount_dollars == 0:
+            print("[INFO] Fee amount is zero — cannot apply units.")
+            return False
+
+        apply_units_cap = fee_amount_dollars * Decimal("0.5")
+        print(f"[DEBUG] Original fee: {fee_amount_dollars}")
+        print(f"[DEBUG] 50% credit cap: {apply_units_cap}")
+
+        # --- Check outstanding balance ---
+        outstanding_balance = obligation.elicensing_invoice.outstanding_balance if obligation.elicensing_invoice else Decimal("0")
+        print(f"[DEBUG] Outstanding balance: {outstanding_balance}")
+        if outstanding_balance <= 0:
+            print("[INFO] Outstanding balance is zero or negative — cannot apply units.")
+            return False
+
+        # --- Check total adjustments ---
+        line_items = obligation.elicensing_invoice.elicensing_line_items.all() if obligation.elicensing_invoice else []
+        total_adjustments = ElicensingAdjustment.objects.filter(
+            elicensing_line_item__in=line_items
+        ).aggregate(total=Sum("amount"))["total"] or Decimal("0")
+        print(f"[DEBUG] Total adjustments from line items: {total_adjustments}")
+
+        if total_adjustments >= apply_units_cap:
+            print("[INFO] Total adjustments exceed or equal the credit cap — cannot apply units.")
+            return False
+
+        print("[DEBUG] User is allowed to apply units.")
+        return True
+
+
     @classmethod
     def _format_bccr_units_for_grid_display(cls, bccr_units: List[Optional[Dict[str, Any]]]) -> List[BCCRUnit]:
         """
