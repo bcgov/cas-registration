@@ -1,6 +1,4 @@
 import importlib
-from decimal import Decimal
-
 from django.test import TestCase
 from django.apps import apps
 from reporting.models import GasType
@@ -35,9 +33,9 @@ class TestMigration0119Functions(TestCase):
         ]
 
         handle_emissions(apps, emissions_list)
-        self.assertEqual(emissions_list[0]["equivalentEmission"], Decimal('100.5000'))
-        self.assertEqual(emissions_list[1]["equivalentEmission"], Decimal('70.0000'))
-        self.assertEqual(emissions_list[2]["equivalentEmission"], Decimal('265.0000'))
+        self.assertEqual(emissions_list[0]["equivalentEmission"], 100.5)
+        self.assertEqual(emissions_list[1]["equivalentEmission"], 70.0)
+        self.assertEqual(emissions_list[2]["equivalentEmission"], 265.0)
 
     def test_handle_emissions_decimal_precision(self):
         """Test that decimal calculations maintain correct precision."""
@@ -47,8 +45,8 @@ class TestMigration0119Functions(TestCase):
         ]
 
         handle_emissions(apps, emissions_list)
-        self.assertEqual(emissions_list[0]["equivalentEmission"], Decimal('34.5679'))
-        self.assertEqual(emissions_list[1]["equivalentEmission"], Decimal('32.7160'))
+        self.assertEqual(emissions_list[0]["equivalentEmission"], 34.5679)
+        self.assertEqual(emissions_list[1]["equivalentEmission"], 32.716)
 
     def test_find_emissions_nested_dict(self):
         """Test find_emissions function with nested dictionary structures."""
@@ -83,11 +81,11 @@ class TestMigration0119Functions(TestCase):
         updated_data = find_emissions(apps, test_data, "emissions")
 
         flaring_emissions = updated_data["sourceTypes"]["flaringStacks"]["units"][0]["emissions"]
-        self.assertEqual(flaring_emissions[0]["equivalentEmission"], Decimal('10.0000'))
-        self.assertEqual(flaring_emissions[1]["equivalentEmission"], Decimal('42.0000'))
+        self.assertEqual(flaring_emissions[0]["equivalentEmission"], 10.0)
+        self.assertEqual(flaring_emissions[1]["equivalentEmission"], 42.0)
 
         other_emissions = updated_data["sourceTypes"]["otherSource"]["emissions"]
-        self.assertEqual(other_emissions[0]["equivalentEmission"], Decimal('132.5000'))
+        self.assertEqual(other_emissions[0]["equivalentEmission"], 132.5)
 
     def test_find_emissions_nested_arrays(self):
         """Test find_emissions function with nested array structures."""
@@ -114,11 +112,9 @@ class TestMigration0119Functions(TestCase):
 
         updated_data = find_emissions(apps, test_data, "emissions")
 
-        self.assertEqual(updated_data["arrayLevel"][0]["emissions"][0]["equivalentEmission"], Decimal('56.0000'))
+        self.assertEqual(updated_data["arrayLevel"][0]["emissions"][0]["equivalentEmission"], 56.0)
 
-        self.assertEqual(
-            updated_data["arrayLevel"][1]["nested"]["emissions"][0]["equivalentEmission"], Decimal('5.0000')
-        )
+        self.assertEqual(updated_data["arrayLevel"][1]["nested"]["emissions"][0]["equivalentEmission"], 5.0)
 
     def test_find_emissions_deeply_nested(self):
         """Test find_emissions function with deeply nested structures."""
@@ -142,8 +138,9 @@ class TestMigration0119Functions(TestCase):
 
         updated_data = find_emissions(apps, test_data, "emissions")
 
+        # Check deeply nested emission
         deep_emission = updated_data["level1"]["level2"]["level3"]["level4"]["emissions"][0]
-        self.assertEqual(deep_emission["equivalentEmission"], Decimal('50.0000'))
+        self.assertEqual(deep_emission["equivalentEmission"], 50.0)
 
     def test_find_emissions_preserves_other_data(self):
         """Test that find_emissions preserves all other data."""
@@ -182,6 +179,7 @@ class TestMigration0119Functions(TestCase):
 
         updated_data = find_emissions(apps, test_data, "emissions")
 
+        # Check that all other data is preserved
         self.assertEqual(updated_data["id"], 1190)
         self.assertEqual(updated_data["flaringStacks"], True)
         self.assertEqual(updated_data["sourceTypes"]["flaringStacks"]["units"][0]["type"], "Source sub-type")
@@ -198,7 +196,8 @@ class TestMigration0119Functions(TestCase):
             "WCI.363 (k)",
         )
 
+        # Check that equivalentEmission was updated
         self.assertEqual(
             updated_data["sourceTypes"]["flaringStacks"]["units"][0]["fuels"][0]["emissions"][0]["equivalentEmission"],
-            Decimal('317.0829'),
+            317.0829,
         )
