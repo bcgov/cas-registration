@@ -1,3 +1,10 @@
+# [3.12.0](https://github.com/bcgov/cas-registration/compare/v3.11.0...v3.12.0) (2025-07-22)
+
+### Features
+
+- create service to reduce obligation and update elicensing data refresh service ([33bbca7](https://github.com/bcgov/cas-registration/commit/33bbca76b6a1595f665c7938d981bbc21601084c))
+- set action cell to pending invoice creation if no invoice number ([2c5a5aa](https://github.com/bcgov/cas-registration/commit/2c5a5aa2e53358489cee54db79ce43247938a8bf))
+
 # [3.11.0](https://github.com/bcgov/cas-registration/compare/v3.10.0...v3.11.0) (2025-07-18)
 
 ### Bug Fixes
