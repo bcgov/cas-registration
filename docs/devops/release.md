@@ -16,9 +16,9 @@ When you're ready to make a release, apply the following steps:
 
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
 1. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
+1. on `develop`, check migrations against prod data: `poetry run python manage.py check_migrations_with_prod_data --pod-name {pod_name}` (replace {pod_name} with the name of the production Postgres pod (not the leader node)). If there are any problems with the migrations, create a branch, fix, and merge the fix before continuing.
 1. create a `chore/release` branch and create the upstream
 1. reset database with `make reset_db` (from `cas-registration/bc_obps`) for proper creation of migration files
-1. check migrations against prod data: `poetry run python manage.py check_migrations_with_prod_data --pod-name {pod_name}` (replace {pod_name} with the name of the production Postgres pod (not the leader node)).
 1. run `make release` (from `cas-registration`) and follow the prompts - This will:
    - Create empty migration files for each django app based on the release version
    - bump the version number
