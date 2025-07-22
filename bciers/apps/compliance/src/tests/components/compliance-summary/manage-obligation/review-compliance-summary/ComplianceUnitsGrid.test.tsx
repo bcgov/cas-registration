@@ -13,7 +13,6 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-// Use camelCase variable names
 const complianceReportVersionId = "123";
 const appliedComplianceUnits = {
   row_count: 2,
@@ -35,9 +34,9 @@ const appliedComplianceUnits = {
       equivalent_value: 4000,
     },
   ],
+  can_apply_units: true,
 };
 
-// Object keys remain in snake_case to match the expected type
 const mockValue: ComplianceAppliedUnitsSummary = {
   compliance_report_version_id: complianceReportVersionId,
   applied_compliance_units: appliedComplianceUnits,

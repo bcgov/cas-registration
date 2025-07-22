@@ -1,7 +1,7 @@
 import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
 import { withRulesAppliedCompliance } from "./middlewares/withRulesAppliedCompliance";
 import { withResponseCompliance } from "./middlewares/withResponseCompliance";
-
+import { withRuleHasComplianceRouteAccess } from "./middlewares/withRuleHasComplianceRouteAccess";
 export const appName = "compliance";
 
 /* 📌
@@ -33,5 +33,6 @@ export const config = {
 export default stackMiddlewares([
   withAuthorization,
   withRulesAppliedCompliance,
+  withRuleHasComplianceRouteAccess,
   withResponseCompliance,
 ]);

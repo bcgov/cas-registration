@@ -9,6 +9,7 @@ from compliance.service.compliance_report_version_service import ComplianceRepor
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from decimal import Decimal
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from django.db.models import Sum
 
 bccr_account_service = BCCarbonRegistryAccountService()
 
@@ -18,49 +19,57 @@ class ApplyComplianceUnitsService:
     @classmethod
     def _can_apply_units(cls, compliance_report_version_id: int) -> bool:
         """
-        Returns True if user is allowed to apply compliance units.
-        Conditions:
-        - Outstanding balance must be > 0
-        - Total adjustments must be <= 50% of the original obligation fee
-        """
-        print(f"[DEBUG] Checking if user can apply units for ComplianceReportVersion ID: {compliance_report_version_id}")
+        Determines whether a user is allowed to apply compliance units for a given compliance report version.
 
+        Returns True only if:
+        - The obligation exists.
+        - The original fee amount (fee_amount_dollars) is greater than 0.
+        - There is a remaining outstanding balance > 0.
+        - The total adjustments (credits already applied) do not exceed 50% of the original obligation fee.
+        """
+        # Retrieve the obligation linked to the compliance report version
         obligation = ComplianceObligationService.get_obligation_for_report_version(
             compliance_report_version_id
         )
 
         if not obligation:
-            print("[WARNING] No obligation found.")
+            # No obligation found — cannot apply units
             return False
 
-        fee_amount_dollars = obligation.fee_amount_dollars or Decimal("0")
-        if fee_amount_dollars == 0:
-            print("[INFO] Fee amount is zero — cannot apply units.")
+        # Original total fee amount (before payments or adjustments)
+        fee_amount_dollars = obligation.fee_amount_dollars
+        if not fee_amount_dollars:
+            # If there's no fee, nothing to apply units toward
             return False
 
+        # Maximum allowable value of applied units (50% of the original fee)
         apply_units_cap = fee_amount_dollars * Decimal("0.5")
-        print(f"[DEBUG] Original fee: {fee_amount_dollars}")
-        print(f"[DEBUG] 50% credit cap: {apply_units_cap}")
 
-        # --- Check outstanding balance ---
-        outstanding_balance = obligation.elicensing_invoice.outstanding_balance if obligation.elicensing_invoice else Decimal("0")
-        print(f"[DEBUG] Outstanding balance: {outstanding_balance}")
+        # --- Check whether any balance remains to be paid ---
+        outstanding_balance = (
+            obligation.elicensing_invoice.outstanding_balance
+            if obligation.elicensing_invoice
+            else Decimal("0")
+        )
         if outstanding_balance <= 0:
-            print("[INFO] Outstanding balance is zero or negative — cannot apply units.")
+            # Nothing left to pay — no need to apply units
             return False
 
-        # --- Check total adjustments ---
-        line_items = obligation.elicensing_invoice.elicensing_line_items.all() if obligation.elicensing_invoice else []
+        # --- Check how much has already been applied via adjustments ---
+        line_items = (
+            obligation.elicensing_invoice.elicensing_line_items.all()
+            if obligation.elicensing_invoice else []
+        )
+
         total_adjustments = ElicensingAdjustment.objects.filter(
             elicensing_line_item__in=line_items
         ).aggregate(total=Sum("amount"))["total"] or Decimal("0")
-        print(f"[DEBUG] Total adjustments from line items: {total_adjustments}")
 
         if total_adjustments >= apply_units_cap:
-            print("[INFO] Total adjustments exceed or equal the credit cap — cannot apply units.")
+            # Already applied the max allowed credits
             return False
 
-        print("[DEBUG] User is allowed to apply units.")
+        # All checks passed — user can apply more units
         return True
 
 
@@ -152,17 +161,24 @@ class ApplyComplianceUnitsService:
         )
 
     @classmethod
-    def _validate_quantity_limits(cls, units: List[Dict[str, Any]]) -> None:
+    def _validate_quantity_limits(cls, compliance_report_version_id: int, units: List[Dict[str, Any]]) -> None:
         """
-        Validates that quantity_to_be_applied doesn't exceed quantity_available for each unit.
+        Validates:
+        - The total compliance units can be applied (i.e., the 50% cap has not already been reached).
+        - Each unit's quantity_to_be_applied does not exceed quantity_available.
 
         Args:
+            compliance_report_version_id: ID of the compliance report version to validate against.
             units: List of unit dictionaries with quantity_available and quantity_to_be_applied fields.
 
         Raises:
-            UserError: If any unit has quantity_to_be_applied greater than quantity_available.
+            UserError: If applying units is disallowed or a unit exceeds quantity_available.
         """
-        # TODO: We need to implement a check to ensure the total amount of units being applied does not exceed 50% of the compliance outstanding balance. Ticket #207
+        # Cap check: prevent applying units if already at 50% threshold
+        if not cls._can_apply_units(compliance_report_version_id):
+            raise UserError("Cannot apply more units: 50% credit cap already reached.")
+
+        # Per-unit validation: ensure each unit's requested quantity is available
         for unit in units:
             if unit.get("quantity_to_be_applied", 0) > unit.get("quantity_available", 0):
                 raise UserError(
@@ -181,7 +197,7 @@ class ApplyComplianceUnitsService:
             compliance_report_version_id (int): Compliance report version ID.
             payload (Dict[str, Any]): Data model for the Apply Compliance Units page data as dictionary.
         """
-        cls._validate_quantity_limits(payload["bccr_units"])
+        cls._validate_quantity_limits(compliance_report_version_id, payload["bccr_units"])
 
         transfer_compliance_units_payload = TransferComplianceUnitsPayload(
             destination_account_id=payload["bccr_compliance_account_id"],

@@ -1,8 +1,5 @@
 import { actionHandler } from "@bciers/actions";
-import {
-  ComplianceAppliedUnits,
-  ComplianceAppliedUnitsData,
-} from "@/compliance/src/app/types";
+import { ComplianceAppliedUnitsData } from "@/compliance/src/app/types";
 
 const getComplianceAppliedUnits = async (
   complianceReportVersionId: number,
