@@ -13,14 +13,20 @@ const ActionCell = (params: ActionCellProps) => {
     status,
     issuance_status: issuanceStatus,
     id,
+    invoice_number: invoiceNumber,
   } = params.row;
   let basePath = `/compliance-summaries/${id}`;
   let cellText = "View Details";
 
   // if we have obligationId should show the Manage Obligation text in the cell
   if (obligationId && !params.isAllowedCas) {
-    cellText = "Manage Obligation";
-    basePath += "/manage-obligation-review-summary";
+    if (invoiceNumber) {
+      cellText = "Manage Obligation";
+      basePath += "/manage-obligation-review-summary";
+    } else {
+      cellText = "Pending Invoice Creation";
+      basePath = "#";
+    }
   } else if (status === "Earned credits") {
     const hasFinalDecision = [
       IssuanceStatus.APPROVED,
