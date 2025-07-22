@@ -35,6 +35,7 @@ class ComplianceReportVersionListOut(ModelSchema):
     excess_emissions: Decimal = Field(..., alias=EXCESS_EMISSIONS_ALIAS)
     issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
+    invoice_number: Optional[str] = Field(None, alias="obligation.elicensing_invoice.invoice_number")
 
     class Meta:
         model = ComplianceReportVersion

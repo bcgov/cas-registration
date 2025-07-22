@@ -11,6 +11,7 @@ describe("ActionCell", () => {
     obligation_id?: string;
     status?: string;
     issuance_status?: string;
+    invoice_number?: string;
   }
 
   const createMockParams = (
@@ -19,10 +20,17 @@ describe("ActionCell", () => {
     obligation_id?: string,
     status?: string,
     issuance_status?: string,
+    invoice_number?: string,
   ): ActionCellParams =>
     ({
       id: id,
-      row: { id, obligation_id, status, issuance_status } as ComplianceSummary,
+      row: {
+        id,
+        obligation_id,
+        status,
+        issuance_status,
+        invoice_number,
+      } as ComplianceSummary,
       isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
 
@@ -34,16 +42,39 @@ describe("ActionCell", () => {
 
   // Test cases for obligation rows
   describe("Obligation Flow", () => {
-    it("displays 'Manage Obligation' when obligation_id is present", () => {
+    it("displays 'Manage Obligation' when obligation_id and invoice_number are present", () => {
       render(
         ActionCell(
-          createMockParams(123, false, "24-0001-1-1", undefined, undefined),
+          createMockParams(
+            123,
+            false,
+            "24-0001-1-1",
+            undefined,
+            undefined,
+            "OBI700000",
+          ),
         ),
       );
       expectLink(
         "Manage Obligation",
         "/compliance-summaries/123/manage-obligation-review-summary",
       );
+    });
+
+    it("displays 'Pending Invoice Creation' when obligation_id is present and invoice_number is not", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            false,
+            "24-0001-1-1",
+            undefined,
+            undefined,
+            undefined,
+          ),
+        ),
+      );
+      expectLink("Pending Invoice Creation", "#");
     });
   });
 
@@ -122,6 +153,7 @@ describe("ActionCell", () => {
           "24-0001-1-1",
           "Earned credits",
           IssuanceStatus.ISSUANCE_REQUESTED,
+          "OBI700000",
         ),
       ),
     );

@@ -18,6 +18,7 @@ const mockResponse = {
       status: "Obligation not met",
       penalty_status: "Accruing",
       obligation_id: "24-0001-1-1",
+      invoice_number: "OBI700000",
     },
     {
       id: 2,
@@ -98,6 +99,17 @@ const mockResponse2 = {
       status: "Earned credits",
       penalty_status: "N/A",
       obligation_id: undefined,
+      issuance_status: "Approved",
+    },
+    {
+      id: 5,
+      operation_name: "Operation 7",
+      reporting_year: 2024,
+      excess_emissions: 5000,
+      outstanding_balance: 1,
+      status: "Obligation not met",
+      penalty_status: "N/A",
+      obligation_id: "24-0001-1-5",
       issuance_status: "Approved",
     },
   ] as ComplianceSummary[],
@@ -277,5 +289,26 @@ describe("ComplianceSummariesDataGrid component", () => {
     expect(
       within(dataRow).getByRole("link", { name: "View Details" }),
     ).toHaveAttribute("href", "/compliance-summaries/5/review-summary");
+  });
+
+  it("shows 'Pending Invoice Creation' when there's no invoice_number", async () => {
+    render(
+      <ComplianceSummariesDataGrid
+        initialData={mockResponse2}
+        isAllowedCas={false}
+      />,
+    );
+
+    const summaryRows = screen.getAllByRole("row");
+    const dataRow = summaryRows[7];
+
+    // Find the link within that row
+    expect(
+      within(dataRow).getByRole("link", { name: "Pending Invoice Creation" }),
+    ).toBeVisible();
+
+    expect(
+      within(dataRow).getByRole("link", { name: "Pending Invoice Creation" }),
+    ).toHaveAttribute("href", "#");
   });
 });
