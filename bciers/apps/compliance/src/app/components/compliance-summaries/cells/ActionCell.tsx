@@ -13,7 +13,7 @@ const ActionCell = (params: ActionCellProps) => {
     status,
     issuance_status: issuanceStatus,
     id,
-    invoice_number: invoiceNumber,
+    invoice_number: invoiceNumber, // Without an e-licening invoice number, user cannot route to further pages
   } = params.row;
   let basePath = `/compliance-summaries/${id}`;
   let cellText = "View Details";
