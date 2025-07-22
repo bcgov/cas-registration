@@ -17,7 +17,7 @@ def handle_emissions(apps, emissions_list):
 
         emission_value = e.get("emission")
         if emission_value is not None and gas_type is not None:
-            e["equivalentEmission"] = round(Decimal(emission_value) * gas_type.gwp, 4)
+            e["equivalentEmission"] = float(round(Decimal(emission_value) * gas_type.gwp, 4))
         else:
             e["equivalentEmission"] = None
 
