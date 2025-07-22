@@ -542,7 +542,9 @@ class ReportSupplementaryVersionService:
         report_source_types = ReportSourceType.objects.filter(report_version=report_version)
         report_fuels = ReportFuel.objects.filter(report_version=report_version).select_related("report_source_type")
         report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related("report_fuel")
-        methodologies = ReportMethodology.objects.filter(report_version=report_version).select_related("report_emission")
+        methodologies = ReportMethodology.objects.filter(report_version=report_version).select_related(
+            "report_emission"
+        )
 
         # Build lookups to avoid repeated database queries
         emissions_by_fuel = defaultdict(list)
