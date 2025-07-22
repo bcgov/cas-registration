@@ -2,12 +2,14 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from enum import Enum
 from typing import Dict, Any, Tuple, Optional
-
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
     ElicensingInvoice,
 )
+from datetime import timedelta
+from django.db.models import Sum
+from compliance.models import ElicensingLineItem, ElicensingPayment, ElicensingAdjustment
 
 
 class PenaltyCalculationService:
@@ -18,9 +20,8 @@ class PenaltyCalculationService:
     starting the day after the November 30 deadline until the obligation is fully paid.
     """
 
-    TODAY = date(2024, 12, 31)
-    DAILY_PENALTY_RATE = Decimal('0.0038')  # 0.38%
-    PENALTY_PAYMENT_DEADLINE_DAYS = 30
+    TODAY = date.today()
+    DAILY_PENALTY_RATE = Decimal('0.0038')
 
     class PenaltyType(Enum):
         AUTOMATIC_OVERDUE = "Automatic Overdue"
@@ -36,7 +37,6 @@ class PenaltyCalculationService:
         Returns:
             Dictionary containing penalty details or empty penalty data if no penalty applies
         """
-        # Check if penalty calculation is needed and get the invoice if available
         should_calculate, invoice = cls.should_calculate_penalty(obligation)
 
         if should_calculate and invoice:
@@ -55,8 +55,6 @@ class PenaltyCalculationService:
         Returns:
             Tuple containing a boolean indicating if penalty calculation is needed and the invoice (or None)
         """
-
-        # Refresh data from eLicensing to ensure we have the latest
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
@@ -71,11 +69,46 @@ class PenaltyCalculationService:
             return False, invoice
 
         # Check if past deadline and has outstanding amount
-        # days_late = (cls.TODAY - invoice.due_date.date()).days
-        # return (days_late > 0 and invoice.outstanding_balance > Decimal('0.00')), invoice
+        days_late = (cls.TODAY - invoice.due_date.date()).days
+        return (days_late > 0 and invoice.outstanding_balance > Decimal('0.00')), invoice
 
-        # Temporary until we don't overdue the payment and days_late is 0
-        return True, invoice
+    @classmethod
+    def sum_payments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
+        """
+        Calculate the sum of all payments received on or before the given date.
+
+        Args:
+            invoice: The eLicensing invoice
+            date: The cutoff date for payments
+
+        Returns:
+            Decimal sum of payment amounts
+        """
+        # Get line items for this invoice and sum payments received on or before date
+        line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+
+        return ElicensingPayment.objects.filter(
+            elicensing_line_item__in=line_items, received_date__date__lte=date
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+
+    @classmethod
+    def sum_adjustments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
+        """
+        Calculate the sum of all adjustments made on or before the given date.
+
+        Args:
+            invoice: The eLicensing invoice
+            date: The cutoff date for adjustments
+
+        Returns:
+            Decimal sum of adjustment amounts
+        """
+        # Get line items for this invoice and sum adjustments made on or before date
+        line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
+
+        return ElicensingAdjustment.objects.filter(
+            elicensing_line_item__in=line_items, adjustment_date__date__lte=date
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     @classmethod
     def calculate_penalty(cls, obligation: ComplianceObligation, invoice: ElicensingInvoice) -> Dict[str, Any]:
@@ -94,48 +127,51 @@ class PenaltyCalculationService:
                 - days_late: Number of days past the deadline
                 - accumulated_penalty: Total accumulated penalty from eLicensing
                 - accumulated_compounding: The accumulated compound interest on previous penalties
-                - penalty_today: Total penalty from eLicensing
+                - total_penalty: Total penalty from eLicensing
                 - faa_interest: FAA interest from eLicensing
-                - total_amount: Total amount due including penalties and interest
-                - penalty_amount: Total penalty including FAA interest
+                - total_amount: Total penalty including FAA interest
         """
 
-        # Calculate days late based on obligation deadline and today
+        # Initialize variables
+        base = invoice.outstanding_balance
+        accumulated_penalty = Decimal('0.00')
+        accumulated_compounding = Decimal('0.00')
         days_late = max(0, (cls.TODAY - invoice.due_date.date()).days)
+        current_date = invoice.due_date.date()
 
-        # TODO: Implement calculation logic
+        for _ in range(1, days_late + 1):
+            payments = cls.sum_payments_before_date(invoice, current_date)
+            adjustments = cls.sum_adjustments_before_date(invoice, current_date)
+            penalty_amount = (base - payments + adjustments) * cls.DAILY_PENALTY_RATE
+            daily_compounding = (accumulated_penalty + accumulated_compounding) * cls.DAILY_PENALTY_RATE
+            accumulated_penalty += penalty_amount
+            accumulated_compounding += daily_compounding
+            total_penalty = accumulated_penalty + accumulated_compounding
 
-        # Pseudo-code for penalty calculation
+            current_date += timedelta(days=1)
 
-        # base = 1000000
-        # rate = .0038
-        # accumulated_compounding = 0
-        # accumlated_penalty = 0
-        # for i in range(1...days_late):
-        #     penalty_amount = (base - (sum of payments made(received_date) on or before date) + (sum adjustments made on or before date)) * rate
-        #     daily_compounding = (accumulated_penalty + accumulated_compounding) * rate
-        #     accumulated_penalty += penalty_amount
-        #     accumulated_compounding = accumulated_compounding + daily_compounding
-        #     total_penalty = accumulated_penalty + accumulated_compounding
+        faa_interest = invoice.invoice_interest_balance or Decimal('0.00')
+        total_amount = total_penalty + faa_interest
 
-        # Create result dictionary
+        # Apply maximum penalty cap if needed
+        if base > 0 and total_amount > base * 3:
+            total_amount = base * 3
+
         result = {
             "penalty_status": obligation.penalty_status,
             "penalty_type": cls.PenaltyType.AUTOMATIC_OVERDUE.value,
-            "days_late": days_late,
             "penalty_charge_rate": cls.DAILY_PENALTY_RATE * 100,
-            # TODO: Uncomment when calculation logic will be implemented
-            # "accumulated_penalty": accumulated_penalty,
-            # "accumulated_compounding": Decimal('0.00'),
-            # "penalty_today": penalty_today,
-            # "faa_interest": faa_interest,
-            # "total_amount": total_amount,
-            # "penalty_amount": penalty_today + faa_interest,
+            "days_late": days_late,
+            "accumulated_penalty": accumulated_penalty,
+            "accumulated_compounding": accumulated_compounding,
+            "total_penalty": total_penalty,
+            "faa_interest": faa_interest,
+            "total_amount": total_amount,
         }
 
         # Format all Decimal values to 2 decimal places
         for key, value in result.items():
-            if isinstance(value, Decimal):
+            if type(value) is Decimal:
                 result[key] = value.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
         return result
@@ -156,11 +192,9 @@ class PenaltyCalculationService:
             "penalty_type": cls.PenaltyType.AUTOMATIC_OVERDUE.value,
             "days_late": 0,
             "penalty_charge_rate": cls.DAILY_PENALTY_RATE * 100,
-            # TODO: Uncomment when calculation logic will be implemented
-            # "accumulated_penalty": Decimal('0'),
-            # "accumulated_compounding": Decimal('0'),
-            # "penalty_today": Decimal('0'),
-            # "faa_interest": Decimal('0'),
-            # "total_amount": obligation.fee_amount_dollars,
-            # "penalty_amount": Decimal('0'),
+            "accumulated_penalty": Decimal('0'),
+            "accumulated_compounding": Decimal('0'),
+            "total_penalty": Decimal('0'),
+            "faa_interest": Decimal('0'),
+            "total_amount": Decimal('0'),
         }

@@ -23,10 +23,9 @@ vi.mock("@/compliance/src/app/utils/getAutomaticOverduePenalty", () => ({
     penalty_charge_rate: "10%",
     accumulated_penalty: "1000.00",
     accumulated_compounding: "100.00",
-    penalty_today: "1100.00",
+    total_penalty: "1100.00",
     faa_interest: "50.00",
     total_amount: "1150.00",
-    penalty_amount: "1000.00",
   }),
 }));
 

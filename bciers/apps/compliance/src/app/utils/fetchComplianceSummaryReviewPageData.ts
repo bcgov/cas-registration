@@ -2,7 +2,6 @@ import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSu
 import { getComplianceSummaryPayments } from "@/compliance/src/app/utils/getComplianceSummaryPayments";
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
-import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
 
 export async function fetchComplianceSummaryReviewPageData(
   complianceReportVersionId: number,
@@ -12,12 +11,10 @@ export async function fetchComplianceSummaryReviewPageData(
     complianceReportVersion,
     monetaryPayments,
     appliedComplianceUnitsData,
-    automaticOverduePenalty,
   ] = await Promise.all([
     getComplianceSummary(complianceReportVersionId),
     getComplianceSummaryPayments(complianceReportVersionId),
     getComplianceAppliedUnits(complianceReportVersionId),
-    getAutomaticOverduePenalty(complianceReportVersionId),
   ]);
 
   return {
@@ -27,6 +24,5 @@ export async function fetchComplianceSummaryReviewPageData(
       compliance_report_version_id: complianceReportVersionId,
       applied_compliance_units: appliedComplianceUnitsData,
     },
-    ...automaticOverduePenalty,
   };
 }

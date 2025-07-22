@@ -183,8 +183,7 @@ export interface AutomaticOverduePenalty {
   penalty_charge_rate: string;
   accumulated_penalty: string;
   accumulated_compounding: string;
-  penalty_today: string;
+  total_penalty: string;
   faa_interest: string;
   total_amount: string;
-  penalty_amount: string;
 }

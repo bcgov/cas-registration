@@ -23,9 +23,9 @@ export const createPenaltySummaryReviewSchema = (
     penalty_charge_rate: readOnlyStringField("Penalty Rate (Daily):"),
     accumulated_penalty: readOnlyStringField("Accumulated Penalty:"),
     accumulated_compounding: readOnlyStringField("Accumulated Compounding:"),
-    penalty_today: readOnlyStringField("Penalty Amount:"),
+    total_penalty: readOnlyStringField("Penalty Amount:"),
     faa_interest: readOnlyStringField("FAA Interest (as of Today):"),
-    penalty_amount: readOnlyStringField("Total Amount (as of Today):"),
+    total_amount: readOnlyStringField("Total Amount (as of Today):"),
   },
 });
 
@@ -52,7 +52,7 @@ export const penaltySummaryReviewUiSchema: UiSchema = {
   days_late: commonReadOnlyOptions,
   accumulated_penalty: currencyUiConfig,
   accumulated_compounding: currencyUiConfig,
-  penalty_today: currencyUiConfig,
+  total_penalty: currencyUiConfig,
   faa_interest: currencyUiConfig,
-  penalty_amount: currencyUiConfig,
+  total_amount: currencyUiConfig,
 };

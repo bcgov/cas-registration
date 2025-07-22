@@ -12,14 +12,11 @@ class AutomaticOverduePenaltyOut(Schema):
     penalty_type: str
     days_late: int
     penalty_charge_rate: Decimal
-
-    # TODO: Uncomment when calculation logic will be implemented
-    # accumulated_penalty: Decimal
-    # accumulated_compounding: Decimal
-    # penalty_today: Decimal
-    # faa_interest: Decimal
-    # total_amount: Decimal
-    # penalty_amount: Decimal
+    accumulated_penalty: Decimal
+    accumulated_compounding: Decimal
+    total_penalty: Decimal
+    faa_interest: Decimal
+    total_amount: Decimal
 
     @staticmethod
     def resolve_penalty_status(obj: dict) -> str:
