@@ -3,6 +3,7 @@
 
 from decimal import Decimal
 from django.db import migrations
+from common.lib import pgtrigger
 
 
 def handle_emissions(apps, emissions_list):
@@ -39,7 +40,8 @@ def migrate_json_data(apps, schema_editor):
         raw_data = record.json_data
         updated_data = find_emissions(apps, raw_data, "emissions")
         record.json_data = updated_data
-        record.save(update_fields=["json_data"])
+        with pgtrigger.ignore("reporting.ReportRawActivityData:immutable_report_version"):
+            record.save(update_fields=["json_data"])
 
 
 class Migration(migrations.Migration):
