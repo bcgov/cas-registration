@@ -58,6 +58,7 @@ class Command(BaseCommand):
         REPEAT_DELAY = options["repeat_delay"]
 
         logger.info("Starting check_document_file_status")
+        RUN_FOREVER = False
         if REPETITIONS == 0:
             RUN_FOREVER = True
             logger.info(f"Running indefinitely with a delay of {REPEAT_DELAY} seconds between checks")
