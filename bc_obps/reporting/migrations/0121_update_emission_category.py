@@ -51,7 +51,7 @@ def reverse_update_emission_category_mapping_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0119_update_report_raw_activity_data_equivalent_emission'),
+        ('reporting', '0120_V3_11_0'),
     ]
 
     operations = [

@@ -26,6 +26,10 @@ from reporting.models import (
     ReportVersion,
     ReportElectricityImportData,
 )
+from reporting.service.emission_category_mapping_service import (
+    EmissionCategoryMappingService,
+)
+from collections import defaultdict
 
 
 class ReportSupplementaryVersionService:
@@ -60,6 +64,7 @@ class ReportSupplementaryVersionService:
         ReportSupplementaryVersionService.clone_report_version_verification(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_attachments(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_facilities(report_version, new_report_version)
+        ReportSupplementaryVersionService.reapply_emission_categories(new_report_version)
         # Return the newly created report version
         return new_report_version
 
@@ -528,3 +533,39 @@ class ReportSupplementaryVersionService:
                 cloned_product_allocation.report_emission_allocation = new_report_emission_allocation
             cloned_product_allocation.report_product = new_report_product
             cloned_product_allocation.save()
+
+    @staticmethod
+    def reapply_emission_categories(report_version: ReportVersion) -> None:
+        """
+        Reapplies emission categories for all emissions in the given report version.
+        """
+        report_source_types = ReportSourceType.objects.filter(report_version=report_version)
+        report_fuels = ReportFuel.objects.filter(report_version=report_version).select_related("report_source_type")
+        report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related("report_fuel")
+        methodologies = ReportMethodology.objects.filter(report_version=report_version).select_related("report_emission")
+
+        # Build lookups to avoid repeated database queries
+        emissions_by_fuel = defaultdict(list)
+        for emission in report_emissions:
+            emissions_by_fuel[emission.report_fuel_id].append(emission)
+        methodologies_by_emission = defaultdict(list)
+        for methodology in methodologies:
+            methodologies_by_emission[methodology.report_emission_id].append(methodology)
+        fuels_by_source_type = defaultdict(list)
+        for fuel in report_fuels:
+            fuels_by_source_type[fuel.report_source_type_id].append(fuel)
+
+        for source_type in report_source_types:
+            fuels = fuels_by_source_type.get(source_type.id, [])
+            for fuel in fuels:
+                emissions = emissions_by_fuel.get(fuel.id, [])
+                methodologies = methodologies_by_emission.get(emission.id, [])
+                if methodologies:
+                    for methodology in methodologies:
+                        EmissionCategoryMappingService.apply_emission_categories(
+                            source_type, fuel, emission, methodology
+                        )
+                else:
+                    EmissionCategoryMappingService.apply_emission_categories(source_type, fuel, emission)
+
+        print("Reapplying emission categories completed.")
