@@ -5,7 +5,12 @@ from django.db import migrations
 
 def update_emission_category_mapping_data(apps, schema_monitor):
     '''
-    Add initial data to erc.emission_category_mapping
+    Add missing emission category mappings for "General stationary non-compression and non-processing combustion" activity
+    and "Emissions from line tracing and non-processing and non-compression activities" emission category
+    for the source types:
+    - General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production
+      of useful energy
+    - Field gas or process vent gas combustion at a linear facilities operation
     '''
 
     EmissionCategoryMapping = apps.get_model('reporting', 'EmissionCategoryMapping')
@@ -34,7 +39,7 @@ def update_emission_category_mapping_data(apps, schema_monitor):
 
 def reverse_update_emission_category_mapping_data(apps, schema_monitor):
     '''
-    Remove initial data from erc.emission_category_mapping
+    Remove data added by update_emission_category_mapping_data migration
     '''
     EmissionCategoryMapping = apps.get_model('reporting', 'EmissionCategoryMapping')
     EmissionCategory = apps.get_model('reporting', 'EmissionCategory')
