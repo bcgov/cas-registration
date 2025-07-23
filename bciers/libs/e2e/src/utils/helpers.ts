@@ -609,7 +609,9 @@ export async function assertSuccessfulSnackbar(
   page: Page,
   message: string | RegExp,
 ) {
-  const snackbarLocator = page.locator(".MuiSnackbar-root").getByText(message);
+  const snackbarLocator = page
+    .locator(".MuiSnackbarContent-root")
+    .getByText(message);
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
 }
@@ -634,12 +636,12 @@ export async function linkIsVisible(
   text: string,
   visible: boolean,
 ) {
-  const link = await page.getByRole("link", { name: text }).first();
+  const link = await page.getByRole("link", { name: text });
   await expect(link).toBeVisible({ visible: visible });
   return link;
 }
 
-export async function assertSpinnerIsDone(row: Locator) {
+export async function waitForSpinner(row: Locator) {
   const spinner = row.locator('svg[aria-label="loading"]').first();
   await expect(spinner).toBeVisible();
   await expect(spinner).toBeHidden();
@@ -650,7 +652,10 @@ export async function selectOptionFromCombobox(
   page: Page,
   choice: string | RegExp,
 ) {
-  const optionsContainer = page.locator('ul[role="listbox"]');
+  const roleCell = page.locator(".MuiFormControl-root");
+  await expect(roleCell).toBeVisible();
+  await roleCell.click();
+  const optionsContainer = await page.locator(".MuiList-root");
   await expect(optionsContainer).toBeVisible();
   const option = optionsContainer.getByRole("option", { name: choice });
   await expect(option).toBeVisible();

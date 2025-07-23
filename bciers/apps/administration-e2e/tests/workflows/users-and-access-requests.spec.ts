@@ -12,6 +12,8 @@ import {
   AppRoute,
   MessageTextOperatorSelect,
   OperatorE2EValue,
+  UserAccessRequestActions,
+  UserAccessRequestRoles,
   UserAndAccessRequestGridHeaders,
   UserAndAccessRequestValues,
 } from "@/administration-e2e/utils/enums";
@@ -41,7 +43,7 @@ test.beforeAll(async () => {
 test.describe.configure({ mode: "serial" });
 test.describe("External User", () => {
   test("Approve a reporter", async ({ page }) => {
-    // 🛸 Navigate to Users and Access Requests from dashboard
+    // 🤣🛸 Navigate to Users and Access Requests from dashboard
     const accessRequestPage = new UsersAccessRequestPOM(page);
     await accessRequestPage.goToUserAccessRequestPage();
     await accessRequestPage.pageIsStable();
@@ -56,9 +58,12 @@ test.describe("External User", () => {
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
 
-    const userRoleCell = row.getByRole("combobox");
-    const originalRole = await userRoleCell.innerText();
-    await accessRequestPage.approveRequest(row, originalRole);
+    const role = UserAccessRequestRoles.REPORTER;
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.APPROVE,
+    );
     await assertSuccessfulSnackbar(page, /is now approved/i);
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
@@ -92,8 +97,16 @@ test.describe("External User", () => {
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
 
+    // Click Edit request
     await accessRequestPage.editRequest(row);
-    await accessRequestPage.assignNewRole(row, "Admin");
+    const role = UserAccessRequestRoles.ADMIN;
+
+    // Approve admin role
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.APPROVE,
+    );
     await assertSuccessfulSnackbar(page, /is now approved/i);
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
@@ -102,8 +115,6 @@ test.describe("External User", () => {
     });
 
     const newPage = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    // const context = await openNewBrowserContextAs(UserRole.INDUSTRY_USER);
-    // const newPage = await context.newPage();
 
     const dashboardPage = new DashboardPOM(newPage);
     await dashboardPage.route();
@@ -126,12 +137,22 @@ test.describe("External User", () => {
       UserAndAccessRequestValues.EMAIL,
     );
 
+    // Click Edit
+    await accessRequestPage.editRequest(row);
+    const role = await accessRequestPage.getCurrentRole(row);
+    await assertSuccessfulSnackbar(page, /is now pending/i);
+
+    // Decline Request
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.DECLINE,
+    );
+    await expect(row.getByText(role)).toBeHidden();
+    await assertSuccessfulSnackbar(page, /is now declined/i);
+
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
-
-    await accessRequestPage.editRequest(row);
-    await accessRequestPage.declineRequest(row);
-    await assertSuccessfulSnackbar(page, /is now declined/i);
 
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: "EXTERNAL: Decline a user operator request",

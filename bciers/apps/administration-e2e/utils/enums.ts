@@ -158,7 +158,7 @@ export enum UserAndAccessRequestGridHeaders {
 }
 
 export enum UserAndAccessRequestValues {
-  EMAIL = "email@email.com",
+  EMAIL = "email2@email.com",
 }
 
 export enum UserAccessRequestStatus {
@@ -186,3 +186,12 @@ export enum UserAccessRequestActions {
   DECLINE = "Decline",
   EDIT = "Edit",
 }
+
+export const UnactionedRequest: ReadonlyArray<UserAccessRequestActions> = [
+  UserAccessRequestActions.APPROVE,
+  UserAccessRequestActions.DECLINE,
+];
+
+export const ActionedRequest: ReadonlyArray<UserAccessRequestActions> = [
+  UserAccessRequestActions.EDIT,
+];
