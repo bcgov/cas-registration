@@ -60,7 +60,10 @@ class BCCarbonRegistryProjectService:
         if not address_related_fields:
             raise UserError("Operation type must be SFO or LFO to create a project in BCCR.")
 
-        operation_name = operation.name
+        # NOTE: Populating the operation name using the report operation name to make testing easier.
+        operation_name = (
+            compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
+        )
         compliance_period_end_date_year = compliance_period.end_date.year
         # Hardcoded value based on the Business Area decision
         project_description = f"The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), is a carbon pricing system that incentivizes emission reductions through performance-based targets. The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS)."
