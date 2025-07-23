@@ -201,17 +201,6 @@ class InvoiceQueryResponse:
 
 
 @dataclass
-class InvoiceGetResponse:
-    """Schema to return invoice details from ElicensingDataRefreshService"""
-
-    invoiceNumber: str
-    invoicePaymentDueDate: datetime
-    invoiceOutstandingBalance: Decimal
-    invoiceFeeBalance: Decimal | None
-    invoiceInterestBalance: Decimal | None
-
-
-@dataclass
 class PaymentRecord:
     """Internal schema for payment records from eLicensing"""
 
