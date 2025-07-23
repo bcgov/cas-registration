@@ -165,7 +165,7 @@ class ComplianceEarnedCredit(TimeStampedModel):
                 name="populate_issued_date_issued_by_on_decision",
                 when=pgtrigger.Before,
                 operation=pgtrigger.Update,
-                condition=pgtrigger.Q(new__issuance_status__in=["Approved", "Declined"]),
+                condition=pgtrigger.Q(new__issuance_status="Approved"),
                 func="""
                     new.issued_date = current_date;
                     new.issued_by_id = (select nullif(current_setting('my.guid', true), ''));
