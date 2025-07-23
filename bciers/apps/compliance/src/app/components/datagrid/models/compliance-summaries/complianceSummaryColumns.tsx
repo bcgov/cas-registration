@@ -2,7 +2,10 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCell from "@/compliance/src/app/components/compliance-summaries/cells/ActionCell";
 
 const PenaltyStatusCell = ({ row }: GridRenderCellParams) => {
-  return row.penalty_status ? row.penalty_status : "N/A";
+  if (!row.penalty_status || row.penalty_status === "NONE") {
+    return "N/A";
+  }
+  return row.penalty_status;
 };
 const ObligationIDCell = ({ row }: GridRenderCellParams) => {
   return row.obligation_id ? row.obligation_id : "N/A";
