@@ -539,6 +539,11 @@ class ReportSupplementaryVersionService:
         """
         Reapplies emission categories for all emissions in the given report version.
         """
+
+        # TODO: Refactor all this. Source type, fuel, methodology are all tied 1-1 to emission.
+        # FIXME: Fuel is optional, methodology isn't.
+
+
         report_source_types = ReportSourceType.objects.filter(report_version=report_version)
         report_fuels = ReportFuel.objects.filter(report_version=report_version).select_related("report_source_type")
         report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related("report_fuel")
