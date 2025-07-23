@@ -8,6 +8,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/complianceSummaryReviewSchema";
 import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
@@ -23,7 +24,12 @@ const ComplianceSummaryReviewComponent = ({
 
   let saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
   if (isCasStaff) {
+
     saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
+    // Don't show the continue button to internal users if the issuance status is CREDITS_NOT_ISSUED
+    if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
+      saveAndContinueUrl = "";
+    }
   }
 
   return (

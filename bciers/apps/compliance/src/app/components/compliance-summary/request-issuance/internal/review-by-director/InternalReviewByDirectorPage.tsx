@@ -33,6 +33,13 @@ export default async function InternalReviewByDirectorPage({
     );
   }
 
+  // prevent internal users from accessing the page if the issuance status is CREDITS_NOT_ISSUED
+  if (pageData.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
+    redirect(
+      `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`,
+    );
+  }
+
   const taskListElements = generateIssuanceRequestTaskList(
     complianceReportVersionId,
     pageData.reporting_year,
