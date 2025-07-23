@@ -11,6 +11,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
 
+
 @router.get(
     "/bccr/accounts/{account_id}/compliance-report-versions/{compliance_report_version_id}/compliance-units",
     response={200: ApplyComplianceUnitsOut, custom_codes_4xx: Message},
@@ -20,14 +21,14 @@ from compliance.constants import COMPLIANCE
 )
 def get_apply_compliance_units_page_data(
     request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
-) -> Tuple[Literal[200], DictStrAny]:  # <-- Return type is now DictStrAny
+) -> Tuple[Literal[200], ApplyComplianceUnitsOut]:
     apply_compliance_units_page_data = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
         account_id=account_id, compliance_report_version_id=compliance_report_version_id
     )
 
-    # Instead of schema instance, return plain dict
-    return 200, asdict(apply_compliance_units_page_data)
+    response = ApplyComplianceUnitsOut(**asdict(apply_compliance_units_page_data))
 
+    return 200, response
 
 
 @router.post(

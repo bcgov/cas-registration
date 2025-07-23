@@ -3,11 +3,11 @@ import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import {
   extractComplianceReportVersionId,
-  getUserRole,
   AppRoutes,
   COMPLIANCE_BASE,
   COMPLIANCE_REPORT_BASE,
 } from "./constants";
+import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";

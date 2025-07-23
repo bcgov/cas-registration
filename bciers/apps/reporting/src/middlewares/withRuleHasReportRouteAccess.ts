@@ -6,9 +6,9 @@ import {
 } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
+import { getUserRole } from "@bciers/middlewares";
 import {
   extractReportVersionId,
-  getUserRole,
   REPORT_APP_BASE,
   REPORT_BASE,
   REPORTING_BASE,
@@ -275,8 +275,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesSubmitted.some(
-          (path) => request?.nextUrl.pathname.includes(path),
+        !reportRoutesSubmitted.some((path) =>
+          request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -301,8 +301,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesReportingOperation.some(
-          (path) => request?.nextUrl.pathname.includes(path),
+        !reportRoutesReportingOperation.some((path) =>
+          request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;
@@ -330,8 +330,8 @@ export const permissionRules: PermissionRule[] = [
     },
     validate: (_reportVersionId, request) => {
       if (
-        !reportRoutesEIO.some(
-          (path) => request?.nextUrl.pathname.includes(path),
+        !reportRoutesEIO.some((path) =>
+          request?.nextUrl.pathname.includes(path),
         )
       ) {
         return false;

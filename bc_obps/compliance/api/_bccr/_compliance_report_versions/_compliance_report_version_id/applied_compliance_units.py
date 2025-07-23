@@ -10,7 +10,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
 
-
 @router.get(
     "/bccr/compliance-report-versions/{compliance_report_version_id}/applied-compliance-units",
     response={200: AppliedComplianceUnitsOut, custom_codes_4xx: Message},
@@ -20,19 +19,15 @@ from compliance.constants import COMPLIANCE
 )
 def get_applied_compliance_units(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], AppliedComplianceUnitsOut]:
+) -> Tuple[Literal[200], DictStrAny]:
     applied_compliance_units_data = ApplyComplianceUnitsService.get_applied_compliance_units_data(
         compliance_report_version_id=compliance_report_version_id
     )
-    applied_compliance_units=[asdict(unit) for unit in applied_compliance_units_data]
-    
     can_apply_units = ApplyComplianceUnitsService._can_apply_units(
-            compliance_report_version_id=compliance_report_version_id
-        )
-    
-    response = AppliedComplianceUnitsOut(
-        applied_compliance_units=applied_compliance_units,
-        can_apply_units=can_apply_units,
+        compliance_report_version_id
     )
 
-    return 200, response
+    return 200, {
+        "applied_compliance_units": [asdict(unit) for unit in applied_compliance_units_data],
+        "can_apply_units": can_apply_units,
+    }
