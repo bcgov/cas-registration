@@ -1,4 +1,8 @@
-import { AnalystSuggestion, ComplianceSummaryStatus, IssuanceStatus } from "@bciers/utils/src/enums";
+import {
+  AnalystSuggestion,
+  ComplianceSummaryStatus,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
 
 export interface DataGridSearchParams {
   page?: string;
