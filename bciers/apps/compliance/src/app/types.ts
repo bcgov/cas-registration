@@ -1,4 +1,4 @@
-import { AnalystSuggestion, IssuanceStatus } from "@bciers/utils/src/enums";
+import { AnalystSuggestion, ComplianceSummaryStatus, IssuanceStatus } from "@bciers/utils/src/enums";
 
 export interface DataGridSearchParams {
   page?: string;
@@ -140,10 +140,10 @@ export interface ComplianceSummary {
   reporting_year: number;
   excess_emissions: number;
   outstanding_balance?: number;
-  status?: string;
+  status?: ComplianceSummaryStatus;
   penalty_status?: string;
   obligation_id?: string;
-  issuance_status?: string;
+  issuance_status?: IssuanceStatus;
   compliance_charge_rate?: number;
   outstanding_balance_tco2e?: number;
   equivalent_value?: number;
