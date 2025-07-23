@@ -16,22 +16,23 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     status,
     issuance_status: issuanceStatus,
     id,
-    invoice_number: invoiceNumber,
   } = row;
 
   const basePath = `/compliance-summaries/${id}`;
 
   // Obligation logic
   if (obligationId && !isAllowedCas) {
-    if (invoiceNumber) {
+    if (
+      status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
+    ) {
       return {
-        cellText: "Manage Obligation",
-        basePath: `${basePath}/manage-obligation-review-summary`,
+        cellText: "Pending Invoice Creation",
+        basePath: "#",
       };
     }
     return {
-      cellText: "Pending Invoice Creation",
-      basePath: "#",
+      cellText: "Manage Obligation",
+      basePath: `${basePath}/manage-obligation-review-summary`,
     };
   }
 

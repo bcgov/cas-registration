@@ -152,7 +152,6 @@ export interface ComplianceSummary {
   outstanding_balance_tco2e?: number;
   equivalent_value?: number;
   outstanding_balance_equivalent_value?: number;
-  invoice_number?: string;
 }
 
 export interface ComplianceAppliedUnitsData {

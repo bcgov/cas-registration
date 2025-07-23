@@ -11,7 +11,6 @@ describe("ActionCell", () => {
     obligation_id?: string;
     status?: string;
     issuance_status?: string;
-    invoice_number?: string;
   }
 
   const createMockParams = (
@@ -20,7 +19,6 @@ describe("ActionCell", () => {
     obligation_id?: string,
     status?: string,
     issuance_status?: string,
-    invoice_number?: string,
   ): ActionCellParams =>
     ({
       id: id,
@@ -29,7 +27,6 @@ describe("ActionCell", () => {
         obligation_id,
         status,
         issuance_status,
-        invoice_number,
       } as ComplianceSummary,
       isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
@@ -45,14 +42,7 @@ describe("ActionCell", () => {
     it("displays 'Manage Obligation' when obligation_id and invoice_number are present", () => {
       render(
         ActionCell(
-          createMockParams(
-            123,
-            false,
-            "24-0001-1-1",
-            undefined,
-            undefined,
-            "OBI700000",
-          ),
+          createMockParams(123, false, "24-0001-1-1", undefined, undefined),
         ),
       );
       expectLink(
@@ -61,16 +51,14 @@ describe("ActionCell", () => {
       );
     });
 
-    it("displays 'Pending Invoice Creation' when obligation_id is present and invoice_number is not", () => {
+    it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
       render(
         ActionCell(
           createMockParams(
             123,
             false,
             "24-0001-1-1",
-            undefined,
-            undefined,
-            undefined,
+            "Obligation pending invoice creation",
           ),
         ),
       );
@@ -306,7 +294,6 @@ describe("ActionCell", () => {
           "24-0001-1-1",
           "Earned credits",
           IssuanceStatus.ISSUANCE_REQUESTED,
-          "OBI700000",
         ),
       ),
     );

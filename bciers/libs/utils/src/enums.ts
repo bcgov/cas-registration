@@ -122,6 +122,7 @@ export enum AnalystSuggestion {
 export enum ComplianceSummaryStatus {
   OBLIGATION_NOT_MET = "Obligation not met",
   OBLIGATION_FULLY_MET = "Obligation fully met",
+  OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation",
   EARNED_CREDITS = "Earned credits",
   NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }

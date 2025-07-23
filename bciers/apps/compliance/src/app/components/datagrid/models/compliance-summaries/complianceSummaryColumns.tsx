@@ -21,6 +21,8 @@ const ComplianceStatusCell = ({ row }: GridRenderCellParams) => {
       return "Obligation - not met";
     case ComplianceSummaryStatus.OBLIGATION_FULLY_MET:
       return "Obligation - met";
+    case ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION:
+      return "Obligation - pending invoice creation";
     case ComplianceSummaryStatus.EARNED_CREDITS:
       switch (row.issuance_status) {
         case IssuanceStatus.CREDITS_NOT_ISSUED:

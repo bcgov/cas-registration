@@ -18,7 +18,6 @@ const mockResponse = {
       status: "Obligation not met",
       penalty_status: "Accruing",
       obligation_id: "24-0001-1-1",
-      invoice_number: "OBI700000",
     },
     {
       id: 2,
@@ -80,10 +79,9 @@ const mockResponse = {
       reporting_year: 2024,
       excess_emissions: 5000,
       outstanding_balance: 1,
-      status: "Obligation not met",
+      status: "Obligation pending invoice creation",
       penalty_status: "N/A",
       obligation_id: "24-0001-1-5",
-      issuance_status: "Approved",
     },
     {
       id: 8,
@@ -281,7 +279,9 @@ describe("ComplianceSummariesDataGrid component", () => {
       within(row).queryByText("Operation 7"),
     );
     expect(seventhRow).toBeTruthy();
-    expect(within(seventhRow!).getByText("Obligation - not met")).toBeVisible();
+    expect(
+      within(seventhRow!).getByText("Obligation - pending invoice creation"),
+    ).toBeVisible();
     expect(within(seventhRow!).getAllByRole("gridcell")[5]).toHaveTextContent(
       "N/A",
     );
@@ -400,7 +400,7 @@ describe("ComplianceSummariesDataGrid component", () => {
     );
   });
 
-  it("shows 'Pending Invoice Creation' when there's no invoice_number", async () => {
+  it("shows 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", async () => {
     render(
       <ComplianceSummariesDataGrid
         initialData={mockResponse}
