@@ -16,4 +16,6 @@ class ElicensingPaymentTest(BaseTestCase):
             ("payment_object_id", "payment object id", None, None),
             ("amount", "amount", None, None),
             ("received_date", "received date", None, None),
+            ("method", "method", None, None),
+            ("receipt_number", "receipt number", None, None),
         ]
