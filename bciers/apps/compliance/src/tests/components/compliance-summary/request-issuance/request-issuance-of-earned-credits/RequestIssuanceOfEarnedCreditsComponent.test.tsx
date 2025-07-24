@@ -18,7 +18,7 @@ vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-const TEST_COMPLIANCE_SUMMARY_ID = "123";
+const TEST_COMPLIANCE_REPORT_VERSION_ID = 123;
 const VALID_ACCOUNT_ID = "123456789012345";
 const INVALID_ACCOUNT_ID = "123";
 const MOCK_TRADING_NAME = "Test Company";
@@ -30,7 +30,7 @@ const setupValidAccount = async () => {
 
   render(
     <RequestIssuanceOfEarnedCreditsComponent
-      complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+      complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
     />,
   );
   const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -51,7 +51,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
   it("displays form title and BCCR account section", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
       />,
     );
 
@@ -66,7 +66,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
   it("shows BCCR account input field", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
       />,
     );
 
@@ -77,7 +77,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
   it("does not show BCCR trading name initially", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
       />,
     );
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
@@ -98,7 +98,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     render(
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -149,7 +149,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/request-issuance-review-summary`,
+      `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/request-issuance-review-summary`,
     );
 
     const continueButton = screen.getByRole("button", {
@@ -160,7 +160,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     // Verify that actionHandler was called with correct parameters
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        `compliance/compliance-report-versions/${TEST_COMPLIANCE_SUMMARY_ID}/earned-credits`,
+        `compliance/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/earned-credits`,
         "PUT",
         "",
         {
@@ -174,7 +174,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/track-status-of-issuance`,
+        `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/track-status-of-issuance`,
       );
     });
   });
@@ -186,7 +186,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     render(
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -270,7 +270,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     render(
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");

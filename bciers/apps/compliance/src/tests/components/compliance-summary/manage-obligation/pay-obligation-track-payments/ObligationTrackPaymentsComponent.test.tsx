@@ -52,12 +52,14 @@ const mockData = {
   ],
 };
 
+const mockComplianceReportVersionId = 123;
+
 describe("ObligationTrackPaymentsComponent", () => {
   it("renders the form with correct data", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={mockData}
-        complianceSummaryId="123"
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -85,7 +87,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={mockData}
-        complianceSummaryId="123"
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -106,7 +108,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={mockDataNoPenalty}
-        complianceSummaryId="789"
+        complianceReportVersionId={789}
       />,
     );
 
@@ -126,7 +128,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={mockDataWithPenalty}
-        complianceSummaryId="456"
+        complianceReportVersionId={456}
       />,
     );
 

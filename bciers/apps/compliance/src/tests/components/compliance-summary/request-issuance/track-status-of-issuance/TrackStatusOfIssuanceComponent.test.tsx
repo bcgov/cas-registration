@@ -40,11 +40,11 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("TrackStatusOfIssuanceComponent", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockData: RequestIssuanceComplianceSummaryData = {
     reporting_year: 2023,
     emissions_attributable_for_compliance: 85,
-    emission_limit: 100,
+    emissions_limit: 100,
     excess_emissions: -15,
     earned_credits_amount: 100,
     issuance_status: IssuanceStatus.APPROVED,
@@ -65,7 +65,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -95,7 +95,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -115,7 +115,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={declinedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -133,7 +133,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={requestedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -151,14 +151,14 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={otherStatusData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 
@@ -166,7 +166,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -182,7 +182,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={declinedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -198,7 +198,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={requestedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -214,7 +214,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     render(
       <TrackStatusOfIssuanceComponent
         data={changesRequiredData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 

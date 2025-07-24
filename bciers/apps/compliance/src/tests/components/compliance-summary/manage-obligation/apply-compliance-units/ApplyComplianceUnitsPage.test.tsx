@@ -45,7 +45,9 @@ describe("ApplyComplianceUnitsPage", () => {
   });
 
   it("renders with correct components and generates task list", async () => {
-    render(await ApplyComplianceUnitsPage({ compliance_summary_id: "123" }));
+    render(
+      await ApplyComplianceUnitsPage({ compliance_report_version_id: 123 }),
+    );
 
     // Check components are rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
@@ -53,7 +55,7 @@ describe("ApplyComplianceUnitsPage", () => {
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      "123",
+      123,
       2024,
       ActivePage.ApplyComplianceUnits,
     );

@@ -25,7 +25,7 @@ vi.mock(
 );
 
 describe("ComplianceSummaryReviewPage", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -34,7 +34,7 @@ describe("ComplianceSummaryReviewPage", () => {
   it("renders with correct content and generates task list with one item", async () => {
     render(
       await ComplianceSummaryReviewPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 

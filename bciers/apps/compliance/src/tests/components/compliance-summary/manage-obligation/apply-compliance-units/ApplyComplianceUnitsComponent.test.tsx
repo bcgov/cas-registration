@@ -22,7 +22,7 @@ vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-const TEST_COMPLIANCE_SUMMARY_ID = "123";
+const TEST_COMPLIANCE_REPORT_VERSION_ID = 123;
 const VALID_ACCOUNT_ID = "123456789012345";
 const MOCK_TRADING_NAME = "Test Company";
 const MOCK_COMPLIANCE_ACCOUNT_ID = "COMP123";
@@ -39,6 +39,11 @@ const MOCK_UNITS = [
   },
 ];
 
+const MOCK_PROPS = {
+  complianceReportVersionId: TEST_COMPLIANCE_REPORT_VERSION_ID,
+  reportingYear: 2024,
+};
+
 const setupValidAccount = async () => {
   (
     getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
@@ -51,9 +56,7 @@ const setupValidAccount = async () => {
   });
 
   const renderResult = render(
-    <ApplyComplianceUnitsComponent
-      complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
-    />,
+    <ApplyComplianceUnitsComponent {...MOCK_PROPS} />,
   );
 
   const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -72,11 +75,7 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("displays form title and BCCR account section and input field", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
-      />,
-    );
+    render(<ApplyComplianceUnitsComponent {...MOCK_PROPS} />);
 
     expect(screen.getByText("Apply Compliance Units")).toBeVisible();
     expect(screen.getByText("Enter account ID")).toBeVisible();
@@ -84,11 +83,7 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("does not show compliance account and units initially", () => {
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
-      />,
-    );
+    render(<ApplyComplianceUnitsComponent {...MOCK_PROPS} />);
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
     expect(
       screen.queryByText("BCCR Compliance Account ID:"),
@@ -103,7 +98,7 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     expect(getBccrComplianceUnitsAccountDetails).toHaveBeenCalledWith(
       VALID_ACCOUNT_ID,
-      TEST_COMPLIANCE_SUMMARY_ID,
+      TEST_COMPLIANCE_REPORT_VERSION_ID,
     );
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
@@ -127,11 +122,7 @@ describe("ApplyComplianceUnitsComponent", () => {
       getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
     ).mockRejectedValueOnce(new Error("Unknown error"));
 
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
-      />,
-    );
+    render(<ApplyComplianceUnitsComponent {...MOCK_PROPS} />);
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
     fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 
@@ -369,7 +360,7 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_SUMMARY_ID}/compliance-units`,
+        `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
         "POST",
         "",
         {
@@ -386,7 +377,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.click(cancelButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${TEST_COMPLIANCE_SUMMARY_ID}/manage-obligation-review-summary`,
+      `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/manage-obligation-review-summary`,
     );
   });
 
@@ -395,11 +386,7 @@ describe("ApplyComplianceUnitsComponent", () => {
       getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
     ).mockRejectedValueOnce(new Error("Unknown error"));
 
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
-      />,
-    );
+    render(<ApplyComplianceUnitsComponent {...MOCK_PROPS} />);
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
     fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 

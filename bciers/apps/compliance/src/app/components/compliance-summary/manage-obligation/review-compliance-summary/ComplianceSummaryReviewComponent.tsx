@@ -20,6 +20,7 @@ export function ComplianceSummaryReviewComponent({
   complianceReportVersionId,
 }: Readonly<Props>) {
   const [errors, setErrors] = useState<string[]>([]);
+  console.log("complianceReportVersionId", complianceReportVersionId);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
   const backUrl = "/compliance-summaries";

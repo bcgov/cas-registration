@@ -25,7 +25,7 @@ describe("InternalReviewByDirectorComponent", () => {
   const mockData = {
     reporting_year: 2023,
     emissions_attributable_for_compliance: 85,
-    emission_limit: 100,
+    emissions_limit: 100,
     excess_emissions: -15,
     earned_credits_amount: 100,
     issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
@@ -38,7 +38,7 @@ describe("InternalReviewByDirectorComponent", () => {
     analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
   };
 
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -50,7 +50,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -81,7 +81,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -104,7 +104,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={dataWithDifferentSuggestion}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -122,7 +122,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={dataWithDifferentStatus}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -139,7 +139,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -147,7 +147,7 @@ describe("InternalReviewByDirectorComponent", () => {
     fireEvent.click(backButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-credits-issuance-request`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
     );
   });
 
@@ -160,7 +160,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={declinedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -174,7 +174,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -183,9 +183,9 @@ describe("InternalReviewByDirectorComponent", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        `compliance/compliance-report-versions/${mockComplianceSummaryId}/earned-credits`,
+        `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
-        `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+        `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
         {
           body: JSON.stringify({
             director_comment: "",
@@ -196,7 +196,7 @@ describe("InternalReviewByDirectorComponent", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -204,7 +204,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -213,9 +213,9 @@ describe("InternalReviewByDirectorComponent", () => {
 
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
-        `compliance/compliance-report-versions/${mockComplianceSummaryId}/earned-credits`,
+        `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
-        `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+        `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
         {
           body: JSON.stringify({
             director_comment: "",
@@ -226,7 +226,7 @@ describe("InternalReviewByDirectorComponent", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -236,7 +236,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -249,7 +249,7 @@ describe("InternalReviewByDirectorComponent", () => {
 
     // Should not navigate on error
     expect(mockPush).not.toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
 
     expect(screen.getByText("Submission failed")).toBeVisible();
@@ -259,7 +259,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -279,7 +279,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={changesRequiredData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -299,7 +299,7 @@ describe("InternalReviewByDirectorComponent", () => {
     render(
       <InternalReviewByDirectorComponent
         data={declinedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 

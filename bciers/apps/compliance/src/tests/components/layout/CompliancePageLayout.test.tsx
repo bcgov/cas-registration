@@ -18,7 +18,7 @@ vi.mock(
 );
 
 const mockProps = {
-  complianceSummaryId: "123",
+  complianceReportVersionId: 123,
   taskListElements: [
     {
       type: "Section" as const,

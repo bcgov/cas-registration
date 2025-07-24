@@ -45,9 +45,9 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("InternalTrackStatusOfIssuancePage", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockPageData = {
-    id: "123",
+    id: 123,
     reporting_year: 2024,
     earned_credits_amount: 100,
     issuance_status: IssuanceStatus.APPROVED,
@@ -71,7 +71,7 @@ describe("InternalTrackStatusOfIssuancePage", () => {
 
   it("renders the component with data", async () => {
     const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     render(Page);
@@ -80,7 +80,7 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     expect(screen.getByText("Mock Layout")).toBeVisible();
     expect(screen.getByText("Mock Track Status Component")).toBeVisible();
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       2024,
       ActivePage.TrackStatusOfIssuance,
     );
@@ -93,11 +93,11 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     });
 
     await InternalTrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
   });
 
@@ -108,11 +108,11 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     });
 
     await InternalTrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
   });
 
@@ -123,7 +123,7 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     });
 
     const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     render(Page);
@@ -139,7 +139,7 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     });
 
     const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     render(Page);
@@ -155,7 +155,7 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     });
 
     const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     render(Page);

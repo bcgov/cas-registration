@@ -30,9 +30,13 @@ vi.mock(
   "@/compliance/src/app/components/compliance-summary/manage-obligation/review-compliance-summary/ComplianceSummaryReviewComponent",
   () => ({
     __esModule: true,
-    ComplianceSummaryReviewComponent: ({ complianceSummaryId, data }: any) => (
+    ComplianceSummaryReviewComponent: ({
+      complianceReportVersionId,
+      data,
+    }: any) => (
       <div>
-        Mock Review Component - {complianceSummaryId} - {data.operation_name}
+        Mock Review Component - {complianceReportVersionId} -{" "}
+        {data.operation_name}
       </div>
     ),
   }),
@@ -42,7 +46,7 @@ import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/utils
 import { generateManageObligationTaskList } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockData = {
     id: 1,
     reporting_year: 2025,
@@ -70,7 +74,7 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
   it("fetches data, generates task list, and renders layout with review component", async () => {
     render(
       await ComplianceSummaryReviewPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -82,10 +86,10 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
     });
 
     expect(fetchComplianceSummaryReviewPageData).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
     );
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       2025,
       "ReviewComplianceSummary",
     );
