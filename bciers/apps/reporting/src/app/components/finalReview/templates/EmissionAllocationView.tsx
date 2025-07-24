@@ -13,19 +13,23 @@ interface EmissionAllocationProps {
 export const transformEmissionAllocationData = (
   data: ReportEmissionAllocation,
 ) => ({
-  allocation_methodology: data.allocation_methodology,
+  allocation_methodology: data?.allocation_methodology || null,
   allocation_other_methodology_description:
-    data.allocation_other_methodology_description,
-  basic_emission_allocation_data: data.report_product_emission_allocations
+    data?.allocation_other_methodology_description || null,
+  basic_emission_allocation_data: (
+    data?.report_product_emission_allocations || []
+  )
     .filter((category) => category.category_type === "basic")
     .map(calculateEmissionData),
-  fuel_excluded_emission_allocation_data:
-    data.report_product_emission_allocations
-      .filter((category) => category.category_type === "fuel_excluded")
-      .map(calculateEmissionData),
+  fuel_excluded_emission_allocation_data: (
+    data?.report_product_emission_allocations || []
+  )
+    .filter((category) => category.category_type === "fuel_excluded")
+    .map(calculateEmissionData),
   total_emission_allocations: {
-    facility_total_emissions: data.facility_total_emissions?.toString(),
-    products: data.report_product_emission_allocation_totals,
+    facility_total_emissions:
+      data?.facility_total_emissions?.toString() || null,
+    products: data?.report_product_emission_allocation_totals || [],
   },
 });
 
@@ -61,20 +65,29 @@ const addEmissionAllocationFields = (
 export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
   data,
 }) => {
+  // Early return if data is undefined or null
+  if (!data) {
+    return null;
+  }
+
   const transformedData = transformEmissionAllocationData(data);
   const fields: any[] = [
     { label: "Methodology", key: "allocation_methodology" },
-    ...(transformedData.allocation_other_methodology_description && [
-      {
-        label: "Other Methodology Description",
-        key: "allocation_other_methodology_description",
-      },
-    ]),
-    {
-      heading:
-        "Allocate the facility's total emissions, by emission category, among its regulated products in tCO2e:",
-    },
   ];
+
+  // Add conditional field only if allocation_other_methodology_description exists
+  if (transformedData.allocation_other_methodology_description) {
+    fields.push({
+      label: "Other Methodology Description",
+      key: "allocation_other_methodology_description",
+    });
+  }
+
+  fields.push({
+    heading:
+      "Allocate the facility's total emissions, by emission category, among its regulated products in tCO2e:",
+  });
+
   // Fields for basic emission allocation data
   addEmissionAllocationFields(
     fields,
@@ -103,15 +116,22 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
       key: "total_emission_allocations.facility_total_emissions",
     },
   );
-  transformedData.total_emission_allocations.products.forEach(
-    (product, productIndex) => {
-      fields.push({
-        label: product.product_name,
-        key: `total_emission_allocations.products.${productIndex}.allocated_quantity`,
-        showSeparator: false,
-      });
-    },
-  );
+
+  // Safely iterate through products array
+  if (
+    transformedData.total_emission_allocations.products &&
+    Array.isArray(transformedData.total_emission_allocations.products)
+  ) {
+    transformedData.total_emission_allocations.products.forEach(
+      (product, productIndex) => {
+        fields.push({
+          label: product.product_name,
+          key: `total_emission_allocations.products.${productIndex}.allocated_quantity`,
+          showSeparator: false,
+        });
+      },
+    );
+  }
 
   return (
     <SectionReview
