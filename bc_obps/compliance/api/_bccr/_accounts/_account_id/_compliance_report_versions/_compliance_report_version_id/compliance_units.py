@@ -35,7 +35,13 @@ def get_apply_compliance_units_page_data(
     "/bccr/accounts/{account_id}/compliance-report-versions/{compliance_report_version_id}/compliance-units",
     response={200: Dict[str, bool], custom_codes_4xx: Message},
     tags=COMPLIANCE,
-    description="Apply compliance units to a BCCR compliance account.",
+    description="""
+    Apply compliance units to a BCCR compliance account.
+    Returns:
+    - success (bool): Indicates whether the units were successfully applied.
+    - can_apply_units (bool): Indicates whether the user can still apply additional units,
+      based on the 50% credit cap rule relative to the original obligation fee.
+    """,
     auth=authorize("approved_industry_user"),
 )
 def apply_compliance_units(
@@ -44,7 +50,20 @@ def apply_compliance_units(
     compliance_report_version_id: int,
     payload: ApplyComplianceUnitsIn,
 ) -> Tuple[Literal[200], DictStrAny]:
+    # Apply the units
     ApplyComplianceUnitsService.apply_compliance_units(
-        account_id=account_id, compliance_report_version_id=compliance_report_version_id, payload=payload.model_dump()
+        account_id=account_id,
+        compliance_report_version_id=compliance_report_version_id,
+        payload=payload.model_dump(),
     )
-    return 200, {"success": True}
+
+    # Determine if the user can still apply more units
+    can_apply_units = ApplyComplianceUnitsService._can_apply_units(
+        compliance_report_version_id
+    )
+
+    # Return both flags in response
+    return 200, {
+        "success": True,
+        "can_apply_units": can_apply_units,
+    }

@@ -14,7 +14,9 @@ from compliance.constants import COMPLIANCE
     "/bccr/compliance-report-versions/{compliance_report_version_id}/applied-compliance-units",
     response={200: AppliedComplianceUnitsOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
-    description="Get applied compliance units for a specific compliance report version.",
+    description="""Returns applied compliance units for the given report version.
+    - applied_compliance_units: List of units already applied.
+    - can_apply_units: Whether additional units can be applied.""",
     auth=authorize("approved_industry_user"),
 )
 def get_applied_compliance_units(

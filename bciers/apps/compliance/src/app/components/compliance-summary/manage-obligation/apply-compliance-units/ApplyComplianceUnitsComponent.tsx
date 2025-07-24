@@ -192,8 +192,9 @@ export default function ApplyComplianceUnitsComponent({
   const handleApply = async () => {
     setStatus("applying");
     const response = await actionHandler(
-      `compliance/bccr/accounts/${(formData as ApplyComplianceUnitsFormData)
-        ?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
+      `compliance/bccr/accounts/${
+        (formData as ApplyComplianceUnitsFormData)?.bccr_holding_account_id
+      }/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
       "POST",
       "",
       {

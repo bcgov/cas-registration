@@ -151,12 +151,14 @@ class ApplyComplianceUnitsService:
             compliance_report_version_id
         )
         outstanding_balance = obligation_data.equivalent_value
+        fee_amount_dollars = obligation_data.fee_amount_dollars
 
         return ComplianceUnitsPageData(
             bccr_trading_name=bccr_compliance_account.master_account_name,
             bccr_compliance_account_id=bccr_compliance_account.entity_id,
             charge_rate=ComplianceChargeRateService.get_rate_for_year(compliance_report.report.reporting_year),
             outstanding_balance=outstanding_balance,
+            fee_amount_dollars=fee_amount_dollars,
             bccr_units=cls._format_bccr_units_for_grid_display(bccr_units.get("entities", [])),
         )
 

@@ -22,6 +22,7 @@ export interface BccrComplianceAccountResponse {
   bccr_units?: BccrUnit[];
   charge_rate: number;
   outstanding_balance: number;
+  fee_amount_dollars: number;
 }
 
 export interface RequestIssuanceOfEarnedCreditsFormData {
