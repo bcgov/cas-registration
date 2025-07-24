@@ -1,86 +1,50 @@
 import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
-import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
+import SubmittedForm from "@reporting/src/app/components/submitted/SubmittedForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
-import { HeaderStep } from "@reporting/src/app/components/taskList/types";
+import { vi } from "vitest";
 
 const mockRouterPush = vi.fn();
+const mockRouterBack = vi.fn();
 useRouter.mockReturnValue({
   push: mockRouterPush,
+  back: mockRouterBack,
 });
 
 vi.mock("@reporting/src/app/utils/getFinalReviewData", () => ({
   getFinalReviewData: vi.fn(),
 }));
 
-vi.mock("@bciers/components/form/components/MultiStepHeader", () => ({
-  default: () => <div data-testid="multi-step-header">Multi Step Header</div>,
-}));
-
-vi.mock("@bciers/components/form/components/ReportingStepButtons", () => ({
-  default: () => <div data-testid="reporting-step-buttons">Step Buttons</div>,
-}));
-
 vi.mock(
-  "@bciers/components/navigation/reportingTaskList/ReportingTaskList",
+  "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections",
   () => ({
-    default: () => <div data-testid="reporting-task-list">Task List</div>,
+    FinalReviewReportSections: ({ data }: { data: any }) => (
+      <div data-testid="report-sections">
+        Report Sections: {data?.report_operation?.operation_name}
+      </div>
+    ),
   }),
 );
 
-describe("The FinalReviewForm component", () => {
-  const mockNavigationInformation = {
-    headerStepIndex: 4,
-    headerSteps: [
-      HeaderStep.OperationInformation,
-      HeaderStep.ReportInformation,
-      HeaderStep.EmissionsData,
-      HeaderStep.AdditionalInformation,
-      HeaderStep.ComplianceSummary,
-      HeaderStep.SignOffSubmit,
-    ],
-    taskList: [
-      {
-        type: "Section" as const,
-        title: "Operation Information",
-        isChecked: true,
-        isExpanded: false,
-        isActive: false,
-      },
-      {
-        type: "Section" as const,
-        title: "Report Information",
-        isChecked: true,
-        isExpanded: false,
-        isActive: false,
-      },
-    ],
-    backUrl: "/back",
-    continueUrl: "/continue",
-  };
-
+describe("The SubmittedForm component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders the Loading component while data is being fetched", async () => {
-    (getFinalReviewData as any).mockImplementation(
+    (getFinalReviewData as vi.Mock).mockImplementation(
       () => new Promise(() => {}), // Never resolves to keep loading state
     );
 
-    render(
-      <FinalReviewForm
-        navigationInformation={mockNavigationInformation}
-        version_id={1}
-      />,
-    );
+    render(<SubmittedForm version_id={1} />);
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
     expect(getFinalReviewData).toHaveBeenCalledWith(1);
   });
 
-  it("renders all components when data is provided", async () => {
+  it("renders ReportSections and Back button when data is provided", async () => {
     const mockData = {
       report_operation: {
         activities: "Test Activities",
@@ -113,6 +77,14 @@ describe("The FinalReviewForm component", () => {
           activity_data: [],
           emission_summary: {},
           reportnonattributableemissions_records: [],
+          report_products: [],
+          report_emission_allocation: {
+            report_product_emission_allocations: [],
+            allocation_methodology: null,
+            allocation_other_methodology_description: null,
+            facility_total_emissions: null,
+            report_product_emission_allocation_totals: [],
+          },
         },
       ],
       report_additional_data: {
@@ -139,21 +111,59 @@ describe("The FinalReviewForm component", () => {
       },
     };
 
-    (getFinalReviewData as any).mockResolvedValue(mockData);
+    (getFinalReviewData as vi.Mock).mockResolvedValue(mockData);
 
-    render(
-      <FinalReviewForm
-        navigationInformation={mockNavigationInformation}
-        version_id={1}
-      />,
-    );
+    render(<SubmittedForm version_id={1} />);
 
     await waitFor(() => {
-      expect(screen.getByTestId("facility-review")).toBeInTheDocument();
-      expect(screen.getByTestId("multi-step-header")).toBeInTheDocument();
-      expect(screen.getByTestId("reporting-task-list")).toBeInTheDocument();
       expect(screen.getByTestId("report-sections")).toBeInTheDocument();
-      expect(screen.getByTestId("reporting-step-buttons")).toBeInTheDocument();
+      expect(screen.getByText("Back to All Reports")).toBeInTheDocument();
     });
+
+    expect(
+      screen.getByText("Report Sections: Test Operation"),
+    ).toBeInTheDocument();
+  });
+
+  it("calls router.push('/reporting/reports') when Back to All Reports button is clicked", async () => {
+    const mockData = {
+      report_operation: {
+        operation_name: "Test Operation",
+        operation_type: "SFO",
+        registration_purpose: "REPORTING_OPERATION",
+      },
+      report_person_responsible: {
+        first_name: "John",
+        last_name: "Doe",
+      },
+      facility_reports: [],
+      report_additional_data: {
+        capture_emissions: false,
+      },
+      report_compliance_summary: {
+        regulatory_values: {},
+        products: [],
+      },
+    };
+
+    (getFinalReviewData as vi.Mock).mockResolvedValue(mockData);
+
+    const user = userEvent.setup();
+    render(<SubmittedForm version_id={1} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Back to All Reports")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByText("Back to All Reports"));
+    expect(mockRouterPush).toHaveBeenCalledWith("/reporting/reports");
+  });
+
+  it("fetches data with correct version_id", () => {
+    (getFinalReviewData as vi.Mock).mockResolvedValue({});
+
+    render(<SubmittedForm version_id={42} />);
+
+    expect(getFinalReviewData).toHaveBeenCalledWith(42);
   });
 });

@@ -141,7 +141,6 @@ export const reportNewEntrantFields = (
   const otherExcludedEmissionsFields = reportNewEntrantEmission.filter(
     (emission) => emission.category_type === "other_excluded",
   );
-
   return [
     {
       label: "Authorization Date",
