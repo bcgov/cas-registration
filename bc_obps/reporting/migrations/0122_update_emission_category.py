@@ -21,14 +21,18 @@ def update_emission_category_mapping_data(apps, schema_monitor):
         [
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
-                source_type=SourceType.objects.get(name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'),
+                source_type=SourceType.objects.get(
+                    name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
+                ),
                 emission_category=EmissionCategory.objects.get(
                     category_name='Emissions from line tracing and non-processing and non-compression activities'
                 ),
             ),
             EmissionCategoryMapping(
                 activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
-                source_type=SourceType.objects.get(name='Field gas or process vent gas combustion at a linear facilities operation'),
+                source_type=SourceType.objects.get(
+                    name='Field gas or process vent gas combustion at a linear facilities operation'
+                ),
                 emission_category=EmissionCategory.objects.get(
                     category_name='Emissions from line tracing and non-processing and non-compression activities'
                 ),
@@ -46,18 +50,22 @@ def reverse_update_emission_category_mapping_data(apps, schema_monitor):
     Activity = apps.get_model('registration', 'Activity')
     SourceType = apps.get_model('reporting', 'SourceType')
     EmissionCategoryMapping.objects.get(
-                activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
-                source_type=SourceType.objects.get(name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'),
-                emission_category=EmissionCategory.objects.get(
-                    category_name='Emissions from line tracing and non-processing and non-compression activities'
-                ),
+        activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
+        source_type=SourceType.objects.get(
+            name='General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
+        ),
+        emission_category=EmissionCategory.objects.get(
+            category_name='Emissions from line tracing and non-processing and non-compression activities'
+        ),
     ).delete()
     EmissionCategoryMapping.objects.get(
-                activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
-                source_type=SourceType.objects.get(name='Field gas or process vent gas combustion at a linear facilities operation'),
-                emission_category=EmissionCategory.objects.get(
-                    category_name='Emissions from line tracing and non-processing and non-compression activities'
-                ),
+        activity=Activity.objects.get(name='General stationary non-compression and non-processing combustion'),
+        source_type=SourceType.objects.get(
+            name='Field gas or process vent gas combustion at a linear facilities operation'
+        ),
+        emission_category=EmissionCategory.objects.get(
+            category_name='Emissions from line tracing and non-processing and non-compression activities'
+        ),
     ).delete()
 
 
