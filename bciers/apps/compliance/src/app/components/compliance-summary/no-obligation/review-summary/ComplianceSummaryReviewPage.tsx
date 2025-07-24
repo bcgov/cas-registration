@@ -7,6 +7,12 @@ import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 export default async function ComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
+  console.log("------------------------------------");
+  console.log(
+    "complianceReportVersionId in ComplianceSummaryReviewPage",
+    complianceReportVersionId,
+  );
+  console.log("------------------------------------");
   const complianceSummary = await getComplianceSummary(
     complianceReportVersionId,
   );
