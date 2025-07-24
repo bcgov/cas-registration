@@ -28,10 +28,16 @@ export default async function ActivityInit({
   const orderedActivities = await getOrderedActivities(versionId, facilityId);
   if (step === -1) step = orderedActivities.length - 1; // handle last step from non-attributable emissions page
   let currentActivity = orderedActivities[step];
-  if (activityId)
-    currentActivity = orderedActivities.find((obj: ActivityData) => {
-      return obj.id === activityId;
-    });
+  if (activityId) {
+    currentActivity = orderedActivities.find(
+      (obj: ActivityData) => obj.id === activityId,
+    );
+  }
+
+  if (!currentActivity) {
+    currentActivity = orderedActivities[0];
+  }
+
   const activityData = await actionHandler(
     `reporting/report-version/${versionId}/facility-report/${facilityId}/initial-activity-data?activity_id=${currentActivity.id}`,
     "GET",
