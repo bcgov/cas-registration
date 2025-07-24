@@ -15,7 +15,6 @@ bccr_account_service = BCCarbonRegistryAccountService()
 
 
 class ApplyComplianceUnitsService:
-
     @classmethod
     def _can_apply_units(cls, compliance_report_version_id: int) -> bool:
         """
@@ -28,9 +27,7 @@ class ApplyComplianceUnitsService:
         - The total adjustments (credits already applied) do not exceed 50% of the original obligation fee.
         """
         # Retrieve the obligation linked to the compliance report version
-        obligation = ComplianceObligationService.get_obligation_for_report_version(
-            compliance_report_version_id
-        )
+        obligation = ComplianceObligationService.get_obligation_for_report_version(compliance_report_version_id)
 
         if not obligation:
             # No obligation found — cannot apply units
@@ -47,23 +44,18 @@ class ApplyComplianceUnitsService:
 
         # --- Check whether any balance remains to be paid ---
         outstanding_balance = (
-            obligation.elicensing_invoice.outstanding_balance
-            if obligation.elicensing_invoice
-            else Decimal("0")
+            obligation.elicensing_invoice.outstanding_balance if obligation.elicensing_invoice else Decimal("0")
         )
         if outstanding_balance <= 0:
             # Nothing left to pay — no need to apply units
             return False
 
         # --- Check how much has already been applied via adjustments ---
-        line_items = (
-            obligation.elicensing_invoice.elicensing_line_items.all()
-            if obligation.elicensing_invoice else []
-        )
+        line_items = obligation.elicensing_invoice.elicensing_line_items.all() if obligation.elicensing_invoice else []
 
-        total_adjustments = ElicensingAdjustment.objects.filter(
-            elicensing_line_item__in=line_items
-        ).aggregate(total=Sum("amount"))["total"] or Decimal("0")
+        total_adjustments = ElicensingAdjustment.objects.filter(elicensing_line_item__in=line_items).aggregate(
+            total=Sum("amount")
+        )["total"] or Decimal("0")
 
         if total_adjustments >= apply_units_cap:
             # Already applied the max allowed credits
@@ -71,7 +63,6 @@ class ApplyComplianceUnitsService:
 
         # All checks passed — user can apply more units
         return True
-
 
     @classmethod
     def _format_bccr_units_for_grid_display(cls, bccr_units: List[Optional[Dict[str, Any]]]) -> List[BCCRUnit]:

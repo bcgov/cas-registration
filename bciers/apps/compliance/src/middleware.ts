@@ -1,7 +1,6 @@
 import { stackMiddlewares, withAuthorization } from "@bciers/middlewares";
 import { withResponseCompliance } from "./middlewares/withResponseCompliance";
 import { withRuleHasComplianceRouteAccess } from "./middlewares/withRuleHasComplianceRouteAccess";
-import { withRuleHasRegisteredOperation } from "@reporting/src/middlewares/withRuleHasRegisteredOperation";
 
 export const appName = "compliance";
 
@@ -33,7 +32,6 @@ export const config = {
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
   withAuthorization,
-  withRuleHasRegisteredOperation,
   withRuleHasComplianceRouteAccess,
   withResponseCompliance,
 ]);

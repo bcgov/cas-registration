@@ -6,7 +6,10 @@ from registration.utils import custom_reverse_lazy
 
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
-CAN_APPLY_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_units"
+CAN_APPLY_UNITS_PATH = (
+    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_units"
+)
+
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent DB queries
 class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
@@ -88,5 +91,3 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             "message": "The system cannot connect to the external application. Please try again later. If the problem persists, contact GHGRegulator@gov.bc.ca for help."
         }
         mock_service.assert_called_once_with(compliance_report_version_id=self.compliance_report_version_id)
-
-   

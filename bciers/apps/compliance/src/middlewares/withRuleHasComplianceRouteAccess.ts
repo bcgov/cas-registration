@@ -11,15 +11,49 @@ import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
+import hasRegisteredOperationForCurrentUser from "@bciers/actions/api/hasRegisteredOperationForCurrentUser";
 
-export type RuleContext = {
+// --------------------
+// Rule Context & Types
+// --------------------
+type RuleContext = {
   canApplyComplianceUnitsCache: Record<number, boolean>;
   getComplianceAppliedUnits: (
     complianceReportVersionId: number,
   ) => Promise<boolean>;
+  getHasRegisteredOperation: () => Promise<boolean>;
 };
 
-export type PermissionRule = {
+const createRuleContext = (): RuleContext => {
+  const canApplyComplianceUnitsCache: Record<number, boolean> = {};
+  let hasRegisteredOperationCache: boolean | undefined;
+
+  return {
+    canApplyComplianceUnitsCache,
+    getComplianceAppliedUnits: async (complianceReportVersionId: number) => {
+      if (!(complianceReportVersionId in canApplyComplianceUnitsCache)) {
+        const result = await getComplianceAppliedUnits(
+          complianceReportVersionId,
+        );
+        canApplyComplianceUnitsCache[complianceReportVersionId] =
+          result.can_apply_units;
+      }
+      return canApplyComplianceUnitsCache[complianceReportVersionId];
+    },
+    getHasRegisteredOperation: async () => {
+      if (hasRegisteredOperationCache === undefined) {
+        const result = await hasRegisteredOperationForCurrentUser();
+        hasRegisteredOperationCache = result.has_registered_operation === true;
+      }
+      return hasRegisteredOperationCache;
+    },
+  };
+};
+
+// --------------------
+// Permission Rules
+// --------------------
+type PermissionRule = {
   name: string;
   isApplicable: (
     request: NextRequest,
@@ -37,25 +71,17 @@ export type PermissionRule = {
   ) => NextResponse;
 };
 
-const createRuleContext = (): RuleContext => {
-  const canApplyComplianceUnitsCache: Record<number, boolean> = {};
-
-  return {
-    canApplyComplianceUnitsCache,
-    getComplianceAppliedUnits: async (complianceReportVersionId: number) => {
-      if (!(complianceReportVersionId in canApplyComplianceUnitsCache)) {
-        const result = await getComplianceAppliedUnits(
-          complianceReportVersionId,
-        );
-        canApplyComplianceUnitsCache[complianceReportVersionId] =
-          result.can_apply_units;
-      }
-      return canApplyComplianceUnitsCache[complianceReportVersionId];
+const permissionRules: PermissionRule[] = [
+  {
+    name: "hasRegisteredOperation",
+    isApplicable: (request) =>
+      request.nextUrl.pathname.startsWith("/compliance"),
+    validate: async (_id, _request, context) => {
+      return await context!.getHasRegisteredOperation();
     },
-  };
-};
-
-export const permissionRules: PermissionRule[] = [
+    redirect: (_id, request) =>
+      NextResponse.redirect(new URL(`/onboarding`, request.url)),
+  },
   {
     name: "accessCanApplyUnits",
     isApplicable: (request) =>
@@ -75,12 +101,16 @@ export const permissionRules: PermissionRule[] = [
   },
 ];
 
+// --------------------
+// Rule Runner
+// --------------------
 const checkHasPathAccess = async (request: NextRequest) => {
   try {
     const { pathname } = request.nextUrl;
     const complianceReportVersionId =
       extractComplianceReportVersionId(pathname);
     if (!complianceReportVersionId) return null;
+
     const context = createRuleContext();
 
     for (const rule of permissionRules) {

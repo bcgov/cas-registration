@@ -58,9 +58,7 @@ def apply_compliance_units(
     )
 
     # Determine if the user can still apply more units
-    can_apply_units = ApplyComplianceUnitsService._can_apply_units(
-        compliance_report_version_id
-    )
+    can_apply_units = ApplyComplianceUnitsService._can_apply_units(compliance_report_version_id)
 
     # Return both flags in response
     return 200, {

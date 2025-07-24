@@ -19,7 +19,7 @@ export const ComplianceUnitsGrid = ({
     compliance_report_version_id: complianceReportVersionId,
     applied_compliance_units: appliedComplianceUnits,
   } = value;
-  const { can_apply_units } = appliedComplianceUnits;
+  const { can_apply_units: canApplyUnits } = appliedComplianceUnits;
 
   const router = useRouter();
 
@@ -58,7 +58,7 @@ export const ComplianceUnitsGrid = ({
           },
         }}
       />
-      {can_apply_units && (
+      {canApplyUnits && (
         <div className="flex justify-end mt-4">
           <Button
             variant="contained"

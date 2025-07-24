@@ -127,4 +127,21 @@ describe("ComplianceUnitsGrid", () => {
     expect(bccrLink).toHaveAttribute("target", "_blank");
     expect(bccrLink).toHaveAttribute("rel", "noopener noreferrer");
   });
+
+  it("does not render the Apply Compliance Units button when can_apply_units is false", () => {
+    const mockValueWithoutApply: ComplianceAppliedUnitsSummary = {
+      ...mockValue,
+      applied_compliance_units: {
+        ...mockValue.applied_compliance_units,
+        can_apply_units: false,
+      },
+    };
+
+    render(<ComplianceUnitsGrid value={mockValueWithoutApply} />);
+
+    const applyButton = screen.queryByRole("button", {
+      name: "Apply Compliance Units",
+    });
+    expect(applyButton).not.toBeInTheDocument();
+  });
 });
