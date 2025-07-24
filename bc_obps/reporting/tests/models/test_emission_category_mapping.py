@@ -740,7 +740,7 @@ class TestInitialData(TestCase):
                     'Third party line hits with release of gas',
                     'Flare stacks',
                     'Field gas or process vent gas combustion at a linear facilities operation',
-                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy'
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
                 ]
             ),
         )
