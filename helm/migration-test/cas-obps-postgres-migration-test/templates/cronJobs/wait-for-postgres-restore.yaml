@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-wait-for-postgres-restore-job
+  labels: {{- include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: wait-for-postgres-restore
+            image: alpine/k8s:1.29.15
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+            env:
+              - name: POSTGRES_CHART_SHORTNAME
+                value: {{ template "cas-obps-postgres-migration-test.fullname" . }}
+              - name: DESTINATION_NAMESPACE
+                value: {{ .Release.Namespace }}
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - |
+                timeout=600
+                interval=10
+                elapsed=0
+                while [[ $elapsed -lt $timeout ]]; do
+                    ready=$(kubectl get postgrescluster $POSTGRES_CHART_SHORTNAME -n $DESTINATION_NAMESPACE -o json \
+                        | jq -r '.status.instances[] | select(.name=="pgha1") | select(.readyReplicas == 1 and .replicas == 1)')
+                    if [[ -n "$ready" ]]; then
+                        echo "PostgresCluster $POSTGRES_CHART_SHORTNAME -n $DESTINATION_NAMESPACE -o json \ is ready."
+                        exit 0
+                    fi
+                    echo "Waiting for PostgresCluster to become ready..."
+                    sleep $interval
+                    elapsed=$((elapsed + interval))
+                done
+                echo "Timed out waiting for PostgresCluster readiness"
+                exit 1
