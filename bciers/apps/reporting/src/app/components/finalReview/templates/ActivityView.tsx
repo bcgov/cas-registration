@@ -62,7 +62,18 @@ const excludedKeys = ["units", "fuels", "emissions", "fuel type"];
 function renderObject(obj: unknown, labelPrefix = ""): React.ReactNode {
   if (Array.isArray(obj)) {
     return obj.map((item, index) => {
-      const title = labelPrefix ? `${labelPrefix} ${index + 1}:` : "";
+      // Format the label prefix to singular form and proper case
+      const formatLabel = (prefix: string) => {
+        const lower = prefix.toLowerCase();
+        if (lower === "units") return "Unit";
+        if (lower === "fuels") return "Fuel";
+        if (lower === "emissions") return "Emission";
+        return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+      };
+
+      const title = labelPrefix
+        ? `${formatLabel(labelPrefix)} ${index + 1}:`
+        : "";
       const containerStyle = {
         marginLeft: 20,
         marginBottom: 8,
@@ -85,21 +96,34 @@ function renderObject(obj: unknown, labelPrefix = ""): React.ReactNode {
   }
 
   if (obj && typeof obj === "object" && !Array.isArray(obj)) {
-    return Object.entries(obj).map(([key, value], idx) => (
-      <div key={`${key}-${idx}`} style={{ marginBottom: 4 }}>
-        {!excludedKeys.includes(key.toLowerCase()) && (
-          <strong>
-            {key
-              .replace(/([A-Z])/g, " $1")
-              .replace(/^./, (s) => s.toUpperCase())}
-            <span style={{ marginRight: "1px" }}></span>
-          </strong>
-        )}
-        {typeof value === "object" && value !== null
-          ? renderObject(value, key)
-          : ` ${String(value)}`}
-      </div>
-    ));
+    return Object.entries(obj)
+      .sort(([keyA], [keyB]) => {
+        // Put units at the top
+        if (keyA.toLowerCase().includes("unit")) return -1;
+        if (keyB.toLowerCase().includes("unit")) return 1;
+
+        // Put emissions at the bottom
+        if (keyA.toLowerCase().includes("emission")) return 1;
+        if (keyB.toLowerCase().includes("emission")) return -1;
+
+        // Keep other items in between
+        return 0;
+      })
+      .map(([key, value], idx) => (
+        <div key={`${key}-${idx}`} style={{ marginBottom: 4 }}>
+          {!excludedKeys.includes(key.toLowerCase()) && (
+            <strong>
+              {key
+                .replace(/([A-Z])/g, " $1")
+                .replace(/^./, (s) => s.toUpperCase())}
+              <span style={{ marginRight: "1px" }}></span>
+            </strong>
+          )}
+          {typeof value === "object" && value !== null
+            ? renderObject(value, key)
+            : ` ${String(value)}`}
+        </div>
+      ));
   }
 
   return <span>{String(obj)}</span>;
@@ -118,13 +142,8 @@ export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
           <h2 className={"py-2 w-full font-bold text-bc-bg-blue mb-4"}>
             {activityItem.activity}
           </h2>
-          {Object.entries(activityItem.source_types)
-            .sort(([keyA], [keyB]) => {
-              if (keyA.toLowerCase().includes("emissions")) return 1;
-              if (keyB.toLowerCase().includes("emissions")) return -1;
-              return 0;
-            })
-            .map(([sourceTypeName, sourceTypeValue], sourceTypeIndex) => {
+          {Object.entries(activityItem.source_types).map(
+            ([sourceTypeName, sourceTypeValue], sourceTypeIndex) => {
               if (sourceTypeName.toLowerCase().includes("fuels")) {
                 return (
                   <div key={sourceTypeIndex} style={styles.dataCard}>
@@ -165,7 +184,8 @@ export default function ActivitiesView({ activity_data }: ActivitiesViewProps) {
                   readonly={false}
                 />
               );
-            })}
+            },
+          )}
         </section>
       ))}
     </div>

@@ -130,25 +130,17 @@ export const eioFields = [
 ];
 export const reportNewEntrantFields = (
   productions: any[],
-  reportNewEntrantEmission: any,
+  reportNewEntrantEmission: any[],
 ) => {
-  // Ensure reportNewEntrantEmission is an array, handle undefined/null cases
-  const emissionsArray = Array.isArray(reportNewEntrantEmission)
-    ? reportNewEntrantEmission
-    : reportNewEntrantEmission
-    ? [reportNewEntrantEmission]
-    : [];
-
-  const basicEmissions = emissionsArray.filter(
-    (emission) => emission?.category_type === "basic",
+  const basicEmissions = reportNewEntrantEmission.filter(
+    (emission) => emission.category_type === "basic",
   );
-  const fuelExcludedEmissionsFields = emissionsArray.filter(
+  const fuelExcludedEmissionsFields = reportNewEntrantEmission.filter(
     (emission) => emission.category_type === "fuel_excluded",
   );
-  const otherExcludedEmissionsFields = emissionsArray.filter(
+  const otherExcludedEmissionsFields = reportNewEntrantEmission.filter(
     (emission) => emission.category_type === "other_excluded",
   );
-
   return [
     {
       label: "Authorization Date",

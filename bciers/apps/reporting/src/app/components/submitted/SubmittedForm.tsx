@@ -9,7 +9,7 @@ import Loading from "@bciers/components/loading/SkeletonForm";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
 
 interface Props {
-  version_id: any;
+  version_id: number;
 }
 
 const SubmittedForm: React.FC<Props> = ({ version_id }) => {

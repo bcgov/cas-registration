@@ -33,21 +33,18 @@ const fieldLabels: Record<string, string> = {
 export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
   data,
 }) => {
-  // Helper functions to determine flow type
-  const isEIO = () =>
+  const isEIO =
     data?.report_operation.registration_purpose === OperationTypes.EIO;
-  const isLFO = () =>
-    data?.report_operation.operation_type === OperationTypes.LFO;
-  const isSFO = () =>
-    data?.report_operation.operation_type === OperationTypes.SFO;
-  const isNewEntrant = () =>
+  const isLFO = data?.report_operation.operation_type === OperationTypes.LFO;
+  const isSFO = data?.report_operation.operation_type === OperationTypes.SFO;
+  const isNewEntrant =
     data?.report_operation.registration_purpose ===
     RegistrationPurposes.NEW_ENTRANT_OPERATION;
-  const isReportingOnly = () =>
+  const isReportingOnly =
     data?.report_operation.registration_purpose ===
     RegistrationPurposes.REPORTING_OPERATION;
 
-  const isSFOReportingOnly = () => isSFO() && isReportingOnly();
+  const isSFOReportingOnly = isSFO && isReportingOnly;
 
   // Component for rendering facility report information
   const renderFacilityReportInformation = () => (
@@ -102,7 +99,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
           />
 
           {/* Production Data - only for LFO and SFO non-reporting flows */}
-          {!isReportingOnly() && facilityReport.report_products?.length > 0 && (
+          {!isReportingOnly && facilityReport.report_products?.length > 0 && (
             <SectionReview
               title="Production Data"
               data={facilityReport.report_products}
@@ -119,7 +116,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
           )}
 
           {/* Allocation of Emissions - only for LFO and SFO non-reporting flows */}
-          {!isReportingOnly() && (
+          {!isReportingOnly && (
             <EmissionAllocationView
               data={facilityReport.report_emission_allocation}
             />
@@ -149,7 +146,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       <SectionReview
         title="Review Operation Information"
         data={data.report_operation}
-        fields={operationFields(isEIO())}
+        fields={operationFields(isEIO)}
       />
 
       {/* Person Responsible for Submitting Report - ALL FLOWS */}
@@ -160,7 +157,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       />
 
       {/* EIO Flow - only show Electricity Import Data */}
-      {isEIO() && data.report_electricity_import_data && (
+      {isEIO && data.report_electricity_import_data && (
         <SectionReview
           title="Electricity Import Data"
           data={data.report_electricity_import_data[0]}
@@ -169,10 +166,10 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       )}
 
       {/* Non-EIO Flows - show facility report information */}
-      {!isEIO() && renderFacilityReportInformation()}
+      {!isEIO && renderFacilityReportInformation()}
 
       {/* Additional Reporting Data - ALL NON-EIO FLOWS */}
-      {!isEIO() && data.report_additional_data && (
+      {!isEIO && data.report_additional_data && (
         <SectionReview
           title="Additional Reporting Data"
           data={data.report_additional_data}
@@ -181,7 +178,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       )}
 
       {/* New Entrant Information - only for New Entrant flows */}
-      {isNewEntrant() && data.report_new_entrant.length > 0 && (
+      {isNewEntrant && data.report_new_entrant.length > 0 && (
         <SectionReview
           title="Report New Entrant Information"
           data={data.report_new_entrant[0]}
@@ -193,7 +190,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       )}
 
       {/* Operation Emission Summary - LFO flows only */}
-      {isLFO() && data.operation_emission_summary && (
+      {isLFO && data.operation_emission_summary && (
         <SectionReview
           title="Operation Emission Summary"
           data={data.operation_emission_summary}
@@ -202,7 +199,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       )}
 
       {/* Compliance Summary - ALL NON-EIO FLOWS */}
-      {!isEIO() && !isSFOReportingOnly() && data.report_compliance_summary && (
+      {!isEIO && !isSFOReportingOnly && data.report_compliance_summary && (
         <SectionReview
           title="Compliance Summary"
           data={data.report_compliance_summary}
