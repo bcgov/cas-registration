@@ -117,11 +117,7 @@ export const EmissionAllocationView: React.FC<EmissionAllocationProps> = ({
     },
   );
 
-  // Safely iterate through products array
-  if (
-    transformedData.total_emission_allocations.products &&
-    Array.isArray(transformedData.total_emission_allocations.products)
-  ) {
+  if (transformedData.total_emission_allocations.products) {
     transformedData.total_emission_allocations.products.forEach(
       (product, productIndex) => {
         fields.push({
