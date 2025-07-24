@@ -17,6 +17,7 @@ class AutomaticOverduePenaltyOut(Schema):
     total_penalty: Decimal
     faa_interest: Decimal
     total_amount: Decimal
+    data_is_fresh: bool
 
     @staticmethod
     def resolve_penalty_status(obj: dict) -> str:

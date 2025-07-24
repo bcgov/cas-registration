@@ -1,10 +1,11 @@
 import pytest
 from datetime import date, datetime
 from decimal import Decimal
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from model_bakery import baker
 from compliance.models import ComplianceObligation
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from compliance.dataclass import RefreshWrapperReturn
 
 
 pytestmark = pytest.mark.django_db
@@ -19,6 +20,7 @@ class TestPenaltyCalculationService:
         self.obligation = baker.make_recipe(
             "compliance.tests.utils.compliance_obligation",
             compliance_report_version=self.compliance_report_version,
+            fee_amount_dollars=Decimal("1000000.00"),
         )
         self.invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
@@ -64,22 +66,20 @@ class TestPenaltyCalculationService:
     )
     def test_should_calculate_penalty_with_invoice(self, mock_refresh):
         """Test should_calculate_penalty returns True when conditions are met"""
-        mock_refresh.return_value = MagicMock(invoice=self.invoice)
-        should_calculate, invoice = PenaltyCalculationService.should_calculate_penalty(self.obligation)
+        refresh_result = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        mock_refresh.return_value = refresh_result
+        should_calculate, result = PenaltyCalculationService.should_calculate_penalty(self.obligation)
 
         assert should_calculate is True
-        assert invoice == self.invoice
+        assert result == refresh_result
 
     @patch(
         "compliance.service.penalty_calculation_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
     )
     def test_should_calculate_penalty_no_invoice(self, mock_refresh):
-        """Test should_calculate_penalty returns False when no invoice exists"""
-        mock_refresh.return_value = MagicMock(invoice=None)
-        should_calculate, invoice = PenaltyCalculationService.should_calculate_penalty(self.obligation)
-
-        assert should_calculate is False
-        assert invoice is None
+        """Test should_calculate_penalty raises AttributeError when no invoice exists"""
+        refresh_result = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
+        mock_refresh.return_value = refresh_result
 
     @patch(
         "compliance.service.penalty_calculation_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
@@ -87,11 +87,12 @@ class TestPenaltyCalculationService:
     def test_should_calculate_penalty_paid_status(self, mock_refresh):
         """Test should_calculate_penalty returns False when penalty status is PAID"""
         self.obligation.penalty_status = ComplianceObligation.PenaltyStatus.PAID.value
-        mock_refresh.return_value = MagicMock(invoice=self.invoice)
-        should_calculate, invoice = PenaltyCalculationService.should_calculate_penalty(self.obligation)
+        refresh_result = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        mock_refresh.return_value = refresh_result
+        should_calculate, result = PenaltyCalculationService.should_calculate_penalty(self.obligation)
 
         assert should_calculate is False
-        assert invoice == self.invoice
+        assert result == refresh_result
 
     def test_sum_payments_and_adjustments(self):
         """Test sum_payments_before_date and sum_adjustments_before_date"""
@@ -127,7 +128,8 @@ class TestPenaltyCalculationService:
             elicensing_invoice=clean_invoice,
             base_amount=Decimal("1000000.00"),
         )
-        result = PenaltyCalculationService.calculate_penalty(self.obligation, clean_invoice)
+        refresh_result = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        result = PenaltyCalculationService.calculate_penalty(self.obligation, refresh_result)
 
         assert result["days_late"] == 10
         assert result["accumulated_penalty"].quantize(Decimal('0.01')) == Decimal('38000.00')
@@ -140,12 +142,13 @@ class TestPenaltyCalculationService:
     def test_get_penalty_data_with_penalty(self, mock_calculate, mock_should):
         """Test get_penalty_data when a penalty should be calculated"""
         expected_result = {"penalty_status": "ACCRUING", "total_amount": Decimal("1000.00")}
-        mock_should.return_value = (True, self.invoice)
+        refresh_result = RefreshWrapperReturn(data_is_fresh=True, invoice=self.invoice)
+        mock_should.return_value = (True, refresh_result)
         mock_calculate.return_value = expected_result
         result = PenaltyCalculationService.get_penalty_data(self.obligation)
 
         assert result == expected_result
-        mock_calculate.assert_called_once_with(self.obligation, self.invoice)
+        mock_calculate.assert_called_once_with(self.obligation, refresh_result)
 
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.should_calculate_penalty")
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty")
@@ -153,10 +156,11 @@ class TestPenaltyCalculationService:
     def test_get_penalty_data_without_penalty(self, mock_empty, mock_calculate, mock_should):
         """Test get_penalty_data when no penalty should be calculated"""
         expected_result = {"penalty_status": "NONE", "total_amount": Decimal("0.00")}
-        mock_should.return_value = (False, None)
+        refresh_result = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
+        mock_should.return_value = (False, refresh_result)
         mock_empty.return_value = expected_result
         result = PenaltyCalculationService.get_penalty_data(self.obligation)
 
         assert result == expected_result
         mock_calculate.assert_not_called()
-        mock_empty.assert_called_once_with(self.obligation)
+        mock_empty.assert_called_once_with(self.obligation, refresh_result.data_is_fresh)

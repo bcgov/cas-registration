@@ -186,4 +186,5 @@ export interface AutomaticOverduePenalty {
   total_penalty: string;
   faa_interest: string;
   total_amount: string;
+  data_is_fresh: boolean;
 }

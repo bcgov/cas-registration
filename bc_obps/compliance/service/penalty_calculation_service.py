@@ -1,7 +1,8 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 from enum import Enum
-from typing import Dict, Any, Tuple, Optional
+from typing import Dict, Any, Tuple
+from compliance.dataclass import RefreshWrapperReturn
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
@@ -37,40 +38,36 @@ class PenaltyCalculationService:
         Returns:
             Dictionary containing penalty details or empty penalty data if no penalty applies
         """
-        should_calculate, invoice = cls.should_calculate_penalty(obligation)
+        should_calculate, refresh_result = cls.should_calculate_penalty(obligation)
 
-        if should_calculate and invoice:
-            return cls.calculate_penalty(obligation, invoice)
+        if should_calculate and refresh_result.invoice:
+            return cls.calculate_penalty(obligation, refresh_result)
         else:
-            return cls.get_empty_penalty_data(obligation)
+            return cls.get_empty_penalty_data(obligation, refresh_result.data_is_fresh)
 
     @classmethod
-    def should_calculate_penalty(cls, obligation: ComplianceObligation) -> Tuple[bool, Optional[ElicensingInvoice]]:
+    def should_calculate_penalty(cls, obligation: ComplianceObligation) -> Tuple[bool, RefreshWrapperReturn]:
         """
-        Determine if penalty calculation is needed for a compliance obligation and get the invoice.
+        Determine if penalty calculation is needed for a compliance obligation and get the refresh result.
 
         Args:
             obligation: The compliance obligation
 
         Returns:
-            Tuple containing a boolean indicating if penalty calculation is needed and the invoice (or None)
+            Tuple containing a boolean indicating if penalty calculation is needed and the refresh result
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        invoice = refresh_result.invoice
-
-        # Check if there's an associated eLicensing invoice
-        if not invoice:
-            return False, None
 
         # Check if penalty status is PAID (no need to calculate)
         if obligation.penalty_status == ComplianceObligation.PenaltyStatus.PAID.value:
-            return False, invoice
+            return False, refresh_result
 
         # Check if past deadline and has outstanding amount
+        invoice = refresh_result.invoice
         days_late = (cls.TODAY - invoice.due_date.date()).days
-        return (days_late > 0 and invoice.outstanding_balance > Decimal('0.00')), invoice
+        return (days_late > 0 and invoice.outstanding_balance > Decimal('0.00')), refresh_result
 
     @classmethod
     def sum_payments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
@@ -88,7 +85,7 @@ class PenaltyCalculationService:
         line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
 
         return ElicensingPayment.objects.filter(
-            elicensing_line_item__in=line_items, received_date__date__lte=date
+            elicensing_line_item__in=line_items, received_date__date__lt=date
         ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     @classmethod
@@ -107,17 +104,19 @@ class PenaltyCalculationService:
         line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
 
         return ElicensingAdjustment.objects.filter(
-            elicensing_line_item__in=line_items, adjustment_date__date__lte=date
+            elicensing_line_item__in=line_items, adjustment_date__date__lt=date
         ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     @classmethod
-    def calculate_penalty(cls, obligation: ComplianceObligation, invoice: ElicensingInvoice) -> Dict[str, Any]:
+    def calculate_penalty(
+        cls, obligation: ComplianceObligation, refresh_result: RefreshWrapperReturn
+    ) -> Dict[str, Any]:
         """
         Calculate penalty for an obligation by retrieving data from eLicensing.
 
         Args:
             obligation: The compliance obligation
-            invoice: The eLicensing invoice with penalty data
+            refresh_result: The refresh result containing invoice and data_is_fresh flag
 
         Returns:
             Dictionary containing penalty details retrieved from eLicensing:
@@ -130,14 +129,16 @@ class PenaltyCalculationService:
                 - total_penalty: Total penalty from eLicensing
                 - faa_interest: FAA interest from eLicensing
                 - total_amount: Total penalty including FAA interest
+                - data_is_fresh: Flag indicating if the data is fresh from the eLicensing API
         """
+        invoice = refresh_result.invoice
 
         # Initialize variables
-        base = invoice.outstanding_balance
+        base = obligation.fee_amount_dollars or Decimal('0.00')
         accumulated_penalty = Decimal('0.00')
         accumulated_compounding = Decimal('0.00')
         days_late = max(0, (cls.TODAY - invoice.due_date.date()).days)
-        current_date = invoice.due_date.date()
+        current_date = invoice.due_date.date() + timedelta(days=1)
 
         for _ in range(1, days_late + 1):
             payments = cls.sum_payments_before_date(invoice, current_date)
@@ -151,11 +152,12 @@ class PenaltyCalculationService:
             current_date += timedelta(days=1)
 
         faa_interest = invoice.invoice_interest_balance or Decimal('0.00')
-        total_amount = total_penalty + faa_interest
 
         # Apply maximum penalty cap if needed
-        if base > 0 and total_amount > base * 3:
-            total_amount = base * 3
+        if base > 0 and total_penalty > base * Decimal('3.00'):
+            total_penalty = base * Decimal('3.00')
+
+        total_amount = total_penalty + faa_interest
 
         result = {
             "penalty_status": obligation.penalty_status,
@@ -167,6 +169,7 @@ class PenaltyCalculationService:
             "total_penalty": total_penalty,
             "faa_interest": faa_interest,
             "total_amount": total_amount,
+            "data_is_fresh": refresh_result.data_is_fresh,
         }
 
         # Format all Decimal values to 2 decimal places
@@ -177,12 +180,13 @@ class PenaltyCalculationService:
         return result
 
     @classmethod
-    def get_empty_penalty_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
+    def get_empty_penalty_data(cls, obligation: ComplianceObligation, data_is_fresh: bool) -> Dict[str, Any]:
         """
         Return empty penalty data for a compliance obligation when no penalty applies.
 
         Args:
             obligation: The compliance obligation object
+            data_is_fresh: Flag indicating if the data is fresh from the eLicensing API
 
         Returns:
             Dictionary with default/empty penalty data
@@ -197,4 +201,5 @@ class PenaltyCalculationService:
             "total_penalty": Decimal('0'),
             "faa_interest": Decimal('0'),
             "total_amount": Decimal('0'),
+            "data_is_fresh": data_is_fresh,
         }

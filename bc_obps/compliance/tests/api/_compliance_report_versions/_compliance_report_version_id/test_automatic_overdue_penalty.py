@@ -26,6 +26,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
             "total_penalty": Decimal("38656.43"),
             "faa_interest": Decimal("0.00"),
             "total_amount": Decimal("38656.43"),
+            "data_is_fresh": True,
         }
         mock_get_penalty_data.return_value = penalty_data
 
@@ -52,3 +53,4 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         assert response_data["total_penalty"] == "38656.43"
         assert response_data["faa_interest"] == "0.00"
         assert response_data["total_amount"] == "38656.43"
+        assert response_data["data_is_fresh"]
