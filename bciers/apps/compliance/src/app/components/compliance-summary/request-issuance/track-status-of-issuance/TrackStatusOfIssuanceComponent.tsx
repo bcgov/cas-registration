@@ -11,14 +11,14 @@ import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 export default function TrackStatusOfIssuanceComponent({
   data,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Readonly<Props>) {
-  let backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  let backUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
   if (
     [
       IssuanceStatus.ISSUANCE_REQUESTED,

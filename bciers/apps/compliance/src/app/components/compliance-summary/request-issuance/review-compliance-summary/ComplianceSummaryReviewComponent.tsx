@@ -11,19 +11,19 @@ import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 const ComplianceSummaryReviewComponent = ({
   data,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Readonly<Props>) => {
   const isCasStaff = useSessionRole().includes("cas_");
   const backUrl = "/compliance-summaries";
 
-  let saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-of-earned-credits`;
+  let saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
   if (isCasStaff) {
-    saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
+    saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
   }
 
   return (

@@ -7,10 +7,7 @@ import InternalTrackStatusOfIssuanceComponent from "./InternalTrackStatusOfIssua
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-
-interface Props {
-  compliance_summary_id: string;
-}
+import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 
 const RESTRICTED_STATUSES = [
   IssuanceStatus.CHANGES_REQUIRED,
@@ -18,31 +15,34 @@ const RESTRICTED_STATUSES = [
 ];
 
 export default async function InternalTrackStatusOfIssuancePage({
-  compliance_summary_id: complianceSummaryId,
-}: Readonly<Props>) {
-  let pageData =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+  compliance_report_version_id: complianceReportVersionId,
+}: Readonly<HasComplianceReportVersion>) {
+  let pageData = await getRequestIssuanceComplianceSummaryData(
+    complianceReportVersionId,
+  );
 
   // Redirect to the previous page if the user is not authorized to view this page
   if (
     RESTRICTED_STATUSES.includes(pageData.issuance_status as IssuanceStatus)
   ) {
-    redirect(`/compliance-summaries/${complianceSummaryId}/review-by-director`);
+    redirect(
+      `/compliance-summaries/${complianceReportVersionId}/review-by-director`,
+    );
   }
 
   const taskListElements = generateIssuanceRequestTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     pageData.reporting_year,
     ActivePage.TrackStatusOfIssuance,
   );
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <InternalTrackStatusOfIssuanceComponent
         data={pageData}
-        complianceSummaryId={complianceSummaryId}
+        complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

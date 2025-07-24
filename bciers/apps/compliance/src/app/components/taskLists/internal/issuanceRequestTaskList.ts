@@ -8,11 +8,11 @@ export enum ActivePage {
 }
 
 export const generateIssuanceRequestTaskList: (
-  complianceSummaryId: string,
+  complianceReportVersionId: number,
   reporting_year: number,
   activePage?: ActivePage,
 ) => TaskListElement[] = (
-  complianceSummaryId,
+  complianceReportVersionId,
   reporting_year,
   activePage = ActivePage.ReviewComplianceSummary,
 ) => {
@@ -20,25 +20,25 @@ export const generateIssuanceRequestTaskList: (
     {
       type: "Page" as const,
       title: `Review ${reporting_year} Compliance Summary`,
-      link: `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`,
+      link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
       isActive: activePage === ActivePage.ReviewComplianceSummary,
     },
     {
       type: "Page" as const,
       title: "Review Credits Issuance Request",
-      link: `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`,
+      link: `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`,
       isActive: activePage === ActivePage.ReviewCreditsIssuanceRequest,
     },
     {
       type: "Page" as const,
       title: "Review by Director",
-      link: `/compliance-summaries/${complianceSummaryId}/review-by-director`,
+      link: `/compliance-summaries/${complianceReportVersionId}/review-by-director`,
       isActive: activePage === ActivePage.ReviewByDirector,
     },
     {
       type: "Page" as const,
       title: "Track Status of Issuance",
-      link: `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+      link: `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
       isActive: activePage === ActivePage.TrackStatusOfIssuance,
     },
   ];

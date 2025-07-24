@@ -5,19 +5,18 @@ import {
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
+import {
+  HasComplianceReportVersion,
+  RequestIssuanceComplianceSummaryData,
+} from "@/compliance/src/app/types";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
 
-interface Props {
-  compliance_summary_id: string;
-}
-
 export default async function ComplianceSummaryReviewPage({
-  compliance_summary_id: complianceSummaryId,
-}: Readonly<Props>) {
+  compliance_report_version_id: complianceReportVersionId,
+}: Readonly<HasComplianceReportVersion>) {
   const complianceSummary: RequestIssuanceComplianceSummaryData =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+    await getRequestIssuanceComplianceSummaryData(complianceReportVersionId);
 
   // Redirect the user to track status page if user already requested issuance or issuance is approved or declined
   if (
@@ -28,23 +27,23 @@ export default async function ComplianceSummaryReviewPage({
     ].includes(complianceSummary.issuance_status as IssuanceStatus)
   ) {
     redirect(
-      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
     );
   }
 
   const taskListElements = generateRequestIssuanceTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={complianceSummaryId}
+        complianceReportVersionId={complianceReportVersionId}
         data={complianceSummary}
       />
     </CompliancePageLayout>

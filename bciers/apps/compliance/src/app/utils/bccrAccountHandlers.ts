@@ -19,7 +19,7 @@ export const getBccrAccountDetails = async (
 
 export const getBccrComplianceUnitsAccountDetails = async (
   accountId: string,
-  complianceReportVersionId: string,
+  complianceReportVersionId: number,
 ): Promise<BccrComplianceAccountResponse> => {
   const response = await actionHandler(
     `compliance/bccr/accounts/${accountId}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,

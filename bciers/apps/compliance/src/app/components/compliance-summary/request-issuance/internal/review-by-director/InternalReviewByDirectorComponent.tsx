@@ -22,18 +22,18 @@ import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 const InternalReviewByDirectorComponent = ({
   data,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Props) => {
   const router = useRouter();
   const userRole = useSessionRole();
-  const continueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
+  const continueUrl = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
 
-  let backUrl = `/compliance-summaries/${complianceSummaryId}/review-credits-issuance-request`;
+  let backUrl = `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
   if (
     [IssuanceStatus.DECLINED].includes(data.issuance_status as IssuanceStatus)
   ) {
@@ -72,8 +72,8 @@ const InternalReviewByDirectorComponent = ({
       director_comment: formData?.director_comment,
       director_decision: decision,
     };
-    const endpoint = `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`;
-    const pathToRevalidate = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
+    const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
+    const pathToRevalidate = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });

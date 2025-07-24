@@ -12,22 +12,22 @@ import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 
 interface Props {
   data: ComplianceSummaryReviewPageData;
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 export function ComplianceSummaryReviewComponent({
   data,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Readonly<Props>) {
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
   const backUrl = "/compliance-summaries";
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
 
   /**
    * Attempts to fetch and open a compliance invoice PDF in a new window.
-   * - Calls the app API route `/compliance/api/invoice/{complianceSummaryId}`.
+   * - Calls the app API route `/compliance/api/invoice/{complianceReportVersionId}`.
    * - If the response is a 4xx/5xx with a JSON payload containing `errors`,
    *   extracts the first error message and stores it in state for display.
    * - If the response is successful (PDF stream), converts it to a Blob,
@@ -39,7 +39,7 @@ export function ComplianceSummaryReviewComponent({
 
     try {
       const res = await fetch(
-        `/compliance/api/invoice/${complianceSummaryId}`,
+        `/compliance/api/invoice/${complianceReportVersionId}`,
         {
           method: "GET",
           cache: "no-store",

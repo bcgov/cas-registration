@@ -19,15 +19,15 @@ import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
 
 interface Props {
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 const RequestIssuanceOfEarnedCreditsComponent = ({
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Readonly<Props>) => {
   const router = useRouter();
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
 
   const [formData, setFormData] = useState<
     RequestIssuanceOfEarnedCreditsFormData | {}
@@ -67,7 +67,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
   ) => {
     setIsSubmitting(true);
     const response = await actionHandler(
-      `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`,
+      `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`,
       "PUT",
       "",
       {

@@ -156,7 +156,7 @@ export interface ComplianceAppliedUnitsData {
   row_count: number;
 }
 export interface ComplianceAppliedUnitsSummary {
-  compliance_report_version_id: string;
+  compliance_report_version_id: number;
   applied_compliance_units: ComplianceAppliedUnitsData;
 }
 

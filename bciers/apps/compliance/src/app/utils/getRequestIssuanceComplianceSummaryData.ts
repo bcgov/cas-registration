@@ -7,7 +7,7 @@ import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types
  * @returns The compliance report version data with issuance information
  */
 export const getRequestIssuanceComplianceSummaryData = async (
-  complianceReportVersionId?: string,
+  complianceReportVersionId?: number,
 ): Promise<RequestIssuanceComplianceSummaryData> => {
   const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
   const data = await actionHandler(endpoint, "GET", "");

@@ -17,17 +17,17 @@ import FormAlerts from "@bciers/components/form/FormAlerts";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 interface Props {
   initialFormData: RequestIssuanceComplianceSummaryData;
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 const InternalReviewCreditsIssuanceRequestComponent = ({
   initialFormData,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Readonly<Props>) => {
   const userRole = useSessionRole();
   const router = useRouter();
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`;
-  const continueUrl = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`;
+  const continueUrl = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
 
   const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;
   const [errors, setErrors] = useState<string[] | undefined>();
@@ -55,8 +55,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       analyst_suggestion: formData?.analyst_suggestion,
       analyst_comment: formData?.analyst_comment,
     };
-    const endpoint = `compliance/compliance-report-versions/${complianceSummaryId}/earned-credits`;
-    const pathToRevalidate = `/compliance-summaries/${complianceSummaryId}/review-by-director`;
+    const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
+    const pathToRevalidate = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });

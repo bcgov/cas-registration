@@ -10,15 +10,15 @@ import { PayObligationTrackPaymentsFormData } from "@/compliance/src/app/types";
 
 interface Props {
   readonly data: PayObligationTrackPaymentsFormData;
-  readonly complianceSummaryId: string;
+  readonly complianceReportVersionId: number;
 }
 
 export function ObligationTrackPaymentsComponent({
   data,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/automatic-overdue-penalty`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/automatic-overdue-penalty`;
 
   return (
     <FormBase

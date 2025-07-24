@@ -4,17 +4,17 @@ import { ReactNode } from "react";
 import CompliancePageHeading from "@/compliance/src/app/components/layout/CompliancePageHeading";
 
 interface Props {
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
   taskListElements: TaskListElement[];
   children: ReactNode;
 }
 
 const CompliancePageLayout: ({
-  complianceSummaryId,
+  complianceReportVersionId,
   taskListElements,
   children,
 }: Readonly<Props>) => JSX.Element = ({
-  complianceSummaryId,
+  complianceReportVersionId,
   taskListElements,
   children,
 }: Readonly<Props>) => {
@@ -22,7 +22,9 @@ const CompliancePageLayout: ({
     <div>
       <div className="container mx-auto pb-4">
         <h2 className="text-2xl font-bold mb-4 text-bc-bg-blue">
-          <CompliancePageHeading complianceSummaryId={complianceSummaryId} />
+          <CompliancePageHeading
+            compliance_report_version_id={complianceReportVersionId}
+          />
         </h2>
       </div>
       <div className="w-full flex">
