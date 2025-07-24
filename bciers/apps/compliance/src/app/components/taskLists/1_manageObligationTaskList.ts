@@ -17,11 +17,7 @@ export const generateManageObligationTaskList: (
     defaultActiveIndex === undefined
       ? ActivePage.ReviewComplianceSummary
       : defaultActiveIndex;
-  const {
-    reporting_year: reportingYear,
-    penalty_status: penaltyStatus,
-    outstanding_balance: outstandingBalance,
-  } = data;
+  const { reporting_year: reportingYear, penalty_status: penaltyStatus } = data;
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
       ? {
@@ -69,8 +65,7 @@ export const generateManageObligationTaskList: (
 
   if (
     activePage === ActivePage.PayObligationTrackPayments &&
-    penaltyStatus === "ACCRUING" &&
-    outstandingBalance === 0
+    penaltyStatus === "ACCRUING"
   ) {
     const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
       complianceReportVersionId,
