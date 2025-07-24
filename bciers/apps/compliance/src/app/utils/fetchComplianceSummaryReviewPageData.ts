@@ -7,12 +7,6 @@ export async function fetchComplianceSummaryReviewPageData(
   complianceReportVersionId: number,
 ): Promise<ComplianceSummaryReviewPageData> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  console.log("----------------------------------------");
-  console.log(
-    "complianceReportVersionId in fetchComplianceSummaryReviewPageData",
-    complianceReportVersionId,
-  );
-  console.log("----------------------------------------");
   const [
     complianceReportVersion,
     monetaryPayments,

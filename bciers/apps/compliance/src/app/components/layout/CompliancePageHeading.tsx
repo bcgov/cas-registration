@@ -7,11 +7,6 @@ export const CompliancePageHeading = async ({
   const operation = await getOperationByComplianceReportVersionId(
     complianceReportVersionId,
   );
-  console.log(
-    "getOperationByComplianceReportVersionId",
-    getOperationByComplianceReportVersionId,
-  );
-  console.log("operation", operation);
   return (
     <div className="container mx-auto pb-4">
       <h2 className="text-2xl font-bold mb-4 text-bc-bg-blue">

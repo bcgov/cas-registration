@@ -13,12 +13,6 @@ import {
 export default async function ComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
-  console.log("------------------------------------");
-  console.log(
-    "complianceReportVersionId in ComplianceSummaryReviewPage",
-    complianceReportVersionId,
-  );
-  console.log("------------------------------------");
   const complianceSummaryReviewPageData: ComplianceSummaryReviewPageData =
     await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
