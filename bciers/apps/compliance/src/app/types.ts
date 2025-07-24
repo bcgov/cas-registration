@@ -168,3 +168,7 @@ export interface ComplianceSummaryReviewPageData extends ComplianceSummary {
 export interface Invoice {
   invoice_number: string;
 }
+
+export interface HasComplianceReportVersion {
+  compliance_report_version_id: number;
+}
