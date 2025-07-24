@@ -1,7 +1,7 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesPodOperator,
+    KubernetesJobOperator,
 )
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
@@ -44,7 +44,7 @@ test_migrations_dag = DAG(
 )
 
 
-postgres_helm_install = KubernetesPodOperator(
+postgres_helm_install = KubernetesJobOperator(
     task_id="install_cas_obps_postgres_migration_test_chart",
     name="install_cas_obps_postgres_migration_test_chart",
     namespace=DESTINATION_NAMESPACE,
@@ -61,35 +61,10 @@ postgres_helm_install = KubernetesPodOperator(
     dag=test_migrations_dag,
 )
 
-wait_for_postgres_restore = KubernetesPodOperator(
+trigger_wait_for_postgres_restore = PythonOperator(
+    python_callable=trigger_k8s_cronjob,
     task_id="wait_for_postgres_restore",
-    name="wait_for_postgres_restore",
-    namespace=DESTINATION_NAMESPACE,
-    service_account_name=SERVICE_ACCOUNT_NAME,
-    image=K8S_IMAGE,
-    cmds=["bash", "-c"],
-    arguments=[
-        f"""
-        timeout=600
-        interval=10
-        elapsed=0
-        while [[ $elapsed -lt $timeout ]]; do
-            ready=$(kubectl get postgrescluster {POSTGRES_CHART_SHORTNAME} -n {DESTINATION_NAMESPACE} -o json \
-                | jq -r '.status.instances[] | select(.name=="pgha1") | select(.readyReplicas == 1 and .replicas == 1)')
-            if [[ -n "$ready" ]]; then
-                echo "PostgresCluster {POSTGRES_CHART_SHORTNAME} is ready."
-                exit 0
-            fi
-            echo "Waiting for PostgresCluster to become ready..."
-            sleep $interval
-            elapsed=$((elapsed + interval))
-        done
-        echo "Timed out waiting for PostgresCluster readiness"
-        exit 1
-        """
-    ],
-    get_logs=True,
-    is_delete_operator_pod=True,
+    op_args=["pg-migration-test-wait-for-postgres-restore-job", DESTINATION_NAMESPACE],
     dag=test_migrations_dag,
 )
 
@@ -100,7 +75,7 @@ trigger_postgres_migration_test_cronjob = PythonOperator(
     dag=test_migrations_dag,
 )
 
-backend_helm_install = KubernetesPodOperator(
+backend_helm_install = KubernetesJobOperator(
     task_id="install_cas_obps_backend_migration_test_chart",
     name="install_cas_obps_backend_migration_test_chart",
     namespace=DESTINATION_NAMESPACE,
@@ -117,35 +92,10 @@ backend_helm_install = KubernetesPodOperator(
     dag=test_migrations_dag,
 )
 
-wait_for_backend = KubernetesPodOperator(
+trigger_wait_for_backend = PythonOperator(
+    python_callable=trigger_k8s_cronjob,
     task_id="wait_for_backend",
-    name="wait_for_backend",
-    namespace=DESTINATION_NAMESPACE,
-    service_account_name=SERVICE_ACCOUNT_NAME,
-    image=K8S_IMAGE,
-    cmds=["bash", "-c"],
-    arguments=[
-        f"""
-        timeout=600
-        interval=10
-        elapsed=0
-        while [[ $elapsed -lt $timeout ]]; do
-            ready=$(kubectl get deployment {BACKEND_CHART_SHORTNAME}-backend -n {DESTINATION_NAMESPACE} -o json \
-                | jq -r 'select(.status.readyReplicas == .spec.replicas)')
-            if [[ -n "$ready" ]]; then
-                echo "Deployment {BACKEND_CHART_SHORTNAME}-backend is ready."
-                exit 0
-            fi
-            echo "Waiting for Deployment to become ready..."
-            sleep $interval
-            elapsed=$((elapsed + interval))
-        done
-        echo "Timed out waiting for Deployment readiness"
-        exit 1
-        """
-    ],
-    get_logs=True,
-    is_delete_operator_pod=True,
+    op_args=["be-migration-test-wait-for-backend-job", DESTINATION_NAMESPACE],
     dag=test_migrations_dag,
 )
 
@@ -156,7 +106,7 @@ trigger_backend_migration_test_cronjob = PythonOperator(
     dag=test_migrations_dag,
 )
 
-uninstall_helm_charts = KubernetesPodOperator(
+uninstall_helm_charts = KubernetesJobOperator(
     task_id="uninstall_helm_charts",
     name="uninstall_helm_charts",
     namespace=DESTINATION_NAMESPACE,
@@ -174,10 +124,10 @@ uninstall_helm_charts = KubernetesPodOperator(
 
 (
     postgres_helm_install
-    >> wait_for_postgres_restore
+    >> trigger_wait_for_postgres_restore
     >> trigger_postgres_migration_test_cronjob
     >> backend_helm_install
-    >> wait_for_backend
+    >> trigger_wait_for_backend
     >> trigger_backend_migration_test_cronjob
     >> uninstall_helm_charts
 )
