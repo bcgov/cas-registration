@@ -8,7 +8,7 @@ class BCCarbonRegistryCreditIssuanceService:
     def __init__(self) -> None:
         self.client = BCCarbonRegistryAPIClient()
 
-    def issue_credits(self, earned_credit: ComplianceEarnedCredit, bccr_project_data: Dict) -> None:
+    def issue_credits(self, earned_credit: ComplianceEarnedCredit, bccr_project_data: Dict) -> Dict:
         """
         Issues earned credits in the BC Carbon Registry (BCCR) for a compliance report.
 
@@ -66,3 +66,4 @@ class BCCarbonRegistryCreditIssuanceService:
         response = self.client.create_issuance(issuance_data=credits_issuance_payload)
         if not response.get("id"):
             raise UserError("Failed to issue credits in BCCR")
+        return response

@@ -1,3 +1,4 @@
+import logging
 from compliance.dataclass import ComplianceEarnedCreditsUpdate
 from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
 from typing import Dict, Optional
@@ -9,6 +10,8 @@ from registration.models.user import User
 
 bccr_project_service = BCCarbonRegistryProjectService()
 bccr_credit_issuance_service = BCCarbonRegistryCreditIssuanceService()
+
+logger = logging.getLogger(__name__)
 
 
 class ComplianceEarnedCreditsService:
@@ -129,11 +132,44 @@ class ComplianceEarnedCreditsService:
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus(director_decision)
 
         if director_decision == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
-            new_project_data = bccr_project_service.create_project(
+            new_project_data = cls.create_bccr_project_for_earned_credit(earned_credit)
+            cls.issue_bccr_credits_for_earned_credit(earned_credit, new_project_data)
+        earned_credit.save(update_fields=["issuance_status", "director_comment"])
+
+    @classmethod
+    def create_bccr_project_for_earned_credit(cls, earned_credit: ComplianceEarnedCredit) -> Dict:
+        """
+        Create or fetch a BCCR project for the earned credit, ensuring idempotency.
+        """
+        if earned_credit.bccr_project_id:
+            logger.info(f"Project already created for earned credit {earned_credit.id}, fetching details...")
+            project_data = bccr_project_service.client.get_project_details(earned_credit.bccr_project_id)
+        else:
+            if not earned_credit.bccr_holding_account_id:
+                raise UserError(
+                    "BCCR Holding Account ID is required to create a project"
+                )  # Just to make mypy happy - We already checked this in the _handle_cas_director_update method
+            project_data = bccr_project_service.create_project(
                 earned_credit.bccr_holding_account_id, earned_credit.compliance_report_version
             )
-            bccr_credit_issuance_service.issue_credits(earned_credit, new_project_data)
-        earned_credit.save(update_fields=["issuance_status", "director_comment"])
+            if project_data and "id" in project_data:
+                earned_credit.bccr_project_id = project_data["id"]
+                earned_credit.save(update_fields=["bccr_project_id"])
+        return project_data
+
+    @classmethod
+    def issue_bccr_credits_for_earned_credit(cls, earned_credit: ComplianceEarnedCredit, project_data: Dict) -> None:
+        """
+        Issue credits for the earned credit, ensuring idempotency.
+        """
+        if earned_credit.bccr_issuance_id:
+            # Credits already issued, skip
+            logger.info(f"Credits already issued for earned credit {earned_credit.id}")
+            return
+        issuance_result = bccr_credit_issuance_service.issue_credits(earned_credit, project_data)
+        if issuance_result and "id" in issuance_result:
+            earned_credit.bccr_issuance_id = issuance_result["id"]
+            earned_credit.save(update_fields=["bccr_issuance_id"])
 
     @classmethod
     def update_earned_credit(
