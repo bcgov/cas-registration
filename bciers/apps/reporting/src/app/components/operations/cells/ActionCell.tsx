@@ -62,7 +62,7 @@ const ActionCell = (params: GridRenderCellParams) => {
       );
     }
     if (typeof reportVersionId === "number")
-      router.push(`reports/${reportVersionId}/review-operation-information`);
+      router.push(`${reportVersionId}/review-operation-information`);
   };
 
   let buttonText = "Start";
@@ -76,14 +76,13 @@ const ActionCell = (params: GridRenderCellParams) => {
     ) {
       buttonText = "Continue";
       buttonAction = async () =>
-        router.push(`reports/${reportVersionId}/review-operation-information`);
+        router.push(`${reportVersionId}/review-operation-information`);
     } else if (
       reportStatus === ReportOperationStatus.SUBMITTED ||
       reportStatus === ReportOperationStatus.SUBMITTED_SUPPLEMENTARY
     ) {
       buttonText = "View Details";
-      buttonAction = async () =>
-        router.push(`reports/${reportVersionId}/submitted`);
+      buttonAction = async () => router.push(`${reportVersionId}/submitted`);
     }
   }
 
