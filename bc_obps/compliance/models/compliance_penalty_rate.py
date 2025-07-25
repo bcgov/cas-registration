@@ -1,6 +1,6 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
-from reporting.models.reporting_year import ReportingYear
+from compliance.models import CompliancePeriod
 from .rls_configs.compliance_penalty_rate import Rls as CompliancePenaltyRateRls
 
 
@@ -11,7 +11,7 @@ class CompliancePenaltyRate(TimeStampedModel):
     """
 
     compliance_period = models.OneToOneField(
-        ReportingYear,
+        CompliancePeriod,
         on_delete=models.PROTECT,
         related_name='compliance_Penalty_rate',
         db_comment="The associated compliance_period for this compliance penalty rate",
