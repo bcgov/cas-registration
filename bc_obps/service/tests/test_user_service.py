@@ -1,4 +1,5 @@
 import pytest
+from django.utils import timezone
 from registration.models.app_role import AppRole
 from registration.schema.user import UserUpdateRoleIn
 from registration.tests.utils.bakers import (
@@ -11,7 +12,6 @@ from registration.models.user_operator import UserOperator
 from registration.tests.utils.bakers import operator_baker
 from model_bakery import baker
 from service.user_service import UserService
-from datetime import datetime
 
 pytestmark = pytest.mark.django_db
 
@@ -107,7 +107,7 @@ class TestUserService:
     @staticmethod
     def test_update_user_role_unarchive_success():
         updating_user = baker.make_recipe('registration.tests.utils.cas_admin')
-        user_to_update = baker.make_recipe('registration.tests.utils.cas_pending', archived_at=datetime.now())
+        user_to_update = baker.make_recipe('registration.tests.utils.cas_pending', archived_at=timezone.now())
 
         UserService.update_user_role(
             updating_user.user_guid,

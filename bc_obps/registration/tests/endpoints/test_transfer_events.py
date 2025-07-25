@@ -96,7 +96,7 @@ class TestTransferEventEndpoint(CommonTestSetup):
         assert page_2_response_id != page_2_response_id_reverse
 
     def test_transfer_events_endpoint_list_transfer_events_with_sorting(self):
-        today = timezone.make_aware(datetime.now())
+        today = timezone.now()
         yesterday = today - timedelta(days=1)
         # transfer of an operation
         baker.make_recipe(

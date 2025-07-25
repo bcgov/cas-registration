@@ -1,6 +1,6 @@
 import logging
-from datetime import datetime
 from typing import Dict, Any, Tuple, Generator
+from django.utils import timezone
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.exceptions import ComplianceInvoiceError
 from service.pdf.pdf_generator_service import PDFGeneratorService
@@ -29,7 +29,7 @@ class PaymentInstructionsService:
         """
         try:
             context = PaymentInstructionsService._prepare_payment_instructions_context(compliance_report_version_id)
-            filename = f"payment_instructions_{context['invoice_number']}_{datetime.now().strftime('%Y%m%d')}.pdf"
+            filename = f"payment_instructions_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
 
             return PDFGeneratorService.generate_pdf(
                 template_name="payment_instructions.html",

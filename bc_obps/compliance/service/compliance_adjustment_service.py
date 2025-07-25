@@ -1,8 +1,7 @@
 import uuid
 import logging
 from decimal import Decimal
-from datetime import datetime
-
+from django.utils import timezone
 from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from compliance.models.elicensing_line_item import ElicensingLineItem
 from compliance.models.compliance_obligation import ComplianceObligation
@@ -53,7 +52,7 @@ class ComplianceAdjustmentService:
                 "feeObjectId": elicensing_line_item.object_id,
                 "adjustmentGUID": str(uuid.uuid4()),
                 "adjustmentTotal": float(adjustment_total),
-                "date": datetime.now().strftime("%Y-%m-%d"),
+                "date": timezone.now().strftime("%Y-%m-%d"),
                 "reason": "Compliance Units and/or Payments Applied",
                 "type": "Adjustment",
             }
