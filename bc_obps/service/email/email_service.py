@@ -4,6 +4,7 @@ import typing
 from uuid import UUID
 import logging
 import requests
+from django.utils import timezone
 from common.models import EmailNotification, EmailNotificationTemplate
 from django.conf import settings
 
@@ -47,7 +48,7 @@ class EmailService(object):
             cls._instance.client_secret = settings.CHES_CLIENT_SECRET
             cls._instance.token_endpoint = settings.CHES_TOKEN_ENDPOINT
             cls._instance.token = None
-            cls._instance.token_expiry = datetime.now()
+            cls._instance.token_expiry = timezone.now()
             logger.info(
                 f'Logger: Initializing EmailService for clientID {cls._instance.client_id} to connect to {cls._instance.api_url}'
             )
@@ -63,7 +64,7 @@ class EmailService(object):
         {self.token} and {self.token_expiry}.
         """
         try:
-            if not self.token or self.token_expiry < datetime.now():
+            if not self.token or self.token_expiry < timezone.now():
                 response = requests.post(
                     self.token_endpoint,
                     auth=(self.client_id, self.client_secret),
@@ -72,7 +73,7 @@ class EmailService(object):
                 )
                 if response.status_code == 200:
                     self.token = response.json()["access_token"]
-                    self.token_expiry = datetime.now() + timedelta(seconds=response.json()["expires_in"])
+                    self.token_expiry = timezone.now() + timedelta(seconds=response.json()["expires_in"])
                 else:
                     logger.error("Logger: Failed to retrieve CHES access token")
         except Exception as exc:

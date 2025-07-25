@@ -1,5 +1,6 @@
-from datetime import date, timedelta, datetime
+from datetime import date, timedelta
 from typing import Any
+from django.utils import timezone
 from model_bakery import baker
 from reporting.models.report_attachment import ReportAttachment
 from reporting.models.report_methodology import ReportMethodology
@@ -230,9 +231,9 @@ report_additional_data = Recipe(
 report_new_entrant = Recipe(
     ReportNewEntrant,
     report_version=foreign_key(report_version),
-    authorization_date=(datetime.now() - timedelta(days=10)).isoformat(),
-    first_shipment_date=(datetime.now() - timedelta(days=5)).isoformat(),
-    new_entrant_period_start=(datetime.now() - timedelta(days=20)).isoformat(),
+    authorization_date=(timezone.now() - timedelta(days=10)).isoformat(),
+    first_shipment_date=(timezone.now() - timedelta(days=5)).isoformat(),
+    new_entrant_period_start=(timezone.now() - timedelta(days=20)).isoformat(),
     assertion_statement=True,
 )
 report_new_entrant_emission = Recipe(
@@ -308,7 +309,7 @@ report_sign_off = Recipe(
     acknowledgement_of_information=True,
     acknowledgement_of_possible_costs=True,
     signature="Test Signature",
-    signing_date=datetime.now(),
+    signing_date=timezone.now(),
 )
 
 report_compliance_summary = Recipe(ReportComplianceSummary, report_version=foreign_key(report_version))

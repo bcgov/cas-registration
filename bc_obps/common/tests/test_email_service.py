@@ -1,6 +1,7 @@
 import pytest
-from datetime import datetime, timedelta
+from datetime import timedelta
 from uuid import UUID
+from django.utils import timezone
 from service.email.email_service import EmailService
 
 pytestmark = pytest.mark.django_db
@@ -15,7 +16,7 @@ def email_service(mocker):
 
     def _get_token_mock():
         email_service.token = "mocked_access_token"
-        email_service.token_expiry = datetime.now() + timedelta(seconds=300)
+        email_service.token_expiry = timezone.now() + timedelta(seconds=300)
 
     mocker.patch.object(email_service, '_get_token', side_effect=_get_token_mock)
     return email_service
@@ -96,7 +97,7 @@ def test_new_instance_attributes(email_service: EmailService):
 
 
 def test_fetch_new_token(email_service: EmailService, mocker):
-    current_time = datetime.now()
+    current_time = timezone.now()
 
     email_service._get_token()
 
@@ -109,11 +110,11 @@ def test_fetch_new_token(email_service: EmailService, mocker):
 
 def test_get_token_when_expired(email_service: EmailService, mocker):
     email_service.token = "mock_expired_token"
-    email_service.token_expiry = datetime.now() - timedelta(days=1)
+    email_service.token_expiry = timezone.now() - timedelta(days=1)
 
     email_service._get_token()
 
-    current_time = datetime.now()
+    current_time = timezone.now()
     email_service._get_token.assert_called_once()
     assert email_service.token == "mocked_access_token"
     assert email_service.token_expiry > current_time

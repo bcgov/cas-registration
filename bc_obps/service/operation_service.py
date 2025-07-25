@@ -46,8 +46,7 @@ from registration.schema import (
     MultipleOperatorIn,
 )
 from django.db.models import Q
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from django.conf import settings
 
@@ -102,7 +101,7 @@ class OperationService:
         fields_to_update = ['status']
         if status == Operation.Statuses.REGISTERED:
             cls.raise_exception_if_operation_missing_registration_information(operation)
-            operation.submission_date = datetime.now(ZoneInfo("UTC"))
+            operation.submission_date = timezone.now()
             fields_to_update.append('submission_date')
         operation.status = Operation.Statuses(status)
         operation.save(update_fields=fields_to_update)
@@ -250,7 +249,7 @@ class OperationService:
             {
                 'operator': user_operator.operator,
                 'operation': operation,
-                'start_date': datetime.now(ZoneInfo("UTC")),
+                'start_date': timezone.now(),
             },
         )
 

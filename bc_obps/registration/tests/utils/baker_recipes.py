@@ -1,5 +1,4 @@
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 from registration.models import OperationDesignatedOperatorTimeline
 from registration.models import Activity
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
@@ -171,15 +170,15 @@ facility_designated_operation_timeline = Recipe(
     facility=foreign_key(
         facility
     ),  # note: you have to manually assign the correct operation_id to this facility in each test if desired
-    end_date=datetime.now(ZoneInfo("UTC")),
+    end_date=timezone.now(),
 )
 
 operation_designated_operator_timeline = Recipe(
     OperationDesignatedOperatorTimeline,
     operation=foreign_key(operation),
     operator=foreign_key(operator),
-    start_date=datetime.now(ZoneInfo("UTC")),
-    end_date=datetime.now(ZoneInfo("UTC")),
+    start_date=timezone.now(),
+    end_date=timezone.now(),
 )
 
 regulated_product = Recipe(RegulatedProduct)

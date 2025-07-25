@@ -1,5 +1,4 @@
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.facility import Facility
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
@@ -154,7 +153,7 @@ class TestFacilityDesignatedOperationTimelineService:
         )
         assert result_found == timeline_with_no_end_date
         timeline_with_end_date = baker.make_recipe(
-            'registration.tests.utils.facility_designated_operation_timeline', end_date=datetime.now(ZoneInfo("UTC"))
+            'registration.tests.utils.facility_designated_operation_timeline', end_date=timezone.now()
         )
         result_not_found = FacilityDesignatedOperationTimelineService.get_current_timeline(
             timeline_with_end_date.operation_id, timeline_with_end_date.facility_id
@@ -166,7 +165,7 @@ class TestFacilityDesignatedOperationTimelineService:
         timeline = baker.make_recipe(
             'registration.tests.utils.facility_designated_operation_timeline',
         )
-        end_date = datetime.now(ZoneInfo("UTC"))
+        end_date = timezone.now()
 
         updated_timeline = FacilityDesignatedOperationTimelineService.set_timeline_end_date(timeline, end_date)
 

@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import os
 from unittest.mock import patch, MagicMock
 from django.test import override_settings
 import pytest
 from common.lib import pgtrigger
 from uuid import uuid4
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 from registration.models.facility import Facility
 from registration.models.contact import Contact
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
@@ -156,7 +156,7 @@ class TestOperationService:
         assert updated_operation.status == Operation.Statuses.REGISTERED
         assert updated_operation.updated_at is not None
         # make sure the submission_date is set - using 2 seconds as a buffer for the test
-        assert datetime.now(ZoneInfo("UTC")).replace(microsecond=0) - updated_operation.submission_date.replace(
+        assert timezone.now().replace(microsecond=0) - updated_operation.submission_date.replace(
             microsecond=0
         ) < timedelta(seconds=2)
         assert updated_operation.registration_purpose == Operation.Purposes.OPTED_IN_OPERATION

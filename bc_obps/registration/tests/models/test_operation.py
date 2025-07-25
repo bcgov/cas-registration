@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 from common.tests.utils.helpers import BaseTestCase
 import pytest
 from registration.models import (
@@ -128,7 +128,7 @@ class OperationModelTest(BaseTestCase):
         self.test_object.bc_obps_regulated_operation = None
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
-        current_year = datetime.now().year % 100
+        current_year = timezone.now().year % 100
         expected_id = f"{current_year:02d}-0001"  # Assuming the first ID for the year
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,
@@ -136,7 +136,7 @@ class OperationModelTest(BaseTestCase):
         )
 
     def test_generate_unique_boro_id_multiple_existing_ids_same_year(self):
-        current_year = datetime.now().year % 100
+        current_year = timezone.now().year % 100
         # Case: Multiple existing BORO IDs for the current year
         existing_ids = [f"{current_year:02d}-0002", f"{current_year:02d}-0003", f"{current_year:02d}-0001"]
         for existing_id in existing_ids:
@@ -168,7 +168,7 @@ class OperationModelTest(BaseTestCase):
         self.test_object.bc_obps_regulated_operation = None
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         self.test_object.generate_unique_boro_id(user_guid=cas_director.user_guid)
-        current_year = datetime.now().year % 100
+        current_year = timezone.now().year % 100
         expected_id = f"{current_year:02d}-0001"
         self.assertEqual(
             self.test_object.bc_obps_regulated_operation.pk,

@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-import datetime
 from typing import Optional
-
 from django.db import transaction
+from django.utils import timezone
 from reporting.models.report_sign_off import ReportSignOff
 from django.core.exceptions import ValidationError
 
@@ -42,7 +41,7 @@ class ReportSignOffService:
                 acknowledgement_of_possible_costs=acknowledgements.acknowledgement_of_possible_costs,
                 acknowledgement_of_new_version=acknowledgements.acknowledgement_of_new_version,
                 signature=data.signature,
-                signing_date=datetime.datetime.now(),
+                signing_date=timezone.now(),
             )
 
             return report_sign_off_record
