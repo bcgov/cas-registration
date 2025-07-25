@@ -29,6 +29,11 @@ class CompliancePenaltyRate(TimeStampedModel):
         db_comment="The total amount of the penalty to be paid",
     )
 
+    is_current_rate = models.BooleanField(
+        default=False,
+        db_comment="Boolean field signifies whether or not this rate is the rate currently in use",
+    )
+
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "A table to store compliance penalty rates by reporting year"
