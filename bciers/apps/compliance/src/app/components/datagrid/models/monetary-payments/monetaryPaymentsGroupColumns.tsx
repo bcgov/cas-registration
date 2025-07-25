@@ -10,9 +10,9 @@ const monetaryPaymentsGroupColumns = (
   const columnGroupModel = [
     createColumnGroup("received_date", "Payment Received Date", SearchCell),
     createColumnGroup("amount", "Payment Amount Applied", SearchCell),
-    createColumnGroup("payment_method", "Payment Method", SearchCell),
+    createColumnGroup("method", "Payment Method", SearchCell),
     createColumnGroup("transaction_type", "Transaction Type", SearchCell),
-    createColumnGroup("payment_object_id", "Receipt Number", SearchCell),
+    createColumnGroup("receipt_number", "Receipt Number", SearchCell),
   ] as GridColumnGroupingModel;
 
   return columnGroupModel;
