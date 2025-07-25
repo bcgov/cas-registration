@@ -16,7 +16,7 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-const mockComplianceSummaryId = "123";
+const mockComplianceReportVersionId = 123;
 const mockData = {
   reporting_year: 2024,
   excess_emissions: -15.0,
@@ -44,7 +44,7 @@ describe("ComplianceSummaryReviewComponent", () => {
   it("renders the form with correct schema fields and headers", () => {
     render(
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
         data={mockData}
       />,
     );
@@ -94,7 +94,7 @@ describe("ComplianceSummaryReviewComponent", () => {
   it("renders navigation buttons with correct functionality", () => {
     render(
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
         data={mockData}
       />,
     );
@@ -112,7 +112,7 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     fireEvent.click(continueButton);
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 
@@ -121,7 +121,7 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     render(
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
         data={mockData}
       />,
     );
@@ -135,7 +135,7 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     render(
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
         data={mockData}
       />,
     );
@@ -144,7 +144,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     fireEvent.click(continueButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 
@@ -153,7 +153,7 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     render(
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
         data={mockData}
       />,
     );
@@ -162,7 +162,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     fireEvent.click(continueButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-credits-issuance-request`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
     );
   });
 });

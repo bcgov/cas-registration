@@ -48,7 +48,9 @@ describe("PaymentInstructionsDownloadPage", () => {
 
   it("renders with correct content and generates task list", async () => {
     render(
-      await PaymentInstructionsDownloadPage({ compliance_summary_id: "123" }),
+      await PaymentInstructionsDownloadPage({
+        compliance_report_version_id: 123,
+      }),
     );
 
     // Check content is rendered
@@ -57,7 +59,7 @@ describe("PaymentInstructionsDownloadPage", () => {
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      "123",
+      123,
       2024,
       ActivePage.DownloadPaymentInstructions,
     );

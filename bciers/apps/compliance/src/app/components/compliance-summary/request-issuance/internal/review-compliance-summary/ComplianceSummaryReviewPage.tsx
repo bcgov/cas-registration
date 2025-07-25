@@ -7,16 +7,14 @@ import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/ut
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
 import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent";
-
-interface Props {
-  compliance_summary_id: string;
-}
+import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 
 export default async function ComplianceSummaryReviewPage({
-  compliance_summary_id: complianceSummaryId,
-}: Readonly<Props>) {
-  const complianceSummary =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+  compliance_report_version_id: complianceReportVersionId,
+}: Readonly<HasComplianceReportVersion>) {
+  const complianceSummary = await getRequestIssuanceComplianceSummaryData(
+    complianceReportVersionId,
+  );
 
   // Redirect the user to track status page if user already requested issuance or issuance is approved or declined
   if (
@@ -25,23 +23,23 @@ export default async function ComplianceSummaryReviewPage({
     )
   ) {
     redirect(
-      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
     );
   }
 
   const taskListElements = generateIssuanceRequestTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     complianceSummary.reporting_year,
     ActivePage.ReviewComplianceSummary,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <ComplianceSummaryReviewComponent
-        complianceSummaryId={complianceSummaryId}
+        complianceReportVersionId={complianceReportVersionId}
         data={complianceSummary}
       />
     </CompliancePageLayout>

@@ -26,11 +26,11 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("InternalTrackStatusOfIssuanceComponent", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockData: RequestIssuanceComplianceSummaryData = {
     reporting_year: 2023,
     emissions_attributable_for_compliance: 85,
-    emission_limit: 100,
+    emissions_limit: 100,
     excess_emissions: -15,
     earned_credits_amount: 100,
     issuance_status: IssuanceStatus.APPROVED,
@@ -51,7 +51,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -83,7 +83,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -103,7 +103,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={declinedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -121,14 +121,14 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={otherStatusData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
   });
 
@@ -136,7 +136,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={mockData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -153,7 +153,7 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent
         data={declinedData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 

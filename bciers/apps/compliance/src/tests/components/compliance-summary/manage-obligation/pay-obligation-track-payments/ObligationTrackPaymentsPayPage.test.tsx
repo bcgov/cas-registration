@@ -33,13 +33,13 @@ vi.mock(
   () => ({
     ObligationTrackPaymentsComponent: ({
       data,
-      complianceSummaryId,
+      complianceReportVersionId,
     }: {
       data: any;
-      complianceSummaryId: string;
+      complianceReportVersionId: number;
     }) => (
       <div data-testid="obligation-track-payments-component">
-        Mock Component - ID: {complianceSummaryId}
+        Mock Component - ID: {complianceReportVersionId}
         <div data-testid="component-data">{JSON.stringify(data)}</div>
       </div>
     ),
@@ -85,7 +85,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
   it("renders with correct content and generates task list", async () => {
     render(
       await ObligationTrackPaymentsPayPage({
-        compliance_summary_id: "123",
+        compliance_report_version_id: 123,
       }),
     );
 
@@ -95,7 +95,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      "123",
+      123,
       2024,
       ActivePage.PayObligationTrackPayments,
       "NONE",
@@ -105,7 +105,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
   it("passes correct data to the component", async () => {
     render(
       await ObligationTrackPaymentsPayPage({
-        compliance_summary_id: "456",
+        compliance_report_version_id: 456,
       }),
     );
 
@@ -149,7 +149,7 @@ describe("ObligationTrackPaymentsPayPage", () => {
   it("passes correct compliance summary ID to the component", async () => {
     render(
       await ObligationTrackPaymentsPayPage({
-        compliance_summary_id: "789",
+        compliance_report_version_id: 789,
       }),
     );
 

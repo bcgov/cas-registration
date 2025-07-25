@@ -4,7 +4,7 @@ import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceA
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 
 export async function fetchComplianceSummaryReviewPageData(
-  complianceReportVersionId: string,
+  complianceReportVersionId: number,
 ): Promise<ComplianceSummaryReviewPageData> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const [

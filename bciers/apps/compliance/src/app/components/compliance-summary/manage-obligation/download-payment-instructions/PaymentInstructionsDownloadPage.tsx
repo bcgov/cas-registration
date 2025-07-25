@@ -6,31 +6,29 @@ import CompliancePageLayout from "@/compliance/src/app/components/layout/Complia
 import PaymentInstructionsDownloadComponent from "./PaymentInstructionsDownloadComponent";
 import getInvoiceByComplianceReportVersionId from "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
-
-interface Props {
-  readonly compliance_summary_id: string;
-}
+import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 
 export default async function PaymentInstructionsDownloadPage({
-  compliance_summary_id: complianceSummaryId,
-}: Props) {
+  compliance_report_version_id: complianceReportVersionId,
+}: HasComplianceReportVersion) {
   const { reporting_year: reportingYear } = await getReportingYear();
   const taskListElements = generateManageObligationTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     reportingYear,
     ActivePage.DownloadPaymentInstructions,
   );
 
-  const invoice =
-    await getInvoiceByComplianceReportVersionId(complianceSummaryId);
+  const invoice = await getInvoiceByComplianceReportVersionId(
+    complianceReportVersionId,
+  );
 
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
     >
       <PaymentInstructionsDownloadComponent
-        complianceReportVersionId={complianceSummaryId}
+        complianceReportVersionId={complianceReportVersionId}
         invoiceID={invoice.invoice_number}
       />
     </CompliancePageLayout>

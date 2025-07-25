@@ -10,7 +10,7 @@ import {
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
-  readonly complianceReportVersionId: string;
+  readonly complianceReportVersionId: number;
   readonly invoiceID: string;
 }
 

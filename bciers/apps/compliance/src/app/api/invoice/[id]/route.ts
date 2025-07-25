@@ -4,7 +4,7 @@ import * as Sentry from "@sentry/nextjs";
 
 /**
  * API route handler for downloading invoice PDFs directly.
-   Calls the endpoint `/compliance/api/{complianceSummaryId}/invoice/pdf`.
+   Calls the endpoint `/compliance/api/{complianceReportVersionId}/invoice/pdf`.
  * Also handles JSON‐encoded errors returned by the service.
  */
 export async function GET(

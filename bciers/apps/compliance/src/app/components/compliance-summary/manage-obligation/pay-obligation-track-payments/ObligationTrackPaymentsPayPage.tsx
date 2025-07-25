@@ -6,17 +6,14 @@ import CompliancePageLayout from "@/compliance/src/app/components/layout/Complia
 import { ObligationTrackPaymentsComponent } from "./ObligationTrackPaymentsComponent";
 import { getObligationData } from "@/compliance/src/app/utils/getObligation";
 import {
+  HasComplianceReportVersion,
   ObligationData,
   PayObligationTrackPaymentsFormData,
 } from "@/compliance/src/app/types";
 
-interface Props {
-  readonly compliance_summary_id: string;
-}
-
 export default async function ObligationTrackPaymentsPayPage({
-  compliance_summary_id: complianceReportVersionId,
-}: Props) {
+  compliance_report_version_id: complianceReportVersionId,
+}: HasComplianceReportVersion) {
   const obligationWithPayments: ObligationData = await getObligationData(
     complianceReportVersionId,
   );
@@ -39,11 +36,11 @@ export default async function ObligationTrackPaymentsPayPage({
   return (
     <CompliancePageLayout
       taskListElements={taskListElements}
-      complianceSummaryId={complianceReportVersionId}
+      complianceReportVersionId={complianceReportVersionId}
     >
       <ObligationTrackPaymentsComponent
         data={data}
-        complianceSummaryId={complianceReportVersionId}
+        complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

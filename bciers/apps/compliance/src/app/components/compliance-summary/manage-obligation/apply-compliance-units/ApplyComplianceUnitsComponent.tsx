@@ -21,14 +21,14 @@ import { actionHandler } from "@bciers/actions";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 
 interface ApplyComplianceUnitsComponentProps {
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
   reportingYear: number;
 }
 
 export type ComplianceLimitStatus = "EXCEEDS" | "EQUALS" | "BELOW";
 
 export default function ApplyComplianceUnitsComponent({
-  complianceSummaryId,
+  complianceReportVersionId,
   reportingYear,
 }: Readonly<ApplyComplianceUnitsComponentProps>) {
   const router = useRouter();
@@ -116,7 +116,7 @@ export default function ApplyComplianceUnitsComponent({
   ) => {
     setIsSubmitting(true);
     const response = await actionHandler(
-      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceSummaryId}/compliance-units`,
+      `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
       "POST",
       "",
       {
@@ -169,7 +169,10 @@ export default function ApplyComplianceUnitsComponent({
         reportingYear,
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
         validateBccrAccount: (accountId: string) =>
-          getBccrComplianceUnitsAccountDetails(accountId, complianceSummaryId),
+          getBccrComplianceUnitsAccountDetails(
+            accountId,
+            complianceReportVersionId,
+          ),
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
           if (response?.outstanding_balance) {
             setInitialOutstandingBalance(response.outstanding_balance);
@@ -196,7 +199,7 @@ export default function ApplyComplianceUnitsComponent({
           backButtonText={isSubmitted ? "Back" : "Cancel"}
           onBackClick={() =>
             router.push(
-              `/compliance-summaries/${complianceSummaryId}/manage-obligation-review-summary`,
+              `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`,
             )
           }
           className="mt-8"

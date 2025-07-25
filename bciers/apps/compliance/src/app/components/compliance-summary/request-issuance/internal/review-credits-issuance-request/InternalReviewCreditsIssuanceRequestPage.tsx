@@ -7,16 +7,14 @@ import CompliancePageLayout from "@/compliance/src/app/components/layout/Complia
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
-
-interface Props {
-  compliance_summary_id: string;
-}
+import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 
 export default async function InternalReviewCreditsIssuanceRequestPage({
-  compliance_summary_id: complianceSummaryId,
-}: Readonly<Props>) {
-  const pageData =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+  compliance_report_version_id: complianceReportVersionId,
+}: Readonly<HasComplianceReportVersion>) {
+  const pageData = await getRequestIssuanceComplianceSummaryData(
+    complianceReportVersionId,
+  );
 
   if (
     [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
@@ -24,24 +22,24 @@ export default async function InternalReviewCreditsIssuanceRequestPage({
     )
   ) {
     redirect(
-      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
     );
   }
 
   const taskListElements = generateIssuanceRequestTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     pageData.reporting_year,
     ActivePage.ReviewCreditsIssuanceRequest,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={pageData}
-        complianceSummaryId={complianceSummaryId}
+        complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

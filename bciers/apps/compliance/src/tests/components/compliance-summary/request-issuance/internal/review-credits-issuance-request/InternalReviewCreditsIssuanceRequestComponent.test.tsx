@@ -26,7 +26,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
   const mockFormData = {
     reporting_year: 2023,
     emissions_attributable_for_compliance: 85,
-    emission_limit: 100,
+    emissions_limit: 100,
     excess_emissions: -15,
     earned_credits_amount: 100,
     issuance_status: IssuanceStatus.APPROVED,
@@ -38,7 +38,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     analyst_submitted_date: "2023-01-01",
     analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
   };
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -50,7 +50,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -93,7 +93,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -108,7 +108,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -132,7 +132,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
   });
 
@@ -142,7 +142,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -150,7 +150,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     fireEvent.click(submitButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-by-director`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
     expect(actionHandler).not.toHaveBeenCalled();
   });
@@ -164,7 +164,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={formDataWithoutSuggestion}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -178,7 +178,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -197,7 +197,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={mockFormData}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -205,7 +205,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     fireEvent.click(backButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-review-summary`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
     );
   });
 
@@ -218,7 +218,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={formDataWithoutAnalyst}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 
@@ -234,7 +234,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     render(
       <InternalReviewCreditsIssuanceRequestComponent
         initialFormData={formDataWithoutDate}
-        complianceSummaryId={mockComplianceSummaryId}
+        complianceReportVersionId={mockComplianceReportVersionId}
       />,
     );
 

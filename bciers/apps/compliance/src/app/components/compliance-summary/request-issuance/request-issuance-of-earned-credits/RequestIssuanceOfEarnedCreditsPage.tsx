@@ -8,17 +8,14 @@ import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { redirect } from "next/navigation";
-
-interface Props {
-  compliance_summary_id: string;
-}
+import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 
 export default async function RequestIssuanceOfEarnedCreditsPage({
-  compliance_summary_id: complianceSummaryId,
-}: Readonly<Props>) {
+  compliance_report_version_id: complianceReportVersionId,
+}: Readonly<HasComplianceReportVersion>) {
   const { reporting_year: reportingYear } = await getReportingYear();
   const requestIssuanceComplianceSummaryData =
-    await getRequestIssuanceComplianceSummaryData(complianceSummaryId);
+    await getRequestIssuanceComplianceSummaryData(complianceReportVersionId);
 
   // Redirect to track status of issuance page if issuance status is already set
   if (
@@ -31,23 +28,23 @@ export default async function RequestIssuanceOfEarnedCreditsPage({
     )
   ) {
     redirect(
-      `/compliance-summaries/${complianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
     );
   }
 
   const taskListElements = generateRequestIssuanceTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     reportingYear,
     ActivePage.RequestIssuanceOfEarnedCredits,
   );
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <RequestIssuanceOfEarnedCreditsComponent
-        complianceSummaryId={complianceSummaryId}
+        complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
   );

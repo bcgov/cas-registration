@@ -56,7 +56,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("TrackStatusOfIssuancePage", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockData = {
     operation_name: "Test Operation",
     earned_credits: 100,
@@ -76,7 +76,7 @@ describe("TrackStatusOfIssuancePage", () => {
   it("renders with correct content and generates task list when status is approved", async () => {
     render(
       await TrackStatusOfIssuancePage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -86,7 +86,7 @@ describe("TrackStatusOfIssuancePage", () => {
 
     // Verify task list generation
     expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       2024,
       ActivePage.TrackStatusOfIssuance,
     );
@@ -99,11 +99,11 @@ describe("TrackStatusOfIssuancePage", () => {
     });
 
     await TrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 
@@ -114,11 +114,11 @@ describe("TrackStatusOfIssuancePage", () => {
     });
 
     await TrackStatusOfIssuancePage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-of-earned-credits`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 
@@ -130,7 +130,7 @@ describe("TrackStatusOfIssuancePage", () => {
 
     render(
       await TrackStatusOfIssuancePage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 

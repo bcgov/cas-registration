@@ -43,11 +43,11 @@ const mockData: ComplianceSummaryReviewPageData = {
   },
 };
 
-const setupComponent = (id = "123") =>
+const setupComponent = (id = 123) =>
   render(
     <ComplianceSummaryReviewComponent
       data={mockData}
-      complianceSummaryId={id}
+      complianceReportVersionId={id}
     />,
   );
 
@@ -128,7 +128,7 @@ describe("ComplianceSummaryReviewComponent", () => {
       }),
     );
 
-    setupComponent("999");
+    setupComponent(999);
 
     await user.click(getGenerateButton());
 

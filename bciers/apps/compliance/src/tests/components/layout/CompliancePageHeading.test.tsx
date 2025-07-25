@@ -1,18 +1,21 @@
 import { render, screen } from "@testing-library/react";
 import { CompliancePageHeading } from "@/compliance/src/app/components/layout/CompliancePageHeading";
 
-// Mock the getOperationByComplianceSummaryId function
-vi.mock("@/compliance/src/app/utils/getOperationByComplianceSummaryId", () => ({
-  default: vi.fn().mockResolvedValue({ name: "Operation ABC" }),
-}));
+// Mock the getOperationByComplianceReportVersionId function
+vi.mock(
+  "@/compliance/src/app/utils/getOperationByComplianceReportVersionId",
+  () => ({
+    default: vi.fn().mockResolvedValue({ name: "Operation ABC" }),
+  }),
+);
 
-const mockComplianceSummaryId = "123";
+const mockComplianceReportVersionId = 123;
 
 describe("CompliancePageHeading", () => {
   it("renders operation name in heading", async () => {
     render(
       await CompliancePageHeading({
-        complianceSummaryId: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -25,7 +28,7 @@ describe("CompliancePageHeading", () => {
   it("renders with correct container styles", async () => {
     render(
       await CompliancePageHeading({
-        complianceSummaryId: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 

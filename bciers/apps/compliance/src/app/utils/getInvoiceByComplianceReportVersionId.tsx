@@ -2,7 +2,7 @@ import { actionHandler } from "@bciers/actions";
 import { Invoice } from "@/compliance/src/app/types";
 
 const getInvoiceByComplianceReportVersionId = async (
-  complianceReportVersionId: string,
+  complianceReportVersionId: number,
 ): Promise<Invoice> => {
   const response: Invoice = await actionHandler(
     `compliance/compliance-report-versions/${complianceReportVersionId}/invoice`,

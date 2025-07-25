@@ -4,12 +4,12 @@ import {
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 describe("generateManageObligationTaskList", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockReportingYear = 2024;
 
   it("generates task list with correct structure when not in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
     );
 
@@ -50,7 +50,7 @@ describe("generateManageObligationTaskList", () => {
 
   it("generates task list with subsection when in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ApplyComplianceUnits,
     );
@@ -84,7 +84,7 @@ describe("generateManageObligationTaskList", () => {
   it("sets active page correctly for each page type", () => {
     // Test Review Summary page
     const reviewList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewComplianceSummary,
     );
@@ -94,7 +94,7 @@ describe("generateManageObligationTaskList", () => {
 
     // Test Download Instructions page
     const downloadList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.DownloadPaymentInstructions,
     );
@@ -104,7 +104,7 @@ describe("generateManageObligationTaskList", () => {
 
     // Test Pay and Track page
     const payList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.PayObligationTrackPayments,
     );
@@ -115,7 +115,7 @@ describe("generateManageObligationTaskList", () => {
 
   it("adds 'Review Penalty Summary' page when penaltyStatus is 'ACCRUING'", () => {
     const taskList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewPenaltySummary,
       "ACCRUING",
@@ -132,14 +132,14 @@ describe("generateManageObligationTaskList", () => {
     expect(lastItem).toEqual({
       type: "Page",
       title: "Review Penalty Summary",
-      link: `/compliance-summaries/${mockComplianceSummaryId}/review-penalty-summary`,
+      link: `/compliance-summaries/${mockComplianceReportVersionId}/review-penalty-summary`,
       isActive: true,
     });
   });
 
   it("does NOT add 'Review Penalty Summary' page when penaltyStatus is NOT 'ACCRUING'", () => {
     const taskList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewPenaltySummary,
       "NONE",

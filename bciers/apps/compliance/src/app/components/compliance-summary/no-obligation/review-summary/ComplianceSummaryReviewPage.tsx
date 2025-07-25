@@ -2,15 +2,14 @@ import CompliancePageLayout from "@/compliance/src/app/components/layout/Complia
 import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
-
-interface Props {
-  compliance_summary_id: string;
-}
+import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 
 export default async function ComplianceSummaryReviewPage({
-  compliance_summary_id: complianceSummaryId,
-}: Readonly<Props>) {
-  const complianceSummary = await getComplianceSummary(complianceSummaryId);
+  compliance_report_version_id: complianceReportVersionId,
+}: Readonly<HasComplianceReportVersion>) {
+  const complianceSummary = await getComplianceSummary(
+    complianceReportVersionId,
+  );
   const data = {
     reporting_year: complianceSummary.reporting_year,
     emissions_attributable_for_compliance:
@@ -28,7 +27,7 @@ export default async function ComplianceSummaryReviewPage({
         {
           type: "Page" as const,
           title: `Review ${complianceSummary.reporting_year} Compliance Summary`,
-          link: `/compliance-summaries/${complianceSummaryId}/review-summary`,
+          link: `/compliance-summaries/${complianceReportVersionId}/review-summary`,
           isActive: true,
         },
       ],
@@ -37,7 +36,7 @@ export default async function ComplianceSummaryReviewPage({
 
   return (
     <CompliancePageLayout
-      complianceSummaryId={complianceSummaryId}
+      complianceReportVersionId={complianceReportVersionId}
       taskListElements={taskListElements}
     >
       <ComplianceSummaryReviewComponent data={data} />

@@ -48,9 +48,9 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("InternalReviewCreditsIssuanceRequestPage", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockPageData = {
-    id: "123",
+    id: 123,
     reporting_year: 2023,
     earned_credits_amount: 100,
     issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
@@ -75,7 +75,7 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
   it("renders with correct content and generates task list", async () => {
     render(
       await InternalReviewCreditsIssuanceRequestPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -85,7 +85,7 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
 
     // Verify task list generation
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       2023,
       ActivePage.ReviewCreditsIssuanceRequest,
     );
@@ -98,11 +98,11 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
     });
 
     await InternalReviewCreditsIssuanceRequestPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -113,11 +113,11 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
     });
 
     await InternalReviewCreditsIssuanceRequestPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -129,7 +129,7 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
 
     render(
       await InternalReviewCreditsIssuanceRequestPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -145,7 +145,7 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
 
     render(
       await InternalReviewCreditsIssuanceRequestPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 

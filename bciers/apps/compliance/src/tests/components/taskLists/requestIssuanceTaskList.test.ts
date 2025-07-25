@@ -4,12 +4,12 @@ import {
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 
 describe("generateRequestIssuanceTaskList", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockReportingYear = 2024;
 
   it("generates task list with correct structure", () => {
     const taskList = generateRequestIssuanceTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
     );
 
@@ -51,7 +51,7 @@ describe("generateRequestIssuanceTaskList", () => {
   it("sets active page correctly for each page type", () => {
     // Test Review Summary page
     const reviewList = generateRequestIssuanceTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewComplianceSummary,
     );
@@ -61,7 +61,7 @@ describe("generateRequestIssuanceTaskList", () => {
 
     // Test Request Issuance page
     const requestList = generateRequestIssuanceTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.RequestIssuanceOfEarnedCredits,
     );
@@ -71,7 +71,7 @@ describe("generateRequestIssuanceTaskList", () => {
 
     // Test Track Status page
     const trackList = generateRequestIssuanceTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.TrackStatusOfIssuance,
     );

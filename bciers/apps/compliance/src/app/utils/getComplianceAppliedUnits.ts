@@ -5,7 +5,7 @@ import {
 } from "@/compliance/src/app/types";
 
 const getComplianceAppliedUnits = async (
-  complianceReportVersionId: string,
+  complianceReportVersionId: number,
 ): Promise<ComplianceAppliedUnitsData> => {
   const data: Array<ComplianceAppliedUnits> = await actionHandler(
     `compliance/bccr/compliance-report-versions/${complianceReportVersionId}/applied-compliance-units`,

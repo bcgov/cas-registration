@@ -16,19 +16,19 @@ class PaymentInstructionsService:
     @classmethod
     def generate_payment_instructions_pdf(
         cls,
-        compliance_summary_id: int,
+        compliance_report_version_id: int,
     ) -> Tuple[Generator[bytes, None, None], str, int]:
         """
         Generate a PDF payment instructions and return a generator that yields chunks of the PDF data.
 
         Args:
-            compliance_summary_id: ID of the compliance summary
+            compliance_report_version_id: ID of the compliance summary
 
         Returns:
             Tuple of (PDF data generator, filename, total_size_in_bytes)
         """
         try:
-            context = PaymentInstructionsService._prepare_payment_instructions_context(compliance_summary_id)
+            context = PaymentInstructionsService._prepare_payment_instructions_context(compliance_report_version_id)
             filename = f"payment_instructions_{context['invoice_number']}_{datetime.now().strftime('%Y%m%d')}.pdf"
 
             return PDFGeneratorService.generate_pdf(
@@ -46,7 +46,7 @@ class PaymentInstructionsService:
             raise ComplianceInvoiceError("unexpected_error", str(exc))
 
     @staticmethod
-    def _prepare_payment_instructions_context(complianceReportVersionID: int) -> Dict[str, Any]:
+    def _prepare_payment_instructions_context(compliance_report_version_id: int) -> Dict[str, Any]:
         """
         Prepare context data for the payment instructions template.
 
@@ -55,7 +55,7 @@ class PaymentInstructionsService:
         """
 
         refreshResult = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            complianceReportVersionID
+            compliance_report_version_id
         )
 
         context = {

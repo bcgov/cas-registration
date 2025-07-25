@@ -4,12 +4,12 @@ import {
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 
 describe("generateIssuanceRequestTaskList", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockReportingYear = 2024;
 
   it("generates task list with correct structure", () => {
     const taskList = generateIssuanceRequestTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
     );
 
@@ -59,7 +59,7 @@ describe("generateIssuanceRequestTaskList", () => {
   it("sets active page correctly for each page type", () => {
     // Test Review Compliance Summary page
     const reviewList = generateIssuanceRequestTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewComplianceSummary,
     );
@@ -70,7 +70,7 @@ describe("generateIssuanceRequestTaskList", () => {
 
     // Test Review Credits Issuance Request page
     const requestList = generateIssuanceRequestTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewCreditsIssuanceRequest,
     );
@@ -81,7 +81,7 @@ describe("generateIssuanceRequestTaskList", () => {
 
     // Test Review by Director page
     const directorList = generateIssuanceRequestTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.ReviewByDirector,
     );
@@ -92,7 +92,7 @@ describe("generateIssuanceRequestTaskList", () => {
 
     // Test Track Status of Issuance page
     const statusList = generateIssuanceRequestTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       mockReportingYear,
       ActivePage.TrackStatusOfIssuance,
     );

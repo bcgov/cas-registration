@@ -46,7 +46,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("InternalReviewByDirectorPage", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockPageData = {
     id: "123",
     reporting_year: 2023,
@@ -69,7 +69,7 @@ describe("InternalReviewByDirectorPage", () => {
   it("renders with correct content and generates task list", async () => {
     render(
       await InternalReviewByDirectorPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -79,7 +79,7 @@ describe("InternalReviewByDirectorPage", () => {
 
     // Verify task list generation
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       2023,
       ActivePage.ReviewByDirector,
     );
@@ -92,11 +92,11 @@ describe("InternalReviewByDirectorPage", () => {
     });
 
     await InternalReviewByDirectorPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/review-credits-issuance-request`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
     );
   });
 
@@ -107,11 +107,11 @@ describe("InternalReviewByDirectorPage", () => {
     });
 
     await InternalReviewByDirectorPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -122,11 +122,11 @@ describe("InternalReviewByDirectorPage", () => {
     });
 
     await InternalReviewByDirectorPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 });

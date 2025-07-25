@@ -46,7 +46,7 @@ vi.mock("next/navigation", () => ({
 }));
 
 describe("Internal ComplianceSummaryReviewPage", () => {
-  const mockComplianceSummaryId = "123";
+  const mockComplianceReportVersionId = 123;
   const mockData = {
     id: 1,
     reporting_year: 2024,
@@ -68,7 +68,7 @@ describe("Internal ComplianceSummaryReviewPage", () => {
   it("renders with correct content and generates task list", async () => {
     render(
       await ComplianceSummaryReviewPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -78,7 +78,7 @@ describe("Internal ComplianceSummaryReviewPage", () => {
 
     // Verify task list generation
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       2024,
       ActivePage.ReviewComplianceSummary,
     );
@@ -91,11 +91,11 @@ describe("Internal ComplianceSummaryReviewPage", () => {
     });
 
     await ComplianceSummaryReviewPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -106,11 +106,11 @@ describe("Internal ComplianceSummaryReviewPage", () => {
     });
 
     await ComplianceSummaryReviewPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/track-status-of-issuance`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -122,7 +122,7 @@ describe("Internal ComplianceSummaryReviewPage", () => {
 
     render(
       await ComplianceSummaryReviewPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 
@@ -138,7 +138,7 @@ describe("Internal ComplianceSummaryReviewPage", () => {
 
     render(
       await ComplianceSummaryReviewPage({
-        compliance_summary_id: mockComplianceSummaryId,
+        compliance_report_version_id: mockComplianceReportVersionId,
       }),
     );
 

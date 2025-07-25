@@ -25,9 +25,8 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
 }));
 
-const mockComplianceSummaryForm = ComplianceSummaryForm as ReturnType<
-  typeof vi.fn
->;
+const mockComplianceReportVersionIdaryForm =
+  ComplianceSummaryForm as ReturnType<typeof vi.fn>;
 const mockActionHandler = actionHandler as ReturnType<typeof vi.fn>;
 
 const mockGetNavigationInformation = getNavigationInformation as ReturnType<
@@ -47,7 +46,7 @@ describe("ComplianceSummaryPage", () => {
     render(await ComplianceSummaryPage({ version_id: versionId }));
 
     // Validate that ComplianceSummaryForm was called with the expected props
-    expect(mockComplianceSummaryForm).toHaveBeenCalledWith(
+    expect(mockComplianceReportVersionIdaryForm).toHaveBeenCalledWith(
       {
         summaryFormData: complianceData,
         navigationInformation: { nav: true },
