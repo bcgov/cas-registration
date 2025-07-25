@@ -14,7 +14,7 @@ class CompliancePenalty(TimeStampedModel):
         db_comment="The compliance obligation not paid on time which triggered this penalty",
     )
 
-    elicensing_invoice = models.ForeignKey(
+    elicensing_invoice = models.OneToOneField(
         ElicensingInvoice,
         on_delete=models.PROTECT,
         related_name="compliance_penalty",
