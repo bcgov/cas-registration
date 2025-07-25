@@ -8,7 +8,7 @@ class ElicensingPaymentOut(ModelSchema):
 
     class Meta:
         model = ElicensingPayment
-        fields = ['id', 'amount', 'received_date', 'payment_object_id']
+        fields = ['id', 'amount', 'received_date', 'payment_object_id', 'method', 'receipt_number']
 
 
 class ElicensingPaymentListOut(Schema):
