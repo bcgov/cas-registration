@@ -72,30 +72,31 @@ export class UsersAccessRequestPOM {
     return { expectedActions, hiddenActions };
   }
 
+  async clickActionOnRow(row: Locator, action: string) {
+    const button = await row.getByRole("button", { name: action });
+    await button.click();
+    await waitForSpinner(row);
+    await this.assertCorrectStatus(row, action);
+  }
+
   async approveOrDeclineRequest(row: Locator, role: string, action: string) {
     if (action === UserAccessRequestActions.APPROVE) {
       await selectItemFromMuiSelect(this.page, role);
-      await row.getByRole("button", { name: action }).click();
-      await waitForSpinner(row);
+      await this.clickActionOnRow(row, action);
       await this.assertCorrectRole(row, role);
-      await this.assertCorrectStatus(row, action);
     } else if (action === UserAccessRequestActions.DECLINE) {
-      await row.getByRole("button", { name: action }).click();
-      await waitForSpinner(row);
-      await this.assertCorrectStatus(row, action);
+      await this.clickActionOnRow(row, action);
     }
   }
 
   async editRequest(row: Locator) {
     const action = UserAccessRequestActions.EDIT;
-    await row.getByRole("button", { name: action }).click();
-    await waitForSpinner(row);
+    await this.clickActionOnRow(row, action);
   }
 
   async getCurrentStatus(row: Locator) {
     const statusCell = row.locator('[data-field="status"]');
     const statusText = await statusCell.textContent();
-    console.log("getcurrentstatus: ", statusText);
     return statusText;
   }
 

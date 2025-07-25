@@ -26,7 +26,7 @@ import { OperatorPOM } from "@/administration-e2e/poms/operator";
 
 const happoPlaywright = require("happo-playwright");
 const test = setupBeforeAllTest(UserRole.INDUSTRY_USER_ADMIN);
-test.beforeAll(async () => {
+test.beforeEach(async () => {
   /**
    * Upsert bc-cas-dev-secondary user operator as pending
    * Best not to set this in the fixtures so that we can test
@@ -97,11 +97,7 @@ test.describe("External User", () => {
     const currentStatus = await accessRequestPage.getCurrentStatus(row);
     await accessRequestPage.assertActionVisibility(row, currentStatus);
 
-    // Click Edit request
-    await accessRequestPage.editRequest(row);
     const role = UserAccessRequestRoles.ADMIN;
-
-    // Approve admin role
     await accessRequestPage.approveOrDeclineRequest(
       row,
       role,
@@ -137,10 +133,7 @@ test.describe("External User", () => {
       UserAndAccessRequestValues.EMAIL,
     );
 
-    // Click Edit
-    await accessRequestPage.editRequest(row);
     const role = await accessRequestPage.getCurrentRole(row);
-    await assertSuccessfulSnackbar(page, /is now pending/i);
 
     // Decline Request
     await accessRequestPage.approveOrDeclineRequest(
@@ -186,5 +179,31 @@ test.describe("External User", () => {
       component: "Decline a user operator request",
       variant: "default",
     });
+  });
+
+  test("Edit a request", async ({ page }) => {
+    // 🛸 Navigate to Users and Access Requests from dashboard
+    const accessRequestPage = new UsersAccessRequestPOM(page);
+    await accessRequestPage.goToUserAccessRequestPage();
+    await accessRequestPage.pageIsStable();
+
+    const row = await getRowByUniqueCellValue(
+      page,
+      UserAndAccessRequestGridHeaders.EMAIL.toLowerCase(),
+      UserAndAccessRequestValues.EMAIL,
+    );
+    const role = UserAccessRequestRoles.REPORTER;
+    await accessRequestPage.approveOrDeclineRequest(
+      row,
+      role,
+      UserAccessRequestActions.APPROVE,
+    );
+    await assertSuccessfulSnackbar(page, /is now approved/i);
+
+    await accessRequestPage.editRequest(row);
+    await assertSuccessfulSnackbar(page, /is now pending/i);
+
+    const currentStatus = await accessRequestPage.getCurrentStatus(row);
+    await accessRequestPage.assertActionVisibility(row, currentStatus);
   });
 });
