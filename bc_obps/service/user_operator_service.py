@@ -14,8 +14,7 @@ from service.operator_service import OperatorService
 from django.db.models import QuerySet
 from django.db.models.functions import Lower
 from ninja import Query
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 
 
 class UserOperatorService:
@@ -175,7 +174,7 @@ class UserOperatorService:
         updated_role = payload.role
 
         if user_operator.status in [UserOperator.Statuses.APPROVED, UserOperator.Statuses.DECLINED]:
-            user_operator.verified_at = datetime.now(ZoneInfo("UTC"))
+            user_operator.verified_at = timezone.now()
             user_operator.verified_by_id = admin_user_guid
 
             if user_operator.status == UserOperator.Statuses.DECLINED:

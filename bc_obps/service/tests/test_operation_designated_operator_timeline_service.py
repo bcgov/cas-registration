@@ -1,6 +1,5 @@
-from zoneinfo import ZoneInfo
 import pytest
-from datetime import datetime
+from django.utils import timezone
 from model_bakery import baker
 from service.operation_designated_operator_timeline_service import OperationDesignatedOperatorTimelineService
 
@@ -34,7 +33,7 @@ class TestOperationDesignatedOperatorTimelineService:
         timeline = baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
         )
-        end_date = datetime.now(ZoneInfo("UTC"))
+        end_date = timezone.now()
 
         updated_timeline = OperationDesignatedOperatorTimelineService.set_timeline_end_date(timeline, end_date)
 

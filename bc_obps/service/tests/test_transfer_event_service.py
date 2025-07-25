@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 from unittest.mock import patch, MagicMock
 from uuid import uuid4
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models import TransferEvent
@@ -116,7 +116,7 @@ class TestTransferEventService:
             transfer_entity="Operation",
             from_operator=from_operator.id,
             to_operator=to_operator.id,
-            effective_date=datetime.now(ZoneInfo("UTC")),
+            effective_date=timezone.now(),
             operation=operation.id,
         )
 
@@ -202,7 +202,7 @@ class TestTransferEventService:
             transfer_entity="Facility",
             from_operator=from_operator.id,
             to_operator=to_operator.id,
-            effective_date=datetime.now(ZoneInfo("UTC")),
+            effective_date=timezone.now(),
             from_operation=from_operation.id,
             to_operation=to_operation.id,
             facilities=[facility.id for facility in facilities],
@@ -304,7 +304,7 @@ class TestTransferEventService:
 
         # Use an effective date that is yesterday
         payload = cls._get_transfer_event_payload_for_operation()
-        payload.effective_date = datetime.now(ZoneInfo("UTC")) - timedelta(days=1)
+        payload.effective_date = timezone.now() - timedelta(days=1)
 
         mock_user = MagicMock()
         mock_user.is_cas_analyst.return_value = True
@@ -325,7 +325,7 @@ class TestTransferEventService:
     @patch("service.transfer_event_service.logger")
     def test_process_due_transfer_events(mock_logger: MagicMock, mock_process_single_event: MagicMock):
         # Setup test data: Three transfer events, two of which are due today and one is due in the future
-        today = datetime.now(ZoneInfo("UTC"))
+        today = timezone.now()
         due_event_1 = baker.make_recipe(
             "registration.tests.utils.transfer_event",
             effective_date=today,
@@ -666,7 +666,7 @@ class TestTransferEventService:
         user_guid = uuid4()
         transfer_id = uuid4()
         operation_id = uuid4()
-        payload = MagicMock(operation=operation_id, effective_date=datetime.now(ZoneInfo("UTC")))
+        payload = MagicMock(operation=operation_id, effective_date=timezone.now())
 
         # Test with valid operation ID
         TransferEventService._update_operation_transfer_event(user_guid, transfer_id, payload)
@@ -688,7 +688,7 @@ class TestTransferEventService:
         user_guid = uuid4()
         transfer_id = uuid4()
         facility_ids = [uuid4(), uuid4()]
-        payload = MagicMock(facilities=facility_ids, effective_date=datetime.now(ZoneInfo("UTC")))
+        payload = MagicMock(facilities=facility_ids, effective_date=timezone.now())
 
         updated_transfer_event_mock = MagicMock()
         mock_update_transfer_event.return_value = updated_transfer_event_mock

@@ -1,9 +1,8 @@
 import logging
-from datetime import datetime
 from typing import cast, List, Union
 from uuid import UUID
-from zoneinfo import ZoneInfo
 from django.db import transaction
+from django.utils import timezone
 from django.db.models import QuerySet
 from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
@@ -111,7 +110,7 @@ class TransferEventService:
         user_guid: UUID,
     ) -> None:
         # Check if the effective date is today or in the past and process the event
-        now = datetime.now(ZoneInfo("UTC"))
+        now = timezone.now()
         if payload.effective_date <= now:  # type: ignore[union-attr] # mypy not aware of model schema field in TransferEventCreateIn
             cls._process_single_event(transfer_event, user_guid)
 
@@ -185,7 +184,7 @@ class TransferEventService:
         Process all due transfer events (effective date <= today and status = 'To be transferred').
         Updates timelines and marks the events as 'Transferred'.
         """
-        today = datetime.now(ZoneInfo("UTC")).date()
+        today = timezone.now().date()
 
         # Fetch all due transfer events with related fields to optimize queries
         transfer_events = TransferEvent.objects.filter(
@@ -235,9 +234,7 @@ class TransferEventService:
         """
         for facility in event.facilities.all():
             # get the current timeline for the facility and operation
-            current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline(
-                event.from_operation.id, facility.id  # type: ignore # we are sure that from_operation is not None
-            )
+            current_timeline = FacilityDesignatedOperationTimelineService.get_current_timeline(event.from_operation.id, facility.id)  # type: ignore # we are sure that from_operation is not None
 
             if current_timeline:
                 FacilityDesignatedOperationTimelineService.set_timeline_end_date(
@@ -265,9 +262,7 @@ class TransferEventService:
         """
 
         # get the current timeline for the operation and operator
-        current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline(
-            event.from_operator.id, event.operation.id  # type: ignore # we are sure that operation is not None
-        )
+        current_timeline = OperationDesignatedOperatorTimelineService.get_current_timeline(event.from_operator.id, event.operation.id)  # type: ignore # we are sure that operation is not None
 
         if current_timeline:
             OperationDesignatedOperatorTimelineService.set_timeline_end_date(

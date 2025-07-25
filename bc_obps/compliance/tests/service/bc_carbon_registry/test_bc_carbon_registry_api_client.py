@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock
 from datetime import datetime, timedelta
-from zoneinfo import ZoneInfo
+from django.utils import timezone
 import requests
 import logging
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
@@ -25,7 +25,7 @@ API_URL = "https://api.example.com"
 CLIENT_ID = "test_client_id"
 CLIENT_SECRET = "test_client_secret"
 TOKEN = "test_token"
-VALID_TOKEN_EXPIRY = datetime.now(ZoneInfo("UTC")) + timedelta(seconds=3600)
+VALID_TOKEN_EXPIRY = timezone.now() + timedelta(seconds=3600)
 
 # Common mock account response
 BASE_ACCOUNT_RESPONSE = {
@@ -222,7 +222,7 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert client.token == TOKEN
         assert isinstance(client.token_expiry, datetime)
-        assert client.token_expiry > datetime.now(ZoneInfo("UTC"))
+        assert client.token_expiry > timezone.now()
         mock_post.assert_called_once_with(
             f"{API_URL}/user-api/okta/token",
             json={"clientId": CLIENT_ID, "clientSecret": CLIENT_SECRET},
@@ -287,7 +287,7 @@ class TestBCCarbonRegistryAPIClient:
         # Arrange
         client = setup
         client.token = "old_token"
-        client.token_expiry = datetime.now(ZoneInfo("UTC")) - timedelta(seconds=3600)
+        client.token_expiry = timezone.now() - timedelta(seconds=3600)
         mock_post = mocker.patch("requests.post")
         mock_post.return_value = Mock(
             status_code=200,
