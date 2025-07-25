@@ -16,6 +16,10 @@ const PaymentSummariesDataGrid = ({
     row_count: number;
   };
 }) => {
+  console.log(
+    "PaymentSummariesDataGrid rendered with initialData:",
+    initialData,
+  );
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   const SearchCell = useMemo(
