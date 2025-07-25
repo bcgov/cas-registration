@@ -119,16 +119,32 @@ class DecreasedObligationHandler:
         return compliance_report_version
 
 
-# # Concrete strategy for no significant change
-# class NoChangeHandler:
-#     def can_handle(self, new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-#         # Return True if no significant change in excess emissions
-#         return False # return False until implemented
+# Concrete strategy for no significant change
+class NoChangeHandler:
+    def can_handle(self, new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+        if (
+            new_summary.excess_emissions == previous_summary.excess_emissions
+            and new_summary.credited_emissions == previous_summary.credited_emissions
+        ):
+            return True
+        return False
 
-#     def handle(self, compliance_report: ComplianceReport, new_summary: ReportComplianceSummary,
-#                previous_summary: ReportComplianceSummary, version_count: int) -> Optional[ComplianceReportVersion]:
-#         # Return None - no action needed
-#         pass
+    def handle(
+        self,
+        compliance_report: ComplianceReport,
+        new_summary: ReportComplianceSummary,
+        previous_summary: ReportComplianceSummary,
+        version_count: int,
+    ) -> Optional[ComplianceReportVersion]:
+        compliance_report_version = ComplianceReportVersion.objects.create(
+            compliance_report=compliance_report,
+            report_compliance_summary=new_summary,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            excess_emissions_delta_from_previous=0,
+            is_supplementary=True,
+        )
+        return compliance_report_version
+
 
 # # Concrete strategy for increased credits
 # class IncreasedCreditHandler:
@@ -159,7 +175,7 @@ class SupplementaryVersionService:
         self.handlers: list[SupplementaryScenarioHandler] = [
             IncreasedObligationHandler(),
             DecreasedObligationHandler(),
-            # NoChangeHandler(),
+            NoChangeHandler(),
             # IncreasedCreditHandler(),
             # DecreasedCreditHandler(),
         ]
