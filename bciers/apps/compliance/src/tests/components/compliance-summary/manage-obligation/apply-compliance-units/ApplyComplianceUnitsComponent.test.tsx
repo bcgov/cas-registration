@@ -262,6 +262,47 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
+  it("hides confirmation checkbox when invalid account is entered after valid one", async () => {
+    // First, enter a valid account
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: MOCK_TRADING_NAME,
+    });
+
+    render(
+      <ApplyComplianceUnitsComponent
+        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
+        reportingYear={TEST_REPORTING_YEAR}
+      />,
+    );
+
+    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
+    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
+
+    // Wait for valid account confirmation to appear
+    await waitFor(() => {
+      expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
+      expect(screen.getByRole("checkbox")).toBeInTheDocument();
+    });
+
+    // Now enter an invalid account (null trading name response)
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      bccr_trading_name: null,
+    });
+
+    fireEvent.change(accountInput, { target: { value: "999999999999999" } });
+
+    // Wait for the error state and confirm checkbox is hidden
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          /please enter a valid bccr holding account id to move to the next step/i,
+        ),
+      ).toBeVisible();
+      expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+      expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
+    });
+  });
+
   it("submits form and calls GET API to fetch compliance data", async () => {
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       bccr_trading_name: MOCK_TRADING_NAME,

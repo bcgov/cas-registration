@@ -273,11 +273,15 @@ export default function ApplyComplianceUnitsComponent({
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
         validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
-          setFormData((prev: ApplyComplianceUnitsFormData) => ({
-            ...prev,
-            ...response,
-          }));
-          setCurrentPhase("confirmation");
+          if (response) {
+            setFormData((prev: ApplyComplianceUnitsFormData) => ({
+              ...prev,
+              ...response,
+            }));
+            setCurrentPhase("confirmation");
+          } else {
+            setCurrentPhase("initial");
+          }
         },
         onError: setErrors,
         complianceLimitStatus,
