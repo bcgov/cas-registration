@@ -22,8 +22,14 @@ spec:
       configuration:
         - configMap:
             name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pgbackrest
+        {{- $secretName := printf "gcp-%s-obps-backups-service-account-key" .Values.sourceNamespace }}
+        {{- $sourceSecret := lookup "v1" "Secret" .Values.sourceNamespace $secretName }}
+
+        {{- if not $sourceSecret }}
+        {{- fail (printf "Required secret %s not found in namespace %s" $secretName .Values.sourceNamespace) }}
+        {{- end }}
         - secret:
-            name: gcp-{{ .Values.sourceNamespace }}-obps-backups-service-account-key
+            name: {{ $secretName }}
             items:
               - key: credentials
                 path: gcs-key.json
