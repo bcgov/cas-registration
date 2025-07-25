@@ -64,9 +64,18 @@ const formatTimestamp = (timestamp: string) => {
 
 When querying the database directly (e.g., in Metabase, SQL queries, debugging):
 
-1. **Remember you're seeing UTC times**: A timestamp showing `2024-01-15 22:00:00` is 10:00 PM UTC, which is 2:00 PM Pacific Time
+1. **Remember you're seeing UTC times**: A timestamp showing `2024-01-15 22:00:00` is 10:00 PM UTC, which converts to Pacific Time depending on the time of year
 2. **Use timezone functions for local time**: PostgreSQL's `AT TIME ZONE` function can convert UTC to local time
 3. **Be consistent**: Always work in UTC for data processing, convert only for display
+
+## Pacific Time Conversion
+
+**Important**: Pacific Time has daylight saving time, so the offset from UTC changes:
+
+- **Pacific Standard Time (PST)**: UTC-8 (November to March)
+- **Pacific Daylight Time (PDT)**: UTC-7 (March to November)
+
+This means the same UTC time converts to different Pacific times depending on the season.
 
 ## Common Scenario
 
@@ -78,6 +87,8 @@ When querying the database directly (e.g., in Metabase, SQL queries, debugging):
 - Backend receives: `2024-01-15T22:00:00Z` (UTC)
 - Database stores: `2024-01-15 22:00:00+00:00`
 - Frontend displays: "Jan 15, 2024 2:00 PM PST"
+
+**Note**: During PDT (March-November), the same UTC time would display as 3:00 PM PDT instead of 2:00 PM PST.
 
 ## References
 
