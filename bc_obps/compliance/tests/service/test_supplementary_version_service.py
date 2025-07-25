@@ -16,11 +16,7 @@ pytestmark = pytest.mark.django_db(transaction=True)  # This is used to mark a t
 
 
 class TestSupplementaryVersionService:
-    @patch(
-        'compliance.service.compliance_report_version_service.ComplianceReportVersionService._process_obligation_integration'
-    )
-    def test_handle_increased_obligation_success(self, mock_integration):
-        # Arrange
+    def setup_method(self):
 
         operator = baker.make_recipe('registration.tests.utils.operator')
 
@@ -37,38 +33,45 @@ class TestSupplementaryVersionService:
         report_version_1 = baker.make_recipe(
             'reporting.tests.utils.report_version', report=report, status=ReportVersion.ReportVersionStatus.Submitted
         )
-        report_version_2 = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        self.report_version_2 = baker.make_recipe('reporting.tests.utils.report_version', report=report)
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            report_compliance_summary_1 = baker.make_recipe(
+            self.report_compliance_summary_1 = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
                 excess_emissions=Decimal('500'),
                 credited_emissions=0,
                 report_version=report_version_1,
             )
-        report_compliance_summary_2 = baker.make_recipe(
+        self.report_compliance_summary_2 = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             excess_emissions=Decimal('800'),
             credited_emissions=0,
-            report_version=report_version_2,
+            report_version=self.report_version_2,
         )
-        compliance_report = baker.make_recipe(
+        self.compliance_report = baker.make_recipe(
             'compliance.tests.utils.compliance_report', report=report, compliance_period_id=1
         )
         baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary_1,
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.report_compliance_summary_1,
         )
 
+    @patch(
+        'compliance.service.compliance_report_version_service.ComplianceReportVersionService._process_obligation_integration'
+    )
+    def test_handle_increased_obligation_success(self, mock_integration):
+
         # Act
-        result = SupplementaryVersionService().handle_supplementary_version(compliance_report, report_version_2, 2)
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
 
         # Assert
         mock_integration.assert_called_once()
 
         assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        assert result.report_compliance_summary_id == report_compliance_summary_2.id
-        assert result.compliance_report_id == compliance_report.id
+        assert result.report_compliance_summary_id == self.report_compliance_summary_2.id
+        assert result.compliance_report_id == self.compliance_report.id
         assert result.excess_emissions_delta_from_previous == Decimal('300')
         assert result.is_supplementary == True  # noqa: E712
         assert (
@@ -110,53 +113,22 @@ class TestSupplementaryVersionService:
 
     def test_handle_no_change_success(self):
         # Arrange
-
-        operator = baker.make_recipe('registration.tests.utils.operator')
-
-        operation = baker.make_recipe(
-            'registration.tests.utils.operation',
-            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
-            status=Operation.Statuses.REGISTERED,
-            operator=operator,
-        )
-
-        report = baker.make_recipe(
-            'reporting.tests.utils.report', reporting_year_id=2025, operation=operation, operator=operator
-        )
-        report_version_1 = baker.make_recipe(
-            'reporting.tests.utils.report_version', report=report, status=ReportVersion.ReportVersionStatus.Submitted
-        )
-        report_version_2 = baker.make_recipe('reporting.tests.utils.report_version', report=report)
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            report_compliance_summary_1 = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=Decimal('500'),
-                credited_emissions=0,
-                report_version=report_version_1,
-            )
-        report_compliance_summary_2 = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary',
-            excess_emissions=Decimal('500'),
-            credited_emissions=0,
-            report_version=report_version_2,
-        )
-        compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=report, compliance_period_id=1
-        )
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary_1,
-        )
+            self.report_compliance_summary_2.excess_emissions = Decimal(
+                '500'
+            )  # to match the first version's compliance summary
+        self.report_compliance_summary_2.save()
 
         # Act
-        result = SupplementaryVersionService().handle_supplementary_version(compliance_report, report_version_2, 2)
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
 
         # Assert
 
         assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
-        assert result.report_compliance_summary_id == report_compliance_summary_2.id
-        assert result.compliance_report_id == compliance_report.id
+        assert result.report_compliance_summary_id == self.report_compliance_summary_2.id
+        assert result.compliance_report_id == self.compliance_report.id
         assert result.excess_emissions_delta_from_previous == Decimal('0')
         assert result.is_supplementary == True  # noqa: E712
 
