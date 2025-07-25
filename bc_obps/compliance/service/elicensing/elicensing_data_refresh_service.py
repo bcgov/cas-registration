@@ -101,6 +101,8 @@ class ElicensingDataRefreshService:
                     defaults={
                         "received_date": datetime.fromisoformat(payment.receivedDate),
                         "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
+                        "method": payment.method,
+                        "receipt_number": payment.receiptNumber,
                     },
                 )
             for adjustment in fee.adjustments:

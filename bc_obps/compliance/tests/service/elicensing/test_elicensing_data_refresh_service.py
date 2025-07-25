@@ -53,13 +53,14 @@ class TestElicensingOperatorService:
                     payments=[
                         Payment(
                             paymentObjectId=2,
-                            receiptNumber='str',
                             receivedDate='2025-11-30',
                             depositDate='2025-11-30',
                             amount=Decimal('50.00'),
-                            method='method',
                             cashHandlingArea='1',
                             referenceNumber='1',
+                            # brianna go look at this in the api
+                            method='wire',
+                            receiptNumber='R192883',
                         )
                     ],
                     adjustments=[
@@ -92,6 +93,8 @@ class TestElicensingOperatorService:
         assert fee.object_id == 1
         assert fee.description == 'desc'
         assert payment.amount == Decimal('50')
+        assert payment.method == 'wire'
+        assert payment.receipt_number == 'R192883'
         assert adjustment.amount == Decimal('10.11')
 
     @pytest.mark.django_db
