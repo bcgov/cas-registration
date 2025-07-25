@@ -18,7 +18,7 @@ import {
 import {
   waitForSpinner,
   linkIsVisible,
-  selectOptionFromCombobox,
+  selectItemFromMuiSelect,
   stabilizeGrid,
   tableColumnNamesAreCorrect,
 } from "@bciers/e2e/utils/helpers";
@@ -74,7 +74,7 @@ export class UsersAccessRequestPOM {
 
   async approveOrDeclineRequest(row: Locator, role: string, action: string) {
     if (action === UserAccessRequestActions.APPROVE) {
-      await selectOptionFromCombobox(this.page, role);
+      await selectItemFromMuiSelect(this.page, role);
       await row.getByRole("button", { name: action }).click();
       await waitForSpinner(row);
       await this.assertCorrectRole(row, role);

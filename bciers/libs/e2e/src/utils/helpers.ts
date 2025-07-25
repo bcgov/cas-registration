@@ -647,8 +647,8 @@ export async function waitForSpinner(row: Locator) {
   await expect(spinner).toBeHidden();
 }
 
-// This is specifically for a combobox that does not allow manual entries
-export async function selectOptionFromCombobox(
+// This is specifically for a combobox that does not allow manual entries (MUI Select)
+export async function selectItemFromMuiSelect(
   page: Page,
   choice: string | RegExp,
 ) {
