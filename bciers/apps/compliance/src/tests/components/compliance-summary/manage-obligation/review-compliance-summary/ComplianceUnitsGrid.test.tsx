@@ -34,7 +34,7 @@ const appliedComplianceUnits = {
       equivalent_value: 4000,
     },
   ],
-  can_apply_units: true,
+  can_apply_compliance_units: true,
 };
 
 const mockValue: ComplianceAppliedUnitsSummary = {
@@ -128,12 +128,12 @@ describe("ComplianceUnitsGrid", () => {
     expect(bccrLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("does not render the Apply Compliance Units button when can_apply_units is false", () => {
+  it("does not render the Apply Compliance Units button when can_apply_compliance_units is false", () => {
     const mockValueWithoutApply: ComplianceAppliedUnitsSummary = {
       ...mockValue,
       applied_compliance_units: {
         ...mockValue.applied_compliance_units,
-        can_apply_units: false,
+        can_apply_compliance_units: false,
       },
     };
 

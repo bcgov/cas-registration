@@ -3,9 +3,8 @@ import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
 import {
   extractComplianceReportVersionId,
-  AppRoutes,
   COMPLIANCE_BASE,
-  COMPLIANCE_REPORT_BASE,
+  AppRoutes,
 } from "./constants";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
@@ -36,7 +35,7 @@ const createRuleContext = (): RuleContext => {
           complianceReportVersionId,
         );
         canApplyComplianceUnitsCache[complianceReportVersionId] =
-          result.can_apply_units;
+          result.can_apply_compliance_units;
       }
       return canApplyComplianceUnitsCache[complianceReportVersionId];
     },
@@ -57,16 +56,16 @@ type PermissionRule = {
   name: string;
   isApplicable: (
     request: NextRequest,
-    complianceReportVersionId: number,
+    complianceReportVersionId?: number,
     context?: RuleContext,
   ) => boolean | Promise<boolean>;
   validate: (
-    complianceReportVersionId: number,
+    complianceReportVersionId?: number,
     request?: NextRequest,
     context?: RuleContext,
   ) => boolean | Promise<boolean>;
   redirect: (
-    complianceReportVersionId: number,
+    complianceReportVersionId: number | undefined,
     request: NextRequest,
   ) => NextResponse;
 };
@@ -74,30 +73,34 @@ type PermissionRule = {
 const permissionRules: PermissionRule[] = [
   {
     name: "hasRegisteredOperation",
-    isApplicable: (request) =>
-      request.nextUrl.pathname.startsWith("/compliance"),
+    isApplicable: () => true,
     validate: async (_id, _request, context) => {
-      return await context!.getHasRegisteredOperation();
+      return context!.getHasRegisteredOperation();
     },
     redirect: (_id, request) =>
-      NextResponse.redirect(new URL(`/onboarding`, request.url)),
+      NextResponse.redirect(new URL(`/${AppRoutes.ONBOARDING}`, request.url)),
   },
   {
     name: "accessCanApplyUnits",
-    isApplicable: (request) =>
-      request.nextUrl.pathname.includes(AppRoutes.APPLY_COMPLIANCE_UNITS),
-    validate: async (complianceReportVersionId, _request, context) => {
-      return await context!.getComplianceAppliedUnits(
-        complianceReportVersionId,
+    isApplicable: (request) => {
+      const match = request.nextUrl.pathname.includes(
+        AppRoutes.APPLY_COMPLIANCE_UNITS,
       );
+      return match;
     },
-    redirect: (complianceReportVersionId, request) =>
-      NextResponse.redirect(
-        new URL(
-          `${COMPLIANCE_BASE}${COMPLIANCE_REPORT_BASE}${complianceReportVersionId}${AppRoutes.REVIEW_COMPLIANCE_SUMMARY}`,
-          request.url,
-        ),
-      ),
+
+    validate: async (complianceReportVersionId, _request, context) => {
+      if (typeof complianceReportVersionId !== "number") {
+        return false;
+      }
+      return context!.getComplianceAppliedUnits(complianceReportVersionId);
+    },
+    redirect: (_, request) => {
+      const targetPath = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
+
+      const redirectUrl = new URL(targetPath, request.url);
+      return NextResponse.redirect(redirectUrl);
+    },
   },
 ];
 
@@ -108,9 +111,7 @@ const checkHasPathAccess = async (request: NextRequest) => {
   try {
     const { pathname } = request.nextUrl;
     const complianceReportVersionId =
-      extractComplianceReportVersionId(pathname);
-    if (!complianceReportVersionId) return null;
-
+      extractComplianceReportVersionId(pathname) ?? undefined;
     const context = createRuleContext();
 
     for (const rule of permissionRules) {

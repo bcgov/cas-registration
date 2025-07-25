@@ -13,9 +13,7 @@ const mockedRequest: NextRequest = mock(NextRequest);
 const mockNextFetchEvent: NextFetchEvent = mock(NextFetchEvent);
 
 // 🧪 Create the middleware instance with a no-op base middleware
-const middleware = withResponseCompliance((req: NextRequest) =>
-  NextResponse.next(),
-);
+const middleware = withResponseCompliance(() => NextResponse.next());
 
 vi.spyOn(NextResponse, "redirect");
 vi.spyOn(NextResponse, "rewrite");

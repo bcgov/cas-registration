@@ -1,14 +1,13 @@
 from unittest.mock import patch
-from compliance.dataclass import BCCRUnit
+from compliance.dataclass import BCCRUnit, RefreshWrapperReturn
 from django.test import SimpleTestCase, override_settings, Client
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import custom_reverse_lazy
 
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
-CAN_APPLY_UNITS_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_units"
-)
+CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_compliance_units"
+ELICENSING_DATA_REFRESH_WRAPPER_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent DB queries
@@ -24,10 +23,11 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             "get_applied_compliance_units", kwargs={"compliance_report_version_id": self.compliance_report_version_id}
         )
 
-    @patch(CAN_APPLY_UNITS_PATH)
+    @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_successful_applied_units_retrieval(self, mock_permission, mock_service, mock_can_apply):
+    def test_successful_applied_units_retrieval(self, mock_permission, mock_service, mock_can_apply, mock_refresh_data):
         # Arrange
         mock_permission.return_value = True
         mock_service.return_value = [
@@ -41,6 +41,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             )
         ]
         mock_can_apply.return_value = True
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
 
         # Act
         response = self.client.get(self._get_endpoint_url())
@@ -58,23 +59,27 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
                     "equivalent_value": "4000.00",
                 }
             ],
-            "can_apply_units": True,
+            "can_apply_compliance_units": True,
+            "data_is_fresh": True,
         }
 
-    @patch(CAN_APPLY_UNITS_PATH)
+    @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
-    def test_empty_applied_units(self, mock_permission, mock_service, mock_can_apply):
+    def test_empty_applied_units(self, mock_permission, mock_service, mock_can_apply, mock_refresh_data):
         mock_permission.return_value = True
         mock_service.return_value = []
         mock_can_apply.return_value = False
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
 
         response = self.client.get(self._get_endpoint_url())
 
         assert response.status_code == 200
         assert response.json() == {
             "applied_compliance_units": [],
-            "can_apply_units": False,
+            "can_apply_compliance_units": False,
+            "data_is_fresh": True,
         }
 
     @patch(SERVICE_PATH)

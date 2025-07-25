@@ -10,11 +10,11 @@ const getComplianceAppliedUnits = async (
     "",
   );
   const data = response.applied_compliance_units;
-  const can_apply_units = response.can_apply_units;
+  const canApplyComplianceUnits = response.can_apply_compliance_units;
   return {
     rows: data,
     row_count: data.length || 0,
-    can_apply_units: can_apply_units,
+    can_apply_compliance_units: canApplyComplianceUnits,
   };
 };
 

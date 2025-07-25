@@ -30,7 +30,8 @@ class AppliedComplianceUnitsOut(Schema):
     """Wrapper schema for applied units and credit cap metadata."""
 
     applied_compliance_units: List[AppliedComplianceUnit]
-    can_apply_units: bool
+    can_apply_compliance_units: bool
+    data_is_fresh: bool
 
 
 class ApplyComplianceUnitsOut(Schema):
@@ -38,9 +39,11 @@ class ApplyComplianceUnitsOut(Schema):
 
     bccr_trading_name: Optional[str] = None
     bccr_compliance_account_id: Optional[str] = None
+    bccr_units: List[BCCRUnit] = []
     charge_rate: Optional[Decimal] = None
     outstanding_balance: Optional[Decimal] = None
-    bccr_units: List[BCCRUnit] = []
+    compliance_unit_cap_limit: Optional[Decimal] = None
+    compliance_unit_cap_remaining: Optional[Decimal] = None
 
 
 class ApplyComplianceUnitsIn(Schema):

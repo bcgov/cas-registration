@@ -46,7 +46,9 @@ export default function ApplyComplianceUnitsComponent({
   >("initial");
   const [errors, setErrors] = useState<string[] | undefined>();
   const [status, setStatus] = useState<Status>("idle");
-  // Keep track of the initial outstanding balance from the API
+  // Keep track of the remaining cap from the API (what's left to apply)
+  const [remainingCap, setRemainingCap] = useState<number>(0);
+  // Legacy / fallback outstanding balance (not used for limit enforcement)
   const [initialOutstandingBalance, setInitialOutstandingBalance] =
     useState<number>(0);
 
@@ -122,10 +124,11 @@ export default function ApplyComplianceUnitsComponent({
           newFormData.bccr_units,
         );
 
-        setFormData({
+        const merged = {
           ...newFormData,
           ...summaryValues,
-        });
+        };
+        setFormData(merged);
       }
       // Don't update form data if we don't have valid units in compliance phase
       return;
@@ -142,10 +145,11 @@ export default function ApplyComplianceUnitsComponent({
         newFormData.bccr_units,
       );
 
-      setFormData({
+      const merged = {
         ...newFormData,
         ...summaryValues,
-      });
+      };
+      setFormData(merged);
     } else {
       setFormData({
         ...newFormData,
@@ -167,6 +171,9 @@ export default function ApplyComplianceUnitsComponent({
       setStatus("idle");
       setErrors([response?.error || "Failed to get compliance units data"]);
     } else {
+      // Set the remaining cap from the response (what’s left to apply)
+      setRemainingCap(Number(response.compliance_unit_cap_remaining));
+
       // Set the outstanding balance from the response
       setInitialOutstandingBalance(response.outstanding_balance || 0);
 
@@ -192,9 +199,8 @@ export default function ApplyComplianceUnitsComponent({
   const handleApply = async () => {
     setStatus("applying");
     const response = await actionHandler(
-      `compliance/bccr/accounts/${
-        (formData as ApplyComplianceUnitsFormData)?.bccr_holding_account_id
-      }/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
+      `compliance/bccr/accounts/${(formData as ApplyComplianceUnitsFormData)
+        ?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
       "POST",
       "",
       {
@@ -218,7 +224,8 @@ export default function ApplyComplianceUnitsComponent({
   // Check if Submit button should be enabled (when checkbox is checked)
   const canSubmit = useMemo(() => {
     const data = formData as ApplyComplianceUnitsFormData;
-    return !!(shouldShowSubmitButton && data?.confirmation_checkbox);
+    const result = !!(shouldShowSubmitButton && data?.confirmation_checkbox);
+    return result;
   }, [formData, shouldShowSubmitButton]);
 
   // Check if we should show the Apply button (after data is loaded)
@@ -234,7 +241,6 @@ export default function ApplyComplianceUnitsComponent({
       data?.bccr_units &&
       data?.bccr_units.length > 0
     );
-
     return result;
   }, [formData, status]);
 
@@ -242,25 +248,28 @@ export default function ApplyComplianceUnitsComponent({
   const complianceLimitStatus = useMemo((): ComplianceLimitStatus => {
     const totalValue = (formData as ApplyComplianceUnitsFormData)
       .total_equivalent_value;
-    const limit = initialOutstandingBalance * 0.5;
-
-    if (totalValue > limit) {
-      return "EXCEEDS";
-    } else if (totalValue === limit) {
-      return "EQUALS";
+    // Compare against remaining cap (what's left); not original full cap
+    let statusStr: ComplianceLimitStatus;
+    if (totalValue > remainingCap) {
+      statusStr = "EXCEEDS";
+    } else if (totalValue === remainingCap) {
+      statusStr = "EQUALS";
+    } else {
+      statusStr = "BELOW";
     }
-    return "BELOW";
-  }, [formData, initialOutstandingBalance]);
+    return statusStr;
+  }, [formData, remainingCap]);
 
   // Check if Apply button should be enabled
   const canApply = useMemo(() => {
     const data = formData as ApplyComplianceUnitsFormData;
-    return !!(
+    const result = !!(
       shouldShowApplyButton &&
       data?.total_quantity_to_be_applied &&
       data?.total_quantity_to_be_applied > 0 &&
       complianceLimitStatus !== "EXCEEDS"
     );
+    return result;
   }, [formData, shouldShowApplyButton, complianceLimitStatus]);
 
   // Select the appropriate schema based on current phase

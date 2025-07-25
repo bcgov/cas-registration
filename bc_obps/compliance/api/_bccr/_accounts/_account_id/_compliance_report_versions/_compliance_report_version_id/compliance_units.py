@@ -10,6 +10,7 @@ from compliance.service.bc_carbon_registry.schema import FifteenDigitString
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
+from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
 
 @router.get(
@@ -39,8 +40,7 @@ def get_apply_compliance_units_page_data(
     Apply compliance units to a BCCR compliance account.
     Returns:
     - success (bool): Indicates whether the units were successfully applied.
-    - can_apply_units (bool): Indicates whether the user can still apply additional units,
-      based on the 50% credit cap rule relative to the original obligation fee.
+    - can_apply_compliance_units (bool): Indicates whether the user can still apply additional units - used in frontend permission management.
     """,
     auth=authorize("approved_industry_user"),
 )
@@ -58,10 +58,16 @@ def apply_compliance_units(
     )
 
     # Determine if the user can still apply more units
-    can_apply_units = ApplyComplianceUnitsService._can_apply_units(compliance_report_version_id)
+    can_apply_compliance_units = ApplyComplianceUnitsService._can_apply_compliance_units(compliance_report_version_id)
 
-    # Return both flags in response
+    # Get the data_is_fresh flag
+    refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+        compliance_report_version_id=compliance_report_version_id
+    )
+
+    # Return flags in response
     return 200, {
         "success": True,
-        "can_apply_units": can_apply_units,
+        "can_apply_compliance_units": can_apply_compliance_units,
+        "data_is_fresh": refresh_result.data_is_fresh,
     }
