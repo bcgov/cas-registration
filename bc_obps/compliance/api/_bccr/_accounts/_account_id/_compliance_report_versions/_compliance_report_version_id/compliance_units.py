@@ -39,8 +39,7 @@ def get_apply_compliance_units_page_data(
     Apply compliance units to a BCCR compliance account.
     Returns:
     - success (bool): Indicates whether the units were successfully applied.
-    - can_apply_units (bool): Indicates whether the user can still apply additional units,
-      based on the 50% credit cap rule relative to the original obligation fee.
+    - can_apply_compliance_units (bool): Indicates whether the user can still apply additional units - used in frontend permission management.
     """,
     auth=authorize("approved_industry_user"),
 )
@@ -58,10 +57,10 @@ def apply_compliance_units(
     )
 
     # Determine if the user can still apply more units
-    can_apply_units = ApplyComplianceUnitsService._can_apply_units(compliance_report_version_id)
+    can_apply_compliance_units = ApplyComplianceUnitsService._can_apply_compliance_units(compliance_report_version_id)
 
     # Return both flags in response
     return 200, {
         "success": True,
-        "can_apply_units": can_apply_units,
+        "can_apply_compliance_units": can_apply_compliance_units,
     }

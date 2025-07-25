@@ -19,7 +19,7 @@ export const ComplianceUnitsGrid = ({
     compliance_report_version_id: complianceReportVersionId,
     applied_compliance_units: appliedComplianceUnits,
   } = value;
-  const { can_apply_units: canApplyUnits } = appliedComplianceUnits;
+  const { can_apply_compliance_units: canApplyUnits } = appliedComplianceUnits;
 
   const router = useRouter();
 

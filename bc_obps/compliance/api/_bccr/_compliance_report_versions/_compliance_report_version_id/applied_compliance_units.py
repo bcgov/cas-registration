@@ -17,7 +17,7 @@ from compliance.constants import COMPLIANCE
     tags=COMPLIANCE,
     description="""Returns applied compliance units for the given report version.
     - applied_compliance_units: List of units already applied.
-    - can_apply_units: Whether additional units can be applied.""",
+    - can_apply_compliance_units: Whether additional units can be applied.""",
     auth=authorize("approved_industry_user"),
 )
 def get_applied_compliance_units(
@@ -26,9 +26,9 @@ def get_applied_compliance_units(
     applied_compliance_units_data = ApplyComplianceUnitsService.get_applied_compliance_units_data(
         compliance_report_version_id=compliance_report_version_id
     )
-    can_apply_units = ApplyComplianceUnitsService._can_apply_units(compliance_report_version_id)
+    can_apply_compliance_units = ApplyComplianceUnitsService._can_apply_compliance_units(compliance_report_version_id)
 
     return 200, {
         "applied_compliance_units": [asdict(unit) for unit in applied_compliance_units_data],
-        "can_apply_units": can_apply_units,
+        "can_apply_compliance_units": can_apply_compliance_units,
     }

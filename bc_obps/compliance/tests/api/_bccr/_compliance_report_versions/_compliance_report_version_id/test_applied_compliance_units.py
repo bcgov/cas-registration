@@ -6,9 +6,7 @@ from registration.utils import custom_reverse_lazy
 
 PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
 SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
-CAN_APPLY_UNITS_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_units"
-)
+CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_compliance_units"
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent DB queries
@@ -24,7 +22,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
             "get_applied_compliance_units", kwargs={"compliance_report_version_id": self.compliance_report_version_id}
         )
 
-    @patch(CAN_APPLY_UNITS_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
     def test_successful_applied_units_retrieval(self, mock_permission, mock_service, mock_can_apply):
@@ -58,10 +56,10 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
                     "equivalent_value": "4000.00",
                 }
             ],
-            "can_apply_units": True,
+            "can_apply_compliance_units": True,
         }
 
-    @patch(CAN_APPLY_UNITS_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
     @patch(PERMISSION_CHECK_PATH)
     def test_empty_applied_units(self, mock_permission, mock_service, mock_can_apply):
@@ -74,7 +72,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
         assert response.status_code == 200
         assert response.json() == {
             "applied_compliance_units": [],
-            "can_apply_units": False,
+            "can_apply_compliance_units": False,
         }
 
     @patch(SERVICE_PATH)

@@ -46,6 +46,8 @@ class ComplianceUnitsPageData:
     charge_rate: Optional[Decimal]
     outstanding_balance: Optional[Decimal]
     bccr_units: List[BCCRUnit]
+    compliance_unit_cap_limit: Optional[Decimal] = None
+    compliance_unit_cap_remaining: Optional[Decimal] = None
 
 
 @dataclass
@@ -106,6 +108,7 @@ class ObligationData:
     equivalent_value: Decimal
     obligation_id: str
     penalty_status: str
+    fee_amount_dollars: Optional[Decimal]
     data_is_fresh: bool
 
 

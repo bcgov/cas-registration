@@ -1,5 +1,3 @@
-import { JWT } from "next-auth/jwt";
-import { IDP } from "@bciers/utils/src/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
 
 export const REPORTING_BASE = "reporting";
