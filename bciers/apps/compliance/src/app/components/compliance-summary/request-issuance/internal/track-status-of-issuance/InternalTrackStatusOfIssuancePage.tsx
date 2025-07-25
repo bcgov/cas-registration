@@ -33,7 +33,7 @@ export default async function InternalTrackStatusOfIssuancePage({
   // prevent internal users from accessing the page if the issuance status is CREDITS_NOT_ISSUED
   if (pageData.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
     redirect(
-      `/compliance-summaries/${complianceSummaryId}/request-issuance-review-summary`,
+      `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
     );
   }
 

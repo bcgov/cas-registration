@@ -137,11 +137,11 @@ describe("InternalReviewByDirectorPage", () => {
     });
 
     await InternalReviewByDirectorPage({
-      compliance_summary_id: mockComplianceSummaryId,
+      compliance_report_version_id: mockComplianceReportVersionId,
     });
 
     expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceSummaryId}/request-issuance-review-summary`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
     );
   });
 });
