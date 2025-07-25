@@ -286,12 +286,12 @@ export default function ApplyComplianceUnitsComponent({
       className="w-full min-h-[62vh] flex flex-col justify-between"
     >
       <div>
-        <FormAlerts errors={errors} />
         {canApply && status !== "applied" && (
           <div className="mt-8">
             <ApplyComplianceUnitsAlertNote />
           </div>
         )}
+        <FormAlerts errors={errors} />
         <ComplianceStepButtons
           backButtonText={status === "applied" ? "Back" : "Cancel"}
           onBackClick={() =>
