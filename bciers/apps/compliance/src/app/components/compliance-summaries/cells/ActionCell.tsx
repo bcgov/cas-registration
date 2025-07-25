@@ -1,65 +1,80 @@
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import ActionCellFactory from "@bciers/components/datagrid/cells/ActionCellFactory";
 import { ComplianceSummary } from "@/compliance/src/app/types";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import {
+  ComplianceSummaryStatus,
+  IssuanceStatus,
+} from "@bciers/utils/src/enums";
 
 interface ActionCellProps extends GridRenderCellParams<ComplianceSummary> {
   isAllowedCas?: boolean;
 }
 
-const ActionCell = (params: ActionCellProps) => {
+function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
   const {
     obligation_id: obligationId,
     status,
     issuance_status: issuanceStatus,
     id,
-    invoice_number: invoiceNumber, // Without an e-licening invoice number, user cannot route to further pages
-  } = params.row;
-  let basePath = `/compliance-summaries/${id}`;
-  let cellText = "View Details";
+  } = row;
 
-  // if we have obligationId should show the Manage Obligation text in the cell
-  if (obligationId && !params.isAllowedCas) {
-    if (invoiceNumber) {
-      cellText = "Manage Obligation";
-      basePath += "/manage-obligation-review-summary";
-    } else {
-      cellText = "Pending Invoice Creation";
-      basePath = "#";
-    }
-  } else if (status === "Earned credits") {
-    const hasFinalDecision = [
-      IssuanceStatus.APPROVED,
-      IssuanceStatus.DECLINED,
-    ].includes(issuanceStatus as IssuanceStatus);
-    const isIssuanceRequestSubmitted =
-      issuanceStatus !== IssuanceStatus.CREDITS_NOT_ISSUED;
+  const basePath = `/compliance-summaries/${id}`;
 
-    // for internal user: if was made final decision show View Details,
-    // else show Review Credits Issuance Request
-    if (params.isAllowedCas) {
-      if (hasFinalDecision) {
-        cellText = "View Details";
-        basePath += "/review-summary";
-      } else {
-        cellText = "Review Credits Issuance Request";
-        basePath += "/request-issuance-review-summary";
-      }
-    } else {
-      // For external users: Show "Request Issuance of Credits"
-      // until request has been submitted, then "View Details"
-      if (isIssuanceRequestSubmitted) {
-        cellText = "View Details";
-        basePath += "/review-summary";
-      } else {
-        cellText = "Request Issuance of Credits";
-        basePath += "/request-issuance-review-summary";
-      }
+  // Obligation logic
+  if (obligationId && !isAllowedCas) {
+    if (
+      status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
+    ) {
+      return {
+        cellText: "Pending Invoice Creation",
+        basePath: "#",
+      };
     }
-  } else {
-    cellText = "View Details";
-    basePath += "/review-summary";
+    return {
+      cellText: "Manage Obligation",
+      basePath: `${basePath}/manage-obligation-review-summary`,
+    };
   }
+
+  // Earned Credits logic
+  if (status === ComplianceSummaryStatus.EARNED_CREDITS) {
+    let cellText = "View Details";
+    let pathSuffix = "/request-issuance-review-summary";
+
+    if (isAllowedCas && issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED) {
+      cellText = "Review Credits Issuance Request";
+    } else if (
+      !isAllowedCas &&
+      issuanceStatus === IssuanceStatus.CREDITS_NOT_ISSUED
+    ) {
+      cellText = "Request Issuance of Credits";
+    }
+
+    if (
+      issuanceStatus === IssuanceStatus.APPROVED ||
+      issuanceStatus === IssuanceStatus.DECLINED
+    ) {
+      pathSuffix = "/track-status-of-issuance";
+    }
+
+    return {
+      cellText,
+      basePath: `${basePath}${pathSuffix}`,
+    };
+  }
+
+  // Default
+  return {
+    cellText: "View Details",
+    basePath: `${basePath}/review-summary`,
+  };
+}
+
+const ActionCell = (params: ActionCellProps) => {
+  const { cellText, basePath } = getActionCellConfig(
+    params.row,
+    params.isAllowedCas,
+  );
 
   const cell = ActionCellFactory({
     generateHref: () => basePath,

@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional, List, Literal
 from dataclasses import dataclass, field
 from decimal import Decimal
@@ -198,17 +197,6 @@ class InvoiceQueryResponse:
     invoiceFeeBalance: Decimal
     invoiceInterestBalance: Decimal
     fees: List[InvoiceFee]
-
-
-@dataclass
-class InvoiceGetResponse:
-    """Schema to return invoice details from ElicensingDataRefreshService"""
-
-    invoiceNumber: str
-    invoicePaymentDueDate: datetime
-    invoiceOutstandingBalance: Decimal
-    invoiceFeeBalance: Decimal | None
-    invoiceInterestBalance: Decimal | None
 
 
 @dataclass

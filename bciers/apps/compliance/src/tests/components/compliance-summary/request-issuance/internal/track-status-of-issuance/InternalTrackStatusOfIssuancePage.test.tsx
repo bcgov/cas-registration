@@ -148,7 +148,7 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 
-  it("does not redirect to review by director page for CREDITS_NOT_ISSUED status", async () => {
+  it("redirects to request-issuance-review-summary page for CREDITS_NOT_ISSUED status", async () => {
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
       ...mockPageData,
       issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
@@ -157,10 +157,10 @@ describe("InternalTrackStatusOfIssuancePage", () => {
     const Page = await InternalTrackStatusOfIssuancePage({
       compliance_report_version_id: mockComplianceReportVersionId,
     });
-
     render(Page);
 
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
+    );
   });
 });

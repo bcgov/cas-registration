@@ -137,7 +137,7 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
     expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 
-  it("does not redirect to track status page when issuance status is CREDITS_NOT_ISSUED", async () => {
+  it("redirects to request-issuance-review-summary when issuance status is CREDITS_NOT_ISSUED", async () => {
     (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
       ...mockPageData,
       issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
@@ -149,7 +149,8 @@ describe("InternalReviewCreditsIssuanceRequestPage", () => {
       }),
     );
 
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
+    );
   });
 });

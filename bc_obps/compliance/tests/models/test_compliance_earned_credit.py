@@ -68,9 +68,9 @@ class ComplianceEarnedCreditBccrFieldsTriggerTest(BaseTestCase):
                     earned_credits_amount=100,
                     issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
                     bccr_trading_name="valid_trading_name" if field_name != "bccr_trading_name" else field_value,
-                    bccr_holding_account_id="123456789012345"
-                    if field_name != "bccr_holding_account_id"
-                    else field_value,
+                    bccr_holding_account_id=(
+                        "123456789012345" if field_name != "bccr_holding_account_id" else field_value
+                    ),
                 )
         self.assertIn(expected_error, str(cm.exception))
 
@@ -292,8 +292,8 @@ class ComplianceEarnedCreditAnalystSubmissionTriggerTest(BaseTestCase):
 class ComplianceEarnedCreditIssuanceDateTriggerTest(BaseTestCase):
     def setUp(self):
         self.approved_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
-        self.declined_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
         self.other_statuses = [
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
             ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
         ]
@@ -319,28 +319,7 @@ class ComplianceEarnedCreditIssuanceDateTriggerTest(BaseTestCase):
         self.assertIsNotNone(earned_credit.issued_date)
         self.assertIsNotNone(earned_credit.issued_by)
 
-    def test_populate_issued_date_issued_by_when_declined_on_update(self):
-        # Arrange
-        earned_credit = make_recipe(
-            "compliance.tests.utils.compliance_earned_credit",
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
-            bccr_trading_name="valid_trading_name",
-            bccr_holding_account_id="123456789012345",
-            issued_date=None,
-            issued_by=None,
-        )
-
-        # Act
-        earned_credit.issuance_status = self.declined_status
-        earned_credit.save()
-
-        # Assert
-        earned_credit.refresh_from_db()
-        self.assertEqual(earned_credit.issuance_status, self.declined_status)
-        self.assertIsNotNone(earned_credit.issued_date)
-        self.assertIsNotNone(earned_credit.issued_by)
-
-    def test_populate_issued_date_issued_by_when_not_approved_or_declined(self):
+    def test_populate_issued_date_issued_by_when_not_approved(self):
         for status in self.other_statuses:
             with self.subTest(status=status):
                 # Arrange

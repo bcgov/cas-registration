@@ -303,8 +303,6 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.director_comment == "Declined due to insufficient documentation"
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED
         assert result == earned_credit
-        assert earned_credit.issued_date is not None
-        assert earned_credit.issued_by is not None
         mock_project_service.create_project.assert_not_called()
         mock_credit_issuance_service.issue_credits.assert_not_called()
 

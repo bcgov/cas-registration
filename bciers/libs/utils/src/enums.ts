@@ -118,3 +118,11 @@ export enum AnalystSuggestion {
   REQUIRING_CHANGE_OF_BCCR_HOLDING_ACCOUNT_ID = "Requiring change of BCCR Holding Account ID",
   REQUIRING_SUPPLEMENTARY_REPORT = "Requiring supplementary report",
 }
+
+export enum ComplianceSummaryStatus {
+  OBLIGATION_NOT_MET = "Obligation not met",
+  OBLIGATION_FULLY_MET = "Obligation fully met",
+  OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation",
+  EARNED_CREDITS = "Earned credits",
+  NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
+}

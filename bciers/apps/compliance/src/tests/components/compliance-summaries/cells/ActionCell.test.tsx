@@ -11,7 +11,6 @@ describe("ActionCell", () => {
     obligation_id?: string;
     status?: string;
     issuance_status?: string;
-    invoice_number?: string;
   }
 
   const createMockParams = (
@@ -20,7 +19,6 @@ describe("ActionCell", () => {
     obligation_id?: string,
     status?: string,
     issuance_status?: string,
-    invoice_number?: string,
   ): ActionCellParams =>
     ({
       id: id,
@@ -29,7 +27,6 @@ describe("ActionCell", () => {
         obligation_id,
         status,
         issuance_status,
-        invoice_number,
       } as ComplianceSummary,
       isAllowedCas: isAllowedCas,
     }) as ActionCellParams;
@@ -45,14 +42,7 @@ describe("ActionCell", () => {
     it("displays 'Manage Obligation' when obligation_id and invoice_number are present", () => {
       render(
         ActionCell(
-          createMockParams(
-            123,
-            false,
-            "24-0001-1-1",
-            undefined,
-            undefined,
-            "OBI700000",
-          ),
+          createMockParams(123, false, "24-0001-1-1", undefined, undefined),
         ),
       );
       expectLink(
@@ -61,16 +51,14 @@ describe("ActionCell", () => {
       );
     });
 
-    it("displays 'Pending Invoice Creation' when obligation_id is present and invoice_number is not", () => {
+    it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
       render(
         ActionCell(
           createMockParams(
             123,
             false,
             "24-0001-1-1",
-            undefined,
-            undefined,
-            undefined,
+            "Obligation pending invoice creation",
           ),
         ),
       );
@@ -80,62 +68,215 @@ describe("ActionCell", () => {
 
   // Test cases for earned credits flow
   describe("Earned Credits Flow", () => {
-    it("displays 'Review Credits Issuance Request' for CAS user when no final decision", () => {
-      render(
-        ActionCell(
-          createMockParams(
-            123,
-            true,
-            undefined,
-            "Earned credits",
-            IssuanceStatus.ISSUANCE_REQUESTED,
+    describe("Internal users (isAllowedCas: true)", () => {
+      it("displays 'Review Credits Issuance Request' when issuance status is 'Issuance Requested'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.ISSUANCE_REQUESTED,
+            ),
           ),
-        ),
-      );
-      expectLink(
-        "Review Credits Issuance Request",
-        "/compliance-summaries/123/request-issuance-review-summary",
-      );
+        );
+        expectLink(
+          "Review Credits Issuance Request",
+          "/compliance-summaries/123/request-issuance-review-summary",
+        );
+      });
+
+      it("displays 'View Details' when issuance status is 'Credits Not Issued in BCCR'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.CREDITS_NOT_ISSUED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/request-issuance-review-summary",
+        );
+      });
+
+      it("displays 'View Details' when issuance status is 'Changes Required'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.CHANGES_REQUIRED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/request-issuance-review-summary",
+        );
+      });
+
+      it("displays 'View Details' with track-status path when issuance status is 'Approved'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.APPROVED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/track-status-of-issuance",
+        );
+      });
+
+      it("displays 'View Details' with track-status path when issuance status is 'Declined'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.DECLINED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/track-status-of-issuance",
+        );
+      });
     });
 
-    it("displays 'View Details' for internal user when approved", () => {
-      render(
-        ActionCell(
-          createMockParams(
-            123,
-            true,
-            undefined,
-            "Earned credits",
-            IssuanceStatus.APPROVED,
+    describe("External users (isAllowedCas: false)", () => {
+      it("displays 'Request Issuance of Credits' when issuance status is 'Credits Not Issued in BCCR'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.CREDITS_NOT_ISSUED,
+            ),
           ),
-        ),
-      );
-      expectLink("View Details", "/compliance-summaries/123/review-summary");
-    });
+        );
+        expectLink(
+          "Request Issuance of Credits",
+          "/compliance-summaries/123/request-issuance-review-summary",
+        );
+      });
 
-    it("displays 'View Details' for internal user when declined", () => {
-      render(
-        ActionCell(
-          createMockParams(
-            123,
-            true,
-            undefined,
-            "Earned credits",
-            IssuanceStatus.DECLINED,
+      it("displays 'View Details' when issuance status is 'Issuance Requested'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.ISSUANCE_REQUESTED,
+            ),
           ),
-        ),
-      );
-      expectLink("View Details", "/compliance-summaries/123/review-summary");
-    });
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/request-issuance-review-summary",
+        );
+      });
 
-    it("displays 'View Details' for external user when request is submitted", () => {
+      it("displays 'View Details' when issuance status is 'Changes Required'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.CHANGES_REQUIRED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/request-issuance-review-summary",
+        );
+      });
+
+      it("displays 'View Details' with track-status path when issuance status is 'Approved'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.APPROVED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/track-status-of-issuance",
+        );
+      });
+
+      it("displays 'View Details' with track-status path when issuance status is 'Declined'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              undefined,
+              "Earned credits",
+              IssuanceStatus.DECLINED,
+            ),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/track-status-of-issuance",
+        );
+      });
+    });
+  });
+
+  describe("Default Flow", () => {
+    it("displays 'View Details' for external user when status is not earned credits", () => {
       render(
         ActionCell(
           createMockParams(
             123,
             false,
             undefined,
-            "Earned credits",
+            "Other status",
+            IssuanceStatus.ISSUANCE_REQUESTED,
+          ),
+        ),
+      );
+      expectLink("View Details", "/compliance-summaries/123/review-summary");
+    });
+
+    it("displays 'View Details' for internal user when status is not earned credits", () => {
+      render(
+        ActionCell(
+          createMockParams(
+            123,
+            true,
+            undefined,
+            "Other status",
             IssuanceStatus.ISSUANCE_REQUESTED,
           ),
         ),
@@ -153,7 +294,6 @@ describe("ActionCell", () => {
           "24-0001-1-1",
           "Earned credits",
           IssuanceStatus.ISSUANCE_REQUESTED,
-          "OBI700000",
         ),
       ),
     );

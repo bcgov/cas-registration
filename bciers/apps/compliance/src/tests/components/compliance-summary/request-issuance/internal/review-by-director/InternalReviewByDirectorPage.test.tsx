@@ -129,4 +129,19 @@ describe("InternalReviewByDirectorPage", () => {
       `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
+
+  it("redirects to request-issuance-review-summary when issuance status is CREDITS_NOT_ISSUED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockPageData,
+      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+    });
+
+    await InternalReviewByDirectorPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
+    );
+  });
 });

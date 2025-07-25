@@ -118,10 +118,18 @@ def sfo_operation_no_facility():
 
 
 def create_compliance_report_version(operation):
+    # Use a hardcoded operation_name for testing
+    report_operation = baker.make_recipe("reporting.tests.utils.report_operation", operation_name="Test Operation Name")
+    report_version = baker.make_recipe("reporting.tests.utils.report_version", report_operation=report_operation)
+    report_compliance_summary = baker.make_recipe(
+        "reporting.tests.utils.report_compliance_summary", report_version=report_version
+    )
     report = baker.make_recipe("reporting.tests.utils.report", operation=operation)
     compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", report=report)
     compliance_report_version = baker.make_recipe(
-        "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
+        "compliance.tests.utils.compliance_report_version",
+        compliance_report=compliance_report,
+        report_compliance_summary=report_compliance_summary,
     )
     return compliance_report_version
 
@@ -150,9 +158,10 @@ class TestBCCarbonRegistryProjectService:
 
         # Verify project data structure
         assert call_args["account_id"] == "123456789012345"
+        operation_name = "Test Operation Name"
         assert (
             call_args["project_name"]
-            == f"{sfo_operation.name} {compliance_report_version.compliance_report.compliance_period.end_date.year} - {compliance_report_version.id}"
+            == f"{operation_name} {compliance_report_version.compliance_report.compliance_period.end_date.year} - {compliance_report_version.id}"
         )
 
         # Verify SFO-specific address fields
@@ -187,9 +196,10 @@ class TestBCCarbonRegistryProjectService:
 
         # Verify project data structure
         assert call_args["account_id"] == "123456789012345"
+        operation_name = "Test Operation Name"
         assert (
             call_args["project_name"]
-            == f"{lfo_operation.name} {compliance_report_version.compliance_report.compliance_period.end_date.year} - {compliance_report_version.id}"
+            == f"{operation_name} {compliance_report_version.compliance_report.compliance_period.end_date.year} - {compliance_report_version.id}"
         )
 
         # Verify LFO-specific address fields
@@ -310,7 +320,7 @@ class TestBCCarbonRegistryProjectService:
         call_args = mock_api_client.create_project.call_args[1]["project_data"]
         description = call_args["project_description"]
 
-        operation_name = sfo_operation.name
+        operation_name = "Test Operation Name"
         compliance_period_end_date_year = compliance_report_version.compliance_report.compliance_period.end_date.year
         expected_description = f"The B.C. OBPS, established under the Greenhouse Gas Industrial Reporting and Control Act (GGIRCA), is a carbon pricing system that incentivizes emission reductions through performance-based targets. The Director under GGIRCA issued earned credits to {operation_name} because their verified emissions were below their emission limit in {compliance_period_end_date_year} B.C. Output Based Pricing System (OBPS)."
 

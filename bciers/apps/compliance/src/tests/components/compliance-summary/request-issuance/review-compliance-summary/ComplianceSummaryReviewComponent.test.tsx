@@ -148,7 +148,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     );
   });
 
-  it("navigates to review-credits-issuance-request for CAS staff", () => {
+  it("hides continue button for CAS staff when issuance status is CREDITS_NOT_ISSUED", () => {
     (useSessionRole as any).mockReturnValue("cas_analyst");
 
     render(
@@ -158,11 +158,45 @@ describe("ComplianceSummaryReviewComponent", () => {
       />,
     );
 
-    const continueButton = screen.getByRole("button", { name: "Continue" });
-    fireEvent.click(continueButton);
+    // The continue button should not be visible when continueUrl is empty
+    const continueButton = screen.queryByRole("button", { name: "Continue" });
+    expect(continueButton).toBeNull();
+  });
 
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
+  it("shows continue button for CAS staff when issuance status is not CREDITS_NOT_ISSUED", () => {
+    (useSessionRole as any).mockReturnValue("cas_analyst");
+
+    const dataWithCreditsIssued = {
+      ...mockData,
+      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
+    };
+
+    render(
+      <ComplianceSummaryReviewComponent
+        complianceReportVersionId={mockComplianceReportVersionId}
+        data={dataWithCreditsIssued}
+      />,
     );
+
+    // The continue button should be visible when continueUrl is not empty
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).toBeVisible();
+    expect(continueButton).not.toBeDisabled();
+  });
+
+  it("shows continue button for industry users regardless of issuance status", () => {
+    (useSessionRole as any).mockReturnValue("industry_user");
+
+    render(
+      <ComplianceSummaryReviewComponent
+        complianceReportVersionId={mockComplianceReportVersionId}
+        data={mockData}
+      />,
+    );
+
+    // Industry users should always see the continue button
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).toBeVisible();
+    expect(continueButton).not.toBeDisabled();
   });
 });
