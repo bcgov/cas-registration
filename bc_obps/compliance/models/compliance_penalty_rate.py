@@ -22,13 +22,6 @@ class CompliancePenaltyRate(TimeStampedModel):
         db_comment="The compliance Penalty rate applied daily if an obligation is not paid on time",
     )
 
-    penalty_amount = models.DecimalField(
-        decimal_places=2,
-        max_digits=20,
-        default=0.00,
-        db_comment="The total amount of the penalty to be paid",
-    )
-
     is_current_rate = models.BooleanField(
         default=False,
         db_comment="Boolean field signifies whether or not this rate is the rate currently in use",
