@@ -18,10 +18,6 @@ class CompliancePenaltyAccrual(TimeStampedModel):
         db_comment="The date of accrual for this record",
     )
 
-    accrual_start_date = models.DateField(
-        db_comment="The date on which the penalty began accruing. It will always be the day after the obligation's due date",
-    )
-
     daily_penalty = models.DecimalField(
         decimal_places=2,
         max_digits=20,
