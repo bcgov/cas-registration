@@ -197,12 +197,8 @@ export default function ApplyComplianceUnitsComponent({
 
   // Check if we should show the Submit button (when trading name is received)
   const shouldShowSubmitButton = useMemo(() => {
-    const data = formData as ApplyComplianceUnitsFormData;
-    return !!(
-      data?.bccr_trading_name &&
-      (status === "idle" || status === "submitting")
-    );
-  }, [formData, status]);
+    return status === "idle" || status === "submitting";
+  }, [status]);
 
   // Check if Submit button should be enabled (when checkbox is checked)
   const canSubmit = useMemo(() => {
@@ -213,6 +209,11 @@ export default function ApplyComplianceUnitsComponent({
   // Check if we should show the Apply button (after data is loaded)
   const shouldShowApplyButton = useMemo(() => {
     const data = formData as ApplyComplianceUnitsFormData;
+
+    if (status === "applying") {
+      return true;
+    }
+
     const result = !!(
       status === "submitted" &&
       data?.bccr_units &&
@@ -300,7 +301,7 @@ export default function ApplyComplianceUnitsComponent({
           }
           className="mt-8"
         >
-          {status !== "applied" && shouldShowSubmitButton && (
+          {shouldShowSubmitButton && (
             <SubmitButton
               isSubmitting={status === "submitting"}
               disabled={!canSubmit}
@@ -308,7 +309,7 @@ export default function ApplyComplianceUnitsComponent({
               Submit
             </SubmitButton>
           )}
-          {status !== "applied" && shouldShowApplyButton && (
+          {shouldShowApplyButton && (
             <SubmitButton
               isSubmitting={status === "applying"}
               disabled={!canApply}
