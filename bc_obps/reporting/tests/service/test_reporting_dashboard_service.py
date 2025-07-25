@@ -12,16 +12,18 @@ from reporting.schema.operation import ReportingDashboardOperationFilterSchema
 
 @pytest.mark.django_db
 class TestReportingDashboardService:
-    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
+    @patch(
+        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
+    )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_operations_for_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
-        mock_get_all_operations_for_user: MagicMock | AsyncMock,
+        mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
     ):
         user = user_baker()
         mock_get_by_guid.return_value = user
-        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
@@ -91,18 +93,20 @@ class TestReportingDashboardService:
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
 
-    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
+    @patch(
+        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
+    )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_sorting_and_filtering(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
-        mock_get_all_operations_for_user: MagicMock | AsyncMock,
+        mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
     ):
 
         # SETUP
         user = user_baker()
         mock_get_by_guid.return_value = user
-        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
