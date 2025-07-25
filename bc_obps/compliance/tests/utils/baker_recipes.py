@@ -11,6 +11,10 @@ from compliance.models import (
     ElicensingLineItem,
     ElicensingPayment,
     ElicensingAdjustment,
+    CompliancePenaltyRate,
+    CompliancePenalty,
+    CompliancePenaltyAccrual,
+    ElicensingInterestRate,
 )
 from reporting.tests.utils.baker_recipes import report, report_compliance_summary, reporting_year
 from registration.tests.utils.baker_recipes import (
@@ -93,3 +97,26 @@ elicensing_payment = Recipe(
 elicensing_adjustment = Recipe(
     ElicensingAdjustment, elicensing_line_item=foreign_key(elicensing_line_item), amount=Decimal('100.00')
 )
+
+# CompliancePenaltyRate recipe
+compliance_charge_rate = Recipe(
+    CompliancePenaltyRate,
+    compliance_period=foreign_key(compliance_period),
+    rate=Decimal('0.0038'),
+    is_current_rate=True,
+)
+
+# CompliancePenalty recipe
+compliance_penalty = Recipe(
+    CompliancePenalty,
+    compliance_obligation=foreign_key(compliance_obligation),
+    elicensing_invoice=foreign_key(elicensing_invoice),
+    accrual_start_date='2025-12-01',
+    penalty_amount=1000000.00,
+)
+
+# CompliancePenaltyAccrual recipe
+compliance_penalty_accrual = Recipe(CompliancePenaltyAccrual, compliance_penalty=foreign_key(compliance_penalty))
+
+# ElicensingInterestRate recipe
+elicensing_interest_rate = Recipe(ElicensingInterestRate, interest_rate=Decimal('0.0007'))
