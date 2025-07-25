@@ -60,7 +60,7 @@ class ElicensingDataRefreshService:
         Refresh BCIERS elicensing data by an invoice number. Refreshes the invoice data and all child data
 
         Args:
-            client_id: The client_operator_id for the requesting client in elicensing
+            client_operator_id: The client_operator_id for the requesting client in elicensing
             invoice_number: The invoice number of the invoice to refresh from elicensing
 
         Returns:
