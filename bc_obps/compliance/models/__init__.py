@@ -12,6 +12,7 @@ from .elicensing_adjustment import ElicensingAdjustment
 from .compliance_penalty_rate import CompliancePenaltyRate
 from .compliance_penalty import CompliancePenalty
 from .compliance_penalty_accrual import CompliancePenaltyAccrual
+from .elicensing_interest_rate import ElicensingInterestRate
 
 __all__ = [
     'ComplianceChargeRate',
@@ -28,4 +29,5 @@ __all__ = [
     'CompliancePenaltyRate',
     'CompliancePenalty',
     'CompliancePenaltyAccrual',
+    'ElicensingInterestRate',
 ]
