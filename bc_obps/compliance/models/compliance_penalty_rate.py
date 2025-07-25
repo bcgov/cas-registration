@@ -25,7 +25,7 @@ class CompliancePenaltyRate(TimeStampedModel):
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "A table to store compliance penalty rates by reporting year"
-        db_table = 'erc"."compliance_Penalty_rate'
+        db_table = 'erc"."compliance_penalty_rate'
         ordering = ['compliance_period']
 
     Rls = CompliancePenaltyRateRls

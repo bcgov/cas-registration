@@ -14,3 +14,6 @@ class ComplianceTableNames(Enum):
     ELICENSING_PAYMENT = "elicensing_payment"
     ELICENSING_ADJUSTMENT = "elicensing_adjustment"
     COMPLIANCE_PENALTY_RATE = "compliance_penalty_rate"
+    COMPLIANCE_PENALTY = "compliance_penalty"
+    COMPLIANCE_PENALTY_ACCRUAL = "compliance_penalty_accrual"
+    ELICENSING_INTEREST_RATE = "elicensing_interest_rate"
