@@ -7,6 +7,7 @@ from ninja import FilterSchema, ModelSchema
 from registration.models.operation import Operation
 from ninja import Field
 from django.db.models import Q, F
+from reporting.models.report import Report
 
 
 class ReportingDashboardOperationOut(ModelSchema):
@@ -24,10 +25,26 @@ class ReportingDashboardOperationOut(ModelSchema):
         fields = ["id", "name"]
 
 
+class ReportingDashboardReportOut(ModelSchema):
+    report_id: int | None
+    report_version_id: int | None
+    first_report_version_id: Optional[int] = None
+    report_status: str | None
+    report_submitted_by: Optional[str] = None
+    operation_name: Optional[str] = None
+    report_updated_at: Optional[datetime] = None
+    # reporting_year_id: Optional[int] = Field(None, alias="reporting_year_id.reporting_year")
+
+    class Meta:
+        model = Report
+        fields = ["id", "reporting_year"]
+
+
 class ReportingDashboardOperationFilterSchema(FilterSchema):
     bcghg_id: Optional[str] = Field(None, json_schema_extra={'q': 'bcghg_id__id__icontains'})
     operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
     report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})
+    reporting_year: Optional[int] = Field(None, json_schema_extra={'q': 'report__reporting_year__icontains'})
 
     def filter_report_status(self, value: str) -> Q:
         """
