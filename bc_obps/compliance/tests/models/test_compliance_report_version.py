@@ -18,4 +18,5 @@ class ComplianceReportVersionTest(BaseTestCase):
             ("compliance_earned_credit", "compliance earned credit", None, None),
             ("obligation", "compliance obligation", None, None),
             ("is_supplementary", "is supplementary", None, None),
+            ("elicensing_adjustments", "elicensing adjustment", None, None),
         ]

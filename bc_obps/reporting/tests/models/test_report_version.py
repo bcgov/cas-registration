@@ -206,21 +206,18 @@ class ReportVersionTest(BaseTestCase):
             if not any(trigger.name == "immutable_report_version" for trigger in m._meta.triggers)
         ]
 
-        missing_triggers.remove(
-            'ComplianceReportVersion'
-        )  # Created compliance_report_version record should not be immutable after report submission
-        missing_triggers.remove(
-            'ComplianceObligation'
-        )  # Created compliance_obligation record should not be immutable after report submission
-        missing_triggers.remove(
-            'ComplianceEarnedCredit'
-        )  # Created compliance_earned_credit record should not be immutable after report submission
-        missing_triggers.remove(
-            'CompliancePenalty'
-        )  # Created compliance_earned_credit record should not be immutable after report submission
-        missing_triggers.remove(
-            'CompliancePenaltyAccrual'
-        )  # Created compliance_earned_credit record should not be immutable after report submission
+        # Remove models that should not be immutable after report submission
+        models_exempt_from_immutability = [
+            'ComplianceReportVersion',  # Created compliance_report_version record should not be immutable after report submission
+            'ComplianceObligation',  # Created compliance_obligation record should not be immutable after report submission
+            'ComplianceEarnedCredit',  # Created compliance_earned_credit record should not be immutable after report submission
+            'ElicensingAdjustment',  # Created elicensing_adjustment record should not be immutable after report submission
+            'CompliancePenalty',  # Created compliance_penalty record should not be immutable after report submission
+            'CompliancePenaltyAccrual',  # Created compliance_penalty_accrual record should not be immutable after report submission
+        ]
+        for model_name in models_exempt_from_immutability:
+            missing_triggers.remove(model_name)
+
         assert (
             missing_triggers == []
         ), f"{', '.join(missing_triggers)} models are missing the `immutable_report_version` trigger"
