@@ -12,12 +12,19 @@ export const generateManageObligationTaskList: (
   complianceReportVersionId: number,
   data: any,
   defaultActiveIndex?: ActivePage | null,
-) => TaskListElement[] = (complianceReportVersionId, data, defaultActiveIndex) => {
+) => TaskListElement[] = (
+  complianceReportVersionId,
+  data,
+  defaultActiveIndex,
+) => {
   const activePage =
     defaultActiveIndex === undefined
       ? ActivePage.ReviewComplianceSummary
       : defaultActiveIndex;
-  const { reporting_year: reportingYear, penalty_status: penaltyStatus } = data;
+  const {
+    reporting_year: reportingYear,
+    outstanding_balance: outstandingBalance,
+  } = data;
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
       ? {
@@ -65,7 +72,7 @@ export const generateManageObligationTaskList: (
 
   if (
     activePage === ActivePage.PayObligationTrackPayments &&
-    penaltyStatus === "ACCRUING"
+    outstandingBalance === 0
   ) {
     const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
       complianceReportVersionId,

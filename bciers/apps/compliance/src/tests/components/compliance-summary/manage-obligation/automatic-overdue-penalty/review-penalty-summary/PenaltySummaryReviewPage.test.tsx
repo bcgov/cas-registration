@@ -57,7 +57,9 @@ describe("PenaltySummaryReviewPage", () => {
   });
 
   it("renders with correct content and generates task list", async () => {
-    render(await PenaltySummaryReviewPage({ compliance_summary_id: "123" }));
+    render(
+      await PenaltySummaryReviewPage({ compliance_report_version_id: 123 }),
+    );
 
     // Check content is rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
@@ -65,7 +67,7 @@ describe("PenaltySummaryReviewPage", () => {
 
     // Verify task list generation
     expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
-      "123",
+      123,
       2025,
       ActivePage.ReviewPenaltySummary,
     );

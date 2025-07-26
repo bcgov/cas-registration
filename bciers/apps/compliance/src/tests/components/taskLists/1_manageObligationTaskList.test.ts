@@ -16,8 +16,8 @@ vi.mock(
 );
 
 describe("generateManageObligationTaskList", () => {
-  const mockComplianceReportVersionId = "123";
-  const data = { reporting_year: "2024" };
+  const mockComplianceReportVersionId = 123;
+  const data = { reporting_year: 2024 };
 
   it("generates task list with correct structure when not in Apply Units page", () => {
     const taskList = generateManageObligationTaskList(
@@ -115,7 +115,7 @@ describe("generateManageObligationTaskList", () => {
 
     // Test Pay and Track page
     const payList = generateManageObligationTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       data,
       ActivePage.PayObligationTrackPayments,
     );
@@ -124,16 +124,16 @@ describe("generateManageObligationTaskList", () => {
     expect(payList[0].elements?.[2].isActive).toBe(true);
   });
 
-  it("adds automatic penalty section when on PayObligationTrackPayments page and penalty status is ACCRUING", () => {
-    const dataWithAccruingStatus = {
+  it("adds automatic penalty section when on PayObligationTrackPayments page and outstanding balance is 0", () => {
+    const dataWithZeroBalance = {
       reporting_year: 2024,
-      penalty_status: "ACCRUING",
+      outstanding_balance: 0,
     };
 
-    // Generate task list with PayObligationTrackPayments active page and ACCRUING status
+    // Generate task list with PayObligationTrackPayments active page and outstanding balance is 0
     const taskList = generateManageObligationTaskList(
       mockComplianceReportVersionId,
-      dataWithAccruingStatus,
+      dataWithZeroBalance,
       ActivePage.PayObligationTrackPayments,
     );
 

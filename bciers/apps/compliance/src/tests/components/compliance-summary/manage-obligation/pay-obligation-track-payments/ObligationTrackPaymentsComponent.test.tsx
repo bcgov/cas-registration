@@ -110,7 +110,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={dataWithBalance}
-        complianceSummaryId="123"
+        complianceReportVersionId={123}
       />,
     );
 
@@ -135,7 +135,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={dataWithBalance}
-        complianceSummaryId="123"
+        complianceReportVersionId={123}
       />,
     );
 

@@ -67,7 +67,7 @@ class PenaltyCalculationService:
         # Check if past deadline and has outstanding amount
         invoice = refresh_result.invoice
         days_late = (cls.TODAY - invoice.due_date.date()).days
-        return (days_late > 0 and invoice.outstanding_balance > Decimal('0.00')), refresh_result
+        return (days_late > 0 and invoice.outstanding_balance == Decimal('0.00')), refresh_result
 
     @classmethod
     def sum_payments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:

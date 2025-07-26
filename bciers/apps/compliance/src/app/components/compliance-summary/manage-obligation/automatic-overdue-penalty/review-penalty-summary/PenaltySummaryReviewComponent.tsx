@@ -11,16 +11,16 @@ import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
 interface Props {
   data: AutomaticOverduePenalty;
   reportingYear: number;
-  complianceSummaryId: string;
+  complianceReportVersionId: number;
 }
 
 const PenaltySummaryReviewComponent = ({
   data,
   reportingYear,
-  complianceSummaryId,
+  complianceReportVersionId,
 }: Props) => {
-  const backUrl = `/compliance-summaries/${complianceSummaryId}/pay-obligation-track-payments`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceSummaryId}/download-payment-instructions`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
 
   const handleGeneratePenaltyInvoice = () => {
     // TODO: Implement generate penalty invoice logic in task #73

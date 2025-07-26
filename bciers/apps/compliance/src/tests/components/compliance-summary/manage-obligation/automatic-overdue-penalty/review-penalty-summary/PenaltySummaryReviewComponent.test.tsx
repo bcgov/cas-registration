@@ -67,6 +67,7 @@ const mockData = {
   total_penalty: "1100.00",
   faa_interest: "50.00",
   total_amount: "1000.00",
+  data_is_fresh: true,
 };
 
 describe("PenaltySummaryReviewComponent", () => {
@@ -75,7 +76,7 @@ describe("PenaltySummaryReviewComponent", () => {
       <PenaltySummaryReviewComponent
         data={mockData}
         reportingYear={2024}
-        complianceSummaryId="123"
+        complianceReportVersionId={123}
       />,
     );
 
@@ -91,7 +92,7 @@ describe("PenaltySummaryReviewComponent", () => {
       <PenaltySummaryReviewComponent
         data={mockData}
         reportingYear={2024}
-        complianceSummaryId="123"
+        complianceReportVersionId={123}
       />,
     );
 
@@ -115,7 +116,7 @@ describe("PenaltySummaryReviewComponent", () => {
       <PenaltySummaryReviewComponent
         data={mockData}
         reportingYear={2024}
-        complianceSummaryId="123"
+        complianceReportVersionId={123}
       />,
     );
 

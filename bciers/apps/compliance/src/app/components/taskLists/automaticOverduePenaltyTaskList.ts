@@ -8,11 +8,11 @@ export enum ActivePage {
 }
 
 export const generateAutomaticOverduePenaltyTaskList: (
-  complianceSummaryId: string,
+  complianceReportVersionId: number,
   reporting_year: number,
   activePage?: ActivePage | null,
 ) => TaskListElement[] = (
-  complianceSummaryId,
+  complianceReportVersionId,
   reporting_year,
   activePage = ActivePage.ReviewPenaltySummary,
 ) => {
@@ -20,25 +20,27 @@ export const generateAutomaticOverduePenaltyTaskList: (
     {
       type: "Page" as const,
       title: `Review Penalty Summary`,
-      link: `/compliance-summaries/${complianceSummaryId}/review-penalty-summary`,
+      link: `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`,
       isActive: activePage === ActivePage.ReviewPenaltySummary,
     },
+    // TODO: should be implemented in the task #91
     {
       type: "Page" as const,
       title: "Download Payment Instructions",
-      link: `/compliance-summaries/${complianceSummaryId}/download-payment-penalty-instructions`,
+      link: `/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`,
       isActive: activePage === ActivePage.DownloadPaymentPenaltyInstruction,
     },
+    // TODO: should be implemented in the task #91
     {
       type: "Page" as const,
       title: "Pay Penalty and Track Payment(s)",
-      link: `/compliance-summaries/${complianceSummaryId}/pay-penalty-track-payments`,
+      link: `/compliance-summaries/${complianceReportVersionId}/pay-penalty-track-payments`,
       isActive: activePage === ActivePage.PayPenaltyTrackPayments,
     },
   ];
 
   const complianceObligationSection = generateManageObligationTaskList(
-    complianceSummaryId,
+    complianceReportVersionId,
     { reporting_year },
     null,
   )[0];

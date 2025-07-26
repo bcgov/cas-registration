@@ -2,7 +2,7 @@ import { actionHandler } from "@bciers/actions";
 import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
 
 const getAutomaticOverduePenalty = async (
-  complianceReportVersionId: string,
+  complianceReportVersionId: number,
 ): Promise<AutomaticOverduePenalty> => {
   const response = await actionHandler(
     `compliance/compliance-report-versions/${complianceReportVersionId}/automatic-overdue-penalty`,

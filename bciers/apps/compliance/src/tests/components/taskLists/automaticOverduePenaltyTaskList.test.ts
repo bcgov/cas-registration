@@ -17,12 +17,12 @@ vi.mock(
 );
 
 describe("generateAutomaticOverduePenaltyTaskList", () => {
-  const mockComplianceSummaryId = "123";
-  const reportingYear = "2024";
+  const mockComplianceReportVersionId = 123;
+  const reportingYear = 2024;
 
   it("generates task list with correct structure", () => {
     const taskList = generateAutomaticOverduePenaltyTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       reportingYear,
     );
 
@@ -69,7 +69,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
 
     // Verify that generateManageObligationTaskList was called with correct parameters
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       { reporting_year: reportingYear },
       null,
     );
@@ -78,7 +78,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
   it("sets active page correctly for each page type", () => {
     // Test Review Penalty Summary page
     const reviewList = generateAutomaticOverduePenaltyTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       reportingYear,
       ActivePage.ReviewPenaltySummary,
     );
@@ -89,7 +89,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
 
     // Test Download Payment Instructions page
     const downloadList = generateAutomaticOverduePenaltyTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       reportingYear,
       ActivePage.DownloadPaymentPenaltyInstruction,
     );
@@ -100,7 +100,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
 
     // Test Pay Penalty and Track Payment(s) page
     const payList = generateAutomaticOverduePenaltyTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       reportingYear,
       ActivePage.PayPenaltyTrackPayments,
     );
@@ -112,7 +112,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
 
   it("handles null activePage parameter", () => {
     const taskList = generateAutomaticOverduePenaltyTaskList(
-      mockComplianceSummaryId,
+      mockComplianceReportVersionId,
       reportingYear,
       null,
     );

@@ -25,7 +25,7 @@ class TestPenaltyCalculationService:
         self.invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
             due_date=datetime(2025, 11, 30),
-            outstanding_balance=Decimal("1000000.00"),
+            outstanding_balance=Decimal("0.00"),
             invoice_interest_balance=Decimal("5000.00"),
         )
         self.line_item = baker.make_recipe(

@@ -92,7 +92,7 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
       mockComplianceReportVersionId,
     );
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      "123",
+      123,
       expect.objectContaining({
         reporting_year: 2025,
         operation_name: "Mock Operation",
