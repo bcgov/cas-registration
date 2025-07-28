@@ -25,7 +25,8 @@ function InlineFieldTemplate({
   const isLabel = options?.label !== false;
   // Allow width override if inline is true
   const inline = options?.inline;
-  const cellWidth = inline ? "lg:w-full" : "lg:w-4/12";
+  const wide = options?.wide;
+  const cellWidth = inline ? "lg:w-full" : wide ? "lg:w-8/12" : "lg:w-4/12";
 
   // Check for noteDescription in ui:options
   let noteDescription = options?.noteDescription;
