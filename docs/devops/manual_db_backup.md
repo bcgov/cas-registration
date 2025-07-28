@@ -8,4 +8,4 @@ To take a manual backup of the database in Openshift:
 
 `pgbackrest --type=full --stanza=db backup`
 
-Refer to: https://access.crunchydata.com/documentation/postgres-operator/latest/tutorials/backups-disaster-recovery/backup-management#taking-a-one-off-backup
+Alternatively, the Crunchy PostgresOperator can do this for us: https://access.crunchydata.com/documentation/postgres-operator/latest/tutorials/backups-disaster-recovery/backup-management#taking-a-one-off-backup
