@@ -19,6 +19,12 @@
             "href": "/reporting/reports/current-reports"
           },
           {
+            "title": "Previous Years Reports",
+            "icon": "File",
+            "content": "View reports from previous years.",
+            "href": "/reporting/reports/previous-years"
+          },
+          {
             "title": "Report Attachments",
             "icon": "Download",
             "content": "Submit, view and edit your annual reports.",
