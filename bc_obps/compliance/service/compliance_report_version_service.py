@@ -239,3 +239,30 @@ class ComplianceReportVersionService:
             'compliance_report__compliance_period',
             'compliance_earned_credit',
         )
+
+    @classmethod
+    def update_compliance_report_version_status(cls, compliance_report_version_id: int) -> None:
+        """
+        Updates the status of a compliance report version if obligation has been met.
+
+        Args:
+            compliance_report_version (int): The compliance report version to update
+        """
+        # Check if obligation and invoice exist to avoid default balance of 0
+        obligation = (
+            ComplianceObligation.objects.filter(compliance_report_version__id=compliance_report_version_id)
+            .select_related('elicensing_invoice')
+            .first()
+        )
+        if not obligation or not obligation.elicensing_invoice:
+            return
+
+        # Get the compliance report version and calculate excess emissions and outstanding balance
+        compliance_report_version = cls.get_compliance_report_version(compliance_report_version_id)
+        excess_emissions = compliance_report_version.report_compliance_summary.excess_emissions
+        outstanding_balance = cls.calculate_outstanding_balance_tco2e(compliance_report_version)
+
+        # Update the compliance report version status if the obligation is reduced to 0
+        if excess_emissions > Decimal('0') and outstanding_balance == Decimal('0'):
+            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+            compliance_report_version.save()
