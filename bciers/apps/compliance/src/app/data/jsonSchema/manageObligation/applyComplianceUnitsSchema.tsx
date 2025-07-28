@@ -12,8 +12,9 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { ApplyComplianceUnitsSuccessAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsSuccessAlertNote";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
-// Base schema for initial and confirmation phases
-export const applyComplianceUnitsBaseSchema: RJSFSchema = {
+
+// Base schema factory for initial and confirmation phases
+export const createApplyComplianceUnitsBaseSchema = (): RJSFSchema => ({
   type: "object",
   title: "Apply Compliance Units",
   required: ["bccr_holding_account_id"],
@@ -26,29 +27,29 @@ export const applyComplianceUnitsBaseSchema: RJSFSchema = {
     },
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
-};
+});
 
-// Confirmation phase schema (extends base with checkbox)
-export const applyComplianceUnitsConfirmationSchema: RJSFSchema = {
-  ...applyComplianceUnitsBaseSchema,
+// Confirmation phase schema factory (extends base with checkbox)
+export const createApplyComplianceUnitsConfirmationSchema = (): RJSFSchema => ({
+  ...createApplyComplianceUnitsBaseSchema(),
   required: [
-    ...(applyComplianceUnitsBaseSchema.required || []),
+    ...(createApplyComplianceUnitsBaseSchema().required || []),
     "confirmation_checkbox",
   ],
   properties: {
-    ...applyComplianceUnitsBaseSchema.properties,
+    ...createApplyComplianceUnitsBaseSchema().properties,
     confirmation_checkbox: {
       type: "boolean",
       title: "I confirm the accuracy of the information above.",
     },
   },
-};
+});
 
-// Compliance data phase schema (extends base with all compliance fields)
-export const applyComplianceUnitsDataSchema: RJSFSchema = {
-  ...applyComplianceUnitsBaseSchema,
+// Compliance data phase schema factory (extends base with all compliance fields)
+export const createApplyComplianceUnitsDataSchema = (): RJSFSchema => ({
+  ...createApplyComplianceUnitsBaseSchema(),
   properties: {
-    ...applyComplianceUnitsBaseSchema.properties,
+    ...createApplyComplianceUnitsBaseSchema().properties,
     bccr_compliance_account_id: readOnlyStringField(
       "BCCR Compliance Account ID:",
     ),
@@ -87,9 +88,11 @@ export const applyComplianceUnitsDataSchema: RJSFSchema = {
       default: 0,
     },
   },
-};
+});
 
-export const applyComplianceUnitsUiSchema: UiSchema = {
+export const createApplyComplianceUnitsUiSchema = (
+  operationName?: string,
+): UiSchema => ({
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   apply_compliance_units_success_alert_note: {
@@ -140,11 +143,11 @@ export const applyComplianceUnitsUiSchema: UiSchema = {
         By checking off the box above, you confirm that the B.C. Carbon Registry
         Holding Account was entered accurately and the Trading Name displays
         correctly. Your confirmation will initiate the creation of a compliance
-        account for Pink Operation.
+        account for {operationName || "the operation"}.
       </small>
     ),
     "ui:options": {
       label: false,
     },
   },
-};
+});

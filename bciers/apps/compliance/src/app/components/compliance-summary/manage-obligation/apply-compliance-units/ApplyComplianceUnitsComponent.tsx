@@ -3,12 +3,12 @@
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
-  applyComplianceUnitsBaseSchema,
-  applyComplianceUnitsConfirmationSchema,
-  applyComplianceUnitsDataSchema,
-  applyComplianceUnitsUiSchema,
+  createApplyComplianceUnitsBaseSchema,
+  createApplyComplianceUnitsConfirmationSchema,
+  createApplyComplianceUnitsDataSchema,
+  createApplyComplianceUnitsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/applyComplianceUnitsSchema";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import {
@@ -21,6 +21,7 @@ import { ApplyComplianceUnitsAlertNote } from "./ApplyComplianceUnitsAlertNote";
 import { IChangeEvent } from "@rjsf/core";
 import { actionHandler } from "@bciers/actions";
 import SubmitButton from "@bciers/components/button/SubmitButton";
+import getOperationByComplianceReportVersionId from "@/compliance/src/app/utils/getOperationByComplianceReportVersionId";
 
 interface ApplyComplianceUnitsComponentProps {
   complianceReportVersionId: number;
@@ -37,6 +38,7 @@ export default function ApplyComplianceUnitsComponent({
   const [formData, setFormData] = useState<ApplyComplianceUnitsFormData | {}>(
     {},
   );
+  const [operationName, setOperationName] = useState<string>();
   type Status = "idle" | "submitting" | "submitted" | "applying" | "applied";
 
   const [currentPhase, setCurrentPhase] = useState<
@@ -47,6 +49,17 @@ export default function ApplyComplianceUnitsComponent({
   // Keep track of the initial outstanding balance from the API
   const [initialOutstandingBalance, setInitialOutstandingBalance] =
     useState<number>(0);
+
+  useEffect(() => {
+    const fetchOperationName = async () => {
+      const operation = await getOperationByComplianceReportVersionId(
+        complianceReportVersionId,
+      );
+      setOperationName(operation?.name || "");
+    };
+
+    fetchOperationName();
+  }, [complianceReportVersionId]);
 
   // Calculate summary values based on BCCR units user has selected
   const calculateSummaryValues = (
@@ -146,12 +159,12 @@ export default function ApplyComplianceUnitsComponent({
     setStatus("submitting");
     const response = await actionHandler(
       `compliance/bccr/accounts/${e.formData?.bccr_holding_account_id}/compliance-report-versions/${complianceReportVersionId}/compliance-units`,
-      "POST",
+      "GET",
       "",
     );
     if (!response || response.error) {
       setStatus("idle");
-      setErrors([response.error || "Failed to get compliance units data"]);
+      setErrors([response?.error || "Failed to get compliance units data"]);
     } else {
       // Set the outstanding balance from the response
       setInitialOutstandingBalance(response.outstanding_balance || 0);
@@ -252,19 +265,19 @@ export default function ApplyComplianceUnitsComponent({
   const currentSchema = useMemo(() => {
     switch (currentPhase) {
       case "confirmation":
-        return applyComplianceUnitsConfirmationSchema;
+        return createApplyComplianceUnitsConfirmationSchema();
       case "compliance_data":
-        return applyComplianceUnitsDataSchema;
+        return createApplyComplianceUnitsDataSchema();
       default:
-        return applyComplianceUnitsBaseSchema;
+        return createApplyComplianceUnitsBaseSchema();
     }
-  }, [currentPhase]);
+  }, [currentPhase, operationName]);
 
   return (
     <FormBase
       readonly={status === "applied"}
       schema={currentSchema}
-      uiSchema={applyComplianceUnitsUiSchema}
+      uiSchema={createApplyComplianceUnitsUiSchema(operationName)}
       formData={formData}
       onChange={handleChange}
       onSubmit={handleSubmit}
@@ -318,6 +331,7 @@ export default function ApplyComplianceUnitsComponent({
               isSubmitting={status === "applying"}
               disabled={!canApply}
               onClick={handleApply}
+              type="button"
             >
               Apply
             </SubmitButton>

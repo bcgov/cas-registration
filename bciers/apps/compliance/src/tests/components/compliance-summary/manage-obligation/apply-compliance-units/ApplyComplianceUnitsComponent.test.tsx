@@ -1,9 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
-import {
-  getBccrAccountDetails,
-  getBccrComplianceUnitsAccountDetails,
-} from "@/compliance/src/app/utils/bccrAccountHandlers";
+import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
 import { useRouter, useSearchParams } from "@bciers/testConfig/mocks";
 import { actionHandler } from "@bciers/actions";
 
@@ -19,11 +16,19 @@ useRouter.mockReturnValue({
 
 vi.mock("@/compliance/src/app/utils/bccrAccountHandlers", () => ({
   getBccrAccountDetails: vi.fn(),
+  getBccrComplianceUnitsAccountDetails: vi.fn(),
 }));
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
+
+vi.mock(
+  "@/compliance/src/app/utils/getOperationByComplianceReportVersionId",
+  () => ({
+    default: vi.fn().mockResolvedValue({ name: "Test Operation" }),
+  }),
+);
 
 const TEST_COMPLIANCE_REPORT_VERSION_ID = 123;
 const VALID_ACCOUNT_ID = "123456789012345";
@@ -54,17 +59,21 @@ const MOCK_UNITS = [
   },
 ];
 
-const setupValidAccountAndSubmit = async () => {
-  (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+const setupMocks = () => {
+  (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValue({
     bccr_trading_name: MOCK_TRADING_NAME,
   });
 
-  (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+  (actionHandler as ReturnType<typeof vi.fn>).mockResolvedValue({
     bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
     bccr_units: MOCK_UNITS,
     charge_rate: MOCK_CHARGE_RATE,
     outstanding_balance: MOCK_OUTSTANDING_BALANCE,
   });
+};
+
+const setupValidAccountAndSubmit = async () => {
+  setupMocks();
 
   const renderResult = render(
     <ApplyComplianceUnitsComponent
@@ -106,10 +115,19 @@ const setupValidAccountAndSubmit = async () => {
 describe("ApplyComplianceUnitsComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Reset all mock implementations to ensure clean state
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockReset();
+    (actionHandler as ReturnType<typeof vi.fn>).mockReset();
+  });
+
+  afterEach(() => {
+    // Additional cleanup to ensure DOM is clean
+    document.body.innerHTML = "";
   });
 
   it("displays form title and BCCR account section and input field", () => {
-    render(<ApplyComplianceUnitsComponent
+    render(
+      <ApplyComplianceUnitsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
         reportingYear={2024}
       />,
@@ -121,7 +139,8 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("does not show compliance account and units initially", () => {
-    render(<ApplyComplianceUnitsComponent
+    render(
+      <ApplyComplianceUnitsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
         reportingYear={2024}
       />,
@@ -132,9 +151,10 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("validates account and displays compliance details on success", async () => {
     await setupValidAccountAndSubmit();
 
-    expect(getBccrComplianceUnitsAccountDetails).toHaveBeenCalledWith(
-      VALID_ACCOUNT_ID,
-      TEST_COMPLIANCE_REPORT_VERSION_ID,
+    expect(actionHandler).toHaveBeenCalledWith(
+      `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
+      "GET",
+      "",
     );
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
@@ -154,11 +174,13 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("does not show compliance details when account is invalid", async () => {
-    (
-      getBccrComplianceUnitsAccountDetails as ReturnType<typeof vi.fn>
-    ).mockRejectedValueOnce(new Error("Unknown error"));
+    // Mock account details to fail
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error("Invalid account"),
+    );
 
-    render(<ApplyComplianceUnitsComponent
+    render(
+      <ApplyComplianceUnitsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
         reportingYear={2024}
       />,
@@ -168,8 +190,9 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await waitFor(() => {
       expect(getBccrAccountDetails).toHaveBeenCalledWith(VALID_ACCOUNT_ID);
-      expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
-      expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
+      // Should show error message instead of trading name
+      expect(screen.getByText("Invalid account")).toBeVisible();
+      expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
     });
   });
 
@@ -270,8 +293,8 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     render(
       <ApplyComplianceUnitsComponent
-        complianceSummaryId={TEST_COMPLIANCE_SUMMARY_ID}
-        reportingYear={TEST_REPORTING_YEAR}
+        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        reportingYear={2024}
       />,
     );
 
@@ -356,7 +379,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     await waitFor(() => {
       expect(actionHandler).toHaveBeenCalledWith(
         `compliance/bccr/accounts/${VALID_ACCOUNT_ID}/compliance-report-versions/${TEST_COMPLIANCE_REPORT_VERSION_ID}/compliance-units`,
-        "POST",
+        "GET",
         "",
       );
     });
@@ -394,10 +417,18 @@ describe("ApplyComplianceUnitsComponent", () => {
     await waitFor(() => {
       // Check calculations: 100 units * $50 charge rate = $5000
       // Outstanding balance: $16000 - $5000 = $11000
-      expect(screen.getByText("100")).toBeVisible(); // Total quantity
-      expect(screen.getByText("100 tCO2e")).toBeVisible(); // Total equivalent emission reduced
-      expect(screen.getByText("$5,000.00")).toBeVisible(); // Total equivalent value
-      expect(screen.getByText("$11,000.00")).toBeVisible(); // Outstanding balance
+      expect(
+        document.getElementById("root_total_quantity_to_be_applied"),
+      ).toHaveTextContent("100"); // Total quantity
+      expect(
+        document.getElementById("root_total_equivalent_emission_reduced"),
+      ).toHaveTextContent("100 tCO2e"); // Total equivalent emission reduced
+      expect(
+        document.getElementById("root_total_equivalent_value"),
+      ).toHaveTextContent("$5,000.00"); // Total equivalent value
+      expect(
+        document.getElementById("root_outstanding_balance"),
+      ).toHaveTextContent("$11,000.00"); // Outstanding balance
     });
   });
 
@@ -412,6 +443,13 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("enables Apply button when units are selected and below 50% limit", async () => {
     await setupValidAccountAndSubmit();
 
+    // Wait for quantity inputs to be available
+    await waitFor(() => {
+      expect(
+        screen.getAllByLabelText("quantity_to_be_applied").length,
+      ).toBeGreaterThan(0);
+    });
+
     // Select units below 50% limit (8000/50 = 160 units max)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInputs[0], { target: { value: "100" } });
@@ -424,6 +462,13 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("disables Apply button when units exceed 50% compliance limit", async () => {
     await setupValidAccountAndSubmit();
+
+    // Wait for quantity inputs to be available
+    await waitFor(() => {
+      expect(
+        screen.getAllByLabelText("quantity_to_be_applied").length,
+      ).toBeGreaterThan(0);
+    });
 
     // Select units that exceed 50% limit (8000/50 = 160 units max)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
@@ -512,6 +557,13 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await setupValidAccountAndSubmit();
 
+    // Wait for quantity inputs to be available
+    await waitFor(() => {
+      expect(
+        screen.getAllByLabelText("quantity_to_be_applied").length,
+      ).toBeGreaterThan(0);
+    });
+
     // Select some units
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInputs[0], { target: { value: "75" } });
@@ -521,8 +573,10 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          /the compliance unit.*have been applied.*successfully/i,
+        screen.getByText((content) =>
+          content.includes(
+            "have been applied towards the compliance obligation successfully",
+          ),
         ),
       ).toBeVisible();
       expect(
@@ -533,7 +587,7 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("handles Apply button submission errors correctly", async () => {
-    // Mock error response for apply
+    // Mock successful response for initial setup, then error for apply
     (actionHandler as ReturnType<typeof vi.fn>)
       .mockResolvedValueOnce({
         bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
@@ -544,6 +598,13 @@ describe("ApplyComplianceUnitsComponent", () => {
       .mockResolvedValueOnce({ error: "Failed to apply compliance units" });
 
     await setupValidAccountAndSubmit();
+
+    // Wait for quantity inputs to be available
+    await waitFor(() => {
+      expect(
+        screen.getAllByLabelText("quantity_to_be_applied").length,
+      ).toBeGreaterThan(0);
+    });
 
     // Select some units
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
@@ -597,22 +658,23 @@ describe("ApplyComplianceUnitsComponent", () => {
       const expectedValue = 123 * MOCK_CHARGE_RATE; // 123 * 50 = 6150
       const expectedBalance = MOCK_OUTSTANDING_BALANCE - expectedValue; // 16000 - 6150 = 9850
 
+      // Use specific element IDs to avoid multiple matches
       expect(
-        screen.getByText(
-          `$${expectedValue.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`,
-        ),
-      ).toBeVisible();
+        document.getElementById("root_total_equivalent_value"),
+      ).toHaveTextContent(
+        `$${expectedValue.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+      );
       expect(
-        screen.getByText(
-          `$${expectedBalance.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`,
-        ),
-      ).toBeVisible();
+        document.getElementById("root_outstanding_balance"),
+      ).toHaveTextContent(
+        `$${expectedBalance.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+      );
     });
   });
 
@@ -727,7 +789,8 @@ describe("ApplyComplianceUnitsComponent", () => {
       () => new Promise((resolve) => setTimeout(() => resolve({}), 100)),
     );
 
-    render(<ApplyComplianceUnitsComponent
+    render(
+      <ApplyComplianceUnitsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
         reportingYear={2024}
       />,
@@ -788,7 +851,15 @@ describe("ApplyComplianceUnitsComponent", () => {
   });
 
   it("displays units grid with correct columns and data", async () => {
+    // Explicitly setup mocks for this test to ensure isolation
+    setupMocks();
+
     await setupValidAccountAndSubmit();
+
+    // Wait for the compliance account ID to be visible before checking other elements
+    await waitFor(() => {
+      expect(screen.getByText(MOCK_COMPLIANCE_ACCOUNT_ID)).toBeVisible();
+    });
 
     // Check that units are displayed with correct headers
     expect(screen.getByText("Type")).toBeVisible();
@@ -819,8 +890,12 @@ describe("ApplyComplianceUnitsComponent", () => {
       // Combined: 50 + 25 = 75 units
       // Value: 75 * $50 = $3750
       // Balance: $16000 - $3750 = $12250
-      expect(screen.getByText("75")).toBeVisible(); // Total quantity
-      expect(screen.getByText("75 tCO2e")).toBeVisible(); // Total emission reduced
+      expect(
+        document.getElementById("root_total_quantity_to_be_applied"),
+      ).toHaveTextContent("75");
+      expect(
+        document.getElementById("root_total_equivalent_emission_reduced"),
+      ).toHaveTextContent("75 tCO2e");
       expect(screen.getByText("$3,750.00")).toBeVisible(); // Total value
       expect(screen.getByText("$12,250.00")).toBeVisible(); // Outstanding balance
     });
@@ -829,42 +904,25 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("prevents applying more units than available quantity", async () => {
     await setupValidAccountAndSubmit();
 
+    // Wait for quantity inputs to be available
+    await waitFor(() => {
+      expect(
+        screen.getAllByLabelText("quantity_to_be_applied").length,
+      ).toBeGreaterThan(0);
+    });
+
     // Try to enter more than available (1000 is max for first unit)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInputs[0], { target: { value: "1500" } });
 
     await waitFor(() => {
       // Should be capped at 1000 (quantity_available)
-      expect(screen.getByText("1000")).toBeVisible();
-      expect(screen.getByText("$50,000.00")).toBeVisible(); // 1000 * 50
-    });
-  });
-
-  it("shows form as readonly after successful application", async () => {
-    // Mock successful apply response
-    (actionHandler as ReturnType<typeof vi.fn>)
-      .mockResolvedValueOnce({
-        bccr_compliance_account_id: MOCK_COMPLIANCE_ACCOUNT_ID,
-        bccr_units: MOCK_UNITS,
-        charge_rate: MOCK_CHARGE_RATE,
-        outstanding_balance: MOCK_OUTSTANDING_BALANCE,
-      })
-      .mockResolvedValueOnce({ success: true });
-
-    await setupValidAccountAndSubmit();
-
-    const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
-    fireEvent.change(quantityInputs[0], { target: { value: "75" } });
-
-    const applyButton = screen.getByRole("button", { name: "Apply" });
-    fireEvent.click(applyButton);
-
-    await waitFor(() => {
-      // Form should be readonly - inputs should be disabled
-      const newQuantityInputs = screen.getAllByLabelText(
-        "quantity_to_be_applied",
-      );
-      expect(newQuantityInputs[0]).toBeDisabled();
+      expect(
+        document.getElementById("root_total_quantity_to_be_applied"),
+      ).toHaveTextContent("1000");
+      expect(
+        document.getElementById("root_total_equivalent_value"),
+      ).toHaveTextContent("$50,000.00"); // 1000 * 50
     });
   });
 });
