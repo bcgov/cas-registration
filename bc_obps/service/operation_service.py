@@ -636,13 +636,21 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> BcGreenhouseGasId:
+    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID, bcghg_id: str | None) -> BcGreenhouseGasId:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)
         # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
         operation = OperationDataAccessService.get_by_id(operation_id)
-        operation.generate_unique_bcghg_id(user_guid=user_guid)
+
+        if bcghg_id:
+            bcghg_id_record, _ = BcGreenhouseGasId.objects.get_or_create(
+                id=bcghg_id, defaults={'issued_by_id': user_guid, 'comments': 'bcghg id manually set'}
+            )
+            operation.bcghg_id = bcghg_id_record
+        else:
+            operation.generate_unique_bcghg_id(user_guid=user_guid)
+
         operation.save(update_fields=['bcghg_id'])
         if operation.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the operation.')
