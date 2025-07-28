@@ -147,6 +147,9 @@ export const operationInformationUISchema: UiSchema = {
     "ui:widget": "BoroIdWidget",
   },
   bcghg_id: {
+    "ui:options": {
+      wide: true,
+    },
     "ui:widget": "BcghgIdWidget",
   },
 };
