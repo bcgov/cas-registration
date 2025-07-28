@@ -1,15 +1,26 @@
 "use client";
 
 import { WidgetProps } from "@rjsf/utils/lib/types";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import { useState } from "react";
 import SnackBar from "../components/SnackBar";
+import { DARK_GREY_BG_COLOR } from "@bciers/styles";
+import Link from "next/link";
 
 export enum EntityWithBcghgType {
   OPERATION = "operation",
   FACILITY = "facility",
 }
+
+const styles = {
+  "& .MuiOutlinedInput-root": {
+    "& fieldset": {
+      DARK_GREY_BG_COLOR,
+    },
+  },
+  font: "inherit",
+};
 
 function generateBcghgId(entityId: string, entityType: EntityWithBcghgType) {
   const endpoint =
@@ -20,10 +31,18 @@ function generateBcghgId(entityId: string, entityType: EntityWithBcghgType) {
   return actionHandler(endpoint, "PATCH", "");
 }
 
-const BcghgIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
+const BcghgIdWidget: React.FC<WidgetProps> = ({
+  id,
+  value,
+  formContext,
+  name,
+}) => {
   const [bcghgId, setBcghgId] = useState(value);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [error, setError] = useState(undefined);
+
+  const [editBcghgId, setEditBcghgId] = useState(false);
+  const [manualBcghgId, setManualBcghgId] = useState("");
 
   if (error) {
     return (
@@ -35,26 +54,63 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({ id, value, formContext }) => {
 
   if (formContext?.isCasDirector && !bcghgId && !formContext?.isSfo) {
     return (
-      <Button
-        variant="outlined"
-        onClick={async () => {
-          const response = await generateBcghgId(
-            formContext?.operationId || formContext?.facilityId,
-            formContext?.operationId
-              ? EntityWithBcghgType.OPERATION
-              : EntityWithBcghgType.FACILITY,
-          );
+      <>
+        <Button
+          variant="outlined"
+          sx={{ mr: "14px" }}
+          disabled={editBcghgId}
+          onClick={async () => {
+            const response = await generateBcghgId(
+              formContext?.operationId || formContext?.facilityId,
+              formContext?.operationId
+                ? EntityWithBcghgType.OPERATION
+                : EntityWithBcghgType.FACILITY,
+            );
 
-          if (response?.error) {
-            setError(response?.error);
-            return;
-          }
-          setIsSnackbarOpen(true);
-          setBcghgId(response?.id);
-        }}
-      >
-        &#xFF0B; Issue BCGHG ID
-      </Button>
+            if (response?.error) {
+              setError(response?.error);
+              return;
+            }
+            setIsSnackbarOpen(true);
+            setBcghgId(response?.id);
+          }}
+        >
+          &#xFF0B; Issue BCGHG ID
+        </Button>
+        {editBcghgId ? (
+          <>
+            <TextField
+              sx={styles}
+              id={`${id}-input`}
+              name={`${name}-input`}
+              onChange={(e) => {
+                setManualBcghgId(e.target.value);
+                console.log("manualBcghgId", e.target.value);
+              }}
+              size="small"
+              inputRef={(el) => el && el.focus()}
+            />
+            <Button>Save</Button>
+            <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
+          </>
+        ) : (
+          <>
+            Or click&nbsp;
+            <Link
+              href="#"
+              style={{ cursor: "pointer" }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setEditBcghgId(true);
+              }}
+            >
+              edit
+            </Link>
+            &nbsp;to enter a BCGHGID
+          </>
+        )}
+      </>
     );
   }
   return (
