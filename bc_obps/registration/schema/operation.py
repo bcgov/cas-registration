@@ -297,6 +297,10 @@ class OperationBcghgIdOut(ModelSchema):
         fields = ['id']
 
 
+class OperationBcghgIdIn(Schema):
+    bcghg_id: Optional[str]
+
+
 class OperationUpdateStatusOut(ModelSchema):
     class Meta:
         model = Operation
