@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
 from typing import Optional
+from uuid import UUID
 
 from ninja import FilterSchema, ModelSchema
 
@@ -12,6 +13,7 @@ from reporting.models.report import Report
 
 class ReportingDashboardOperationOut(ModelSchema):
     report_id: int | None
+    operation_id: UUID | None
     report_version_id: int | None
     first_report_version_id: Optional[int] = None
     report_status: str | None
@@ -27,13 +29,14 @@ class ReportingDashboardOperationOut(ModelSchema):
 
 class ReportingDashboardReportOut(ModelSchema):
     report_id: int | None
+    operation_id: UUID | None
     report_version_id: int | None
     first_report_version_id: Optional[int] = None
     report_status: str | None
     report_submitted_by: Optional[str] = None
     operation_name: Optional[str] = None
     report_updated_at: Optional[datetime] = None
-    # reporting_year_id: Optional[int] = Field(None, alias="reporting_year_id.reporting_year")
+    reporting_year_id: Optional[int] = Field(None, alias="reporting_year_id.reporting_year")
 
     class Meta:
         model = Report

@@ -13,7 +13,7 @@ const ActionCell = (params: GridRenderCellParams) => {
   let reportVersionId = params?.row?.report_version_id;
   const reportStatus = params?.row?.report_status;
   const router = useRouter();
-  const operationId = params.row.id;
+  const operationId = params.row.operation_id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
 
