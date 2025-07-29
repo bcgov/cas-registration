@@ -99,7 +99,7 @@ elicensing_adjustment = Recipe(
 )
 
 # CompliancePenaltyRate recipe
-compliance_charge_rate = Recipe(
+compliance_penalty_rate = Recipe(
     CompliancePenaltyRate,
     compliance_period=foreign_key(compliance_period),
     rate=Decimal('0.0038'),
