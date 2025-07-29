@@ -27,8 +27,6 @@ export const MonetaryPaymentsGrid = ({ value }: { value: PaymentData }) => {
 
   const showAlert = payments.row_count === 0;
 
-  console.log("MonetaryPaymentsGrid rendered with payments:", payments);
-
   return (
     <SimpleAccordion title="Monetary Payments Made">
       {showAlert && (
