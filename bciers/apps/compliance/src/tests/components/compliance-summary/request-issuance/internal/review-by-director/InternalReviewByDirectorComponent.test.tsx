@@ -185,7 +185,7 @@ describe("InternalReviewByDirectorComponent", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
-        `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+        "",
         {
           body: JSON.stringify({
             director_comment: "",
@@ -215,7 +215,7 @@ describe("InternalReviewByDirectorComponent", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
-        `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+        "",
         {
           body: JSON.stringify({
             director_comment: "",
