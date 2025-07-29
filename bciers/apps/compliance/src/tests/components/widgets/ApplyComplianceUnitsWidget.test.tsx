@@ -141,7 +141,7 @@ describe("ApplyComplianceUnitsWidget", () => {
       formContext: {
         ...defaultProps.formContext,
         complianceLimitStatus: "EQUALS" as ComplianceLimitStatus,
-        isSubmitted: true,
+        isApplied: true,
       },
     };
 

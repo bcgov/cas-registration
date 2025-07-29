@@ -5,9 +5,9 @@ import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useEffect } from "react";
 import {
-  createApplyComplianceUnitsBaseSchema,
-  createApplyComplianceUnitsConfirmationSchema,
-  createApplyComplianceUnitsDataSchema,
+  applyComplianceUnitsBaseSchema,
+  applyComplianceUnitsConfirmationSchema,
+  applyComplianceUnitsDataSchema,
   createApplyComplianceUnitsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/applyComplianceUnitsSchema";
 import { getBccrAccountDetails } from "@/compliance/src/app/utils/bccrAccountHandlers";
@@ -105,6 +105,7 @@ export default function ApplyComplianceUnitsComponent({
       setFormData({
         bccr_holding_account_id: newAccountId,
       });
+      setStatus("idle");
       setCurrentPhase("initial");
       return;
     }
@@ -265,13 +266,13 @@ export default function ApplyComplianceUnitsComponent({
   const currentSchema = useMemo(() => {
     switch (currentPhase) {
       case "confirmation":
-        return createApplyComplianceUnitsConfirmationSchema();
+        return applyComplianceUnitsConfirmationSchema;
       case "compliance_data":
-        return createApplyComplianceUnitsDataSchema();
+        return applyComplianceUnitsDataSchema;
       default:
-        return createApplyComplianceUnitsBaseSchema();
+        return applyComplianceUnitsBaseSchema;
     }
-  }, [currentPhase, operationName]);
+  }, [currentPhase]);
 
   return (
     <FormBase

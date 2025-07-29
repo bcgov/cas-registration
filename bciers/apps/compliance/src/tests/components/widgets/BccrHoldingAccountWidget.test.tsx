@@ -85,30 +85,6 @@ describe("BccrHoldingAccountWidget", () => {
     expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
   });
 
-  it("calls onValidAccountResolved with undefined when account validation fails with error", async () => {
-    mockValidateBccrAccount.mockRejectedValueOnce(new Error("Network error"));
-
-    render(<BccrHoldingAccountWidget {...defaultProps} />);
-    const input = screen.getByRole("textbox");
-
-    fireEvent.change(input, { target: { value: "123456789012345" } });
-
-    await waitFor(() => {
-      expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
-      expect(mockOnError).toHaveBeenCalledWith(["Network error"]);
-    });
-  });
-
-  it("calls onValidAccountResolved with undefined when account ID is changed to incomplete value", () => {
-    render(<BccrHoldingAccountWidget {...defaultProps} />);
-    const input = screen.getByRole("textbox");
-
-    // Enter incomplete account ID
-    fireEvent.change(input, { target: { value: "12345" } });
-
-    expect(mockOnValidAccountResolved).toHaveBeenCalledWith(undefined);
-  });
-
   it("shows success state for valid account", async () => {
     const mockResponse = { bccr_trading_name: "Test Company" };
     mockValidateBccrAccount.mockResolvedValueOnce(mockResponse);

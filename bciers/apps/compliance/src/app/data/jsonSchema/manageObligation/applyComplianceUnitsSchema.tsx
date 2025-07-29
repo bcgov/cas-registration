@@ -13,8 +13,8 @@ import {
 import { ApplyComplianceUnitsSuccessAlertNote } from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsSuccessAlertNote";
 import CheckboxWidgetLeft from "@bciers/components/form/widgets/CheckboxWidgetLeft";
 
-// Base schema factory for initial and confirmation phases
-export const createApplyComplianceUnitsBaseSchema = (): RJSFSchema => ({
+// Base schema for initial and confirmation phases
+export const applyComplianceUnitsBaseSchema: RJSFSchema = {
   type: "object",
   title: "Apply Compliance Units",
   required: ["bccr_holding_account_id"],
@@ -27,29 +27,29 @@ export const createApplyComplianceUnitsBaseSchema = (): RJSFSchema => ({
     },
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
   },
-});
+};
 
-// Confirmation phase schema factory (extends base with checkbox)
-export const createApplyComplianceUnitsConfirmationSchema = (): RJSFSchema => ({
-  ...createApplyComplianceUnitsBaseSchema(),
+// Confirmation phase schema (extends base with checkbox)
+export const applyComplianceUnitsConfirmationSchema: RJSFSchema = {
+  ...applyComplianceUnitsBaseSchema,
   required: [
-    ...(createApplyComplianceUnitsBaseSchema().required || []),
+    ...(applyComplianceUnitsBaseSchema.required || []),
     "confirmation_checkbox",
   ],
   properties: {
-    ...createApplyComplianceUnitsBaseSchema().properties,
+    ...applyComplianceUnitsBaseSchema.properties,
     confirmation_checkbox: {
       type: "boolean",
       title: "I confirm the accuracy of the information above.",
     },
   },
-});
+};
 
-// Compliance data phase schema factory (extends base with all compliance fields)
-export const createApplyComplianceUnitsDataSchema = (): RJSFSchema => ({
-  ...createApplyComplianceUnitsBaseSchema(),
+// Compliance data phase schema (extends base with all compliance fields)
+export const applyComplianceUnitsDataSchema: RJSFSchema = {
+  ...applyComplianceUnitsBaseSchema,
   properties: {
-    ...createApplyComplianceUnitsBaseSchema().properties,
+    ...applyComplianceUnitsBaseSchema.properties,
     bccr_compliance_account_id: readOnlyStringField(
       "BCCR Compliance Account ID:",
     ),
@@ -88,7 +88,7 @@ export const createApplyComplianceUnitsDataSchema = (): RJSFSchema => ({
       default: 0,
     },
   },
-});
+};
 
 export const createApplyComplianceUnitsUiSchema = (
   operationName?: string,

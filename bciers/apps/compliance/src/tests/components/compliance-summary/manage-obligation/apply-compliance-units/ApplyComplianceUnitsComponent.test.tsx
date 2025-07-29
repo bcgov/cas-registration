@@ -120,11 +120,6 @@ describe("ApplyComplianceUnitsComponent", () => {
     (actionHandler as ReturnType<typeof vi.fn>).mockReset();
   });
 
-  afterEach(() => {
-    // Additional cleanup to ensure DOM is clean
-    document.body.innerHTML = "";
-  });
-
   it("displays form title and BCCR account section and input field", () => {
     render(
       <ApplyComplianceUnitsComponent
@@ -146,6 +141,12 @@ describe("ApplyComplianceUnitsComponent", () => {
       />,
     );
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("BCCR Compliance Account ID:"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Indicate compliance units to be applied"),
+    ).not.toBeInTheDocument();
   });
 
   it("validates account and displays compliance details on success", async () => {
@@ -213,6 +214,11 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("checkbox")).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /By checking off the box above, you confirm that the B\.C\. Carbon Registry Holding Account was entered accurately and the Trading Name displays correctly\. Your confirmation will initiate the creation of a compliance account for Test Operation\./,
+        ),
+      ).toBeInTheDocument();
     });
   });
 
