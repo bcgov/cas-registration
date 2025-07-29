@@ -147,7 +147,7 @@ class ApplyComplianceUnitsService:
         if response.get("success"):
             ComplianceAdjustmentService.create_adjustment(
                 compliance_report_version_id=compliance_report_version_id,
-                adjustment_total=Decimal(payload["total_equivalent_value"]),
+                adjustment_total=-Decimal(payload["total_equivalent_value"]),
             )
 
     @classmethod
