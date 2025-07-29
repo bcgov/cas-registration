@@ -43,7 +43,10 @@ vi.mock(
 );
 
 import { fetchComplianceSummaryReviewPageData } from "@/compliance/src/app/utils/fetchComplianceSummaryReviewPageData";
-import { generateManageObligationTaskList } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+import {
+  generateManageObligationTaskList,
+  ActivePage,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
   const mockComplianceReportVersionId = 123;
@@ -89,9 +92,12 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
       mockComplianceReportVersionId,
     );
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
-      mockComplianceReportVersionId,
-      2025,
-      "ReviewComplianceSummary",
+      123,
+      expect.objectContaining({
+        reporting_year: 2025,
+        operation_name: "Mock Operation",
+      }),
+      ActivePage.ReviewComplianceSummary,
     );
   });
 });

@@ -35,7 +35,7 @@ vi.mock(
 );
 
 const mockData = {
-  reporting_year: "2024",
+  reporting_year: 2024,
   outstanding_balance: 0.0,
   equivalent_value: 0.0,
   payments: [
@@ -83,7 +83,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     expect(screen.getByText("2025-12-06")).toBeVisible();
   });
 
-  it("renders step buttons with correct URLs", () => {
+  it("renders step buttons with correct URLs when outstanding_balance is 0", () => {
     render(
       <ObligationTrackPaymentsComponent
         data={mockData}
@@ -97,8 +97,58 @@ describe("ObligationTrackPaymentsComponent", () => {
     );
     expect(screen.getByTestId("continue-button")).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/automatic-overdue-penalty",
+      "/compliance-summaries/123/review-penalty-summary",
     );
+  });
+
+  it("does not set continueUrl when outstanding_balance is not 0", () => {
+    const dataWithBalance = {
+      ...mockData,
+      outstanding_balance: 100,
+    };
+
+    render(
+      <ObligationTrackPaymentsComponent
+        data={dataWithBalance}
+        complianceReportVersionId={123}
+      />,
+    );
+
+    const backButton = screen.getByTestId("back-button");
+    expect(backButton).toBeVisible();
+    expect(backButton).toHaveAttribute(
+      "data-url",
+      "/compliance-summaries/123/manage-obligation-review-summary",
+    );
+
+    const continueButton = screen.getByTestId("continue-button");
+    expect(continueButton).toBeVisible();
+    expect(continueButton).not.toHaveAttribute("data-url");
+  });
+
+  it("does not set continueUrl when outstanding_balance is not 0", () => {
+    const dataWithBalance = {
+      ...mockData,
+      outstanding_balance: 100,
+    };
+
+    render(
+      <ObligationTrackPaymentsComponent
+        data={dataWithBalance}
+        complianceReportVersionId={123}
+      />,
+    );
+
+    const backButton = screen.getByTestId("back-button");
+    expect(backButton).toBeVisible();
+    expect(backButton).toHaveAttribute(
+      "data-url",
+      "/compliance-summaries/123/manage-obligation-review-summary",
+    );
+
+    const continueButton = screen.getByTestId("continue-button");
+    expect(continueButton).toBeVisible();
+    expect(continueButton).not.toHaveAttribute("data-url");
   });
 
   it("does not render the automatic penalty alert when penalty_status is NONE", () => {

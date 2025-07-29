@@ -20,7 +20,7 @@ vi.mock(
   "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
   () => ({
     generateManageObligationTaskList: vi.fn(),
-    ActivePage: { DownloadPaymentInstructions: 1 },
+    ActivePage: { DownloadPaymentObligationInstructions: 1 },
   }),
 );
 
@@ -60,8 +60,8 @@ describe("PaymentInstructionsDownloadPage", () => {
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
-      2024,
-      ActivePage.DownloadPaymentInstructions,
+      expect.objectContaining({ reporting_year: 2024 }),
+      ActivePage.DownloadPaymentObligationInstructions,
     );
   });
 });

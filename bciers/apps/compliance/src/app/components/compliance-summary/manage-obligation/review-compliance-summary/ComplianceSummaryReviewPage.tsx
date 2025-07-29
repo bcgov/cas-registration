@@ -17,7 +17,7 @@ export default async function ComplianceSummaryReviewPage({
     await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    complianceSummaryReviewPageData.reporting_year,
+    complianceSummaryReviewPageData,
     ActivePage.ReviewComplianceSummary,
   );
 

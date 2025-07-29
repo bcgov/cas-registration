@@ -379,6 +379,13 @@ ENDPOINTS = {
                 "compliance_report_version_id": MOCK_INT,
             },
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_automatic_overdue_penalty",
+            "kwargs": {
+                "compliance_report_version_id": MOCK_INT,
+            },
+        },
     ],
     "all_roles": [
         {"method": "get", "endpoint_name": "get_reporting_year"},

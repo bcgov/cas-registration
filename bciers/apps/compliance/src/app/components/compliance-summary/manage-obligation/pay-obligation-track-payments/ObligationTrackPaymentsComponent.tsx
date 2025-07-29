@@ -18,7 +18,7 @@ export function ObligationTrackPaymentsComponent({
   complianceReportVersionId,
 }: Props) {
   const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/automatic-overdue-penalty`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
 
   return (
     <FormBase
@@ -30,7 +30,9 @@ export function ObligationTrackPaymentsComponent({
     >
       <ComplianceStepButtons
         backUrl={backUrl}
-        continueUrl={saveAndContinueUrl}
+        continueUrl={
+          data.outstanding_balance === 0 ? saveAndContinueUrl : undefined
+        }
       />
     </FormBase>
   );
