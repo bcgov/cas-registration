@@ -73,8 +73,7 @@ const InternalReviewByDirectorComponent = ({
       director_decision: decision,
     };
     const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
-    const pathToRevalidate = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
-    const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
+    const response = await actionHandler(endpoint, "PUT", "", {
       body: JSON.stringify(payload),
     });
     if (response && !response.error) {
