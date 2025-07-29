@@ -60,7 +60,7 @@ class ComplianceReportVersionService:
 
                 # Integration operation - handle eLicensing integration
                 # This is done outside of the main transaction to prevent rollback if integration fails
-                transaction.on_commit(lambda: cls._process_obligation_integration(obligation.id))
+                transaction.on_commit(lambda: ElicensingObligationService.process_obligation_integration(obligation.id))
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
@@ -69,25 +69,6 @@ class ComplianceReportVersionService:
                 ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
             return compliance_report_version
-
-    @classmethod
-    def _process_obligation_integration(cls, obligation_id: int) -> None:
-        """
-        Process eLicensing integration for a compliance obligation.
-
-        Args:
-            obligation_id: The ID of the compliance obligation to process
-
-        Raises:
-            Exception: If integration fails
-        """
-        try:
-            ElicensingObligationService.process_obligation_integration(obligation_id)
-        except Exception as e:
-            logger.error(
-                f"Failed to process eLicensing integration for obligation {obligation_id}: {str(e)}", exc_info=True
-            )
-            raise
 
     @classmethod
     def get_compliance_report_version(cls, compliance_report_version_id: int) -> ComplianceReportVersion:
