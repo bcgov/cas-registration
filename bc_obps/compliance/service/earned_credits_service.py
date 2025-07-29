@@ -164,18 +164,18 @@ class ComplianceEarnedCreditsService:
         update_payload = ComplianceEarnedCreditsUpdate(**payload)
         # Industry user can only update the BCCR trading name and holding account ID
         if user.is_industry_user():
-            logger.info(
+            logger.warning(
                 f"Industry user is updating earned credits for compliance report version {compliance_report_version_id} with payload {update_payload}"
             )
             cls._handle_industry_user_update(earned_credit, update_payload)
         elif user.is_cas_analyst():
-            logger.info(
+            logger.warning(
                 f"CAS analyst is updating earned credits for compliance report version {compliance_report_version_id} with payload {update_payload}"
             )
             cls._handle_cas_analyst_update(earned_credit, update_payload)
         # Director can only update the director comment and update the issuance status to approved or declined
         elif user.is_cas_director():
-            logger.info(
+            logger.warning(
                 f"CAS director is updating earned credits for compliance report version {compliance_report_version_id} with payload {update_payload}"
             )
             cls._handle_cas_director_update(earned_credit, update_payload)
