@@ -79,7 +79,9 @@ class TestComplianceAdjustmentService:
         assert adjustment["type"] == "Adjustment"
 
         mock_refresh_data_wrapper.assert_called_once_with(
-            compliance_report_version_id=compliance_report_version.id, force_refresh=True
+            compliance_report_version_id=compliance_report_version.id,
+            force_refresh=True,
+            supplementary_compliance_report_version_id=None,
         )
 
     @pytest.mark.django_db
