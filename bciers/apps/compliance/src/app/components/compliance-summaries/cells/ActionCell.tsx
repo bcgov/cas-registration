@@ -21,7 +21,11 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
   const basePath = `/compliance-summaries/${id}`;
 
   // Obligation logic
-  if (obligationId && !isAllowedCas) {
+  if (
+    obligationId &&
+    !isAllowedCas &&
+    status !== ComplianceSummaryStatus.OBLIGATION_FULLY_MET
+  ) {
     if (
       status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
     ) {
