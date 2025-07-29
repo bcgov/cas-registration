@@ -27,7 +27,10 @@ class ElicensingDataRefreshService:
 
     @classmethod
     def refresh_data_wrapper_by_compliance_report_version_id(
-        cls, compliance_report_version_id: int, force_refresh: bool = False
+        cls,
+        compliance_report_version_id: int,
+        force_refresh: bool = False,
+        supplementary_compliance_report_version_id: int | None = None,
     ) -> RefreshWrapperReturn:
         data_is_fresh = True
         invoice = ComplianceObligation.objects.get(
@@ -44,7 +47,9 @@ class ElicensingDataRefreshService:
             return RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
         try:
             ElicensingDataRefreshService.refresh_data_by_invoice(
-                client_operator_id=invoice.elicensing_client_operator_id, invoice_number=invoice.invoice_number
+                client_operator_id=invoice.elicensing_client_operator_id,
+                invoice_number=invoice.invoice_number,
+                supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
             )
         except Exception as e:  # noqa: E722
             logger.error(f"Failed to refresh data by invoice: {str(e)}")
@@ -55,16 +60,16 @@ class ElicensingDataRefreshService:
 
     @classmethod
     @transaction.atomic
-    def refresh_data_by_invoice(cls, client_operator_id: int, invoice_number: str) -> None:
+    def refresh_data_by_invoice(
+        cls, client_operator_id: int, invoice_number: str, supplementary_compliance_report_version_id: int | None = None
+    ) -> None:
         """
         Refresh BCIERS elicensing data by an invoice number. Refreshes the invoice data and all child data
 
         Args:
             client_operator_id: The client_operator_id for the requesting client in elicensing
             invoice_number: The invoice number of the invoice to refresh from elicensing
-
-        Returns:
-            None
+            supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this refresh
         """
 
         client_operator = ElicensingClientOperator.objects.get(id=client_operator_id)
@@ -94,26 +99,42 @@ class ElicensingDataRefreshService:
                     "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
                 },
             )
-            for payment in fee.payments:
-                ElicensingPayment.objects.update_or_create(
-                    elicensing_line_item=fee_record,
-                    payment_object_id=payment.paymentObjectId,
-                    defaults={
-                        "received_date": datetime.fromisoformat(payment.receivedDate),
-                        "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
-                        "method": payment.method,
-                        "receipt_number": payment.receiptNumber,
-                    },
-                )
-            for adjustment in fee.adjustments:
-                ElicensingAdjustment.objects.update_or_create(
-                    elicensing_line_item=fee_record,
-                    adjustment_object_id=adjustment.adjustmentObjectId,
-                    defaults={
-                        "amount": Decimal(adjustment.amount).quantize(Decimal("0.00")),
-                        "adjustment_date": datetime.fromisoformat(adjustment.date),
-                        "reason": adjustment.reason,
-                        "type": adjustment.type,
-                        "comment": adjustment.comment,
-                    },
-                )
+            cls._process_fee_payments(fee_record, fee.payments)
+            cls._process_fee_adjustments(fee_record, fee.adjustments, supplementary_compliance_report_version_id)
+
+    @classmethod
+    def _process_fee_payments(cls, fee_record: ElicensingLineItem, payments: list) -> None:
+        for payment in payments:
+            ElicensingPayment.objects.update_or_create(
+                elicensing_line_item=fee_record,
+                payment_object_id=payment.paymentObjectId,
+                defaults={
+                    "received_date": datetime.fromisoformat(payment.receivedDate),
+                    "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
+                    "method": payment.method,
+                    "receipt_number": payment.receiptNumber,
+                },
+            )
+
+    @classmethod
+    def _process_fee_adjustments(
+        cls, fee_record: ElicensingLineItem, adjustments: list, supplementary_compliance_report_version_id: int | None
+    ) -> None:
+        for adjustment in adjustments:
+            adjustment_defaults = {
+                "amount": Decimal(adjustment.amount).quantize(Decimal("0.00")),
+                "adjustment_date": datetime.fromisoformat(adjustment.date),
+                "reason": adjustment.reason,
+                "type": adjustment.type,
+                "comment": adjustment.comment,
+            }
+            if supplementary_compliance_report_version_id:
+                adjustment_defaults[
+                    "supplementary_compliance_report_version_id"
+                ] = supplementary_compliance_report_version_id
+
+            ElicensingAdjustment.objects.update_or_create(
+                elicensing_line_item=fee_record,
+                adjustment_object_id=adjustment.adjustmentObjectId,
+                defaults=adjustment_defaults,
+            )

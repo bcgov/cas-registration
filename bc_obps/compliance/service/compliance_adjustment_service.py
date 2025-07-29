@@ -17,16 +17,19 @@ class ComplianceAdjustmentService:
     """
 
     @classmethod
-    def create_adjustment(cls, compliance_report_version_id: int, adjustment_total: Decimal) -> None:
+    def create_adjustment(
+        cls,
+        compliance_report_version_id: int,
+        adjustment_total: Decimal,
+        supplementary_compliance_report_version_id: int | None = None,
+    ) -> None:
         """
         Creates fee adjustment connecting with elicensing service.
 
         Args:
             compliance_report_version_id: ID of the compliance report version to which the adjustment applies
             adjustment_total: Total amount of the adjustment to be applied
-
-        Returns:
-            None
+            supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
         """
 
         # Get the compliance obligation from the compliance report version
@@ -44,7 +47,7 @@ class ComplianceAdjustmentService:
         # Get the elicensing line item from the invoice
         elicensing_line_item = ElicensingLineItem.objects.get(
             elicensing_invoice_id=elicensing_invoice.id,
-            line_item_type="Fee",
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
 
         adjustment_data = [
@@ -70,8 +73,11 @@ class ComplianceAdjustmentService:
         except Exception as e:
             logger.error(f"Failed to adjust fees: {str(e)}")
             raise ValueError("Failed to adjust fees")
+
         # Force refresh local wrapper to ensure local tables are up-to-date
         if response.get("clientObjectId"):
             ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-                compliance_report_version_id=compliance_report_version_id, force_refresh=True
+                compliance_report_version_id=compliance_report_version_id,
+                force_refresh=True,
+                supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
             )
