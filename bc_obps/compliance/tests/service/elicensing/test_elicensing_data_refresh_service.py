@@ -58,8 +58,7 @@ class TestElicensingOperatorService:
                             amount=Decimal('50.00'),
                             cashHandlingArea='1',
                             referenceNumber='1',
-                            # brianna go look at this in the api
-                            method='wire',
+                            method='Cheque/Money Order',
                             receiptNumber='R192883',
                         )
                     ],
@@ -93,7 +92,7 @@ class TestElicensingOperatorService:
         assert fee.object_id == 1
         assert fee.description == 'desc'
         assert payment.amount == Decimal('50')
-        assert payment.method == 'wire'
+        assert payment.method == "Cheque/Money Order"
         assert payment.receipt_number == 'R192883'
         assert adjustment.amount == Decimal('10.11')
 
