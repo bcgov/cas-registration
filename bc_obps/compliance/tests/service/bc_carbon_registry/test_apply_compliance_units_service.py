@@ -282,6 +282,10 @@ class TestApplyComplianceUnitsService:
         assert unit2["new_quantity"] == 75
         assert unit2["id"] == "unit-2"
 
+        # Verify adjustment creation
+        assert mock_create_adjustment.call_args.kwargs["compliance_report_version_id"] == compliance_report_version.id
+        assert mock_create_adjustment.call_args.kwargs['adjustment_total'] == -80
+
     @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
     @patch(COMPLIANCE_CREATE_ADJUSTMENT_PATH)
     def test_apply_compliance_units_filters_zero_quantities(self, mock_create_adjustment, mock_bccr_service):
