@@ -20,4 +20,5 @@ class ElicensingInvoiceTest(BaseTestCase):
             ("last_refreshed", "last refreshed", None, None),
             ("elicensing_line_items", "elicensing line item", None, None),
             ("compliance_obligation", "compliance obligation", None, None),
+            ("compliance_penalty", "compliance penalty", None, None),
         ]
