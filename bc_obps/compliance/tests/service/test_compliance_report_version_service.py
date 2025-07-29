@@ -257,3 +257,53 @@ class TestComplianceReportVersionService:
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_1) == Decimal("100.00")
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_2) == Decimal("2.0")
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_3) == Decimal("0")
+
+    def test_update_compliance_report_version_status(self):
+        report_compliance_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('1000'), credited_emissions=0
+        )
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', report_compliance_summary=report_compliance_summary
+        )
+        compliance_report_version.status = ComplianceReportVersionService._determine_compliance_status(
+            compliance_report_version.report_compliance_summary.excess_emissions,
+            compliance_report_version.report_compliance_summary.credited_emissions,
+        )
+        compliance_report_version.save()
+        reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=reporting_year,
+            rate=Decimal("50.00"),
+        )
+        obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=compliance_report_version,
+        )
+
+        # Ensure nothing changes when no invoice is connected
+        ComplianceReportVersionService.update_compliance_report_version_status(compliance_report_version.id)
+        compliance_report_version.refresh_from_db()
+        # Assert 1
+        assert compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+
+        # Ensure nothing changes when outstanding balance is above zero
+        invoice = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            outstanding_balance=Decimal("100.00"),
+        )
+        obligation.elicensing_invoice = invoice
+        obligation.save()
+
+        ComplianceReportVersionService.update_compliance_report_version_status(compliance_report_version.id)
+        compliance_report_version.refresh_from_db()
+        # Assert 2
+        assert compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+
+        # Ensure status changes to OBLIGATION_FULLY_MET when outstanding balance is zero with invoices
+        invoice.outstanding_balance = Decimal("0.00")
+        invoice.save()
+        ComplianceReportVersionService.update_compliance_report_version_status(compliance_report_version.id)
+        compliance_report_version.refresh_from_db()
+        # Assert 3
+        assert compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET

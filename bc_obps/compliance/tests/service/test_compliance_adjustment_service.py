@@ -24,6 +24,12 @@ class TestComplianceAdjustmentService:
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
         )
+        reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
+        make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=reporting_year,
+            rate=Decimal("50.00"),
+        )
         client_operator = make_recipe(
             'compliance.tests.utils.elicensing_client_operator',
         )
