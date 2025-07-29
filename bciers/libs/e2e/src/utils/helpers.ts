@@ -255,6 +255,31 @@ export async function getTableColumnTextValues(
 
   return Array.from(uniqueColumnValues);
 }
+
+// 🛠️ Function: find the nth row where a unique value resides in a given column and return that row Locator
+export async function getRowByUniqueCellValue(
+  page: Page,
+  uniqueCellDataField: string,
+  uniqueCellValue: string,
+): Promise<Locator | null> {
+  const table = page.locator(".MuiDataGrid-root");
+  const rows = await table.locator('[role="row"]').all();
+  const indexStart = 1; // skip header row
+
+  for (let i = indexStart; i < rows.length; i++) {
+    const row = rows[i];
+    const uniqueCell = await getRowCellBySelector(
+      row,
+      `[data-field="${uniqueCellDataField}"]`,
+    );
+    const text = (await uniqueCell.textContent())?.trim() || "";
+    if (text === uniqueCellValue) {
+      return row;
+    }
+  }
+  return null; // uniqueCellValue not found
+}
+
 // 🛠️ Function: clears form fields
 export async function fieldsClear(page: Page, formFields: string | any[]) {
   // 📛 Clear the required input fields
@@ -364,7 +389,7 @@ export async function tableColumnNamesAreCorrect(
 ) {
   const columnHeaders = page.locator(".MuiDataGrid-columnHeaderTitle");
   const actualColumnNames = await columnHeaders.allTextContents();
-  expect(actualColumnNames).toEqual(expectedColumnNames);
+  await expect(actualColumnNames).toEqual(expectedColumnNames);
 }
 
 export async function tableHasExpectedRowCount(
@@ -375,11 +400,7 @@ export async function tableHasExpectedRowCount(
   await expect(rows).toHaveCount(expectedRowCount);
 }
 
-// 🛠️ Function: calls api to seed database with data for workflow tests
-export async function setupTestEnvironment(
-  workFlow?: string,
-  truncateOnly?: boolean,
-) {
+export async function getBrowser() {
   let browser: Browser | null = null;
 
   // Attempt launching browsers in order of preference
@@ -409,7 +430,40 @@ export async function setupTestEnvironment(
   if (!browser) {
     throw new Error("No compatible browser found");
   }
+  return browser;
+}
 
+export function getStorageStateForRole(role: string) {
+  const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
+  const processEnv = process.env[envKey];
+
+  return JSON.parse(processEnv as string);
+}
+
+// Open a new browser context instead of logging out and logging in as a new user
+export async function openNewBrowserContextAs(
+  role: string,
+  happoPlaywright?: any,
+) {
+  const browser = await getBrowser();
+  const storageState = await getStorageStateForRole(role);
+  const context = await browser.newContext({ storageState });
+
+  // To take a screenshot in the new browserContext, we first need to close the current context for the screenshot to be saved properly, then re-initialize using the new browserContext
+  if (happoPlaywright) {
+    await happoPlaywright.finish();
+    await happoPlaywright.init(context);
+  }
+  const newPage = await context.newPage();
+  return newPage;
+}
+
+// 🛠️ Function: calls api to seed database with data for workflow tests
+export async function setupTestEnvironment(
+  workFlow?: string,
+  truncateOnly?: boolean,
+) {
+  const browser = await getBrowser();
   const context = await browser.newContext();
   const url = workFlow
     ? `${baseUrlSetup}?workflow=${workFlow}`
@@ -551,15 +605,13 @@ export async function stabilizeAccordion(
   await waitForElementToStabilize(page, "section");
 }
 
-export function getStorageStateForRole(role: string) {
-  const envKey = `E2E_${role.toUpperCase()}_STORAGE_STATE`;
-  const processEnv = process.env[envKey];
-
-  return JSON.parse(processEnv as string);
-}
-
-export async function assertSuccessfulSnackbar(page: Page, message: string) {
-  const snackbarLocator = page.locator(".MuiSnackbar-root").getByText(message);
+export async function assertSuccessfulSnackbar(
+  page: Page,
+  message: string | RegExp,
+) {
+  const snackbarLocator = page
+    .locator(".MuiSnackbarContent-root")
+    .getByText(message);
   await snackbarLocator.waitFor();
   await expect(snackbarLocator).toBeVisible();
 }
@@ -579,7 +631,48 @@ export async function clickWithRetry(
   }
 }
 
+export async function linkIsVisible(
+  page: Page,
+  text: string,
+  visible: boolean,
+) {
+  const link = await page.getByRole("link", { name: text });
+  await expect(link).toBeVisible({ visible: visible });
+  return link;
+}
+
+export async function waitForSpinner(row: Locator) {
+  const spinner = row.locator('svg[aria-label="loading"]').first();
+  await expect(spinner).toBeVisible();
+  await expect(spinner).toBeHidden();
+}
+
+// This is specifically for a combobox that does not allow manual entries (MUI Select)
+export async function selectItemFromMuiSelect(
+  page: Page,
+  choice: string | RegExp,
+) {
+  const roleCell = page.locator(".MuiFormControl-root");
+  await expect(roleCell).toBeVisible();
+  await roleCell.click();
+  const optionsContainer = await page.locator(".MuiList-root");
+  await expect(optionsContainer).toBeVisible();
+  const option = optionsContainer.getByRole("option", { name: choice });
+  await expect(option).toBeVisible();
+  await option.click();
+}
+
 export async function urlIsCorrect(page: Page, expectedPath: string) {
   const currentUrl = page.url();
   await expect(currentUrl.toLowerCase()).toMatch(expectedPath.toLowerCase());
+}
+
+// 🛠️ Function: checks if the breadcrumb contains the specified text using getByText
+export async function checkBreadcrumbText(
+  page: Page,
+  expectedText: string | RegExp,
+) {
+  const breadcrumbLocator = page.locator('nav[aria-label="breadcrumbs"]');
+  const textLocator = breadcrumbLocator.getByText(expectedText);
+  await expect(textLocator).toBeVisible();
 }

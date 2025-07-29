@@ -9,6 +9,7 @@ export enum AppRoute {
   PROFILE = "administration/profile",
   USERS = "administration/users",
   ADMINISTRATION_DASHBOARD = "administration",
+  USER_ACCESS_REQUEST = "administration/users-and-access-requests",
 }
 
 // 🔘 button text
@@ -95,8 +96,10 @@ export enum MessageTextOperatorSelect {
   // This shortened string works consistently.
   REQUEST_ACCESS_CONFIRMED = "Your access request has been sent to the Administrator",
   REQUEST_ACCESS_ADMIN_CONFIRMED = "Your access request as administrator",
+  REQUEST_ACCESS_DECLINED = "Your access request was declined",
   SELECT_OPERATOR = "Which operator would you like to log in to?",
   SEARCH_BY_CANADA_REVENUE = "Search by Canada Revenue Agency (CRA) Business Number",
+  SELECT_ANOTHER_OPERATOR = "Select another operator",
 }
 
 export enum ContactButtonText {
@@ -143,3 +146,52 @@ export enum SnackbarMessages {
   ISSUED_BCGHG_ID = "BCGHG ID issued successfully",
   ISSUED_BORO_ID = "BORO ID issued successfully",
 }
+
+export enum UserAndAccessRequestGridHeaders {
+  USER_ID = "User ID",
+  NAME = "Name",
+  EMAIL = "Email",
+  BUSINESS_BCEID = "Business BCeID",
+  USER_ROLE = "User Role",
+  STATUS = "Status",
+  ACTIONS = "Actions",
+}
+
+export enum UserAndAccessRequestValues {
+  EMAIL = "email2@email.com",
+}
+
+export enum UserAccessRequestStatus {
+  APPROVED = "Approved",
+  DECLINED = "Declined",
+  PENDING = "Pending",
+}
+
+export enum UserAccessRequestRoles {
+  ADMIN = "Admin",
+  REPORTER = "Reporter",
+  PENDING = "Pending",
+  NONE = "N/A",
+}
+
+export enum SecondaryUserOperatorFixtureFields {
+  USER = "279c80cf57814c28872740a133d17c0d",
+  OPERATOR = "4242ea9d-b917-4129-93c2-db00b7451051",
+  ROLE_PENDING = "pending",
+  STATUS_PENDING = "Pending",
+}
+
+export enum UserAccessRequestActions {
+  APPROVE = "Approve",
+  DECLINE = "Decline",
+  EDIT = "Edit",
+}
+
+export const UnactionedRequest: ReadonlyArray<UserAccessRequestActions> = [
+  UserAccessRequestActions.APPROVE,
+  UserAccessRequestActions.DECLINE,
+];
+
+export const ActionedRequest: ReadonlyArray<UserAccessRequestActions> = [
+  UserAccessRequestActions.EDIT,
+];
