@@ -25,5 +25,5 @@ def operation_bcghg_id(
     return 200, OperationService.generate_bcghg_id(
         get_current_user_guid(request),
         operation_id,
-        payload.bcghg_id,
+        payload.bcghg_id if payload else None,
     )
