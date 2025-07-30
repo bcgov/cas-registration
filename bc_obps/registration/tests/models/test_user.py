@@ -210,6 +210,15 @@ class UserModelTest(BaseTestCase):
             ("elicensingadjustment_created", "elicensing adjustment", None, None),
             ("elicensingadjustment_updated", "elicensing adjustment", None, None),
             ("elicensingadjustment_archived", "elicensing adjustment", None, None),
+            ("compliancepenalty_created", "compliance penalty", None, None),
+            ("compliancepenalty_updated", "compliance penalty", None, None),
+            ("compliancepenalty_archived", "compliance penalty", None, None),
+            ("compliancepenaltyaccrual_created", "compliance penalty accrual", None, None),
+            ("compliancepenaltyaccrual_updated", "compliance penalty accrual", None, None),
+            ("compliancepenaltyaccrual_archived", "compliance penalty accrual", None, None),
+            ("compliancepenaltyrate_created", "compliance penalty rate", None, None),
+            ("compliancepenaltyrate_updated", "compliance penalty rate", None, None),
+            ("compliancepenaltyrate_archived", "compliance penalty rate", None, None),
         ]
 
     def test_unique_user_guid_and_business_guid_constraint(self):

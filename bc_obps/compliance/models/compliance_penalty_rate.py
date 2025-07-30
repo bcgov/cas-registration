@@ -13,7 +13,7 @@ class CompliancePenaltyRate(TimeStampedModel):
     compliance_period = models.OneToOneField(
         CompliancePeriod,
         on_delete=models.PROTECT,
-        related_name='compliance_Penalty_rate',
+        related_name='compliance_penalty_rate',
         db_comment="The associated compliance_period for this compliance penalty rate",
     )
     rate = models.DecimalField(
