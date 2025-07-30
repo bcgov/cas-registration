@@ -636,7 +636,7 @@ class OperationService:
 
     @classmethod
     @transaction.atomic()
-    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID, bcghg_id: str | None) -> BcGreenhouseGasId:
+    def generate_bcghg_id(cls, user_guid: UUID, operation_id: UUID, bcghg_id: str | None = None) -> BcGreenhouseGasId:
         user: User = UserDataAccessService.get_by_guid(user_guid)
         if not user.is_cas_director():
             raise Exception(UNAUTHORIZED_MESSAGE)

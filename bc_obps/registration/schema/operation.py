@@ -298,7 +298,7 @@ class OperationBcghgIdOut(ModelSchema):
 
 
 class OperationBcghgIdIn(Schema):
-    bcghg_id: Optional[str]
+    bcghg_id: Optional[str] = None
 
 
 class OperationUpdateStatusOut(ModelSchema):
