@@ -90,6 +90,19 @@ class ComplianceEarnedCredit(TimeStampedModel):
         db_comment="The BCCR trading name. This is the name of the account holder in the BC Carbon Registry",
     )
 
+    bccr_project_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        db_comment="The BCCR project ID associated with this earned credit, for idempotency.",
+    )
+    bccr_issuance_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        db_comment="The BCCR issuance ID associated with this earned credit, for idempotency.",
+    )
+
     analyst_suggestion = models.CharField(
         max_length=100,
         choices=AnalystSuggestion.choices,

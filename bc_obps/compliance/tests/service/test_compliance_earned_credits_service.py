@@ -243,11 +243,9 @@ class TestComplianceEarnedCreditsService:
                 earned_credit.compliance_report_version_id, payload, self.cas_analyst
             )
 
-    @patch('compliance.service.earned_credits_service.bccr_project_service')
-    @patch('compliance.service.earned_credits_service.bccr_credit_issuance_service')
-    def test_update_earned_credit_cas_director_approve_success(
-        self, mock_credit_issuance_service, mock_project_service
-    ):
+    @patch.object(ComplianceEarnedCreditsService, 'create_bccr_project_for_earned_credit')
+    @patch.object(ComplianceEarnedCreditsService, 'issue_bccr_credits_for_earned_credit')
+    def test_update_earned_credit_cas_director_approve_success(self, mock_issue_credits, mock_create_project):
         # Arrange
         earned_credit = self.earned_credit_base
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
@@ -259,7 +257,7 @@ class TestComplianceEarnedCreditsService:
             "director_decision": ComplianceEarnedCredit.IssuanceStatus.APPROVED.value,
             "director_comment": "Approved for issuance",
         }
-        mock_project_service.create_project.return_value = {"id": "project_123"}
+        mock_create_project.return_value = {"id": "project_123"}
 
         # Act
         result = ComplianceEarnedCreditsService.update_earned_credit(
@@ -273,8 +271,8 @@ class TestComplianceEarnedCreditsService:
         assert result == earned_credit
         assert earned_credit.issued_date is not None
         assert earned_credit.issued_by is not None
-        mock_project_service.create_project.assert_called_once()
-        mock_credit_issuance_service.issue_credits.assert_called_once()
+        mock_create_project.assert_called_once_with(earned_credit)
+        mock_issue_credits.assert_called_once_with(earned_credit, {"id": "project_123"})
 
     @patch('compliance.service.earned_credits_service.bccr_project_service')
     @patch('compliance.service.earned_credits_service.bccr_credit_issuance_service')
@@ -440,3 +438,34 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert earned_credit.earned_credits_amount == original_earned_credits_amount
         assert str(earned_credit.issued_date) == original_issued_date
+
+    @patch('compliance.service.earned_credits_service.bccr_project_service')
+    def test_create_bccr_project_for_earned_credit_idempotent(self, mock_project_service):
+        # Arrange
+        earned_credit = self.earned_credit_base
+        earned_credit.bccr_project_id = 'project_123'
+        earned_credit.save()
+        mock_project_service.client.get_project_details.return_value = {'id': 'project_123'}
+
+        # Act
+        result = ComplianceEarnedCreditsService.create_bccr_project_for_earned_credit(earned_credit)
+
+        # Assert
+        mock_project_service.create_project.assert_not_called()
+        mock_project_service.client.get_project_details.assert_called_once_with('project_123')
+        assert result['id'] == 'project_123'
+
+    @patch('compliance.service.earned_credits_service.bccr_credit_issuance_service')
+    def test_issue_bccr_credits_for_earned_credit_idempotent(self, mock_credit_issuance_service):
+        # Arrange
+        earned_credit = self.earned_credit_base
+        earned_credit.bccr_issuance_id = 'issuance_789'
+        earned_credit.save()
+        project_data = {'id': 'project_123'}
+
+        # Act
+        result = ComplianceEarnedCreditsService.issue_bccr_credits_for_earned_credit(earned_credit, project_data)
+
+        # Assert
+        mock_credit_issuance_service.issue_credits.assert_not_called()
+        assert result is None
