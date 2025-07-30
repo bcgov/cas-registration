@@ -1,4 +1,3 @@
-import logging
 from compliance.dataclass import ComplianceEarnedCreditsUpdate
 from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
 from typing import Dict, Optional
@@ -7,8 +6,6 @@ from compliance.service.bc_carbon_registry.project_service import BCCarbonRegist
 from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
 from registration.models.user import User
 
-
-logger = logging.getLogger(__name__)
 
 bccr_project_service = BCCarbonRegistryProjectService()
 bccr_credit_issuance_service = BCCarbonRegistryCreditIssuanceService()
@@ -164,20 +161,11 @@ class ComplianceEarnedCreditsService:
         update_payload = ComplianceEarnedCreditsUpdate(**payload)
         # Industry user can only update the BCCR trading name and holding account ID
         if user.is_industry_user():
-            logger.warning(
-                f"Industry user is updating earned credits for compliance report version {compliance_report_version_id} with payload {update_payload}"
-            )
             cls._handle_industry_user_update(earned_credit, update_payload)
         elif user.is_cas_analyst():
-            logger.warning(
-                f"CAS analyst is updating earned credits for compliance report version {compliance_report_version_id} with payload {update_payload}"
-            )
             cls._handle_cas_analyst_update(earned_credit, update_payload)
         # Director can only update the director comment and update the issuance status to approved or declined
         elif user.is_cas_director():
-            logger.warning(
-                f"CAS director is updating earned credits for compliance report version {compliance_report_version_id} with payload {update_payload}"
-            )
             cls._handle_cas_director_update(earned_credit, update_payload)
         else:
             raise UserError("This user is not authorized to update earned credit")
