@@ -10,8 +10,8 @@ class ElicensingInterestRate(BaseModel):
     """
 
     interest_rate = models.DecimalField(
-        decimal_places=2,
-        max_digits=20,
+        decimal_places=6,
+        max_digits=6,
         db_comment="The interest rate from elicensing",
     )
 
