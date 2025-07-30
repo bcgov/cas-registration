@@ -22,13 +22,21 @@ const styles = {
   font: "inherit",
 };
 
-function generateBcghgId(entityId: string, entityType: EntityWithBcghgType) {
+function generateBcghgId(
+  entityId: string,
+  entityType: EntityWithBcghgType,
+  bxghgIdOverride?: string,
+) {
   const endpoint =
     entityType === EntityWithBcghgType.OPERATION
       ? `registration/operations/${entityId}/bcghg-id`
       : `registration/facilities/${entityId}/bcghg-id`;
-
-  return actionHandler(endpoint, "PATCH", "");
+  const payload = bxghgIdOverride
+    ? JSON.stringify({ bcghg_id: bxghgIdOverride })
+    : undefined;
+  return actionHandler(endpoint, "PATCH", "", {
+    body: payload,
+  });
 }
 
 const BcghgIdWidget: React.FC<WidgetProps> = ({
@@ -52,6 +60,23 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     );
   }
 
+  const handleIssueBcghgId = async () => {
+    const response = await generateBcghgId(
+      formContext?.operationId || formContext?.facilityId,
+      formContext?.operationId
+        ? EntityWithBcghgType.OPERATION
+        : EntityWithBcghgType.FACILITY,
+      editBcghgId ? manualBcghgId : undefined,
+    );
+
+    if (response?.error) {
+      setError(response?.error);
+      return;
+    }
+    setIsSnackbarOpen(true);
+    setBcghgId(response?.id);
+  };
+
   if (formContext?.isCasDirector && !bcghgId && !formContext?.isSfo) {
     return (
       <>
@@ -59,21 +84,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           variant="outlined"
           sx={{ mr: "14px" }}
           disabled={editBcghgId}
-          onClick={async () => {
-            const response = await generateBcghgId(
-              formContext?.operationId || formContext?.facilityId,
-              formContext?.operationId
-                ? EntityWithBcghgType.OPERATION
-                : EntityWithBcghgType.FACILITY,
-            );
-
-            if (response?.error) {
-              setError(response?.error);
-              return;
-            }
-            setIsSnackbarOpen(true);
-            setBcghgId(response?.id);
-          }}
+          onClick={handleIssueBcghgId}
         >
           &#xFF0B; Issue BCGHG ID
         </Button>
@@ -85,12 +96,11 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
               name={`${name}-input`}
               onChange={(e) => {
                 setManualBcghgId(e.target.value);
-                console.log("manualBcghgId", e.target.value);
               }}
               size="small"
               inputRef={(el) => el && el.focus()}
             />
-            <Button>Save</Button>
+            <Button onClick={handleIssueBcghgId}>Save</Button>
             <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
           </>
         ) : (
