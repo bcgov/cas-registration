@@ -9,6 +9,10 @@ from .elicensing_invoice import ElicensingInvoice
 from .elicensing_line_item import ElicensingLineItem
 from .elicensing_payment import ElicensingPayment
 from .elicensing_adjustment import ElicensingAdjustment
+from .compliance_penalty_rate import CompliancePenaltyRate
+from .compliance_penalty import CompliancePenalty
+from .compliance_penalty_accrual import CompliancePenaltyAccrual
+from .elicensing_interest_rate import ElicensingInterestRate
 
 __all__ = [
     'ComplianceChargeRate',
@@ -22,4 +26,8 @@ __all__ = [
     'ElicensingLineItem',
     'ElicensingPayment',
     'ElicensingAdjustment',
+    'CompliancePenaltyRate',
+    'CompliancePenalty',
+    'CompliancePenaltyAccrual',
+    'ElicensingInterestRate',
 ]
