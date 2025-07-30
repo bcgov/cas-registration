@@ -13,10 +13,10 @@ const pastReportsGroupColumns = (
     createColumnGroup("operation_name", "Operation", SearchCell),
     createColumnGroup(
       "report_updated_at",
-      "Date of Submission",
+      "Date of submission",
       EmptyGroupCell,
     ),
-    createColumnGroup("report_submitted_by", "Submitted By", EmptyGroupCell),
+    createColumnGroup("report_submitted_by", "Submitted by", EmptyGroupCell),
     createColumnGroup("report_status", "Status", SearchCell),
     createColumnGroup("action", "Action", EmptyGroupCell),
   ] as GridColumnGroupingModel;

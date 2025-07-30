@@ -9,7 +9,7 @@ export const fetchPastReportsPageData = async (
   const queryParams = buildQueryParams(searchParams);
   // fetch data from server
   const pageData = await actionHandler(
-    `reporting/past-operations${queryParams}`,
+    `reporting/past-reports${queryParams}`,
     "GET",
     "",
   );
