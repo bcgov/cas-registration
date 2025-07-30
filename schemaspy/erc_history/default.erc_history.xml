@@ -230,6 +230,8 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="22" name="analyst_suggestion" nullable="true" remarks="The suggestion from the analyst on whether or not to recommend issuance of the credits" size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="23" name="bccr_holding_account_id" nullable="true" remarks="The BCCR holding account ID. This is the ID of the account holder in the BC Carbon Registry" size="15" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="24" name="issuance_requested_date" nullable="true" remarks="The date on which the earned credits were requested to be issued by the industry user" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="25" name="bccr_issuance_id" nullable="true" remarks="The BCCR issuance ID associated with this earned credit, for idempotency." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="26" name="bccr_project_id" nullable="true" remarks="The BCCR project ID associated with this earned credit, for idempotency." size="50" type="varchar" typeCode="12"/>
          <primaryKey column="history_id" sequenceNumberInPK="1"/>
          <index name="compliance_earned_credit_history_pkey" unique="true">
             <column ascending="true" name="history_id"/>

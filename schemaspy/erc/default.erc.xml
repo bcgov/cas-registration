@@ -353,6 +353,8 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="17" name="analyst_suggestion" nullable="true" remarks="The suggestion from the analyst on whether or not to recommend issuance of the credits" size="100" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="18" name="bccr_holding_account_id" nullable="true" remarks="The BCCR holding account ID. This is the ID of the account holder in the BC Carbon Registry" size="15" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="19" name="issuance_requested_date" nullable="true" remarks="The date on which the earned credits were requested to be issued by the industry user" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="20" name="bccr_issuance_id" nullable="true" remarks="The BCCR issuance ID associated with this earned credit, for idempotency." size="50" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="21" name="bccr_project_id" nullable="true" remarks="The BCCR project ID associated with this earned credit, for idempotency." size="50" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_earned_credit_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -381,7 +383,9 @@
          <checkConstraint constraint="((earned_credits_amount &gt;= 0))" name="compliance_earned_credit_earned_credits_amount_check"/>
       </table>
       <table name="compliance_obligation" remarks="A table to store compliance obligations" schema="erc" type="TABLE">
-         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="compliance_obligation_id" foreignKey="compliance_penalty_compliance_obligatio_0f8163dc_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty"/>
+         </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -425,8 +429,128 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="compliance_penalty" remarks="This table contains compliance penalty data for obligations that were not met before their due date" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="compliance_penalty_id" foreignKey="compliance_penalty_a_compliance_penalty_i_3240786f_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_accrual"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="accrual_start_date" nullable="false" remarks="The date on which the penalty began accruing. It will always be the day after the obligation's due date" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="penalty_amount" nullable="false" remarks="The total amount of the penalty to be paid" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_archived_by_id_00e12c49_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="compliance_obligation_id" nullable="false" remarks="The compliance obligation not paid on time which triggered this penalty" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="compliance_penalty_compliance_obligatio_0f8163dc_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_created_by_id_32e99396_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="elicensing_invoice_id" nullable="false" remarks="The invoice from elicensing that this penalty created" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="compliance_penalty_elicensing_invoice_i_1d5556d5_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_invoice"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_updated_by_id_2a12db0a_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="compliance_penalty_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_penalty_archived_by_id_00e12c49" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_penalty_compliance_obligation_id_key" unique="true">
+            <column ascending="true" name="compliance_obligation_id"/>
+         </index>
+         <index name="compliance_penalty_created_by_id_32e99396" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_penalty_elicensing_invoice_id_key" unique="true">
+            <column ascending="true" name="elicensing_invoice_id"/>
+         </index>
+         <index name="compliance_penalty_updated_by_id_2a12db0a" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="compliance_penalty_accrual" remarks="This table contains the daily record of how a penalty was accrued" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="date" nullable="false" remarks="The date of accrual for this record" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="daily_penalty" nullable="false" remarks="The penalty amount for this date calculated from the rate in the compliance_penalty_rate table" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="6" name="daily_compounded" nullable="false" remarks="The amount of the penalty compounded for this date" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="7" name="accumulated_penalty" nullable="false" remarks="The accumulated amount of base penalty charges up to this date" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="8" name="accumulated_compounded" nullable="false" remarks="The accumulated amount of compounded penalty up to this date" size="20" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_a_archived_by_id_60450ad8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="compliance_penalty_id" nullable="false" remarks="The penalty record that this daily accrual record relates to" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="compliance_penalty_a_compliance_penalty_i_3240786f_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_a_created_by_id_497af47c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_a_updated_by_id_c215c6ed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="compliance_penalty_accrual_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_penalty_accrual_archived_by_id_60450ad8" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_penalty_accrual_compliance_penalty_id_3240786f" unique="false">
+            <column ascending="true" name="compliance_penalty_id"/>
+         </index>
+         <index name="compliance_penalty_accrual_created_by_id_497af47c" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_penalty_accrual_updated_by_id_c215c6ed" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
+      <table name="compliance_penalty_rate" remarks="A table to store compliance penalty rates by reporting year" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="rate" nullable="false" remarks="The compliance Penalty rate applied daily if an obligation is not paid on time" size="6" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="is_current_rate" nullable="false" remarks="Boolean field signifies whether or not this rate is the rate currently in use" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_r_archived_by_id_1a3f8acd_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="compliance_period_id" nullable="false" remarks="The associated compliance_period for this compliance penalty rate" size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="compliance_penalty_r_compliance_period_id_f44d115e_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_period"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_r_created_by_id_cad30672_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+            <parent column="user_guid" foreignKey="compliance_penalty_r_updated_by_id_53a1b1fa_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
+         </column>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="compliance_penalty_rate_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="compliance_penalty_rate_archived_by_id_1a3f8acd" unique="false">
+            <column ascending="true" name="archived_by_id"/>
+         </index>
+         <index name="compliance_penalty_rate_compliance_period_id_key" unique="true">
+            <column ascending="true" name="compliance_period_id"/>
+         </index>
+         <index name="compliance_penalty_rate_created_by_id_cad30672" unique="false">
+            <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_penalty_rate_updated_by_id_53a1b1fa" unique="false">
+            <column ascending="true" name="updated_by_id"/>
+         </index>
+      </table>
       <table name="compliance_period" remarks="A table to store compliance periods" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
+            <child column="compliance_period_id" foreignKey="compliance_penalty_r_compliance_period_id_f44d115e_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_rate"/>
             <child column="compliance_period_id" foreignKey="compliance_report_compliance_period_id_4ee3836d_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_report"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -907,9 +1031,20 @@
             <column ascending="true" name="updated_by_id"/>
          </index>
       </table>
+      <table name="elicensing_interest_rate" remarks="Table contains the interest rate from elicensing" schema="erc" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="interest_rate" nullable="false" remarks="The interest rate from elicensing" size="6" type="numeric" typeCode="2"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="start_date" nullable="false" remarks="The date that the rate took effect. Date is pulled from elicensing" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="end_date" nullable="false" remarks="The last date that the rate was in effect. Date is generated in BCIERS when a new interest rate record is pulled from elicensing. End date is one day before the start date of the new record." size="13" type="date" typeCode="91"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="elicensing_interest_rate_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
       <table name="elicensing_invoice" remarks="Table contains invoice data from elicensing" schema="erc" type="TABLE">
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="elicensing_invoice_id" foreignKey="compliance_obligatio_elicensing_invoice_i_47e18c80_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
+            <child column="elicensing_invoice_id" foreignKey="compliance_penalty_elicensing_invoice_i_1d5556d5_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty"/>
             <child column="elicensing_invoice_id" foreignKey="elicensing_line_item_elicensing_invoice_i_1450e1c0_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -1014,6 +1149,8 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="elicensing_payment_updated_by_id_07ac7256_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="method" nullable="true" remarks="The method used to make the payment (e.g. wire transfer) from elicensing." size="2147483647" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="receipt_number" nullable="true" remarks="Receipt number of the payment in elicensing." size="2147483647" type="varchar" typeCode="12"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="elicensing_payment_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -3713,6 +3850,15 @@
             <child column="archived_by_id" foreignKey="compliance_obligation_archived_by_id_80f75b00_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
             <child column="created_by_id" foreignKey="compliance_obligation_created_by_id_e2485278_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
             <child column="updated_by_id" foreignKey="compliance_obligation_updated_by_id_05a4c582_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
+            <child column="archived_by_id" foreignKey="compliance_penalty_archived_by_id_00e12c49_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty"/>
+            <child column="created_by_id" foreignKey="compliance_penalty_created_by_id_32e99396_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty"/>
+            <child column="updated_by_id" foreignKey="compliance_penalty_updated_by_id_2a12db0a_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty"/>
+            <child column="archived_by_id" foreignKey="compliance_penalty_a_archived_by_id_60450ad8_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_accrual"/>
+            <child column="created_by_id" foreignKey="compliance_penalty_a_created_by_id_497af47c_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_accrual"/>
+            <child column="updated_by_id" foreignKey="compliance_penalty_a_updated_by_id_c215c6ed_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_accrual"/>
+            <child column="archived_by_id" foreignKey="compliance_penalty_r_archived_by_id_1a3f8acd_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_rate"/>
+            <child column="created_by_id" foreignKey="compliance_penalty_r_created_by_id_cad30672_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_rate"/>
+            <child column="updated_by_id" foreignKey="compliance_penalty_r_updated_by_id_53a1b1fa_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="compliance_penalty_rate"/>
             <child column="archived_by_id" foreignKey="compliance_period_archived_by_id_631fa5a6_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_period"/>
             <child column="created_by_id" foreignKey="compliance_period_created_by_id_4214aedd_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_period"/>
             <child column="updated_by_id" foreignKey="compliance_period_updated_by_id_970ca3fa_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="compliance_period"/>
