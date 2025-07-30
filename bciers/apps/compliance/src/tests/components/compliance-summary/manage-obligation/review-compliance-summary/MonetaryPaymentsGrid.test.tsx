@@ -16,17 +16,19 @@ const mockPaymentsData: PaymentData = {
       id: "1",
       received_date: "2024-03-15",
       amount: 8000,
-      payment_method: "Bank Transfer",
+      method: "EFT/Wire - OBPS",
       transaction_type: "Payment",
       payment_object_id: "REF-123",
+      receipt_number: "R123456",
     },
     {
       id: "2",
       received_date: "2024-03-16",
       amount: 4000,
-      payment_method: "Credit Card",
+      method: "EFT/Wire - OBPS",
       transaction_type: "Payment",
       payment_object_id: "REF-124",
+      receipt_number: "R234567",
     },
   ],
 };
@@ -65,15 +67,15 @@ describe("MonetaryPaymentsGrid", () => {
 
     within(firstRow).getByText("2024-03-15");
     within(firstRow).getByText("$8,000.00");
-    within(firstRow).getByText("Bank Transfer");
+    within(firstRow).getByText("EFT/Wire - OBPS");
     within(firstRow).getByText("Payment");
-    within(firstRow).getByText("REF-123");
+    within(firstRow).getByText("R123456");
 
     within(secondRow).getByText("2024-03-16");
     within(secondRow).getByText("$4,000.00");
-    within(secondRow).getByText("Credit Card");
+    within(secondRow).getByText("EFT/Wire - OBPS");
     within(secondRow).getByText("Payment");
-    within(secondRow).getByText("REF-124");
+    within(secondRow).getByText("R234567");
   });
 
   it("shows alert when no payments are made", () => {
