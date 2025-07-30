@@ -31,6 +31,12 @@ class ElicensingPayment(TimeStampedModel):
         blank=True,
     )
 
+    method = models.CharField(
+        db_comment="The method used to make the payment (e.g. wire transfer) from elicensing.", blank=True, null=True
+    )
+
+    receipt_number = models.CharField(db_comment="Receipt number of the payment in elicensing.", blank=True, null=True)
+
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "Table contains payment data from elicensing"
