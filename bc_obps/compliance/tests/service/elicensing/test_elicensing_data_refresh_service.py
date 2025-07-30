@@ -58,7 +58,7 @@ class TestElicensingOperatorService:
                             amount=Decimal('50.00'),
                             cashHandlingArea='1',
                             referenceNumber='1',
-                            method='Cheque/Money Order',
+                            method='EFT/Wire - OBPS',
                             receiptNumber='R192883',
                         )
                     ],
@@ -92,7 +92,7 @@ class TestElicensingOperatorService:
         assert fee.object_id == 1
         assert fee.description == 'desc'
         assert payment.amount == Decimal('50')
-        assert payment.method == "Cheque/Money Order"
+        assert payment.method == "EFT/Wire - OBPS"
         assert payment.receipt_number == 'R192883'
         assert adjustment.amount == Decimal('10.11')
 
