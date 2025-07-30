@@ -106,7 +106,8 @@ describe("actionHandler function", () => {
 
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith(
-      "An error occurred while fetching /endpoint:",
+      "An error occurred while fetching %s:",
+      "/endpoint",
       expect.any(Error),
     );
 
@@ -184,7 +185,8 @@ describe("actionHandler function", () => {
 
     expect(consoleMock).toHaveBeenCalledOnce();
     expect(consoleMock).toHaveBeenLastCalledWith(
-      "An error occurred while fetching /endpoint:",
+      "An error occurred while fetching %s:",
+      "/endpoint",
       expect.any(Error),
     );
 
