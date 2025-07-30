@@ -25,13 +25,13 @@ const pastReportsColumns = (): GridColDef[] => {
     { field: "operation_name", headerName: "Operation", width: 300 },
     {
       field: "report_updated_at",
-      headerName: "Date of Submission",
+      headerName: "Date of submission",
       renderCell: UpdatedAtCell,
       width: 200,
     },
     {
       field: "report_submitted_by",
-      headerName: "Submitted By",
+      headerName: "Submitted by",
       renderCell: SubmittedByCell,
       width: 200,
     },
@@ -55,7 +55,8 @@ const pastReportsColumns = (): GridColDef[] => {
       headerName: "More Actions",
       renderCell: MoreActionsCell,
       sortable: false,
-      width: 200,
+      width: 120,
+      flex: 1,
     },
   ];
   return columns;
