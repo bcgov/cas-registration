@@ -141,7 +141,7 @@ describe("ApplyComplianceUnitsWidget", () => {
       formContext: {
         ...defaultProps.formContext,
         complianceLimitStatus: "EQUALS" as ComplianceLimitStatus,
-        isSubmitted: true,
+        isApplied: true,
       },
     };
 
@@ -301,5 +301,55 @@ describe("ApplyComplianceUnitsWidget", () => {
       },
       mockUnits[1],
     ]);
+  });
+
+  it("updates local state when value prop changes", () => {
+    const { rerender } = render(
+      <ApplyComplianceUnitsWidget {...defaultProps} value={[]} />,
+    );
+
+    // Initially no units
+    expect(screen.getAllByRole("row")).toHaveLength(1); // Only header row
+
+    // Update with new units
+    const newUnits = [mockUnits[0]];
+    rerender(<ApplyComplianceUnitsWidget {...defaultProps} value={newUnits} />);
+
+    // Should now show one unit
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(2); // Header + 1 data row
+  });
+
+  it("forces DataGrid re-render when units change using key prop", () => {
+    const { rerender } = render(
+      <ApplyComplianceUnitsWidget {...defaultProps} value={[]} />,
+    );
+
+    // Get initial number of rows
+    const initialRows = screen.getAllByRole("row");
+    const initialRowCount = initialRows.length;
+
+    // Update with new units
+    const newUnits = [mockUnits[0]];
+    rerender(<ApplyComplianceUnitsWidget {...defaultProps} value={newUnits} />);
+
+    // Should have more rows now
+    const updatedRows = screen.getAllByRole("row");
+    const updatedRowCount = updatedRows.length;
+
+    expect(updatedRowCount).toBeGreaterThan(initialRowCount);
+  });
+
+  it("handles empty units array", () => {
+    const props = {
+      ...defaultProps,
+      value: [],
+    };
+
+    render(<ApplyComplianceUnitsWidget {...props} />);
+
+    // Should only show header row
+    const rows = screen.getAllByRole("row");
+    expect(rows).toHaveLength(1);
   });
 });

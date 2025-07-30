@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { WidgetProps } from "@rjsf/utils";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import applyComplianceUnitsColumns from "@/compliance/src/app/components/datagrid/models/apply-compliance-units/applyComplianceUnitsColumns";
@@ -36,8 +36,15 @@ const ApplyComplianceUnitsWidget = ({
   formContext,
   readonly,
 }: WidgetProps) => {
-  const { chargeRate, complianceLimitStatus, isSubmitted } = formContext;
-  const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value);
+  const { chargeRate, complianceLimitStatus, isApplied } = formContext;
+  const [localUnits, setLocalUnits] = useState<BccrUnit[]>(value || []);
+
+  // Update localUnits when value prop changes
+  useEffect(() => {
+    if (value && Array.isArray(value)) {
+      setLocalUnits(value);
+    }
+  }, [value]);
 
   const handleUnitUpdate = (updatedUnit: BccrUnit) => {
     const updatedUnits = localUnits.map((unit: BccrUnit) =>
@@ -53,13 +60,22 @@ const ApplyComplianceUnitsWidget = ({
     handleUnitUpdate,
   );
 
+  // Create a key that changes when localUnits changes to force DataGrid re-render
+  const gridKey = useMemo(
+    () =>
+      localUnits.length.toString() +
+      JSON.stringify(localUnits.map((u) => u.id)),
+    [localUnits],
+  );
+
   return (
     <div className="w-full">
-      {!isSubmitted &&
+      {!isApplied &&
         COMPLIANCE_LIMIT_MESSAGES[
           complianceLimitStatus as ComplianceLimitStatus
         ]}
       <DataGrid
+        key={gridKey}
         columns={columns}
         initialData={{ rows: localUnits, row_count: localUnits.length }}
         hideFooter={true}
