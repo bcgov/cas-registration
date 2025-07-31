@@ -36,10 +36,7 @@ spec:
               - bash
               - -c
               - |
-                timeout=600
-                interval=10
-                elapsed=0
-                while [[ $elapsed -lt $timeout ]]; do
+                while true; do
                     ready=$(kubectl get deployment $BACKEND_CHART_SHORTNAME-backend -n $DESTINATION_NAMESPACE -o json \
                         | jq -r 'select(.status.readyReplicas == .spec.replicas)')
                     if [[ -n "$ready" ]]; then
@@ -47,8 +44,5 @@ spec:
                         exit 0
                     fi
                     echo "Waiting for Deployment to become ready..."
-                    sleep $interval
-                    elapsed=$((elapsed + interval))
+                    sleep 10
                 done
-                echo "Timed out waiting for Deployment readiness"
-                exit 1
