@@ -1,4 +1,5 @@
 from django.test import TestCase
+from unittest.mock import MagicMock, patch
 from model_bakery.baker import make_recipe
 from django.core.files.base import ContentFile
 from registration.models import Operation
@@ -9,6 +10,8 @@ from reporting.models import (
     ReportActivity,
     ReportAdditionalData,
     ReportAttachment,
+    ReportEmission,
+    ReportMethodology,
     ReportNewEntrant,
     ReportNewEntrantEmission,
     ReportNewEntrantProduction,
@@ -485,3 +488,42 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             self.old_facility_activity.json_data,
             "The json_data of the cloned ReportActivity should match the original.",
         )
+
+    def test_reapply_emission_categories(self):
+        # Arrange
+        fake_version = MagicMock(spec=ReportVersion)
+        fake_methodology = MagicMock(spec=ReportMethodology)
+        fake_emission = MagicMock(spec=ReportEmission)
+        fake_emission.report_source_type = MagicMock()
+        fake_emission.report_fuel = MagicMock()
+        fake_emission.report_methodology = fake_methodology
+
+        # Patch the queryset
+        with patch("reporting.models.ReportEmission.objects.filter") as mock_filter, patch(
+            "reporting.service.report_supplementary_version_service.EmissionCategoryMappingService.apply_emission_categories"
+        ) as mock_apply, patch(
+            "reporting.service.report_supplementary_version_service.model_to_dict"
+        ) as mock_model_to_dict:
+
+            mock_filter.return_value.select_related.return_value = [fake_emission]
+            mock_model_to_dict.return_value = {
+                'report_source_type': fake_emission.report_source_type,
+                'report_fuel': fake_emission.report_fuel,
+                'report_methodology': fake_methodology,
+            }
+
+            # Act
+            ReportSupplementaryVersionService.reapply_emission_categories(fake_version)
+
+            # Assert
+            mock_filter.assert_called_once_with(report_version=fake_version)
+            mock_apply.assert_called_once_with(
+                report_source_type=fake_emission.report_source_type,
+                report_fuel=fake_emission.report_fuel,
+                report_emission=fake_emission,
+                methodology_data={
+                    'report_source_type': fake_emission.report_source_type,
+                    'report_fuel': fake_emission.report_fuel,
+                    'report_methodology': fake_methodology,
+                },
+            )
