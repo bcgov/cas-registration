@@ -118,6 +118,7 @@ class ComplianceInvoiceContext:
     invoice_date: str
     invoice_due_date: str
     invoice_printed_date: str
+    invoice_is_void: bool
     operator_name: str
     operator_address_line1: str
     operator_address_line2: str
