@@ -98,11 +98,17 @@ class DecreasedObligationHandler:
             is_supplementary=True,
         )
 
+        # Get the previous compliance report version to create adjustment for
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
+        )
+
         # Create adjustment in elicensing for the dollar amount difference
         # This is done outside the main transaction to prevent rollback if integration fails
         transaction.on_commit(
-            lambda: ComplianceAdjustmentService.create_adjustment(
-                compliance_report_version_id=compliance_report_version.id,
+            lambda: ComplianceAdjustmentService.create_adjustment_for_target_version(
+                target_compliance_report_version_id=previous_compliance_report_version.id,
                 adjustment_total=adjustment_amount,
                 supplementary_compliance_report_version_id=compliance_report_version.id,
             )

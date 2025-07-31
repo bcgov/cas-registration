@@ -14,10 +14,54 @@ logger = logging.getLogger(__name__)
 class ComplianceAdjustmentService:
     """
     Service for handling compliance adjustments.
+
+    This service provides two main methods for creating fee adjustments:
+
+    1. `create_adjustment_for_current_version`: Creates an adjustment for the current compliance report version
+    2. `create_adjustment_for_target_version`: Creates an adjustment for a target version when triggered by a supplementary version
     """
 
     @classmethod
-    def create_adjustment(
+    def create_adjustment_for_current_version(
+        cls,
+        compliance_report_version_id: int,
+        adjustment_total: Decimal,
+    ) -> None:
+        """
+        Creates fee adjustment for the current compliance report version.
+
+        Args:
+            compliance_report_version_id: ID of the compliance report version to which the adjustment applies
+            adjustment_total: Total amount of the adjustment to be applied
+        """
+        cls._create_adjustment(
+            compliance_report_version_id=compliance_report_version_id,
+            adjustment_total=adjustment_total,
+        )
+
+    @classmethod
+    def create_adjustment_for_target_version(
+        cls,
+        target_compliance_report_version_id: int,
+        adjustment_total: Decimal,
+        supplementary_compliance_report_version_id: int,
+    ) -> None:
+        """
+        Creates fee adjustment for a target compliance report version when triggered by a supplementary version.
+
+        Args:
+            target_compliance_report_version_id: ID of the target compliance report version to which the adjustment applies
+            adjustment_total: Total amount of the adjustment to be applied
+            supplementary_compliance_report_version_id: ID of the supplementary compliance report version that triggered this adjustment
+        """
+        cls._create_adjustment(
+            compliance_report_version_id=target_compliance_report_version_id,
+            adjustment_total=adjustment_total,
+            supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
+        )
+
+    @classmethod
+    def _create_adjustment(
         cls,
         compliance_report_version_id: int,
         adjustment_total: Decimal,
