@@ -48,14 +48,14 @@ def get_dashboard_operations_list(
 
 
 @router.get(
-    "/past-operations",
+    "/past-reports",
     response={200: List[ReportingDashboardReportOut], custom_codes_4xx: Message},
     tags=DASHBOARD_TAGS,
-    description="""Returns a list of past reports for the current user.""",
+    description="""Returns a list of past reports for the current user. Returns all reports for the operator excluding the current reporting year""",
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(PageNumberPagination)
-def get_past_reports_operations_list(
+def get_dashboard_past_reports_list(
     request: HttpRequest,
     filters: ReportingDashboardOperationFilterSchema = Query(...),
     sort_field: Optional[str] = "reporting_year",
@@ -64,12 +64,6 @@ def get_past_reports_operations_list(
 ) -> QuerySet[Report]:
     user_guid: UUID = get_current_user_guid(request)
     reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
-    print(
-        "API past reports",
-        ReportingDashboardService.get_past_reports_for_reporting_dashboard(
-            user_guid, reporting_year, sort_field=sort_field, sort_order=sort_order, filters=filters
-        ).values(),
-    )
     return ReportingDashboardService.get_past_reports_for_reporting_dashboard(
         user_guid, reporting_year, sort_field=sort_field, sort_order=sort_order, filters=filters
     )

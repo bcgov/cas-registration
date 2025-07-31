@@ -29,7 +29,7 @@ class ReportingDashboardService:
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
-        Fetches all operations for the user, and annotates it with the associated report data required for the API call
+        Fetches all past reports for the user, and annotates it with the associated operation data required for the API call
         """
         user = UserDataAccessService.get_by_guid(user_guid)
 
@@ -90,14 +90,7 @@ class ReportingDashboardService:
             )
         )
 
-        sort_field = sort_field or "id"
-        sort_order = sort_order or "asc"
-        sort_direction = "-" if sort_order == "desc" else ""
-
-        sort_fields = [f"{sort_direction}{sort_field}"]
-
-        if sort_field == "report_status":
-            sort_fields = [f"{sort_direction}report_status_sort_key"]
+        sort_fields = cls._get_sort_fields(sort_field, sort_order)
 
         return filters.filter(queryset).order_by(*sort_fields)
 
@@ -105,13 +98,13 @@ class ReportingDashboardService:
     def get_past_reports_for_reporting_dashboard(
         cls,
         user_guid: UUID,
-        reporting_year: int,
+        current_reporting_year: int,
         sort_field: Optional[str] = None,
         sort_order: Optional[str] = None,
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Report]:
         """
-        Fetches all past operations for the user, and annotates it with the associated report data required for the API call
+        Fetches all past reports for the user, and annotates it with the associated operation data required for the API call
         """
         user = UserDataAccessService.get_by_guid(user_guid)
         operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator.id
@@ -125,13 +118,18 @@ class ReportingDashboardService:
             .order_by("-id")
             .annotate(full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")))[:1]
         )
+        latest_report_version_subquery_for_name = ReportVersion.objects.filter(
+            pk=OuterRef("report_version_id")
+        ).order_by("created_at")
+
         report_operation_name_subquery = ReportOperation.objects.filter(
             report_version__report_id=OuterRef("id"),
+            report_version=Subquery(latest_report_version_subquery_for_name.values("id")[:1]),
         ).values("operation_name")[:1]
 
         queryset = (
             Report.objects.filter(operator_id=operator_id)
-            # .exclude(reporting_year=reporting_year)
+            .exclude(reporting_year=current_reporting_year)
             .annotate(
                 report_id=F("id"),
                 first_report_version_id=first_report_version_subquery.values("id")[:1],
@@ -153,13 +151,16 @@ class ReportingDashboardService:
             )
         )
 
-        sort_field = sort_field or "id"
-        sort_order = sort_order or "asc"
-        sort_direction = "-" if sort_order == "desc" else ""
-
-        sort_fields = [f"{sort_direction}{sort_field}"]
-
-        if sort_field == "report_status":
-            sort_fields = [f"{sort_direction}report_status_sort_key"]
+        sort_fields = cls._get_sort_fields(sort_field, sort_order)
 
         return filters.filter(queryset).order_by(*sort_fields)
+
+    @classmethod
+    def _get_sort_fields(cls, sort_field="id", sort_order="asc"):
+        """
+        Helper method to determine the sort fields based on the provided sort field and order.
+        """
+        sort_direction = "-" if sort_order == "desc" else ""
+        if sort_field == "report_status":
+            return [f"{sort_direction}report_status_sort_key"]
+        return [f"{sort_direction}{sort_field}"]
