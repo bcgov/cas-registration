@@ -210,7 +210,7 @@ class ComplianceInvoiceService:
             billing_items.extend(adjustments_billing_items)
             total_adjustments += adjustments_total
 
-        amount_due = (total_fee - total_payments - total_adjustments).quantize(Decimal("0.01"))
+        amount_due = (total_fee - total_payments + total_adjustments).quantize(Decimal("0.01"))
         return amount_due, billing_items
 
     @staticmethod
