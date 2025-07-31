@@ -23,7 +23,7 @@ const mockPaymentsData: PaymentData = {
     },
     {
       id: "2",
-      received_date: "2024-03-16",
+      received_date: "2024-03-30",
       amount: 4000,
       method: "EFT/Wire - OBPS",
       transaction_type: "Payment",
@@ -56,22 +56,20 @@ describe("MonetaryPaymentsGrid", () => {
       expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
     });
 
-    // Filters
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(5);
-
-    // Data rows (1 header + 1 filter + 2 data rows = 4 total)
+    // Data rows (1 header + 2 data rows = 3 total)
     const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(3);
 
-    const [, , firstRow, secondRow] = rows;
+    const [, firstRow, secondRow] = rows;
 
-    within(firstRow).getByText("2024-03-15");
+    within(firstRow).getByText(/Mar 15, 2024/);
+
     within(firstRow).getByText("$8,000.00");
     within(firstRow).getByText("EFT/Wire - OBPS");
     within(firstRow).getByText("Payment");
     within(firstRow).getByText("R123456");
 
-    within(secondRow).getByText("2024-03-16");
+    within(secondRow).getByText(/Mar 30, 2024/);
     within(secondRow).getByText("$4,000.00");
     within(secondRow).getByText("EFT/Wire - OBPS");
     within(secondRow).getByText("Payment");
