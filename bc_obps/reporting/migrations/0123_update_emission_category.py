@@ -72,7 +72,7 @@ def reverse_update_emission_category_mapping_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('reporting', '0121_V3_12_0'),
+        ('reporting', '0122_V3_13_0'),
     ]
 
     operations = [
