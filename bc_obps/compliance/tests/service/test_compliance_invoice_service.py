@@ -101,14 +101,14 @@ class TestComplianceInvoiceService:
             (
                 Decimal("300.00"),
                 [],
-                [{"amount": Decimal("50.00"), "date": datetime(2025, 6, 12).date(), "description": "Rebate"}],
+                [{"amount": Decimal("-50.00"), "date": datetime(2025, 6, 12).date(), "description": "Rebate"}],
                 Decimal("250.00"),
                 2,
             ),
             (
                 Decimal("300.00"),
                 [{"amount": Decimal("100.00"), "date": datetime(2025, 6, 10).date(), "description": "Partial Payment"}],
-                [{"amount": Decimal("25.00"), "date": datetime(2025, 6, 12).date(), "description": "Rebate"}],
+                [{"amount": Decimal("-25.00"), "date": datetime(2025, 6, 12).date(), "description": "Rebate"}],
                 Decimal("175.00"),
                 3,
             ),
