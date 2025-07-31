@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FormBase } from "@bciers/components/form";
-import ComplianceStepButtons from "../../../ComplianceStepButtons";
+import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
 import {
   createDownloadPaymentInstructionsSchema,
   downloadPaymentInstructionsUiSchema,
@@ -10,16 +10,16 @@ import {
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
-  readonly complianceReportVersionId: number;
-  readonly invoiceID: string;
+  complianceReportVersionId: number;
+  invoiceID: string;
 }
 
 export default function PaymentInstructionsDownloadComponent({
   complianceReportVersionId,
   invoiceID,
-}: Props) {
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation/review-compliance-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation/pay-obligation-track-payments`;
+}: Readonly<Props>) {
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {
