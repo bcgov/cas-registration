@@ -1,12 +1,19 @@
 import PaymentInstructionsDownloadComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/download-payment-instructions/PaymentInstructionsDownloadComponent";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useRouter } from "@bciers/testConfig/mocks";
+
+const mockRouterPush = vi.fn();
+useRouter.mockReturnValue({
+  query: {},
+  push: mockRouterPush,
+});
 
 // Mocks
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
 
-const setupComponent = (id = "123") =>
+const setupComponent = (id = 123) =>
   render(
     <PaymentInstructionsDownloadComponent
       complianceReportVersionId={id}
@@ -19,7 +26,7 @@ const downloadPDFButton = () =>
 
 describe("PaymentInstructionsDownloadComponent", () => {
   beforeEach(() => {
-    vi.restoreAllMocks();
+    vi.clearAllMocks();
     mockWindowOpen.mockClear();
 
     if (!("createObjectURL" in URL)) {
@@ -57,6 +64,36 @@ describe("PaymentInstructionsDownloadComponent", () => {
       screen.getByText("Provide correct information for timely processing"),
     ).toBeVisible();
     expect(downloadPDFButton()).toBeEnabled();
+  });
+
+  it("validates button text, and navigation", async () => {
+    setupComponent();
+
+    const backButton = screen.getByRole("button", { name: /back/i });
+    const continueButton = screen.getByRole("button", { name: /continue/i });
+
+    expect(downloadPDFButton()).toBeVisible();
+    expect(backButton).toBeVisible();
+    expect(continueButton).toBeVisible();
+
+    // Check that buttons are enabled initially
+    expect(downloadPDFButton()).toBeEnabled();
+    expect(backButton).toBeEnabled();
+    expect(continueButton).toBeEnabled();
+
+    // Click back button and verify navigation
+    fireEvent.click(backButton);
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/compliance-summaries/123/manage-obligation-review-summary",
+    );
+
+    // Click continue button and verify navigation
+    fireEvent.click(continueButton);
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(
+        "/compliance-summaries/123/pay-obligation-track-payments",
+      );
+    });
   });
 
   it("handles pdf download correctly", async () => {
@@ -111,7 +148,7 @@ describe("PaymentInstructionsDownloadComponent", () => {
       }),
     );
 
-    setupComponent("999");
+    setupComponent(999);
 
     await user.click(downloadPDFButton());
 
@@ -132,5 +169,24 @@ describe("PaymentInstructionsDownloadComponent", () => {
     );
     expect(hasErrorText).toBe(true);
     expect(downloadPDFButton()).toBeEnabled();
+  });
+
+  it("validates form data is properly displayed", () => {
+    setupComponent();
+
+    // Check all hardcoded form data is displayed
+    const expectedData = [
+      "Canadian Imperial Bank of Commerce",
+      "00090",
+      "010",
+      "CIBCCATT",
+      "09-70301",
+      "Province of British Columbia-OBPS-BCIERS",
+      "1175 DOUGLAS STREET, VICTORIA, BC V8W2E1",
+    ];
+
+    expectedData.forEach((text) => {
+      expect(screen.getByText(text)).toBeVisible();
+    });
   });
 });
