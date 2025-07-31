@@ -36,4 +36,4 @@ class TestComplianceObligationPaymentsEndpoint(CommonTestSetup):
         assert response_data["row_count"] == 1
         assert isinstance(response_data["rows"], list)
         assert response_data["rows"][0]["amount"] == "200"  # Decimal gets serialized as string
-        assert response_data["rows"][0]["received_date"] == "2024-05-01T00:00:00"
+        assert response_data["rows"][0]["received_date"] == "2024-05-01"
