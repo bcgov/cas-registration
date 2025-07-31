@@ -506,7 +506,7 @@ ENDPOINTS = {
         },
         {"method": "get", "endpoint_name": "build_form_schema"},
         {"method": "get", "endpoint_name": "get_dashboard_operations_list"},
-        {"method": "get", "endpoint_name": "get_past_reports_operations_list"},
+        {"method": "get", "endpoint_name": "get_dashboard_past_reports_list"},
         {
             "method": "get",
             "endpoint_name": "get_facility_report_form_data",
