@@ -34,13 +34,6 @@ def cleanup_orphaned_raw_activity_data(apps, schema_editor):
         print("No orphaned ReportRawActivityData records found")
 
 
-def reverse_cleanup_orphaned_raw_activity_data(apps, schema_editor):
-    """
-    This migration is irreversible as we cannot restore deleted orphaned data.
-    """
-    pass
-
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -49,7 +42,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunPython(
-            cleanup_orphaned_raw_activity_data,
-            reverse_cleanup_orphaned_raw_activity_data,
+            code=cleanup_orphaned_raw_activity_data,
+            reverse_code=migrations.RunPython.noop,
+            elidable=True,
         ),
     ]
