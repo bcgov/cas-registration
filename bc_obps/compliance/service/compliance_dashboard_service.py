@@ -101,8 +101,13 @@ class ComplianceDashboardService:
 
             summary = compliance_report_version.report_compliance_summary
             if summary and summary.excess_emissions is not None:
+                if compliance_report_version.is_supplementary:
+                    summary.excess_emissions = max(
+                        compliance_report_version.excess_emissions_delta_from_previous or 0, 0
+                    )
                 compliance_report_version.equivalent_value = summary.excess_emissions * charge_rate  # type: ignore[attr-defined]
 
+                compliance_report_version.save()
             obligation = getattr(compliance_report_version, "obligation", None)
             if (
                 obligation
