@@ -5,6 +5,7 @@ from ninja import Query
 from registration.models import Activity, Facility
 from reporting.models import ReportActivity, ReportProductEmissionAllocation, ReportProduct
 from reporting.models.facility_report import FacilityReport
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.schema.facility_report import FacilityReportListInSchema, FacilityReportFilterSchema
 from django.db.models import QuerySet
 from django.db.models import F
@@ -59,6 +60,10 @@ class FacilityReportService:
             # If activities are removed from a facility report, then the allocation of emissions to all products must be deleted & re-allocated by the user
             ReportProductEmissionAllocation.objects.filter(
                 report_emission_allocation__facility_report_id=facility_report.id
+            ).delete()
+            # If activities are removed from a facility_report, then the corresponding raw activity data must be delete-cascaded
+            ReportRawActivityData.objects.filter(facility_report_id=facility_report.id).exclude(
+                activity_id__in=activities
             ).delete()
 
     @classmethod

@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.core.exceptions import ObjectDoesNotExist
 from reporting.models.report_emission_allocation import ReportEmissionAllocation
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.utils.bakers import activity_baker
 from service.facility_report_service import FacilityReportService, SaveFacilityReportData
 from model_bakery import baker
@@ -173,3 +174,47 @@ class TestFacilityReportService(TestCase):
             "ReportSourceType",
             "ReportUnit",
         }
+
+    @staticmethod
+    def test_set_activities_for_facility_report_deletes_raw_activity_data():
+        """Test that removing activities from a facility report also deletes related ReportRawActivityData."""
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        activity_1 = activity_baker()
+        activity_2 = activity_baker()
+
+        # Add activities to the facility report
+        facility_report.activities.set([activity_1, activity_2])
+
+        # Create ReportActivity records (needed for the deletion logic to trigger)
+        baker.make_recipe(
+            'reporting.tests.utils.report_activity', activity_id=activity_1.id, facility_report_id=facility_report.id
+        )
+        baker.make_recipe(
+            'reporting.tests.utils.report_activity', activity_id=activity_2.id, facility_report_id=facility_report.id
+        )
+
+        # Create raw activity data for both activities
+        baker.make_recipe(
+            'reporting.tests.utils.report_raw_activity_data',
+            facility_report=facility_report,
+            activity=activity_1,
+            json_data={"test": "data1"},
+        )
+        baker.make_recipe(
+            'reporting.tests.utils.report_raw_activity_data',
+            facility_report=facility_report,
+            activity=activity_2,
+            json_data={"test": "data2"},
+        )
+
+        # Verify both raw data records exist
+        assert ReportRawActivityData.objects.filter(facility_report=facility_report).count() == 2
+
+        # Remove activity_2 from the facility report
+        FacilityReportService.set_activities_for_facility_report(facility_report, [activity_1.id])
+
+        # Verify that raw data for activity_2 is deleted but activity_1 remains
+        remaining_raw_data = ReportRawActivityData.objects.filter(facility_report=facility_report)
+        assert remaining_raw_data.count() == 1
+        assert remaining_raw_data.first().activity == activity_1
+        assert not ReportRawActivityData.objects.filter(facility_report=facility_report, activity=activity_2).exists()
