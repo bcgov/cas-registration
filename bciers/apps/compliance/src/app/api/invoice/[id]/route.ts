@@ -19,6 +19,7 @@ export async function GET(
     if (!apiUrl) {
       throw new Error("API_URL environment variable is not set");
     }
+    // brianna need to hit the penalty url here
     const url = `${apiUrl}compliance/compliance-report-versions/${id}/invoice/pdf`;
 
     // Obtain user token
