@@ -469,7 +469,9 @@ class TestDecreasedObligationHandler:
         # Assert
         assert result is False
 
-    @patch('compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment')
+    @patch(
+        'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
+    )
     @patch('compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year')
     def test_handle_creates_compliance_report_version_and_adjustment(self, mock_get_rate, mock_create_adjustment):
         # Arrange
@@ -485,6 +487,13 @@ class TestDecreasedObligationHandler:
             credited_emissions=0,
         )
         version_count = 2
+
+        # Create the previous compliance report version that the adjustment will target
+        previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
+        )
 
         # Mock the charge rate
         mock_charge_rate = Decimal('50.00')
@@ -510,14 +519,14 @@ class TestDecreasedObligationHandler:
         # Verify ComplianceChargeRateService.get_rate_for_year was called
         mock_get_rate.assert_called_once_with(new_summary.report_version.report.reporting_year)
 
-        # Verify ComplianceAdjustmentService.create_adjustment was called with correct parameters
+        # Verify ComplianceAdjustmentService.create_adjustment_for_target_version was called with correct parameters
         expected_adjustment_amount = (Decimal('-300') * mock_charge_rate).quantize(
             Decimal('0.01')
         )  # -300 * 50.00 = -15000.00
         mock_create_adjustment.assert_called_once_with(
-            compliance_report_version_id=result.id,
+            target_compliance_report_version_id=previous_compliance_report_version.id,  # The previous version to adjust
             adjustment_total=expected_adjustment_amount,
-            supplementary_compliance_report_version_id=result.id,
+            supplementary_compliance_report_version_id=result.id,  # The new supplementary version that triggered this
         )
 
     def test_handle_calculates_correct_excess_emission_delta(self):
@@ -535,11 +544,18 @@ class TestDecreasedObligationHandler:
         )
         version_count = 3
 
+        # Create the previous compliance report version that the adjustment will target
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
+        )
+
         with patch(
             'compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year'
         ) as mock_get_rate:
             with patch(
-                'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment'
+                'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
             ):
                 # Mock the charge rate
                 mock_get_rate.return_value = Decimal('75.00')
@@ -571,11 +587,18 @@ class TestDecreasedObligationHandler:
         )
         version_count = 2
 
+        # Create the previous compliance report version that the adjustment will target
+        previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
+        )
+
         with patch(
             'compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year'
         ) as mock_get_rate:
             with patch(
-                'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment'
+                'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
             ) as mock_create_adjustment:
                 # Mock the charge rate
                 mock_get_rate.return_value = Decimal('100.00')
@@ -592,7 +615,7 @@ class TestDecreasedObligationHandler:
                 # Expected adjustment amount: -400 * 100.00 = -40000.00
                 expected_adjustment_amount = Decimal('-40000.00')
                 mock_create_adjustment.assert_called_once_with(
-                    compliance_report_version_id=result.id,
+                    target_compliance_report_version_id=previous_compliance_report_version.id,
                     adjustment_total=expected_adjustment_amount,
                     supplementary_compliance_report_version_id=result.id,
                 )

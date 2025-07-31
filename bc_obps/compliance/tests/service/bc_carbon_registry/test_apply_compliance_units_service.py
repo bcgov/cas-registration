@@ -22,9 +22,7 @@ COMPLIANCE_CHARGE_RATE_SERVICE_PATH = (
 COMPLIANCE_OBLIGATION_SERVICE_PATH = (
     "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceObligationService"
 )
-COMPLIANCE_CREATE_ADJUSTMENT_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment"
-)
+COMPLIANCE_CREATE_ADJUSTMENT_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment_for_current_version"
 
 
 @pytest.fixture

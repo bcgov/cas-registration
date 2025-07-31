@@ -58,7 +58,7 @@ class TestComplianceAdjustmentService:
         mock_adjust_fees.return_value = mock_response
 
         # API call
-        ComplianceAdjustmentService.create_adjustment(
+        ComplianceAdjustmentService.create_adjustment_for_current_version(
             compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
         )
 
@@ -109,8 +109,8 @@ class TestComplianceAdjustmentService:
         mock_adjust_fees.side_effect = Exception("API connection error")
 
         with pytest.raises(ValueError) as excinfo:
-            ComplianceAdjustmentService.create_adjustment(
-                compliance_report_version_id=compliance_report_version.id, adjustment_total=160
+            ComplianceAdjustmentService.create_adjustment_for_current_version(
+                compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
             )
 
         assert "Failed to adjust fees" in str(excinfo.value)
@@ -130,8 +130,8 @@ class TestComplianceAdjustmentService:
         )
 
         with pytest.raises(ValueError) as excinfo:
-            ComplianceAdjustmentService.create_adjustment(
-                compliance_report_version_id=compliance_report_version.id, adjustment_total=160
+            ComplianceAdjustmentService.create_adjustment_for_current_version(
+                compliance_report_version_id=compliance_report_version.id, adjustment_total=Decimal('160')
             )
 
         assert "No elicensing invoice found" in str(excinfo.value)
