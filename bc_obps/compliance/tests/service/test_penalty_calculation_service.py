@@ -39,13 +39,13 @@ class TestPenaltyCalculationService:
             "compliance.tests.utils.elicensing_payment",
             elicensing_line_item=self.line_item,
             amount=Decimal("300000.00"),
-            received_date=datetime(2025, 11, 25),
+            received_date=date(2025, 11, 25),
         )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_payment",
             elicensing_line_item=self.line_item,
             amount=Decimal("200000.00"),
-            received_date=datetime(2025, 12, 1),
+            received_date=date(2025, 12, 1),
         )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_adjustment",

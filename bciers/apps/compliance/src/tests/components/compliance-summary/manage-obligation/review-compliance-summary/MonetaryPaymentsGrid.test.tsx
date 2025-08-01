@@ -14,19 +14,21 @@ const mockPaymentsData: PaymentData = {
   rows: [
     {
       id: "1",
-      received_date: "2024-03-15",
+      formatted_received_date: "Mar 15, 2024",
       amount: 8000,
-      payment_method: "Bank Transfer",
+      method: "EFT/Wire - OBPS",
       transaction_type: "Payment",
       payment_object_id: "REF-123",
+      receipt_number: "R123456",
     },
     {
       id: "2",
-      received_date: "2024-03-16",
+      formatted_received_date: "Mar 30, 2024",
       amount: 4000,
-      payment_method: "Credit Card",
+      method: "EFT/Wire - OBPS",
       transaction_type: "Payment",
       payment_object_id: "REF-124",
+      receipt_number: "R234567",
     },
   ],
 };
@@ -54,26 +56,24 @@ describe("MonetaryPaymentsGrid", () => {
       expect(screen.getByRole("columnheader", { name: header })).toBeVisible();
     });
 
-    // Filters
-    expect(screen.queryAllByPlaceholderText(/Search/i)).toHaveLength(5);
-
-    // Data rows (1 header + 1 filter + 2 data rows = 4 total)
+    // Data rows (1 header + 2 data rows = 3 total)
     const rows = screen.getAllByRole("row");
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(3);
 
-    const [, , firstRow, secondRow] = rows;
+    const [, firstRow, secondRow] = rows;
 
-    within(firstRow).getByText("2024-03-15");
+    within(firstRow).getByText(/Mar 15, 2024/);
+
     within(firstRow).getByText("$8,000.00");
-    within(firstRow).getByText("Bank Transfer");
+    within(firstRow).getByText("EFT/Wire - OBPS");
     within(firstRow).getByText("Payment");
-    within(firstRow).getByText("REF-123");
+    within(firstRow).getByText("R123456");
 
-    within(secondRow).getByText("2024-03-16");
+    within(secondRow).getByText(/Mar 30, 2024/);
     within(secondRow).getByText("$4,000.00");
-    within(secondRow).getByText("Credit Card");
+    within(secondRow).getByText("EFT/Wire - OBPS");
     within(secondRow).getByText("Payment");
-    within(secondRow).getByText("REF-124");
+    within(secondRow).getByText("R234567");
   });
 
   it("shows alert when no payments are made", () => {

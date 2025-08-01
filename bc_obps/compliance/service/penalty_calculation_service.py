@@ -84,9 +84,9 @@ class PenaltyCalculationService:
         # Get line items for this invoice and sum payments received on or before date
         line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
 
-        return ElicensingPayment.objects.filter(
-            elicensing_line_item__in=line_items, received_date__date__lt=date
-        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
+        return ElicensingPayment.objects.filter(elicensing_line_item__in=line_items, received_date__lt=date).aggregate(
+            total=Sum('amount')
+        )['total'] or Decimal('0.00')
 
     @classmethod
     def sum_adjustments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
@@ -104,7 +104,7 @@ class PenaltyCalculationService:
         line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
 
         return ElicensingAdjustment.objects.filter(
-            elicensing_line_item__in=line_items, adjustment_date__date__lt=date
+            elicensing_line_item__in=line_items, adjustment_date__lt=date
         ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     @classmethod

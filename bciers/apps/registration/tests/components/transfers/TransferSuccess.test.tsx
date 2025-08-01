@@ -63,7 +63,7 @@ describe("The TransferSuccess component", () => {
   });
 
   it("renders pending transfer message when effective date is in the future", () => {
-    const futureDate = "2099-10-10:09:00:00Z";
+    const futureDate = "2099-10-10T09:00:00Z";
     const updatedProps = { ...defaultProps, effectiveDate: futureDate };
 
     render(<TransferSuccess {...updatedProps} />);
