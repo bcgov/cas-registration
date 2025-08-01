@@ -19,6 +19,7 @@ class ComplianceObligation(TimeStampedModel):
         NONE = "NONE", "None"
         ACCRUING = "ACCRUING", "Accruing"
         PAID = "PAID", "Paid"
+        NOT_PAID = "NOT PAID", "Not Paid"
 
     compliance_report_version = models.OneToOneField(
         ComplianceReportVersion,
