@@ -10,7 +10,7 @@ const generateInvoice = async (
   invoiceType: InvoiceType,
 ) => {
   const res = await fetch(
-    `/compliance/api/invoice/${complianceReportVersionId}`,
+    `/compliance/api/invoice/${complianceReportVersionId}/${invoiceType}`,
     {
       method: "GET",
       cache: "no-store",
