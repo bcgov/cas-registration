@@ -137,7 +137,6 @@ class TestBCCarbonRegistryAccountService:
             type_of_account_holder="Corporation",
             compliance_year=2024,
             boro_id="BORO123",
-            compliance_report=compliance_report_instance,
             compliance_report_version=compliance_report_version,
         )
 
