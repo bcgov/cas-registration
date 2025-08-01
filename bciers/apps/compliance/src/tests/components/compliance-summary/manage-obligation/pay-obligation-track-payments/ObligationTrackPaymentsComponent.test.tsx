@@ -93,7 +93,7 @@ describe("ObligationTrackPaymentsComponent", () => {
 
     expect(screen.getByTestId("back-button")).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/manage-obligation-review-summary",
+      "/compliance-summaries/123/download-payment-instructions",
     );
     expect(screen.getByTestId("continue-button")).toHaveAttribute(
       "data-url",
@@ -118,32 +118,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     expect(backButton).toBeVisible();
     expect(backButton).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/manage-obligation-review-summary",
-    );
-
-    const continueButton = screen.getByTestId("continue-button");
-    expect(continueButton).toBeVisible();
-    expect(continueButton).not.toHaveAttribute("data-url");
-  });
-
-  it("does not set continueUrl when outstanding_balance is not 0", () => {
-    const dataWithBalance = {
-      ...mockData,
-      outstanding_balance: 100,
-    };
-
-    render(
-      <ObligationTrackPaymentsComponent
-        data={dataWithBalance}
-        complianceReportVersionId={123}
-      />,
-    );
-
-    const backButton = screen.getByTestId("back-button");
-    expect(backButton).toBeVisible();
-    expect(backButton).toHaveAttribute(
-      "data-url",
-      "/compliance-summaries/123/manage-obligation-review-summary",
+      "/compliance-summaries/123/download-payment-instructions",
     );
 
     const continueButton = screen.getByTestId("continue-button");

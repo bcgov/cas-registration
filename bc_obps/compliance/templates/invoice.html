@@ -55,13 +55,6 @@
       h6 {
         margin: 0;
       }
-
-      .invoice-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 50px;
-      }
       .invoice-header p {
         margin: 0;
       }
@@ -171,10 +164,25 @@
         margin: 0;
         font-weight: bold;
       }
+      /* Watermark styles */
+      .watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+        font-size: 150px;
+        font-weight: bold;
+        color: #313132;
+        opacity: 0.1;
+        text-transform: uppercase;
+      }
     </style>
   </head>
 
   <body>
+    {% if invoice_is_void %}
+    <div class="watermark">VOID</div>
+    {% endif %}
     <div class="container">
       <div class="header-section">
         <img
