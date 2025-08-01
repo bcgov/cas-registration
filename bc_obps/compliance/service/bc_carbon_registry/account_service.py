@@ -68,7 +68,6 @@ class BCCarbonRegistryAccountService:
         type_of_account_holder: str,
         compliance_year: int,
         boro_id: str,
-        compliance_report: ComplianceReport,
         compliance_report_version: ComplianceReportVersion,
     ) -> BCCRComplianceAccountResponseDetails:
         """Create a new compliance subaccount in BCCR.
@@ -143,7 +142,6 @@ class BCCarbonRegistryAccountService:
             type_of_account_holder=holding_account_details.type_of_account_holder,
             compliance_year=compliance_year,
             boro_id=boro_id,
-            compliance_report=compliance_report,
             compliance_report_version=compliance_report_version,
         )
 
