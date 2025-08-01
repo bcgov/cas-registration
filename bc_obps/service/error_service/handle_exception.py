@@ -12,7 +12,7 @@ from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryErr
 from registration.utils import generate_useful_error
 from registration.constants import UNAUTHORIZED_MESSAGE
 from common.exceptions import UserError
-from compliance.service.exceptions import ComplianceInvoiceError
+from compliance.service.exceptions import ComplianceInvoiceError, PenaltyInvoiceError
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,11 @@ class ExceptionHandler:
             "An unexpected error occurred while generating your compliance invoice. Please try again, or contact support if the problem persists.",
             400,
             "compliance_invoice_error",
+        ),
+        (PenaltyInvoiceError,): ExceptionResponse(
+            "An unexpected error occurred while generating your penalty invoice. Please try again, or contact support if the problem persists.",
+            400,
+            "penalty_invoice_error",
         ),
         (UserError,): ExceptionResponse(lambda exc: str(exc), 400),
         (ObjectDoesNotExist,): ExceptionResponse("Not Found", 404),
