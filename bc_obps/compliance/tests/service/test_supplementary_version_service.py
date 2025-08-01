@@ -1,6 +1,10 @@
 from decimal import Decimal
 from reporting.models import ReportVersion
-from compliance.service.supplementary_version_service import SupplementaryVersionService, IncreasedObligationHandler
+from compliance.service.supplementary_version_service import (
+    NoChangeHandler,
+    SupplementaryVersionService,
+    IncreasedObligationHandler,
+)
 import pytest
 from unittest.mock import patch
 from compliance.models import ComplianceReportVersion, ComplianceObligation, ComplianceChargeRate
@@ -12,11 +16,7 @@ pytestmark = pytest.mark.django_db(transaction=True)  # This is used to mark a t
 
 
 class TestSupplementaryVersionService:
-    @patch(
-        'compliance.service.compliance_report_version_service.ComplianceReportVersionService._process_obligation_integration'
-    )
-    def test_handle_increased_obligation_success(self, mock_integration):
-        # Arrange
+    def setup_method(self):
 
         operator = baker.make_recipe('registration.tests.utils.operator')
 
@@ -33,38 +33,45 @@ class TestSupplementaryVersionService:
         report_version_1 = baker.make_recipe(
             'reporting.tests.utils.report_version', report=report, status=ReportVersion.ReportVersionStatus.Submitted
         )
-        report_version_2 = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        self.report_version_2 = baker.make_recipe('reporting.tests.utils.report_version', report=report)
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            report_compliance_summary_1 = baker.make_recipe(
+            self.report_compliance_summary_1 = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
                 excess_emissions=Decimal('500'),
                 credited_emissions=0,
                 report_version=report_version_1,
             )
-        report_compliance_summary_2 = baker.make_recipe(
+        self.report_compliance_summary_2 = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             excess_emissions=Decimal('800'),
             credited_emissions=0,
-            report_version=report_version_2,
+            report_version=self.report_version_2,
         )
-        compliance_report = baker.make_recipe(
+        self.compliance_report = baker.make_recipe(
             'compliance.tests.utils.compliance_report', report=report, compliance_period_id=1
         )
         baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,
-            report_compliance_summary=report_compliance_summary_1,
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.report_compliance_summary_1,
         )
 
+    @patch(
+        'compliance.service.compliance_report_version_service.ComplianceReportVersionService._process_obligation_integration'
+    )
+    def test_handle_increased_obligation_success(self, mock_integration):
+
         # Act
-        result = SupplementaryVersionService().handle_supplementary_version(compliance_report, report_version_2, 2)
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
 
         # Assert
         mock_integration.assert_called_once()
 
         assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        assert result.report_compliance_summary_id == report_compliance_summary_2.id
-        assert result.compliance_report_id == compliance_report.id
+        assert result.report_compliance_summary_id == self.report_compliance_summary_2.id
+        assert result.compliance_report_id == self.compliance_report.id
         assert result.excess_emissions_delta_from_previous == Decimal('300')
         assert result.is_supplementary == True  # noqa: E712
         assert (
@@ -103,3 +110,85 @@ class TestSupplementaryVersionService:
             report_compliance_summary_1, report_compliance_summary_2
         )
         assert decrease_result == True  # noqa: E712
+
+    def test_handle_no_change_success(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.report_compliance_summary_2.excess_emissions = Decimal(
+                '500'
+            )  # to match the first version's compliance summary
+        self.report_compliance_summary_2.save()
+
+        # Act
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
+
+        # Assert
+
+        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert result.report_compliance_summary_id == self.report_compliance_summary_2.id
+        assert result.compliance_report_id == self.compliance_report.id
+        assert result.excess_emissions_delta_from_previous == Decimal('0')
+        assert result.is_supplementary == True  # noqa: E712
+
+    def test_no_change_obligation_handler(self):
+        # NoChange Obligation Handler cannot handle a change in excess emissions
+        changed_excess_emissions = NoChangeHandler().can_handle(
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('700'),
+                credited_emissions=0,
+            ),
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+            ),
+        )
+        assert changed_excess_emissions == False  # noqa: E712
+
+        # NoChange Obligation Handler cannot handle a change in credited emissions
+        changed_credited_emissions = NoChangeHandler().can_handle(
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('100'),
+            ),
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('150'),
+            ),
+        )
+        assert changed_credited_emissions == False  # noqa: E712
+
+        # NoChanges Obligation Handler can handle no changes when there are credited emissions
+        unchanged_credited_emissions = NoChangeHandler().can_handle(
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('100'),
+            ),
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('100'),
+            ),
+        )
+        assert unchanged_credited_emissions == True  # noqa: E712
+
+        # NoChange Obligation Handler can handle no changes when there are excess emissions
+        unchanged_excess_emissions = NoChangeHandler().can_handle(
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('30'),
+                credited_emissions=0,
+            ),
+            baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('30'),
+                credited_emissions=0,
+            ),
+        )
+        assert unchanged_excess_emissions == True  # noqa: E712
