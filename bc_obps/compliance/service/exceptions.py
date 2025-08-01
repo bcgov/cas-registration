@@ -13,3 +13,13 @@ class ComplianceInvoiceError(Exception):
     def __str__(self) -> str:
         # When printed or logged, show "<error_key>: <message>"
         return f"{self.error_key}: {self.message}"
+
+
+class PenaltyInvoiceError(ComplianceInvoiceError):
+    """
+    Raise this whenever any required “piece” of the invoice context is missing
+    or cannot be computed.  The `error_key` will be used as the dict key
+    in the final {"errors": { error_key: message }} response.
+    """
+
+    pass
