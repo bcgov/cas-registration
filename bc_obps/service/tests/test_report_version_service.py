@@ -95,6 +95,7 @@ class TestReportVersionService(TestCase):
             'ComplianceEarnedCredit',
             'CompliancePenalty',
             'CompliancePenaltyAccrual',
+            'ElicensingAdjustment',
         }
 
     def test_is_initial_report_version_returns_true_for_first_version(self):

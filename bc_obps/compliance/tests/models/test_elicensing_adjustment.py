@@ -19,4 +19,5 @@ class ElicensingAdjustmentTest(BaseTestCase):
             ("reason", "reason", None, None),
             ("type", "type", None, None),
             ("comment", "comment", None, None),
+            ("supplementary_compliance_report_version", "supplementary compliance report version", None, None),
         ]
