@@ -183,6 +183,24 @@ class ComplianceReportVersionService:
         return outstanding_balance
 
     @staticmethod
+    def calculate_display_value_excess_emissions(compliance_report_version: ComplianceReportVersion) -> Decimal:
+        """
+        Get the display value of excess emissions for a report or supplementary report. Initial reports show
+        compliance_report_version.report_compliance_summary.excess_emissions, and supplementary reports show the delta between the supplementary report and the previous version.
+
+        Args:
+            compliance_report_version (ComplianceReportVersion): The compliance report version record
+
+        Returns:
+            Decimal: The display value of excess emissions
+        """
+
+        if not compliance_report_version.is_supplementary:
+            return compliance_report_version.report_compliance_summary.excess_emissions
+
+        return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))
+
+    @staticmethod
     def get_operation_by_compliance_report_version(compliance_report_version_id: int) -> Operation:
         return ComplianceReportVersion.objects.get(id=compliance_report_version_id).compliance_report.report.operation
 
