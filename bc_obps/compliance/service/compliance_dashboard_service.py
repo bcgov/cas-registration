@@ -57,6 +57,9 @@ class ComplianceDashboardService:
 
         for version in compliance_report_versions:
             version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
+            # Check outstanding balance to determine obligation met status
+            if version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET:
+                ComplianceReportVersionService.update_compliance_report_version_status(version.id)
         return compliance_report_versions
 
     @classmethod
