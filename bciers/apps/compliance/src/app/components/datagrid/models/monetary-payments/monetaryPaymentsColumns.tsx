@@ -1,15 +1,13 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
-import formatTimestamp from "@bciers/utils/src/formatTimestamp";
 
 const monetaryPaymentsColumns = (): GridColDef[] => {
   return [
     {
-      field: "received_date",
+      field: "formatted_received_date",
       headerName: "Payment Received Date",
       width: 200,
       type: "string",
-      valueFormatter: (params) => formatTimestamp(params.value),
     },
     {
       field: "amount",

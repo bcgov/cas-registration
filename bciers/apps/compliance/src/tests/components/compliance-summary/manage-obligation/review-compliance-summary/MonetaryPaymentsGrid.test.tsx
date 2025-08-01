@@ -14,7 +14,7 @@ const mockPaymentsData: PaymentData = {
   rows: [
     {
       id: "1",
-      received_date: "2024-03-15",
+      formatted_received_date: "Mar 15, 2024",
       amount: 8000,
       method: "EFT/Wire - OBPS",
       transaction_type: "Payment",
@@ -23,7 +23,7 @@ const mockPaymentsData: PaymentData = {
     },
     {
       id: "2",
-      received_date: "2024-03-30",
+      formatted_received_date: "Mar 30, 2024",
       amount: 4000,
       method: "EFT/Wire - OBPS",
       transaction_type: "Payment",

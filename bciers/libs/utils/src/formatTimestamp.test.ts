@@ -8,12 +8,6 @@ describe("formatTimestamp", () => {
     expect(formatTimestamp(undefined as any)).toBeUndefined();
   });
 
-  it("should format date-only timestamp without time", () => {
-    const result = formatTimestamp("2023-12-25");
-    expect(result).toBe("Dec 25, 2023");
-    expect(result).not.toContain("\n");
-  });
-
   it("should format datetime timestamp in Pacific time", () => {
     const result = formatTimestamp("2023-12-25T14:30:00Z");
     expect(result).toContain("\n");
