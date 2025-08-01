@@ -105,23 +105,11 @@ class TestReportingDashboardService:
 
         current_year = 2061
         last_year = current_year - 1
-        years = [current_year - i for i in range(5)]
-        reporting_years = [reporting_year_baker(reporting_year=year) for year in years]
+        laster_year = current_year - 2
+        years = [current_year, last_year, laster_year]
+        [reporting_year_baker(reporting_year=year) for year in years]
 
-        operations = operation_baker(operator_id=uo.operator.id, _quantity=5)
-        # Change operation names so alphabetical sorting produces consistent results
-        # operations[0].name = "a"
-        # operations[1].name = "b"
-        # operations[2].name = "c"
-        # operations[3].name = "d"
-
-        operations[0].status = Operation.Statuses.REGISTERED
-        operations[1].status = Operation.Statuses.REGISTERED
-        operations[2].status = Operation.Statuses.REGISTERED
-        operations[3].status = Operation.Statuses.NOT_STARTED
-        operations[4].registration_purpose = Operation.Purposes.POTENTIAL_REPORTING_OPERATION
-        for op in operations:
-            op.save()
+        operations = operation_baker(operator_id=uo.operator.id, _quantity=3)
 
         sort_field: Optional[str] = "operation_name"
         sort_order: Optional[str] = "asc"
@@ -129,43 +117,28 @@ class TestReportingDashboardService:
 
         # Create reports
         ## Create current year reports (the service should not return these)
-        current_year_reports = [ReportService.create_report(operation.id, current_year) for operation in operations]
+        [ReportService.create_report(operation.id, current_year) for operation in operations]
 
         ## Create past reports
-        ### Create reports for the last 2 years
-        o0_r1v1_id = ReportService.create_report(operations[0].id, last_year - 1)
+        ### Report 1 - Operation 0: Laster year Report Version 1
+        o0_r1v1_id = ReportService.create_report(operations[0].id, laster_year)
         o0_r1v1 = ReportVersion.objects.get(pk=o0_r1v1_id)
         r1_report_operation = ReportOperation.objects.get(report_version=o0_r1v1_id)
-        print(f"Report 1 created with ID: {o0_r1v1_id} and operation name {r1_report_operation.operation_name}")
         o0_r1v1.status = "Submitted"
         o0_r1v1.save()
-
-        results = ReportingDashboardService.get_past_reports_for_reporting_dashboard(
-            uo.user.user_guid, current_year, sort_field, sort_order, filters
-        ).values()
-        result_list = list(results)
-        print("Result List before new version:", result_list)
-
+        ### Report 1 - Operation 0: Laster year Report Version 2
         o0_r1 = ReportVersion.objects.get(pk=o0_r1v1_id).report
         latest_o0r1_revision = report_version_baker(report=o0_r1)
         r1_report_operation = ReportOperation.objects.get(report_version=latest_o0r1_revision)
-        print(
-            f"Report 1 updated with ID: {latest_o0r1_revision.id} and operation name {r1_report_operation.operation_name}"
-        )
-        results = ReportingDashboardService.get_past_reports_for_reporting_dashboard(
-            uo.user.user_guid, current_year, sort_field, sort_order, filters
-        ).values()
-        result_list = list(results)
-        print("Result List after new version:", result_list)
 
+        ### Report 2 - Operation 0: Last year Report Version 1
         o0_r2v1_id = ReportService.create_report(operations[0].id, last_year)
         o0_r2v1 = ReportVersion.objects.get(pk=o0_r2v1_id)
-        o0_r2v1.status = "Draft"
-        o0_r2v1.save()
         o0_r2 = ReportVersion.objects.get(pk=o0_r2v1_id).report
         latest_o0r2_revision = o0_r2v1
         r2_report_operation = ReportOperation.objects.get(report_version=latest_o0r2_revision)
 
+        ### Report 3 - Operation 1: Last year Report Version 1
         o1_r3v1_id = ReportService.create_report(operations[1].id, last_year)
         latest_o1r3_version = ReportVersion.objects.get(pk=o1_r3v1_id)
         o1_r3 = latest_o1r3_version.report
@@ -175,10 +148,9 @@ class TestReportingDashboardService:
             uo.user.user_guid, current_year, sort_field, sort_order, filters
         ).values()
         result_list = list(result)
-        print("Result List:", result_list)
         assert len(result_list) == 3
 
-        # Create dictionaries for easy lookup by operation ID
+        # Create dictionaries for easy lookup by report ID
         result_dict = {str(item["id"]): item for item in result_list}
 
         # Test report with multiple versions
@@ -205,12 +177,11 @@ class TestReportingDashboardService:
         assert op1_result["report_version_id"] == latest_o1r3_version.id
         assert op1_result["report_status"] == latest_o1r3_version.status
 
-    ###########################################################
     @patch(
         "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
     )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    def test_sorting_and_filtering(
+    def test_operations_sorting_and_filtering(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
         mock_get_all_current_operations_for_user: MagicMock | AsyncMock,

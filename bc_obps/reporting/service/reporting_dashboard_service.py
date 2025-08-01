@@ -116,16 +116,11 @@ class ReportingDashboardService:
         latest_report_version_subquery = (
             ReportVersion.objects.filter(report_id=OuterRef("id"))
             .order_by("-id")
-            .annotate(full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")))[:1]
+            .annotate(
+                full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")),
+                operation_name=F("report_operation__operation_name"),
+            )[:1]
         )
-        latest_report_version_subquery_for_name = ReportVersion.objects.filter(
-            pk=OuterRef("report_version_id")
-        ).order_by("created_at")
-
-        report_operation_name_subquery = ReportOperation.objects.filter(
-            report_version__report_id=OuterRef("id"),
-            report_version=Subquery(latest_report_version_subquery_for_name.values("id")[:1]),
-        ).values("operation_name")[:1]
 
         queryset = (
             Report.objects.filter(operator_id=operator_id)
@@ -133,11 +128,13 @@ class ReportingDashboardService:
             .annotate(
                 report_id=F("id"),
                 first_report_version_id=first_report_version_subquery.values("id")[:1],
-                report_updated_at=latest_report_version_subquery.values("updated_at")[:1],
-                report_version_id=latest_report_version_subquery.values("id")[:1],
-                report_status=latest_report_version_subquery.values("status")[:1],
-                report_submitted_by=latest_report_version_subquery.values("full_name")[:1],
-                operation_name=Coalesce(Subquery(report_operation_name_subquery), F("operation__name")),
+                report_updated_at=latest_report_version_subquery.values("updated_at"),
+                report_version_id=latest_report_version_subquery.values("id"),
+                report_status=latest_report_version_subquery.values("status"),
+                report_submitted_by=latest_report_version_subquery.values("full_name"),
+                operation_name=Coalesce(
+                    Subquery(latest_report_version_subquery.values("operation_name")), F("operation__name")
+                ),
                 report_status_sort_key=Case(
                     When(
                         Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
@@ -156,7 +153,7 @@ class ReportingDashboardService:
         return filters.filter(queryset).order_by(*sort_fields)
 
     @classmethod
-    def _get_sort_fields(cls, sort_field="id", sort_order="asc"):
+    def _get_sort_fields(cls, sort_field: Optional[str] = "id", sort_order: Optional[str] = "asc") -> list[str]:
         """
         Helper method to determine the sort fields based on the provided sort field and order.
         """
