@@ -1,0 +1,127 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: {{ include "cas-obps-postgres-migration-test.fullname" . }}
+  labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
+spec:
+  users:
+    - name: postgres
+      databases:
+        - obps
+      password:
+        type: AlphaNumeric
+    - name: registration
+      password:
+        type: AlphaNumeric
+      databases:
+        - obps
+      options: "CREATEROLE"
+  dataSource:
+    pgbackrest:
+      stanza: db
+      configuration:
+        - configMap:
+            name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-pgbackrest
+        {{- $secretName := printf "gcp-%s-obps-backups-service-account-key" .Values.sourceNamespace }}
+        {{- $sourceSecret := lookup "v1" "Secret" .Values.sourceNamespace $secretName }}
+
+        {{- if not $sourceSecret }}
+        {{- fail (printf "Required secret %s not found in namespace %s" $secretName .Values.sourceNamespace) }}
+        {{- end }}
+        - secret:
+            name: {{ $secretName }}
+            items:
+              - key: credentials
+                path: gcs-key.json
+      repo:
+        name: repo1
+        gcs:
+          bucket: {{ .Values.sourceNamespace }}-obps-backups
+  metadata:
+    labels: {{ include "cas-obps-postgres-migration-test.labels" . | nindent 6 }}
+  postgresVersion: 16
+  instances:
+    - name: pgha1
+      replicas: 1
+      # this is how you create a PDB - don't make a separate one yourself!
+      minAvailable: 1
+      # these resources are for the "database" container in the "obps-postgres-pgha1" set of pods
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+      sidecars:
+        # this stuff is for the "replication-cert-copy" container in the "obps-postgres-pgha1" set of pods
+        replicaCertCopy:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+      dataVolumeClaimSpec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1000Mi
+        storageClassName: netapp-block-standard
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    postgres-operator.crunchydata.com/cluster: {{ template "cas-obps-postgres-migration-test.fullname" . }}
+                    postgres-operator.crunchydata.com/instance-set: pgha1
+
+  backups:
+    pgbackrest:
+      repos:
+        - name: repo2
+          volume:
+            volumeClaimSpec:
+              accessModes:
+                - "ReadWriteOnce"
+              resources:
+                requests:
+                  storage: 300Mi
+      # this stuff is for the "pgbackrest" container (the only non-init container) in the "obps-postgres-repo-host" pod
+      repoHost:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
+      sidecars:
+        # this stuff is for the "pgbackrest" container in the "obps-postgres-pgha1" set of pods
+        pgbackrest:
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+      # allows the triggering of manual backups
+      manual:
+        repoName: repo2
+        options:
+          - --type=full
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        # these will probably allow your database to start up, but you'll definitely want to tune them up a bit for anything but the most minimal DBs.
+        parameters:
+          shared_buffers: "128MB" # default is 128MB; a good tuned default for shared_buffers is 25% of the memory allocated to the pod
+          wal_buffers: "-1" # automatically set as 1/32 of shared_buffers or 64kB, whichever is larger
+          min_wal_size: "32MB"
+          max_wal_size: "500MB" # default is 1GB

@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ template "cas-obps-backend-migration-test.fullname" . }}-wait-for-backend-job
+  labels: {{- include "cas-obps-backend-migration-test.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels: {{ include "cas-obps-backend-migration-test.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 600
+          restartPolicy: Never
+          serviceAccountName: deployer
+          containers:
+          - name: wait-for-backend
+            image: alpine/k8s:1.29.15
+            resources:
+              requests:
+                cpu: 50m
+                memory: 64Mi
+            env:
+              - name: BACKEND_CHART_SHORTNAME
+                value: {{ template "cas-obps-backend-migration-test.fullname" . }}
+              - name: DESTINATION_NAMESPACE
+                value: {{ .Release.Namespace }}
+            command:
+              - /usr/bin/env
+              - bash
+              - -c
+              - |
+                while true; do
+                    ready=$(kubectl get deployment $BACKEND_CHART_SHORTNAME-backend -n $DESTINATION_NAMESPACE -o json \
+                        | jq -r 'select(.status.readyReplicas == .spec.replicas)')
+                    if [[ -n "$ready" ]]; then
+                        echo "Deployment $BACKEND_CHART_SHORTNAME-backend is ready."
+                        exit 0
+                    fi
+                    echo "Waiting for Deployment to become ready..."
+                    sleep 10
+                done

@@ -1,0 +1,31 @@
+# The chart name limits the length of the release name drastically, so we
+# override it here to be more accommodating for descriptive release names.
+fullnameOverride: be-migration-test
+
+# The database name is too long for the default release name, it's overridden in the test chart
+# to be shorter.
+dbShortName: pg-migration-test
+
+backend:
+  replicaCount: 1
+
+  image:
+    repository: ghcr.io/bcgov/cas-reg-backend
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+
+  environment: test
+
+  service:
+    type: ClusterIP
+    port: 8000
+
+  resources:
+    requests:
+      cpu: 60m
+      memory: 128Mi
+
+  database:
+    releaseName: postgres-migration-test
+    appName: cas-obps-postgres-migration-test

@@ -52,11 +52,13 @@ install: CHART_INSTANCE=cas-bciers
 install: HELM_OPTS=--atomic --wait-for-jobs --timeout 2400s --namespace $(NAMESPACE) \
 										--set defaultImageTag=$(IMAGE_TAG) \
 										--set download-dags.dagConfiguration="$$dagConfig" \
+										--set download-migration-test-dags.dagConfiguration="$$migrationTestDagConfig" \
 										--values $(CHART_DIR)/values-$(ENVIRONMENT).yaml \
 										--set cas-logging-sidecar.host=elasticsearch.$(GGIRCS_NAMESPACE_PREFIX)-tools.svc.cluster.local
 install:
 	@set -euo pipefail; \
 	dagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/cas_bciers_dags.py"}' | base64 -w0); \
+	migrationTestDagConfig=$$(echo '{"org": "bcgov", "repo": "cas-registration", "ref": "$(GIT_SHA1)", "path": "dags/bc_obps_test_migrations.py"}' | base64 -w0); \
 	helm dep up $(CHART_DIR); \
 	if ! helm status --namespace $(NAMESPACE) cas-obps-postgres; then \
 		echo "ERROR: Postgres is not deployed to $(NAMESPACE)."; \

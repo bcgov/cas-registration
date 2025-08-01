@@ -1,0 +1,15 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "cas-obps-backend-migration-test.fullname" . }}-backend-postgres-ingress
+  labels: {{ include "cas-obps-backend-migration-test.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "cas-obps-backend-migration-test.postgresSelectorLabels" . | nindent 6 }}
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "cas-obps-backend-migration-test.selectorLabels" . | nindent 10 }}
+          component: backend
