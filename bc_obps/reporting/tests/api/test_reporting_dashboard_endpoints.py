@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock, AsyncMock
 from django.test import Client
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, user_baker
+from registration.utils import custom_reverse_lazy
 from reporting.models.report import Report
 from reporting.tests.utils.bakers import report_baker, reporting_year_baker
 from registration.tests.utils.bakers import operator_baker
@@ -69,39 +70,35 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         mock_get_current_user: MagicMock | AsyncMock,
         mock_get_past_reports: MagicMock | AsyncMock,
     ):
-        try:
-            endpoint_under_test = "/api/reporting/past-reports"
-            operator = operator_baker()
-            TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
-            operations = operation_baker(operator_id=operator.id, _quantity=3)
-            current_year = reporting_year_baker(reporting_year=1234)
-            last_year = reporting_year_baker(reporting_year=1233)
-            laster_year = reporting_year_baker(reporting_year=1232)
-            years = [last_year, laster_year]
 
-            # [report_baker(operator_id=operator.id, operation_id=operation.id, reporting_year=year, _quantity=3) for operation, year in zip(operations, years)]
-            for operation in operations:
-                for year in years:
-                    report_baker(operator_id=operator.id, operation_id=operation.id, reporting_year=year)
-            reports = Report.objects.filter(
-                operator_id=operator.id, reporting_year__reporting_year__lt=current_year.reporting_year
-            )
+        endpoint_under_test = custom_reverse_lazy("get_dashboard_past_reports_list")
+        operator = operator_baker()
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        operations = operation_baker(operator_id=operator.id, _quantity=3)
+        current_year = reporting_year_baker(reporting_year=1234)
+        last_year = reporting_year_baker(reporting_year=1233)
+        laster_year = reporting_year_baker(reporting_year=1232)
+        years = [last_year, laster_year]
 
-            mock_get_current_year.return_value = current_year
-            mock_get_current_user.return_value = user_baker()
-            mock_get_past_reports.return_value = Report.objects.filter(
-                operator_id=operator.id, reporting_year__reporting_year__lt=current_year.reporting_year
-            ).annotate(
-                report_id=F('id'),
-                operation_name=F('operation__name'),
-                report_version_id=F('report_versions__id'),
-                report_status=F('report_versions__status'),
-            )
-            breakpoint()
-            response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
-        except Exception as e:
-            print(f" error occurred: {e}")
-            raise
+        
+        for operation in operations:
+            for year in years:
+              report_baker(operator_id=operator.id, operation_id=operation.id, reporting_year=year)
+        reports = Report.objects.filter(
+            operator_id=operator.id, reporting_year__reporting_year__lt=current_year.reporting_year
+        )
+
+        mock_get_current_year.return_value = current_year
+        mock_get_current_user.return_value = user_baker()
+        mock_get_past_reports.return_value = Report.objects.filter(
+            operator_id=operator.id
+        ).annotate(
+            report_id=F('id'),
+            operation_name=F('operation__name'),
+            report_version_id=F('report_versions__id'),
+            report_status=F('report_versions__status'),
+        )
+        response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
 
         print(f"Response JSON: {response_json}")
 
