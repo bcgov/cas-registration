@@ -10,15 +10,13 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def mock_api_client():
-    with patch('compliance.service.bc_carbon_registry.bc_carbon_registry_api_client.BCCarbonRegistryAPIClient') as mock:
+    with patch('compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAPIClient') as mock:
         yield mock
 
 
 @pytest.fixture
-def service(mock_api_client):
+def service():
     service_instance = BCCarbonRegistryAccountService()
-    # Replace the client instance with our mock
-    service_instance.client = mock_api_client
     return service_instance
 
 
@@ -63,6 +61,7 @@ class TestBCCarbonRegistryAccountService:
 
     def test_get_account_details_success(self, service, mock_api_client):
         # Arrange
+        service.client = mock_api_client
         mock_api_client.get_account_details.return_value = {
             "entities": [
                 {
@@ -87,6 +86,7 @@ class TestBCCarbonRegistryAccountService:
 
     def test_get_account_details_not_found(self, service, mock_api_client):
         # Arrange
+        service.client = mock_api_client
         mock_api_client.get_account_details.return_value = {"entities": []}
 
         # Act
@@ -105,6 +105,29 @@ class TestBCCarbonRegistryAccountService:
 
     def test_create_compliance_account(self, service, mock_api_client, compliance_report_instance):
         # Arrange
+        service.client = mock_api_client
+        # Create a report version with report operation
+        report_version = baker.make_recipe(
+            "reporting.tests.utils.report_version", report=compliance_report_instance.report
+        )
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            operation_name="Test Operation Name",
+        )
+
+        # Create a report compliance summary
+        report_compliance_summary = baker.make_recipe(
+            "reporting.tests.utils.report_compliance_summary", report_version=report_version
+        )
+
+        # Create a compliance report version
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report_instance,
+            report_compliance_summary=report_compliance_summary,
+        )
+
         mock_api_client.create_sub_account.return_value = {"entity": {"id": "789", "parent_name": "Parent Corp"}}
 
         # Act
@@ -114,7 +137,7 @@ class TestBCCarbonRegistryAccountService:
             type_of_account_holder="Corporation",
             compliance_year=2024,
             boro_id="BORO123",
-            compliance_report=compliance_report_instance,
+            compliance_report_version=compliance_report_version,
         )
 
         # Assert
@@ -128,10 +151,12 @@ class TestBCCarbonRegistryAccountService:
         assert call_args["master_account_id"] == "123"
         assert call_args["compliance_year"] == 2024
         assert call_args["boro_id"] == "BORO123"
+        assert call_args["registered_name"] == "Test Operation Name BORO123"
         assert call_args["type_of_organization"] == "140000000000002"
 
     def test_get_or_create_compliance_account_existing(self, service, mock_api_client):
         # Arrange
+        service.client = mock_api_client
         compliance_report = baker.make_recipe(
             "compliance.tests.utils.compliance_report", bccr_subaccount_id="123456789012345"
         )
@@ -141,9 +166,12 @@ class TestBCCarbonRegistryAccountService:
             type_of_account_holder="Corporation",
             trading_name="Test Corp",
         )
+        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         # Act
         result = service.get_or_create_compliance_account(
-            holding_account_details=holding_account, compliance_report=compliance_report
+            holding_account_details=holding_account,
+            compliance_report=compliance_report,
+            compliance_report_version=compliance_report_version,
         )
         # Assert
         assert isinstance(result, BCCRComplianceAccountResponseDetails)
@@ -153,6 +181,7 @@ class TestBCCarbonRegistryAccountService:
 
     def test_get_or_create_compliance_account_new(self, service, mock_api_client):
         # Arrange
+        service.client = mock_api_client
         operation = baker.make_recipe(
             "registration.tests.utils.operation",
             bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
@@ -162,6 +191,23 @@ class TestBCCarbonRegistryAccountService:
         compliance_report = baker.make_recipe(
             "compliance.tests.utils.compliance_report", report=report, bccr_subaccount_id=None
         )
+
+        # Create the required relationships for compliance_report_version
+        report_version = baker.make_recipe("reporting.tests.utils.report_version", report=report)
+        baker.make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=report_version,
+            operation_name="Test Operation Name",
+        )
+        report_compliance_summary = baker.make_recipe(
+            "reporting.tests.utils.report_compliance_summary", report_version=report_version
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
+
         holding_account = BCCRAccountResponseDetails(
             entity_id="123",
             organization_classification_id="456",
@@ -172,7 +218,9 @@ class TestBCCarbonRegistryAccountService:
         mock_api_client.create_sub_account.return_value = {"entity": {"id": "789", "parent_name": "Parent Corp"}}
         # Act
         result = service.get_or_create_compliance_account(
-            holding_account_details=holding_account, compliance_report=compliance_report
+            holding_account_details=holding_account,
+            compliance_report=compliance_report,
+            compliance_report_version=compliance_report_version,
         )
         # Assert
         assert isinstance(result, BCCRComplianceAccountResponseDetails)

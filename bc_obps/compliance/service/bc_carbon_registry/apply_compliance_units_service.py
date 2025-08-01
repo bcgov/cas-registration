@@ -81,7 +81,9 @@ class ApplyComplianceUnitsService:
         )
         compliance_report = compliance_report_version.compliance_report
         bccr_compliance_account = bccr_account_service.get_or_create_compliance_account(
-            holding_account_details=holding_account_details, compliance_report=compliance_report
+            holding_account_details=holding_account_details,
+            compliance_report=compliance_report,
+            compliance_report_version=compliance_report_version,
         )
         bccr_units = bccr_account_service.client.list_all_units(account_id=account_id)
 

@@ -1,5 +1,6 @@
 from typing import Dict, Optional, Any, TypeVar, cast
 from compliance.models import ComplianceReport
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
 
@@ -67,18 +68,23 @@ class BCCarbonRegistryAccountService:
         type_of_account_holder: str,
         compliance_year: int,
         boro_id: str,
-        compliance_report: ComplianceReport,
+        compliance_report_version: ComplianceReportVersion,
     ) -> BCCRComplianceAccountResponseDetails:
         """Create a new compliance subaccount in BCCR.
 
         Creates a compliance-specific subaccount under the main holding account.
         The subaccount is linked to a specific compliance period and boro_id.
         """
+        # Get the operation name from the report operation through the compliance summary
+        operation_name = (
+            compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
+        )
+
         sub_account_payload = {
             "master_account_id": str(holding_account_id),
             "compliance_year": compliance_year,
             "boro_id": boro_id,
-            "registered_name": f"{compliance_report.report.operation.name} {boro_id}",
+            "registered_name": f"{operation_name} {boro_id}",
             "type_of_organization": self._get_type_of_organization(type_of_account_holder),
             "organization_classification_id": organization_classification_id,
         }
@@ -112,13 +118,17 @@ class BCCarbonRegistryAccountService:
         return self._get_first_entity(compliance_account)
 
     def _create_and_save_compliance_account(
-        self, holding_account_details: BCCRAccountResponseDetails, compliance_report: ComplianceReport
+        self,
+        holding_account_details: BCCRAccountResponseDetails,
+        compliance_report: ComplianceReport,
+        compliance_report_version: ComplianceReportVersion,
     ) -> BCCRComplianceAccountResponseDetails:
         """Create a new compliance account and save its ID to the compliance report.
 
         Args:
             holding_account_details: Details of the holding account
             compliance_report: The compliance report to associate with
+            compliance_report_version: The compliance report version to use for operation name
 
         Returns:
             Details of the newly created compliance account
@@ -132,7 +142,7 @@ class BCCarbonRegistryAccountService:
             type_of_account_holder=holding_account_details.type_of_account_holder,
             compliance_year=compliance_year,
             boro_id=boro_id,
-            compliance_report=compliance_report,
+            compliance_report_version=compliance_report_version,
         )
 
         # Save the new subaccount ID to the compliance report
@@ -143,7 +153,10 @@ class BCCarbonRegistryAccountService:
         return new_compliance_account
 
     def get_or_create_compliance_account(
-        self, holding_account_details: BCCRAccountResponseDetails, compliance_report: ComplianceReport
+        self,
+        holding_account_details: BCCRAccountResponseDetails,
+        compliance_report: ComplianceReport,
+        compliance_report_version: ComplianceReportVersion,
     ) -> BCCRComplianceAccountResponseDetails:
         """Retrieve existing compliance account or create new one if not found.
 
@@ -181,4 +194,6 @@ class BCCarbonRegistryAccountService:
                 entity_id=str(entity_id) if entity_id else None,
             )
 
-        return self._create_and_save_compliance_account(holding_account_details, compliance_report)
+        return self._create_and_save_compliance_account(
+            holding_account_details, compliance_report, compliance_report_version
+        )
