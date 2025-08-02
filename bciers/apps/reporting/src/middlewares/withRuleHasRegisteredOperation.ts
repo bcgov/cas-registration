@@ -12,9 +12,8 @@ import {
   AppRoutes,
   extractReportVersionId,
   fetchResponse,
-  getUserRole,
 } from "./constants";
-
+import { getUserRole } from "@bciers/middlewares";
 /**
  * 📏 Handles routing access for industry users based on:
  * if the userOperator's operator has a registered operation

@@ -13,7 +13,6 @@ useSearchParams.mockReturnValue({
   get: vi.fn(),
 });
 
-// Use camelCase variable names
 const complianceReportVersionId = "123";
 const appliedComplianceUnits = {
   row_count: 2,
@@ -35,9 +34,9 @@ const appliedComplianceUnits = {
       equivalent_value: 4000,
     },
   ],
+  can_apply_compliance_units: true,
 };
 
-// Object keys remain in snake_case to match the expected type
 const mockValue: ComplianceAppliedUnitsSummary = {
   compliance_report_version_id: complianceReportVersionId,
   applied_compliance_units: appliedComplianceUnits,
@@ -127,5 +126,22 @@ describe("ComplianceUnitsGrid", () => {
     );
     expect(bccrLink).toHaveAttribute("target", "_blank");
     expect(bccrLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("does not render the Apply Compliance Units button when can_apply_compliance_units is false", () => {
+    const mockValueWithoutApply: ComplianceAppliedUnitsSummary = {
+      ...mockValue,
+      applied_compliance_units: {
+        ...mockValue.applied_compliance_units,
+        can_apply_compliance_units: false,
+      },
+    };
+
+    render(<ComplianceUnitsGrid value={mockValueWithoutApply} />);
+
+    const applyButton = screen.queryByRole("button", {
+      name: "Apply Compliance Units",
+    });
+    expect(applyButton).not.toBeInTheDocument();
   });
 });

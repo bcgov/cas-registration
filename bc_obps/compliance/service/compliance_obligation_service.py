@@ -244,5 +244,6 @@ class ComplianceObligationService:
             equivalent_value=outstanding_balance_dollars,
             obligation_id=obligation.obligation_id,
             penalty_status=obligation.penalty_status,
+            fee_amount_dollars=obligation.fee_amount_dollars,
             data_is_fresh=refreshed_data.data_is_fresh,
         )

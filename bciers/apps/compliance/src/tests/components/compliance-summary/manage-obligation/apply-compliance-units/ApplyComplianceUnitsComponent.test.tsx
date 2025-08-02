@@ -36,6 +36,8 @@ const MOCK_TRADING_NAME = "Test Company";
 const MOCK_COMPLIANCE_ACCOUNT_ID = "COMP123";
 const MOCK_CHARGE_RATE = 50;
 const MOCK_OUTSTANDING_BALANCE = 16000;
+const MOCK_CAP_LIMIT = 8000;
+const MOCK_CAP_REMAINING = 4000;
 const MOCK_UNITS = [
   {
     id: "1",
@@ -69,6 +71,8 @@ const setupMocks = () => {
     bccr_units: MOCK_UNITS,
     charge_rate: MOCK_CHARGE_RATE,
     outstanding_balance: MOCK_OUTSTANDING_BALANCE,
+    compliance_unit_cap_limit: MOCK_CAP_LIMIT,
+    compliance_unit_cap_remaining: MOCK_CAP_REMAINING,
   });
 };
 
@@ -456,9 +460,10 @@ describe("ApplyComplianceUnitsComponent", () => {
       ).toBeGreaterThan(0);
     });
 
-    // Select units below 50% limit (8000/50 = 160 units max)
+    // Select units below 50% limit (8000/50 = 160 units max, so 50% is 80 units)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
-    fireEvent.change(quantityInputs[0], { target: { value: "100" } });
+    // Change value to something below 80, e.g., 50
+    fireEvent.change(quantityInputs[0], { target: { value: "50" } });
 
     await waitFor(() => {
       const applyButton = screen.getByRole("button", { name: "Apply" });
@@ -496,9 +501,9 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("enables Apply button when units equal exactly 50% compliance limit", async () => {
     await setupValidAccountAndSubmit();
 
-    // Select units that equal exactly 50% limit (8000/50 = 160 units)
+    // Select units that equal exactly 50% limit (4000 units / 50 charge rate = 80 units)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
-    fireEvent.change(quantityInputs[0], { target: { value: "160" } });
+    fireEvent.change(quantityInputs[0], { target: { value: "80" } });
 
     await waitFor(() => {
       const applyButton = screen.getByRole("button", { name: "Apply" });

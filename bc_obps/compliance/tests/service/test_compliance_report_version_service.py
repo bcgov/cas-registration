@@ -205,3 +205,34 @@ class TestComplianceReportVersionService:
 
         # Assert
         assert result == Decimal("2.0")  # 100.00 / 50.00
+
+    def test_calculate_outstanding_balance_tco2e_zero_balance_returns_0_00(self):
+        # Arrange
+        compliance_report_version = baker.make_recipe('compliance.tests.utils.compliance_report_version')
+
+        reporting_year = compliance_report_version.compliance_report.compliance_period.reporting_year
+        charge_rate = Decimal("50.00")
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=reporting_year,
+            rate=charge_rate,
+        )
+
+        obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=compliance_report_version,
+        )
+
+        invoice = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            outstanding_balance=Decimal("0.00"),
+        )
+        obligation.elicensing_invoice = invoice
+        obligation.save()
+
+        # Act
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
+
+        # Assert
+        assert result == Decimal("0.00")  # Not "0E+2"
+        assert str(result) == "0.00"
