@@ -39,9 +39,29 @@ const mockFetchResponse = {
       id: 2,
       operation_name: "Another Test Operation",
       reporting_year: 2024,
-      excess_emissions: 0,
+      excess_emissions: 1000,
       obligation_id: "obligation-123",
       status: ComplianceSummaryStatus.OBLIGATION_NOT_MET,
+    },
+  ],
+  row_count: 2,
+};
+const mockFetchResponseNoUnmetObligations = {
+  rows: [
+    {
+      id: 1,
+      operation_name: "Test Operation",
+      reporting_year: 2024,
+      excess_emissions: 50,
+      status: ComplianceSummaryStatus.OBLIGATION_FULLY_MET,
+    },
+    {
+      id: 2,
+      operation_name: "Another Test Operation",
+      reporting_year: 2024,
+      excess_emissions: 1000,
+      obligation_id: "obligation-124",
+      status: ComplianceSummaryStatus.OBLIGATION_FULLY_MET,
     },
   ],
   row_count: 2,
@@ -84,7 +104,25 @@ describe("ComplianceSummariesPage", () => {
     expect(fetchSpy).toHaveBeenCalledWith(mockSearchParams);
   });
 
-  it("renders alert message with dynamic reporting year", async () => {
+  // neither alerts
+  it("doesn't render either alert messages if no obligations fully met", async () => {
+    fetchSpy.mockResolvedValue(mockFetchResponseNoUnmetObligations);
+    await renderPage();
+
+    expect(
+      screen.queryByText(
+        /Your compliance obligation for the 2024 reporting year is/i,
+      ),
+    ).toBeNull();
+    expect(
+      screen.queryByText(/An automatic overdue penalty has been incurred/i),
+    ).toBeNull();
+  });
+
+  // first alert only
+  it("renders 1st alert message with dynamic reporting year", async () => {
+    const currentDate = new Date("2025-10-01");
+    vi.setSystemTime(currentDate);
     await renderPage();
     expect(
       screen.getByText(
@@ -92,10 +130,15 @@ describe("ComplianceSummariesPage", () => {
       ),
     ).toBeVisible();
     expect(screen.getByText(/due on November 30, 2025/i)).toBeVisible();
+    expect(
+      screen.queryByText(/An automatic overdue penalty has been incurred/i),
+    ).toBeNull();
   });
 
-  it("renders alert message with 'was' if current date is past due", async () => {
-    const currentDate = new Date("2025-12-01");
+  // first alert modified
+  it("renders 1st alert message with 'was' if current date is past due", async () => {
+    fetchSpy.mockResolvedValue(mockFetchResponse);
+    const currentDate = new Date(2025, 11, 1);
     vi.setSystemTime(currentDate);
     await renderPage();
     expect(
@@ -106,25 +149,44 @@ describe("ComplianceSummariesPage", () => {
     expect(screen.getByText(/due on November 30, 2025/i)).toBeVisible();
   });
 
-  it("doesn't render alert message for overdue penalty if date is before due", async () => {
-    const currentDate = new Date("2025-10-01");
+  // both alerts
+  it("renders both alert messages for overdue penalty if date was past due and initial data has obligation not met", async () => {
+    const currentDate = new Date(2025, 11, 1);
     vi.setSystemTime(currentDate);
 
     await renderPage();
 
     expect(
-      screen.queryByText(/An automatic overdue penalty has been incurred/i),
-    ).toBeNull();
-  });
-
-  it("renders alert message for overdue penalty if date is past due and initial data has obligation not met", async () => {
-    const currentDate = new Date("2025-12-01");
-    vi.setSystemTime(currentDate);
-
-    await renderPage();
-
+      screen.getByText(
+        /Your compliance obligation for the 2024 reporting year was/i,
+      ),
+    ).toBeVisible();
     expect(
       screen.getByText(/An automatic overdue penalty has been incurred/i),
+    ).toBeVisible();
+  });
+
+  // midnight to next day deadline
+  it("renders different 1st alert message before and after midnight deadline", async () => {
+    const currentDate = new Date(2025, 10, 30, 23, 58, 59);
+    vi.setSystemTime(currentDate);
+    await renderPage();
+
+    expect(
+      screen.getByText(
+        /Your compliance obligation for the 2024 reporting year is/i,
+      ),
+    ).toBeVisible();
+
+    // next day
+    const newDate = new Date(2025, 11, 1, 0, 0, 1);
+    vi.setSystemTime(newDate);
+    await renderPage();
+
+    expect(
+      screen.getByText(
+        /Your compliance obligation for the 2024 reporting year was/i,
+      ),
     ).toBeVisible();
   });
 });
