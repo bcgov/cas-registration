@@ -32,7 +32,9 @@ class ComplianceReportVersionListOut(ModelSchema):
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
     obligation_id: Optional[str] = Field(None, alias=OBLIGATION_ID_ALIAS)
     outstanding_balance_tco2e: Optional[Decimal] = None
-    excess_emissions: Decimal = Field(..., alias=EXCESS_EMISSIONS_ALIAS)
+    excess_emissions: Decimal = Field(
+        ..., alias=EXCESS_EMISSIONS_ALIAS
+    )  # for supplementary reports, this is the delta from the previous report
     issuance_status: Optional[str] = Field(None, alias=ISSUANCE_STATUS_ALIAS)
     penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
 

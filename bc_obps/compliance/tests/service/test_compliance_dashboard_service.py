@@ -305,135 +305,67 @@ class TestComplianceDashboardService(TestCase):
         # Assert
         assert result is not None
         assert result.id == version.id
-        assert result.report_compliance_summary.excess_emissions == Decimal(4.0)
 
+        assert result.report_compliance_summary.excess_emissions == Decimal(4.0)
         assert result.compliance_charge_rate == Decimal("25.00")
         assert result.equivalent_value == Decimal("100.00")  # 4.0 * 25.0
         # assert result.outstanding_balance_tco2e == Decimal("2.0")
         # assert result.outstanding_balance_equivalent_value == Decimal("50.0")  # 2.0 * 25.0
 
-    @patch(
-        "compliance.service.compliance_dashboard_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e"
-    )
-    @patch("compliance.service.compliance_dashboard_service.ComplianceChargeRateService.get_rate_for_year")
-    @patch(
-        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
-    )
-    def test_get_compliance_report_version_by_id_supplementary_excess_emissions_are_are_greater(
-        self,
-        mock_refresh_data,
-        mock_get_rate,
-        mock_calculate_tco2e,
-    ):
-        # Setup user and operator
-        user_operator = make_recipe("registration.tests.utils.approved_user_operator")
-        operator = user_operator.operator
-        user_guid = user_operator.user.user_guid
+    def test_get_compliance_report_versions_for_dashboard_sets_calculated_fields(self):
+        """Test that the service sets calculated fields correctly for compliance report versions"""
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
 
-        # Mock values
-        mock_get_rate.return_value = Decimal("25.00")
-        mock_calculate_tco2e.return_value = Decimal("2.0")
-
-        # Report chain
-        operation = make_recipe("registration.tests.utils.operation", operator=operator)
-        report = make_recipe("reporting.tests.utils.report", operator=operator, operation=operation)
-        compliance_report = make_recipe("compliance.tests.utils.compliance_report", report=report)
-
-        # Invoice and obligation
-        invoice = make_recipe("compliance.tests.utils.elicensing_invoice", outstanding_balance=Decimal("2.0"))
-        obligation = make_recipe("compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice)
-
-        # Compliance report versions
-        # version 1
-        make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            obligation=obligation,
-            report_compliance_summary__excess_emissions=Decimal("4.0"),
+        operation_1 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
         )
-        version_2 = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            obligation=obligation,
-            report_compliance_summary__excess_emissions=Decimal("4.0"),
-            excess_emissions_delta_from_previous=Decimal("7.0"),
+        operation_2 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_1 = make_recipe(
+            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation_1
+        )
+        report_2 = make_recipe(
+            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation_2
+        )
+        compliance_report_1 = make_recipe('compliance.tests.utils.compliance_report', report=report_1)
+        compliance_report_2 = make_recipe('compliance.tests.utils.compliance_report', report=report_2)
+        # v1 report for report 1
+        compliance_report_version_1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_1,
+            excess_emissions_delta_from_previous=Decimal("0.0"),
+        )
+        compliance_report_version_1.report_compliance_summary.excess_emissions = Decimal("10.0")
+        compliance_report_version_1.report_compliance_summary.save()
+        # v1 report for report 2
+        compliance_report_version_2_1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_2,
+            excess_emissions_delta_from_previous=Decimal("0.0"),
+        )
+        compliance_report_version_2_1.report_compliance_summary.excess_emissions = Decimal("20.0")
+        compliance_report_version_2_1.report_compliance_summary.save()
+        # v2 report for report 2
+        compliance_report_version_2_2 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_2,
+            excess_emissions_delta_from_previous=Decimal("5.0"),
             is_supplementary=True,
         )
-
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
-
-        # Act
-        result = ComplianceDashboardService.get_compliance_report_version_by_id(
-            user_guid=user_guid,
-            compliance_report_version_id=version_2.id,
+        compliance_report_version_2_2.report_compliance_summary.excess_emissions = Decimal("25.0")
+        compliance_report_version_2_2.report_compliance_summary.save()
+        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=approved_user_operator.user_id
         )
 
-        # Assert
-        assert result is not None
-        assert result.id == version_2.id
-        # check we're using the report_version.excess_emissions_delta_from_previous instead of report_compliance_summary.excess_emissions for supplementary reports
-        assert result.report_compliance_summary.excess_emissions == Decimal(7.0)
-        assert result.equivalent_value == Decimal("175.00")  # 7.0 * 25.0
-
-    @patch(
-        "compliance.service.compliance_dashboard_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e"
-    )
-    @patch("compliance.service.compliance_dashboard_service.ComplianceChargeRateService.get_rate_for_year")
-    @patch(
-        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
-    )
-    def test_get_compliance_report_version_by_id_supplementary_excess_emissions_are_are_less(
-        self,
-        mock_refresh_data,
-        mock_get_rate,
-        mock_calculate_tco2e,
-    ):
-        # Setup user and operator
-        user_operator = make_recipe("registration.tests.utils.approved_user_operator")
-        operator = user_operator.operator
-        user_guid = user_operator.user.user_guid
-
-        # Mock values
-        mock_get_rate.return_value = Decimal("25.00")
-        mock_calculate_tco2e.return_value = Decimal("2.0")
-
-        # Report chain
-        operation = make_recipe("registration.tests.utils.operation", operator=operator)
-        report = make_recipe("reporting.tests.utils.report", operator=operator, operation=operation)
-        compliance_report = make_recipe("compliance.tests.utils.compliance_report", report=report)
-
-        # Invoice and obligation
-        invoice = make_recipe("compliance.tests.utils.elicensing_invoice", outstanding_balance=Decimal("2.0"))
-        obligation = make_recipe("compliance.tests.utils.compliance_obligation", elicensing_invoice=invoice)
-
-        # Compliance report versions
-        # version 1
-        make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            obligation=obligation,
-            report_compliance_summary__excess_emissions=Decimal("4.0"),
-        )
-        version_2 = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            obligation=obligation,
-            report_compliance_summary__excess_emissions=Decimal("4.0"),
-            excess_emissions_delta_from_previous=Decimal("-5.0"),
-            is_supplementary=True,
-        )
-
-        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
-
-        # Act
-        result = ComplianceDashboardService.get_compliance_report_version_by_id(
-            user_guid=user_guid,
-            compliance_report_version_id=version_2.id,
-        )
-
-        # Assert
-        assert result is not None
-        assert result.id == version_2.id
-        # check we're using the report_version.excess_emissions_delta_from_previous instead of report_compliance_summary.excess_emissions for supplementary reports
-        assert result.report_compliance_summary.excess_emissions == Decimal(0)
-        assert result.equivalent_value == Decimal(0)  # 0 * 25.0
+        assert result[0].id == compliance_report_version_1.id
+        assert result[0].report_compliance_summary.excess_emissions == Decimal("10.0")
+        assert result[1].id == compliance_report_version_2_1.id
+        assert result[1].report_compliance_summary.excess_emissions == Decimal("20.0")
+        assert result[2].id == compliance_report_version_2_2.id
+        assert result[2].report_compliance_summary.excess_emissions == Decimal("5.0")
