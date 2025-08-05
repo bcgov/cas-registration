@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.forms import model_to_dict
 from typing import Optional
 import copy
 from reporting.models import (
@@ -25,6 +26,9 @@ from reporting.models import (
     ReportVerification,
     ReportVersion,
     ReportElectricityImportData,
+)
+from reporting.service.emission_category_mapping_service import (
+    EmissionCategoryMappingService,
 )
 
 
@@ -60,6 +64,7 @@ class ReportSupplementaryVersionService:
         ReportSupplementaryVersionService.clone_report_version_verification(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_attachments(report_version, new_report_version)
         ReportSupplementaryVersionService.clone_report_version_facilities(report_version, new_report_version)
+        ReportSupplementaryVersionService.reapply_emission_categories(new_report_version)
         # Return the newly created report version
         return new_report_version
 
@@ -528,3 +533,22 @@ class ReportSupplementaryVersionService:
                 cloned_product_allocation.report_emission_allocation = new_report_emission_allocation
             cloned_product_allocation.report_product = new_report_product
             cloned_product_allocation.save()
+
+    @staticmethod
+    def reapply_emission_categories(report_version: ReportVersion) -> None:
+        """
+        Reapplies emission categories for all emissions in the given report version.
+        This ensures that the emission categories are applied to the report correctly, in case changes to emission categories
+        have occurred in the database since the report was last updated.
+        """
+        report_emissions = ReportEmission.objects.filter(report_version=report_version).select_related(
+            "report_methodology"
+        )
+
+        for report_emission in report_emissions:
+            EmissionCategoryMappingService.apply_emission_categories(
+                report_source_type=report_emission.report_source_type,
+                report_fuel=report_emission.report_fuel if report_emission.report_fuel else None,
+                report_emission=report_emission,
+                methodology_data=model_to_dict(report_emission.report_methodology),
+            )

@@ -66,7 +66,7 @@ class TestInitialData(TestCase):
         self.assertEqual(excluded_biomass_count, 10)
         self.assertEqual(excluded_nonbiomass_count, 9)
         # OTHER
-        self.assertEqual(lfo_line_tracing_count, 40)
+        self.assertEqual(lfo_line_tracing_count, 42)
 
     def test_all_activities_have_basic_category_mapping(self):
         mapped_activity_ids = list(
@@ -739,6 +739,8 @@ class TestInitialData(TestCase):
                     'Other fugitive sources',
                     'Third party line hits with release of gas',
                     'Flare stacks',
+                    'Field gas or process vent gas combustion at a linear facilities operation',
+                    'General stationary combustion of fuel or waste at a linear facilities operation not resulting in the production of useful energy',
                 ]
             ),
         )
