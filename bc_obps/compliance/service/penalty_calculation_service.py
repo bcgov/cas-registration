@@ -26,6 +26,7 @@ from compliance.service.elicensing.elicensing_api_client import (
 )
 from compliance.service.elicensing.schema import FeeCreationItem
 from django.db import transaction
+from compliance.dataclass import CompliancePenaltyData
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -34,7 +35,7 @@ class PenaltyCalculationService:
     """
     Service for calculating automatic overdue penalties for compliance obligations.
 
-    The penalty is calculated as 0.38% daily compounded interest on the outstanding amount
+    The penalty is calculated as 0.38% daily compounded on the outstanding amount
     starting the day after the November 30 deadline until the obligation is fully paid.
     """
 
@@ -45,7 +46,7 @@ class PenaltyCalculationService:
         AUTOMATIC_OVERDUE = "Automatic Overdue"
 
     @classmethod
-    def get_penalty_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
+    def get_penalty_data(cls, obligation: ComplianceObligation) -> CompliancePenaltyData:
         """
         Get penalty data for a compliance obligation.
 
@@ -55,12 +56,26 @@ class PenaltyCalculationService:
         Returns:
             Dictionary containing penalty details or empty penalty data if no penalty applies
         """
-        should_calculate, refresh_result = cls.should_calculate_penalty(obligation)
+        refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id
+        )
+        penalty = CompliancePenalty.objects.get(compliance_obligation=obligation)
+        last_accrual_record = penalty.compliance_penalty_accruals.all().last()
+        faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
+        total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
 
-        if should_calculate and refresh_result.invoice:
-            return cls.calculate_penalty(obligation)
-        else:
-            return cls.get_empty_penalty_data(obligation, refresh_result.data_is_fresh)
+        return CompliancePenaltyData(
+            penalty_status=obligation.penalty_status,
+            penalty_type="Automatic Overdue",
+            days_late=penalty.compliance_penalty_accruals.count(),
+            penalty_charge_rate=cls.DAILY_PENALTY_RATE,
+            accumulated_penalty=last_accrual_record.accumulated_penalty,  # type: ignore [union-attr]
+            accumulated_compounding=last_accrual_record.accumulated_compounded,  # type: ignore [union-attr]
+            total_penalty=penalty.penalty_amount,
+            total_amount=total_amount,
+            data_is_fresh=refresh_result.data_is_fresh,
+            faa_interest=faa_interest,  # type: ignore [arg-type]
+        )
 
     @classmethod
     def should_calculate_penalty(cls, obligation: ComplianceObligation) -> Tuple[bool, RefreshWrapperReturn]:
@@ -162,9 +177,9 @@ class PenaltyCalculationService:
 
         # Compose the invoice data for the penalty invoice
         invoice_data: Dict[str, Any] = {
-            "paymentDueDate": (final_accrual_date + timedelta(days=90)).strftime(
+            "paymentDueDate": (final_accrual_date + timedelta(days=30)).strftime(
                 "%Y-%m-%d"
-            ),  # 90 days after the triggering obligation was met
+            ),  # 30 days after the triggering obligation was met
             "businessAreaCode": "OBPS",
             "fees": [fee_response.fees[0].feeObjectId],
         }
@@ -232,6 +247,7 @@ class PenaltyCalculationService:
         accumulated_compounding = Decimal('0.00')
         days_late = max(0, (last_calculation_day - invoice.due_date.date()).days)
         current_date = invoice.due_date.date() + timedelta(days=1)
+        total_penalty = Decimal('0.00')
 
         for _ in range(1, days_late + 1):
             payments = cls.sum_payments_before_date(invoice, current_date)

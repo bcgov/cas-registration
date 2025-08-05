@@ -147,3 +147,19 @@ class ComplianceEarnedCreditsUpdate:
     analyst_comment: Optional[str] = None
     director_comment: Optional[str] = None
     director_decision: Optional[Literal["Approved", "Declined"]] = None
+
+
+@dataclass
+class CompliancePenaltyData:
+    """Data model for automatic overdue penalty API payload"""
+
+    penalty_status: str
+    penalty_type: str
+    days_late: int
+    penalty_charge_rate: Decimal
+    accumulated_penalty: Decimal
+    accumulated_compounding: Decimal
+    total_penalty: Decimal
+    total_amount: Decimal
+    data_is_fresh: bool
+    faa_interest: Decimal = Decimal('0.00')
