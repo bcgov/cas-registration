@@ -37,6 +37,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             obligation_id="23-0001-1-1",
             penalty_status="NONE",
             data_is_fresh=True,
+            paid_before_deadline=False,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
 
@@ -92,6 +93,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             obligation_id="23-0001-1-1",
             penalty_status="NONE",
             data_is_fresh=True,
+            paid_before_deadline=False,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
 
@@ -139,6 +141,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
             obligation_id="24-0999-999-999",
             penalty_status="NONE",
             data_is_fresh=True,
+            paid_before_deadline=False,
         )
         mock_get_obligation_data.return_value = mock_obligation_data
 

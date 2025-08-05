@@ -8,8 +8,10 @@ from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.dataclass import ObligationData
+from compliance.models.elicensing_payment import ElicensingPayment
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 import logging
+from typing import List, cast
 
 logger = logging.getLogger(__name__)
 
@@ -238,6 +240,21 @@ class ComplianceObligationService:
             outstanding_balance_dollars, reporting_year
         )
 
+        # Determine if the obligation was paid before the invoice due date
+        invoice = obligation.elicensing_invoice
+        paid_before_deadline = False
+        if invoice and invoice.due_date:
+            payment_received_dates: List[date] = cast(
+                List[date],
+                ElicensingPayment.objects.filter(
+                    elicensing_line_item__elicensing_invoice_id=invoice.id,
+                    received_date__isnull=False,
+                ).values_list("received_date", flat=True),
+            )
+            if payment_received_dates:
+                latest_payment = max(payment_received_dates)
+                paid_before_deadline = latest_payment <= invoice.due_date.date()
+
         return ObligationData(
             reporting_year=reporting_year.reporting_year,
             outstanding_balance=outstanding_balance_tco2e,
@@ -246,4 +263,5 @@ class ComplianceObligationService:
             penalty_status=obligation.penalty_status,
             fee_amount_dollars=obligation.fee_amount_dollars,
             data_is_fresh=refreshed_data.data_is_fresh,
+            paid_before_deadline=paid_before_deadline,
         )

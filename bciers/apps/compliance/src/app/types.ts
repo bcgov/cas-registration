@@ -136,6 +136,7 @@ export interface ObligationData {
   payment_data: PaymentData;
   penalty_status?: string;
   data_is_fresh?: string;
+  paid_before_deadline: boolean;
 }
 
 export interface PayObligationTrackPaymentsFormData extends ObligationData {

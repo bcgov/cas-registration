@@ -24,6 +24,7 @@ export const generateManageObligationTaskList: (
   const {
     reporting_year: reportingYear,
     outstanding_balance: outstandingBalance,
+    paid_before_deadline: paidBeforeDeadline,
   } = data;
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
@@ -72,7 +73,8 @@ export const generateManageObligationTaskList: (
 
   if (
     activePage === ActivePage.PayObligationTrackPayments &&
-    Number(outstandingBalance) === 0
+    Number(outstandingBalance) === 0 &&
+    paidBeforeDeadline === false
   ) {
     const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
       complianceReportVersionId,

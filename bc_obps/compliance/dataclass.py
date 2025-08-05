@@ -110,6 +110,7 @@ class ObligationData:
     penalty_status: str
     fee_amount_dollars: Optional[Decimal]
     data_is_fresh: bool
+    paid_before_deadline: bool
 
 
 @dataclass

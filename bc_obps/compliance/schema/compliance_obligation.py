@@ -23,4 +23,5 @@ class ObligationWithPaymentsOut(Schema):
     obligation_id: str
     penalty_status: str
     data_is_fresh: bool
+    paid_before_deadline: bool
     payment_data: ElicensingPaymentListOut
