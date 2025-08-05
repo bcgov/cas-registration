@@ -110,6 +110,10 @@ class ComplianceInvoiceService:
             invoice = refresh_result.invoice
             invoice_number = invoice.invoice_number
             invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
+            invoice_is_void = (
+                invoice.is_void
+                and compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+            )
 
             # Build invoice biling items and amounts due
             amount_due, billing_items = cls.calculate_invoice_amount_due(invoice)
@@ -122,6 +126,7 @@ class ComplianceInvoiceService:
                 invoice_date=invoice_date,
                 invoice_due_date=invoice_due_date,
                 invoice_printed_date=invoice_printed_date,
+                invoice_is_void=invoice_is_void,
                 operator_name=operator_name,
                 operator_address_line1=operator_address_line1,
                 operator_address_line2=operator_address_line2,

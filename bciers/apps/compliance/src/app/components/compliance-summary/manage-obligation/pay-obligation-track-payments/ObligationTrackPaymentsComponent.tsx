@@ -17,7 +17,7 @@ export function ObligationTrackPaymentsComponent({
   data,
   complianceReportVersionId,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
 
   return (
