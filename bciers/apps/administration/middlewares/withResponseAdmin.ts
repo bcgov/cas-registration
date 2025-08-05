@@ -31,7 +31,7 @@ export const withResponseAdmin: MiddlewareFactory = (next: NextMiddleware) => {
     }
     const token = await getToken();
 
-    // 🧱 Build rewrite to physcial folder path which enforces authorization by IdP and role
+    // 🧱 Build rewrite to physical folder path which enforces authorization by IdP and role
     request.nextUrl.pathname = `${token.identity_provider}/${
       token.app_role
     }${pathname.replace(`${appName}/`, "")}`;

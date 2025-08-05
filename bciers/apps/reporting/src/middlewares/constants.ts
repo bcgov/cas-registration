@@ -1,5 +1,3 @@
-import { JWT } from "next-auth/jwt";
-import { IDP } from "@bciers/utils/src/enums";
 import { fetchApi } from "@bciers/actions/api/fetchApi";
 
 export const REPORTING_BASE = "reporting";
@@ -40,19 +38,6 @@ export async function fetchResponse(endpoint: string, user_guid: string) {
   // Return the response from the API.
   return response;
 }
-
-/**
- * Retrieves the user role (identity provider) from the given JWT token.
- *
- * @param token - The JWT token containing user details, or null if not available.
- * @returns The user role as an IDP enum if present; otherwise, returns null.
- */
-export const getUserRole = (token: JWT | null): IDP | null => {
-  if (!token) {
-    return null;
-  }
-  return (token.identity_provider as IDP) || null;
-};
 
 // App routing routes
 export enum AppRoutes {

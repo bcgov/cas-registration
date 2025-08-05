@@ -2,7 +2,7 @@ from unittest.mock import patch
 from django.test import SimpleTestCase, override_settings, Client
 from decimal import Decimal
 from registration.utils import custom_reverse_lazy
-from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData
+from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, RefreshWrapperReturn
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
@@ -13,6 +13,8 @@ APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = "compliance.service.bc_carbon_regist
 CREATE_ADJUSTMENT_PATH = (
     "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment"
 )
+CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_compliance_units"
+ELICENSING_DATA_REFRESH_WRAPPER_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent database queries
@@ -39,6 +41,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             bccr_compliance_account_id=VALID_ACCOUNT_ID,
             charge_rate=Decimal("40.00"),
             outstanding_balance=Decimal("30000.00"),
+            compliance_unit_cap_limit=Decimal("15000.00"),
+            compliance_unit_cap_remaining=Decimal("15000.00"),
             bccr_units=[
                 BCCRUnit(
                     id="1",
@@ -60,6 +64,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
         assert Decimal(response_data["charge_rate"]) == Decimal("40.00")
         assert Decimal(response_data["outstanding_balance"]) == Decimal("30000.00")
+        assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal("15000.00")
+        assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal("15000.00")
         assert len(response_data["bccr_units"]) == 1
         assert response_data["bccr_units"][0]["type"] == "Earned Credits"
         assert response_data["bccr_units"][0]["serial_number"] == "BCE-2023-0001"
@@ -90,6 +96,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             bccr_compliance_account_id=None,
             charge_rate=None,
             outstanding_balance=None,
+            compliance_unit_cap_limit=None,
+            compliance_unit_cap_remaining=None,
             bccr_units=[],
         )
         # Act
@@ -101,6 +109,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response_data["bccr_compliance_account_id"] is None
         assert response_data["charge_rate"] is None
         assert response_data["outstanding_balance"] is None
+        assert response_data["compliance_unit_cap_limit"] is None
+        assert response_data["compliance_unit_cap_remaining"] is None
         assert response_data["bccr_units"] == []
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_PATH)
@@ -112,7 +122,9 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             bccr_trading_name="Test Company",
             bccr_compliance_account_id=VALID_ACCOUNT_ID,
             charge_rate=Decimal("40.00"),
-            outstanding_balance=Decimal("25000.00"),
+            outstanding_balance=Decimal("24000.00"),
+            compliance_unit_cap_limit=Decimal("12000.00"),
+            compliance_unit_cap_remaining=Decimal("5000.00"),
             bccr_units=[],
         )
 
@@ -125,34 +137,31 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response_data["bccr_trading_name"] == "Test Company"
         assert response_data["bccr_compliance_account_id"] == VALID_ACCOUNT_ID
         assert Decimal(response_data["charge_rate"]) == Decimal("40.00")
-        assert Decimal(response_data["outstanding_balance"]) == Decimal("25000.00")
+        assert Decimal(response_data["outstanding_balance"]) == Decimal("24000.00")
+        assert Decimal(response_data["compliance_unit_cap_limit"]) == Decimal("12000.00")
+        assert Decimal(response_data["compliance_unit_cap_remaining"]) == Decimal("5000.00")
         assert response_data["bccr_units"] == []
 
-
-@override_settings(MIDDLEWARE=[])  # Disable middleware to prevent database queries
-class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid database access
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.client = Client()
-
-    @staticmethod
-    def _get_endpoint_url(account_id, compliance_report_version_id):
-        return custom_reverse_lazy(
-            "apply_compliance_units",
-            kwargs={"account_id": account_id, "compliance_report_version_id": compliance_report_version_id},
-        )
-
-    @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(CREATE_ADJUSTMENT_PATH)
-    def test_apply_compliance_units_success(self, mock_create_adjustment, mock_permission, mock_apply_compliance_units):
+    @patch(PERMISSION_CHECK_PATH)
+    @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
+    def test_apply_compliance_units_success(
+        self,
+        mock_apply_compliance_units,
+        mock_permission,
+        mock_create_adjustment,
+        mock_can_apply_units,
+        mock_refresh_data,
+    ):
         # Arrange
         mock_permission.return_value = True
         mock_apply_compliance_units.return_value = None
         mock_create_adjustment.return_value = None
+        mock_can_apply_units.return_value = True
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
 
-        # Create test data
         test_units = [
             {
                 "id": "1",
@@ -183,31 +192,43 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
         response = self.client.post(
             self._get_endpoint_url(VALID_ACCOUNT_ID, VALID_COMPLIANCE_REPORT_VERSION_ID),
             data=payload,
-            content_type="application/json",
+            content_type="application/json",  # Important for Ninja to parse as JSON
         )
 
         # Assert
         assert response.status_code == 200
         response_data = response.json()
         assert response_data["success"] is True
+        assert response_data["can_apply_compliance_units"] is True
+        assert response_data["data_is_fresh"] is True
 
-        # Verify service was called with correct parameters
+        # Verify service calls
         mock_apply_compliance_units.assert_called_once_with(
             account_id=VALID_ACCOUNT_ID,
             compliance_report_version_id=VALID_COMPLIANCE_REPORT_VERSION_ID,
             payload=payload,
         )
+        mock_can_apply_units.assert_called_once_with(VALID_COMPLIANCE_REPORT_VERSION_ID)
 
-    @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
+    @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(CREATE_ADJUSTMENT_PATH)
+    @patch(PERMISSION_CHECK_PATH)
+    @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     def test_apply_compliance_units_with_units_having_zero_quantity(
-        self, mock_create_adjustment, mock_permission, mock_apply_compliance_units
+        self,
+        mock_apply_compliance_units,
+        mock_permission,
+        mock_create_adjustment,
+        mock_can_apply_units,
+        mock_refresh_data,
     ):
         # Arrange
         mock_permission.return_value = True
         mock_apply_compliance_units.return_value = None
         mock_create_adjustment.return_value = None
+        mock_can_apply_units.return_value = True
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
 
         test_units = [
             {
@@ -240,7 +261,7 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
             "bccr_holding_account_id": VALID_ACCOUNT_ID,
             "bccr_compliance_account_id": "987654321098765",
             "bccr_units": test_units,
-            "total_equivalent_value": Decimal("80.00"),
+            "total_equivalent_value": str(Decimal("80.00")),  # Use string to match Ninja schema input
         }
 
         # Act
@@ -254,13 +275,19 @@ class TestApplyComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to
         assert response.status_code == 200
         response_data = response.json()
         assert response_data["success"] is True
+        assert response_data["can_apply_compliance_units"] is True
+        assert response_data["data_is_fresh"] is True
 
-        # Verify service was called with units having zero/None quantities
+        # Verify service call
         mock_apply_compliance_units.assert_called_once_with(
             account_id=VALID_ACCOUNT_ID,
             compliance_report_version_id=VALID_COMPLIANCE_REPORT_VERSION_ID,
-            payload=payload,
+            payload={
+                **payload,
+                "total_equivalent_value": Decimal("80.00"),  # Match actual method input type
+            },
         )
+        mock_can_apply_units.assert_called_once_with(VALID_COMPLIANCE_REPORT_VERSION_ID)
 
     @patch(PERMISSION_CHECK_PATH)
     def test_apply_compliance_units_invalid_account_id_format(self, mock_permission):

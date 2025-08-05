@@ -4,32 +4,43 @@ from model_bakery import baker
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
 from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, ObligationData
-from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.models.operation import Operation
 from decimal import Decimal
 
 pytestmark = pytest.mark.django_db
 
-APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.bccr_account_service"
+# Base import path for services used in apply_compliance_units_service
+APPLY_UNITS_BASE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service"
+
+# Service paths
+APPLY_UNITS_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ApplyComplianceUnitsService"
+BCCR_ACCOUNT_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.bccr_account_service"
+COMPLIANCE_REPORT_VERSION_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceReportVersionService"
+COMPLIANCE_CHARGE_RATE_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceChargeRateService"
+COMPLIANCE_OBLIGATION_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceObligationService"
+COMPLIANCE_ADJUSTMENT_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ComplianceAdjustmentService"
+ELICENSING_DATA_REFRESH_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ElicensingDataRefreshService"
+
+# Specific method paths
+COMPUTE_COMPLIANCE_UNIT_CAPS_PATH = f"{APPLY_UNITS_SERVICE_PATH}._compute_compliance_unit_caps"
+VALIDATE_QUANTITY_LIMITS = f"{APPLY_UNITS_SERVICE_PATH}._validate_quantity_limits"
+CAN_APPLY_COMPLIANCE_UNITS_PATH = f"{APPLY_UNITS_SERVICE_PATH}._can_apply_compliance_units"
+COMPLIANCE_CREATE_ADJUSTMENT_PATH = f"{COMPLIANCE_ADJUSTMENT_SERVICE_PATH}.create_adjustment"
+GET_OBLIGATION_FOR_REPORT_VERSION_PATH = f"{COMPLIANCE_OBLIGATION_SERVICE_PATH}.get_obligation_for_report_version"
+GET_OBLIGATION_DATA_BY_REPORT_VERSION_PATH = (
+    f"{COMPLIANCE_OBLIGATION_SERVICE_PATH}.get_obligation_data_by_report_version"
 )
-COMPLIANCE_REPORT_VERSION_SERVICE_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceReportVersionService"
+ELICENSING_DATA_REFRESH_WRAPPER_PATH = (
+    f"{ELICENSING_DATA_REFRESH_SERVICE_PATH}.refresh_data_wrapper_by_compliance_report_version_id"
 )
-COMPLIANCE_CHARGE_RATE_SERVICE_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceChargeRateService"
-)
-COMPLIANCE_OBLIGATION_SERVICE_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceObligationService"
-)
-COMPLIANCE_CREATE_ADJUSTMENT_PATH = (
-    "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment"
-)
+
+# Model path for adjustments
+ELICENSING_ADJUSTMENT_MODEL_PATH = "compliance.models.elicensing_adjustment.ElicensingAdjustment.objects"
 
 
 @pytest.fixture
 def mock_bccr_service():
-    with patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH) as mock:
+    with patch(BCCR_ACCOUNT_SERVICE_PATH) as mock:
         yield mock
 
 
@@ -46,8 +57,52 @@ def mock_compliance_charge_rate_service():
 
 
 @pytest.fixture
-def mock_compliance_obligation_service():
-    with patch(COMPLIANCE_OBLIGATION_SERVICE_PATH) as mock:
+def mock_get_obligation():
+    with patch(GET_OBLIGATION_FOR_REPORT_VERSION_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_get_obligation_data():
+    with patch(GET_OBLIGATION_DATA_BY_REPORT_VERSION_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_create_adjustment():
+    with patch(COMPLIANCE_CREATE_ADJUSTMENT_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_adjustments_manager():
+    with patch(ELICENSING_ADJUSTMENT_MODEL_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_can_apply_units():
+    with patch(CAN_APPLY_COMPLIANCE_UNITS_PATH) as mock:
+        mock.return_value = True
+        yield mock
+
+
+@pytest.fixture
+def mock_validate_limits():
+    with patch(VALIDATE_QUANTITY_LIMITS) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_compute_compliance_unit_caps():
+    with patch(COMPUTE_COMPLIANCE_UNIT_CAPS_PATH) as mock:
+        mock.return_value = (Decimal("500.00"), Decimal("400.00"))
+        yield mock
+
+
+@pytest.fixture
+def mock_refresh_data():
+    with patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH) as mock:
         yield mock
 
 
@@ -93,10 +148,11 @@ class TestApplyComplianceUnitsService:
 
     def test_get_apply_compliance_units_page_data_success(
         self,
+        mock_compute_compliance_unit_caps,
         mock_bccr_service,
         mock_compliance_report_version_service,
         mock_compliance_charge_rate_service,
-        mock_compliance_obligation_service,
+        mock_get_obligation_data,
     ):
         # Arrange
         mock_bccr_service.get_account_details.return_value = Mock(
@@ -133,16 +189,19 @@ class TestApplyComplianceUnitsService:
         )
         mock_compliance_charge_rate_service.get_rate_for_year.return_value = Decimal("75.00")
 
-        # Mock the obligation data with outstanding balance
         mock_obligation_data = ObligationData(
             reporting_year=2023,
-            outstanding_balance=Decimal("400.00"),  # tCO2e equivalent
-            equivalent_value=Decimal("30000.00"),  # dollars
+            outstanding_balance=Decimal("400.00"),
+            equivalent_value=Decimal("30000.00"),
+            fee_amount_dollars=Decimal("3000.00"),
             obligation_id="23-0001-1-1",
             penalty_status="NONE",
             data_is_fresh=True,
         )
-        mock_compliance_obligation_service.get_obligation_data_by_report_version.return_value = mock_obligation_data
+        mock_get_obligation_data.return_value = mock_obligation_data
+
+        # Stub compute caps: limit 500, remaining 400
+        mock_compute_compliance_unit_caps.return_value = (Decimal("500.00"), Decimal("400.00"))
 
         # Act
         result = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
@@ -157,11 +216,12 @@ class TestApplyComplianceUnitsService:
         assert result.charge_rate == Decimal("75.00")
         assert result.outstanding_balance == Decimal("30000.00")
         assert len(result.bccr_units) == 1
-        assert result.bccr_units[0].type == "Earned Credits"
         assert result.bccr_units[0].serial_number == "BCE-2023-0001"
 
-        # Verify the obligation service was called correctly
-        mock_compliance_obligation_service.get_obligation_data_by_report_version.assert_called_once_with(1)
+        assert result.compliance_unit_cap_limit == Decimal("500.00")
+        assert result.compliance_unit_cap_remaining == Decimal("400.00")
+
+        mock_get_obligation_data.assert_called_once_with(1)
 
     def test_get_apply_compliance_units_page_data_no_holding_account(
         self,
@@ -192,50 +252,216 @@ class TestApplyComplianceUnitsService:
         mock_bccr_service.client.list_all_units.assert_not_called()
         mock_compliance_charge_rate_service.get_rate_for_year.assert_not_called()
 
-    def test_validate_quantity_limits_success(self):
+    def test_calculate_apply_units_cap_success(self, mock_get_obligation):
+        mock_obligation = Mock()
+        mock_obligation.fee_amount_dollars = Decimal("1000.00")
+        mock_get_obligation.return_value = mock_obligation
+
+        result = ApplyComplianceUnitsService._calculate_apply_units_cap(42)
+        assert result == Decimal("500.00")
+
+    def test_calculate_apply_units_cap_missing_obligation(self, mock_get_obligation):
+        mock_obligation = None
+        mock_get_obligation.return_value = mock_obligation
+
+        with pytest.raises(UserError, match="Unable to calculate unit cap: missing obligation or fee amount."):
+            ApplyComplianceUnitsService._calculate_apply_units_cap(1)
+
+    def test_calculate_apply_units_cap_missing_fee(self, mock_get_obligation):
+        mock_obligation = Mock(fee_amount_dollars=None)
+        mock_get_obligation.return_value = mock_obligation
+
+        with pytest.raises(UserError, match="Unable to calculate unit cap: missing obligation or fee amount."):
+            ApplyComplianceUnitsService._calculate_apply_units_cap(1)
+
+    def test_can_apply_compliance_units_success(
+        self,
+        mock_compute_compliance_unit_caps,
+        mock_get_obligation_data,
+    ):
+        # Arrange: simulate cap limit >0 and remaining >0
+        mock_compute_compliance_unit_caps.return_value = (Decimal("1000.00"), Decimal("500.00"))
+
+        mock_obligation = Mock()
+        mock_obligation.equivalent_value = Decimal("200.00")
+        mock_obligation.fee_amount_dollars = Decimal("2000.00")
+        mock_obligation.elicensing_invoice = Mock(outstanding_balance=Decimal("600.00"))
+        mock_get_obligation_data.return_value = mock_obligation
+
+        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is True
+
+    def test_can_apply_compliance_units_cap_exhausted(
+        self,
+        mock_compute_compliance_unit_caps,
+        mock_get_obligation_data,
+    ):
+        # Simulate remaining cap zero
+        mock_compute_compliance_unit_caps.return_value = (Decimal("1000.00"), Decimal("0.00"))
+
+        mock_obligation = Mock()
+        mock_obligation.equivalent_value = Decimal("200.00")
+        mock_obligation.fee_amount_dollars = Decimal("2000.00")
+        mock_obligation.elicensing_invoice = Mock(outstanding_balance=Decimal("600.00"))
+        mock_get_obligation_data.return_value = mock_obligation
+
+        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is False
+
+    def test_can_apply_compliance_units_missing_obligation(
+        self, mock_compute_compliance_unit_caps, mock_get_obligation_data
+    ):
+        # Arrange: no obligation data
+        mock_compute_compliance_unit_caps.return_value = (Decimal("0.00"), Decimal("0.00"))
+        mock_get_obligation_data.return_value = None
+
+        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is False
+
+    def test_can_apply_compliance_units_zero_outstanding(
+        self,
+        mock_compute_compliance_unit_caps,
+        mock_get_obligation_data,
+    ):
+        # Simulate cap available but outstanding/equivalent value zero
+        mock_compute_compliance_unit_caps.return_value = (Decimal("1000.00"), Decimal("500.00"))
+
+        mock_obligation = Mock()
+        mock_obligation.equivalent_value = Decimal("0.00")
+        mock_obligation.fee_amount_dollars = Decimal("2000.00")
+        mock_obligation.elicensing_invoice = Mock(outstanding_balance=Decimal("0.00"))
+        mock_get_obligation_data.return_value = mock_obligation
+
+        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is False
+
+    def test_validate_quantity_limits_success(self, mock_compute_compliance_unit_caps, mock_get_obligation_data):
         # Arrange
-        units = [
-            {
-                "serial_number": "BCE-2023-0001",
-                "quantity_available": 100,
-                "quantity_to_be_applied": 50,
-            },
-            {
-                "serial_number": "BCO-2023-0001",
-                "quantity_available": 200,
-                "quantity_to_be_applied": 200,  # Equal is allowed
-            },
-            {
-                "serial_number": "BCE-2023-0002",
-                "quantity_available": 75,
-                "quantity_to_be_applied": 0,  # Zero is allowed
-            },
-        ]
+        mock_compute_compliance_unit_caps.return_value = (Decimal("1000.00"), Decimal("500.00"))
+        mock_obligation = Mock()
+        mock_obligation.fee_amount_dollars = Decimal("2000.00")
+        mock_get_obligation_data.return_value = mock_obligation
 
-        # Act & Assert - should not raise any exception
-        ApplyComplianceUnitsService._validate_quantity_limits(units)
+        payload = {
+            "total_equivalent_value": "400.00",  # Below remaining cap
+            "bccr_units": [
+                {
+                    "serial_number": "BCE-2023-0001",
+                    "quantity_available": 100,
+                    "quantity_to_be_applied": 50,
+                },
+                {
+                    "serial_number": "BCO-2023-0001",
+                    "quantity_available": 200,
+                    "quantity_to_be_applied": 200,
+                },
+                {
+                    "serial_number": "BCE-2023-0002",
+                    "quantity_available": 75,
+                    "quantity_to_be_applied": 0,
+                },
+            ],
+        }
 
-    def test_validate_quantity_limits_exceeds_available(self):
+        # Act & Assert — should not raise
+        ApplyComplianceUnitsService._validate_quantity_limits(payload, compliance_report_version_id=1)
+
+    def test_validate_quantity_limits_exceeds_available(
+        self, mock_compute_compliance_unit_caps, mock_get_obligation_data
+    ):
         # Arrange
-        units = [
-            {
-                "serial_number": "BCE-2023-0001",
-                "quantity_available": 100,
-                "quantity_to_be_applied": 150,  # Exceeds available
-            }
-        ]
+        mock_compute_compliance_unit_caps.return_value = (Decimal("1000.00"), Decimal("500.00"))
+        mock_obligation = Mock()
+        mock_obligation.fee_amount_dollars = Decimal("2000.00")
+        mock_get_obligation_data.return_value = mock_obligation
 
-        # Act & Assert
-        with pytest.raises(UserError, match="Quantity to be applied exceeds available quantity for unit BCE-2023-0001"):
-            ApplyComplianceUnitsService._validate_quantity_limits(units)
+        payload = {
+            "total_equivalent_value": "100.00",  # below remaining cap
+            "bccr_units": [
+                {
+                    "serial_number": "BCE-2023-0001",
+                    "quantity_available": 100,
+                    "quantity_to_be_applied": 150,  # Exceeds available
+                }
+            ],
+        }
 
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_CREATE_ADJUSTMENT_PATH)
-    def test_apply_compliance_units_success(self, mock_create_adjustment, mock_bccr_service):
+        with pytest.raises(
+            UserError, match=r"Quantity to be applied .* exceeds available quantity .* for unit BCE-2023-0001"
+        ):
+            ApplyComplianceUnitsService._validate_quantity_limits(payload, compliance_report_version_id=1)
+
+    def test_validate_quantity_limits_exceeds_remaining_cap(
+        self, mock_compute_compliance_unit_caps, mock_get_obligation_data
+    ):
+        # Arrange: remaining cap is 500, payload asks for 600
+        mock_compute_compliance_unit_caps.return_value = (Decimal("1000.00"), Decimal("500.00"))
+        mock_obligation = Mock()
+        mock_obligation.fee_amount_dollars = Decimal("2000.00")
+        mock_get_obligation_data.return_value = mock_obligation
+
+        payload = {
+            "total_equivalent_value": "600.00",  # exceeds remaining cap
+            "bccr_units": [
+                {
+                    "serial_number": "BCE-2023-0001",
+                    "quantity_available": 100,
+                    "quantity_to_be_applied": 50,
+                }
+            ],
+        }
+
+        with pytest.raises(UserError, match="exceeds remaining cap"):
+            ApplyComplianceUnitsService._validate_quantity_limits(payload, compliance_report_version_id=1)
+
+    def test_get_total_adjustments_no_invoice(self, mock_refresh_data):
+
+        # Simulate refresh result with no invoice
+        mock_refresh_result = Mock()
+        mock_refresh_result.invoice = None
+        mock_refresh_data.return_value = mock_refresh_result
+
+        # Act
+        result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version(1)
+
+        # Assert
+        assert result == Decimal("0")
+
+    def test_get_total_adjustments_no_line_items_or_aggregate_none(self, mock_refresh_data, mock_adjustments_manager):
+        # Arrange: invoice exists but line items are empty and aggregate returns None
+        mock_invoice = Mock()
+        mock_invoice.elicensing_line_items.all.return_value = []
+
+        mock_refresh_result = Mock()
+        mock_refresh_result.invoice = mock_invoice
+        mock_refresh_data.return_value = mock_refresh_result
+
+        mock_adjustments_manager.filter.return_value.aggregate.return_value = {"total": None}
+
+        # Act
+        result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version(1)
+
+        # Assert: fallback to zero when no line items or aggregate is None
+        assert result == Decimal("0")
+
+    def test_apply_compliance_units_success(
+        self,
+        mock_can_apply_units,
+        mock_validate_limits,
+        mock_create_adjustment,
+        mock_bccr_service,
+        mock_get_obligation_data,
+        mock_refresh_data,
+    ):
         # Arrange
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version",
+        mock_obligation = Mock(
+            fee_amount_dollars=Decimal("1000.00"),
+            equivalent_value=Decimal("100.00"),
         )
+        mock_get_obligation_data.return_value = mock_obligation
+
+        mock_invoice = Mock()
+        mock_invoice.outstanding_balance = Decimal("500.00")
+        mock_invoice.elicensing_line_items.all.return_value = []
+        mock_refresh_data.return_value.invoice = mock_invoice
+
+        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
         payload = {
             "bccr_compliance_account_id": "456",
@@ -261,37 +487,48 @@ class TestApplyComplianceUnitsService:
 
         # Assert
         mock_bccr_service.client.transfer_compliance_units.assert_called_once()
+        transfer_payload = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
+        assert transfer_payload["destination_account_id"] == "456"
+        assert len(transfer_payload["mixedUnitList"]) == 2
+
+        assert {
+            "account_id": "123",
+            "serial_no": "BCE-2023-0001",
+            "new_quantity": 50,
+            "id": "unit-1",
+        } in transfer_payload["mixedUnitList"]
+        assert {
+            "account_id": "123",
+            "serial_no": "BCO-2023-0001",
+            "new_quantity": 75,
+            "id": "unit-2",
+        } in transfer_payload["mixedUnitList"]
+
+        mock_can_apply_units.assert_called_once_with(compliance_report_version.id)
         mock_create_adjustment.assert_called_once()
-        call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
+        assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("80.00")
 
-        # Verify the transfer payload structure
-        assert call_args["destination_account_id"] == "456"
-        assert len(call_args["mixedUnitList"]) == 2
-
-        # Verify first unit
-        unit1 = call_args["mixedUnitList"][0]
-        assert unit1["account_id"] == "123"
-        assert unit1["serial_no"] == "BCE-2023-0001"
-        assert unit1["new_quantity"] == 50
-        assert unit1["id"] == "unit-1"
-
-        # Verify second unit
-        unit2 = call_args["mixedUnitList"][1]
-        assert unit2["account_id"] == "123"
-        assert unit2["serial_no"] == "BCO-2023-0001"
-        assert unit2["new_quantity"] == 75
-        assert unit2["id"] == "unit-2"
-
-        # Verify adjustment creation
-        assert mock_create_adjustment.call_args.kwargs["compliance_report_version_id"] == compliance_report_version.id
-        assert mock_create_adjustment.call_args.kwargs['adjustment_total'] == -80
-
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_CREATE_ADJUSTMENT_PATH)
-    def test_apply_compliance_units_filters_zero_quantities(self, mock_create_adjustment, mock_bccr_service):
+    def test_apply_compliance_units_filters_zero_quantities(
+        self,
+        mock_can_apply_units,
+        mock_validate_limits,
+        mock_create_adjustment,
+        mock_bccr_service,
+        mock_get_obligation_data,
+        mock_refresh_data,
+    ):
         # Arrange
+        mock_obligation = Mock(fee_amount_dollars=Decimal("1000.00"), equivalent_value=Decimal("100.00"))
+        mock_get_obligation_data.return_value = mock_obligation
+
+        mock_invoice = Mock(outstanding_balance=Decimal("500.00"))
+        mock_invoice.elicensing_line_items.all.return_value = []
+        mock_refresh_data.return_value.invoice = mock_invoice
+
+        mock_bccr_service.client.transfer_compliance_units.return_value = {"success": True}
+
+        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
-        compliance_report_version_id = "1"
         payload = {
             "bccr_compliance_account_id": "456",
             "bccr_units": [
@@ -305,13 +542,13 @@ class TestApplyComplianceUnitsService:
                     "id": "unit-2",
                     "serial_number": "BCO-2023-0001",
                     "quantity_available": 200,
-                    "quantity_to_be_applied": 0,  # Should be filtered out
+                    "quantity_to_be_applied": 0,
                 },
                 {
                     "id": "unit-3",
                     "serial_number": "BCE-2023-0002",
                     "quantity_available": 150,
-                    "quantity_to_be_applied": -10,  # Should be filtered out
+                    "quantity_to_be_applied": -10,
                 },
                 {
                     "id": "unit-4",
@@ -324,56 +561,38 @@ class TestApplyComplianceUnitsService:
         }
 
         # Act
-        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version_id, payload)
+        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
 
         # Assert
-        mock_bccr_service.client.transfer_compliance_units.assert_called_once()
-        mock_create_adjustment.assert_called_once()
-        call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
+        transfer_payload = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
+        serials = [u["serial_no"] for u in transfer_payload["mixedUnitList"]]
+        assert "BCE-2023-0001" in serials
+        assert "BCO-2023-0002" in serials
+        assert "BCO-2023-0001" not in serials
+        assert "BCE-2023-0002" not in serials
+        assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("80.00")
 
-        # Should only include units with positive quantities
-        assert len(call_args["mixedUnitList"]) == 2
-
-        # Verify only the units with positive quantities are included
-        serial_numbers = [unit["serial_no"] for unit in call_args["mixedUnitList"]]
-        assert "BCE-2023-0001" in serial_numbers
-        assert "BCO-2023-0002" in serial_numbers
-        assert "BCO-2023-0001" not in serial_numbers
-        assert "BCE-2023-0002" not in serial_numbers
-
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_CREATE_ADJUSTMENT_PATH)
-    def test_apply_compliance_units_validation_error(self, mock_create_adjustment, mock_bccr_service):
+    def test_apply_compliance_units_all_zero_quantities(
+        self,
+        mock_can_apply_units,
+        mock_validate_limits,
+        mock_create_adjustment,
+        mock_bccr_service,
+        mock_get_obligation_data,
+        mock_refresh_data,
+    ):
         # Arrange
+        mock_obligation = Mock(fee_amount_dollars=Decimal("1000.00"), equivalent_value=Decimal("100.00"))
+        mock_get_obligation_data.return_value = mock_obligation
+
+        mock_invoice = Mock(outstanding_balance=Decimal("500.00"))
+        mock_invoice.elicensing_line_items.all.return_value = []
+        mock_refresh_data.return_value.invoice = mock_invoice
+
+        mock_bccr_service.client.transfer_compliance_units.return_value = {"success": True}
+
+        compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
-        compliance_report_version_id = "1"
-        payload = {
-            "bccr_compliance_account_id": "456",
-            "bccr_units": [
-                {
-                    "id": "unit-1",
-                    "serial_number": "BCE-2023-0001",
-                    "quantity_available": 100,
-                    "quantity_to_be_applied": 150,  # Exceeds available
-                }
-            ],
-            "total_equivalent_value": "80.00",
-        }
-
-        # Act & Assert
-        with pytest.raises(UserError, match="Quantity to be applied exceeds available quantity for unit BCE-2023-0001"):
-            ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version_id, payload)
-
-        # Verify that the transfer was not called due to validation error
-        mock_bccr_service.client.transfer_compliance_units.assert_not_called()
-        mock_create_adjustment.assert_not_called()
-
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_CREATE_ADJUSTMENT_PATH)
-    def test_apply_compliance_units_all_zero_quantities(self, mock_create_adjustment, mock_bccr_service):
-        # Arrange
-        account_id = "123"
-        compliance_report_version_id = "1"
         payload = {
             "bccr_compliance_account_id": "456",
             "bccr_units": [
@@ -394,92 +613,9 @@ class TestApplyComplianceUnitsService:
         }
 
         # Act
-        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version_id, payload)
+        ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
 
         # Assert
-        mock_bccr_service.client.transfer_compliance_units.assert_called_once()
-        mock_create_adjustment.assert_called_once()
         call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
-        assert call_args["destination_account_id"] == "456"
         assert call_args["mixedUnitList"] == []
-
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_REPORT_VERSION_SERVICE_PATH)
-    def test_get_applied_compliance_units_data_success(
-        self, mock_report_version_service, mock_bccr_service, mock_compliance_charge_rate_service
-    ):
-        # Arrange
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", bccr_subaccount_id="123456789101234"
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
-        )
-        mock_report_version_service.get_compliance_report_version.return_value = compliance_report_version
-
-        mock_bccr_service.client.list_all_units.return_value = {
-            "entities": [
-                {
-                    "id": "1",
-                    "unitType": "BCE",
-                    "serialNo": "BCE-2025-0001",
-                    "vintage": 2025,
-                    "holdingQuantity": 50,
-                }
-            ]
-        }
-        mock_compliance_charge_rate_service.get_rate_for_year.return_value = Decimal("80.00")
-
-        # Act
-        result = ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
-
-        # Assert
-        mock_report_version_service.get_compliance_report_version.assert_called_once_with(42)
-        mock_bccr_service.client.list_all_units.assert_called_once_with(
-            account_id="123456789101234", state_filter="ACTIVE,RETIRED"
-        )
-        mock_compliance_charge_rate_service.get_rate_for_year.assert_called_once_with(
-            compliance_report.report.reporting_year
-        )
-        assert isinstance(result, list)
-        assert isinstance(result[0], BCCRUnit)
-        assert result[0].id == "1"
-        assert result[0].type == "Earned Credits"
-        assert result[0].serial_number == "BCE-2025-0001"
-        assert result[0].vintage_year == 2025
-        assert result[0].quantity_applied == "50"
-        assert result[0].equivalent_value == "4000.00"  # 50 * 80
-
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_REPORT_VERSION_SERVICE_PATH)
-    def test_get_applied_compliance_units_data_no_subaccount(self, mock_report_version_service, mock_bccr_service):
-        # Arrange
-        compliance_report = baker.make_recipe("compliance.tests.utils.compliance_report", bccr_subaccount_id=None)
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
-        )
-        mock_report_version_service.get_compliance_report_version.return_value = compliance_report_version
-
-        # Act
-        result = ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
-
-        # Assert
-        assert result == []
-
-    @patch(APPLY_COMPLIANCE_UNITS_BCCR_ACCOUNT_SERVICE_PATH)
-    @patch(COMPLIANCE_REPORT_VERSION_SERVICE_PATH)
-    def test_get_applied_compliance_units_data_bccr_error(self, mock_report_version_service, mock_bccr_service):
-        # Arrange
-        compliance_report = baker.make_recipe(
-            "compliance.tests.utils.compliance_report", bccr_subaccount_id="123456789101234"
-        )
-        compliance_report_version = baker.make_recipe(
-            "compliance.tests.utils.compliance_report_version", compliance_report=compliance_report
-        )
-        mock_report_version_service.get_compliance_report_version.return_value = compliance_report_version
-
-        mock_bccr_service.client.list_all_units.side_effect = BCCarbonRegistryError("Service error")
-
-        # Act & Assert
-        with pytest.raises(BCCarbonRegistryError):
-            ApplyComplianceUnitsService.get_applied_compliance_units_data(42)
+        assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("0.00")

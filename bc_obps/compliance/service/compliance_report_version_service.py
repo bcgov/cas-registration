@@ -152,7 +152,7 @@ class ComplianceReportVersionService:
         if charge_rate == 0:
             return Decimal("0")
 
-        return outstanding_balance / charge_rate
+        return (outstanding_balance / charge_rate).quantize(Decimal("0.01"))
 
     @staticmethod
     def calculate_outstanding_balance(compliance_report_version: ComplianceReportVersion) -> Decimal:

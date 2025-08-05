@@ -19,6 +19,7 @@ export const ComplianceUnitsGrid = ({
     compliance_report_version_id: complianceReportVersionId,
     applied_compliance_units: appliedComplianceUnits,
   } = value;
+  const { can_apply_compliance_units: canApplyUnits } = appliedComplianceUnits;
 
   const router = useRouter();
 
@@ -57,16 +58,18 @@ export const ComplianceUnitsGrid = ({
           },
         }}
       />
-      <div className="flex justify-end mt-4">
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleApplyComplianceUnits}
-          className="p-3"
-        >
-          Apply Compliance Units
-        </Button>
-      </div>
+      {canApplyUnits && (
+        <div className="flex justify-end mt-4">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleApplyComplianceUnits}
+            className="p-3"
+          >
+            Apply Compliance Units
+          </Button>
+        </div>
+      )}
     </SimpleAccordion>
   );
 };

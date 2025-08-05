@@ -22,6 +22,8 @@ export interface BccrComplianceAccountResponse {
   bccr_units?: BccrUnit[];
   charge_rate: number;
   outstanding_balance: number;
+  compliance_unit_cap_limit: number;
+  compliance_unit_cap_remaining: number;
 }
 
 export interface RequestIssuanceOfEarnedCreditsFormData {
@@ -154,12 +156,16 @@ export interface ComplianceSummary {
   outstanding_balance_tco2e?: number;
   equivalent_value?: number;
   outstanding_balance_equivalent_value?: number;
+  emissions_attributable_for_compliance?: string;
+  emissions_limit?: string;
 }
 
 export interface ComplianceAppliedUnitsData {
   rows: ComplianceAppliedUnits[];
   row_count: number;
+  can_apply_compliance_units: boolean;
 }
+
 export interface ComplianceAppliedUnitsSummary {
   compliance_report_version_id: number;
   applied_compliance_units: ComplianceAppliedUnitsData;

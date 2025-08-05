@@ -6,9 +6,9 @@ import {
 } from "next/server";
 import { MiddlewareFactory } from "@bciers/middlewares";
 import { getToken } from "@bciers/actions";
+import { getUserRole } from "@bciers/middlewares";
 import {
   extractReportVersionId,
-  getUserRole,
   REPORT_APP_BASE,
   REPORT_BASE,
   REPORTING_BASE,
