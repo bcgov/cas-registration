@@ -236,3 +236,24 @@ class TestComplianceReportVersionService:
         # Assert
         assert result == Decimal("0.00")  # Not "0E+2"
         assert str(result) == "0.00"
+
+    def test_calculate_display_value_excess_emissions(self):
+        version_1 = baker.make_recipe('compliance.tests.utils.compliance_report_version')
+        version_1.report_compliance_summary.excess_emissions = Decimal("100.00")
+        version_1.report_compliance_summary.save()
+
+        version_2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            is_supplementary=True,
+            excess_emissions_delta_from_previous=Decimal("2.0"),
+        )
+        version_3 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            is_supplementary=True,
+            excess_emissions_delta_from_previous=Decimal("-2.0"),
+        )
+
+        # Act
+        assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_1) == Decimal("100.00")
+        assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_2) == Decimal("2.0")
+        assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_3) == Decimal("0")
