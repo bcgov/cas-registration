@@ -8,7 +8,6 @@ from compliance.models.compliance_obligation import ComplianceObligation
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.schema.automatic_overdue_penalty import AutomaticOverduePenaltyOut
-from compliance.dataclass import CompliancePenaltyData
 
 
 @router.get(
@@ -18,9 +17,7 @@ from compliance.dataclass import CompliancePenaltyData
     description="Get automatic overdue penalty data for a compliance report version.",
     auth=authorize("approved_industry_user"),
 )
-def get_automatic_overdue_penalty(
-    request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], CompliancePenaltyData]:
+def get_automatic_overdue_penalty(request: HttpRequest, compliance_report_version_id: int) -> Tuple[Literal[200], dict]:
     """
     Get automatic overdue penalty data for a compliance report version.
     """

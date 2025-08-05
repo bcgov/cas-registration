@@ -26,7 +26,6 @@ from compliance.service.elicensing.elicensing_api_client import (
 )
 from compliance.service.elicensing.schema import FeeCreationItem
 from django.db import transaction
-from compliance.dataclass import CompliancePenaltyData
 
 elicensing_api_client = ELicensingAPIClient()
 
@@ -46,7 +45,7 @@ class PenaltyCalculationService:
         AUTOMATIC_OVERDUE = "Automatic Overdue"
 
     @classmethod
-    def get_penalty_data(cls, obligation: ComplianceObligation) -> CompliancePenaltyData:
+    def get_penalty_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
         """
         Get penalty data for a compliance obligation.
 
@@ -64,18 +63,18 @@ class PenaltyCalculationService:
         faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
         total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
 
-        return CompliancePenaltyData(
-            penalty_status=obligation.penalty_status,
-            penalty_type="Automatic Overdue",
-            days_late=penalty.compliance_penalty_accruals.count(),
-            penalty_charge_rate=cls.DAILY_PENALTY_RATE,
-            accumulated_penalty=last_accrual_record.accumulated_penalty,  # type: ignore [union-attr]
-            accumulated_compounding=last_accrual_record.accumulated_compounded,  # type: ignore [union-attr]
-            total_penalty=penalty.penalty_amount,
-            total_amount=total_amount,
-            data_is_fresh=refresh_result.data_is_fresh,
-            faa_interest=faa_interest,  # type: ignore [arg-type]
-        )
+        return {
+            "penalty_status": obligation.penalty_status,
+            "penalty_type": cls.PenaltyType.AUTOMATIC_OVERDUE.value,
+            "penalty_charge_rate": cls.DAILY_PENALTY_RATE * 100,
+            "days_late": penalty.compliance_penalty_accruals.count(),
+            "accumulated_penalty": last_accrual_record.accumulated_penalty,  # type: ignore [union-attr]
+            "accumulated_compounding": last_accrual_record.accumulated_compounded,  # type: ignore [union-attr]
+            "total_penalty": penalty.penalty_amount,
+            "faa_interest": faa_interest,
+            "total_amount": total_amount,
+            "data_is_fresh": refresh_result.data_is_fresh,
+        }
 
     @classmethod
     def should_calculate_penalty(cls, obligation: ComplianceObligation) -> Tuple[bool, RefreshWrapperReturn]:
