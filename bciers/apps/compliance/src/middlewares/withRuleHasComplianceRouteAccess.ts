@@ -10,7 +10,7 @@ import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import hasRegisteredOperationForCurrentUser from "@bciers/actions/api/hasRegisteredOperationForCurrentUser";
+import getComplianceAccessForCurrentUser from "@/compliance/src/app/utils/getComplianceAccessForCurrentUser";
 
 // --------------------
 // Rule Context & Types
@@ -20,12 +20,14 @@ type RuleContext = {
   getComplianceAppliedUnits: (
     complianceReportVersionId: number,
   ) => Promise<boolean>;
-  getHasRegisteredOperation: () => Promise<boolean>;
+  getComplianceAccessForCurrentUser: (
+    complianceReportVersionId?: number,
+  ) => Promise<boolean>;
 };
 
 const createRuleContext = (): RuleContext => {
   const canApplyComplianceUnitsCache: Record<number, boolean> = {};
-  let hasRegisteredOperationCache: boolean | undefined;
+  let getComplianceAccessCache: boolean | undefined;
 
   return {
     canApplyComplianceUnitsCache,
@@ -39,12 +41,18 @@ const createRuleContext = (): RuleContext => {
       }
       return canApplyComplianceUnitsCache[complianceReportVersionId];
     },
-    getHasRegisteredOperation: async () => {
-      if (hasRegisteredOperationCache === undefined) {
-        const result = await hasRegisteredOperationForCurrentUser();
-        hasRegisteredOperationCache = result.has_registered_operation === true;
+    getComplianceAccessForCurrentUser: async (
+      complianceReportVersionId?: number,
+    ) => {
+      if (getComplianceAccessCache === undefined) {
+        const result = await getComplianceAccessForCurrentUser(
+          complianceReportVersionId,
+        );
+        console.log("result", result);
+        getComplianceAccessCache =
+          !!result?.status && result.status !== "Invalid";
       }
-      return hasRegisteredOperationCache;
+      return getComplianceAccessCache;
     },
   };
 };
@@ -72,10 +80,12 @@ type PermissionRule = {
 
 const permissionRules: PermissionRule[] = [
   {
-    name: "hasRegisteredOperation",
+    name: "getComplianceAccess",
     isApplicable: () => true,
-    validate: async (_id, _request, context) => {
-      return context!.getHasRegisteredOperation();
+    validate: async (complianceReportVersionId, _request, context) => {
+      return context!.getComplianceAccessForCurrentUser(
+        complianceReportVersionId,
+      );
     },
     redirect: (_id, request) =>
       NextResponse.redirect(new URL(`/${AppRoutes.ONBOARDING}`, request.url)),
