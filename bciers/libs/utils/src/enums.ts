@@ -126,3 +126,9 @@ export enum ComplianceSummaryStatus {
   EARNED_CREDITS = "Earned credits",
   NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }
+
+export enum PenaltyStatus {
+  ACCRUING = "Accruing",
+  PAID = "Paid",
+  NONE = "None",
+}

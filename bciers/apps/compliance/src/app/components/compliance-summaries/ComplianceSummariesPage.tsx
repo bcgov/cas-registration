@@ -7,6 +7,7 @@ import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import {
   ComplianceSummaryStatus,
   FrontEndRoles,
+  PenaltyStatus,
 } from "@bciers/utils/src/enums";
 
 export default async function ComplianceSummariesPage({
@@ -18,7 +19,14 @@ export default async function ComplianceSummariesPage({
   const initialData = await fetchComplianceSummariesPageData(searchParams);
   const frontEndRole = await getSessionRole();
   const currentDate = new Date(); // Current date
+  const currentDatePST = new Date(
+    currentDate.toLocaleString("en-US", { timeZone: "America/Vancouver" }),
+  );
   const dueDate = new Date(reportingYear + 1, 10, 30, 23, 59, 59); // November 30 of the reporting year + 1
+  const dueDatePST = new Date(
+    dueDate.toLocaleString("en-US", { timeZone: "America/Vancouver" }),
+  );
+
   const isAllowedCas = [
     FrontEndRoles.CAS_DIRECTOR,
     FrontEndRoles.CAS_ANALYST,
@@ -28,11 +36,15 @@ export default async function ComplianceSummariesPage({
   const isAllowedIndustryUser = [
     FrontEndRoles.INDUSTRY_USER,
     FrontEndRoles.INDUSTRY_USER_ADMIN,
-  ];
+  ].includes(frontEndRole);
   const obligationsNotMet = initialData.rows.some(
     (row) =>
       row.obligation_id &&
       row.status === ComplianceSummaryStatus.OBLIGATION_NOT_MET,
+  );
+  const penaltyExists = initialData.rows.some(
+    (row) =>
+      row.penalty_status && row.penalty_status === PenaltyStatus.ACCRUING,
   );
 
   return (
@@ -42,7 +54,7 @@ export default async function ComplianceSummariesPage({
           {isAllowedIndustryUser && obligationsNotMet && (
             <AlertNote>
               Your compliance obligation for the {reportingYear} reporting year{" "}
-              {currentDate > dueDate ? "was" : "is"}{" "}
+              {currentDatePST > dueDatePST ? "was" : "is"}{" "}
               <strong>due on November 30, {reportingYear + 1}</strong>. Please
               pay five business days in advance to account for the processing
               time.
@@ -50,8 +62,9 @@ export default async function ComplianceSummariesPage({
           )}
         </div>
         {isAllowedIndustryUser &&
-          currentDate > dueDate &&
-          obligationsNotMet && (
+          currentDatePST > dueDatePST &&
+          obligationsNotMet &&
+          penaltyExists && (
             <AlertNote>
               An automatic overdue penalty has been incurred and{" "}
               <strong>accrues at 0.38% daily</strong> since the compliance

@@ -6,6 +6,7 @@ import { DataGridSearchParams } from "@/compliance/src/app/types";
 import {
   ComplianceSummaryStatus,
   FrontEndRoles,
+  PenaltyStatus,
 } from "@bciers/utils/src/enums";
 import * as reportingYearModule from "@reporting/src/app/utils/getReportingYear";
 
@@ -21,7 +22,7 @@ vi.mock(
 // --- Utility Mocks ---
 
 vi.mock("@bciers/utils/src/sessionUtils", () => ({
-  getSessionRole: vi.fn(() => FrontEndRoles.CAS_ADMIN),
+  getSessionRole: vi.fn(() => FrontEndRoles.INDUSTRY_USER_ADMIN),
 }));
 
 // --- Constants ---
@@ -55,16 +56,22 @@ const mockFetchResponseNoUnmetObligations = {
       excess_emissions: 50,
       status: ComplianceSummaryStatus.OBLIGATION_FULLY_MET,
     },
+  ],
+  row_count: 1,
+};
+const mockFetchResponseWithPenalty = {
+  rows: [
     {
-      id: 2,
-      operation_name: "Another Test Operation",
+      id: 1,
+      operation_name: "Test Operation",
       reporting_year: 2024,
-      excess_emissions: 1000,
-      obligation_id: "obligation-124",
-      status: ComplianceSummaryStatus.OBLIGATION_FULLY_MET,
+      excess_emissions: 50,
+      status: ComplianceSummaryStatus.OBLIGATION_NOT_MET,
+      penalty_status: PenaltyStatus.ACCRUING,
+      obligation_id: "obligation-111",
     },
   ],
-  row_count: 2,
+  row_count: 1,
 };
 
 // --- Spies ---
@@ -86,7 +93,7 @@ describe("ComplianceSummariesPage", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     fetchSpy.mockResolvedValue(mockFetchResponse);
-    roleSpy.mockResolvedValue(FrontEndRoles.CAS_ADMIN);
+    roleSpy.mockResolvedValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
     vi.spyOn(reportingYearModule, "getReportingYear").mockResolvedValue({
       reporting_year: 2024,
       report_due_date: "2025-03-31",
@@ -121,7 +128,7 @@ describe("ComplianceSummariesPage", () => {
 
   // first alert only
   it("renders 1st alert message with dynamic reporting year", async () => {
-    const currentDate = new Date("2025-10-01");
+    const currentDate = new Date(2025, 9, 30);
     vi.setSystemTime(currentDate);
     await renderPage();
     expect(
@@ -135,32 +142,20 @@ describe("ComplianceSummariesPage", () => {
     ).toBeNull();
   });
 
-  // first alert modified
-  it("renders 1st alert message with 'was' if current date is past due", async () => {
-    fetchSpy.mockResolvedValue(mockFetchResponse);
+  // both alerts + first alert modified
+  it("renders both alert messages for overdue penalty if date was past due and initial data has obligation not met", async () => {
+    fetchSpy.mockResolvedValue(mockFetchResponseWithPenalty);
     const currentDate = new Date(2025, 11, 1);
     vi.setSystemTime(currentDate);
+
     await renderPage();
+
     expect(
       screen.getByText(
         /Your compliance obligation for the 2024 reporting year was/i,
       ),
     ).toBeVisible();
     expect(screen.getByText(/due on November 30, 2025/i)).toBeVisible();
-  });
-
-  // both alerts
-  it("renders both alert messages for overdue penalty if date was past due and initial data has obligation not met", async () => {
-    const currentDate = new Date(2025, 11, 1);
-    vi.setSystemTime(currentDate);
-
-    await renderPage();
-
-    expect(
-      screen.getByText(
-        /Your compliance obligation for the 2024 reporting year was/i,
-      ),
-    ).toBeVisible();
     expect(
       screen.getByText(/An automatic overdue penalty has been incurred/i),
     ).toBeVisible();
