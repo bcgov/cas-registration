@@ -1,3 +1,23 @@
+# [3.14.0](https://github.com/bcgov/cas-registration/compare/v3.12.0...v3.14.0) (2025-08-06)
+
+### Bug Fixes
+
+- fix navigation URLs for payment instructions and update tests ([48e758f](https://github.com/bcgov/cas-registration/commit/48e758f715677cac424d24d77613df625925265a))
+- invoice amount should not add adjustments ([#3629](https://github.com/bcgov/cas-registration/issues/3629)) ([4e4feec](https://github.com/bcgov/cas-registration/commit/4e4feec3600e4d09c6f4e8800a0caf6afa9ba9e4))
+- outstanding balance calculation after applying units ([b6fecdb](https://github.com/bcgov/cas-registration/commit/b6fecdb0df4bc5b87c1dbac916eef250528adc51))
+
+### Features
+
+- add BCCR project and issuance IDs for idempotency in earned credits ([8dd7d7f](https://github.com/bcgov/cas-registration/commit/8dd7d7f771e6c6bc9d0f578a1a3de360079d37fd))
+- add template for automatic overdue penalty calculation and create review penalty summary page ([4cf95fc](https://github.com/bcgov/cas-registration/commit/4cf95fc495811bba2609794724e24022c9cb7775))
+- display watermark for voided invoices ([b32e78d](https://github.com/bcgov/cas-registration/commit/b32e78d77ab157609249791a6987531be0df1edb))
+- enhance earned credits flow with detailed status handling and display logic ([e6e3c75](https://github.com/bcgov/cas-registration/commit/e6e3c7580e96388bfc351a382e183b2002744a85))
+- implement automatic overdue penalty calculation with payments and adjustments tracking ([2ded5dd](https://github.com/bcgov/cas-registration/commit/2ded5ddb1e5768ad77013c099390e33c97082b7c))
+
+### Reverts
+
+- Revert "temp: console.log to test service return" ([9a2e3b5](https://github.com/bcgov/cas-registration/commit/9a2e3b53e618fa738c9170de91545f0ef349915b))
+
 # [3.13.0](https://github.com/bcgov/cas-registration/compare/v3.12.0...v3.13.0) (2025-07-30)
 
 ### Bug Fixes
