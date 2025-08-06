@@ -98,3 +98,26 @@ class OperationDataAccessService:
             .filter(operator_id=user_operator.operator_id)
             .only("id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id")
         )
+
+    @classmethod
+    def get_all_previously_owned_operations_for_user_operator(cls, user: User) -> QuerySet[Operation]:
+        """
+        Returns all operations that were previously owned by the user's operator.
+        """
+        if user.is_irc_user():
+            # to be implemented later
+            return
+        else:
+            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+
+            return (
+                Operation.objects.filter(
+                    designated_operators__operator_id=user_operator.operator_id,
+                    designated_operators__end_date__isnull=False,
+                )
+                .select_related("operator", "bc_obps_regulated_operation")
+                .exclude(status__in=[Operation.Statuses.NOT_STARTED, Operation.Statuses.DRAFT])
+                .only(
+                    "id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id"
+                )
+            )
