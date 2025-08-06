@@ -183,3 +183,7 @@ class TestReportingDashboardService:
             (operations[3].id, None, None),
             (operations[2].id, 'Submitted', r2_version1_id),
         ]
+
+    def test_report_retrieval_after_transfer(self):
+        # TODO
+        pass

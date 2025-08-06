@@ -90,7 +90,7 @@ class OperationService:
         user_guid: UUID,
     ) -> QuerySet[Operation]:
         user = UserDataAccessService.get_by_guid(user_guid)
-        return OperationDataAccessService.get_all_operations_for_user(user).filter(
+        return OperationDataAccessService.get_all_current_operations_for_user(user).filter(
             ~Q(status=Operation.Statuses.REGISTERED)
         )
 
