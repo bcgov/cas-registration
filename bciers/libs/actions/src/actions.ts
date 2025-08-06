@@ -116,7 +116,11 @@ export async function actionHandler(
         Sentry.captureException(error as Error);
         if (error instanceof Error) {
           // eslint-disable-next-line no-console
-          console.error(`An error occurred while fetching ${endpoint}:`, error);
+          console.error(
+            "An error occurred while fetching %s:",
+            endpoint,
+            error,
+          );
           if (error.message === ENDPOINT_NOT_ALLOWED_ERROR) {
             return {
               error: `Your session has timed out. Please log in again at https://industrialemissions.gov.bc.ca/onboarding to continue.`,
