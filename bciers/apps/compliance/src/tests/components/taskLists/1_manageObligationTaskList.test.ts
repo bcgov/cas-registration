@@ -128,6 +128,7 @@ describe("generateManageObligationTaskList", () => {
     const dataWithZeroBalance = {
       reporting_year: 2024,
       outstanding_balance: 0,
+      penalty_status: "NOT PAID",
     };
 
     // Generate task list with PayObligationTrackPayments active page and outstanding balance is 0

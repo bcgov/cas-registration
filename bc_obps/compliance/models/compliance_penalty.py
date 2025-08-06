@@ -19,6 +19,8 @@ class CompliancePenalty(TimeStampedModel):
         on_delete=models.PROTECT,
         related_name="compliance_penalty",
         db_comment="The invoice from elicensing that this penalty created",
+        null=True,
+        blank=True,
     )
 
     accrual_start_date = models.DateField(

@@ -72,7 +72,8 @@ export const generateManageObligationTaskList: (
 
   if (
     activePage === ActivePage.PayObligationTrackPayments &&
-    Number(outstandingBalance) === 0
+    Number(outstandingBalance) === 0 &&
+    (data?.penalty_status === "NOT PAID" || data?.penalty_status === "PAID")
   ) {
     const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
       complianceReportVersionId,
