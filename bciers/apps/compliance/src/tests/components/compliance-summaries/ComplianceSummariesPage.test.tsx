@@ -112,7 +112,7 @@ describe("ComplianceSummariesPage", () => {
   });
 
   // neither alerts
-  it("doesn't render either alert messages if no obligations fully met", async () => {
+  it("doesn't render either alert messages if obligations fully met", async () => {
     fetchSpy.mockResolvedValue(mockFetchResponseNoUnmetObligations);
     await renderPage();
 

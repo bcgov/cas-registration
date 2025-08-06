@@ -128,7 +128,8 @@ export enum ComplianceSummaryStatus {
 }
 
 export enum PenaltyStatus {
-  ACCRUING = "Accruing",
-  PAID = "Paid",
-  NONE = "None",
+  ACCRUING = "ACCRUING",
+  PAID = "PAID",
+  NONE = "NONE",
+  NOT_PAID = "NOT_PAID",
 }
