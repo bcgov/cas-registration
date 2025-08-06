@@ -465,3 +465,6 @@ class TestReportingDashboardService:
             (testing_version[1], operation2.name, last_year),
             (testing_version[2], operation2.name, current_year),
         ]
+    def test_report_retrieval_after_transfer(self):
+        # TODO
+        pass
