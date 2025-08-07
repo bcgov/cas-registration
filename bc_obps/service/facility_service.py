@@ -244,12 +244,20 @@ class FacilityService:
         return facilities
 
     @classmethod
-    def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID) -> BcGreenhouseGasId:
+    def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID, bcghg_id: str | None = None) -> BcGreenhouseGasId:
         facility = FacilityService.get_if_authorized(user_guid, facility_id)
-        facility.generate_unique_bcghg_id(user_guid=user_guid)
+
+        if bcghg_id:
+            bcghg_id_record, _ = BcGreenhouseGasId.objects.get_or_create(
+                id=bcghg_id, defaults={'issued_by_id': user_guid, 'comments': 'bcghg id manually set to facility'}
+            )
+            facility.bcghg_id = bcghg_id_record
+        else:
+            facility.generate_unique_bcghg_id(user_guid=user_guid)
+
+        facility.save(update_fields=['bcghg_id'])
         if facility.bcghg_id is None:
             raise Exception('Failed to create a BCGHG ID for the facility.')
-        facility.save(update_fields=['bcghg_id'])
 
         return facility.bcghg_id
 

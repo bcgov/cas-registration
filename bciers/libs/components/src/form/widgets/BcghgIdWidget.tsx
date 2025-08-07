@@ -25,18 +25,20 @@ const styles = {
 function generateBcghgId(
   entityId: string,
   entityType: EntityWithBcghgType,
-  bxghgIdOverride?: string,
+  bcghgIdOverride?: string,
 ) {
   const endpoint =
     entityType === EntityWithBcghgType.OPERATION
       ? `registration/operations/${entityId}/bcghg-id`
       : `registration/facilities/${entityId}/bcghg-id`;
-  const payload = bxghgIdOverride
-    ? JSON.stringify({ bcghg_id: bxghgIdOverride })
-    : undefined;
-  return actionHandler(endpoint, "PATCH", "", {
-    body: payload,
-  });
+
+  if (bcghgIdOverride) {
+    return actionHandler(endpoint, "PATCH", "", {
+      body: JSON.stringify({ bcghg_id: bcghgIdOverride }),
+    });
+  }
+
+  return actionHandler(endpoint, "PATCH", "");
 }
 
 const BcghgIdWidget: React.FC<WidgetProps> = ({
@@ -104,8 +106,8 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
             <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
           </>
         ) : (
-          <>
-            Or click&nbsp;
+          <div data-testid="edit-bcghg-id-text">
+            Or click{" "}
             <Link
               href="#"
               style={{ cursor: "pointer" }}
@@ -116,9 +118,9 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
               }}
             >
               edit
-            </Link>
-            &nbsp;to enter a BCGHGID
-          </>
+            </Link>{" "}
+            to enter a BCGHGID
+          </div>
         )}
       </>
     );

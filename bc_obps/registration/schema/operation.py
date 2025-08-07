@@ -1,5 +1,4 @@
 from uuid import UUID
-from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
 from registration.models.bc_obps_regulated_operation import BcObpsRegulatedOperation
 from typing import List, Optional, Literal
 from registration.models.contact import Contact
@@ -289,16 +288,6 @@ class OperationBoroIdOut(ModelSchema):
     class Meta:
         model = BcObpsRegulatedOperation
         fields = ['id']
-
-
-class OperationBcghgIdOut(ModelSchema):
-    class Meta:
-        model = BcGreenhouseGasId
-        fields = ['id']
-
-
-class OperationBcghgIdIn(Schema):
-    bcghg_id: Optional[str] = None
 
 
 class OperationUpdateStatusOut(ModelSchema):
