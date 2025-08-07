@@ -2,6 +2,7 @@
 from .validators import *
 from .activities import *
 from .business_structure import *
+from .bcghg_id import *
 from .contact import *
 from .facility import *
 from .facility_designated_operation_timeline import *

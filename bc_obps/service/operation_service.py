@@ -645,7 +645,7 @@ class OperationService:
 
         if bcghg_id:
             bcghg_id_record, _ = BcGreenhouseGasId.objects.get_or_create(
-                id=bcghg_id, defaults={'issued_by_id': user_guid, 'comments': 'bcghg id manually set'}
+                id=bcghg_id, defaults={'issued_by_id': user_guid, 'comments': 'bcghg id manually set to operation'}
             )
             operation.bcghg_id = bcghg_id_record
         else:
