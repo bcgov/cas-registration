@@ -286,7 +286,7 @@ class ApplyComplianceUnitsService:
 
         response = bccr_account_service.client.transfer_compliance_units(asdict(transfer_compliance_units_payload))
         if response.get("success"):
-            ComplianceAdjustmentService.create_adjustment(
+            ComplianceAdjustmentService.create_adjustment_for_current_version(
                 compliance_report_version_id=compliance_report_version_id,
                 adjustment_total=-Decimal(payload["total_equivalent_value"]),
             )

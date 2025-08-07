@@ -1,13 +1,13 @@
 from django.db import models
 from registration.models.time_stamped_model import TimeStampedModel
 from compliance.models import ElicensingLineItem
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from .rls_configs.elicensing_adjustment import Rls as ElicensingAdjustmentRls
 
 
 class ElicensingAdjustment(TimeStampedModel):
     """
     Adjustment data synced with elicensing.
-
     """
 
     adjustment_object_id = models.IntegerField(
@@ -19,6 +19,15 @@ class ElicensingAdjustment(TimeStampedModel):
         on_delete=models.CASCADE,
         db_comment="Foreign key to the line item record this adjustment relates to",
         related_name="elicensing_adjustments",
+    )
+
+    supplementary_compliance_report_version = models.ForeignKey(
+        ComplianceReportVersion,
+        on_delete=models.CASCADE,
+        db_comment="Foreign key to the supplementary compliance report version that triggered this adjustment. When a supplementary report reduces excess emissions, an adjustment is created and applied to the existing invoice from the original compliance report version, but this field tracks which supplementary version caused the adjustment.",
+        related_name="elicensing_adjustments",
+        null=True,
+        blank=True,
     )
 
     amount = models.DecimalField(
