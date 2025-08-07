@@ -11,11 +11,17 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
     )
     def test_get_compliance_report_versions_list_success(self, mock_get_versions):
         # Arrange
-        version1 = make_recipe('compliance.tests.utils.compliance_report_version')
+        version1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary__report_version__report_operation__operation_name="Test Operation1",
+        )
         version1.report_compliance_summary.excess_emissions = Decimal("50.0000")
         version1.report_compliance_summary.save()
 
-        version2 = make_recipe('compliance.tests.utils.compliance_report_version')
+        version2 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary__report_version__report_operation__operation_name="Test Operation2",
+        )
         version2.report_compliance_summary.excess_emissions = Decimal("75.0000")
         version2.report_compliance_summary.save()
 
@@ -45,13 +51,19 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         # Verify first version
         assert items[0]["id"] == version1.id
         assert items[0]["status"] == version1.status
-        assert items[0]["operation_name"] == version1.compliance_report.report.operation.name
+        assert (
+            items[0]["operation_name"]
+            == version1.report_compliance_summary.report_version.report_operation.operation_name
+        )
         assert items[0]["reporting_year"] == version1.compliance_report.compliance_period.end_date.year
         assert Decimal(items[0]["excess_emissions"]) == Decimal("50.0000")
 
         # Verify second version
         assert items[1]["id"] == version2.id
         assert items[1]["status"] == version2.status
-        assert items[1]["operation_name"] == version2.compliance_report.report.operation.name
+        assert (
+            items[1]["operation_name"]
+            == version2.report_compliance_summary.report_version.report_operation.operation_name
+        )
         assert items[1]["reporting_year"] == version2.compliance_report.compliance_period.end_date.year
         assert Decimal(items[1]["excess_emissions"]) == Decimal("75.0000")
