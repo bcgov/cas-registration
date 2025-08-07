@@ -5,7 +5,7 @@ from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
 from reporting.models import ReportOperation
-FROM reporting.models.report import Report
+from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
@@ -76,6 +76,7 @@ class ReportingDashboardService:
             Report.objects.filter(
                 operation_id=OuterRef("id"),
                 reporting_year=reporting_year,
+                operator_id=user.user_operators.first().operator_id,
             )
             .annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=cls.latest_report_version_subquery.values("status"))
@@ -113,7 +114,20 @@ class ReportingDashboardService:
             )
         )
 
+        # FIXME - duplicated variable sort_fields - figure out which one to use
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
+        print("\n\n\n\n\n\n**************************")
+        print(f"{queryset.count()} operations found")
+        print("**************************\n\n\n\n\n")
+
+        sort_field = sort_field or "id"
+        sort_order = sort_order or "asc"
+        sort_direction = "-" if sort_order == "desc" else ""
+
+        sort_fields = [f"{sort_direction}{sort_field}"]
+
+        if sort_field == "report_status":
+            sort_fields = [f"{sort_direction}report_status_sort_key"]
 
         return filters.filter(queryset).order_by(*sort_fields)
 
