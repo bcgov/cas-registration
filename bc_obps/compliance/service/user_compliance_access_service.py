@@ -9,13 +9,13 @@ class UserStatusEnum(Enum):
     REGISTERED = "Registered"
     INVALID = "Invalid"
 
-class UserComplianceAccessStatus:
+class UserComplianceAccessService:
     """
-    Service for user app access status
+    Service for user app access
     """
         
     @classmethod
-    def get_user_compliance_access_status(
+    def determine_user_status(
         cls, user_guid: UUID, compliance_report_version_id: Optional[int]
     ) -> str:
         """
@@ -58,5 +58,5 @@ class UserComplianceAccessStatus:
             else:
                 return UserStatusEnum.INVALID.value  # Explicitly invalid if version is not found or not owned
 
-        # Here the user has a registered operation but no valid report version, return generic registered status
+        # Here the user has a registered operation but no report version, return generic registered status
         return UserStatusEnum.REGISTERED.value
