@@ -93,7 +93,9 @@ class DecreasedObligationHandler:
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
-            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            # using NO_OBLIGATION_OR_EARNED_CREDITS status because this report version is supplementary
+            # and does not have an obligation
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
             excess_emissions_delta_from_previous=excess_emission_delta,
             is_supplementary=True,
         )

@@ -512,7 +512,7 @@ class TestDecreasedObligationHandler:
         assert isinstance(result, ComplianceReportVersion)
         assert result.compliance_report == compliance_report
         assert result.report_compliance_summary == new_summary
-        assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
         assert result.excess_emissions_delta_from_previous == Decimal('-300')
         assert result.is_supplementary is True
 

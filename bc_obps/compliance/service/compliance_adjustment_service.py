@@ -94,13 +94,20 @@ class ComplianceAdjustmentService:
             line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
 
+        # Determine the reason based on whether this is a supplementary report adjustment
+        reason = (
+            "Supplementary Report Adjustment"
+            if supplementary_compliance_report_version_id
+            else "Compliance Units Applied"
+        )
+
         adjustment_data = [
             {
                 "feeObjectId": elicensing_line_item.object_id,
                 "adjustmentGUID": str(uuid.uuid4()),
                 "adjustmentTotal": float(adjustment_total),
                 "date": timezone.now().strftime("%Y-%m-%d"),
-                "reason": "Compliance Units and/or Payments Applied",
+                "reason": reason,
                 "type": "Adjustment",
             }
         ]
