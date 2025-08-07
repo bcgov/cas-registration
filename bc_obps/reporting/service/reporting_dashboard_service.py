@@ -50,6 +50,7 @@ class ReportingDashboardService:
             Report.objects.filter(
                 operation_id=OuterRef("id"),
                 reporting_year=reporting_year,
+                operator_id=user.user_operators.first().operator_id,
             )
             .annotate(latest_version_id=latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=latest_report_version_subquery.values("status"))
@@ -95,6 +96,10 @@ class ReportingDashboardService:
                 ),
             )
         )
+
+        print("\n\n\n\n\n\n**************************")
+        print(f"{queryset.count()} operations found")
+        print("**************************\n\n\n\n\n")
 
         sort_field = sort_field or "id"
         sort_order = sort_order or "asc"
