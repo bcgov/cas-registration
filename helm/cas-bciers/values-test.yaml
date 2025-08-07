@@ -121,6 +121,9 @@ dashboardFrontend:
 download-dags:
   airflowEndpoint: https://cas-airflow-test.apps.silver.devops.gov.bc.ca
 
+download-migration-test-dags:
+  airflowEndpoint: https://cas-airflow-test.apps.silver.devops.gov.bc.ca
+
 cas-logging-sidecar:
   host: ~
   index: "cas-bciers-test-logs"
