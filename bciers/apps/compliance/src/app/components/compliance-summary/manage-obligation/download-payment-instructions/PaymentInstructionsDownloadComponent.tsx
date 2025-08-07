@@ -10,16 +10,24 @@ import {
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
-  complianceReportVersionId: number;
-  invoiceID: string;
+  readonly complianceReportVersionId: number;
+  readonly invoiceID: string;
+  readonly customContinueUrl?: string;
+  readonly customBackUrl?: string;
 }
 
 export default function PaymentInstructionsDownloadComponent({
   complianceReportVersionId,
   invoiceID,
-}: Readonly<Props>) {
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  customContinueUrl,
+  customBackUrl,
+}: Props) {
+  const backUrl =
+    customBackUrl ??
+    `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
+  const saveAndContinueUrl =
+    customContinueUrl ??
+    `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {

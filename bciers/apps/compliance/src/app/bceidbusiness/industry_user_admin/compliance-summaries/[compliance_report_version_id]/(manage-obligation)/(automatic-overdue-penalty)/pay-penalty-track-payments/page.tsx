@@ -1,5 +1,4 @@
-import React from "react";
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/compliance/src/app/components/compliance-summary/manage-obligation/automatic-overdue-penalty/pay-penalty-track-payments/PenaltyTrackPaymentsPayPage";
 
-export default async function Page() {
-  return <div>To do in the task #91</div>;
-}
+export default defaultPageFactory(Page);

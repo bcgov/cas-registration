@@ -25,7 +25,7 @@ const PenaltySummaryReviewComponent = ({
   complianceReportVersionId,
 }: Props) => {
   const backUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =

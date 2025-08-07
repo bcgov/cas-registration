@@ -196,3 +196,13 @@ export interface AutomaticOverduePenalty {
   total_amount: string;
   data_is_fresh: boolean;
 }
+export interface PenaltyData {
+  outstanding_amount: string;
+  penalty_status: string;
+  data_is_fresh: boolean;
+  payment_data: PaymentData;
+}
+
+export interface PayPenaltyTrackPaymentsFormData extends PenaltyData {
+  payments: Payment[];
+}

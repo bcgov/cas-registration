@@ -1,3 +1,4 @@
+from datetime import date
 from uuid import UUID
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.db.models import QuerySet
@@ -143,5 +144,28 @@ class ComplianceDashboardService:
             compliance_report_version_id=compliance_report_version_id
         )
         payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
+
+        return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
+
+    @classmethod
+    def get_peanlty_payments_by_compliance_report_version_id(
+        cls, compliance_report_version_id: int
+    ) -> PaymentDataWithFreshnessFlag:
+        """
+        Fetches the monetary payments made towards a compliance penalty
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version the penalty belongs to
+        Returns:
+            The set of payment records that relate to the compliance penalty via the elicensing invoice
+        """
+
+        refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id, force_refresh=True
+        )
+        invoice = refreshed_data.invoice
+        payments = ElicensingPayment.objects.filter(
+            elicensing_line_item__elicensing_invoice=invoice, received_date__gt=date(2025, 8, 1)
+        )
 
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
