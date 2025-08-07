@@ -20,7 +20,7 @@ const PenaltySummaryReviewComponent = ({
   complianceReportVersionId,
 }: Props) => {
   const backUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
+  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
   const handleGeneratePenaltyInvoice = () => {
     // TODO: Implement generate penalty invoice logic in task #73
