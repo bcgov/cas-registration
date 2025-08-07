@@ -6,7 +6,7 @@ from registration.models import Operation
 
 # report aliases
 OPERATOR_NAME_ALIAS = "compliance_report.report.operator.legal_name"
-OPERATION_NAME_ALIAS = "compliance_report.report.operation.name"
+OPERATION_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operation_name"
 OPERATION_BCGHG_ID_ALIAS = "compliance_report.report.operation.bcghg_id.id"
 
 # reporting_year aliases

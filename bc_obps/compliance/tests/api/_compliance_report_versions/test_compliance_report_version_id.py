@@ -16,6 +16,7 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
             report_compliance_summary__excess_emissions=Decimal("50.0000"),
             report_compliance_summary__credited_emissions=Decimal("25.0000"),
             status="Obligation not met",
+            report_compliance_summary__report_version__report_operation__operation_name="Test Operation",
         )
         mock_get_version.return_value = compliance_report_version
 
@@ -37,7 +38,10 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
         # Verify the response data
         assert response_data["id"] == compliance_report_version.id
         assert response_data["status"] == compliance_report_version.status
-        assert response_data["operation_name"] == compliance_report_version.compliance_report.report.operation.name
+        assert (
+            response_data["operation_name"]
+            == compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
+        )
         assert (
             response_data["reporting_year"]
             == compliance_report_version.compliance_report.compliance_period.end_date.year
