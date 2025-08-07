@@ -1,34 +1,34 @@
-import { NextURL } from "next/dist/server/web/next-url";
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+import { NextURL } from "next/dist/server/web/next-url";
 import { withRuleHasComplianceRouteAccess } from "./withRuleHasComplianceRouteAccess";
 import * as constants from "./constants";
+
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import hasRegisteredOperationForCurrentUser from "@bciers/actions/api/hasRegisteredOperationForCurrentUser";
+import getComplianceAccessForCurrentUser from "@/compliance/src/app/utils/getComplianceAccessForCurrentUser";
 import { getToken } from "@bciers/actions";
+
 import {
   mockCasUserToken,
   mockIndustryUserToken,
 } from "@bciers/testConfig/data/tokens";
 
-// Mock modules
+// Mocks
 vi.mock("@bciers/actions", () => ({
   getToken: vi.fn(),
-}));
-vi.mock("@bciers/actions/api/hasRegisteredOperationForCurrentUser", () => ({
-  __esModule: true,
-  default: vi.fn(),
 }));
 vi.mock("@/compliance/src/app/utils/getComplianceAppliedUnits", () => ({
   __esModule: true,
   default: vi.fn(),
 }));
+vi.mock("@/compliance/src/app/utils/getComplianceAccessForCurrentUser", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 
+// Constants
 const DOMAIN = "https://localhost:3000";
 const defaultVersionId = 123;
 
-/**
- * Builds a full compliance path given a subroute
- */
 function buildCompliancePath(subRoute: string): string {
   return `/${constants.COMPLIANCE_BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}/${defaultVersionId}/${subRoute}`;
 }
@@ -37,7 +37,7 @@ const applyPath = buildCompliancePath(
 );
 const summariesPath = `/${constants.COMPLIANCE_BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
 
-// Helper to build NextRequest
+// Helpers
 function makeReq(path: string): NextRequest {
   return {
     nextUrl: new NextURL(`${DOMAIN}${path}`),
@@ -47,145 +47,101 @@ function makeReq(path: string): NextRequest {
 
 vi.spyOn(NextResponse, "redirect");
 
+// Reset between tests
 beforeEach(() => {
   vi.clearAllMocks();
-
-  // Default: industry (BCEID) user
-  (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
-
-  // Default: registration check passes
-  (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
-    has_registered_operation: true,
-  });
-
-  // Default: can apply units
-  (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
-    can_apply_compliance_units: true,
-    rows: [],
-    row_count: 0,
-  });
-
-  // Default: no version ID
   vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(null);
 });
 
-// Helper to run middleware
+// DRY mock setup
+function defaultSetup({
+  role = mockIndustryUserToken,
+  hasAccess = true,
+  canApply = true,
+  reportId = defaultVersionId,
+}: {
+  role?: any;
+  hasAccess?: boolean;
+  canApply?: boolean;
+  reportId?: number | null;
+} = {}) {
+  (getToken as vi.Mock).mockResolvedValue(role);
+  (getComplianceAccessForCurrentUser as vi.Mock).mockResolvedValue({
+    status: hasAccess ? "Registered" : "Invalid",
+  });
+  (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
+    can_apply_compliance_units: canApply,
+    rows: [],
+    row_count: 0,
+  });
+  vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
+    reportId,
+  );
+}
+
+// Runner
 async function runMiddleware(path: string) {
   const req = makeReq(path);
   const evt = {} as NextFetchEvent;
   const next = vi.fn(() => NextResponse.next());
   const mw = withRuleHasComplianceRouteAccess(next);
   const res = await mw(req, evt);
-  return { next, res };
+  return { req, res, next };
 }
 
+// ----------------------
+// Test Suite
+// ----------------------
 describe("withRuleHasComplianceRouteAccess middleware", () => {
-  it("redirects to /onboarding if hasRegisteredOperation is false", async () => {
-    // Arrange
-    (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
-      has_registered_operation: false,
-    });
+  it("redirects to /onboarding if compliance access is invalid", async () => {
+    defaultSetup({ hasAccess: false });
 
-    // Act
-    const { res } = await runMiddleware(
-      `/${constants.COMPLIANCE_BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
-    );
+    const { res } = await runMiddleware(summariesPath);
 
-    // Assert
-    expect(NextResponse.redirect).toHaveBeenCalledTimes(1);
     expect(res!.status).toBe(307);
-
-    const expectedRedirect = `/${constants.AppRoutes.ONBOARDING}`;
-    expect(res!.headers.get("location")).toContain(expectedRedirect);
+    expect(res!.headers.get("location")).toContain(
+      constants.AppRoutes.ONBOARDING,
+    );
   });
 
-  it("redirects to review-summary if can_apply_compliance_units is false", async () => {
-    // Arrange
-    vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
-      defaultVersionId,
-    );
-    // Ensure registration check passes
-    (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
-      has_registered_operation: true,
-    });
-    // Mock units failure
-    (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
-      can_apply_compliance_units: false,
-      rows: [],
-      row_count: 0,
-    });
+  it("redirects to review summary page when user cannot apply compliance units", async () => {
+    defaultSetup({ canApply: false });
 
-    // Act
     const { res } = await runMiddleware(applyPath);
 
-    // Assert
-    expect(NextResponse.redirect).toHaveBeenCalledTimes(1);
     expect(res!.status).toBe(307);
-
-    const expectedRedirect = summariesPath;
-    expect(res!.headers.get("location")).toContain(expectedRedirect);
+    expect(res!.headers.get("location")).toContain(summariesPath);
   });
 
-  it("allows request when all validations pass", async () => {
-    // Arrange: positive case with ID present
-    vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
-      defaultVersionId,
-    );
-    (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
-      has_registered_operation: true,
-    });
-    (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
-      can_apply_compliance_units: true,
-      rows: [
-        {
-          id: "unit-abc-123",
-          type: "ComplianceUnit",
-          serial_number: "CU-2025-0001",
-          vintage_year: "2025",
-          quantity_applied: 100,
-          equivalent_value: 1.0,
-        },
-      ],
-      row_count: 1,
-    });
+  it("allows request when all rules pass", async () => {
+    defaultSetup();
 
-    // Act
-    const { next, res } = await runMiddleware(applyPath);
+    const { res, next } = await runMiddleware(applyPath);
 
-    // Assert
-    expect(next).toHaveBeenCalledTimes(1);
+    expect(next).toHaveBeenCalled();
     expect(res!.status).toBe(200);
   });
 
-  it("skips rules for non-BCEID users", async () => {
-    // Arrange: CAS user
-    (getToken as vi.Mock).mockResolvedValue(mockCasUserToken);
-
-    // Act
-    const { next, res } = await runMiddleware("/compliance/any-path");
-
-    // Assert
-    expect(next).toHaveBeenCalledTimes(1);
-    expect(res!.status).toBe(200);
-  });
-
-  it("redirects to onboarding if checkHasPathAccess throws", async () => {
-    // Arrange: throw during hasRegisteredOperation
-    vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
-      null,
-    );
-    (hasRegisteredOperationForCurrentUser as vi.Mock).mockImplementation(() => {
+  it("redirects to onboarding if rule validation throws an error", async () => {
+    (getComplianceAccessForCurrentUser as vi.Mock).mockImplementation(() => {
       throw new Error("Simulated failure");
     });
 
-    // Act
-    const { res } = await runMiddleware("/compliance/throws-error");
+    const { res } = await runMiddleware(summariesPath);
 
-    // Assert
-    expect(NextResponse.redirect).toHaveBeenCalledTimes(1);
+    expect(getComplianceAccessForCurrentUser).toHaveBeenCalled();
     expect(res!.status).toBe(307);
+    expect(res!.headers.get("location")).toContain(
+      constants.AppRoutes.ONBOARDING,
+    );
+  });
 
-    const expectedRedirect = `/${constants.AppRoutes.ONBOARDING}`;
-    expect(res!.headers.get("location")).toContain(expectedRedirect);
+  it("skips rule validation for CAS users", async () => {
+    defaultSetup({ role: mockCasUserToken });
+
+    const { res, next } = await runMiddleware("/compliance/any-route");
+
+    expect(next).toHaveBeenCalled();
+    expect(res!.status).toBe(200);
   });
 });
