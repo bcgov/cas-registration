@@ -112,6 +112,8 @@ class ReportingDashboardService:
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
+            # need to ensure distinct() because the annotation above can produce duplicates when there's multiple reports for an operation
+            .distinct()
         )
 
         # FIXME - duplicated variable sort_fields - figure out which one to use
