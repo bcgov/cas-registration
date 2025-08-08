@@ -23,10 +23,10 @@ function InlineFieldTemplate({
   // UI Schema options
   const options = uiSchema?.["ui:options"] || {};
   const isLabel = options?.label !== false;
-  // Allow width override if inline is true
-  const inline = options?.inline;
-  const wide = options?.wide;
-  const cellWidth = inline ? "lg:w-full" : wide ? "lg:w-8/12" : "lg:w-4/12";
+
+  let cellWidth = "lg:w-4/12";
+  if (options?.inline) cellWidth = "lg:w-full";
+  else if (options?.wide) cellWidth = "lg:w-8/12";
 
   // Check for noteDescription in ui:options
   let noteDescription = options?.noteDescription;

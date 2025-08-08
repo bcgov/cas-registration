@@ -100,7 +100,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
                 setManualBcghgId(e.target.value);
               }}
               size="small"
-              inputRef={(el) => el && el.focus()}
+              inputRef={(el) => el?.focus()}
             />
             <Button onClick={handleIssueBcghgId}>Save</Button>
             <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
