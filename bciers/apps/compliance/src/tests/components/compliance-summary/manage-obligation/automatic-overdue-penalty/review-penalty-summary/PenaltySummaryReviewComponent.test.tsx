@@ -107,7 +107,7 @@ describe("PenaltySummaryReviewComponent", () => {
     expect(continueButton).toBeVisible();
     expect(continueButton).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/download-payment-instructions",
+      "/compliance-summaries/123/download-payment-penalty-instructions",
     );
   });
 
