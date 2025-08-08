@@ -1,3 +1,4 @@
+from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from reporting.models import ReportVersion, ReportComplianceSummary
 from compliance.models.compliance_report import ComplianceReport
@@ -146,16 +147,34 @@ class NoChangeHandler:
         return compliance_report_version
 
 
-# # Concrete strategy for increased credits
-# class IncreasedCreditHandler:
-#     def can_handle(self, new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-#         # Return True if credited emissions increased from previous version
-#         return False # return False until implemented
+# Concrete strategy for increased credits
+class IncreasedCreditHandler:
+    def can_handle(self, new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+        if (
+            new_summary.credited_emissions > previous_summary.credited_emissions
+        ):
+            return True
+        return False # return False until implemented
 
-#     def handle(self, compliance_report: ComplianceReport, new_summary: ReportComplianceSummary,
-#                previous_summary: ReportComplianceSummary, version_count: int) -> Optional[ComplianceReportVersion]:
-#         # Handle increased credit logic
-#         pass
+    def handle(self, compliance_report: ComplianceReport, new_summary: ReportComplianceSummary,
+               previous_summary: ReportComplianceSummary, version_count: int) -> Optional[ComplianceReportVersion]:
+        # Handle increased credit logic
+        # Incease the credits in the original earned_credit record by the appropriate amount
+        original_earned_credit_record = ComplianceEarnedCredit.objects.get(
+            compliance_report_version__compliance_report=compliance_report)
+        
+        original_earned_credit_record.earned_credits_amount = int(new_summary.credited_emissions)
+        original_earned_credit_record.earned_credits_amount.save()
+
+        # Create a compliance_report_version record with the 'no obligation or earned credits' status
+        compliance_report_version = ComplianceReportVersion.objects.create(
+            compliance_report=compliance_report,
+            report_compliance_summary=new_summary,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            is_supplementary=True,
+        )
+        return compliance_report_version
+        
 
 # # Concrete strategy for decreased credits
 # class DecreasedCreditHandler:
