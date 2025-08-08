@@ -7,6 +7,11 @@ import {
   createPenaltySummaryReviewSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/automatic-overdue-penalty/review-penalty-summary/penaltySummaryReviewSchema";
 import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
+import { useState } from "react";
+import generateInvoice, {
+  InvoiceType,
+} from "@/compliance/src/app/utils/generateInvoice";
+import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
   data: AutomaticOverduePenalty;
@@ -22,8 +27,26 @@ const PenaltySummaryReviewComponent = ({
   const backUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
   const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
 
-  const handleGeneratePenaltyInvoice = () => {
-    // TODO: Implement generate penalty invoice logic in task #73
+  const [errors, setErrors] = useState<string[]>([]);
+  const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
+    useState(false);
+
+  // brianna http://localhost:3000/compliance/compliance-summaries/2/review-penalty-summary
+  const handleGeneratePenaltyInvoice = async () => {
+    setErrors([]);
+    setIsGeneratingPenaltyInvoice(true);
+
+    try {
+      await generateInvoice(
+        complianceReportVersionId,
+        InvoiceType.AUTOMATIC_OVERDUE_PENALTY,
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrors([msg]);
+    } finally {
+      setIsGeneratingPenaltyInvoice(false);
+    }
   };
 
   return (
@@ -37,10 +60,17 @@ const PenaltySummaryReviewComponent = ({
         <ComplianceStepButtons
           backUrl={backUrl}
           continueUrl={saveAndContinueUrl}
-          middleButtonText="Generate Penalty Invoice"
+          middleButtonDisabled={isGeneratingPenaltyInvoice}
+          middleButtonText={
+            isGeneratingPenaltyInvoice
+              ? "Generating Penalty Invoice..."
+              : "Generate Penalty Invoice"
+          }
           onMiddleButtonClick={handleGeneratePenaltyInvoice}
           className="mt-44"
         />
+        {/* Render any errors */}
+        <FormAlerts key="alerts" errors={errors} />
       </FormBase>
     </>
   );
