@@ -116,7 +116,10 @@ const permissionRules: PermissionRule[] = [
   {
     name: "accessNoObligation",
     isApplicable: (request) => {
-      return /\/review-summary\/?$/.test(request.nextUrl.pathname);
+      const reviewSummaryPattern = new RegExp(
+        `/${AppRoutes.REVIEW_SUMMARY}/?$`,
+      );
+      return reviewSummaryPattern.test(request.nextUrl.pathname);
     },
     validate: async (complianceReportVersionId, _request, context) => {
       const accessStatus = await context!.getUserComplianceAccessStatus(
@@ -170,6 +173,12 @@ export const withRuleHasComplianceRouteAccess: MiddlewareFactory = (
   next: NextMiddleware,
 ) => {
   return async (request: NextRequest, _next) => {
+    // Debug: log the incoming request path
+    console.log(
+      "[withRuleHasComplianceRouteAccess] Path:",
+      request.nextUrl.pathname,
+    );
+
     const token = await getToken();
     const role = getUserRole(token);
 
