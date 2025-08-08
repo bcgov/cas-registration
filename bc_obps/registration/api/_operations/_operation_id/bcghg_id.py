@@ -1,4 +1,4 @@
-from typing import Literal, Tuple
+from typing import Literal, Optional, Tuple
 from uuid import UUID
 from django.http import HttpRequest
 from registration.models.bc_greenhouse_gas_id import BcGreenhouseGasId
@@ -19,7 +19,7 @@ from registration.api.router import router
     auth=authorize('cas_director'),
 )
 def operation_bcghg_id(
-    request: HttpRequest, operation_id: UUID, payload: BcghgIdIn
+    request: HttpRequest, operation_id: UUID, payload: Optional[BcghgIdIn]
 ) -> Tuple[Literal[200], BcGreenhouseGasId]:
     return 200, OperationService.generate_bcghg_id(
         get_current_user_guid(request),
