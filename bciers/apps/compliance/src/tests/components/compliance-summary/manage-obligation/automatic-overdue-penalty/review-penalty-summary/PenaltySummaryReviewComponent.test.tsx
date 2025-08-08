@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import PenaltySummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/automatic-overdue-penalty/review-penalty-summary/PenaltySummaryReviewComponent";
+import userEvent from "@testing-library/user-event";
 
 // Mock the FormBase component
 vi.mock("@bciers/components/form/FormBase", () => ({
@@ -70,7 +71,26 @@ const mockData = {
   data_is_fresh: true,
 };
 
+// Mocks
+const mockWindowOpen = vi.fn();
+window.open = mockWindowOpen;
+
+const getGeneratePenaltyInvoiceButton = () =>
+  screen.getByRole("button", { name: "Generate Penalty Invoice" });
+
 describe("PenaltySummaryReviewComponent", () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    mockWindowOpen.mockClear();
+
+    if (!("createObjectURL" in URL)) {
+      // @ts-ignore
+      URL.createObjectURL = vi.fn();
+    }
+
+    vi.spyOn(URL, "createObjectURL").mockReturnValue("blob:fake-invoice-url");
+    vi.stubGlobal("open", mockWindowOpen);
+  });
   it("renders the form with correct data", () => {
     render(
       <PenaltySummaryReviewComponent
@@ -103,6 +123,9 @@ describe("PenaltySummaryReviewComponent", () => {
       "/compliance-summaries/123/pay-obligation-track-payments",
     );
 
+    const generatePenaltyInvoiceButton = getGeneratePenaltyInvoiceButton();
+    expect(generatePenaltyInvoiceButton).toBeVisible();
+
     const continueButton = screen.getByTestId("continue-button");
     expect(continueButton).toBeVisible();
     expect(continueButton).toHaveAttribute(
@@ -111,7 +134,20 @@ describe("PenaltySummaryReviewComponent", () => {
     );
   });
 
-  it("renders middle button for generating penalty invoice", () => {
+  it("handles invoice generation correctly", async () => {
+    const user = userEvent.setup();
+
+    const mockBlob = new Blob(["dummy PDF"], { type: "application/pdf" });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        blob: async () => mockBlob,
+        headers: new Headers(),
+      }),
+    );
+
     render(
       <PenaltySummaryReviewComponent
         data={mockData}
@@ -120,8 +156,62 @@ describe("PenaltySummaryReviewComponent", () => {
       />,
     );
 
-    const middleButton = screen.getByTestId("middle-button");
-    expect(middleButton).toBeVisible();
-    expect(middleButton).toHaveTextContent("Generate Penalty Invoice");
+    await user.click(getGeneratePenaltyInvoiceButton());
+
+    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/123/penalty", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
+
+    expect(mockWindowOpen).toHaveBeenCalledWith(
+      "blob:fake-invoice-url",
+      "_blank",
+      "noopener,noreferrer",
+    );
+
+    expect(getGeneratePenaltyInvoiceButton()).toBeEnabled();
+  });
+
+  it("displays an error when invoice generation fails", async () => {
+    const user = userEvent.setup();
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        headers: new Headers({ "Content-Type": "application/json" }),
+        json: async () => ({
+          message: "Unable to generate invoice",
+        }),
+      }),
+    );
+
+    render(
+      <PenaltySummaryReviewComponent
+        data={mockData}
+        reportingYear={2024}
+        complianceReportVersionId={999}
+      />,
+    );
+
+    await user.click(getGeneratePenaltyInvoiceButton());
+
+    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/999/penalty", {
+      method: "GET",
+      cache: "no-store",
+    });
+
+    expect(mockWindowOpen).not.toHaveBeenCalled();
+
+    const alerts = await screen.findAllByRole("alert");
+    const hasErrorText = alerts.some(
+      (el) =>
+        el.textContent?.toLowerCase().includes("unable to generate invoice"),
+    );
+    expect(hasErrorText).toBe(true);
+    expect(getGeneratePenaltyInvoiceButton()).toBeEnabled();
   });
 });
