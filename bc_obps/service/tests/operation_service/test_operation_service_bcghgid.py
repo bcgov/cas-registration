@@ -78,7 +78,7 @@ class TestGenerateBCGHGId:
 
         assert result.id == manual_bcghg_id
         assert result.issued_by_id == cas_director.user_guid
-        assert result.comments == 'bcghg id manually set'
+        assert result.comments == 'bcghg id manually set to operation'
 
         operation.refresh_from_db()
         assert operation.bcghg_id.id == manual_bcghg_id
