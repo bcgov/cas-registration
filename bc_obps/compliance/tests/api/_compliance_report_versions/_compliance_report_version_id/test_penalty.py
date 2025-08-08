@@ -17,9 +17,14 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_peanlty_payments_by_compliance_report_version_id"  # noqa: E501
     )
     @patch("compliance.service.compliance_obligation_service.ComplianceObligation.objects.get")
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.sum_payments_after_date")
     @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_penalty_data")
     def test_successful_penalty_retrieval(
-        self, mock_get_penalty_data, mock_get_compliance_obligation_get, mock_get_payment_data
+        self,
+        mock_get_penalty_data,
+        mock_sum_payments_after_date,
+        mock_get_compliance_obligation_get,
+        mock_get_payment_data,
     ):
         """Happy-path: service returns penalty data and payments."""
         # Arrange
@@ -34,6 +39,8 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         mock_get_compliance_obligation_get.return_value = ComplianceObligation()
 
         mock_get_penalty_data.return_value = mock_penalty_data
+
+        mock_sum_payments_after_date.return_value = Decimal("0.00")
 
         mock_payment_data = PaymentDataWithFreshnessFlag(
             data_is_fresh=True,

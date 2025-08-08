@@ -1,4 +1,3 @@
-from datetime import date
 from uuid import UUID
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.db.models import QuerySet
@@ -165,7 +164,7 @@ class ComplianceDashboardService:
         )
         invoice = refreshed_data.invoice
         payments = ElicensingPayment.objects.filter(
-            elicensing_line_item__elicensing_invoice=invoice, received_date__gt=date(2025, 8, 1)
+            elicensing_line_item__elicensing_invoice=invoice, received_date__gt=invoice.due_date
         )
 
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
