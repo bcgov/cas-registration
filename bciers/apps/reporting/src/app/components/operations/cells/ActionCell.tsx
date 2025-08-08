@@ -7,6 +7,7 @@ import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import Button from "@mui/material/Button";
 import { BC_GOV_LINKS_COLOR } from "@bciers/styles";
 import { ReportOperationStatus } from "@bciers/utils/src/enums";
+import SimpleModal from "@bciers/components/modal/SimpleModal";
 
 const ActionCell = (params: GridRenderCellParams) => {
   const reportId = params?.row?.report_id;
@@ -16,37 +17,43 @@ const ActionCell = (params: GridRenderCellParams) => {
   const operationId = params.row.operation_id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [modalErrorMessage, setModalErrorMessage] = React.useState("");
 
   // Create a new report
-  const handleStartReport = async (reportingYear: number): Promise<string> => {
+  const handleStartReport = async (reportingYear: number): Promise<string | undefined> => {
     try {
       const response = await createReport(operationId, reportingYear);
-      if (response?.error)
-        setResponseError(
-          `We couldn't create a report for operation ID '${operationId}' and reporting year '${reportingYear}': ${response?.error}.`,
-        );
-      return response;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  if (responseError) {
-    throw new Error(responseError);
-  }
-
-  // Create a new report version
-  const handleNewDraftVersion = async (): Promise<string> => {
-    try {
-      const response = await createReportVersion(operationId, reportId);
       if (response?.error) {
-        setResponseError(
-          `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
+        setModalErrorMessage(
+          `We couldn't create a report for operation ID '${operationId}' and reporting year ${reportingYear}: ${response?.error}`,
         );
+        setModalOpen(true);
+        return;
       }
       return response;
     } catch (error) {
-      throw error;
+      setModalErrorMessage("An unexpected error occurred while creating the report.");
+      setModalOpen(true);
+    }
+  };
+
+
+  // Create a new report version
+  const handleNewDraftVersion = async (): Promise<string | undefined> => {
+    try {
+      const response = await createReportVersion(operationId, reportId);
+      if (response?.error) {
+        setModalErrorMessage(
+          `We couldn't create a draft report version for report ID '${reportId}': ${response?.error}.`,
+        );
+        setModalOpen(true);
+        return;
+      }
+      return response;
+    } catch (error) {
+      setModalErrorMessage("An unexpected error occurred while creating a new draft version of the report.");
+      setModalOpen(true);
     }
   };
 
@@ -87,6 +94,17 @@ const ActionCell = (params: GridRenderCellParams) => {
   }
 
   return (
+    <>
+    <SimpleModal
+      open={modalOpen}
+      title="Error Creating Report"
+      onCancel={() => setModalOpen(false)}
+      onConfirm={() => setModalOpen(false)}
+      confirmText="OK"
+      cancelText="Close"
+    >
+      {modalErrorMessage}
+    </SimpleModal>
     <Button
       sx={{
         width: 120,
@@ -105,6 +123,7 @@ const ActionCell = (params: GridRenderCellParams) => {
     >
       {buttonText}
     </Button>
+    </>
   );
 };
 
