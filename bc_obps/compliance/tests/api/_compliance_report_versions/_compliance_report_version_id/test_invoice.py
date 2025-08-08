@@ -6,11 +6,11 @@ from model_bakery.baker import make_recipe
 
 
 class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_invoice_pdf")
-    def test_get_invoice_success(self, mock_generate_invoice_pdf):
+    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_obligation_invoice_pdf")
+    def test_get_invoice_success(self, mock_generate_obligation_invoice_pdf):
         # Arrange
         pdf_bytes = b"%PDF content"
-        mock_generate_invoice_pdf.return_value = (iter([pdf_bytes]), "invoice.pdf", len(pdf_bytes))
+        mock_generate_obligation_invoice_pdf.return_value = (iter([pdf_bytes]), "invoice.pdf", len(pdf_bytes))
 
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=make_recipe("registration.tests.utils.operator")
@@ -32,12 +32,14 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
         assert response["Content-Length"] == str(len(pdf_bytes))
         assert b"".join(response.streaming_content) == pdf_bytes
 
-        mock_generate_invoice_pdf.assert_called_once_with(123)
+        mock_generate_obligation_invoice_pdf.assert_called_once_with(123)
 
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_invoice_pdf")
-    def test_get_invoice_error_from_service(self, mock_generate_invoice_pdf):
+    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_obligation_invoice_pdf")
+    def test_get_invoice_error_from_service(self, mock_generate_obligation_invoice_pdf):
         # Arrange: simulate an error result from the service
-        mock_generate_invoice_pdf.return_value = {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
+        mock_generate_obligation_invoice_pdf.return_value = {
+            "errors": {"unexpected_error": "Mocked: PDF generation failed"}
+        }
 
         TestUtils.authorize_current_user_as_operator_user(
             self, operator=make_recipe("registration.tests.utils.operator")
@@ -61,4 +63,4 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
         parsed = json.loads(raw_bytes.decode("utf-8"))
         assert parsed == {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
 
-        mock_generate_invoice_pdf.assert_called_once_with(123)
+        mock_generate_obligation_invoice_pdf.assert_called_once_with(123)
