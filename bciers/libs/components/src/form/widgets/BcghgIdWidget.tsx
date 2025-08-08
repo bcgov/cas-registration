@@ -32,13 +32,13 @@ function generateBcghgId(
       ? `registration/operations/${entityId}/bcghg-id`
       : `registration/facilities/${entityId}/bcghg-id`;
 
-  if (bcghgIdOverride) {
-    return actionHandler(endpoint, "PATCH", "", {
-      body: JSON.stringify({ bcghg_id: bcghgIdOverride }),
-    });
-  }
+  const payload = bcghgIdOverride
+    ? JSON.stringify({ bcghg_id: bcghgIdOverride })
+    : "{}";
 
-  return actionHandler(endpoint, "PATCH", "");
+  return actionHandler(endpoint, "PATCH", "", {
+    body: payload,
+  });
 }
 
 const BcghgIdWidget: React.FC<WidgetProps> = ({
