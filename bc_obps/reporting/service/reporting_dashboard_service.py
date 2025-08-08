@@ -95,11 +95,9 @@ class ReportingDashboardService:
                     output_field=CharField(),
                 ),
             )
+            # need to ensure distinct() because the annotation above can produce duplicates when there's multiple reports for an operation
+            .distinct()
         )
-
-        print("\n\n\n\n\n\n**************************")
-        print(f"{queryset.count()} operations found")
-        print("**************************\n\n\n\n\n")
 
         sort_field = sort_field or "id"
         sort_order = sort_order or "asc"
