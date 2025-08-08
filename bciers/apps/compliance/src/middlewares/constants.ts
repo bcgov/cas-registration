@@ -20,5 +20,15 @@ export const extractComplianceReportVersionId = (
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
+  REVIEW_SUMMARY = "review-summary",
   APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
+}
+
+// Compiance Report Version Status
+export enum ComplianceReportVersionStatus {
+  OBLIGATION_NOT_MET = "Obligation not met",
+  OBLIGATION_FULLY_MET = "Obligation fully met",
+  OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation",
+  EARNED_CREDITS = "Earned credits",
+  NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }

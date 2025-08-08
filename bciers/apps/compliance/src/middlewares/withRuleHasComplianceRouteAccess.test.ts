@@ -4,7 +4,7 @@ import { withRuleHasComplianceRouteAccess } from "./withRuleHasComplianceRouteAc
 import * as constants from "./constants";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import getComplianceAccessForCurrentUser from "@/compliance/src/app/utils/getComplianceAccessForCurrentUser";
+import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
 import { getToken } from "@bciers/actions";
 
 import {
@@ -20,7 +20,7 @@ vi.mock("@/compliance/src/app/utils/getComplianceAppliedUnits", () => ({
   __esModule: true,
   default: vi.fn(),
 }));
-vi.mock("@/compliance/src/app/utils/getComplianceAccessForCurrentUser", () => ({
+vi.mock("@/compliance/src/app/utils/getUserComplianceAccessStatus", () => ({
   __esModule: true,
   default: vi.fn(),
 }));
@@ -66,7 +66,7 @@ function defaultSetup({
   reportId?: number | null;
 } = {}) {
   (getToken as vi.Mock).mockResolvedValue(role);
-  (getComplianceAccessForCurrentUser as vi.Mock).mockResolvedValue({
+  (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
     status: hasAccess ? "Registered" : "Invalid",
   });
   (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
@@ -123,16 +123,69 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
   });
 
   it("redirects to onboarding if rule validation throws an error", async () => {
-    (getComplianceAccessForCurrentUser as vi.Mock).mockImplementation(() => {
+    (getUserComplianceAccessStatus as vi.Mock).mockImplementation(() => {
       throw new Error("Simulated failure");
     });
 
     const { res } = await runMiddleware(summariesPath);
 
-    expect(getComplianceAccessForCurrentUser).toHaveBeenCalled();
+    expect(getUserComplianceAccessStatus).toHaveBeenCalled();
     expect(res!.status).toBe(307);
     expect(res!.headers.get("location")).toContain(
       constants.AppRoutes.ONBOARDING,
+    );
+  });
+  it("allows /review-summary when status is NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
+    // Arrange: industry user, status is the exact string used by the rule
+    (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
+    (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
+      status: "No obligation or earned credits",
+    });
+    (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
+      can_apply_compliance_units: true,
+      rows: [],
+      row_count: 0,
+    });
+    // ID extraction isn't critical here, but keep it consistent
+    vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
+      defaultVersionId,
+    );
+
+    // Path must end with /review-summary to trigger the rule
+    const reviewSummaryPath = `/${constants.COMPLIANCE_BASE}/review-summary`;
+
+    // Act
+    const { res, next } = await runMiddleware(reviewSummaryPath);
+
+    // Assert
+    expect(next).toHaveBeenCalled(); // rule validated successfully, no redirect
+    expect(res!.status).toBe(200);
+  });
+
+  it("redirects to review summaries when /review-summary but status is not NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
+    // Arrange: status that should fail the accessNoObligation rule
+    (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
+    (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
+      status: "Registered",
+    });
+    (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
+      can_apply_compliance_units: true,
+      rows: [],
+      row_count: 0,
+    });
+    vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
+      defaultVersionId,
+    );
+
+    const reviewSummaryPath = `/${constants.COMPLIANCE_BASE}/review-summary`;
+
+    // Act
+    const { res } = await runMiddleware(reviewSummaryPath);
+
+    // Assert: should redirect to the summaries landing path
+    expect(res!.status).toBe(307);
+    expect(res!.headers.get("location")).toContain(
+      `/${constants.COMPLIANCE_BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
     );
   });
 

@@ -5,12 +5,13 @@ import {
   extractComplianceReportVersionId,
   COMPLIANCE_BASE,
   AppRoutes,
+  ComplianceReportVersionStatus,
 } from "./constants";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import getComplianceAccessForCurrentUser from "@/compliance/src/app/utils/getComplianceAccessForCurrentUser";
+import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
 
 // --------------------
 // Rule Context & Types
@@ -20,14 +21,14 @@ type RuleContext = {
   getComplianceAppliedUnits: (
     complianceReportVersionId: number,
   ) => Promise<boolean>;
-  getComplianceAccessForCurrentUser: (
+  getUserComplianceAccessStatus: (
     complianceReportVersionId?: number,
-  ) => Promise<boolean>;
+  ) => Promise<string | undefined>;
 };
 
 const createRuleContext = (): RuleContext => {
   const canApplyComplianceUnitsCache: Record<number, boolean> = {};
-  let getComplianceAccessCache: boolean | undefined;
+  let getComplianceAccessCache: string | undefined;
 
   return {
     canApplyComplianceUnitsCache,
@@ -41,16 +42,14 @@ const createRuleContext = (): RuleContext => {
       }
       return canApplyComplianceUnitsCache[complianceReportVersionId];
     },
-    getComplianceAccessForCurrentUser: async (
+    getUserComplianceAccessStatus: async (
       complianceReportVersionId?: number,
     ) => {
       if (getComplianceAccessCache === undefined) {
-        const result = await getComplianceAccessForCurrentUser(
+        const result = await getUserComplianceAccessStatus(
           complianceReportVersionId,
         );
-        console.log("result", result);
-        getComplianceAccessCache =
-          !!result?.status && result.status !== "Invalid";
+        getComplianceAccessCache = result?.status;
       }
       return getComplianceAccessCache;
     },
@@ -80,12 +79,14 @@ type PermissionRule = {
 
 const permissionRules: PermissionRule[] = [
   {
-    name: "getComplianceAccess",
+    name: "accessComplianceRoute",
     isApplicable: () => true,
     validate: async (complianceReportVersionId, _request, context) => {
-      return context!.getComplianceAccessForCurrentUser(
+      const accessStatus = await context!.getUserComplianceAccessStatus(
         complianceReportVersionId,
       );
+      // Ensure status is defined and not "Invalid"
+      return accessStatus !== undefined && accessStatus !== "Invalid";
     },
     redirect: (_id, request) =>
       NextResponse.redirect(new URL(`/${AppRoutes.ONBOARDING}`, request.url)),
@@ -104,6 +105,27 @@ const permissionRules: PermissionRule[] = [
         return false;
       }
       return context!.getComplianceAppliedUnits(complianceReportVersionId);
+    },
+    redirect: (_, request) => {
+      const targetPath = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
+
+      const redirectUrl = new URL(targetPath, request.url);
+      return NextResponse.redirect(redirectUrl);
+    },
+  },
+  {
+    name: "accessNoObligation",
+    isApplicable: (request) => {
+      return /\/review-summary\/?$/.test(request.nextUrl.pathname);
+    },
+    validate: async (complianceReportVersionId, _request, context) => {
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      return (
+        accessStatus ===
+        ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+      );
     },
     redirect: (_, request) => {
       const targetPath = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
