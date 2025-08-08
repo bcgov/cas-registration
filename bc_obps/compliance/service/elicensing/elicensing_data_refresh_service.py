@@ -1,3 +1,6 @@
+from compliance.enums import ComplianceInvoiceTypes
+from compliance.models.compliance_penalty import CompliancePenalty
+
 from compliance.service.elicensing.elicensing_api_client import ELicensingAPIClient
 from django.db import transaction
 from compliance.models import (
@@ -31,11 +34,38 @@ class ElicensingDataRefreshService:
         compliance_report_version_id: int,
         force_refresh: bool = False,
         supplementary_compliance_report_version_id: int | None = None,
+        invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
     ) -> RefreshWrapperReturn:
+        """
+        Refreshes eLicensing invoice data for a given compliance report version ID.
+
+        This method retrieves the related invoice (obligation or penalty) for the specified compliance report version.
+        It checks if the invoice data is fresh (recently refreshed) and, unless forced, avoids unnecessary API calls.
+        If the data is stale or a forced refresh is requested, it fetches the latest invoice data from the eLicensing API
+        and updates the database records accordingly. Returns a wrapper indicating whether the data is fresh and the invoice instance.
+
+        Args:
+            compliance_report_version_id (int): The ID of the compliance report version to refresh data for.
+            force_refresh (bool, optional): If True, forces a refresh from the API regardless of last refresh time. Defaults to False.
+            invoice_type (ComplianceInvoiceTypes, optional): The type of invoice to refresh (OBLIGATION or PENALTY). Defaults to OBLIGATION.
+
+        Returns:
+            RefreshWrapperReturn: An object containing whether the data is fresh and the invoice instance.
+
+        Raises:
+            ValidationError: If no related invoice is found for the given report version ID.
+        """
         data_is_fresh = True
-        invoice = ComplianceObligation.objects.get(
+        compliance_obligation: ComplianceObligation = ComplianceObligation.objects.get(
             compliance_report_version_id=compliance_report_version_id
-        ).elicensing_invoice
+        )
+
+        invoice = (
+            compliance_obligation.elicensing_invoice
+            if invoice_type == ComplianceInvoiceTypes.OBLIGATION
+            else CompliancePenalty.objects.get(compliance_obligation=compliance_obligation).elicensing_invoice
+        )
+
         if not invoice:
             raise ValidationError(f"No related invoice found for report version ID: {compliance_report_version_id}")
         # Limit calls successive calls to refresh an invoice from the elicensing API to once per 15mins

@@ -17,3 +17,8 @@ class ComplianceTableNames(Enum):
     COMPLIANCE_PENALTY = "compliance_penalty"
     COMPLIANCE_PENALTY_ACCRUAL = "compliance_penalty_accrual"
     ELICENSING_INTEREST_RATE = "elicensing_interest_rate"
+
+
+class ComplianceInvoiceTypes(Enum):
+    OBLIGATION = "obligation"
+    AUTOMATIC_OVERDUE_PENALTY = "automatic overdue penalty"
