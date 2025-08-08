@@ -10,6 +10,7 @@ import pytest
 from model_bakery.baker import make_recipe
 from django.utils import timezone
 from datetime import timedelta
+from compliance.enums import ComplianceInvoiceTypes
 
 ELICENSING_QUERY_INVOICE_PATH = "compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_invoice"
 ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = (
@@ -151,3 +152,33 @@ class TestElicensingOperatorService:
         )
         mock_refresh.assert_called_once()
         assert returned_data.data_is_fresh == True  # noqa: E712
+        # python
+
+    @pytest.mark.django_db
+    def test_refresh_data_wrapper_by_compliance_report_version_id_obligation(self):
+        # Create an obligation with an associated invoice
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
+        # Call with OBLIGATION type (default)
+        result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id,
+        )
+        assert result.invoice == invoice
+
+    @pytest.mark.django_db
+    def test_refresh_data_wrapper_by_compliance_report_version_id_penalty(self):
+        # Create an obligation and a penalty, each with their own invoice
+        penalty_invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        # penalty
+        make_recipe(
+            'compliance.tests.utils.compliance_penalty',
+            compliance_obligation=obligation,
+            elicensing_invoice=penalty_invoice,
+        )
+        # Call with PENALTY type
+        result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=obligation.compliance_report_version_id,
+            invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+        )
+        assert result.invoice == penalty_invoice
