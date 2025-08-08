@@ -121,7 +121,8 @@ class DecreasedObligationHandler:
 
 # Concrete strategy for no significant change
 class NoChangeHandler:
-    def can_handle(self, new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+    @staticmethod
+    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
         if (
             new_summary.excess_emissions == previous_summary.excess_emissions
             and new_summary.credited_emissions == previous_summary.credited_emissions
@@ -129,8 +130,8 @@ class NoChangeHandler:
             return True
         return False
 
+    @staticmethod
     def handle(
-        self,
         compliance_report: ComplianceReport,
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
@@ -140,7 +141,6 @@ class NoChangeHandler:
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-            excess_emissions_delta_from_previous=0,
             is_supplementary=True,
         )
         return compliance_report_version
@@ -175,7 +175,7 @@ class SupplementaryVersionService:
         self.handlers: list[SupplementaryScenarioHandler] = [
             IncreasedObligationHandler(),
             DecreasedObligationHandler(),
-            NoChangeHandler(),
+            NoChangeHandler()
             # IncreasedCreditHandler(),
             # DecreasedCreditHandler(),
         ]
