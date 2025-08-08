@@ -214,9 +214,11 @@ class DecreasedCreditHandler:
             is_supplementary=False,
         )
         # Get the original earned credit record
-        original_earned_credit_record = ComplianceEarnedCredit.objects.get(
+        original_earned_credit_record = ComplianceEarnedCredit.objects.filter(
             compliance_report_version=original_compliance_report_version
-        )
+        ).first()
+        if not original_earned_credit_record:
+            return False
         return (
             previous_summary.credited_emissions > Decimal('0')
             and new_summary.credited_emissions < previous_summary.credited_emissions
