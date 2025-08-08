@@ -19,7 +19,7 @@ class UserComplianceAccessService:
         cls, user_guid: UUID, compliance_report_version_id: Optional[int]
     ) -> str:
         """
-        Determines the user's access status to the compliance application and a specific compliance report version.
+        Determines the user's access status to the compliance application or to a specific compliance report version.
 
         Args:
             user_guid (UUID): The GUID of the current user making the request.
@@ -47,16 +47,11 @@ class UserComplianceAccessService:
             compliance_report_version = ComplianceDashboardService.get_compliance_report_version_by_id(
                 user_guid, compliance_report_version_id
             )
-
-        # If a report version ID is provided, check its validity and ownership
-        if compliance_report_version_id:
-            compliance_report_version = ComplianceDashboardService.get_compliance_report_version_by_id(
-                user_guid, compliance_report_version_id
-            )
+            # If a report version is found, return its status. Otherwise, it's invalid request for this user.
             if compliance_report_version:
                 return compliance_report_version.status
             else:
-                return UserStatusEnum.INVALID.value  # Explicitly invalid if version is not found or not owned
+                return UserStatusEnum.INVALID.value
 
         # Here the user has a registered operation but no report version, return generic registered status
         return UserStatusEnum.REGISTERED.value
