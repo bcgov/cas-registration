@@ -209,7 +209,7 @@ class DecreasedCreditHandler:
         # Return True if credited emissions decreased from previous version
         original_compliance_report_version = ComplianceReportVersion.objects.get(
             compliance_report=ComplianceReportVersion.objects.get(
-                report_compliance_summary=new_summary
+                report_compliance_summary=previous_summary
             ).compliance_report,
             is_supplementary=False,
         )
