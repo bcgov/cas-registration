@@ -170,6 +170,9 @@ describe("RJSF bcghgIdWidget", () => {
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
       "PATCH",
       "",
+      {
+        body: "{}",
+      },
     );
     const readOnlyBcghgIdTestField = container.querySelector(
       "#root_bcghgIdTestField",
@@ -197,6 +200,9 @@ describe("RJSF bcghgIdWidget", () => {
       "registration/facilities/ea4314ea-1974-465a-a851-278c8f9c8daa/bcghg-id",
       "PATCH",
       "",
+      {
+        body: "{}",
+      },
     );
     const readOnlyBcghgIdTestField = container.querySelector(
       "#root_bcghgIdTestField",
@@ -224,6 +230,9 @@ describe("RJSF bcghgIdWidget", () => {
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
       "PATCH",
       "",
+      {
+        body: "{}",
+      },
     );
     expect(screen.getByText(/not for you/i)).toBeVisible();
     await waitFor(() => {
