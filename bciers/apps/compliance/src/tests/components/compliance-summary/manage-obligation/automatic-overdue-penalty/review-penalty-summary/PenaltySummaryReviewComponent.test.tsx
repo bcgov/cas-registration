@@ -158,10 +158,13 @@ describe("PenaltySummaryReviewComponent", () => {
 
     await user.click(getGeneratePenaltyInvoiceButton());
 
-    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/123/penalty", {
-      method: "GET",
-      cache: "no-store",
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/invoice/123/automatic-overdue-penalty",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
     expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
 
@@ -199,10 +202,13 @@ describe("PenaltySummaryReviewComponent", () => {
 
     await user.click(getGeneratePenaltyInvoiceButton());
 
-    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/999/penalty", {
-      method: "GET",
-      cache: "no-store",
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/invoice/999/automatic-overdue-penalty",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
     expect(mockWindowOpen).not.toHaveBeenCalled();
 
