@@ -269,7 +269,7 @@ class ComplianceInvoiceService:
 
             # Generate and return the PDF generator, filename, and size
             return PDFGeneratorService.generate_pdf(
-                template_name="aop_invoice.html",
+                template_name="automatic_overdue_penalty_invoice.html",
                 context=context,
                 filename=filename,
             )
