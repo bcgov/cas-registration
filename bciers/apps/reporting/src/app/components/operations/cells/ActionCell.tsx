@@ -13,7 +13,7 @@ const ActionCell = (params: GridRenderCellParams) => {
   let reportVersionId = params?.row?.report_version_id;
   const reportStatus = params?.row?.report_status;
   const router = useRouter();
-  const operationId = params.row.id;
+  const operationId = params.row.operation_id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
 
@@ -62,7 +62,7 @@ const ActionCell = (params: GridRenderCellParams) => {
       );
     }
     if (typeof reportVersionId === "number")
-      router.push(`reports/${reportVersionId}/review-operation-information`);
+      router.push(`${reportVersionId}/review-operation-information`);
   };
 
   let buttonText = "Start";
@@ -76,14 +76,13 @@ const ActionCell = (params: GridRenderCellParams) => {
     ) {
       buttonText = "Continue";
       buttonAction = async () =>
-        router.push(`reports/${reportVersionId}/review-operation-information`);
+        router.push(`${reportVersionId}/review-operation-information`);
     } else if (
       reportStatus === ReportOperationStatus.SUBMITTED ||
       reportStatus === ReportOperationStatus.SUBMITTED_SUPPLEMENTARY
     ) {
       buttonText = "View Details";
-      buttonAction = async () =>
-        router.push(`reports/${reportVersionId}/submitted`);
+      buttonAction = async () => router.push(`${reportVersionId}/submitted`);
     }
   }
 

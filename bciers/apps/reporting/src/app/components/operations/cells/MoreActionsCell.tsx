@@ -78,7 +78,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
       const response = await postSupplementaryReportVersion(reportVersionId);
       //navigate to new report version
       if (response && !response.error) {
-        router.push(`/reports/${response}/review-operation-information`);
+        router.push(`${response}/review-operation-information`);
       }
       // close menu
       handleClose();
@@ -171,9 +171,7 @@ const MoreActionsCell = (params: GridRenderCellParams) => {
         )}
         {!pending && reportId && showReportHistoryEnabled && (
           <MenuItem
-            onClick={async () =>
-              router.push(`reports/report-history/${reportId}`)
-            }
+            onClick={async () => router.push(`report-history/${reportId}`)}
           >
             Report history
           </MenuItem>

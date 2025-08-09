@@ -11,7 +11,13 @@
             "title": "Submit Annual Report(s)",
             "icon": "File",
             "content": "Submit, view and edit your annual reports.",
-            "href": "/reporting/reports"
+            "href": "/reporting/reports/current-reports"
+          },
+          {
+            "title": "Previous Years Reports",
+            "icon": "File",
+            "content": "View reports from previous years.",
+            "href": "/reporting/reports/previous-years"
           }
         ]
       }
