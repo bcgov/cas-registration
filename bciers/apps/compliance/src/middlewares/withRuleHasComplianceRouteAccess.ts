@@ -15,7 +15,7 @@ import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
-import getRequestIssuanceComplianceSummaryData from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 // --------------------
 // Rule Types & Contexts
@@ -156,9 +156,9 @@ const permissionRules: PermissionRule[] = [
         accessStatus === ComplianceReportVersionStatus.OBLIGATION_NOT_MET;
       if (!statusOk) return false;
 
-      // 2) If the route is APPLY_COMPLIANCE_UNITS, also require "can apply units"
+      // 2) If the route is MO_APPLY_COMPLIANCE_UNITS, also require "can apply units"
       const isApplyUnits = request?.nextUrl.pathname.includes(
-        AppRoutes.APPLY_COMPLIANCE_UNITS,
+        AppRoutes.MO_APPLY_COMPLIANCE_UNITS,
       );
       if (isApplyUnits) {
         if (typeof complianceReportVersionId !== "number") {
@@ -194,10 +194,14 @@ const permissionRules: PermissionRule[] = [
         accessStatus === ComplianceReportVersionStatus.EARNED_CREDITS;
       if (!isEarned) return false;
 
-      // Special case: visiting "request-issuance-review-summary" under (request-issuance)
-      const isReviewComplianceSummary = request!.nextUrl.pathname.includes(
-        AppRoutes.REVIEW_SUMMARY_ISSUANCE,
-      );
+      // Special cases under (request-issuance)
+      const isReviewComplianceSummary =
+        request!.nextUrl.pathname.includes(
+          AppRoutes.RI_REVIEW_SUMMARY_ISSUANCE,
+        ) ||
+        request!.nextUrl.pathname.includes(
+          AppRoutes.RI_REVIEW_CREDITS_ISSUANCE,
+        );
 
       if (
         isReviewComplianceSummary &&
@@ -231,7 +235,7 @@ const permissionRules: PermissionRule[] = [
       if (shouldTrack && typeof complianceReportVersionId === "number") {
         return NextResponse.redirect(
           new URL(
-            `/${COMPLIANCE_BASE}/${complianceReportVersionId}/${AppRoutes.TRACK_STATUS_ISSUANCE}`,
+            `/${COMPLIANCE_BASE}/${complianceReportVersionId}/${AppRoutes.RI_TRACK_STATUS_ISSUANCE}`,
             request.url,
           ),
         );

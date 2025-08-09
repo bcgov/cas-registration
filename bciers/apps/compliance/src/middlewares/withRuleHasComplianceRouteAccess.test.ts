@@ -6,7 +6,7 @@ import * as constants from "./constants";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
-import getRequestIssuanceComplianceSummaryData from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 import { getToken } from "@bciers/actions";
 import { getUserRole } from "@bciers/middlewares";
@@ -73,7 +73,9 @@ const reviewSummariesPath = `${BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUM
 // This base is used by most tests that run through the "review summaries" subapp:
 const crvBase = `${reviewSummariesPath}/${defaultCrvId}`;
 const pathForSeg = (seg: string) => `${crvBase}/${seg}`;
-const applyUnitsPath = pathForSeg(constants.AppRoutes.APPLY_COMPLIANCE_UNITS);
+const applyUnitsPath = pathForSeg(
+  constants.AppRoutes.MO_APPLY_COMPLIANCE_UNITS,
+);
 
 // NEW: paths under /compliance/compliance-summaries/:id (not the review base)
 const summariesIdBase = `/${constants.COMPLIANCE_BASE}/compliance-summaries/${defaultCrvId}`;
@@ -141,7 +143,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
   // accessNoObligation
   describe("accessNoObligation", () => {
     const seg =
-      constants.routesNoObligation[0] ?? constants.AppRoutes.REVIEW_SUMMARY;
+      constants.routesNoObligation[0] ?? constants.AppRoutes.NO_REVIEW_SUMMARY;
 
     it("redirects when status !== NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
       (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
@@ -169,8 +171,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
   // accessObligation
   describe("accessObligation", () => {
     const obligationSeg =
-      constants.routesObligation[0] ??
-      constants.AppRoutes.MANAGE_OBLIGATION_REVIEW_SUMMARY;
+      constants.routesObligation[0] ?? constants.AppRoutes.MO_REVIEW_SUMMARY;
 
     it("redirects when status !== OBLIGATION_NOT_MET", async () => {
       (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
@@ -194,7 +195,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(res!.status).toBe(200);
     });
 
-    it("APPLY_COMPLIANCE_UNITS: redirects when can_apply=false", async () => {
+    it("MO_APPLY_COMPLIANCE_UNITS: redirects when can_apply=false", async () => {
       (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
         status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
       });
@@ -208,7 +209,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
 
-    it("APPLY_COMPLIANCE_UNITS: allows when can_apply=true", async () => {
+    it("MO_APPLY_COMPLIANCE_UNITS: allows when can_apply=true", async () => {
       (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
         status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
       });
@@ -251,7 +252,145 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     });
   });
 
+  // #TODO Earned Credits: request-issuance-of-earned-credits → track-status-of-issuance
+  /*
+  it("redirects to track status page when issuance status is ISSUANCE_REQUESTED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
+    });
+
+    await RequestIssuanceOfEarnedCreditsPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+    );
+  });
+
+  it("redirects to track status page when issuance status is APPROVED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.APPROVED,
+    });
+
+    await RequestIssuanceOfEarnedCreditsPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+    );
+  });
+
+  it("redirects to track status page when issuance status is DECLINED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+    });
+
+    await RequestIssuanceOfEarnedCreditsPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+    );
+  });
+
+  it("does not redirect when issuance status is CREDITS_NOT_ISSUED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+    });
+
+    render(
+      await RequestIssuanceOfEarnedCreditsPage({
+        compliance_report_version_id: mockComplianceReportVersionId,
+      }),
+    );
+
+    expect(redirect).not.toHaveBeenCalled();
+    expect(screen.getByText("Mock Layout")).toBeVisible();
+  });
+
+  it("does not redirect when issuance status is CHANGES_REQUIRED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
+    });
+
+    render(
+      await RequestIssuanceOfEarnedCreditsPage({
+        compliance_report_version_id: mockComplianceReportVersionId,
+      }),
+    );
+
+    expect(redirect).not.toHaveBeenCalled();
+    expect(screen.getByText("Mock Layout")).toBeVisible();
+  });*/
   // #TODO Earned Credits: request-issuance-review-summary → track-status-of-issuance
+  /**  it("redirects to track status page when issuance status is ISSUANCE_REQUESTED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
+    });
+
+    await ComplianceSummaryReviewPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+    );
+  });
+
+  it("redirects to track status page when issuance status is APPROVED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.APPROVED,
+    });
+
+    await ComplianceSummaryReviewPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+    );
+  });
+
+  it("redirects to track status page when issuance status is DECLINED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+    });
+
+    await ComplianceSummaryReviewPage({
+      compliance_report_version_id: mockComplianceReportVersionId,
+    });
+
+    expect(redirect).toHaveBeenCalledWith(
+      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+    );
+  });
+
+  it("does not redirect to track status page when issuance status is CREDITS_NOT_ISSUED", async () => {
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
+      ...mockData,
+      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+    });
+
+    render(
+      await ComplianceSummaryReviewPage({
+        compliance_report_version_id: mockComplianceReportVersionId,
+      }),
+    );
+
+    expect(redirect).not.toHaveBeenCalled();
+    expect(screen.getByText("Mock Layout")).toBeVisible();
+  }); */
 
   // Bypass & edges
   describe("bypass & edge flows", () => {

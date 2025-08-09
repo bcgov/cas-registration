@@ -20,14 +20,13 @@ export const extractComplianceReportVersionId = (
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
-  MANAGE_OBLIGATION_REVIEW_SUMMARY = "manage-obligation-review-summary",
-  APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
-  REVIEW_SUMMARY = "review-summary",
-  REVIEW_COMPLIANCE_SUMMARY = "review-compliance-summary",
+  MO_REVIEW_SUMMARY = "manage-obligation-review-summary",
+  MO_APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
+  NO_REVIEW_SUMMARY = "review-summary",
+  RI_REVIEW_SUMMARY_ISSUANCE = "request-issuance-review-summary",
+  RI_REVIEW_CREDITS_ISSUANCE = "request-issuance-of-earned-credits",
+  RI_TRACK_STATUS_ISSUANCE = "track-status-of-issuance",
   REVIEW_BY_DIRECTOR = "review-by-director",
-  REVIEW_SUMMARY_ISSUANCE = "request-issuance-review-summary",
-  REVIEW_CREDITS_ISSUANCE = "review-credits-issuance-request",
-  TRACK_STATUS_ISSUANCE = "track-status-of-issuance",
 }
 
 // Compiance Report Version Status

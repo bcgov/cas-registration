@@ -147,7 +147,7 @@ const permissionRules: PermissionRule[] = [
           )
         ) {
           const target = new URL(
-            `${basePath}/${AppRoutes.TRACK_STATUS_ISSUANCE}`,
+            `${basePath}/${AppRoutes.RI_TRACK_STATUS_ISSUANCE}`,
             request.url,
           );
           return NextResponse.redirect(target);
