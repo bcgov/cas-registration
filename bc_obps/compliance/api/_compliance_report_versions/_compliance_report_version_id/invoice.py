@@ -1,4 +1,3 @@
-import json
 from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
@@ -22,28 +21,13 @@ def generate_compliance_report_version_invoice(
     request: HttpRequest, compliance_report_version_id: int
 ) -> StreamingHttpResponse:
     """
-    Generate a PDF invoice for a compliance report version and stream it to the client.
-    Delegates all context-building and error handling to ComplianceInvoiceService.generate_invoice_pdf.
+    Generate a PDF invoice for a compliance report version's obligation and stream it to the client.
+    Delegates all context-building and error handling to ComplianceInvoiceService.generate_obligation_invoice_pdf.
     """
     # Call the refactored service method; it returns either a PDF tuple or an errors dict
-    result = ComplianceInvoiceService.generate_invoice_pdf(compliance_report_version_id)
+    result = ComplianceInvoiceService.generate_obligation_invoice_pdf(compliance_report_version_id)
 
-    # If result is an error dictionary, stream it back with status 400
-    if isinstance(result, dict) and "errors" in result:
-        err_payload = json.dumps({"errors": result["errors"]}).encode("utf-8")
-        return StreamingHttpResponse(
-            streaming_content=iter([err_payload]),
-            content_type="application/json",
-            status=400,
-        )
-
-    # Otherwise, unpack the PDF generator, filename, and total size
-    pdf_generator, filename, total_size = result
-
-    response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="{filename}"'
-    response["Content-Length"] = str(total_size)
-    return response
+    return ComplianceInvoiceService.create_pdf_response(result)
 
 
 @router.get(
