@@ -33,6 +33,10 @@ const defaultFacilityFormContext = {
 };
 
 describe("RJSF bcghgIdWidget", () => {
+  beforeEach(() => {
+    actionHandler.mockClear();
+  });
+
   it("for an external user, should show message when operation does not have a BCGHG ID yet", () => {
     const { container } = render(
       <FormBase
@@ -166,6 +170,9 @@ describe("RJSF bcghgIdWidget", () => {
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
       "PATCH",
       "",
+      {
+        body: "{}",
+      },
     );
     const readOnlyBcghgIdTestField = container.querySelector(
       "#root_bcghgIdTestField",
@@ -193,6 +200,9 @@ describe("RJSF bcghgIdWidget", () => {
       "registration/facilities/ea4314ea-1974-465a-a851-278c8f9c8daa/bcghg-id",
       "PATCH",
       "",
+      {
+        body: "{}",
+      },
     );
     const readOnlyBcghgIdTestField = container.querySelector(
       "#root_bcghgIdTestField",
@@ -220,6 +230,9 @@ describe("RJSF bcghgIdWidget", () => {
       "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
       "PATCH",
       "",
+      {
+        body: "{}",
+      },
     );
     expect(screen.getByText(/not for you/i)).toBeVisible();
     await waitFor(() => {
@@ -227,5 +240,103 @@ describe("RJSF bcghgIdWidget", () => {
         screen.queryByText(/BCGHG ID issued successfully/i),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("Allows the user to update the BCGHGID for the operation manually ", async () => {
+    actionHandler.mockReturnValueOnce({ id: "this_is_a_fake_bcghgid" });
+    const { container } = render(
+      <FormBase
+        schema={bcghgIdWidgetSchema}
+        uiSchema={bcghgIdWidgetUiSchema}
+        formContext={defaultOperationFormContext}
+      />,
+    );
+    await userEvent.click(screen.getByRole("link", { name: "edit" }));
+    await userEvent.type(screen.getByRole("textbox"), "this_is_a_fake_bcghgid");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/operations/6d07d02a-1ad2-46ed-ad56-2f84313e98bf/bcghg-id",
+      "PATCH",
+      "",
+      { body: '{"bcghg_id":"this_is_a_fake_bcghgid"}' },
+    );
+    const readOnlyBcghgIdTestField = container.querySelector(
+      "#root_bcghgIdTestField",
+    );
+    expect(readOnlyBcghgIdTestField).toBeVisible();
+    expect(readOnlyBcghgIdTestField).toHaveTextContent(
+      "this_is_a_fake_bcghgid BCGHG ID issued",
+    );
+  });
+
+  it("Allows the user to update the BCGHGID for the facility manually ", async () => {
+    actionHandler.mockReturnValueOnce({
+      id: "this_is_a_fake_facility_bcghgid",
+    });
+    const { container } = render(
+      <FormBase
+        schema={bcghgIdWidgetSchema}
+        uiSchema={bcghgIdWidgetUiSchema}
+        formContext={defaultFacilityFormContext}
+      />,
+    );
+    await userEvent.click(screen.getByRole("link", { name: "edit" }));
+    await userEvent.type(
+      screen.getByRole("textbox"),
+      "this_is_a_fake_facility_bcghgid",
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/facilities/ea4314ea-1974-465a-a851-278c8f9c8daa/bcghg-id",
+      "PATCH",
+      "",
+      { body: '{"bcghg_id":"this_is_a_fake_facility_bcghgid"}' },
+    );
+    const readOnlyBcghgIdTestField = container.querySelector(
+      "#root_bcghgIdTestField",
+    );
+    expect(readOnlyBcghgIdTestField).toBeVisible();
+    expect(readOnlyBcghgIdTestField).toHaveTextContent(
+      "this_is_a_fake_facility_bcghgid BCGHG ID issued",
+    );
+  });
+
+  it("Displays the error if the manual BCGHG ID is not valid", async () => {
+    actionHandler.mockReturnValueOnce({ error: "Invalid BCGHGID" });
+    render(
+      <FormBase
+        schema={bcghgIdWidgetSchema}
+        uiSchema={bcghgIdWidgetUiSchema}
+        formContext={defaultOperationFormContext}
+      />,
+    );
+    await userEvent.click(screen.getByRole("link", { name: "edit" }));
+    await userEvent.type(screen.getByRole("textbox"), "123456");
+    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(screen.getByText(/Invalid BCGHGID/i)).toBeVisible();
+    await waitFor(() => {
+      expect(
+        screen.queryByText(/123456 BCGHG ID issued/i),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it("Reverts the display if the user clicks the cancel button", async () => {
+    actionHandler.mockReturnValueOnce({ error: "Invalid BCGHGID" });
+    render(
+      <FormBase
+        schema={bcghgIdWidgetSchema}
+        uiSchema={bcghgIdWidgetUiSchema}
+        formContext={defaultOperationFormContext}
+      />,
+    );
+    await userEvent.click(screen.getByRole("link", { name: "edit" }));
+    await userEvent.type(screen.getByRole("textbox"), "123456");
+    await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByTestId("edit-bcghg-id-text").textContent).toBe(
+      "Or click edit to enter a BCGHGID",
+    );
   });
 });

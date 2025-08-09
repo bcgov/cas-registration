@@ -232,6 +232,9 @@ export const facilitiesLfoUiSchema = {
     },
     bcghg_id: {
       "ui:widget": "BcghgIdWidget",
+      "ui:options": {
+        wide: true,
+      },
     },
     province: {
       "ui:widget": "ReadOnlyComboBoxWidget",
