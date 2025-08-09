@@ -5,30 +5,45 @@ import {
   extractComplianceReportVersionId,
   COMPLIANCE_BASE,
   AppRoutes,
+  ComplianceReportVersionStatus,
+  routesNoObligation,
+  routesObligation,
+  routesEarnedCredits,
 } from "./constants";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import hasRegisteredOperationForCurrentUser from "@bciers/actions/api/hasRegisteredOperationForCurrentUser";
-
+import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 // --------------------
-// Rule Context & Types
+// Rule Types & Contexts
 // --------------------
 type RuleContext = {
   canApplyComplianceUnitsCache: Record<number, boolean>;
   getComplianceAppliedUnits: (
     complianceReportVersionId: number,
   ) => Promise<boolean>;
-  getHasRegisteredOperation: () => Promise<boolean>;
+  getUserComplianceAccessStatus: (
+    complianceReportVersionId?: number,
+  ) => Promise<string | undefined>;
+  issuanceSummaryCache: Record<number, any>;
+  getIssuanceSummary: (complianceReportVersionId: number) => Promise<any>;
+  redirectToTrackStatusById: Record<number, boolean>;
 };
 
 const createRuleContext = (): RuleContext => {
   const canApplyComplianceUnitsCache: Record<number, boolean> = {};
-  let hasRegisteredOperationCache: boolean | undefined;
+  const issuanceSummaryCache: Record<number, any> = {};
+  const redirectToTrackStatusById: Record<number, boolean> = {};
+  let getComplianceAccessCache: string | undefined;
 
   return {
     canApplyComplianceUnitsCache,
+    issuanceSummaryCache,
+    redirectToTrackStatusById,
+
     getComplianceAppliedUnits: async (complianceReportVersionId: number) => {
       if (!(complianceReportVersionId in canApplyComplianceUnitsCache)) {
         const result = await getComplianceAppliedUnits(
@@ -39,12 +54,27 @@ const createRuleContext = (): RuleContext => {
       }
       return canApplyComplianceUnitsCache[complianceReportVersionId];
     },
-    getHasRegisteredOperation: async () => {
-      if (hasRegisteredOperationCache === undefined) {
-        const result = await hasRegisteredOperationForCurrentUser();
-        hasRegisteredOperationCache = result.has_registered_operation === true;
+
+    getUserComplianceAccessStatus: async (
+      complianceReportVersionId?: number,
+    ) => {
+      if (getComplianceAccessCache === undefined) {
+        const result = await getUserComplianceAccessStatus(
+          complianceReportVersionId,
+        );
+        getComplianceAccessCache = result?.status;
       }
-      return hasRegisteredOperationCache;
+      return getComplianceAccessCache;
+    },
+
+    getIssuanceSummary: async (complianceReportVersionId: number) => {
+      if (!issuanceSummaryCache[complianceReportVersionId]) {
+        issuanceSummaryCache[complianceReportVersionId] =
+          await getRequestIssuanceComplianceSummaryData(
+            complianceReportVersionId,
+          );
+      }
+      return issuanceSummaryCache[complianceReportVersionId];
     },
   };
 };
@@ -72,34 +102,151 @@ type PermissionRule = {
 
 const permissionRules: PermissionRule[] = [
   {
-    name: "hasRegisteredOperation",
+    name: "accessComplianceRoute",
     isApplicable: () => true,
-    validate: async (_id, _request, context) => {
-      return context!.getHasRegisteredOperation();
+    validate: async (complianceReportVersionId, _request, context) => {
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      // Ensure status is defined and not "Invalid"
+      return accessStatus !== undefined && accessStatus !== "Invalid";
     },
     redirect: (_id, request) =>
       NextResponse.redirect(new URL(`/${AppRoutes.ONBOARDING}`, request.url)),
   },
   {
-    name: "accessCanApplyUnits",
-    isApplicable: (request) => {
-      const match = request.nextUrl.pathname.includes(
-        AppRoutes.APPLY_COMPLIANCE_UNITS,
-      );
-      return match;
-    },
-
+    name: "accessNoObligation",
+    isApplicable: (request) =>
+      Boolean(
+        routesNoObligation.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
     validate: async (complianceReportVersionId, _request, context) => {
-      if (typeof complianceReportVersionId !== "number") {
-        return false;
-      }
-      return context!.getComplianceAppliedUnits(complianceReportVersionId);
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      return (
+        accessStatus ===
+        ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+      );
     },
-    redirect: (_, request) => {
-      const targetPath = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
+    redirect: (_id, request) =>
+      NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      ),
+  },
+  {
+    name: "accessObligation",
+    isApplicable: (request) =>
+      Boolean(
+        routesObligation.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
+    validate: async (complianceReportVersionId, request, context) => {
+      // 1) Must be "Obligation not met"
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      const statusOk =
+        accessStatus === ComplianceReportVersionStatus.OBLIGATION_NOT_MET;
+      if (!statusOk) return false;
 
-      const redirectUrl = new URL(targetPath, request.url);
-      return NextResponse.redirect(redirectUrl);
+      // 2) If the route is MO_APPLY_COMPLIANCE_UNITS, also require "can apply units"
+      const isApplyUnits = request?.nextUrl.pathname.includes(
+        AppRoutes.MO_APPLY_COMPLIANCE_UNITS,
+      );
+      if (isApplyUnits) {
+        if (typeof complianceReportVersionId !== "number") {
+          return false;
+        }
+        return context!.getComplianceAppliedUnits(complianceReportVersionId);
+      }
+
+      return accessStatus === ComplianceReportVersionStatus.OBLIGATION_NOT_MET;
+    },
+    redirect: (_id, request) =>
+      NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      ),
+  },
+  {
+    name: "accessEarnedCredits",
+    isApplicable: (request) =>
+      Boolean(
+        routesEarnedCredits.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
+
+    validate: async (complianceReportVersionId, request, context) => {
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      const isEarned =
+        accessStatus === ComplianceReportVersionStatus.EARNED_CREDITS;
+      if (!isEarned) return false;
+
+      // Special cases under (request-issuance)
+      const isReviewComplianceSummary =
+        request!.nextUrl.pathname.includes(
+          AppRoutes.RI_REVIEW_SUMMARY_ISSUANCE,
+        ) ||
+        request!.nextUrl.pathname.includes(
+          AppRoutes.RI_REVIEW_CREDITS_ISSUANCE,
+        );
+
+      if (
+        isReviewComplianceSummary &&
+        typeof complianceReportVersionId === "number"
+      ) {
+        const summary = await context!.getIssuanceSummary(
+          complianceReportVersionId,
+        );
+        const shouldTrack = [
+          IssuanceStatus.ISSUANCE_REQUESTED,
+          IssuanceStatus.APPROVED,
+          IssuanceStatus.DECLINED,
+        ].includes(summary?.issuance_status as IssuanceStatus);
+
+        if (shouldTrack) {
+          // mark intent to redirect to track-status
+          context!.redirectToTrackStatusById[complianceReportVersionId] = true;
+          return false; // trigger redirect
+        }
+      }
+
+      return true;
+    },
+
+    redirect: (complianceReportVersionId, request) => {
+      const ctx = (request as any).__ctx as RuleContext | undefined;
+      const shouldTrack =
+        typeof complianceReportVersionId === "number" &&
+        Boolean(ctx?.redirectToTrackStatusById[complianceReportVersionId]);
+
+      if (shouldTrack && typeof complianceReportVersionId === "number") {
+        return NextResponse.redirect(
+          new URL(
+            `/${COMPLIANCE_BASE}/${complianceReportVersionId}/${AppRoutes.RI_TRACK_STATUS_ISSUANCE}`,
+            request.url,
+          ),
+        );
+      }
+
+      return NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      );
     },
   },
 ];
@@ -138,6 +285,12 @@ export const withRuleHasComplianceRouteAccess: MiddlewareFactory = (
   next: NextMiddleware,
 ) => {
   return async (request: NextRequest, _next) => {
+    // Debug: log the incoming request path
+    console.log(
+      "[withRuleHasComplianceRouteAccess] Path:",
+      request.nextUrl.pathname,
+    );
+
     const token = await getToken();
     const role = getUserRole(token);
 
