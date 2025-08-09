@@ -6,15 +6,15 @@ import * as constants from "./constants";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
+import getRequestIssuanceComplianceSummaryData from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+
 import { getToken } from "@bciers/actions";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 import { ComplianceReportVersionStatus } from "./constants";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
-import {
-  mockCasUserToken,
-  mockIndustryUserToken,
-} from "@bciers/testConfig/data/tokens";
+import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 
 // --------------------
 // Mocks
@@ -32,6 +32,13 @@ vi.mock("@/compliance/src/app/utils/getUserComplianceAccessStatus", () => ({
   __esModule: true,
   default: vi.fn(),
 }));
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    __esModule: true,
+    default: vi.fn(),
+  }),
+);
 
 // --------------------
 // Test harness
@@ -63,9 +70,14 @@ async function runMiddleware(path: string) {
 
 // Build paths used by rules (path-only strings)
 const reviewSummariesPath = `${BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
+// This base is used by most tests that run through the "review summaries" subapp:
 const crvBase = `${reviewSummariesPath}/${defaultCrvId}`;
 const pathForSeg = (seg: string) => `${crvBase}/${seg}`;
 const applyUnitsPath = pathForSeg(constants.AppRoutes.APPLY_COMPLIANCE_UNITS);
+
+// NEW: paths under /compliance/compliance-summaries/:id (not the review base)
+const summariesIdBase = `/${constants.COMPLIANCE_BASE}/compliance-summaries/${defaultCrvId}`;
+const pathUnderSummaries = (seg: string) => `${summariesIdBase}/${seg}`;
 
 // --------------------
 // Setup
@@ -77,7 +89,7 @@ beforeEach(() => {
   (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
   (getUserRole as vi.Mock).mockReturnValue(IDP.BCEIDBUSINESS);
 
-  // Extract CRV id from path by default
+  // Extract CRV id from path by default (works for /compliance-summaries/:id/…)
   vi.spyOn(constants, "extractComplianceReportVersionId").mockImplementation(
     (pathname: string) => {
       const m = pathname.match(/\/compliance-summaries\/(\d+)/);
@@ -86,6 +98,9 @@ beforeEach(() => {
   );
 
   // Default OK responses
+  (getRequestIssuanceComplianceSummaryData as vi.Mock).mockResolvedValue({
+    issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
+  });
   (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
     status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
   });
@@ -112,7 +127,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     expect(getPathname(res)).toBe(`/${constants.AppRoutes.ONBOARDING}`);
   });
 
-  it("allows when status is defined and not Invalid", async () => {
+  it("allows when access status is defined and not Invalid", async () => {
     (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
       status: "Registered",
     });
@@ -121,6 +136,34 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
 
     expect(next).toHaveBeenCalledOnce();
     expect(res!.status).toBe(200);
+  });
+
+  // accessNoObligation
+  describe("accessNoObligation", () => {
+    const seg =
+      constants.routesNoObligation[0] ?? constants.AppRoutes.REVIEW_SUMMARY;
+
+    it("redirects when status !== NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
+      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
+        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
+      });
+
+      const { res } = await runMiddleware(`${BASE}/${seg}`);
+
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(reviewSummariesPath);
+    });
+
+    it("allows when status === NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
+      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
+        status: ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+      });
+
+      const { next, res } = await runMiddleware(`${BASE}/${seg}`);
+
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
   });
 
   // accessObligation
@@ -208,34 +251,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     });
   });
 
-  // accessNoObligation
-  describe("accessNoObligation", () => {
-    const seg =
-      constants.routesNoObligation[0] ??
-      constants.NoObligationRoutes.REVIEW_SUMMARY;
-
-    it("redirects when status !== NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-      });
-
-      const { res } = await runMiddleware(`${BASE}/${seg}`);
-
-      expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(reviewSummariesPath);
-    });
-
-    it("allows when status === NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-      });
-
-      const { next, res } = await runMiddleware(`${BASE}/${seg}`);
-
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
-  });
+  // #TODO Earned Credits: request-issuance-review-summary → track-status-of-issuance
 
   // Bypass & edges
   describe("bypass & edge flows", () => {

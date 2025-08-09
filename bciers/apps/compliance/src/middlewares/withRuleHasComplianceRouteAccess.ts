@@ -6,7 +6,6 @@ import {
   COMPLIANCE_BASE,
   AppRoutes,
   ComplianceReportVersionStatus,
-  NoObligationRoutes,
   routesNoObligation,
   routesObligation,
   routesEarnedCredits,
@@ -16,9 +15,10 @@ import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
-
+import getRequestIssuanceComplianceSummaryData from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 // --------------------
-// Rule Context & Types
+// Rule Types & Contexts
 // --------------------
 type RuleContext = {
   canApplyComplianceUnitsCache: Record<number, boolean>;
@@ -28,14 +28,22 @@ type RuleContext = {
   getUserComplianceAccessStatus: (
     complianceReportVersionId?: number,
   ) => Promise<string | undefined>;
+  issuanceSummaryCache: Record<number, any>;
+  getIssuanceSummary: (complianceReportVersionId: number) => Promise<any>;
+  redirectToTrackStatusById: Record<number, boolean>;
 };
 
 const createRuleContext = (): RuleContext => {
   const canApplyComplianceUnitsCache: Record<number, boolean> = {};
+  const issuanceSummaryCache: Record<number, any> = {};
+  const redirectToTrackStatusById: Record<number, boolean> = {};
   let getComplianceAccessCache: string | undefined;
 
   return {
     canApplyComplianceUnitsCache,
+    issuanceSummaryCache,
+    redirectToTrackStatusById,
+
     getComplianceAppliedUnits: async (complianceReportVersionId: number) => {
       if (!(complianceReportVersionId in canApplyComplianceUnitsCache)) {
         const result = await getComplianceAppliedUnits(
@@ -46,6 +54,7 @@ const createRuleContext = (): RuleContext => {
       }
       return canApplyComplianceUnitsCache[complianceReportVersionId];
     },
+
     getUserComplianceAccessStatus: async (
       complianceReportVersionId?: number,
     ) => {
@@ -56,6 +65,16 @@ const createRuleContext = (): RuleContext => {
         getComplianceAccessCache = result?.status;
       }
       return getComplianceAccessCache;
+    },
+
+    getIssuanceSummary: async (complianceReportVersionId: number) => {
+      if (!issuanceSummaryCache[complianceReportVersionId]) {
+        issuanceSummaryCache[complianceReportVersionId] =
+          await getRequestIssuanceComplianceSummaryData(
+            complianceReportVersionId,
+          );
+      }
+      return issuanceSummaryCache[complianceReportVersionId];
     },
   };
 };
@@ -94,6 +113,31 @@ const permissionRules: PermissionRule[] = [
     },
     redirect: (_id, request) =>
       NextResponse.redirect(new URL(`/${AppRoutes.ONBOARDING}`, request.url)),
+  },
+  {
+    name: "accessNoObligation",
+    isApplicable: (request) =>
+      Boolean(
+        routesNoObligation.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
+    validate: async (complianceReportVersionId, _request, context) => {
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      return (
+        accessStatus ===
+        ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+      );
+    },
+    redirect: (_id, request) =>
+      NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      ),
   },
   {
     name: "accessObligation",
@@ -141,44 +185,65 @@ const permissionRules: PermissionRule[] = [
           request.nextUrl.pathname.includes(path),
         ),
       ),
-    validate: async (complianceReportVersionId, _request, context) => {
+
+    validate: async (complianceReportVersionId, request, context) => {
       const accessStatus = await context!.getUserComplianceAccessStatus(
         complianceReportVersionId,
       );
-      return accessStatus === ComplianceReportVersionStatus.EARNED_CREDITS;
+      const isEarned =
+        accessStatus === ComplianceReportVersionStatus.EARNED_CREDITS;
+      if (!isEarned) return false;
+
+      // Special case: visiting "request-issuance-review-summary" under (request-issuance)
+      const isReviewComplianceSummary = request!.nextUrl.pathname.includes(
+        AppRoutes.REVIEW_SUMMARY_ISSUANCE,
+      );
+
+      if (
+        isReviewComplianceSummary &&
+        typeof complianceReportVersionId === "number"
+      ) {
+        const summary = await context!.getIssuanceSummary(
+          complianceReportVersionId,
+        );
+        const shouldTrack = [
+          IssuanceStatus.ISSUANCE_REQUESTED,
+          IssuanceStatus.APPROVED,
+          IssuanceStatus.DECLINED,
+        ].includes(summary?.issuance_status as IssuanceStatus);
+
+        if (shouldTrack) {
+          // mark intent to redirect to track-status
+          context!.redirectToTrackStatusById[complianceReportVersionId] = true;
+          return false; // trigger redirect
+        }
+      }
+
+      return true;
     },
-    redirect: (_id, request) =>
-      NextResponse.redirect(
+
+    redirect: (complianceReportVersionId, request) => {
+      const ctx = (request as any).__ctx as RuleContext | undefined;
+      const shouldTrack =
+        typeof complianceReportVersionId === "number" &&
+        Boolean(ctx?.redirectToTrackStatusById[complianceReportVersionId]);
+
+      if (shouldTrack && typeof complianceReportVersionId === "number") {
+        return NextResponse.redirect(
+          new URL(
+            `/${COMPLIANCE_BASE}/${complianceReportVersionId}/${AppRoutes.TRACK_STATUS_ISSUANCE}`,
+            request.url,
+          ),
+        );
+      }
+
+      return NextResponse.redirect(
         new URL(
           `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
           request.url,
         ),
-      ),
-  },
-  {
-    name: "accessNoObligation",
-    isApplicable: (request) =>
-      Boolean(
-        routesNoObligation.some((path) =>
-          request.nextUrl.pathname.includes(path),
-        ),
-      ),
-    validate: async (complianceReportVersionId, _request, context) => {
-      const accessStatus = await context!.getUserComplianceAccessStatus(
-        complianceReportVersionId,
-      );
-      return (
-        accessStatus ===
-        ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS
       );
     },
-    redirect: (_id, request) =>
-      NextResponse.redirect(
-        new URL(
-          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
-          request.url,
-        ),
-      ),
   },
 ];
 

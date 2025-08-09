@@ -20,10 +20,14 @@ export const extractComplianceReportVersionId = (
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
+  MANAGE_OBLIGATION_REVIEW_SUMMARY = "manage-obligation-review-summary",
   APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
+  REVIEW_SUMMARY = "review-summary",
+  REVIEW_COMPLIANCE_SUMMARY = "review-compliance-summary",
   REVIEW_BY_DIRECTOR = "review-by-director",
-  REVIEW_CREDITS_ISSUANCE_REQUEST = "review-credits-issuance-request",
-  TRACK_STATUS_OF_ISSUANCE = "track-status-of-issuance",
+  REVIEW_SUMMARY_ISSUANCE = "request-issuance-review-summary",
+  REVIEW_CREDITS_ISSUANCE = "review-credits-issuance-request",
+  TRACK_STATUS_ISSUANCE = "track-status-of-issuance",
 }
 
 // Compiance Report Version Status
@@ -47,6 +51,6 @@ export const routesObligation = [
 // App routes restricted to compliance report version status "Earned credits"
 export const routesEarnedCredits = [
   "request-issuance-of-earned-credits",
-  "manage-obligation-review-summary",
-  "pay-obligation-track-payments",
+  "request-issuance-review-summary",
+  "track-status-of-issuance",
 ];
