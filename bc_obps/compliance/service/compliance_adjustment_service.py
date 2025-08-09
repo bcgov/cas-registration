@@ -2,6 +2,8 @@ import uuid
 import logging
 from decimal import Decimal
 from django.utils import timezone
+
+from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from compliance.models.elicensing_line_item import ElicensingLineItem
 from compliance.models.compliance_obligation import ComplianceObligation
@@ -132,3 +134,5 @@ class ComplianceAdjustmentService:
                 force_refresh=True,
                 supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
             )
+            # Check outstanding balance to determine obligation met status
+            ComplianceReportVersionService.update_compliance_report_version_status(compliance_report_version_id)
