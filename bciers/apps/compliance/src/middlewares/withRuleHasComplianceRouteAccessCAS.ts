@@ -131,23 +131,23 @@ const permissionRules: PermissionRule[] = [
         // If cache is empty for some reason, fallback
         if (!data) return NextResponse.redirect(fallback);
 
-        // 1) No analyst suggestion -> go to review credits issuance request
+        // 1) No analyst suggestion -> go to request-issuance-of-earned-credits
         if (!data.analyst_suggestion) {
           const target = new URL(
-            `${basePath}/${AppRoutes.REVIEW_CREDITS_ISSUANCE_REQUEST}`,
+            `${basePath}/${AppRoutes.RI_EARNED_CREDITS}`,
             request.url,
           );
           return NextResponse.redirect(target);
         }
 
-        // 2) Approved/declined -> go to track status page
+        // 2) Approved/declined -> go to track-status-of-issuance
         if (
           [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
             data.issuance_status as IssuanceStatus,
           )
         ) {
           const target = new URL(
-            `${basePath}/${AppRoutes.TRACK_STATUS_OF_ISSUANCE}`,
+            `${basePath}/${AppRoutes.RI_TRACK_STATUS}`,
             request.url,
           );
           return NextResponse.redirect(target);

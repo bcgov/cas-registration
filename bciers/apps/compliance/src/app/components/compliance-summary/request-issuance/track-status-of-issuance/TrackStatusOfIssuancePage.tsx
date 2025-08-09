@@ -16,17 +16,6 @@ export default async function TrackStatusOfIssuancePage({
     complianceReportVersionId,
   );
 
-  if (
-    [
-      IssuanceStatus.CREDITS_NOT_ISSUED,
-      IssuanceStatus.CHANGES_REQUIRED,
-    ].includes(pageData.issuance_status as IssuanceStatus)
-  ) {
-    redirect(
-      `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`,
-    );
-  }
-
   const taskListElements = generateRequestIssuanceTaskList(
     complianceReportVersionId,
     pageData.reporting_year,
