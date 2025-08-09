@@ -20,10 +20,13 @@ export const extractComplianceReportVersionId = (
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
-  APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
+  MO_REVIEW_SUMMARY = "manage-obligation-review-summary",
+  MO_APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
+  NO_REVIEW_SUMMARY = "review-summary",
+  RI_REVIEW_SUMMARY = "request-issuance-review-summary",
+  RI_EARNED_CREDITS = "request-issuance-of-earned-credits",
+  RI_TRACK_STATUS = "track-status-of-issuance",
   REVIEW_BY_DIRECTOR = "review-by-director",
-  REVIEW_CREDITS_ISSUANCE_REQUEST = "review-credits-issuance-request",
-  TRACK_STATUS_OF_ISSUANCE = "track-status-of-issuance",
 }
 
 // Compiance Report Version Status
@@ -32,6 +35,11 @@ export enum ComplianceReportVersionStatus {
   EARNED_CREDITS = "Earned credits",
   NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }
+
+export type ComplianceStatus =
+  | "Invalid"
+  | "Registered"
+  | ComplianceReportVersionStatus;
 
 // App routes restricted to compliance report version status "No obligation or earned credits"
 export const routesNoObligation = ["review-summary"];
@@ -47,6 +55,6 @@ export const routesObligation = [
 // App routes restricted to compliance report version status "Earned credits"
 export const routesEarnedCredits = [
   "request-issuance-of-earned-credits",
-  "manage-obligation-review-summary",
-  "pay-obligation-track-payments",
+  "request-issuance-review-summary",
+  "track-status-of-issuance",
 ];

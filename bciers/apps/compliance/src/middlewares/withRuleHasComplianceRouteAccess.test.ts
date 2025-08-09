@@ -6,15 +6,15 @@ import * as constants from "./constants";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+
 import { getToken } from "@bciers/actions";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 import { ComplianceReportVersionStatus } from "./constants";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
-import {
-  mockCasUserToken,
-  mockIndustryUserToken,
-} from "@bciers/testConfig/data/tokens";
+import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
 
 // --------------------
 // Mocks
@@ -32,18 +32,20 @@ vi.mock("@/compliance/src/app/utils/getUserComplianceAccessStatus", () => ({
   __esModule: true,
   default: vi.fn(),
 }));
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    __esModule: true,
+    getRequestIssuanceComplianceSummaryData: vi.fn(),
+  }),
+);
 
 // --------------------
-// Test harness
+// Helpers & Setup
 // --------------------
 const DOMAIN = "https://localhost:3000";
 const BASE = `/${constants.COMPLIANCE_BASE}`;
 const defaultCrvId = 123;
-
-const getPathname = (res?: NextResponse | null) => {
-  const loc = res?.headers.get("location");
-  return loc ? new URL(loc).pathname : undefined;
-};
 
 function makeReq(path: string): NextRequest {
   return {
@@ -61,11 +63,50 @@ async function runMiddleware(path: string) {
   return { req, res, next };
 }
 
-// Build paths used by rules (path-only strings)
+const getPathname = (res?: NextResponse | null) => {
+  const loc = res?.headers.get("location");
+  return loc ? new URL(loc).pathname : undefined;
+};
+
 const reviewSummariesPath = `${BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
 const crvBase = `${reviewSummariesPath}/${defaultCrvId}`;
+const summariesIdBase = `${BASE}/compliance-summaries/${defaultCrvId}`;
+
 const pathForSeg = (seg: string) => `${crvBase}/${seg}`;
-const applyUnitsPath = pathForSeg(constants.AppRoutes.APPLY_COMPLIANCE_UNITS);
+const pathUnderSummaries = (seg: string) => `${summariesIdBase}/${seg}`;
+
+// Derived paths
+const applyUnitsPath = pathForSeg(
+  constants.AppRoutes.MO_APPLY_COMPLIANCE_UNITS,
+);
+const reviewIssuanceCreditPath = pathUnderSummaries(
+  constants.AppRoutes.RI_REVIEW_SUMMARY,
+);
+const trackStatusPath = pathUnderSummaries(constants.AppRoutes.RI_TRACK_STATUS);
+const requestIssuanceCreditPath = pathUnderSummaries(
+  constants.AppRoutes.RI_EARNED_CREDITS,
+);
+
+// --------------------
+// Mock Helpers
+// --------------------
+const mockComplianceStatus = (status: ComplianceReportVersionStatus) => {
+  (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({ status });
+};
+
+const mockIssuanceStatus = (status: IssuanceStatus) => {
+  (getRequestIssuanceComplianceSummaryData as vi.Mock).mockResolvedValue({
+    issuance_status: status,
+  });
+};
+
+const mockCanApplyComplianceUnits = (canApply: boolean) => {
+  (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
+    can_apply_compliance_units: canApply,
+    rows: [],
+    row_count: 0,
+  });
+};
 
 // --------------------
 // Setup
@@ -73,11 +114,9 @@ const applyUnitsPath = pathForSeg(constants.AppRoutes.APPLY_COMPLIANCE_UNITS);
 beforeEach(() => {
   vi.clearAllMocks();
 
-  // Role: industry (so middleware runs)
   (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
   (getUserRole as vi.Mock).mockReturnValue(IDP.BCEIDBUSINESS);
 
-  // Extract CRV id from path by default
   vi.spyOn(constants, "extractComplianceReportVersionId").mockImplementation(
     (pathname: string) => {
       const m = pathname.match(/\/compliance-summaries\/(\d+)/);
@@ -85,159 +124,162 @@ beforeEach(() => {
     },
   );
 
-  // Default OK responses
-  (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-    status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-  });
-  (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
-    can_apply_compliance_units: true,
-    rows: [],
-    row_count: 0,
-  });
+  // Set defaults
+  mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+  mockCanApplyComplianceUnits(true);
+  mockIssuanceStatus(IssuanceStatus.CREDITS_NOT_ISSUED);
 });
 
 // ----------------------
 // Tests
 // ----------------------
 describe("withRuleHasComplianceRouteAccess middleware", () => {
-  // accessComplianceRoute
   it("redirects to /onboarding if compliance access is Invalid", async () => {
-    (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-      status: "Invalid",
-    });
-
+    mockComplianceStatus("Invalid" as ComplianceReportVersionStatus);
     const { res } = await runMiddleware(reviewSummariesPath);
-
     expect(res!.status).toBe(307);
     expect(getPathname(res)).toBe(`/${constants.AppRoutes.ONBOARDING}`);
   });
 
-  it("allows when status is defined and not Invalid", async () => {
-    (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-      status: "Registered",
-    });
-
+  it("allows when access status is defined and not Invalid", async () => {
+    mockComplianceStatus("Registered" as ComplianceReportVersionStatus);
     const { next, res } = await runMiddleware(reviewSummariesPath);
-
     expect(next).toHaveBeenCalledOnce();
     expect(res!.status).toBe(200);
   });
 
-  // accessObligation
-  describe("accessObligation", () => {
-    const obligationSeg =
-      constants.routesObligation[0] ??
-      constants.AppRoutes.MANAGE_OBLIGATION_REVIEW_SUMMARY;
-
-    it("redirects when status !== OBLIGATION_NOT_MET", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.EARNED_CREDITS,
-      });
-
-      const { res } = await runMiddleware(pathForSeg(obligationSeg));
-
-      expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(reviewSummariesPath);
-    });
-
-    it("allows when status === OBLIGATION_NOT_MET", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-      });
-
-      const { next, res } = await runMiddleware(pathForSeg(obligationSeg));
-
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
-
-    it("APPLY_COMPLIANCE_UNITS: redirects when can_apply=false", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-      });
-      (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
-        can_apply_compliance_units: false,
-      });
-
-      const { res } = await runMiddleware(applyUnitsPath);
-
-      expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(reviewSummariesPath);
-    });
-
-    it("APPLY_COMPLIANCE_UNITS: allows when can_apply=true", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-      });
-      (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
-        can_apply_compliance_units: true,
-      });
-
-      const { next, res } = await runMiddleware(`${applyUnitsPath}/`);
-
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
-  });
-
-  // accessEarnedCredits
-  describe("accessEarnedCredits", () => {
-    const seg =
-      constants.routesEarnedCredits[0] ?? "request-issuance-review-summary";
-
-    it("redirects when status !== EARNED_CREDITS", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-      });
-
-      const { res } = await runMiddleware(pathForSeg(seg));
-
-      expect(res!.status).toBe(307);
-      expect(getPathname(res)).toBe(reviewSummariesPath);
-    });
-
-    it("allows when status === EARNED_CREDITS", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.EARNED_CREDITS,
-      });
-
-      const { next, res } = await runMiddleware(pathForSeg(seg));
-
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
-  });
-
-  // accessNoObligation
   describe("accessNoObligation", () => {
     const seg =
-      constants.routesNoObligation[0] ??
-      constants.NoObligationRoutes.REVIEW_SUMMARY;
+      constants.routesNoObligation[0] ?? constants.AppRoutes.NO_REVIEW_SUMMARY;
 
     it("redirects when status !== NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
-      });
-
+      mockComplianceStatus(ComplianceReportVersionStatus.OBLIGATION_NOT_MET);
       const { res } = await runMiddleware(`${BASE}/${seg}`);
-
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
 
     it("allows when status === NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
-      (getUserComplianceAccessStatus as vi.Mock).mockResolvedValue({
-        status: ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-      });
-
+      mockComplianceStatus(
+        ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+      );
       const { next, res } = await runMiddleware(`${BASE}/${seg}`);
-
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
     });
   });
 
-  // Bypass & edges
+  describe("accessObligation", () => {
+    const seg =
+      constants.routesObligation[0] ?? constants.AppRoutes.MO_REVIEW_SUMMARY;
+
+    it("redirects when status !== OBLIGATION_NOT_MET", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+      const { res } = await runMiddleware(pathForSeg(seg));
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(reviewSummariesPath);
+    });
+
+    it("allows when status === OBLIGATION_NOT_MET", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.OBLIGATION_NOT_MET);
+      const { next, res } = await runMiddleware(pathForSeg(seg));
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
+
+    it("redirects when can_apply=false", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.OBLIGATION_NOT_MET);
+      mockCanApplyComplianceUnits(false);
+      const { res } = await runMiddleware(applyUnitsPath);
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(reviewSummariesPath);
+    });
+
+    it("allows when can_apply=true", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.OBLIGATION_NOT_MET);
+      mockCanApplyComplianceUnits(true);
+      const { next, res } = await runMiddleware(`${applyUnitsPath}/`);
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
+  });
+
+  describe("accessEarnedCredits", () => {
+    const seg =
+      constants.routesEarnedCredits[0] ?? constants.AppRoutes.RI_REVIEW_SUMMARY;
+
+    it("redirects when status !== EARNED_CREDITS", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.OBLIGATION_NOT_MET);
+      const { res } = await runMiddleware(pathForSeg(seg));
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(reviewSummariesPath);
+    });
+
+    it("allows when status === EARNED_CREDITS", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+      const { next, res } = await runMiddleware(pathForSeg(seg));
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
+  });
+
+  describe("track-status-of-issuance → request-issuance redirect logic", () => {
+    it.each([
+      IssuanceStatus.CREDITS_NOT_ISSUED,
+      IssuanceStatus.CHANGES_REQUIRED,
+    ])("redirects when issuance_status = %s", async (status) => {
+      mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+      mockIssuanceStatus(status);
+      const { res } = await runMiddleware(trackStatusPath);
+      expect(res!.status).toBe(307);
+      expect(getPathname(res)).toBe(requestIssuanceCreditPath);
+    });
+
+    it("allows staying on track-status when issuance_status = ISSUANCE_REQUESTED", async () => {
+      mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+      mockIssuanceStatus(IssuanceStatus.ISSUANCE_REQUESTED);
+      const { next, res } = await runMiddleware(`${trackStatusPath}/`);
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
+  });
+
+  // describe("earned-credits > review-summary → redirects to track-status", () => {
+  //   it.each([
+  //     IssuanceStatus.ISSUANCE_REQUESTED,
+  //     IssuanceStatus.APPROVED,
+  //     IssuanceStatus.DECLINED,
+  //   ])(
+  //     "redirects when on review summary and issuance_status = %s",
+  //     async (status) => {
+  //       mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+  //       mockIssuanceStatus(status);
+
+  //       const { res } = await runMiddleware(reviewIssuanceCreditPath);
+
+  //       expect(res!.status).toBe(307);
+  //       expect(getPathname(res)).toBe(trackStatusPath);
+  //     },
+  //   );
+
+  //   it.each([
+  //     IssuanceStatus.CREDITS_NOT_ISSUED,
+  //     IssuanceStatus.CHANGES_REQUIRED,
+  //   ])(
+  //     "allows staying on review-summary when issuance_status = %s",
+  //     async (status) => {
+  //       mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+  //       mockIssuanceStatus(status);
+
+  //       const { next, res } = await runMiddleware(
+  //         `${reviewIssuanceCreditPath}/`,
+  //       );
+  //       expect(next).toHaveBeenCalledOnce();
+  //       expect(res!.status).toBe(200);
+  //     },
+  //   );
+  // });
+
   describe("bypass & edge flows", () => {
     it("skips middleware when no CRV id", async () => {
       vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
@@ -248,14 +290,14 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(res!.status).toBe(200);
     });
 
-    it("bypasses for IDIR (CAS) users", async () => {
+    it("bypasses for IDIR users", async () => {
       (getUserRole as vi.Mock).mockReturnValue(IDP.IDIR);
       const { next, res } = await runMiddleware(applyUnitsPath);
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
     });
 
-    it("fallback redirect to onboarding on error", async () => {
+    it("redirects to onboarding on error", async () => {
       (getUserComplianceAccessStatus as vi.Mock).mockRejectedValue(
         new Error("boom"),
       );
