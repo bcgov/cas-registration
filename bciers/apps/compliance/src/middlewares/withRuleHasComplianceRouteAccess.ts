@@ -6,6 +6,10 @@ import {
   COMPLIANCE_BASE,
   AppRoutes,
   ComplianceReportVersionStatus,
+  NoObligationRoutes,
+  routesNoObligation,
+  routesObligation,
+  routesEarnedCredits,
 } from "./constants";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
@@ -92,35 +96,73 @@ const permissionRules: PermissionRule[] = [
       NextResponse.redirect(new URL(`/${AppRoutes.ONBOARDING}`, request.url)),
   },
   {
-    name: "accessCanApplyUnits",
-    isApplicable: (request) => {
-      const match = request.nextUrl.pathname.includes(
+    name: "accessObligation",
+    isApplicable: (request) =>
+      Boolean(
+        routesObligation.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
+    validate: async (complianceReportVersionId, request, context) => {
+      // 1) Must be "Obligation not met"
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      const statusOk =
+        accessStatus === ComplianceReportVersionStatus.OBLIGATION_NOT_MET;
+      if (!statusOk) return false;
+
+      // 2) If the route is APPLY_COMPLIANCE_UNITS, also require "can apply units"
+      const isApplyUnits = request?.nextUrl.pathname.includes(
         AppRoutes.APPLY_COMPLIANCE_UNITS,
       );
-      return match;
-    },
-
-    validate: async (complianceReportVersionId, _request, context) => {
-      if (typeof complianceReportVersionId !== "number") {
-        return false;
+      if (isApplyUnits) {
+        if (typeof complianceReportVersionId !== "number") {
+          return false;
+        }
+        return context!.getComplianceAppliedUnits(complianceReportVersionId);
       }
-      return context!.getComplianceAppliedUnits(complianceReportVersionId);
-    },
-    redirect: (_, request) => {
-      const targetPath = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
 
-      const redirectUrl = new URL(targetPath, request.url);
-      return NextResponse.redirect(redirectUrl);
+      return accessStatus === ComplianceReportVersionStatus.OBLIGATION_NOT_MET;
     },
+    redirect: (_id, request) =>
+      NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      ),
+  },
+  {
+    name: "accessEarnedCredits",
+    isApplicable: (request) =>
+      Boolean(
+        routesEarnedCredits.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
+    validate: async (complianceReportVersionId, _request, context) => {
+      const accessStatus = await context!.getUserComplianceAccessStatus(
+        complianceReportVersionId,
+      );
+      return accessStatus === ComplianceReportVersionStatus.EARNED_CREDITS;
+    },
+    redirect: (_id, request) =>
+      NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      ),
   },
   {
     name: "accessNoObligation",
-    isApplicable: (request) => {
-      const reviewSummaryPattern = new RegExp(
-        `/${AppRoutes.REVIEW_SUMMARY}/?$`,
-      );
-      return reviewSummaryPattern.test(request.nextUrl.pathname);
-    },
+    isApplicable: (request) =>
+      Boolean(
+        routesNoObligation.some((path) =>
+          request.nextUrl.pathname.includes(path),
+        ),
+      ),
     validate: async (complianceReportVersionId, _request, context) => {
       const accessStatus = await context!.getUserComplianceAccessStatus(
         complianceReportVersionId,
@@ -130,12 +172,13 @@ const permissionRules: PermissionRule[] = [
         ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS
       );
     },
-    redirect: (_, request) => {
-      const targetPath = `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
-
-      const redirectUrl = new URL(targetPath, request.url);
-      return NextResponse.redirect(redirectUrl);
-    },
+    redirect: (_id, request) =>
+      NextResponse.redirect(
+        new URL(
+          `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`,
+          request.url,
+        ),
+      ),
   },
 ];
 

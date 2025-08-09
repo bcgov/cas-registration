@@ -16,11 +16,10 @@ export const extractComplianceReportVersionId = (
   return null;
 };
 
-// App routing routes
+// App routes
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
-  REVIEW_SUMMARY = "review-summary",
   APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
   REVIEW_BY_DIRECTOR = "review-by-director",
   REVIEW_CREDITS_ISSUANCE_REQUEST = "review-credits-issuance-request",
@@ -30,8 +29,24 @@ export enum AppRoutes {
 // Compiance Report Version Status
 export enum ComplianceReportVersionStatus {
   OBLIGATION_NOT_MET = "Obligation not met",
-  OBLIGATION_FULLY_MET = "Obligation fully met",
-  OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation",
   EARNED_CREDITS = "Earned credits",
   NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }
+
+// App routes restricted to compliance report version status "No obligation or earned credits"
+export const routesNoObligation = ["review-summary"];
+
+// App routes restricted to compliance report version status "Obligation not met"
+export const routesObligation = [
+  "apply-compliance-units",
+  "download-payment-instructions",
+  "manage-obligation-review-summary",
+  "pay-obligation-track-payments",
+];
+
+// App routes restricted to compliance report version status "Earned credits"
+export const routesEarnedCredits = [
+  "request-issuance-of-earned-credits",
+  "manage-obligation-review-summary",
+  "pay-obligation-track-payments",
+];
