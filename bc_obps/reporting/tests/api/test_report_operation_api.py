@@ -5,6 +5,7 @@ from registration.models import Operation
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from reporting.service.report_operation_service import ReportOperationService
+from reporting.tests.utils.bakers import report_version_baker
 
 
 class TestReportOperationDataApi(CommonTestSetup):
@@ -126,3 +127,43 @@ class TestReportOperationDataApi(CommonTestSetup):
             ),
         )
         mock_update.assert_called_once_with(report_operation.report_version_id)
+
+    # POST report-operation
+    def test_authorized_users_can_post_updates_to_report_version(self):
+        report_version = report_version_baker(report_type="Simple Report")
+
+        TestUtils.authorize_current_user_as_operator_user(self, operator=report_version.report.operator)
+
+        endpoint_under_test = f"/api/reporting/report-version/{report_version.id}/report-operation"
+
+        data = {
+            "operator_legal_name": "new legal name",
+            "operator_trade_name": "new trade name",
+            "operation_name": "new operation name",
+            "operation_type": Operation.Types.LFO,
+            "operation_bcghgid": "new operation bcghgid",
+            "bc_obps_regulated_operation_id": "new bc obps regulated operation id",
+            "activities": [],
+            "regulated_products": [],
+            "operation_report_type": "Annual Report",
+            "operation_representative_name": [1, 2],
+            "registration_purpose": "OBPS Regulated Operation",
+        }
+        assert report_version.report_operation.operator_legal_name != data["operator_legal_name"]
+        assert report_version.report_operation.operator_trade_name != data["operator_trade_name"]
+        assert report_version.report_operation.operation_name != data["operation_name"]
+        assert report_version.report_operation.operation_bcghgid != data["operation_bcghgid"]
+        assert report_version.report_operation.bc_obps_regulated_operation_id != data["bc_obps_regulated_operation_id"]
+        assert report_version.report_type != data["operation_report_type"]
+
+        response = TestUtils.mock_post_with_auth_role(
+            self, "industry_user", self.content_type, data, endpoint_under_test
+        )
+
+        assert response.status_code == 201
+        response_json = response.json()
+        assert response_json["operator_legal_name"] == data["operator_legal_name"]
+        assert response_json["operator_trade_name"] == data["operator_trade_name"]
+        assert response_json["operation_name"] == data["operation_name"]
+        assert response_json["operation_bcghgid"] == data["operation_bcghgid"]
+        assert response_json["bc_obps_regulated_operation_id"] == data["bc_obps_regulated_operation_id"]
