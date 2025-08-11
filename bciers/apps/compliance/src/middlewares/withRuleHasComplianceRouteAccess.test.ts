@@ -154,7 +154,8 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
 
     it("redirects when status !== NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
       mockComplianceStatus(ComplianceReportVersionStatus.OBLIGATION_NOT_MET);
-      const { res } = await runMiddleware(`${BASE}/${seg}`);
+      // NOTE: must live under review summaries app
+      const { res } = await runMiddleware(`${reviewSummariesPath}/${seg}`);
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
@@ -163,7 +164,10 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       mockComplianceStatus(
         ComplianceReportVersionStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
       );
-      const { next, res } = await runMiddleware(`${BASE}/${seg}`);
+      // NOTE: must live under review summaries app
+      const { next, res } = await runMiddleware(
+        `${reviewSummariesPath}/${seg}`,
+      );
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
     });
@@ -235,7 +239,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(getPathname(res)).toBe(requestIssuanceCreditPath);
     });
 
-    it("allows staying on track-status when issuance_status = ISSUANCE_REQUESTED", async () => {
+    it("allows staying on track-status-of-issuance when issuance_status = ISSUANCE_REQUESTED", async () => {
       mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
       mockIssuanceStatus(IssuanceStatus.ISSUANCE_REQUESTED);
       const { next, res } = await runMiddleware(`${trackStatusPath}/`);
@@ -244,41 +248,41 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     });
   });
 
-  // describe("earned-credits > review-summary → redirects to track-status", () => {
-  //   it.each([
-  //     IssuanceStatus.ISSUANCE_REQUESTED,
-  //     IssuanceStatus.APPROVED,
-  //     IssuanceStatus.DECLINED,
-  //   ])(
-  //     "redirects when on review summary and issuance_status = %s",
-  //     async (status) => {
-  //       mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
-  //       mockIssuanceStatus(status);
+  describe("earned-credits > review-summary → redirects to track-status", () => {
+    it.each([
+      IssuanceStatus.ISSUANCE_REQUESTED,
+      IssuanceStatus.APPROVED,
+      IssuanceStatus.DECLINED,
+    ])(
+      "redirects when on review summary and issuance_status = %s",
+      async (status) => {
+        mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+        mockIssuanceStatus(status);
 
-  //       const { res } = await runMiddleware(reviewIssuanceCreditPath);
+        const { res } = await runMiddleware(reviewIssuanceCreditPath);
 
-  //       expect(res!.status).toBe(307);
-  //       expect(getPathname(res)).toBe(trackStatusPath);
-  //     },
-  //   );
+        expect(res!.status).toBe(307);
+        expect(getPathname(res)).toBe(trackStatusPath);
+      },
+    );
 
-  //   it.each([
-  //     IssuanceStatus.CREDITS_NOT_ISSUED,
-  //     IssuanceStatus.CHANGES_REQUIRED,
-  //   ])(
-  //     "allows staying on review-summary when issuance_status = %s",
-  //     async (status) => {
-  //       mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
-  //       mockIssuanceStatus(status);
+    it.each([
+      IssuanceStatus.CREDITS_NOT_ISSUED,
+      IssuanceStatus.CHANGES_REQUIRED,
+    ])(
+      "allows staying on review-summary when issuance_status = %s",
+      async (status) => {
+        mockComplianceStatus(ComplianceReportVersionStatus.EARNED_CREDITS);
+        mockIssuanceStatus(status);
 
-  //       const { next, res } = await runMiddleware(
-  //         `${reviewIssuanceCreditPath}/`,
-  //       );
-  //       expect(next).toHaveBeenCalledOnce();
-  //       expect(res!.status).toBe(200);
-  //     },
-  //   );
-  // });
+        const { next, res } = await runMiddleware(
+          `${reviewIssuanceCreditPath}/`,
+        );
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
+  });
 
   describe("bypass & edge flows", () => {
     it("skips middleware when no CRV id", async () => {
