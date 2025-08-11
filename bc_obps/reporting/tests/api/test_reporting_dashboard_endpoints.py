@@ -4,7 +4,7 @@ from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, user_baker
 from registration.utils import custom_reverse_lazy
 from reporting.models.report import Report
-from reporting.tests.utils.bakers import report_baker, reporting_year_baker
+from reporting.tests.utils.bakers import report_baker, report_version_baker, reporting_year_baker
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from django.db.models import F
@@ -80,19 +80,17 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         laster_year = reporting_year_baker(reporting_year=1232)
         years = [last_year, laster_year]
 
-        
         for operation in operations:
             for year in years:
-              report_baker(operator_id=operator.id, operation_id=operation.id, reporting_year=year)
+                r = report_baker(operator_id=operator.id, operation_id=operation.id, reporting_year=year)
+                report_version_baker(report=r)
         reports = Report.objects.filter(
             operator_id=operator.id, reporting_year__reporting_year__lt=current_year.reporting_year
         )
 
         mock_get_current_year.return_value = current_year
         mock_get_current_user.return_value = user_baker()
-        mock_get_past_reports.return_value = Report.objects.filter(
-            operator_id=operator.id
-        ).annotate(
+        mock_get_past_reports.return_value = Report.objects.filter(operator_id=operator.id).annotate(
             report_id=F('id'),
             operation_name=F('operation__name'),
             report_version_id=F('report_versions__id'),
@@ -105,11 +103,11 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         assert response_json['count'] == 6
         assert len(response_json['items']) == 6
         for _, item in enumerate(response_json['items']):
-            report = next(rep for rep in reports if str(rep.id) == item['id'])
+            report = next(rep for rep in reports if rep.id == item['id'])
             print(f"checking report {report.id} : {report}")
-            assert item['id'] == str(report.id)
+            assert item['id'] == report.id
+            assert item['operation_id'] == str(report.operation.id)
             assert item['operation_name'] == report.operation.name
-            # The non-none test cases were handled in the service test
             assert item['report_id'] == report.id
-            assert item['report_version_id'] == report.report_version_id
-            assert item['report_status'] is None
+            assert item['report_version_id'] == report.report_versions.first().id
+            assert item['report_status'] == report.report_versions.first().status

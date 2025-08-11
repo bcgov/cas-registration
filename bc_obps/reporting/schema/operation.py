@@ -29,6 +29,7 @@ class ReportingDashboardOperationOut(ModelSchema):
 
 class ReportingDashboardReportOut(ModelSchema):
     report_id: int | None
+    operation_id: UUID = Field(..., alias="operation.id")
     report_version_id: int | None
     first_report_version_id: Optional[int] = None
     report_status: str | None
@@ -39,7 +40,7 @@ class ReportingDashboardReportOut(ModelSchema):
 
     class Meta:
         model = Report
-        fields = ["id", "reporting_year", "operation"]
+        fields = ["id", "reporting_year"]
 
 
 class ReportingDashboardOperationFilterSchema(FilterSchema):
