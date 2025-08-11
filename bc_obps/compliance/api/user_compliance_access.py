@@ -22,8 +22,7 @@ from compliance.service.user_compliance_access_service import UserComplianceAcce
 def get_user_compliance_access_status(
     request: HttpRequest,
     compliance_report_version_id: Optional[str] = Query(
-        None,
-        description="Optional ID of the compliance report version requested"
+        None, description="Optional ID of the compliance report version requested"
     ),
 ) -> dict:
     # Normalize the report version ID, if provided
@@ -38,8 +37,8 @@ def get_user_compliance_access_status(
 
     # Get the compliance access status using the service layer
     user_guid = get_current_user_guid(request)
-    status = UserComplianceAccessService.determine_user_status(
+    status = UserComplianceAccessService.determine_user_compliance_status(
         user_guid,
         compliance_report_version_id_int,
-    )   
+    )
     return {"status": status}

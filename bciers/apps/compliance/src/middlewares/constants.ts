@@ -1,3 +1,5 @@
+import { ComplianceSummaryStatus } from "@bciers/utils/src/enums";
+
 export const COMPLIANCE_BASE = "compliance";
 
 /** Extracts the compliance report version ID from a given pathname. */
@@ -36,23 +38,17 @@ export enum AppRoutes {
   MO_REVIEW_SUMMARY = "manage-obligation-review-summary",
   MO_APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
   NO_REVIEW_SUMMARY = "review-summary",
-  RI_REVIEW_SUMMARY = "request-issuance-review-summary",
   RI_EARNED_CREDITS = "request-issuance-of-earned-credits",
+  RI_REVIEW_SUMMARY = "request-issuance-review-summary",
+  RI_REVIEW_SUMMARY_CREDITS = "review-credits-issuance-request",
   RI_TRACK_STATUS = "track-status-of-issuance",
   REVIEW_BY_DIRECTOR = "review-by-director",
-}
-
-// Compliance Report Version Status
-export enum ComplianceReportVersionStatus {
-  OBLIGATION_NOT_MET = "Obligation not met",
-  EARNED_CREDITS = "Earned credits",
-  NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }
 
 export type ComplianceStatus =
   | "Invalid"
   | "Registered"
-  | ComplianceReportVersionStatus;
+  | ComplianceSummaryStatus;
 
 // App routes restricted to compliance report version status "No obligation or earned credits"
 export const routesNoObligation = ["review-summary"];

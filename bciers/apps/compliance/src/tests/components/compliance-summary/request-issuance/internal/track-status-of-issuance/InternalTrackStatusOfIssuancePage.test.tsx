@@ -6,7 +6,6 @@ import {
   generateIssuanceRequestTaskList,
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import { redirect } from "next/navigation";
 
 // Mock the compliance summary data function
 vi.mock(
@@ -83,84 +82,6 @@ describe("InternalTrackStatusOfIssuancePage", () => {
       mockComplianceReportVersionId,
       2024,
       ActivePage.TrackStatusOfIssuance,
-    );
-  });
-
-  it("redirects to review by director page for CHANGES_REQUIRED status", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
-    });
-
-    await InternalTrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
-    );
-  });
-
-  it("redirects to review by director page for ISSUANCE_REQUESTED status", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
-    });
-
-    await InternalTrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
-    );
-  });
-
-  it("does not redirect to review by director page for APPROVED status", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.APPROVED,
-    });
-
-    const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    render(Page);
-
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
-  });
-
-  it("does not redirect to review by director page for DECLINED status", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.DECLINED,
-    });
-
-    const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    render(Page);
-
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
-  });
-
-  it("redirects to request-issuance-review-summary page for CREDITS_NOT_ISSUED status", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
-    });
-
-    const Page = await InternalTrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-    render(Page);
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
     );
   });
 });
