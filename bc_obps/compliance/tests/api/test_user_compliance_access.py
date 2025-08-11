@@ -1,5 +1,4 @@
 from unittest.mock import patch
-from registration.tests.utils.bakers import user_baker
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -9,27 +8,29 @@ from compliance.service.user_compliance_access_service import UserStatusEnum
 USER_COMPLIANCE_ACCESS_SERVICE_PATH = "compliance.service.user_compliance_access_service.UserComplianceAccessService"
 
 # Method paths
-DETERMINE_USER_STATUS_PATH = f"{USER_COMPLIANCE_ACCESS_SERVICE_PATH}.determine_user_status"
+DETERMINE_USER_STATUS_PATH = f"{USER_COMPLIANCE_ACCESS_SERVICE_PATH}.determine_user_compliance_status"
+
 
 class TestUserComplianceAccessStatusEndPoint(CommonTestSetup):
-    def setup_method(self):        
+    def setup_method(self):
         # Auth setup
-        self.compliance_report_version = make_recipe("compliance.tests.utils.compliance_report_version")      
+        self.compliance_report_version = make_recipe("compliance.tests.utils.compliance_report_version")
         # Endpoints
         self.endpoint_status = custom_reverse_lazy("get_user_compliance_access_status")
-        self.querystring_version_id="?compliance_report_version_id=1"
+        self.querystring_version_id = "?compliance_report_version_id=1"
         super().setup_method()
-    
 
     @patch(DETERMINE_USER_STATUS_PATH)
     def test_get_user_compliance_access_status(self, mock_determine_status):
-        """No version ID: endpoint returns service output and passes None for version_id."""   
+        """No version ID: endpoint returns service output and passes None for version_id."""
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.compliance_report_version.compliance_report.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.compliance_report_version.compliance_report.report.operator
+        )
 
         # Mock the service
         mock_determine_status.return_value = UserStatusEnum.REGISTERED.value
-        
+
         # Act
         response = TestUtils.mock_get_with_auth_role(
             self,
@@ -42,16 +43,17 @@ class TestUserComplianceAccessStatusEndPoint(CommonTestSetup):
         assert response.json() == {"status": UserStatusEnum.REGISTERED.value}
         mock_determine_status.assert_called_once()
 
-
     @patch(DETERMINE_USER_STATUS_PATH)
     def test_get_user_compliance_access_status_version_id(self, mock_determine_status):
-        """With version ID: endpoint returns service output and passes 1 for version_id.""" 
+        """With version ID: endpoint returns service output and passes 1 for version_id."""
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.compliance_report_version.compliance_report.report.operator)
+        TestUtils.authorize_current_user_as_operator_user(
+            self, operator=self.compliance_report_version.compliance_report.report.operator
+        )
 
         # Mock the service
         mock_determine_status.return_value = UserStatusEnum.REGISTERED.value
-        
+
         # Act
         response = TestUtils.mock_get_with_auth_role(
             self,
