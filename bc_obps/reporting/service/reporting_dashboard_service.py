@@ -67,7 +67,6 @@ class ReportingDashboardService:
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
                 report_id=report_subquery.values("id"),
-                operation_id=F("id"),
                 report_version_id=report_subquery.values("latest_version_id")[
                     :1
                 ],  # the [:1] is necessary for the sorting and filters to work

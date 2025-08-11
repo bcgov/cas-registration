@@ -13,7 +13,7 @@ from reporting.models.report import Report
 
 class ReportingDashboardOperationOut(ModelSchema):
     report_id: int | None
-    operation_id: UUID | None
+    operation_id: UUID = Field(..., alias="id")
     report_version_id: int | None
     first_report_version_id: Optional[int] = None
     report_status: str | None
