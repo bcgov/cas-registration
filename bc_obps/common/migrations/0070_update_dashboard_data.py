@@ -10,7 +10,7 @@ def reset_dashboard_data_fn(_, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("common", "0068_V3_13_0"),
+        ("common", "0069_V3_14_0"),
     ]
 
     operations = [
