@@ -10,6 +10,8 @@ import {
   routesNoObligation,
   routesObligation,
   routesEarnedCredits,
+  absolutize,
+  hasSegment,
 } from "./constants";
 import { getUserRole } from "@bciers/middlewares";
 import { IDP, IssuanceStatus } from "@bciers/utils/src/enums";
@@ -21,10 +23,16 @@ import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/ut
 // --------------------
 // Helpers
 // --------------------
-const absolutize = (p: string) => (p.startsWith("/") ? p : `/${p}`);
-
 const redirectTo = (path: string, request: NextRequest) =>
   NextResponse.redirect(new URL(absolutize(path), request.url));
+
+// Sub-app guards to avoid rule collisions
+const isInReviewSummaries = (pathname: string) =>
+  pathname.includes(
+    `/${COMPLIANCE_BASE}/${AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}/`,
+  );
+const isInComplianceSummaries = (pathname: string) =>
+  pathname.includes(`/${COMPLIANCE_BASE}/compliance-summaries/`);
 
 // --------------------
 // Types
@@ -137,7 +145,7 @@ const checkAccess = async (
 // Permission Rules
 // --------------------
 const permissionRules: PermissionRule[] = [
-  // Global access gate: must have valid Compliance access (not undefined, not "Invalid")
+  // Global access gate
   {
     name: "accessComplianceRoute",
     isApplicable: () => true,
@@ -145,7 +153,6 @@ const permissionRules: PermissionRule[] = [
       const accessStatus = await context!.getUserComplianceAccessStatus(
         complianceReportVersionId,
       );
-      // Redirect if no status OR explicitly "Invalid"
       return accessStatus !== undefined && accessStatus !== "Invalid";
     },
     redirect: (_id, request) =>
@@ -158,8 +165,9 @@ const permissionRules: PermissionRule[] = [
   {
     name: "accessNoObligation",
     isApplicable: (request) =>
-      routesNoObligation.some((path) =>
-        request.nextUrl.pathname.includes(path),
+      isInReviewSummaries(request.nextUrl.pathname) &&
+      routesNoObligation.some((seg) =>
+        hasSegment(request.nextUrl.pathname, seg),
       ),
     validate: (id, _req, context) =>
       checkAccess(context!, id, [
@@ -176,7 +184,8 @@ const permissionRules: PermissionRule[] = [
   {
     name: "accessObligation",
     isApplicable: (request) =>
-      routesObligation.some((path) => request.nextUrl.pathname.includes(path)),
+      isInReviewSummaries(request.nextUrl.pathname) &&
+      routesObligation.some((seg) => hasSegment(request.nextUrl.pathname, seg)),
     validate: async (id, request, context) => {
       const statusOk = await checkAccess(context!, id, [
         ComplianceReportVersionStatus.OBLIGATION_NOT_MET,
@@ -196,12 +205,14 @@ const permissionRules: PermissionRule[] = [
         request,
       ),
   },
+
   // Earned Credits routes
   {
     name: "accessEarnedCredits",
     isApplicable: (request) =>
-      routesEarnedCredits.some((path) =>
-        request.nextUrl.pathname.includes(path),
+      isInComplianceSummaries(request.nextUrl.pathname) &&
+      routesEarnedCredits.some((seg) =>
+        hasSegment(request.nextUrl.pathname, seg),
       ),
     validate: async (id, request, context) => {
       const isEarned = await checkAccess(context!, id, [
@@ -211,7 +222,15 @@ const permissionRules: PermissionRule[] = [
 
       const pathname = request!.nextUrl.pathname;
       const summary = await context!.getIssuanceSummary(id);
-
+      //  - If user is on:
+      //   • RI_REVIEW_SUMMARY (request-issuance-review-summary), or
+      //   • RI_EARNED_CREDITS (request-issuance-of-earned-credits)
+      //      AND issuance_status is one of:
+      //      • ISSUANCE_REQUESTED
+      //      • APPROVED
+      //      • DECLINED
+      //     THEN redirect to:
+      //      • RI_TRACK_STATUS (track-status-of-issuance)
       const shouldTrack = [
         IssuanceStatus.ISSUANCE_REQUESTED,
         IssuanceStatus.APPROVED,
@@ -224,10 +243,10 @@ const permissionRules: PermissionRule[] = [
       ].includes(summary.issuance_status as IssuanceStatus);
 
       const isReviewIssuance =
-        pathname.includes(AppRoutes.RI_REVIEW_SUMMARY) ||
-        pathname.includes(AppRoutes.RI_EARNED_CREDITS);
+        hasSegment(pathname, AppRoutes.RI_REVIEW_SUMMARY) ||
+        hasSegment(pathname, AppRoutes.RI_EARNED_CREDITS);
 
-      const isTrackStatus = pathname.includes(AppRoutes.RI_TRACK_STATUS);
+      const isTrackStatus = hasSegment(pathname, AppRoutes.RI_TRACK_STATUS);
 
       if (isReviewIssuance && shouldTrack) {
         context!.redirectToTrackStatusById[id] = true;
