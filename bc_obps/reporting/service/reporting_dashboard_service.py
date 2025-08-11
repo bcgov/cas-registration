@@ -29,7 +29,7 @@ class ReportingDashboardService:
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
-        Fetches all past reports for the user, and annotates it with the associated operation data required for the API call
+        Fetches all operations for the user, and annotates it with the associated report data required for the API call
         """
         user = UserDataAccessService.get_by_guid(user_guid)
 
