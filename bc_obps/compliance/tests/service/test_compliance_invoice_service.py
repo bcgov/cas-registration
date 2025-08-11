@@ -17,6 +17,7 @@ class TestComplianceInvoiceService:
 
         self.compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
+            report_compliance_summary__report_version__report_operation__operation_name="test",
         )
 
         self.obligation = make_recipe(
