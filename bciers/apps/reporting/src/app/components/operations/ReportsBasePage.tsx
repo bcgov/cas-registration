@@ -11,7 +11,7 @@ export default async function ReportsBasePage({
   children,
 }: Readonly<ReportsBasePageProps>) {
   const tabs = [
-    { label: "Submit annual report(s)", href: "/reports/current-reports" },
+    { label: "View annual reports", href: "/reports/current-reports" },
     { label: "View past reports", href: "/reports/previous-years" },
   ];
 

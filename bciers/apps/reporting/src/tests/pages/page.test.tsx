@@ -2,7 +2,7 @@ import Page from "@reporting/src/app/page";
 import { render, screen } from "@testing-library/react";
 const tiles = [
   {
-    title: "Submit Annual Report(s)",
+    title: "View Annual Reports",
     icon: "fa-file-pdf",
     href: "/reporting/operations",
   },
@@ -22,7 +22,7 @@ describe("Page", () => {
     render(await Page());
 
     expect(
-      screen.getByRole("heading", { name: /submit annual report/i }),
+      screen.getByRole("heading", { name: /view annual reports/i }),
     ).toBeVisible();
     expect(
       screen.getByRole("heading", { name: /view past submissions/i }),
@@ -33,7 +33,7 @@ describe("Page", () => {
     render(await Page());
 
     const submitTitleLink = screen.getByRole("link", {
-      name: /Submit Annual Report/i,
+      name: /View Annual Reports/i,
     });
     expect(submitTitleLink).toBeVisible();
     expect(submitTitleLink).toHaveAttribute("href", "/reporting/operations");
