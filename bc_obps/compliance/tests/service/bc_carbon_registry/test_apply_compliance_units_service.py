@@ -634,3 +634,39 @@ class TestApplyComplianceUnitsService:
         call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
         assert call_args["mixedUnitList"] == []
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("0.00")
+
+    @patch(
+        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+    )
+    @patch('compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year')
+    def test_compute_units_cap_with_supplementary_and_unit_adjustments(self, mock_get_charge_rate, mock_refresh):
+        mock_get_charge_rate.return_value = Decimal('80.00')
+        invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
+        obligation = baker.make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            fee_amount_dollars=Decimal('1000'),
+            elicensing_invoice_id=invoice.id,
+        )
+        line_item = baker.make_recipe("compliance.tests.utils.elicensing_line_item", elicensing_invoice=invoice)
+        supplementary_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            reason='Supplementary Report Adjustment',
+            supplementary_compliance_report_version=supplementary_version,
+            elicensing_line_item=line_item,
+            amount=Decimal('-500'),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            reason='Compliance Units Applied',
+            elicensing_line_item=line_item,
+            amount=Decimal('-100'),
+        )
+
+        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+
+        result = ApplyComplianceUnitsService._compute_compliance_unit_caps(
+            compliance_report_version_id=obligation.compliance_report_version_id
+        )
+        print(result)
+        assert result == (Decimal("250.00"), Decimal("150"))
