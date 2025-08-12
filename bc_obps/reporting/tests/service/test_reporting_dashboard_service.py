@@ -1,9 +1,9 @@
 from unittest.mock import AsyncMock, patch, MagicMock
 import pytest
 from registration.models.operation import Operation
-from registration.tests.utils.bakers import operation_baker, operator_baker, user_baker
 from model_bakery.baker import make_recipe
 from reporting.models.report_operation import ReportOperation
+from registration.tests.utils.bakers import operation_baker, operator_baker, user_baker, user_operator_baker
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
 from service.report_service import ReportService
@@ -27,13 +27,13 @@ class TestReportingDashboardService:
         mock_get_by_guid: MagicMock | AsyncMock,
         mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
     ):
-        user = user_baker()
-        mock_get_by_guid.return_value = user
-        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        user_operator = user_operator_baker()
+        mock_get_by_guid.return_value = user_operator.user
+        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
-        operator = operator_baker()
-        operations = operation_baker(operator_id=operator.id, _quantity=5)
+        operations = operation_baker(operator_id=user_operator.operator.id, _quantity=5)
+
 
         # Change operation names so alphabetical sorting produces consistent results
         operations[0].name = "a"
@@ -66,7 +66,7 @@ class TestReportingDashboardService:
             op.save()
 
         result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user.user_guid, 5091, sort_field, sort_order, filters
+            user_operator.user.user_guid, 5091, sort_field, sort_order, filters
         ).values()
         result_list = list(result)
 
@@ -99,6 +99,7 @@ class TestReportingDashboardService:
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
 
+    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_past_reports_for_reporting_dashboard(
         self,
@@ -259,13 +260,12 @@ class TestReportingDashboardService:
     ):
 
         # SETUP
-        user = user_baker()
-        mock_get_by_guid.return_value = user
-        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        user_operator = user_operator_baker()
+        mock_get_by_guid.return_value = user_operator.user
+        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
-        operator = operator_baker()
-        operations = operation_baker(operator_id=operator.id, _quantity=4)
+        operations = operation_baker(operator_id=user_operator.operator.id, _quantity=4)
 
         # r0 orginal, report_version_id=1
         r0_r1v1_id = ReportService.create_report(operations[0].id, year.reporting_year)
@@ -305,7 +305,7 @@ class TestReportingDashboardService:
         # ASSERTIONS FOR FILTERING
         # Frontend status are Draft, Draft Supplementary, Not Started, Submitted
         draft_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="draft")
+            user_operator.user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="draft")
         ).values()
         assert list(draft_filter_result.values_list('report_status', 'report_version_id')) == [
             ('Draft', latest_r0_revision.id),
@@ -313,18 +313,18 @@ class TestReportingDashboardService:
         ]
 
         draft_supplementary_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="sup")
+            user_operator.user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="sup")
         ).values()
         assert len(draft_supplementary_filter_result) == 1
 
         submitted_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="sub")
+            user_operator.user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="sub")
         ).values()
         # submitted reports don't show if there's a supplementary report, so we should only see the one for r2
         assert len(submitted_filter_result) == 1
 
         not_started_filter_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="not")
+            user_operator.user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema(report_status="not")
         ).values()
         assert len(not_started_filter_result) == 1
 
@@ -333,7 +333,7 @@ class TestReportingDashboardService:
         sort_order: Optional[str] = "asc"
 
         sorted_result = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema()
+            user_operator.user.user_guid, 5091, sort_field, sort_order, ReportingDashboardOperationFilterSchema()
         ).values()
 
         assert list(sorted_result.values_list('id', 'report_status', 'report_version_id')) == [
