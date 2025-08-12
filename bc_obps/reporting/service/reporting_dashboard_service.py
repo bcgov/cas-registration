@@ -92,7 +92,7 @@ class ReportingDashboardService:
         current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
         # need to fetch previously owned operations in case reports were filed for them already or if they need to
         # create a new report version for an operation they once owned.
-        previous_operations = OperationDataAccessService.get_all_previously_owned_operations_for_user_operator(user)
+        previous_operations = OperationDataAccessService.get_all_previously_owned_operations_for_operator(user, user.user_operators.first().operator_id)
 
         all_operations = current_operations | previous_operations
 
