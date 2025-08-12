@@ -81,7 +81,7 @@ describe("pastReportsColumns function", () => {
     const params = {
       row: {
         report_status: ReportOperationStatus.DRAFT,
-        submitted_by: "User A",
+        report_submitted_by: "User A",
       },
     };
 
@@ -96,7 +96,6 @@ describe("pastReportsColumns function", () => {
         report_submitted_by: "User A",
       },
     };
-
     expect(columns[3].renderCell(params)).toBe("User A");
   });
 

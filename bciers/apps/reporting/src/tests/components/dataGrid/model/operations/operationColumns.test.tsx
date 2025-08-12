@@ -82,7 +82,7 @@ describe("operationColumns function", () => {
     const params = {
       row: {
         report_status: ReportOperationStatus.DRAFT,
-        submitted_by: "User A",
+        report_submitted_by: "User A",
       },
     };
 
@@ -92,7 +92,7 @@ describe("operationColumns function", () => {
   it("renders the submitted_by value in SubmittedByCell if report_status is not DRAFT", () => {
     const columns = operationColumns();
     const params = {
-      row: { report_status: "Submitted", submitted_by: "User A" },
+      row: { report_status: "Submitted", report_submitted_by: "User A" },
     };
 
     expect(columns[3].renderCell(params)).toBe("User A");

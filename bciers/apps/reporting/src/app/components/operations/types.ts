@@ -1,7 +1,7 @@
 export interface OperationRow {
-  id: number;
+  id: string;
   bcghg_id: string;
-  name: string;
+  operation_name: string;
   operator: string;
   report_version_id: number;
   report_status: string;
@@ -50,5 +50,7 @@ export interface PastReportsRow {
   id: number;
   reporting_year: number;
   operation_name: string;
+  operator: string;
+  report_version_id: number;
   report_status: string;
 }

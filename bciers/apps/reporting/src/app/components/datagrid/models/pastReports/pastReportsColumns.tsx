@@ -1,63 +1,14 @@
 "use client";
 
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import MoreActionsCell from "../../../operations/cells/MoreActionsCell";
-import ActionCell from "../../../operations/cells/ActionCell";
-import StatusCell from "../../../operations/cells/StatusCell";
-import { ReportOperationStatus } from "@bciers/utils/src/enums";
-import formatTimestamp from "@bciers/utils/src/formatTimestamp";
-
-const UpdatedAtCell = ({ row, value }: GridRenderCellParams) =>
-  row.report_status && row.report_status !== ReportOperationStatus.DRAFT
-    ? value
-      ? formatTimestamp(value)
-      : ""
-    : "";
-
-const SubmittedByCell = ({ row }: GridRenderCellParams) =>
-  row.report_status && row.report_status !== ReportOperationStatus.DRAFT
-    ? row.report_submitted_by
-    : "";
+import { GridColDef } from "@mui/x-data-grid";
+import dashboardColumns from "@reporting/src/app/components/datagrid/models/dashboard/dashboardColumns";
 
 const pastReportsColumns = (): GridColDef[] => {
+  const baseColumns = dashboardColumns();
+  // Add the reporting_year field at the start
   const columns: GridColDef[] = [
     { field: "reporting_year", headerName: "Reporting Year", width: 150 },
-    { field: "operation_name", headerName: "Operation", width: 300 },
-    {
-      field: "report_updated_at",
-      headerName: "Date of submission",
-      renderCell: UpdatedAtCell,
-      width: 200,
-    },
-    {
-      field: "report_submitted_by",
-      headerName: "Submitted by",
-      renderCell: SubmittedByCell,
-      width: 200,
-    },
-    {
-      field: "report_status",
-      headerName: "Status",
-      renderCell: StatusCell,
-      align: "center",
-      headerAlign: "center",
-      width: 200,
-    },
-    {
-      field: "report_id",
-      headerName: "Actions",
-      renderCell: ActionCell,
-      sortable: false,
-      width: 200,
-    },
-    {
-      field: "more",
-      headerName: "More Actions",
-      renderCell: MoreActionsCell,
-      sortable: false,
-      width: 120,
-      flex: 1,
-    },
+    ...baseColumns,
   ];
   return columns;
 };
