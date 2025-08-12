@@ -15,7 +15,6 @@ USER_CACHE_PREFIX = "user_cache_"
 
 PAGE_SIZE = 20
 
-
 # API Tags
 BUSINESS_STRUCTURE_TAGS = ["Business Structure"]
 NAICS_CODE_TAGS = ["NAICS Code"]
