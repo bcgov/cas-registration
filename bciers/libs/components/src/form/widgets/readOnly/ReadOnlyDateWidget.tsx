@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 const formatDate = (value: string) => {
   if (typeof value === "string" && dayjs(value).isValid()) {
-    return dayjs(value).format("YYYY-MM-DD");
+    return dayjs(value).format("MMM DD, YYYY");
   }
   return null;
 };

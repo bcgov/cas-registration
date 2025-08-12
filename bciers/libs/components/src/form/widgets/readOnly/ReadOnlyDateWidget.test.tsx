@@ -35,7 +35,7 @@ describe("RJSF ReadOnlyWidget", () => {
 
     const dateWidget = container.querySelector("#root_dateWidgetTestField");
     expect(dateWidget).toBeVisible();
-    expect(dateWidget).toHaveTextContent("2024-07-05");
+    expect(dateWidget).toHaveTextContent("Jul 05, 2024");
   });
 
   it("should be empty when no value is provided", () => {

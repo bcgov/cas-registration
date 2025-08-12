@@ -80,7 +80,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     expect(screen.getByText("Payment 1")).toBeVisible();
 
     // Check the payment received date from mockData
-    expect(screen.getByText("2025-12-06")).toBeVisible();
+    expect(screen.getByText("Dec 06, 2025")).toBeVisible();
   });
 
   it("renders step buttons with correct URLs when outstanding_balance is 0", () => {
