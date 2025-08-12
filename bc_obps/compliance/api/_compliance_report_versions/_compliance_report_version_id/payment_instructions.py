@@ -1,11 +1,11 @@
 import json
 from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.payment_instructions_service import PaymentInstructionsService
-from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.enums import ComplianceInvoiceTypes
 from ...router import router
+from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -13,7 +13,7 @@ from ...router import router
     response={200: None, custom_codes_4xx: Message},
     tags=["Compliance"],
     description="Generate a PDF payment instructions for a compliance summary and stream it to the client",
-    auth=authorize("approved_industry_user"),
+    auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def generate_payment_instructions(
     request: HttpRequest,

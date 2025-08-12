@@ -3,7 +3,6 @@ from ninja.types import DictStrAny
 from compliance.api.router import router
 from typing import Dict, Literal, Tuple
 from django.http import HttpRequest
-from common.permissions import authorize
 from compliance.schema.apply_compliance_units import ApplyComplianceUnitsIn, ApplyComplianceUnitsOut
 from compliance.service.bc_carbon_registry.apply_compliance_units_service import ApplyComplianceUnitsService
 from compliance.service.bc_carbon_registry.schema import FifteenDigitString
@@ -11,6 +10,7 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.constants import COMPLIANCE
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -18,7 +18,7 @@ from compliance.service.elicensing.elicensing_data_refresh_service import Elicen
     response={200: ApplyComplianceUnitsOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Get or create a BCCR compliance account and return consolidated details for the Apply Compliance Units page.",
-    auth=authorize("approved_industry_user"),
+    auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def get_apply_compliance_units_page_data(
     request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
@@ -42,7 +42,7 @@ def get_apply_compliance_units_page_data(
     - success (bool): Indicates whether the units were successfully applied.
     - can_apply_compliance_units (bool): Indicates whether the user can still apply additional units - used in frontend permission management.
     """,
-    auth=authorize("approved_industry_user"),
+    auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def apply_compliance_units(
     request: HttpRequest,
