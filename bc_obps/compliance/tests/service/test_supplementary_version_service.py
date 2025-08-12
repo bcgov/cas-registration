@@ -1,5 +1,6 @@
 from decimal import Decimal
-from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
+from compliance.models import ComplianceReportVersion
+from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from reporting.models import ReportVersion
 from compliance.service.supplementary_version_service import (
     NoChangeHandler,
@@ -666,15 +667,6 @@ class TestIncreasedCreditHandler(TestSupplementaryVersionService):
             credited_emissions=Decimal('600'),
         )
 
-class TestDecreasedCreditHandler:
-    def test_can_handle_decreased_obligation(self):
-        # Setup
-        previous_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('800'), excess_emissions=0
-        )
-        new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('500'), excess_emissions=0
-        )
         original_report_version = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version', report_compliance_summary=previous_summary
         )
@@ -687,12 +679,6 @@ class TestDecreasedCreditHandler:
 
         # Act
         result = IncreasedCreditHandler.can_handle(new_summary, previous_summary)
-            earned_credits_amount=100,
-            issuance_status='Credits Not Issued in BCCR',
-        )
-
-        # Test
-        result = DecreasedCreditHandler.can_handle(new_summary, previous_summary)
 
         # Assert
         assert result is True
@@ -743,18 +729,6 @@ class TestDecreasedCreditHandler:
 
         original_report_version = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version', report_compliance_summary=previous_summary
-    def test_handle_reduces_credit_amount(self):
-        # Setup
-        previous_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('800'), excess_emissions=0
-        )
-        new_summary = baker.make_recipe(
-            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('500'), excess_emissions=0
-        )
-        original_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary=previous_summary,
-            is_supplementary=False,
         )
         baker.make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
@@ -828,6 +802,73 @@ class TestDecreasedCreditHandler:
         # Assert the earned credits were updated correctly
         earned_credit.refresh_from_db()
         assert earned_credit.earned_credits_amount == Decimal('250')
+
+
+class TestDecreasedCreditHandler:
+    def test_can_handle_decreased_obligation(self):
+        # Setup
+        previous_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('800'), excess_emissions=0
+        )
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('500'), excess_emissions=0
+        )
+        original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', report_compliance_summary=previous_summary
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=original_report_version,
+            earned_credits_amount=100,
+            issuance_status='Credits Not Issued in BCCR',
+        )
+
+        # Test
+        result = DecreasedCreditHandler.can_handle(new_summary, previous_summary)
+
+        # Assert
+        assert result is True
+
+    def test_cannot_handle_decreased_obligation(self):
+        # Setup
+        previous_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('500'), excess_emissions=0
+        )
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('800'), excess_emissions=0
+        )
+        original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', report_compliance_summary=previous_summary
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=original_report_version,
+            earned_credits_amount=100,
+            issuance_status='Credits Not Issued in BCCR',
+        )
+
+        # Test
+        result = DecreasedCreditHandler.can_handle(new_summary, previous_summary)
+
+        # Assert
+        assert result is False
+
+    def test_handle_reduces_credit_amount(self):
+        # Setup
+        previous_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('800'), excess_emissions=0
+        )
+        new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=Decimal('500'), excess_emissions=0
+        )
+        original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=previous_summary,
+            is_supplementary=False,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=original_report_version,
             earned_credits_amount=800,
             issuance_status='Credits Not Issued in BCCR',
         )

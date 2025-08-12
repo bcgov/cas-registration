@@ -1,4 +1,3 @@
-from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from reporting.models import ReportVersion, ReportComplianceSummary
 from compliance.models import ComplianceReport, ComplianceEarnedCredit
