@@ -110,7 +110,8 @@ class ReportService:
                 report_version__id=report_version_id
             )
             for f in facility_reports:
-                FacilityReportService.set_activities_for_facility_report(facility_report=f, activities=data.activities)
+                # Activities are not removed from the facility report for LFOs, this is done on the facility
+                FacilityReportService.add_activities_to_facility_report(facility_report=f, activities=data.activities)
                 FacilityReportService.prune_report_product_data_for_facility_report(
                     facility_report=f, regulated_products=data.regulated_products
                 )
