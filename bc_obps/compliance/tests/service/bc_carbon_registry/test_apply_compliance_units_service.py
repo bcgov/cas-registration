@@ -6,6 +6,7 @@ from compliance.service.bc_carbon_registry.apply_compliance_units_service import
 from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, ObligationData
 from registration.models.operation import Operation
 from decimal import Decimal
+from compliance.dataclass import RefreshWrapperReturn
 
 pytestmark = pytest.mark.django_db
 
@@ -252,12 +253,22 @@ class TestApplyComplianceUnitsService:
         mock_bccr_service.client.list_all_units.assert_not_called()
         mock_compliance_charge_rate_service.get_rate_for_year.assert_not_called()
 
-    def test_calculate_apply_units_cap_success(self, mock_get_obligation):
-        mock_obligation = Mock()
-        mock_obligation.fee_amount_dollars = Decimal("1000.00")
-        mock_get_obligation.return_value = mock_obligation
+    @patch(
+        "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+    )
+    def test_calculate_apply_units_cap_success(self, mock_refresh):
+        invoice = baker.make_recipe("compliance.tests.utils.elicensing_invoice")
+        obligation = baker.make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            fee_amount_dollars=Decimal('1000'),
+            elicensing_invoice_id=invoice.id,
+        )
 
-        result = ApplyComplianceUnitsService._calculate_apply_units_cap(42)
+        mock_refresh.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+
+        result = ApplyComplianceUnitsService._calculate_apply_units_cap(
+            compliance_report_version_id=obligation.compliance_report_version_id
+        )
         assert result == Decimal("500.00")
 
     def test_calculate_apply_units_cap_missing_obligation(self, mock_get_obligation):
