@@ -271,3 +271,48 @@ class TestReportService(TestCase):
         assert ReportProduct.objects.filter(id=report_product_1.id).exists()
         assert not ReportProduct.objects.filter(id=report_product_2.id).exists()
         assert not ReportProduct.objects.filter(id=report_product_3.id).exists()
+
+    def test_lfo_does_not_delete_report_activity_records_from_facility_report_on_activity_set_change(self):
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = operation_baker(type=Operation.Types.LFO, operator_id=operator.id)
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_operation.activities.set([1, 2, 3])
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report', report_version=report_version)
+        facility_report.activities.set([1, 2, 3])
+        report_activity = baker.make_recipe(
+            'reporting.tests.utils.report_activity',
+            facility_report=facility_report,
+            activity_id=2,
+        )
+
+        data = ReportOperationIn(
+            operator_legal_name="Updated Legal Name",
+            operator_trade_name="Updated Trade Name",
+            operation_name="Updated Operation Name",
+            operation_type="Linear Facilities Operation",
+            operation_bcghgid="Updated BC GHID",
+            bc_obps_regulated_operation_id="Updated Regulated Operation ID",
+            activities=[1, 18, 14],
+            regulated_products=[1],
+            operation_representative_name=[1, 2],
+            operation_report_type="New Report Type",
+            registration_purpose="OBPS Regulated Operation",
+        )
+
+        ReportService.save_report_operation(report_version.id, data)
+
+        facility_report.refresh_from_db()
+
+        assert facility_report.activities.count() == 5
+        self.assertQuerySetEqual(
+            facility_report.activities.all(),
+            Activity.objects.filter(id__in=[1, 2, 3, 18, 14]),
+            ordered=False,
+        )
+        self.assertQuerySetEqual(
+            facility_report.reportactivity_records.all(),
+            [report_activity],
+            ordered=False,
+        )
