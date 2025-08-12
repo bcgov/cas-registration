@@ -54,7 +54,7 @@
           },
           {
             "title": "Reporting",
-            "href": "/reporting/reports/current-reports",
+            "href": "/reporting",
             "icon": "File",
             "content": "View Annual Reports for any operation here.",
             "links": [

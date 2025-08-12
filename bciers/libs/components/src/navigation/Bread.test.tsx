@@ -107,7 +107,12 @@ describe("The Breadcrumb component", () => {
     },
     {
       url: "http://localhost:3000/reporting/reports/current-reports",
-      expectedBreadcrumbs: ["Dashboard", "Reporting", "Reports"],
+      expectedBreadcrumbs: [
+        "Dashboard",
+        "Reporting",
+        "Reports",
+        "Current Reports",
+      ],
     },
     {
       url: "http://localhost:3000/reporting/reports/1/review-operation-information",
