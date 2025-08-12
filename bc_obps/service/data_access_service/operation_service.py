@@ -109,7 +109,6 @@ class OperationDataAccessService:
             # to be implemented later
             return
         else:
-            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             operator = Operator.objects.get(id=operator_id)
             # Check if the user has access to the specified operator
             if not operator.user_has_access(user.user_guid):
@@ -118,7 +117,7 @@ class OperationDataAccessService:
 
             return (
                 Operation.objects.filter(
-                    designated_operators__operator_id=user_operator.operator_id,
+                    designated_operators__operator_id=operator_id,
                     designated_operators__end_date__isnull=False,
                 )
                 .select_related("operator", "bc_obps_regulated_operation")
