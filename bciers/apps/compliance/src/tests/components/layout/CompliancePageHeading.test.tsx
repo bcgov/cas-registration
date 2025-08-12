@@ -1,13 +1,12 @@
 import { render, screen } from "@testing-library/react";
 import { CompliancePageHeading } from "@/compliance/src/app/components/layout/CompliancePageHeading";
 
-// Mock the getOperationByComplianceReportVersionId function
-vi.mock(
-  "@/compliance/src/app/utils/getOperationByComplianceReportVersionId",
-  () => ({
-    default: vi.fn().mockResolvedValue({ name: "Operation ABC" }),
-  }),
-);
+// Mock the getComplianceSummary function
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
+  getComplianceSummary: vi
+    .fn()
+    .mockResolvedValue({ operation_name: "Operation ABC" }),
+}));
 
 const mockComplianceReportVersionId = 123;
 

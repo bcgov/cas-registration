@@ -60,7 +60,6 @@ class ComplianceInvoiceService:
             operation: Operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
                 compliance_report_version_id
             )
-            operation_name = operation.name
 
             # Get operator information
             # Operation → Operator
@@ -84,6 +83,11 @@ class ComplianceInvoiceService:
             # ComplianceObligation  → ComplianceReportVersion
             compliance_report_version: ComplianceReportVersion = compliance_obligation.compliance_report_version
             fee_amount_dollars = compliance_obligation.fee_amount_dollars
+
+            # Get operation name from report operation
+            operation_name = (
+                compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
+            )
 
             # Get excess_emissions from
             # ComplianceReportVersion → ReportComplianceSummary
