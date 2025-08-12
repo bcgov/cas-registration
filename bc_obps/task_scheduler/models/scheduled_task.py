@@ -1,11 +1,8 @@
-import logging
 from datetime import datetime, timedelta
 from typing import Callable, Dict, Optional
 from django.db import models
 from django.utils import timezone
 from .task import Task
-
-logger = logging.getLogger(__name__)
 
 
 class ScheduledTask(Task):
@@ -42,7 +39,6 @@ class ScheduledTask(Task):
         return f"{self.function_path} ({self.schedule_type}) - {status_display}"
 
     def calculate_next_run_time(self) -> Optional[datetime]:
-        """Calculate the next run time based on schedule type."""
         if not self.schedule_type:
             return None
         now = timezone.now()
@@ -59,7 +55,6 @@ class ScheduledTask(Task):
         return None
 
     def _calculate_minutes_schedule(self, now: datetime) -> Optional[datetime]:
-        """Calculate next run time for minutes schedule."""
         if not self.schedule_interval:
             return None
         if self.next_run_time and now < self.next_run_time:
@@ -67,7 +62,6 @@ class ScheduledTask(Task):
         return now + timedelta(minutes=self.schedule_interval)
 
     def _calculate_hourly_schedule(self, now: datetime) -> Optional[datetime]:
-        """Calculate next run time for hourly schedule."""
         if not self.schedule_interval:
             return None
         if self.next_run_time and now < self.next_run_time:
@@ -75,7 +69,6 @@ class ScheduledTask(Task):
         return now + timedelta(hours=self.schedule_interval)
 
     def _calculate_daily_schedule(self, now: datetime) -> Optional[datetime]:
-        """Calculate next run time for daily schedule."""
         if self.schedule_hour is None or self.schedule_minute is None:
             return None
 
@@ -89,7 +82,6 @@ class ScheduledTask(Task):
         return next_run
 
     def _calculate_weekly_schedule(self, now: datetime) -> Optional[datetime]:
-        """Calculate next run time for weekly schedule."""
         if self.schedule_day_of_week is None or self.schedule_hour is None or self.schedule_minute is None:
             return None
 
@@ -105,7 +97,6 @@ class ScheduledTask(Task):
         return next_run
 
     def _calculate_monthly_schedule(self, now: datetime) -> Optional[datetime]:
-        """Calculate next run time for monthly schedule."""
         if self.schedule_day_of_month is None or self.schedule_hour is None or self.schedule_minute is None:
             return None
 
