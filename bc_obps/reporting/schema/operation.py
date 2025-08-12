@@ -36,7 +36,6 @@ class ReportingDashboardReportOut(ModelSchema):
     report_submitted_by: Optional[str] = None
     operation_name: Optional[str] = None
     report_updated_at: Optional[datetime] = None
-    reporting_year_id: Optional[int] = Field(None, alias="reporting_year_id.reporting_year")
 
     class Meta:
         model = Report

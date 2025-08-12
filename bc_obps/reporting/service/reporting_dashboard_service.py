@@ -19,6 +19,17 @@ class ReportingDashboardService:
     Service providing data operations for the reporting dashboard
     """
 
+    report_status_sort_key = Case(
+        When(
+            Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
+            then=Value("Draft Supplementary Report"),
+        ),
+        When(report_status="Draft", then=Value("Draft")),
+        When(report_status=None, then=Value("Not Started")),
+        default=F("report_status"),
+        output_field=CharField(),
+    )
+
     @classmethod
     def get_operations_for_reporting_dashboard(
         cls,
@@ -76,16 +87,7 @@ class ReportingDashboardService:
                 report_submitted_by=report_subquery.values("latest_version_updated_by"),
                 operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
-                report_status_sort_key=Case(
-                    When(
-                        Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
-                        then=Value("Draft Supplementary Report"),
-                    ),
-                    When(report_status="Draft", then=Value("Draft")),
-                    When(report_status=None, then=Value("Not Started")),
-                    default=F("report_status"),
-                    output_field=CharField(),
-                ),
+                report_status_sort_key=cls.report_status_sort_key,
             )
         )
 
@@ -134,16 +136,7 @@ class ReportingDashboardService:
                 operation_name=Coalesce(
                     Subquery(latest_report_version_subquery.values("operation_name")), F("operation__name")
                 ),
-                report_status_sort_key=Case(
-                    When(
-                        Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
-                        then=Value("Draft Supplementary Report"),
-                    ),
-                    When(report_status="Draft", then=Value("Draft")),
-                    When(report_status=None, then=Value("Not Started")),
-                    default=F("report_status"),
-                    output_field=CharField(),
-                ),
+                report_status_sort_key=cls.report_status_sort_key,
             )
         )
 
