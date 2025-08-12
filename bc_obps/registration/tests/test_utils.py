@@ -16,7 +16,7 @@ from ninja.errors import HttpError
 from django.test import RequestFactory, TestCase, override_settings
 from registration.tests.utils.bakers import document_baker, user_operator_baker
 import requests
-from service.tests.test_operation_service import set_up_valid_mock_operation
+from service.tests.operation_service.test_operation_service import set_up_valid_mock_operation
 
 pytestmark = pytest.mark.django_db
 

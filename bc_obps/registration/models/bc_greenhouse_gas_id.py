@@ -1,20 +1,24 @@
 from common.enums import Schemas
+from django.core.validators import RegexValidator
 from registration.enums.enums import RegistrationTableNames
 from registration.models.user import User
-import re
 import typing
 from common.models import BaseModel
 from django.db import models
 from registration.constants import BCGHG_ID_REGEX
 from simple_history.models import HistoricalRecords
 from django.utils import timezone
-from django.core.exceptions import ValidationError
 from registration.models.rls_configs.bc_greenhouse_gas_id import Rls as BcGreenhouseGasIdRls
 
 
 class BcGreenhouseGasId(BaseModel):
 
-    id = models.CharField(primary_key=True, max_length=255, db_comment="The BCGHG ID of an operation or facility")
+    id = models.CharField(
+        primary_key=True,
+        max_length=255,
+        db_comment="The BCGHG ID of an operation or facility",
+        validators=[RegexValidator(regex=BCGHG_ID_REGEX, message="BCGHG ID is not in the correct format")],
+    )
     issued_at = models.DateTimeField(
         auto_now_add=True,
         db_comment="The time the BCGHG ID was issued by an IRC user",
@@ -47,8 +51,6 @@ class BcGreenhouseGasId(BaseModel):
         """
         Override the save method to set the issued_at field if it is not already set.
         """
-        if not re.match(BCGHG_ID_REGEX, self.id):
-            raise ValidationError("Generated BCGHG ID is not in the correct format.")
         if not self.issued_at:
             self.issued_at = timezone.now()
         super().save(*args, **kwargs)
