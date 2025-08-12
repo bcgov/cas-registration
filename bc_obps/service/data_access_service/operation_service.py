@@ -1,9 +1,10 @@
 from typing import List, Optional
 from uuid import UUID
-from registration.models import Operation, User, RegulatedProduct, Activity
+from registration.models import Operation, User, RegulatedProduct, Activity, Operator
 from ninja.types import DictStrAny
 from django.db.models import QuerySet
 from service.user_operator_service import UserOperatorService
+from registration.constants import UNAUTHORIZED_MESSAGE
 
 
 class OperationDataAccessService:
@@ -100,15 +101,20 @@ class OperationDataAccessService:
         )
 
     @classmethod
-    def get_all_previously_owned_operations_for_user_operator(cls, user: User) -> QuerySet[Operation]:
+    def get_all_previously_owned_operations_for_operator(cls, user: User, operator_id: UUID) -> QuerySet[Operation]:
         """
-        Returns all operations that were previously owned by the user's operator.
+        Returns all operations that were previously owned by the operator.
         """
         if user.is_irc_user():
             # to be implemented later
             return
         else:
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+            operator = Operator.objects.get(id=operator_id)
+            # Check if the user has access to the specified operator
+            if not operator.user_has_access(user.user_guid):
+                # Raise an exception if access is denied
+                raise Exception(UNAUTHORIZED_MESSAGE)
 
             return (
                 Operation.objects.filter(
