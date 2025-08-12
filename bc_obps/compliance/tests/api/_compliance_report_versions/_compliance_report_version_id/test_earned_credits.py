@@ -4,7 +4,7 @@ from registration.models.user import User
 from registration.utils import custom_reverse_lazy
 from compliance.models import ComplianceEarnedCredit
 
-PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
+VALIDATE_PERMISSION_PATH = 'common.permissions.validate_all'
 GET_SERVICE_PATH = (
     "compliance.service.earned_credits_service.ComplianceEarnedCreditsService.get_earned_credit_data_by_report_version"
 )
@@ -54,7 +54,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
         }
 
     @patch(GET_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_get_earned_credits_success(self, mock_permission, mock_get_earned_credits):
         # Arrange
         mock_permission.return_value = True
@@ -82,7 +82,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
 
     @patch(GET_CURRENT_USER_PATH)
     @patch(UPDATE_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_update_earned_credits_success(self, mock_permission, mock_update_earned_credit, mock_get_current_user):
         # Arrange
         mock_permission.return_value = True
@@ -132,7 +132,7 @@ class TestComplianceReportVersionEarnedCreditsEndpoint(SimpleTestCase):
         assert call_args[0][1] == payload
         assert call_args[0][2] is not None  # user
 
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_update_earned_credits_invalid_bccr_holding_account_id_format(self, mock_permission):
         # Arrange
         mock_permission.return_value = True

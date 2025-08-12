@@ -8,7 +8,7 @@ from compliance.dataclass import BCCRUnit, ComplianceUnitsPageData, RefreshWrapp
 VALID_ACCOUNT_ID = "123456789012345"
 VALID_COMPLIANCE_REPORT_VERSION_ID = 1
 APPLY_COMPLIANCE_UNITS_SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_apply_compliance_units_page_data"
-PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
+VALIDATE_PERMISSION_PATH = 'common.permissions.validate_all'
 APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.apply_compliance_units"
 CREATE_ADJUSTMENT_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ComplianceAdjustmentService.create_adjustment_for_current_version"
 CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_compliance_units"
@@ -30,7 +30,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         )
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_successful_compliance_units_retrieval(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
@@ -74,9 +74,8 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
             compliance_report_version_id=VALID_COMPLIANCE_REPORT_VERSION_ID,
         )
 
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_invalid_account_id_format(self, mock_permission):
-        # Arrange
         mock_permission.return_value = True
         # Act
         response = self.client.get(self._get_endpoint_url("12345", VALID_COMPLIANCE_REPORT_VERSION_ID))
@@ -85,7 +84,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert "Account Id: String should match pattern" in response.json().get("message")
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_empty_account_details_response(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
@@ -112,7 +111,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         assert response_data["bccr_units"] == []
 
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_no_compliance_units(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
@@ -143,7 +142,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(CREATE_ADJUSTMENT_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     def test_apply_compliance_units_success(
         self,
@@ -211,7 +210,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(CREATE_ADJUSTMENT_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     @patch(APPLY_COMPLIANCE_UNITS_SERVICE_APPLY_PATH)
     def test_apply_compliance_units_with_units_having_zero_quantity(
         self,
@@ -287,7 +286,7 @@ class TestComplianceUnitsEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoi
         )
         mock_can_apply_units.assert_called_once_with(VALID_COMPLIANCE_REPORT_VERSION_ID)
 
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_apply_compliance_units_invalid_account_id_format(self, mock_permission):
         # Arrange
         mock_permission.return_value = True

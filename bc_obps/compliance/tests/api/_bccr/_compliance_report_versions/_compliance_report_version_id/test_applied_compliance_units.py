@@ -4,7 +4,7 @@ from django.test import SimpleTestCase, override_settings, Client
 from compliance.service.bc_carbon_registry.exceptions import BCCarbonRegistryError
 from registration.utils import custom_reverse_lazy
 
-PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
+VALIDATE_PERMISSION_PATH = "common.permissions.validate_all"
 SERVICE_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService.get_applied_compliance_units_data"
 CAN_APPLY_COMPLIANCE_UNITS_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ApplyComplianceUnitsService._can_apply_compliance_units"
 ELICENSING_DATA_REFRESH_WRAPPER_PATH = "compliance.service.bc_carbon_registry.apply_compliance_units_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
@@ -26,7 +26,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_successful_applied_units_retrieval(self, mock_permission, mock_service, mock_can_apply, mock_refresh_data):
         # Arrange
         mock_permission.return_value = True
@@ -66,7 +66,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
     @patch(ELICENSING_DATA_REFRESH_WRAPPER_PATH)
     @patch(CAN_APPLY_COMPLIANCE_UNITS_PATH)
     @patch(SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_empty_applied_units(self, mock_permission, mock_service, mock_can_apply, mock_refresh_data):
         mock_permission.return_value = True
         mock_service.return_value = []
@@ -83,7 +83,7 @@ class TestAppliedComplianceUnitsEndpoint(SimpleTestCase):
         }
 
     @patch(SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_service_error_handling(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True

@@ -24,8 +24,11 @@ class TestGenerateComplianceReportVersionPenaltyInvoice(CommonTestSetup):
             streaming_content=streaming_content, content_type="application/pdf"
         )
 
-        TestUtils.authorize_current_user_as_operator_user(
-            self, operator=make_recipe("registration.tests.utils.operator")
+        operator = make_recipe("registration.tests.utils.operator")
+        TestUtils.authorize_current_user_as_operator_user(self, operator)
+        compliance_report_version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operator=operator,
         )
 
         # Act
@@ -34,14 +37,14 @@ class TestGenerateComplianceReportVersionPenaltyInvoice(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "generate_compliance_report_version_automatic_overdue_penalty_invoice",
-                kwargs={"compliance_report_version_id": 123},
+                kwargs={"compliance_report_version_id": compliance_report_version.id},
             ),
         )
 
         # Assert
         assert response.status_code == 200
 
-        mock_generate_automatic_overdue_penalty_invoice_pdf.assert_called_once_with(123)
+        mock_generate_automatic_overdue_penalty_invoice_pdf.assert_called_once_with(compliance_report_version.id)
         mock_create_pdf_response.assert_called_once_with((ANY, 'invoice.pdf', 12))
 
     @patch(

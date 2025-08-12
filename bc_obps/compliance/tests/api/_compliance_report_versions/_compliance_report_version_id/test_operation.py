@@ -1,6 +1,9 @@
+from unittest.mock import patch
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
+
+VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
 
 
 class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
@@ -16,7 +19,7 @@ class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operation__operator=approved_user_operator.operator,
+            compliance_report__report__operator=approved_user_operator.operator,
         )
 
         # Act
@@ -31,7 +34,8 @@ class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         assert response.status_code == 200
         assert response.json() == {"name": compliance_report_version.compliance_report.report.operation.name}
 
-    def test_invalid_compliance_report_version_id(self):
+    @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
+    def test_invalid_compliance_report_version_id(self, _):
         # Arrange
         invalid_compliance_report_version_id = 99999  # Assuming this ID does not exist in the database
         # Act

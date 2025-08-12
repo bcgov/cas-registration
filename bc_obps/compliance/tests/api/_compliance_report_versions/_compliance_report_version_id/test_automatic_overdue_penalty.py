@@ -33,10 +33,17 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        compliance_report_version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operator=operator,
+        )
+
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
-            custom_reverse_lazy("get_automatic_overdue_penalty", kwargs={"compliance_report_version_id": 123}),
+            custom_reverse_lazy(
+                "get_automatic_overdue_penalty", kwargs={"compliance_report_version_id": compliance_report_version.id}
+            ),
         )
 
         # Assert
