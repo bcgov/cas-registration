@@ -460,7 +460,7 @@ describe("FacilityForm component", () => {
     );
     expect(
       container.querySelector("#root_section1_starting_date"),
-    ).toHaveTextContent("2024-07-11");
+    ).toHaveTextContent("Jul 11, 2024");
     expect(
       container.querySelector("#root_section2_street_address"),
     ).toHaveTextContent("adf");
@@ -510,7 +510,7 @@ describe("FacilityForm component", () => {
     );
     expect(
       container.querySelector("#root_section1_starting_date"),
-    ).toHaveTextContent("2024-07-11");
+    ).toHaveTextContent("Jul 11, 2024");
     expect(
       container.querySelector("#root_section1_street_address"),
     ).toHaveTextContent("adf");

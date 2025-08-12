@@ -179,7 +179,7 @@ describe("The TransferDetailForm component", () => {
       "what is being transferred?",
       "operation 1",
       "effective date of transfer",
-      "2022-12-31",
+      "Dec 31, 2022",
     ];
     checkFormFieldsAndLabels(formFieldsAndLabels);
     checkButtons();
@@ -200,7 +200,7 @@ describe("The TransferDetailForm component", () => {
       "name 1 - \\(11, 22\\), name 2 - \\(33, 44\\)",
       "new operation",
       "effective date of transfer",
-      "2022-12-31",
+      "Dec 31, 2022",
     ];
 
     checkFormFieldsAndLabels(formFieldsAndLabels);
