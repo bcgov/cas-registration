@@ -418,7 +418,9 @@ class TestApplyComplianceUnitsService:
         mock_refresh_data.return_value = mock_refresh_result
 
         # Act
-        result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version(1)
+        result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version_by_reason(
+            1, 'Compliance Units Applied'
+        )
 
         # Assert
         assert result == Decimal("0")
@@ -435,7 +437,9 @@ class TestApplyComplianceUnitsService:
         mock_adjustments_manager.filter.return_value.aggregate.return_value = {"total": None}
 
         # Act
-        result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version(1)
+        result = ApplyComplianceUnitsService._get_total_adjustments_for_report_version_by_reason(
+            1, 'Compliance Units Applied'
+        )
 
         # Assert: fallback to zero when no line items or aggregate is None
         assert result == Decimal("0")
