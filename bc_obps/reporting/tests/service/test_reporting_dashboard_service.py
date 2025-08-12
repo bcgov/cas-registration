@@ -3,6 +3,9 @@ import pytest
 from registration.models.operation import Operation
 from model_bakery.baker import make_recipe
 from reporting.models.report_operation import ReportOperation
+from registration.models.user import User
+from registration.models.app_role import AppRole
+from registration.models.user_operator import UserOperator
 from registration.tests.utils.bakers import operation_baker, operator_baker, user_baker, user_operator_baker
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
@@ -10,6 +13,7 @@ from service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
 from typing import Optional
 from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema, ReportsPeriod
+from model_bakery import baker
 
 
 @pytest.mark.django_db
@@ -23,7 +27,16 @@ class TestReportingDashboardService:
         mock_get_by_guid: MagicMock | AsyncMock,
         mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
     ):
-        user_operator = user_operator_baker()
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        operator = operator_baker()
+        user_operator = user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
         mock_get_by_guid.return_value = user_operator.user
         mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
@@ -65,6 +78,8 @@ class TestReportingDashboardService:
             user_operator.user.user_guid, 5091, sort_field, sort_order, filters
         ).values()
         result_list = list(result)
+
+        breakpoint()
 
         assert len(result_list) == 3
 
@@ -256,7 +271,16 @@ class TestReportingDashboardService:
     ):
 
         # SETUP
-        user_operator = user_operator_baker()
+        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
+        operator = operator_baker()
+        user_operator = user_operator_baker(
+            {
+                "user": user,
+                "operator": operator,
+                "status": UserOperator.Statuses.APPROVED,
+                "role": UserOperator.Roles.ADMIN,
+            }
+        )
         mock_get_by_guid.return_value = user_operator.user
         mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
