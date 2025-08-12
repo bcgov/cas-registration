@@ -11,7 +11,7 @@ from registration.models.operation import Operation
 from reporting.models.report import Report
 from reporting.schema.generic import Message
 from reporting.constants import DASHBOARD_TAGS
-from reporting.schema.operation import (
+from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
     ReportingDashboardOperationOut,
     ReportingDashboardReportOut,

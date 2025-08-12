@@ -10,7 +10,7 @@ from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
-from reporting.schema.operation import ReportingDashboardOperationFilterSchema
+from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema
 from service.user_operator_service import UserOperatorService
 
 

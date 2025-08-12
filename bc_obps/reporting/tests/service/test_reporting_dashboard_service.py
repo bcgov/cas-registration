@@ -9,7 +9,7 @@ from reporting.tests.utils.bakers import report_version_baker, reporting_year_ba
 from service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
 from typing import Optional
-from reporting.schema.operation import ReportingDashboardOperationFilterSchema
+from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema
 
 
 @pytest.mark.django_db
