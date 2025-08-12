@@ -16,28 +16,32 @@ const ActionCell = (params: GridRenderCellParams) => {
   const router = useRouter();
   const operationId = params.row.operation_id;
   const [responseError, setResponseError] = React.useState<string | null>(null);
+  const operationName = params?.row.operation_name;
   const [hasClicked, setHasClicked] = React.useState<boolean>(false);
   const [modalOpen, setModalOpen] = React.useState(false);
   const [modalErrorMessage, setModalErrorMessage] = React.useState("");
 
   // Create a new report
-  const handleStartReport = async (reportingYear: number): Promise<string | undefined> => {
+  const handleStartReport = async (
+    reportingYear: number,
+  ): Promise<string | undefined> => {
     try {
       const response = await createReport(operationId, reportingYear);
       if (response?.error) {
         setModalErrorMessage(
-          `We couldn't create a report for operation ID '${operationId}' and reporting year ${reportingYear}: ${response?.error}`,
+          `We couldn't create a report for operation '${operationName}' and reporting year ${reportingYear}: ${response?.error}`,
         );
         setModalOpen(true);
         return;
       }
       return response;
     } catch (error) {
-      setModalErrorMessage("An unexpected error occurred while creating the report.");
+      setModalErrorMessage(
+        "An unexpected error occurred while creating the report.",
+      );
       setModalOpen(true);
     }
   };
-
 
   // Create a new report version
   const handleNewDraftVersion = async (): Promise<string | undefined> => {
@@ -52,7 +56,9 @@ const ActionCell = (params: GridRenderCellParams) => {
       }
       return response;
     } catch (error) {
-      setModalErrorMessage("An unexpected error occurred while creating a new draft version of the report.");
+      setModalErrorMessage(
+        "An unexpected error occurred while creating a new draft version of the report.",
+      );
       setModalOpen(true);
     }
   };
@@ -95,34 +101,33 @@ const ActionCell = (params: GridRenderCellParams) => {
 
   return (
     <>
-    <SimpleModal
-      open={modalOpen}
-      title="Error Creating Report"
-      onCancel={() => setModalOpen(false)}
-      onConfirm={() => setModalOpen(false)}
-      confirmText="OK"
-      cancelText="Close"
-    >
-      {modalErrorMessage}
-    </SimpleModal>
-    <Button
-      sx={{
-        width: 120,
-        height: 40,
-        borderRadius: "5px",
-        border: `1px solid ${BC_GOV_LINKS_COLOR}`,
-        cursor: buttonDisabled ? "not-allowed" : "pointer",
-      }}
-      color="primary"
-      disabled={buttonDisabled}
-      onClick={async () => {
-        setHasClicked(true);
-        await buttonAction();
-        setHasClicked(false);
-      }}
-    >
-      {buttonText}
-    </Button>
+      <SimpleModal
+        open={modalOpen}
+        title="Error Creating Report"
+        onCancel={() => setModalOpen(false)}
+        onConfirm={() => setModalOpen(false)}
+        showConfirmButton={false}
+      >
+        {modalErrorMessage}
+      </SimpleModal>
+      <Button
+        sx={{
+          width: 120,
+          height: 40,
+          borderRadius: "5px",
+          border: `1px solid ${BC_GOV_LINKS_COLOR}`,
+          cursor: buttonDisabled ? "not-allowed" : "pointer",
+        }}
+        color="primary"
+        disabled={buttonDisabled}
+        onClick={async () => {
+          setHasClicked(true);
+          await buttonAction();
+          setHasClicked(false);
+        }}
+      >
+        {buttonText}
+      </Button>
     </>
   );
 };
