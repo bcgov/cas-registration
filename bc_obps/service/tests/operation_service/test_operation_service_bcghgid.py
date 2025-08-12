@@ -123,7 +123,7 @@ class TestGenerateBCGHGId:
         """Test that LFO facilities get the manually set BCGHG ID"""
         cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         operation = baker.make_recipe(
-            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, type=Operation.Types.SFO
+            'registration.tests.utils.operation', status=Operation.Statuses.REGISTERED, type=Operation.Types.LFO
         )
         facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
         manual_bcghg_id = "11234567890"
@@ -134,7 +134,7 @@ class TestGenerateBCGHGId:
         operation.refresh_from_db()
 
         assert operation.bcghg_id.id == manual_bcghg_id
-        assert facility.bcghg_id.id == manual_bcghg_id
+        assert facility.bcghg_id is None
         assert result.id == manual_bcghg_id
 
     def test_generate_bcghg_id_manual_id_unauthorized_user_raises_exception(self):
