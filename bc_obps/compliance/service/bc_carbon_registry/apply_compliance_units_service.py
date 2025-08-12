@@ -18,23 +18,13 @@ bccr_account_service = BCCarbonRegistryAccountService()
 
 class ApplyComplianceUnitsService:
     @classmethod
-    def _calculate_apply_units_cap(cls, compliance_report_version_id: int) -> Decimal:
-        """
-        Retrieves the obligation for the given compliance report version ID and calculates the maximum
-        allowable value for applied compliance units as 50% of the original fee.
-
-        Raises:
-            UserError: If the obligation is missing or the fee_amount_dollars is not available.
-        """
-        obligation = ComplianceObligationService.get_obligation_for_report_version(compliance_report_version_id)
-        if not obligation or not obligation.fee_amount_dollars:
-            raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
-        return obligation.fee_amount_dollars * Decimal("0.5")  # 50% of the original amount
-
-    @classmethod
-    def _get_total_adjustments_for_report_version(cls, compliance_report_version_id: int) -> Decimal:
+    def _get_total_adjustments_for_report_version_by_reason(
+        cls, compliance_report_version_id: int, reason: str
+    ) -> Decimal:
         """
         Helper to retrieve total adjustments (value already applied) for a compliance report version.
+        Results filtered on "reason" as adjustments from supplementary reports need to be considered when calculating the overall cap
+        where adjustments from compliance units are to be considered when determining the cap remaining
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
@@ -45,11 +35,30 @@ class ApplyComplianceUnitsService:
             return Decimal("0")
 
         line_items = invoice.elicensing_line_items.all()
-        total_adjustments = ElicensingAdjustment.objects.filter(elicensing_line_item__in=line_items).aggregate(
-            total=Sum("amount")
-        )["total"] or Decimal("0")
+        total_adjustments = ElicensingAdjustment.objects.filter(
+            elicensing_line_item__in=line_items, reason=reason
+        ).aggregate(total=Sum("amount"))["total"] or Decimal("0")
 
         return total_adjustments
+
+    @classmethod
+    def _calculate_apply_units_cap(cls, compliance_report_version_id: int) -> Decimal:
+        """
+        Retrieves the obligation for the given compliance report version ID and calculates the maximum
+        allowable value for applied compliance units as 50% of (the original fee less any adjustments due to supplementary report submissions).
+
+        Raises:
+            UserError: If the obligation is missing or the fee_amount_dollars is not available.
+        """
+        obligation = ComplianceObligationService.get_obligation_for_report_version(compliance_report_version_id)
+        if not obligation or not obligation.fee_amount_dollars:
+            raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
+        total_supplementary_report_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
+            compliance_report_version_id=compliance_report_version_id, reason='Supplementary Report Adjustment'
+        )
+        return (obligation.fee_amount_dollars + total_supplementary_report_adjustments) * Decimal(
+            "0.5"
+        )  # 50% of (original amount less any adjustments due to supplementary reports)
 
     @classmethod
     def _compute_compliance_unit_caps(cls, compliance_report_version_id: int) -> tuple[Decimal, Decimal]:
@@ -65,9 +74,11 @@ class ApplyComplianceUnitsService:
 
         compliance_unit_cap_limit = cls._calculate_apply_units_cap(compliance_report_version_id)
 
-        total_adjustments = cls._get_total_adjustments_for_report_version(compliance_report_version_id)
+        total_compliance_unit_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
+            compliance_report_version_id=compliance_report_version_id, reason='Compliance Units Applied'
+        )
 
-        compliance_unit_cap_remaining = max(Decimal("0"), compliance_unit_cap_limit + total_adjustments)
+        compliance_unit_cap_remaining = max(Decimal("0"), compliance_unit_cap_limit + total_compliance_unit_adjustments)
 
         return compliance_unit_cap_limit, compliance_unit_cap_remaining
 
