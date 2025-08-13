@@ -62,6 +62,9 @@ class ComplianceDashboardService:
                 summary.excess_emissions = ComplianceReportVersionService.calculate_display_value_excess_emissions(
                     version
                 )
+            # Check outstanding balance to determine obligation met status
+            if version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET:
+                ComplianceReportVersionService.update_compliance_report_version_status(version.id)
         return compliance_report_versions
 
     @classmethod
