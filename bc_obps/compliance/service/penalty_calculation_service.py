@@ -164,7 +164,7 @@ class PenaltyCalculationService:
             "businessAreaCode": "OBPS",
             "feeGUID": str(uuid.uuid4()),
             "feeProfileGroupName": "OBPS Compliance Obligation",
-            "feeDescription": f"{obligation.compliance_report_version.compliance_report.compliance_period.reporting_year.reporting_year} GGIRCA Automatic Penalty for Obligation ID {obligation.id}",
+            "feeDescription": "Automatic Overdue Penalty",
             "feeAmount": float(total_penalty),
             "feeDate": (final_accrual_date + timedelta(days=1)).strftime("%Y-%m-%d"),
         }

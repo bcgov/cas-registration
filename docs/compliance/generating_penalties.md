@@ -19,7 +19,15 @@ We can generate a penalty quickly when all we care about is seeing the penalty. 
 #### Example shell call:
 
 ```Python
-PenaltyCalculationService.calculate_penalty(obligation=<related_obligation>, persist_penalty=True, accrual_start_date='2025-07-31', final_accrual_date='2025-08-05')
+from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from compliance.models.compliance_obligation import ComplianceObligation
+from datetime import date
+PenaltyCalculationService.calculate_penalty(
+    obligation=ComplianceObligation.objects.get(id=<related_obligation_id>),
+    persist_penalty_data=True,
+    accrual_start_date=date(2025, 7, 31),
+    final_accrual_date=date(2025, 8, 5))
+
 ```
 
 - This would calculate & persist a penalty to the database that is 5 days late.
@@ -34,17 +42,22 @@ If you care about the data being sane, then use this method. It takes a little l
 - In the elicensing test environment, make a payment (or payments) that fully meet the obligation
 - Refresh the elicensing data in bciers
 - Note: If you want to test multiple payments over a period, update the received_date(s) of your payment records accordingly
-- Manually update elicensing_invoice.due_date to a date in the past
+- Manually update elicensing_invoice.due_date to a date in the past (note that the refresh service will overwrite this change with data from elicensing after 15 minutes on the next refresh, so make sure to do the next step immediately after changing the date)
 - Call PenaltyCalculationService.create_penalty() with the related obligation
 
 #### Example shell call:
 
 ```Python
-PenaltyCalculationService.create_penalty(obligation=<related_obligation>)
+from compliance.service.penalty_calculation_service import PenaltyCalculationService
+from compliance.models.compliance_obligation import ComplianceObligation
+from datetime import date
+PenaltyCalculationService.create_penalty(obligation=ComplianceObligation.objects.get(id=<related_obligation_id>))
+
 ```
 
 - This would calculate & persist a penalty to the database that is `<received_date of final payment - due_date of invoice>` days late
 
 ### Notes:
 
+- To start the shell locally, `make shell`
 - Command to pull up the shell in a backend pod in openshift: `.venv/bin/python manage.py shell`

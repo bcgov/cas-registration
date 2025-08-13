@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "@bciers/actions";
 import * as Sentry from "@sentry/nextjs";
+import { InvoiceType } from "../../../../utils/generateInvoice";
 
 /**
  * API route handler for downloading invoice PDFs directly.
@@ -9,9 +10,10 @@ import * as Sentry from "@sentry/nextjs";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: { id: string; invoiceType: InvoiceType } },
 ) {
   const id = params.id;
+  const invoiceType = params.invoiceType as InvoiceType;
 
   try {
     // Build API URL and headers
@@ -19,7 +21,18 @@ export async function GET(
     if (!apiUrl) {
       throw new Error("API_URL environment variable is not set");
     }
-    const url = `${apiUrl}compliance/compliance-report-versions/${id}/invoice/pdf`;
+    let url;
+
+    switch (invoiceType) {
+      case "obligation":
+        url = `${apiUrl}compliance/compliance-report-versions/${id}/invoice/pdf`;
+        break;
+      case "automatic-overdue-penalty":
+        url = `${apiUrl}compliance/compliance-report-versions/${id}/automatic-overdue-penalty/invoice/pdf`;
+        break;
+      default:
+        throw new Error(`Invalid invoice type: ${invoiceType}`);
+    }
 
     // Obtain user token
     const token = await getToken();

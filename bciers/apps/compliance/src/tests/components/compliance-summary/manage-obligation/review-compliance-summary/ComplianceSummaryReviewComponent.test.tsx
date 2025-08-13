@@ -97,10 +97,13 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     await user.click(getGenerateButton());
 
-    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/123", {
-      method: "GET",
-      cache: "no-store",
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/invoice/123/obligation",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
     expect(URL.createObjectURL).toHaveBeenCalledWith(mockBlob);
 
@@ -132,10 +135,13 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     await user.click(getGenerateButton());
 
-    expect(fetch).toHaveBeenCalledWith("/compliance/api/invoice/999", {
-      method: "GET",
-      cache: "no-store",
-    });
+    expect(fetch).toHaveBeenCalledWith(
+      "/compliance/api/invoice/999/obligation",
+      {
+        method: "GET",
+        cache: "no-store",
+      },
+    );
 
     expect(mockWindowOpen).not.toHaveBeenCalled();
 

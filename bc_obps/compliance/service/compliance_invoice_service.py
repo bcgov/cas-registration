@@ -1,3 +1,5 @@
+from compliance.enums import ComplianceInvoiceTypes
+from compliance.models.compliance_penalty import CompliancePenalty
 from django.db.models import Prefetch, QuerySet
 from typing import Dict, Any, List, Optional, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
@@ -25,12 +27,76 @@ from compliance.models import (
     ElicensingLineItem,
 )
 
-from compliance.dataclass import ComplianceInvoiceContext
+from compliance.dataclass import (
+    ObligationInvoiceContext,
+    AutomaticOverduePenaltyInvoiceContext,
+)
+import json
+from django.http import StreamingHttpResponse
 
 
 class ComplianceInvoiceService:
     @classmethod
-    def generate_invoice_pdf(
+    def create_pdf_response(
+        cls, pdf: Tuple[Generator[bytes, None, None], str, int] | Dict[str, Any]
+    ) -> StreamingHttpResponse:
+        # If result is an error dictionary, stream it back with status 400
+        if isinstance(pdf, dict) and "errors" in pdf:
+            err_payload = json.dumps({"errors": pdf["errors"]}).encode("utf-8")
+            return StreamingHttpResponse(
+                streaming_content=iter([err_payload]),
+                content_type="application/json",
+                status=400,
+            )
+
+        # Otherwise, unpack the PDF generator, filename, and total size
+        pdf_generator, filename, total_size = pdf
+
+        response = StreamingHttpResponse(streaming_content=pdf_generator, content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        response["Content-Length"] = str(total_size)
+        return response
+
+    @classmethod
+    def _prepare_partial_invoice_context(
+        cls, compliance_report_version_id: int, invoice: ElicensingInvoice, compliance_obligation_id: str
+    ) -> Dict[str, Any]:
+        # Get operation information
+        # compliance_report_version_id  →  ComplianceReportVersion → ComplianceReport → Report →  Operation
+        operation: Operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
+            compliance_report_version_id
+        )
+
+        # Get operator information
+        # Operation → Operator
+        operator: Operator = operation.operator
+        # Operator → Address
+
+        operator_address_line1, operator_address_line2 = ComplianceInvoiceService.format_operator_address(
+            operator.physical_address
+        )
+
+        invoice_number = invoice.invoice_number
+        invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
+        amount_due, billing_items = cls.calculate_invoice_amount_due(invoice)
+        total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
+
+        return {
+            "operator_name": operator.legal_name,
+            "operator_address_line1": operator_address_line1,
+            "operator_address_line2": operator_address_line2,
+            "operation_name": operation.name,
+            "invoice_number": invoice_number,
+            "invoice_due_date": invoice_due_date,
+            'invoice_printed_date': timezone.now().strftime("%b %-d, %Y"),
+            "logo_base64": CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
+            'billing_items': billing_items,
+            "total_amount_due": total_amount_due,
+            "compliance_obligation_id": compliance_obligation_id,
+        }
+
+    @classmethod
+    def generate_obligation_invoice_pdf(
         cls,
         compliance_report_version_id: int,
     ) -> Tuple[Generator[bytes, None, None], str, int] | Dict[str, Any]:
@@ -55,25 +121,25 @@ class ComplianceInvoiceService:
                     "Invoice data could not be refreshed from Elicensing.  Please try again, or contact support if the problem persists.",
                 )
 
-            # Get operation information
-            # compliance_report_version_id  →  ComplianceReportVersion → ComplianceReport → Report →  Operation
-            operation: Operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
-                compliance_report_version_id
-            )
-
-            # Get operator information
-            # Operation → Operator
-            operator: Operator = operation.operator
-            operator_name = operator.legal_name
-            # Operator → Address
-            operator_address_line1, operator_address_line2 = cls.format_operator_address(operator.physical_address)
-
             # Get compliance obligation information
             # compliance_report_version_id  → ComplianceObligation
             compliance_obligation: ComplianceObligation = (
                 ComplianceReportVersionService.get_obligation_by_compliance_report_version(compliance_report_version_id)
             )
-            compliance_obligation_id = compliance_obligation.obligation_id
+
+            compliance_report_version: ComplianceReportVersion = compliance_obligation.compliance_report_version
+
+            # Get invoice data
+            invoice = refresh_result.invoice
+            invoice_is_void = (
+                invoice.is_void
+                and compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+            )
+
+            partial_context = cls._prepare_partial_invoice_context(
+                compliance_report_version_id, invoice, compliance_obligation.obligation_id
+            )
+
             invoice_date = (
                 compliance_obligation.fee_date.strftime("%b %-d, %Y") if compliance_obligation.fee_date else "—"
             )
@@ -81,13 +147,8 @@ class ComplianceInvoiceService:
             # Get compliance obligation amounts
             # Get fee_amount_dollars (calculated emmissions * charge rate) from
             # ComplianceObligation  → ComplianceReportVersion
-            compliance_report_version: ComplianceReportVersion = compliance_obligation.compliance_report_version
-            fee_amount_dollars = compliance_obligation.fee_amount_dollars
 
-            # Get operation name from report operation
-            operation_name = (
-                compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
-            )
+            fee_amount_dollars = compliance_obligation.fee_amount_dollars
 
             # Get excess_emissions from
             # ComplianceReportVersion → ReportComplianceSummary
@@ -110,39 +171,16 @@ class ComplianceInvoiceService:
                 compliance_report_version.compliance_report.compliance_period.reporting_year.reporting_year
             )
 
-            # Get invoice data
-            invoice = refresh_result.invoice
-            invoice_number = invoice.invoice_number
-            invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
-            invoice_is_void = (
-                invoice.is_void
-                and compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
-            )
-
-            # Build invoice biling items and amounts due
-            amount_due, billing_items = cls.calculate_invoice_amount_due(invoice)
-            total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
-
             # Assemble context dictionary
-            invoice_printed_date = timezone.now().strftime("%b %-d, %Y")
-            context_obj = ComplianceInvoiceContext(
-                invoice_number=invoice_number,
+
+            context_obj = ObligationInvoiceContext(
+                **partial_context,
                 invoice_date=invoice_date,
-                invoice_due_date=invoice_due_date,
-                invoice_printed_date=invoice_printed_date,
                 invoice_is_void=invoice_is_void,
-                operator_name=operator_name,
-                operator_address_line1=operator_address_line1,
-                operator_address_line2=operator_address_line2,
-                operation_name=operation_name,
                 compliance_obligation_year=compliance_obligation_year,
-                compliance_obligation_id=compliance_obligation_id,
                 compliance_obligation=compliance_obligation_emissions,
                 compliance_obligation_charge_rate=compliance_obligation_charge_rate,
                 compliance_obligation_equivalent_amount=compliance_obligation_fee_amount_dollars,
-                billing_items=billing_items,
-                total_amount_due=total_amount_due,
-                logo_base64=CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
             )
 
             context = context_obj.__dict__
@@ -153,6 +191,85 @@ class ComplianceInvoiceService:
             # Generate and return the PDF generator, filename, and size
             return PDFGeneratorService.generate_pdf(
                 template_name="invoice.html",
+                context=context,
+                filename=filename,
+            )
+
+        except Exception as exc:
+            # If it’s already a ComplianceInvoiceError, just re‐raise it.
+            if isinstance(exc, ComplianceInvoiceError):
+                raise
+
+            # Otherwise wrap in ComplianceInvoiceError and raise
+            raise ComplianceInvoiceError("unexpected_error", str(exc))
+
+    @classmethod
+    def generate_automatic_overdue_penalty_invoice_pdf(
+        cls,
+        compliance_report_version_id: int,
+    ) -> Tuple[Generator[bytes, None, None], str, int] | Dict[str, Any]:
+        """
+        Generates a PDF invoice for compliance obligation's automatic penalty.
+
+        Args:
+            compliance_report_version_id: ID of the compliance report version.
+
+        Returns:
+            - On success: Tuple (PDF generator, filename, total_size_in_bytes).
+            - On error: Custom ComplianceInvoiceError
+        """
+        try:
+            # Refresh the BCIERS data from Elicensing API
+            penalty_refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+                compliance_report_version_id=compliance_report_version_id,
+                invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+            )
+            if not penalty_refresh_result.data_is_fresh:
+                raise ComplianceInvoiceError(
+                    "stale_data",
+                    "Invoice data could not be refreshed from Elicensing.  Please try again, or contact support if the problem persists.",
+                )
+
+            # Get penalty invoice data
+            penalty_invoice = penalty_refresh_result.invoice
+
+            # Get compliance obligation information
+            # compliance_report_version_id  → ComplianceObligation
+            compliance_obligation: ComplianceObligation = (
+                ComplianceReportVersionService.get_obligation_by_compliance_report_version(compliance_report_version_id)
+            )
+
+            partial_context = cls._prepare_partial_invoice_context(
+                compliance_report_version_id, penalty_invoice, compliance_obligation.obligation_id
+            )
+
+            compliance_penalty = CompliancePenalty.objects.get(
+                compliance_obligation=compliance_obligation,
+            )
+
+            invoice_date = penalty_invoice.created_at.strftime("%b %-d, %Y") if penalty_invoice.created_at else "—"
+
+            penalty_invoice_is_void = penalty_invoice.is_void and (
+                compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.PAID
+                or compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.NONE
+            )
+
+            # Assemble context dictionary
+            context_obj = AutomaticOverduePenaltyInvoiceContext(
+                **partial_context,
+                invoice_is_void=penalty_invoice_is_void,
+                invoice_date=invoice_date,
+                penalty_amount=f"${compliance_penalty.penalty_amount:,.2f}",
+            )
+
+            context = context_obj.__dict__
+
+            # Generate filename
+            filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
+
+            # Generate and return the PDF generator, filename, and size
+            return PDFGeneratorService.generate_pdf(
+                template_name="automatic_overdue_penalty_invoice.html",
                 context=context,
                 filename=filename,
             )

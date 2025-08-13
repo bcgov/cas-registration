@@ -123,14 +123,23 @@ class ComplianceInvoiceContext:
     operator_address_line1: str
     operator_address_line2: str
     operation_name: str
-    compliance_obligation_year: int
     compliance_obligation_id: str
-    compliance_obligation: str
-    compliance_obligation_charge_rate: str
-    compliance_obligation_equivalent_amount: str
     billing_items: List[dict]
     total_amount_due: str
     logo_base64: str
+
+
+@dataclass
+class ObligationInvoiceContext(ComplianceInvoiceContext):
+    compliance_obligation_year: int
+    compliance_obligation: str
+    compliance_obligation_charge_rate: str
+    compliance_obligation_equivalent_amount: str
+
+
+@dataclass
+class AutomaticOverduePenaltyInvoiceContext(ComplianceInvoiceContext):
+    penalty_amount: str
 
 
 @dataclass

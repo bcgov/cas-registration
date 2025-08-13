@@ -9,6 +9,8 @@ import {
 import { FormBase } from "@bciers/components/form";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
+import { InvoiceType } from "@/compliance/src/app/utils/generateInvoice";
+import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 
 interface Props {
   data: ComplianceSummaryReviewPageData;
@@ -38,49 +40,7 @@ export function ComplianceSummaryReviewComponent({
     setIsGeneratingInvoice(true);
 
     try {
-      const res = await fetch(
-        `/compliance/api/invoice/${complianceReportVersionId}`,
-        {
-          method: "GET",
-          cache: "no-store",
-        },
-      );
-
-      const contentType = res.headers.get("Content-Type") || "";
-
-      // Handle error or JSON payload
-      if (contentType.includes("application/json")) {
-        let payload: any = { message: `Failed with status ${res.status}` };
-
-        try {
-          payload = await res.json();
-        } catch {
-          // ignore invalid JSON
-        }
-
-        if (typeof payload.message === "string") {
-          setErrors([payload.message]);
-          return;
-        }
-
-        // Generic fallback message
-        setErrors([`Failed to generate invoice (status ${res.status})`]);
-        return;
-      }
-
-      // Handle non-JSON response errors
-      if (!res.ok) {
-        setErrors([`Failed to generate invoice (status ${res.status})`]);
-        return;
-      }
-
-      // Handle PDF response
-      const pdfBlob = await res.blob();
-      const objectUrl = URL.createObjectURL(pdfBlob);
-      window.open(objectUrl, "_blank", "noopener,noreferrer");
-
-      // Cleanup
-      setTimeout(() => URL.revokeObjectURL(objectUrl), 30_000);
+      await generateInvoice(complianceReportVersionId, InvoiceType.OBLIGATION);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrors([msg]);
