@@ -2,12 +2,8 @@ import logging
 from typing import Callable
 from common.permissions import authorize, compose_auth
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from django.http import HttpRequest
-from registration.models.operation import Operation
-from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.models.user_operator import UserOperator
-from django.db.models import Q
 
 logger = logging.getLogger(__name__)
 
@@ -35,32 +31,35 @@ def _validate_version_ownership_in_url(request: HttpRequest, version_id_param: s
         logger.warning("No report version found.")
         return False
 
-    operation: Operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
-        compliance_report_version_id
-    )
+    # this is the operator at the time the report was submitted, which may not be the same as the current operator if the operation was transferred
+    operator = compliance_report_version.compliance_report.report.operator
 
-    created_at = compliance_report_version.compliance_report.created_at
+    # operation: Operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
+    #     compliance_report_version_id
+    # )
 
-    if not created_at:
-        logger.warning("Compliance report is missing created_at date.")
-        return False
+    # created_at = compliance_report_version.compliance_report.created_at
 
-    timeline = (
-        OperationDesignatedOperatorTimeline.objects.filter(
-            operation=operation,
-            start_date__lte=created_at.date(),  # ownership started on or before the report was created
-        )
-        .filter(
-            Q(end_date__gte=created_at.date())
-            | Q(end_date__isnull=True)  # ownership is ongoing or didn't end until after the report was created
-        )
-        .first()
-    )
+    # if not created_at:
+    #     logger.warning("Compliance report is missing created_at date.")
+    #     return False
 
-    if not timeline:
-        logger.warning("No valid operation timeline found for the compliance report version.")
-        return False
-    operator = timeline.operator
+    # timeline = (
+    #     OperationDesignatedOperatorTimeline.objects.filter(
+    #         operation=operation,
+    #         start_date__lte=created_at.date(),  # ownership started on or before the report was created
+    #     )
+    #     .filter(
+    #         Q(end_date__gte=created_at.date())
+    #         | Q(end_date__isnull=True)  # ownership is ongoing or didn't end until after the report was created
+    #     )
+    #     .first()
+    # )
+
+    # if not timeline:
+    #     logger.warning("No valid operation timeline found for the compliance report version.")
+    #     return False
+    # operator = timeline.operator
 
     user_operator = UserOperator.objects.filter(
         user=request.current_user,  # type: ignore

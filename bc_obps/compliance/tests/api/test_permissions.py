@@ -26,20 +26,12 @@ class TestVersionOwnershipFromUrl:
     def test_compliance_version_ownership_from_url(self, role, status, expected_validity):
         # Setup
         user_operator = make_recipe("registration.tests.utils.user_operator", role=role, status=status)
-        operation = make_recipe("registration.tests.utils.operation", operator=user_operator.operator)
-        # timeline
-        make_recipe(
-            "registration.tests.utils.operation_designated_operator_timeline",
-            operation=operation,
-            operator=user_operator.operator,
-            start_date="2023-05-01",
-            end_date=None,
-        )
+
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            report__operator=user_operator.operator,
+            compliance_report__report__operator=user_operator.operator,
             compliance_report__created_at='2024-06-15',
-            compliance_report__report__operation=operation,
+            # compliance_report__report__operation=operation,
         )
 
         validator_under_test = check_compliance_version_ownership_in_url("test_id")
