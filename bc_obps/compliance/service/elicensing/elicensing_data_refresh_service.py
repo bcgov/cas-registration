@@ -47,6 +47,7 @@ class ElicensingDataRefreshService:
         Args:
             compliance_report_version_id (int): The ID of the compliance report version to refresh data for.
             force_refresh (bool, optional): If True, forces a refresh from the API regardless of last refresh time. Defaults to False.
+            supplementary_compliance_report_version_id (int | None): The ID of the supplementary compliance report version that triggered the refresh. Defaults to None.
             invoice_type (ComplianceInvoiceTypes, optional): The type of invoice to refresh (OBLIGATION or PENALTY). Defaults to OBLIGATION.
 
         Returns:

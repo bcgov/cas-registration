@@ -31,7 +31,6 @@ const PenaltySummaryReviewComponent = ({
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =
     useState(false);
 
-  // brianna http://localhost:3000/compliance/compliance-summaries/2/review-penalty-summary
   const handleGeneratePenaltyInvoice = async () => {
     setErrors([]);
     setIsGeneratingPenaltyInvoice(true);

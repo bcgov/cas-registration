@@ -150,11 +150,6 @@ class ComplianceInvoiceService:
 
             fee_amount_dollars = compliance_obligation.fee_amount_dollars
 
-            # Get operation name from report operation
-            operation_name = (
-                compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
-            )
-
             # Get excess_emissions from
             # ComplianceReportVersion → ReportComplianceSummary
             report_compliance_summary: ReportComplianceSummary = compliance_report_version.report_compliance_summary
