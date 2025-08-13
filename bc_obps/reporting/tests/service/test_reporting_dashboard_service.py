@@ -82,8 +82,6 @@ class TestReportingDashboardService:
         ).values()
         result_list = list(result)
 
-        breakpoint()
-
         assert len(result_list) == 3
 
         # Create dictionaries for easy lookup by operation ID
