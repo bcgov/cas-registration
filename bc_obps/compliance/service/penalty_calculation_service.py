@@ -210,6 +210,7 @@ class PenaltyCalculationService:
         if persist_penalty_data:
             compliance_penalty_record = CompliancePenalty.objects.create(
                 compliance_obligation=obligation,
+                fee_date=date.today(),
                 accrual_start_date=accrual_start_date.strftime("%Y-%m-%d"),  # type: ignore[union-attr]
             )
 
