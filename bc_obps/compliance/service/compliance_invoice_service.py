@@ -247,7 +247,7 @@ class ComplianceInvoiceService:
                 compliance_obligation=compliance_obligation,
             )
 
-            invoice_date = penalty_invoice.created_at.strftime("%b %-d, %Y") if penalty_invoice.created_at else "—"
+            invoice_date = compliance_penalty.fee_date.strftime("%b %-d, %Y") if compliance_penalty.fee_date else "—"
 
             penalty_invoice_is_void = penalty_invoice.is_void and (
                 compliance_obligation.penalty_status == ComplianceObligation.PenaltyStatus.PAID
