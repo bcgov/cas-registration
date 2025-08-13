@@ -24,8 +24,8 @@ export const createPenaltySummaryReviewSchema = (
     accumulated_penalty: readOnlyStringField("Accumulated Penalty:"),
     accumulated_compounding: readOnlyStringField("Accumulated Compounding:"),
     total_penalty: readOnlyStringField("Penalty Amount:"),
-    faa_interest: readOnlyStringField("FAA Interest (as of Today):"),
-    total_amount: readOnlyStringField("Total Amount (as of Today):"),
+    faa_interest: readOnlyStringField("FAA Interest:"),
+    total_amount: readOnlyStringField("Total Amount:"),
   },
 });
 
