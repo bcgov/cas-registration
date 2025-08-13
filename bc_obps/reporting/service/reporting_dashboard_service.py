@@ -62,7 +62,7 @@ class ReportingDashboardService:
             Report.objects.filter(
                 operation_id=OuterRef("id"),
                 reporting_year=reporting_year,
-                operator_id=user.user_operators.first().operator_id,
+                operator_id=user.user_operators.first().operator_id if user.user_operators.first().exists() else None,
             )
             .annotate(latest_version_id=latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=latest_report_version_subquery.values("status"))
@@ -78,7 +78,12 @@ class ReportingDashboardService:
         current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
         # need to fetch previously owned operations in case reports were filed for them already or if they need to
         # create a new report version for an operation they once owned.
-        previous_operations = OperationDataAccessService.get_all_previously_owned_operations_for_operator(user, user.user_operators.first().operator_id)
+        if user.user_operators.first().exists():
+            previous_operations = OperationDataAccessService.get_all_previously_owned_operations_for_operator(
+                user, user.user_operators.first().operator_id
+            )
+        else:
+            previous_operations = Operation.objects.none()
 
         all_operations = current_operations | previous_operations
 
