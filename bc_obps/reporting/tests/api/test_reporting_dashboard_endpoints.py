@@ -98,13 +98,10 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         )
         response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
 
-        print(f"Response JSON: {response_json}")
-
         assert response_json['count'] == 6
         assert len(response_json['items']) == 6
         for _, item in enumerate(response_json['items']):
             report = next(rep for rep in reports if rep.id == item['id'])
-            print(f"checking report {report.id} : {report}")
             assert item['id'] == report.id
             assert item['operation_id'] == str(report.operation.id)
             assert item['operation_name'] == report.operation.name
