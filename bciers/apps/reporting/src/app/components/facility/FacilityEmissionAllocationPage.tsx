@@ -59,6 +59,7 @@ export default async function FacilityEmissionAllocationPage({
         overlappingIndustrialProcessEmissions
       }
       facilityType={facilityType}
+      operationType={tasklistData?.operationType}
     />
   );
 }

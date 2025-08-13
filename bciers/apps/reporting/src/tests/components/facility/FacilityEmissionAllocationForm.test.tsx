@@ -229,14 +229,14 @@ describe("FacilityEmissionAllocationForm component", () => {
     expect(mockRouterPush).toHaveBeenCalledWith("back");
   });
 
-  it("renders a Not Applicable option for methodology if report type is small or medium", async () => {
+  it("renders a Not Applicable option for methodology", async () => {
     render(
       <FacilityEmissionAllocationForm
         version_id={config.mockVersionId}
         facility_id={config.mockFacilityId}
         orderedActivities={[]}
         initialData={mockInitialData}
-        facilityType={"Small Aggregate"}
+        facilityType={""}
         navigationInformation={{
           taskList: [],
           continueUrl: "",
@@ -255,5 +255,33 @@ describe("FacilityEmissionAllocationForm component", () => {
     const methodology = screen.getAllByText(/Not Applicable/i)[0];
     expect(methodology).toBeInTheDocument();
     expect(methodology).toBeVisible();
+  });
+
+  it("does not render a Not Applicable option for methodology if operation type is SFO", async () => {
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={mockInitialData}
+        facilityType=""
+        navigationInformation={{
+          taskList: [],
+          continueUrl: "",
+          backUrl: "",
+          headerSteps: [],
+          headerStepIndex: 0,
+        }}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        operationType="Single Facility Operation"
+      />,
+    );
+
+    await userEvent.click(
+      screen.getByRole("combobox", { name: /root_allocation_methodology/i }),
+    );
+    const methodology = screen.queryAllByText(/Not Applicable/i)[0];
+    expect(methodology).toBeUndefined();
   });
 });
