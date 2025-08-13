@@ -24,6 +24,7 @@ interface Props {
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
   facilityType: string;
+  operationType?: string;
 }
 
 interface FormData {
@@ -145,7 +146,20 @@ export default function FacilityEmissionAllocationForm({
   navigationInformation,
   isPulpAndPaper,
   overlappingIndustrialProcessEmissions,
+  operationType,
 }: Props) {
+  // filter allocation_methodology enum
+  const getFilteredSchema = () => {
+    const schema = JSON.parse(JSON.stringify(emissionAllocationSchema));
+    if (operationType === "Single Facility Operation") {
+      const enums = schema.properties.allocation_methodology.enum;
+      schema.properties.allocation_methodology.enum = enums.filter(
+        (methodology: string) => methodology !== "Not Applicable",
+      );
+    }
+    return schema;
+  };
+
   // Using the useState hook to initialize the form data with initialData values
   const [formData, setFormData] = useState<any>(() => ({
     allocation_methodology: initialData.allocation_methodology,
@@ -337,7 +351,7 @@ export default function FacilityEmissionAllocationForm({
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={emissionAllocationSchema}
+      schema={getFilteredSchema()}
       uiSchema={emissionAllocationUiSchema}
       formData={formData}
       submitButtonDisabled={submitButtonDisabled}
