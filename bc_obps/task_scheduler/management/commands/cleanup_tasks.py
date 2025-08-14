@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from task_scheduler.service.task_service import TaskService
 from task_scheduler.config.settings import TASK_SCHEDULER_CONFIG
 
@@ -16,6 +16,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         days = options['days']
+
+        if days <= 0:
+            raise CommandError('Days must be a positive integer greater than 0')
 
         self.stdout.write(f'Cleaning up tasks older than {days} days...')
 
