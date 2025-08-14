@@ -18,7 +18,7 @@ describe("generateReviewObligationPenaltyTaskList", () => {
     expect(taskList[0]).toEqual({
       type: "Page",
       title: `Review ${mockReportingYear} Compliance Obligation Report`,
-      link: `/compliance-summaries/${mockComplianceReportVersionId}/manage-obligation-review-summary`,
+      link: `/compliance-summaries/${mockComplianceReportVersionId}/review-obligation-summary`,
       isActive: true,
     });
 
