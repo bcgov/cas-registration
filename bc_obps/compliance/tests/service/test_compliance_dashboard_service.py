@@ -65,7 +65,7 @@ class TestComplianceDashboardService(TestCase):
             invoice=payment_1.elicensing_line_item.elicensing_invoice,
         )
 
-        returned_data = ComplianceDashboardService.get_peanlty_payments_by_compliance_report_version_id(
+        returned_data = ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id(
             compliance_report_version_id=penalty.compliance_obligation.compliance_report_version_id
         )
 

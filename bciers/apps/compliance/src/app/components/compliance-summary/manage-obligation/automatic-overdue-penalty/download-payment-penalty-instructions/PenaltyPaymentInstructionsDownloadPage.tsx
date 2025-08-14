@@ -7,6 +7,7 @@ import PaymentInstructionsDownloadComponent from "@/compliance/src/app/component
 import getInvoiceByComplianceReportVersionId from "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId";
 import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 
 export default async function PenaltyPaymentInstructionsDownloadPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -24,6 +25,7 @@ export default async function PenaltyPaymentInstructionsDownloadPage({
 
   const invoice = await getInvoiceByComplianceReportVersionId(
     complianceReportVersionId,
+    ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
   );
 
   return (

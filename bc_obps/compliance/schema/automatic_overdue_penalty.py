@@ -10,6 +10,9 @@ class _PenaltyStatusBase(Schema):
 
     @staticmethod
     def resolve_penalty_status(obj: Any) -> str:
+        """
+        Transform penalty status from uppercase to title case for display.
+        """
         if isinstance(obj, dict):
             value = obj.get("penalty_status")
         else:

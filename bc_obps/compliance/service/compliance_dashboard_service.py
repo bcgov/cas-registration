@@ -10,6 +10,7 @@ from compliance.service.elicensing.elicensing_data_refresh_service import Elicen
 from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from compliance.enums import ComplianceInvoiceTypes
 
 
 class ComplianceDashboardService:
@@ -147,7 +148,7 @@ class ComplianceDashboardService:
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
 
     @classmethod
-    def get_peanlty_payments_by_compliance_report_version_id(
+    def get_penalty_payments_by_compliance_report_version_id(
         cls, compliance_report_version_id: int
     ) -> PaymentDataWithFreshnessFlag:
         """
@@ -160,11 +161,10 @@ class ComplianceDashboardService:
         """
 
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=compliance_report_version_id, force_refresh=True
+            compliance_report_version_id=compliance_report_version_id,
+            invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
         )
-        invoice = refreshed_data.invoice
-        payments = ElicensingPayment.objects.filter(
-            elicensing_line_item__elicensing_invoice=invoice, received_date__gt=invoice.due_date
-        )
+
+        payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
 
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)

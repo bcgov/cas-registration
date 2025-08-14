@@ -144,7 +144,6 @@ describe("PenaltyTrackPaymentsPayPage", () => {
           payment_method: "EFT",
           transaction_type: "Payment",
           payment_object_id: "PEN123456",
-          payment_header: "",
         },
       ],
     });

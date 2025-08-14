@@ -95,24 +95,6 @@ class PenaltyCalculationService:
         )['total'] or Decimal('0.00')
 
     @classmethod
-    def sum_payments_after_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
-        """
-        Calculate the sum of all payments received strictly AFTER the given date.
-
-        Args:
-            invoice: The eLicensing invoice
-            date: The cutoff date (exclusive)
-
-        Returns:
-            Decimal: sum of payment amounts received after the given date
-        """
-        line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
-
-        return ElicensingPayment.objects.filter(elicensing_line_item__in=line_items, received_date__gt=date).aggregate(
-            total=Sum('amount')
-        )['total'] or Decimal('0.00')
-
-    @classmethod
     def sum_adjustments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
         """
         Calculate the sum of all adjustments made on or before the given date.

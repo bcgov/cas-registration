@@ -6,7 +6,6 @@ from model_bakery.baker import make_recipe
 
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
-from compliance.dataclass import PaymentDataWithFreshnessFlag
 from compliance.models import ElicensingPayment
 
 
@@ -14,39 +13,20 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
     """Tests for GET /compliance-report-versions/{id}/penalty endpoint."""
 
     @patch(
-        "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_peanlty_payments_by_compliance_report_version_id"  # noqa: E501
+        "compliance.service.penalty_summary_service.PenaltySummaryService.get_summary_by_compliance_report_version_id"
     )
-    @patch("compliance.service.compliance_obligation_service.ComplianceObligation.objects.get")
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.sum_payments_after_date")
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_penalty_data")
     def test_successful_penalty_retrieval(
         self,
-        mock_get_penalty_data,
-        mock_sum_payments_after_date,
-        mock_get_compliance_obligation_get,
-        mock_get_payment_data,
+        mock_get_summary,
     ):
         """Happy-path: service returns penalty data and payments."""
         # Arrange
-
-        mock_penalty_data = {
+        mock_get_summary.return_value = {
             "outstanding_amount": Decimal("38656.43"),
             "penalty_status": "Accruing",
             "data_is_fresh": True,
-            "total_amount": Decimal("38656.43"),
+            "payments": ElicensingPayment.objects.none(),
         }
-        # Mock ComplianceObligation return value (only the fields accessed by the service)
-        mock_get_compliance_obligation_get.return_value = ComplianceObligation()
-
-        mock_get_penalty_data.return_value = mock_penalty_data
-
-        mock_sum_payments_after_date.return_value = Decimal("0.00")
-
-        mock_payment_data = PaymentDataWithFreshnessFlag(
-            data_is_fresh=True,
-            data=ElicensingPayment.objects.none(),
-        )
-        mock_get_payment_data.return_value = mock_payment_data
 
         operator = make_recipe('registration.tests.utils.operator')
         # Act
@@ -69,13 +49,10 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         assert data["payment_data"]["rows"] == []
 
     @patch(
-        "compliance.models.compliance_obligation.ComplianceObligation.objects.get",
+        "compliance.service.penalty_summary_service.PenaltySummaryService.get_summary_by_compliance_report_version_id",
         side_effect=ComplianceObligation.DoesNotExist("not found"),
     )
-    @patch(
-        "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_peanlty_payments_by_compliance_report_version_id"  # noqa: E501
-    )
-    def test_invalid_compliance_report_version_id(self, _mock_get_payment_data, _mock_get_compliance_obligation):
+    def test_invalid_compliance_report_version_id(self, _mock_get_summary):
         """Endpoint should return 404 for non-existent report version id."""
         operator = make_recipe("registration.tests.utils.operator")
 

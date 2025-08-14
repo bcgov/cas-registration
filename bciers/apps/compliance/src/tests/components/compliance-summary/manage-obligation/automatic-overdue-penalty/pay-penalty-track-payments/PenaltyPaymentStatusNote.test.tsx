@@ -58,7 +58,7 @@ describe("PenaltyPaymentStatusNote", () => {
   });
 
   it("displays payment instructions when outstanding penalty remains", () => {
-    const formContext = createFormContext("500", PenaltyStatus.ACCRUING);
+    const formContext = createFormContext("500", PenaltyStatus.NOT_PAID);
 
     render(<PenaltyPaymentStatusNote formContext={formContext} />);
 
@@ -72,7 +72,7 @@ describe("PenaltyPaymentStatusNote", () => {
   });
 
   it("displays payment instructions when outstanding amount is a decimal", () => {
-    const formContext = createFormContext("0.5", PenaltyStatus.ACCRUING);
+    const formContext = createFormContext("0.5", PenaltyStatus.NOT_PAID);
 
     render(<PenaltyPaymentStatusNote formContext={formContext} />);
 

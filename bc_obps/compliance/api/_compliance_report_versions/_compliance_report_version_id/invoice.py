@@ -8,6 +8,7 @@ from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from compliance.schema.elicensing_invoice import ElicensingInvoiceOut
 from compliance.models.elicensing_invoice import ElicensingInvoice
+from compliance.enums import ComplianceInvoiceTypes
 
 
 @router.get(
@@ -37,19 +38,25 @@ def generate_compliance_report_version_invoice(
     description="Returns invoice info for a compliance report version id",
     auth=authorize("approved_industry_user"),
 )
-def get_invoice(request: HttpRequest, compliance_report_version_id: int) -> ElicensingInvoice:
+def get_invoice(
+    request: HttpRequest,
+    compliance_report_version_id: int,
+    invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
+) -> ElicensingInvoice:
     """
     Returns invoice info for a given compliance report version id.
 
     Args:
         request: The HTTP request
         compliance_report_version_id: ID of the compliance report version
+        invoice_type: The type of invoice to retrieve (obligation or penalty)
 
     Returns:
         Invoice information
     """
     invoice = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-        compliance_report_version_id
+        compliance_report_version_id,
+        invoice_type=invoice_type,
     ).invoice
 
     return invoice
