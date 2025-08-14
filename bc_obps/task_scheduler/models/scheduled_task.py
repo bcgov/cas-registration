@@ -38,10 +38,21 @@ class ScheduledTask(Task):
         status_display = dict(self.Status.choices)[self.status]
         return f"{self.function_path} ({self.schedule_type}) - {status_display}"
 
-    def calculate_next_run_time(self) -> Optional[datetime]:
+    def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
         if not self.schedule_type:
             return None
-        now = timezone.now()
+
+        if force_recalculate:
+            return self._calculate_fresh_time()
+
+        # Preserve existing time if it's in the future
+        if self.next_run_time and self.next_run_time > timezone.now():
+            return self.next_run_time
+
+        return self._calculate_fresh_time()
+
+    def _calculate_fresh_time(self) -> Optional[datetime]:
+        now: datetime = timezone.now()
         schedule_calculators: Dict[str, Callable[[datetime], Optional[datetime]]] = {
             self.ScheduleType.MINUTES: self._calculate_minutes_schedule,
             self.ScheduleType.HOURLY: self._calculate_hourly_schedule,
@@ -57,15 +68,11 @@ class ScheduledTask(Task):
     def _calculate_minutes_schedule(self, now: datetime) -> Optional[datetime]:
         if not self.schedule_interval:
             return None
-        if self.next_run_time and now < self.next_run_time:
-            return self.next_run_time
         return now + timedelta(minutes=self.schedule_interval)
 
     def _calculate_hourly_schedule(self, now: datetime) -> Optional[datetime]:
         if not self.schedule_interval:
             return None
-        if self.next_run_time and now < self.next_run_time:
-            return self.next_run_time
         return now + timedelta(hours=self.schedule_interval)
 
     def _calculate_daily_schedule(self, now: datetime) -> Optional[datetime]:
