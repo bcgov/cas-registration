@@ -17,12 +17,14 @@ def create_retryable(
         tag: Tag for the retryable function
         max_retries: Maximum number of retry attempts
         retry_delay_minutes: Delay between retry attempts in minutes
-    Returns:
-        RetryableFunction instance
     """
-    tag = tag or str(TASK_SCHEDULER_CONFIG['default_tag'])
-    max_retries = max_retries or int(str(TASK_SCHEDULER_CONFIG['default_max_retries']))
-    retry_delay_minutes = retry_delay_minutes or int(str(TASK_SCHEDULER_CONFIG['default_retry_delay']))
+    tag = tag if tag is not None else str(TASK_SCHEDULER_CONFIG['default_tag'])
+    max_retries = max_retries if max_retries is not None else int(str(TASK_SCHEDULER_CONFIG['default_max_retries']))
+    retry_delay_minutes = (
+        retry_delay_minutes
+        if retry_delay_minutes is not None
+        else int(str(TASK_SCHEDULER_CONFIG['default_retry_delay']))
+    )
 
     return RetryableFunction(
         func=func,

@@ -68,12 +68,12 @@ class Task(models.Model):
     def mark_attempt_failed(self, error_message: str) -> None:
         self.status = self.Status.FAILED
         self.lock_acquired_at = None
-        error_entry = {'error': error_message, 'timestamp': timezone.now().isoformat()}
+        error_entry: dict = {'error': error_message, 'timestamp': timezone.now().isoformat()}
         self.error_history.append(error_entry)
         if len(self.error_history) > 5:  # Keep only last 5
             self.error_history.pop(0)  # Remove oldest error
 
         self.save(update_fields=['status', 'lock_acquired_at', 'error_history'])
 
-    def calculate_next_run_time(self) -> Optional[datetime]:
+    def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
         raise NotImplementedError("Subclasses must implement calculate_next_run_time")

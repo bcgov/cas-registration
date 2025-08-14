@@ -13,8 +13,8 @@ The task scheduler consists of two main types of tasks:
 
 - **Models**: `ScheduledTask` and `RetryTask` extend the base `Task` model
 - **Service Layer**: `TaskService` handles task execution and management
-- **Discovery**: `TaskDiscovery` automatically discovers scheduled tasks from Django apps
-- **Synchronization**: `TaskSynchronizer` syncs discovered tasks with the database
+- **Discovery**: `ScheduledTaskDiscovery` automatically discovers scheduled tasks from Django apps
+- **Synchronization**: `ScheduledTaskSynchronizer` syncs discovered tasks with the database
 - **Retryable Functions**: `RetryableFunction` wrapper for functions that need retry capability
 - **Management Commands**: Django management commands for running, syncing, and cleaning up tasks
 
@@ -215,7 +215,7 @@ The `ScheduledTaskConfig` dataclass validates task configurations:
 
 ### Synchronization Process
 
-The `TaskSynchronizer` handles database synchronization:
+The `ScheduledTaskSynchronizer` handles database synchronization:
 
 1. **Create New Tasks**: Creates new tasks for newly discovered functions
 2. **Update Existing Tasks**: Updates task configurations when they change

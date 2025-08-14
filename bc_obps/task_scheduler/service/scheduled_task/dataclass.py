@@ -11,7 +11,7 @@ class ScheduledTaskConfig:
     schedule_minute: Optional[int] = None
     schedule_day_of_week: Optional[int] = None
     schedule_day_of_month: Optional[int] = None
-    tag: str = ""
+    tag: Optional[str] = None
 
     def __post_init__(self) -> None:
         self._validate()
@@ -81,5 +81,5 @@ class ScheduledTaskConfig:
             'schedule_minute': self.schedule_minute,
             'schedule_day_of_week': self.schedule_day_of_week,
             'schedule_day_of_month': self.schedule_day_of_month,
-            'tag': self.tag,
+            'tag': self.tag or '',
         }

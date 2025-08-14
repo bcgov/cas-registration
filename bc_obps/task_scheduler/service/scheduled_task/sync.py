@@ -5,7 +5,7 @@ from task_scheduler.models import ScheduledTask
 logger = logging.getLogger(__name__)
 
 
-class TaskSynchronizer:
+class ScheduledTaskSynchronizer:
     @classmethod
     def sync_tasks(cls, discovered_tasks: Dict[str, Dict[str, Any]]) -> Dict[str, int]:
         existing_tasks = {task.function_path: task for task in ScheduledTask.objects.all()}
@@ -63,7 +63,7 @@ class TaskSynchronizer:
 
         if updated:
             # Recalculate next run time
-            task.next_run_time = task.calculate_next_run_time()
+            task.next_run_time = task.calculate_next_run_time(force_recalculate=True)
             task.save()
 
         return updated

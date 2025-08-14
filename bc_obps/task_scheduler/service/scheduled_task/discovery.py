@@ -9,7 +9,7 @@ from task_scheduler.utils.paths import get_function_path
 logger = logging.getLogger(__name__)
 
 
-class TaskDiscovery:
+class ScheduledTaskDiscovery:
     """Discovery by scanning for SCHEDULED_TASKS lists with ScheduledTaskConfig instances."""
 
     @classmethod

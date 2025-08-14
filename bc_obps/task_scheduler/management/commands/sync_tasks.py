@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from task_scheduler.service.scheduled_task.discovery import TaskDiscovery
-from task_scheduler.service.scheduled_task.sync import TaskSynchronizer
+from task_scheduler.service.scheduled_task.discovery import ScheduledTaskDiscovery
+from task_scheduler.service.scheduled_task.sync import ScheduledTaskSynchronizer
 
 
 class Command(BaseCommand):
-    help = 'Sync scheduled tasks from tasks.py files'
+    help = 'Sync SCHEDULED_TASKS with the database'
 
     def add_arguments(self, parser):
         parser.add_argument('--app', type=str, help='Sync tasks from specific app only')
@@ -24,12 +24,11 @@ class Command(BaseCommand):
             if app_name not in getattr(settings, 'LOCAL_APPS', []):
                 self.stdout.write(self.style.ERROR(f"App '{app_name}' is not in LOCAL_APPS"))
                 return None, None
-            return TaskDiscovery.discover_app_tasks(app_name), app_name
+            return ScheduledTaskDiscovery.discover_app_tasks(app_name), app_name
 
-        return TaskDiscovery.discover_all_tasks(), None
+        return ScheduledTaskDiscovery.discover_all_tasks(), None
 
     def _dry_run_sync(self, options):
-        """Show what would be synced without making changes."""
         discovered_tasks, _ = self._get_discovered_tasks(options)
         if not discovered_tasks:
             self.stdout.write("No scheduled tasks to sync.")
@@ -43,14 +42,12 @@ class Command(BaseCommand):
             self.stdout.write(f"  Schedule: {config['schedule_type']}")
             if config.get('tag'):
                 self.stdout.write(f"  Tag: {config['tag']}")
-            self.stdout.write("")
-
         self.stdout.write(f"Total: {len(discovered_tasks)} tasks would be synced")
 
     def _sync_tasks(self, options):
-        """Actually sync the discovered tasks."""
         discovered_tasks, app_name = self._get_discovered_tasks(options)
-        if discovered_tasks is None:
+        if not discovered_tasks:
+            self.stdout.write("No scheduled tasks discovered.")
             return
 
         if app_name:
@@ -58,14 +55,10 @@ class Command(BaseCommand):
         else:
             self.stdout.write("Syncing all discovered tasks...")
 
-        if not discovered_tasks:
-            self.stdout.write("No scheduled tasks discovered.")
-            return
-
         self.stdout.write(f"Discovered {len(discovered_tasks)} scheduled tasks")
 
         # Sync with database
-        results = TaskSynchronizer.sync_tasks(discovered_tasks)
+        results = ScheduledTaskSynchronizer.sync_tasks(discovered_tasks)
 
         # Report results
         if results['created'] > 0:

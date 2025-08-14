@@ -15,14 +15,11 @@ class Command(BaseCommand):
         dry_run = options.get('dry_run', False)
         verbose = options.get('verbose', False)
 
-        if dry_run:
-            self._handle_dry_run()
-            return
-
         due_tasks = TaskService.get_due_tasks(tag)
 
-        if verbose:
-            self._display_due_tasks(due_tasks)
+        if dry_run:
+            self._handle_dry_run(due_tasks)
+            return
 
         if not due_tasks:
             self.stdout.write("No due tasks found")
@@ -30,17 +27,10 @@ class Command(BaseCommand):
 
         self._process_tasks(due_tasks, verbose)
 
-    def _handle_dry_run(self):
+    def _handle_dry_run(self, due_tasks):
         self.stdout.write("DRY RUN MODE - No tasks will be executed")
         self.stdout.write("=" * 50)
-        due_tasks = TaskService.get_due_tasks()
         self.stdout.write(f"Would process {len(due_tasks)} tasks")
-
-    def _display_due_tasks(self, due_tasks):
-        self.stdout.write(f"Found {len(due_tasks)} due tasks:")
-        for task in due_tasks:
-            task_type = self._get_task_type(task)
-            self.stdout.write(f"  - {task.function_path} ({task_type}) - Next run: {task.next_run_time}")
 
     @staticmethod
     def _get_task_type(task):
