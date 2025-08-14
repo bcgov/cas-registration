@@ -185,8 +185,10 @@ def authorize(
     return check_permission
 
 
-def compose_auth(*args: Callable[[HttpRequest], bool]) -> Callable[[HttpRequest], bool]:
-    def validate_all(request: HttpRequest) -> bool:
-        return all(auth_function(request) for auth_function in args)
+def validate_all(request: HttpRequest, funcs: tuple[Callable[[HttpRequest], bool], ...]) -> bool:
+    # This function is separated from compose_auth to allow for testing.(e.g. mocking)
+    return all(func(request) for func in funcs)
 
-    return validate_all
+
+def compose_auth(*funcs: Callable[[HttpRequest], bool]) -> Callable[[HttpRequest], bool]:
+    return lambda request: validate_all(request, funcs)
