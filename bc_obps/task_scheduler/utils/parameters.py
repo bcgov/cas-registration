@@ -1,6 +1,7 @@
 import inspect
+import json
 from typing import Any, Callable, Dict, Tuple
-from .serialization import _serialize_value
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def extract_function_parameters(args: Tuple[Any, ...], kwargs: Dict[str, Any], func: Callable) -> Dict[str, Any]:
@@ -20,7 +21,7 @@ def extract_function_parameters(args: Tuple[Any, ...], kwargs: Dict[str, Any], f
 
     # Process explicit keyword arguments
     for key, value in kwargs.items():
-        serialized_params[str(key)] = _serialize_value(value)
+        serialized_params[str(key)] = json.loads(json.dumps(value, cls=DjangoJSONEncoder))
 
     # Process positional arguments for standalone functions
     sig = inspect.signature(func)
@@ -30,6 +31,6 @@ def extract_function_parameters(args: Tuple[Any, ...], kwargs: Dict[str, Any], f
     for i, arg in enumerate(args):
         if i < len(param_names):
             param_name = param_names[i]
-            serialized_params[param_name] = _serialize_value(arg)
+            serialized_params[param_name] = json.loads(json.dumps(arg, cls=DjangoJSONEncoder))
 
     return serialized_params
