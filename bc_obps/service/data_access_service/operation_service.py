@@ -1,9 +1,10 @@
 from typing import List, Optional
 from uuid import UUID
-from registration.models import Operation, User, RegulatedProduct, Activity
+from registration.models import Operation, User, RegulatedProduct, Activity, Operator
 from ninja.types import DictStrAny
 from django.db.models import QuerySet
 from service.user_operator_service import UserOperatorService
+from registration.constants import UNAUTHORIZED_MESSAGE
 
 
 class OperationDataAccessService:
@@ -69,7 +70,7 @@ class OperationDataAccessService:
         return operation
 
     @classmethod
-    def get_all_operations_for_user(cls, user: User) -> QuerySet[Operation]:
+    def get_all_current_operations_for_user(cls, user: User) -> QuerySet[Operation]:
         if user.is_irc_user():
             # IRC users can see all operations except ones with status of "Not Started" or "Draft"
             return (
@@ -88,3 +89,30 @@ class OperationDataAccessService:
             .filter(operator_id=user_operator.operator_id)
             .only("id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id")
         )
+
+    @classmethod
+    def get_all_previously_owned_operations_for_operator(cls, user: User, operator_id: UUID) -> QuerySet[Operation]:
+        """
+        Returns all operations that were previously owned by the operator.
+        """
+        if user.is_irc_user():
+            # to be implemented later
+            return
+        else:
+            operator = Operator.objects.get(id=operator_id)
+            # Check if the user has access to the specified operator
+            if not operator.user_has_access(user.user_guid):
+                # Raise an exception if access is denied
+                raise Exception(UNAUTHORIZED_MESSAGE)
+
+            return (
+                Operation.objects.filter(
+                    designated_operators__operator_id=operator_id,
+                    designated_operators__end_date__isnull=False,
+                )
+                .select_related("operator", "bc_obps_regulated_operation")
+                .exclude(status__in=[Operation.Statuses.NOT_STARTED, Operation.Statuses.DRAFT])
+                .only(
+                    "id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id"
+                )
+            )

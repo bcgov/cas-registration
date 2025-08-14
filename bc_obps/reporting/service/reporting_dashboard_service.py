@@ -28,7 +28,9 @@ class ReportingDashboardService:
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
-        Fetches all operations for the user, and annotates it with the associated report data required for the API call
+        Fetches all operations for the user, and annotates it with the associated report data required for the API call.
+        We need to also include operations that were owned by the user's operator at the end of the reporting year, even if
+        the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
 
@@ -43,12 +45,15 @@ class ReportingDashboardService:
             .annotate(full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")))[:1]
         )
 
+        # build a dict version of the filters schema
+        filter_dict = filters.dict(exclude_none=True)
+
+        if (op := user.user_operators.first()) is not None:
+            filter_dict["operator_id"] = op.operator_id
+
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_subquery = (
-            Report.objects.filter(
-                operation_id=OuterRef("id"),
-                reporting_year=reporting_year,
-            )
+            Report.objects.filter(**filters)
             .annotate(latest_version_id=latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=latest_report_version_subquery.values("status"))
             .annotate(latest_version_updated_at=latest_report_version_subquery.values("updated_at"))
@@ -60,9 +65,20 @@ class ReportingDashboardService:
             report_version__report__reporting_year=reporting_year,
         ).values("operation_name")[:1]
 
+        current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
+        # need to fetch previously owned operations in case reports were filed for them already or if they need to
+        # create a new report version for an operation they once owned.
+        if user.user_operators.exists():
+            previous_operations = OperationDataAccessService.get_all_previously_owned_operations_for_operator(
+                user, user.user_operators.first().operator_id
+            )
+        else:
+            previous_operations = Operation.objects.none()
+
+        all_operations = current_operations | previous_operations
+
         queryset = (
-            OperationDataAccessService.get_all_operations_for_user(user)
-            .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
+            all_operations.filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
                 report_id=report_subquery.values("id"),
@@ -86,6 +102,8 @@ class ReportingDashboardService:
                     output_field=CharField(),
                 ),
             )
+            # need to ensure distinct() because the annotation above can produce duplicates when there's multiple reports for an operation
+            .distinct()
         )
 
         sort_field = sort_field or "id"
