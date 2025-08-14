@@ -39,30 +39,46 @@ describe("ActionCell", () => {
 
   // Test cases for obligation rows
   describe("Obligation Flow", () => {
-    it("displays 'Manage Obligation' when obligation_id and invoice_number are present", () => {
-      render(
-        ActionCell(
-          createMockParams(123, false, "24-0001-1-1", undefined, undefined),
-        ),
-      );
-      expectLink(
-        "Manage Obligation",
-        "/compliance-summaries/123/manage-obligation-review-summary",
-      );
+    describe("External users (isAllowedCas: false)", () => {
+      it("displays 'Manage Obligation' when obligation_id and invoice_number are present", () => {
+        render(
+          ActionCell(
+            createMockParams(123, false, "24-0001-1-1", undefined, undefined),
+          ),
+        );
+        expectLink(
+          "Manage Obligation",
+          "/compliance-summaries/123/manage-obligation-review-summary",
+        );
+      });
+
+      it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              false,
+              "24-0001-1-1",
+              "Obligation pending invoice creation",
+            ),
+          ),
+        );
+        expectLink("Pending Invoice Creation", "#");
+      });
     });
 
-    it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
-      render(
-        ActionCell(
-          createMockParams(
-            123,
-            false,
-            "24-0001-1-1",
-            "Obligation pending invoice creation",
+    describe("Internal users (isAllowedCas: true)", () => {
+      it("displays 'View Details' with review-obligation path when obligation is not met", () => {
+        render(
+          ActionCell(
+            createMockParams(123, true, "24-0001-1-1", "Obligation not met"),
           ),
-        ),
-      );
-      expectLink("Pending Invoice Creation", "#");
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/review-obligation-summary",
+        );
+      });
     });
   });
 
