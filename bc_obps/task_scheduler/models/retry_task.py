@@ -29,11 +29,16 @@ class RetryTask(Task):
     def can_retry(self) -> bool:
         return self.retry_count < self.max_retries
 
-    def calculate_next_run_time(self) -> Optional[datetime]:
+    def calculate_next_run_time(self, force_recalculate: bool = False, **kwargs: object) -> Optional[datetime]:
         # For retry tasks, don't schedule next run on success
         if self.status == self.Status.COMPLETED or not self.can_retry:
             return None
         return timezone.now() + timedelta(minutes=self.retry_delay_minutes)
+
+    def mark_attempt_success(self) -> None:
+        super().mark_attempt_success()
+        self.retry_count += 1
+        self.save(update_fields=['retry_count'])
 
     def mark_attempt_failed(self, error_message: str) -> None:
         super().mark_attempt_failed(error_message)
