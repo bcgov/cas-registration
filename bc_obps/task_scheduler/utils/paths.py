@@ -30,18 +30,7 @@ def get_function_path(func: Callable) -> str:
 
 
 def resolve_function_from_path(function_path: str) -> Callable:
-    """
-    Resolve a function from its path string dynamically.
-
-    Args:
-        function_path: Path to the function (e.g., "module.submodule.Class.method")
-
-    Returns:
-        The callable function
-
-    Raises:
-        ValueError: If the path is invalid or doesn't resolve to a callable
-    """
+    """Resolve a function from its path string dynamically."""
     parts = function_path.split('.')
 
     if len(parts) < 2:
