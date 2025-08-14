@@ -4,6 +4,7 @@ from compliance.service.payment_instructions_service import PaymentInstructionsS
 from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
+from compliance.enums import ComplianceInvoiceTypes
 from ...router import router
 
 
@@ -14,18 +15,26 @@ from ...router import router
     description="Generate a PDF payment instructions for a compliance summary and stream it to the client",
     auth=authorize("approved_industry_user"),
 )
-def generate_payment_instructions(request: HttpRequest, compliance_report_version_id: int) -> StreamingHttpResponse:
+def generate_payment_instructions(
+    request: HttpRequest,
+    compliance_report_version_id: int,
+    invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
+) -> StreamingHttpResponse:
     """
     Generate a PDF payment instructions for a compliance summary and stream it to the client.
 
     Args:
         request: The HTTP request
         compliance_report_version_id: ID of the compliance summary
+        invoice_type: The type of invoice to use for payment instructions (obligation or penalty)
 
     Returns:
         A streaming response containing the PDF
     """
-    result = PaymentInstructionsService.generate_payment_instructions_pdf(compliance_report_version_id)
+    result = PaymentInstructionsService.generate_payment_instructions_pdf(
+        compliance_report_version_id,
+        invoice_type=invoice_type,
+    )
 
     # If result is an error dictionary, stream it back with status 400
     if isinstance(result, dict) and "errors" in result:

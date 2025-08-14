@@ -65,7 +65,7 @@ class TestPenaltySummaryService(TestCase):
 
         mock_get_penalty_data.return_value = {
             "total_amount": Decimal("42.00"),
-            "penalty_status": ComplianceObligation.PenaltyStatus.NONE,
+            "penalty_status": ComplianceObligation.PenaltyStatus.NOT_PAID,
             "data_is_fresh": True,
         }
         mock_get_payments.return_value = PaymentDataWithFreshnessFlag(

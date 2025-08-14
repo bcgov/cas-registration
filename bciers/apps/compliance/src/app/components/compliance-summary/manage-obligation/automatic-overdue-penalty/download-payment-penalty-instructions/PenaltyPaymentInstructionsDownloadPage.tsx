@@ -38,6 +38,7 @@ export default async function PenaltyPaymentInstructionsDownloadPage({
         invoiceID={invoice.invoice_number}
         customBackUrl={customBackUrl}
         customContinueUrl={customContinueUrl}
+        invoiceType={ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY}
       />
     </CompliancePageLayout>
   );

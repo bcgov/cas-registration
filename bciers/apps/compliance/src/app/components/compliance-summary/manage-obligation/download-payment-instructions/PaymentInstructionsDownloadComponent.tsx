@@ -8,12 +8,15 @@ import {
   downloadPaymentInstructionsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/downloadPaymentInstructionsSchema";
 import FormAlerts from "@bciers/components/form/FormAlerts";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
+import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 
 interface Props {
   readonly complianceReportVersionId: number;
   readonly invoiceID: string;
   readonly customContinueUrl?: string;
   readonly customBackUrl?: string;
+  readonly invoiceType?: ComplianceInvoiceTypes;
 }
 
 export default function PaymentInstructionsDownloadComponent({
@@ -21,6 +24,7 @@ export default function PaymentInstructionsDownloadComponent({
   invoiceID,
   customContinueUrl,
   customBackUrl,
+  invoiceType,
 }: Props) {
   const backUrl =
     customBackUrl ??
@@ -48,8 +52,11 @@ export default function PaymentInstructionsDownloadComponent({
     setIsGeneratingDownload(true);
 
     try {
+      const query = invoiceType
+        ? buildQueryParams({ invoice_type: invoiceType })
+        : "";
       const res = await fetch(
-        `/compliance/api/payment-instructions/${complianceReportVersionId}`,
+        `/compliance/api/payment-instructions/${complianceReportVersionId}${query}`,
         {
           method: "GET",
           cache: "no-store",

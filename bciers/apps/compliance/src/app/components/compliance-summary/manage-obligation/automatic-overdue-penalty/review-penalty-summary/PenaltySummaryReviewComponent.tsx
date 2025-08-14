@@ -8,9 +8,8 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/automatic-overdue-penalty/review-penalty-summary/penaltySummaryReviewSchema";
 import { AutomaticOverduePenalty } from "@/compliance/src/app/types";
 import { useState } from "react";
-import generateInvoice, {
-  InvoiceType,
-} from "@/compliance/src/app/utils/generateInvoice";
+import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 
 interface Props {
@@ -38,7 +37,7 @@ const PenaltySummaryReviewComponent = ({
     try {
       await generateInvoice(
         complianceReportVersionId,
-        InvoiceType.AUTOMATIC_OVERDUE_PENALTY,
+        ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
       );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

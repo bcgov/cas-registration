@@ -4,6 +4,7 @@ from django.utils import timezone
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.service.exceptions import ComplianceInvoiceError
 from service.pdf.pdf_generator_service import PDFGeneratorService
+from compliance.enums import ComplianceInvoiceTypes
 
 # Type ignore for weasyprint since it lacks stubs
 
@@ -17,18 +18,23 @@ class PaymentInstructionsService:
     def generate_payment_instructions_pdf(
         cls,
         compliance_report_version_id: int,
+        invoice_type: ComplianceInvoiceTypes = ComplianceInvoiceTypes.OBLIGATION,
     ) -> Tuple[Generator[bytes, None, None], str, int]:
         """
         Generate a PDF payment instructions and return a generator that yields chunks of the PDF data.
 
         Args:
             compliance_report_version_id: ID of the compliance summary
+            invoice_type: The type of invoice to use (obligation or penalty)
 
         Returns:
             Tuple of (PDF data generator, filename, total_size_in_bytes)
         """
         try:
-            context = PaymentInstructionsService._prepare_payment_instructions_context(compliance_report_version_id)
+            context = PaymentInstructionsService._prepare_payment_instructions_context(
+                compliance_report_version_id,
+                invoice_type,
+            )
             filename = f"payment_instructions_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
 
             return PDFGeneratorService.generate_pdf(
@@ -46,7 +52,10 @@ class PaymentInstructionsService:
             raise ComplianceInvoiceError("unexpected_error", str(exc))
 
     @staticmethod
-    def _prepare_payment_instructions_context(compliance_report_version_id: int) -> Dict[str, Any]:
+    def _prepare_payment_instructions_context(
+        compliance_report_version_id: int,
+        invoice_type: ComplianceInvoiceTypes,
+    ) -> Dict[str, Any]:
         """
         Prepare context data for the payment instructions template.
 
@@ -55,7 +64,8 @@ class PaymentInstructionsService:
         """
 
         refreshResult = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id
+            compliance_report_version_id,
+            invoice_type=invoice_type,
         )
 
         context = {

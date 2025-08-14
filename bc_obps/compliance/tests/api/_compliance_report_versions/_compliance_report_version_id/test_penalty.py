@@ -46,6 +46,7 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         assert data["outstanding_amount"] == "38656.43"
         assert data["penalty_status"] == "Accruing"
         assert data["data_is_fresh"]
+        assert data["payment_data"]["data_is_fresh"]
         assert data["payment_data"]["row_count"] == 0
         assert data["payment_data"]["rows"] == []
 
