@@ -893,6 +893,11 @@ describe("ApplyComplianceUnitsComponent", () => {
     await setupValidAccountAndSubmit();
 
     // Update quantities for both units
+    await waitFor(() => {
+      expect(
+        screen.getAllByLabelText("quantity_to_be_applied").length,
+      ).toBeGreaterThan(1);
+    });
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInputs[0], { target: { value: "50" } });
     fireEvent.change(quantityInputs[1], { target: { value: "25" } });
