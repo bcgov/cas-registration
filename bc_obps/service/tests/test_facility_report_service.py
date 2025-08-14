@@ -175,6 +175,33 @@ class TestFacilityReportService(TestCase):
             "ReportUnit",
         }
 
+    def test_add_activities_to_facility_report_doesnt_duplicate_entries(self):
+
+        facility_report = baker.make_recipe('reporting.tests.utils.facility_report')
+        activity_1 = activity_baker()
+        activity_2 = activity_baker()
+        activity_3 = activity_baker()
+        activity_4 = activity_baker()
+
+        # Add activities to the facility report
+        facility_report.activities.set([activity_1, activity_2])
+
+        self.assertQuerySetEqual(
+            facility_report.activities.all(),
+            [activity_1, activity_2],
+            ordered=False,
+        )
+
+        FacilityReportService.add_activities_to_facility_report(
+            facility_report=facility_report, activities=[activity_2.id, activity_3.id, activity_4.id]
+        )
+
+        self.assertQuerySetEqual(
+            facility_report.activities.all(),
+            [activity_1, activity_2, activity_3, activity_4],
+            ordered=False,
+        )
+
     @staticmethod
     def test_set_activities_for_facility_report_deletes_raw_activity_data():
         """Test that removing activities from a facility report also deletes related ReportRawActivityData."""
