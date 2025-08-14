@@ -140,6 +140,7 @@ class TestPenaltyCalculationService:
         penalty_record = CompliancePenalty.objects.get(compliance_obligation=self.obligation)
         assert penalty_record.penalty_amount == Decimal('38656.43')
         assert penalty_record.compliance_penalty_accruals.all().count() == 10
+        assert penalty_record.fee_date == date.today()
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'

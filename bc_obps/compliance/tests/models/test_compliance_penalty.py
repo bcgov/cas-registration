@@ -15,4 +15,5 @@ class CompliancePenaltyTest(BaseTestCase):
             ("accrual_start_date", "accrual start date", None, None),
             ("penalty_amount", "penalty amount", None, None),
             ("compliance_penalty_accruals", "compliance penalty accrual", None, None),
+            ("fee_date", "fee date", None, None),
         ]

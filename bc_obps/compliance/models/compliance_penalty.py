@@ -23,6 +23,8 @@ class CompliancePenalty(TimeStampedModel):
         blank=True,
     )
 
+    fee_date = models.DateField(null=True, blank=True, db_comment="The date the fee was created")
+
     accrual_start_date = models.DateField(
         db_comment="The date on which the penalty began accruing. It will always be the day after the obligation's due date",
     )
