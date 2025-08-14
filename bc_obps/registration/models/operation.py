@@ -93,7 +93,7 @@ class Operation(TimeStampedModel):
         blank=True,
         null=True,
     )
-    bcghg_id = models.OneToOneField(
+    bcghg_id = models.ForeignKey(
         "BcGreenhouseGasId",
         on_delete=models.PROTECT,
         max_length=1000,

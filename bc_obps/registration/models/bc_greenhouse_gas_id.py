@@ -17,7 +17,9 @@ class BcGreenhouseGasId(BaseModel):
         primary_key=True,
         max_length=255,
         db_comment="The BCGHG ID of an operation or facility",
-        validators=[RegexValidator(regex=BCGHG_ID_REGEX, message="BCGHG ID is not in the correct format")],
+        validators=[
+            RegexValidator(regex=BCGHG_ID_REGEX, message="BCGHG ID should be 11 digits, starting with 1 or 2.")
+        ],
     )
     issued_at = models.DateTimeField(
         auto_now_add=True,
