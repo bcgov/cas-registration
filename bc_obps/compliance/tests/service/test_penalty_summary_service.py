@@ -1,4 +1,5 @@
 from decimal import Decimal
+from compliance.models.compliance_obligation import ComplianceObligation
 from django.test import TestCase
 from unittest.mock import patch
 import pytest
@@ -34,7 +35,7 @@ class TestPenaltySummaryService(TestCase):
 
         mock_get_penalty_data.return_value = {
             "total_amount": Decimal("100.00"),
-            "penalty_status": "Accruing",
+            "penalty_status": ComplianceObligation.PenaltyStatus.NOT_PAID,
             "data_is_fresh": True,
         }
         mock_get_payments.return_value = PaymentDataWithFreshnessFlag(
@@ -48,9 +49,9 @@ class TestPenaltySummaryService(TestCase):
         )
 
         # Assert
-        assert summary["penalty_status"] == "Accruing"
+        assert summary["penalty_status"] == ComplianceObligation.PenaltyStatus.NOT_PAID
         assert summary["data_is_fresh"] is True
-        assert summary["payments_fresh"] is True
+        assert summary["payments_is_fresh"] is True
         assert summary["outstanding_amount"] == Decimal("74.50")
         assert list(summary["payments"]) == list(payments)
 
@@ -64,7 +65,7 @@ class TestPenaltySummaryService(TestCase):
 
         mock_get_penalty_data.return_value = {
             "total_amount": Decimal("42.00"),
-            "penalty_status": "No Penalty",
+            "penalty_status": ComplianceObligation.PenaltyStatus.NONE,
             "data_is_fresh": True,
         }
         mock_get_payments.return_value = PaymentDataWithFreshnessFlag(
@@ -79,5 +80,5 @@ class TestPenaltySummaryService(TestCase):
 
         # Assert
         assert summary["outstanding_amount"] == Decimal("42.00")
-        assert summary["payments_fresh"] is False
+        assert summary["payments_is_fresh"] is False
         assert list(summary["payments"]) == []

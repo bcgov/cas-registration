@@ -25,7 +25,7 @@ class PenaltySummaryService:
             - outstanding_amount (Decimal): Remaining penalty after applying all penalty payments.
             - penalty_status (str): Current penalty status from penalty calculation data.
             - data_is_fresh (bool): Whether the penalty calculation data is up to date.
-            - payments_fresh (bool): Whether the payment data is up to date.
+            - payments_is_fresh (bool): Whether the payment data is up to date.
             - payments (QuerySet[ElicensingPayment]): Payments associated with the penalty invoice.
         """
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
@@ -45,6 +45,6 @@ class PenaltySummaryService:
             "outstanding_amount": outstanding_amount,
             "penalty_status": penalty_data["penalty_status"],
             "data_is_fresh": penalty_data["data_is_fresh"],
-            "payments_fresh": payments_wrapper.data_is_fresh,
+            "payments_is_fresh": payments_wrapper.data_is_fresh,
             "payments": payments,
         }

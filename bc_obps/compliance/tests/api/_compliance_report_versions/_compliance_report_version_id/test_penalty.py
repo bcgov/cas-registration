@@ -25,6 +25,7 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
             "outstanding_amount": Decimal("38656.43"),
             "penalty_status": "Accruing",
             "data_is_fresh": True,
+            "payments_is_fresh": True,
             "payments": ElicensingPayment.objects.none(),
         }
 

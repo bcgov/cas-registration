@@ -30,7 +30,7 @@ def get_penalty_by_compliance_report_version_id(
     )
 
     payment_data = ElicensingPaymentListOut(
-        data_is_fresh=summary["payments_fresh"],
+        data_is_fresh=summary["payments_is_fresh"],
         rows=list(summary["payments"]),
         row_count=len(summary["payments"]),
     )
