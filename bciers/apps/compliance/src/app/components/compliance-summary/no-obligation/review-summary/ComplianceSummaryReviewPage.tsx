@@ -14,8 +14,9 @@ export default async function ComplianceSummaryReviewPage({
     reporting_year: complianceSummary.reporting_year,
     emissions_limit: complianceSummary.emissions_limit?.toString() ?? "",
     excess_emissions: complianceSummary.excess_emissions,
-    emissions_attributable_for_compliance:
-      complianceSummary.emissions_attributable_for_compliance?.toString() ?? "",
+    cumulative_emissions_attributable_for_compliance:
+      complianceSummary.cumulative_emissions_attributable_for_compliance?.toString() ??
+      "",
   };
 
   const taskListElements: TaskListElement[] = [

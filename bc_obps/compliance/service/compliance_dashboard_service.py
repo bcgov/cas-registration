@@ -59,6 +59,7 @@ class ComplianceDashboardService:
         for version in compliance_report_versions:
             version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
             summary = version.report_compliance_summary
+            # brianna
             if summary and summary.excess_emissions is not None:
                 summary.excess_emissions = ComplianceReportVersionService.calculate_display_value_excess_emissions(
                     version

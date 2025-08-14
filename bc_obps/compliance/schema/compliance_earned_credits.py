@@ -17,6 +17,7 @@ class ComplianceEarnedCreditsOut(ModelSchema):
     """Schema for compliance earned credits data"""
 
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
+    # brianna
     emissions_attributable_for_compliance: Optional[Decimal] = Field(None, alias=EMISSIONS_ATTRIBUTABLE_ALIAS)
     emissions_limit: Optional[Decimal] = Field(None, alias=EMISSIONS_LIMIT_ALIAS)
     excess_emissions: Optional[Decimal] = Field(None, alias=EXCESS_EMISSIONS_ALIAS)
