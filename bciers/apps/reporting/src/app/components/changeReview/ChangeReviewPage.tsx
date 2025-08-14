@@ -8,12 +8,14 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import ChangeReviewForm from "./ChangeReviewForm";
+import { getChangeReviewData } from "@reporting/src/app/utils/getReviewChangesData";
 
 export default async function ChangeReviewPage({
   version_id,
 }: HasReportVersion) {
   // 🚀 Get form data
   const initialFormData = await getReportVersionDetails(version_id);
+  const changes = await getChangeReviewData(version_id);
 
   // 🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
@@ -32,11 +34,15 @@ export default async function ChangeReviewPage({
       skipChangeReview: !isSupplementaryReport,
     },
   );
+
   return (
-    <ChangeReviewForm
-      versionId={version_id}
-      initialFormData={initialFormData}
-      navigationInformation={navInfo}
-    />
+    <>
+      <ChangeReviewForm
+        versionId={version_id}
+        initialFormData={initialFormData}
+        navigationInformation={navInfo}
+        changes={changes.changed}
+      />
+    </>
   );
 }
