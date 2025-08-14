@@ -7,6 +7,7 @@ import { useState } from "react";
 import SnackBar from "../components/SnackBar";
 import { DARK_GREY_BG_COLOR } from "@bciers/styles";
 import Link from "next/link";
+import { AlertIcon } from "@bciers/components/icons";
 
 export enum EntityWithBcghgType {
   OPERATION = "operation",
@@ -49,26 +50,24 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
 }) => {
   const [bcghgId, setBcghgId] = useState(value);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  const [error, setError] = useState(undefined);
-
+  const [error, setError] = useState<string | undefined>(undefined);
   const [editBcghgId, setEditBcghgId] = useState(false);
   const [manualBcghgId, setManualBcghgId] = useState("");
 
-  if (error) {
-    return (
-      <div id={id} className="read-only-widget whitespace-pre-line">
-        Error: {error}
-      </div>
-    );
-  }
+  const handleSetBcghgId = async (
+    bcghgIdToSet: string | undefined = undefined,
+  ) => {
+    if (bcghgIdToSet === "") {
+      setError("BCGHG ID cannot be empty");
+      return;
+    }
 
-  const handleIssueBcghgId = async () => {
     const response = await generateBcghgId(
       formContext?.operationId || formContext?.facilityId,
       formContext?.operationId
         ? EntityWithBcghgType.OPERATION
         : EntityWithBcghgType.FACILITY,
-      editBcghgId ? manualBcghgId : undefined,
+      editBcghgId ? bcghgIdToSet : undefined,
     );
 
     if (response?.error) {
@@ -77,59 +76,79 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     }
     setIsSnackbarOpen(true);
     setBcghgId(response?.id);
+    setEditBcghgId(false);
   };
 
-  if (formContext?.isCasDirector && !bcghgId && !formContext?.isSfo) {
-    return (
-      <>
+  const editBcghgIdJsx = editBcghgId ? (
+    <div className="flex flex-col ml-4">
+      <div>
+        <TextField
+          sx={styles}
+          id={`${id}-input`}
+          name={`${name}-input`}
+          onChange={(e) => {
+            setManualBcghgId(e.target.value);
+          }}
+          size="small"
+          inputRef={(el) => el?.focus()}
+        />
+        <Button onClick={() => handleSetBcghgId(manualBcghgId)}>Save</Button>
+        <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
+      </div>
+      {error && (
+        <div style={{ height: "0px", overflow: "visible" }}>
+          <div
+            className="w-full flex items-center text-red-600 ml-0"
+            role="alert"
+          >
+            <div className="hidden md:block mr-3">
+              <AlertIcon />
+            </div>
+            <span>{error}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div data-testid="edit-bcghg-id-text" style={{ marginLeft: "8px" }}>
+      or click {""}
+      <Link
+        href="#"
+        style={{ cursor: "pointer" }}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setError("");
+          setEditBcghgId(true);
+        }}
+      >
+        edit
+      </Link>{" "}
+      to enter a BCGHGID
+    </div>
+  );
+
+  return (
+    <>
+      {formContext?.isCasDirector && !bcghgId && !formContext?.isSfo ? (
         <Button
           variant="outlined"
           sx={{ mr: "14px" }}
           disabled={editBcghgId}
-          onClick={handleIssueBcghgId}
+          onClick={() => handleSetBcghgId()}
         >
           &#xFF0B; Issue BCGHG ID
         </Button>
-        {editBcghgId ? (
-          <>
-            <TextField
-              sx={styles}
-              id={`${id}-input`}
-              name={`${name}-input`}
-              onChange={(e) => {
-                setManualBcghgId(e.target.value);
-              }}
-              size="small"
-              inputRef={(el) => el?.focus()}
-            />
-            <Button onClick={handleIssueBcghgId}>Save</Button>
-            <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
-          </>
-        ) : (
-          <div data-testid="edit-bcghg-id-text">
-            Or click{" "}
-            <Link
-              href="#"
-              style={{ cursor: "pointer" }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setEditBcghgId(true);
-              }}
-            >
-              edit
-            </Link>{" "}
-            to enter a BCGHGID
-          </div>
-        )}
-      </>
-    );
-  }
-  return (
-    <>
-      <div id={id} className="read-only-widget whitespace-pre-line">
-        {bcghgId ? `${bcghgId} BCGHG ID issued` : "Pending"}
-      </div>
+      ) : (
+        <div
+          id={id}
+          className="whitespace-pre-line"
+          style={{ paddingLeft: "14px" }}
+        >
+          {bcghgId ? `${bcghgId}` : "Pending"}
+        </div>
+      )}
+      {formContext?.isCasDirector && !formContext?.isSfo && editBcghgIdJsx}
       <SnackBar
         isSnackbarOpen={isSnackbarOpen}
         message="BCGHG ID issued successfully"
