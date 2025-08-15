@@ -6,6 +6,8 @@ from registration.utils import custom_reverse_lazy
 from compliance.dataclass import ObligationData, PaymentDataWithFreshnessFlag
 from compliance.models import ElicensingPayment
 
+VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
+
 
 class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
     @staticmethod
@@ -26,7 +28,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operation__operator=approved_user_operator.operator,
+            compliance_report__report__operator=approved_user_operator.operator,
         )
 
         mock_obligation_data = ObligationData(
@@ -81,7 +83,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operation__operator=approved_user_operator.operator,
+            compliance_report__report__operator=approved_user_operator.operator,
         )
 
         mock_obligation_data = ObligationData(
@@ -128,7 +130,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operation__operator=approved_user_operator.operator,
+            compliance_report__report__operator=approved_user_operator.operator,
         )
 
         mock_obligation_data = ObligationData(
@@ -164,7 +166,8 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         assert response_data["equivalent_value"] == "39999999.60"
         assert response_data["obligation_id"] == "24-0999-999-999"
 
-    def test_invalid_compliance_report_version_id(self):
+    @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
+    def test_invalid_compliance_report_version_id(self, _):
         # Arrange
         invalid_compliance_report_version_id = 99999  # Assuming this ID does not exist in the database
 
@@ -188,14 +191,15 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
     @patch(
         "compliance.service.compliance_obligation_service.ComplianceObligationService.get_obligation_data_by_report_version"
     )
-    def test_service_raises_does_not_exist_exception(self, mock_get_obligation_data, mock_get_payment_data):
+    @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
+    def test_service_raises_does_not_exist_exception(self, _, mock_get_obligation_data, mock_get_payment_data):
         # Arrange
         from compliance.models import ComplianceObligation
 
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operation__operator=approved_user_operator.operator,
+            compliance_report__report__operator=approved_user_operator.operator,
         )
 
         mock_get_obligation_data.side_effect = ComplianceObligation.DoesNotExist("No obligation found")
@@ -212,7 +216,8 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         assert response.status_code == 404
         assert response.json() == {'message': 'Not Found'}
 
-    def test_access_to_other_operators_obligation(self):
+    @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
+    def test_access_to_other_operators_obligation(self, _):
         # Arrange
         other_operator = make_recipe('registration.tests.utils.operator')
         current_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
@@ -220,7 +225,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         # Create compliance report version for other operator
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operation__operator=other_operator,
+            compliance_report__report__operator=other_operator,
         )
 
         # Act - Try to access other operator's obligation

@@ -194,7 +194,10 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
 
     await waitFor(() => {
-      expect(getBccrAccountDetails).toHaveBeenCalledWith(VALID_ACCOUNT_ID);
+      expect(getBccrAccountDetails).toHaveBeenCalledWith(
+        VALID_ACCOUNT_ID,
+        TEST_COMPLIANCE_REPORT_VERSION_ID,
+      );
       // Should show error message instead of trading name
       expect(screen.getByText("Invalid account")).toBeVisible();
       expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();

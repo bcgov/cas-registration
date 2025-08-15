@@ -6,6 +6,7 @@ const mockValidateBccrAccount = vi.fn();
 const mockOnChange = vi.fn();
 const mockOnValidAccountResolved = vi.fn();
 const mockOnError = vi.fn();
+const TEST_COMPLIANCE_REPORT_VERSION_ID = 123;
 
 const defaultProps = {
   onChange: mockOnChange,
@@ -13,6 +14,7 @@ const defaultProps = {
     onValidAccountResolved: mockOnValidAccountResolved,
     validateBccrAccount: mockValidateBccrAccount,
     onError: mockOnError,
+    complianceReportVersionId: TEST_COMPLIANCE_REPORT_VERSION_ID,
   },
 } as unknown as WidgetProps;
 
@@ -150,7 +152,10 @@ describe("BccrHoldingAccountWidget", () => {
     // Test with exactly 15 digits
     fireEvent.change(input, { target: { value: "123456789012345" } });
     await waitFor(() => {
-      expect(mockValidateBccrAccount).toHaveBeenCalledWith("123456789012345");
+      expect(mockValidateBccrAccount).toHaveBeenCalledWith(
+        "123456789012345",
+        TEST_COMPLIANCE_REPORT_VERSION_ID,
+      );
     });
 
     // Clear mock before next test

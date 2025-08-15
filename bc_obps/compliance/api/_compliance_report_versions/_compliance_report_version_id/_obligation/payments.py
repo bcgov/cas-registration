@@ -1,12 +1,12 @@
 from typing import Literal, Tuple
 from django.http import HttpRequest
-from common.permissions import authorize
 from compliance.constants import COMPLIANCE
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from registration.schema.generic import Message
 from compliance.api.router import router
 from compliance.schema.elicensing_payments import ElicensingPaymentListOut
+from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -14,7 +14,7 @@ from compliance.schema.elicensing_payments import ElicensingPaymentListOut
     response={200: ElicensingPaymentListOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Get payments for a compliance report version's obligation",
-    auth=authorize("approved_industry_user"),
+    auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def get_compliance_obligation_payments_by_compliance_report_version_id(
     request: HttpRequest, compliance_report_version_id: int

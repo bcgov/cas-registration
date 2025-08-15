@@ -1,7 +1,6 @@
 from typing import Tuple
 from common.api.utils.current_user_utils import get_current_user
 from django.http import HttpRequest
-from common.permissions import authorize
 from compliance.constants import COMPLIANCE
 from compliance.models import ComplianceEarnedCredit
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -10,6 +9,10 @@ from registration.schema.generic import Message
 from compliance.api.router import router
 from typing import Optional
 from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsOut, ComplianceEarnedCreditsIn
+from compliance.api.permissions import (
+    approved_authorized_roles_compliance_report_version_composite_auth,
+    approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,
+)
 
 
 @router.get(
@@ -18,7 +21,7 @@ from compliance.schema.compliance_earned_credits import ComplianceEarnedCreditsO
     tags=COMPLIANCE,
     description="Get earned credits data for a compliance report version",
     exclude_none=True,  # Exclude fields with None values (e\.g\., analyst_suggestion) so frontend default values are used
-    auth=authorize("approved_authorized_roles"),
+    auth=approved_authorized_roles_compliance_report_version_composite_auth,
 )
 def get_compliance_report_version_earned_credits(
     request: HttpRequest, compliance_report_version_id: int
@@ -34,7 +37,7 @@ def get_compliance_report_version_earned_credits(
     response={200: ComplianceEarnedCreditsOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Update earned credits data for a compliance report version",
-    auth=authorize("cas_director_analyst_and_approved_industry_user"),
+    auth=approved_industry_user_cas_director_cas_analyst_compliance_report_version_composite_auth,
 )
 def update_compliance_report_version_earned_credit(
     request: HttpRequest, compliance_report_version_id: int, payload: ComplianceEarnedCreditsIn

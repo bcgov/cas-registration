@@ -17,6 +17,10 @@ class TestComplianceObligationPaymentsEndpoint(CommonTestSetup):
         # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        compliance_report_version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operator=operator,
+        )
 
         # Act: Perform GET request with auth role
         response = TestUtils.mock_get_with_auth_role(
@@ -24,7 +28,7 @@ class TestComplianceObligationPaymentsEndpoint(CommonTestSetup):
             "industry_user",
             custom_reverse_lazy(
                 "get_compliance_obligation_payments_by_compliance_report_version_id",
-                kwargs={"compliance_report_version_id": 123},
+                kwargs={"compliance_report_version_id": compliance_report_version.id},
             ),
         )
 

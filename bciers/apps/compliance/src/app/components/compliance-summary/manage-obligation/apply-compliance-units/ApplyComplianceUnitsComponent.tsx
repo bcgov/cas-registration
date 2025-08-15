@@ -296,6 +296,7 @@ export default function ApplyComplianceUnitsComponent({
         reportingYear,
         chargeRate: (formData as ApplyComplianceUnitsFormData)?.charge_rate,
         validateBccrAccount: getBccrAccountDetails,
+        complianceReportVersionId,
         onValidAccountResolved: (response?: BccrComplianceAccountResponse) => {
           if (response) {
             setFormData((prev: ApplyComplianceUnitsFormData) => ({

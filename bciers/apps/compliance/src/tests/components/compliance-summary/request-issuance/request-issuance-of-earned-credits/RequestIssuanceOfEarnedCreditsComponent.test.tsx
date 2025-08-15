@@ -86,7 +86,10 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
   it("validates account and displays trading name on success", async () => {
     await setupValidAccount();
 
-    expect(getBccrAccountDetails).toHaveBeenCalledWith(VALID_ACCOUNT_ID);
+    expect(getBccrAccountDetails).toHaveBeenCalledWith(
+      VALID_ACCOUNT_ID,
+      TEST_COMPLIANCE_REPORT_VERSION_ID,
+    );
     expect(screen.getByText("BCCR Trading Name:")).toBeVisible();
     expect(screen.getByText(MOCK_TRADING_NAME)).toBeVisible();
   });
