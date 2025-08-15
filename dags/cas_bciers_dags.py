@@ -2,8 +2,7 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.operators.python_operator import PythonOperator
-from datetime import timedelta
-from django.utils import timezone
+from datetime import timedelta, datetime, timezone
 from airflow import DAG
 import os
 import sys
@@ -11,7 +10,7 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 PROCESS_DUE_TRANSFERS_DAG_NAME = 'cas_bciers_process_due_transfer_events'
 bciers_namespace = os.getenv('BCIERS_NAMESPACE')
-TWO_DAYS_AGO = timezone.now() - timedelta(days=2)
+TWO_DAYS_AGO = datetime.now(timezone.utc) - timedelta(days=2)
 
 default_args = {**default_dag_args, 'start_date': TWO_DAYS_AGO}
 
