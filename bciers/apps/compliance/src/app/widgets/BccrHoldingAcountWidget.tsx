@@ -26,8 +26,12 @@ const INVALID_ACCOUNT_MESSAGE = (
 
 const BccrHoldingAccountWidget = (props: WidgetProps) => {
   const { id, value, disabled, readonly, onChange, formContext } = props;
-  const { onValidAccountResolved, validateBccrAccount, onError } =
-    formContext || {};
+  const {
+    onValidAccountResolved,
+    validateBccrAccount,
+    onError,
+    complianceReportVersionId,
+  } = formContext || {};
 
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
@@ -42,7 +46,10 @@ const BccrHoldingAccountWidget = (props: WidgetProps) => {
     setShowError(false);
 
     try {
-      const response = await validateBccrAccount(accountId);
+      const response = await validateBccrAccount(
+        accountId,
+        complianceReportVersionId,
+      );
 
       if (response?.bccr_trading_name === null) {
         setIsValid(false);

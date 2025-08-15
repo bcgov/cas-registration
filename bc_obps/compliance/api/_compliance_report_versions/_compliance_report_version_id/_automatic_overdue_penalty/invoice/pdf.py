@@ -1,10 +1,10 @@
 from django.http import HttpRequest, StreamingHttpResponse
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
-from common.permissions import authorize
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
+from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
 
 
 @router.get(
@@ -12,7 +12,7 @@ from compliance.constants import COMPLIANCE
     response={200: None, custom_codes_4xx: Message},
     tags=COMPLIANCE,
     description="Generate a PDF invoice for a compliance report version's automatic penalty and stream it to the client",
-    auth=authorize("approved_industry_user"),
+    auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def generate_compliance_report_version_automatic_overdue_penalty_invoice(
     request: HttpRequest, compliance_report_version_id: int

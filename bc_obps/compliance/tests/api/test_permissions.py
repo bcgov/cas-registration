@@ -23,15 +23,13 @@ role_status_access_tuples = [
 
 class TestVersionOwnershipFromUrl:
     @pytest.mark.parametrize("role,status,expected_validity", role_status_access_tuples)
-    def test_compliance_version_ownership_from_url(self, role, status, expected_validity):
+    def test_compliance_version_ownership_from_url_success(self, role, status, expected_validity):
         # Setup
         user_operator = make_recipe("registration.tests.utils.user_operator", role=role, status=status)
 
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=user_operator.operator,
-            compliance_report__created_at='2024-06-15',
-            # compliance_report__report__operation=operation,
         )
 
         validator_under_test = check_compliance_version_ownership_in_url("test_id")
@@ -44,7 +42,7 @@ class TestVersionOwnershipFromUrl:
 
         assert is_valid == expected_validity
 
-    def test_version_ownership_from_url_denies_access_if_no_timeline_record(self):
+    def test_version_ownership_from_url_denies_access_if_report_not_owned_by_operator(self):
         compliance_report_version = make_recipe("compliance.tests.utils.compliance_report_version")
         user = make_recipe("registration.tests.utils.industry_operator_user")
 
@@ -56,7 +54,7 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_operation_transferred(self):
         old_user_operator = make_recipe("registration.tests.utils.approved_user_operator")
@@ -93,7 +91,7 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_wrong_url_parameter_name(self):
         user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
@@ -110,7 +108,7 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_no_version_in_url(self):
         user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
@@ -127,4 +125,4 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False

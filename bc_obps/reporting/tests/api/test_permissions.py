@@ -53,7 +53,7 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_wrong_url_parameter_name(self):
         user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
@@ -70,7 +70,7 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
     def test_version_ownership_from_url_denies_access_if_no_version_in_url(self):
         user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
@@ -87,7 +87,7 @@ class TestVersionOwnershipFromUrl:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
 
 class TestOperationOwnershipFromPayload:
@@ -118,7 +118,7 @@ class TestOperationOwnershipFromPayload:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False
 
     def test_operation_ownership_from_payload_denies_access_if_missing_field_in_payload(self):
         user_operator = make_recipe("registration.tests.utils.user_operator", role="admin", status="Approved")
@@ -132,4 +132,4 @@ class TestOperationOwnershipFromPayload:
 
         is_valid = validator_under_test(mock_request)
 
-        assert not is_valid
+        assert is_valid is False

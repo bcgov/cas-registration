@@ -32,11 +32,16 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         operator = make_recipe('registration.tests.utils.operator')
         # Act
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        compliance_report_version = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operator=operator,
+        )
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
             custom_reverse_lazy(
-                "get_penalty_by_compliance_report_version_id", kwargs={"compliance_report_version_id": 123}
+                "get_penalty_by_compliance_report_version_id",
+                kwargs={"compliance_report_version_id": compliance_report_version.id},
             ),
         )
 
@@ -54,11 +59,12 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
         "compliance.service.penalty_summary_service.PenaltySummaryService.get_summary_by_compliance_report_version_id",
         side_effect=ComplianceObligation.DoesNotExist("not found"),
     )
-    def test_invalid_compliance_report_version_id(self, _mock_get_summary):
+    @patch("common.permissions.validate_all", return_value=True)
+    def test_invalid_compliance_report_version_id(self, _mock_get_summary, _):
         """Endpoint should return 404 for non-existent report version id."""
-        operator = make_recipe("registration.tests.utils.operator")
+        # operator = make_recipe("registration.tests.utils.operator")
 
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        # TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",

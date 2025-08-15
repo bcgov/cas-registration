@@ -91,6 +91,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       onChange={handleChange}
       onSubmit={handleSubmit}
       formContext={{
+        complianceReportVersionId,
         validateBccrAccount: getBccrAccountDetails,
         onValidAccountResolved: (response?: BccrAccountDetailsResponse) =>
           setFormData((prev: RequestIssuanceOfEarnedCreditsFormData) => ({

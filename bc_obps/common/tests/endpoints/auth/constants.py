@@ -345,7 +345,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_bccr_account_details",
-            "kwargs": {"account_id": MOCK_INT},
+            "kwargs": {"account_id": MOCK_INT, "compliance_report_version_id": MOCK_INT},
         },
         {
             "method": "get",

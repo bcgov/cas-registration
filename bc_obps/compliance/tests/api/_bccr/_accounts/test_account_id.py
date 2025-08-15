@@ -6,10 +6,11 @@ from compliance.dataclass import BCCRAccountResponseDetails
 
 # Constants
 VALID_ACCOUNT_ID = "123456789012345"
+COMPLIANCE_REPORT_VERSION_ID = 1
 BCCR_SERVICE_PATH = (
     "compliance.service.bc_carbon_registry.account_service.BCCarbonRegistryAccountService.get_account_details"
 )
-PERMISSION_CHECK_PATH = "common.permissions.check_permission_for_role"
+VALIDATE_PERMISSION_PATH = 'common.permissions.validate_all'
 
 
 @override_settings(MIDDLEWARE=[])  # Disable middleware to prevent database queries
@@ -20,11 +21,14 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
         cls.client = Client()
 
     @staticmethod
-    def _get_endpoint_url(account_id):
-        return custom_reverse_lazy("get_bccr_account_details", kwargs={"account_id": account_id})
+    def _get_endpoint_url(account_id, compliance_report_version_id):
+        return custom_reverse_lazy(
+            "get_bccr_account_details",
+            kwargs={"account_id": account_id, "compliance_report_version_id": compliance_report_version_id},
+        )
 
     @patch(BCCR_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_successful_account_details_retrieval(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
@@ -35,42 +39,42 @@ class TestAccountIdEndpoint(SimpleTestCase):  # Use SimpleTestCase to avoid data
             trading_name="Test Account Inc.",
         )
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
+        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
         # Assert
         mock_service.assert_called_once_with(account_id=VALID_ACCOUNT_ID)
         assert response.status_code == 200
         assert response.json() == {"bccr_trading_name": "Test Account Inc."}
 
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_invalid_account_id_format(self, mock_permission):
         # Arrange
         mock_permission.return_value = True
         # Act
-        response = self.client.get(self._get_endpoint_url("12345"))
+        response = self.client.get(self._get_endpoint_url("12345", COMPLIANCE_REPORT_VERSION_ID))
         # Assert
         assert response.status_code == 422
         assert "Account Id: String should match pattern" in response.json().get("message")
 
     @patch(BCCR_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_empty_account_details_response(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
         mock_service.return_value = None
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
+        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
         # Assert
         assert response.status_code == 200
         assert response.json() == {"bccr_trading_name": None}
 
     @patch(BCCR_SERVICE_PATH)
-    @patch(PERMISSION_CHECK_PATH)
+    @patch(VALIDATE_PERMISSION_PATH)
     def test_service_error_handling(self, mock_permission, mock_service):
         # Arrange
         mock_permission.return_value = True
         mock_service.side_effect = BCCarbonRegistryError("Service error")
         # Act
-        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID))
+        response = self.client.get(self._get_endpoint_url(VALID_ACCOUNT_ID, COMPLIANCE_REPORT_VERSION_ID))
         # Assert
         assert response.status_code == 400
         assert response.json() == {
