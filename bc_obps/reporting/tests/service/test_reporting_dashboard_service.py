@@ -80,12 +80,12 @@ class TestReportingDashboardService:
         assert op0_result["report_status"] == latest_r0_revision.status
 
         # Test operation with single version
-        op1_result = result_dict[str(operations[1].id)]
-        assert op1_result["name"] == operations[1].name
-        assert op1_result["bcghg_id_id"] == (operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None)
-        assert op1_result["report_id"] == r1.id
-        assert op1_result["report_version_id"] == r1.report_versions.first().id
-        assert op1_result["report_status"] == r1.report_versions.first().status
+        rep3_result = result_dict[str(operations[1].id)]
+        assert rep3_result["name"] == operations[1].name
+        assert rep3_result["bcghg_id_id"] == (operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None)
+        assert rep3_result["report_id"] == r1.id
+        assert rep3_result["report_version_id"] == r1.report_versions.first().id
+        assert rep3_result["report_status"] == r1.report_versions.first().status
 
         # Test operation with no report
         op2_result = result_dict[str(operations[2].id)]
@@ -120,29 +120,29 @@ class TestReportingDashboardService:
         [ReportService.create_report(operation.id, current_year) for operation in operations]
 
         ## Create past reports
-        ### Report 1 - Operation 0: Laster year Report Version 1
-        o0_r1v1_id = ReportService.create_report(operations[0].id, laster_year)
-        o0_r1v1 = ReportVersion.objects.get(pk=o0_r1v1_id)
-        r1_report_operation = ReportOperation.objects.get(report_version=o0_r1v1_id)
-        o0_r1v1.status = "Submitted"
-        o0_r1v1.save()
-        ### Report 1 - Operation 0: Laster year Report Version 2
-        o0_r1 = ReportVersion.objects.get(pk=o0_r1v1_id).report
-        latest_o0r1_revision = report_version_baker(report=o0_r1)
-        r1_report_operation = ReportOperation.objects.get(report_version=latest_o0r1_revision)
+        ### Report 1 - Operation 1: Laster year Report Version 1
+        rep1_op1_v1_version_id = ReportService.create_report(operations[0].id, laster_year)
+        rep1_op1_v1_version = ReportVersion.objects.get(pk=rep1_op1_v1_version_id)
+        rep1_report_operation = ReportOperation.objects.get(report_version=rep1_op1_v1_version_id)
+        rep1_op1_v1_version.status = "Submitted"
+        rep1_op1_v1_version.save()
+        ### Report 1 - Operation 1: Laster year Report Version 2
+        rep1_op1_report = ReportVersion.objects.get(pk=rep1_op1_v1_version_id).report
+        rep1_op1_latest_version = report_version_baker(report=rep1_op1_report)
+        rep1_report_operation = ReportOperation.objects.get(report_version=rep1_op1_latest_version)
 
-        ### Report 2 - Operation 0: Last year Report Version 1
-        o0_r2v1_id = ReportService.create_report(operations[0].id, last_year)
-        o0_r2v1 = ReportVersion.objects.get(pk=o0_r2v1_id)
-        o0_r2 = ReportVersion.objects.get(pk=o0_r2v1_id).report
-        latest_o0r2_revision = o0_r2v1
-        r2_report_operation = ReportOperation.objects.get(report_version=latest_o0r2_revision)
+        ### Report 2 - Operation 1: Last year Report Version 1
+        rep2_op1_v1_version_id = ReportService.create_report(operations[0].id, last_year)
+        rep2_op1_v1_version = ReportVersion.objects.get(pk=rep2_op1_v1_version_id)
+        rep2_op1_report = ReportVersion.objects.get(pk=rep2_op1_v1_version_id).report
+        rep2_op1_latest_version = rep2_op1_v1_version
+        rep2_report_operation = ReportOperation.objects.get(report_version=rep2_op1_latest_version)
 
-        ### Report 3 - Operation 1: Last year Report Version 1
-        o1_r3v1_id = ReportService.create_report(operations[1].id, last_year)
-        latest_o1r3_version = ReportVersion.objects.get(pk=o1_r3v1_id)
-        o1_r3 = latest_o1r3_version.report
-        r3_report_operation = ReportOperation.objects.get(report_version=latest_o1r3_version)
+        ### Report 3 - Operation 2: Last year Report Version 1
+        rep3_op2_v1_version_id = ReportService.create_report(operations[1].id, last_year)
+        rep3_op2_latest_version = ReportVersion.objects.get(pk=rep3_op2_v1_version_id)
+        rep3_op2_report = rep3_op2_latest_version.report
+        rep3_report_operation = ReportOperation.objects.get(report_version=rep3_op2_latest_version)
 
         result = ReportingDashboardService.get_past_reports_for_reporting_dashboard(
             uo.user.user_guid, current_year, sort_field, sort_order, filters
@@ -154,28 +154,28 @@ class TestReportingDashboardService:
         result_dict = {str(item["id"]): item for item in result_list}
 
         # Test report with multiple versions
-        op0r1_result = result_dict[str(o0_r1.id)]
-        assert op0r1_result["operation_name"] == r1_report_operation.operation_name
-        assert op0r1_result["reporting_year_id"] == o0_r1.reporting_year_id
-        assert op0r1_result["report_id"] == o0_r1.id
-        assert op0r1_result["report_version_id"] == latest_o0r1_revision.id
-        assert op0r1_result["report_status"] == latest_o0r1_revision.status
+        rep1_result = result_dict[str(rep1_op1_report.id)]
+        assert rep1_result["operation_name"] == rep1_report_operation.operation_name
+        assert rep1_result["reporting_year_id"] == rep1_op1_report.reporting_year_id
+        assert rep1_result["report_id"] == rep1_op1_report.id
+        assert rep1_result["report_version_id"] == rep1_op1_latest_version.id
+        assert rep1_result["report_status"] == rep1_op1_latest_version.status
 
         # Test report from previous year
-        op0r2_result = result_dict[str(o0_r2.id)]
-        assert op0r2_result["operation_name"] == r2_report_operation.operation_name
-        assert op0r2_result["reporting_year_id"] == o0_r2.reporting_year_id
-        assert op0r2_result["report_id"] == o0_r2.id
-        assert op0r2_result["report_version_id"] == latest_o0r2_revision.id
-        assert op0r2_result["report_status"] == latest_o0r2_revision.status
+        rep2_result = result_dict[str(rep2_op1_report.id)]
+        assert rep2_result["operation_name"] == rep2_report_operation.operation_name
+        assert rep2_result["reporting_year_id"] == rep2_op1_report.reporting_year_id
+        assert rep2_result["report_id"] == rep2_op1_report.id
+        assert rep2_result["report_version_id"] == rep2_op1_latest_version.id
+        assert rep2_result["report_status"] == rep2_op1_latest_version.status
 
         # Test report with single version
-        op1_result = result_dict[str(o1_r3.id)]
-        assert op1_result["operation_name"] == r3_report_operation.operation_name
-        assert op1_result["reporting_year_id"] == o1_r3.reporting_year_id
-        assert op1_result["report_id"] == o1_r3.id
-        assert op1_result["report_version_id"] == latest_o1r3_version.id
-        assert op1_result["report_status"] == latest_o1r3_version.status
+        rep3_result = result_dict[str(rep3_op2_report.id)]
+        assert rep3_result["operation_name"] == rep3_report_operation.operation_name
+        assert rep3_result["reporting_year_id"] == rep3_op2_report.reporting_year_id
+        assert rep3_result["report_id"] == rep3_op2_report.id
+        assert rep3_result["report_version_id"] == rep3_op2_latest_version.id
+        assert rep3_result["report_status"] == rep3_op2_latest_version.status
 
     @patch(
         "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
