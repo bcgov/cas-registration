@@ -609,6 +609,16 @@ ENDPOINTS = {
             "endpoint_name": "operation_bcghg_id",
             "kwargs": {"operation_id": MOCK_UUID},
         },
+        {
+            "method": "delete",
+            "endpoint_name": "delete_operation_bcghg_id",
+            "kwargs": {"operation_id": MOCK_UUID},
+        },
+        {
+            "method": "delete",
+            "endpoint_name": "delete_facility_bcghg_id",
+            "kwargs": {"facility_id": MOCK_UUID},
+        },
     ],
     "cas_director_analyst_and_industry_admin_user": [
         {

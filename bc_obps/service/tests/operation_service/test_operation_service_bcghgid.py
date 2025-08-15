@@ -147,18 +147,17 @@ class TestManageBCGHGId:
 
     def test_clear_bcghg_id(self):
         """Test clearing BCGHG ID for an operation"""
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        cas_director = baker.make_recipe('registration.tests.utils.cas_director')
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
             status=Operation.Statuses.REGISTERED,
-            operator=approved_user_operator.operator,
             bcghg_id=baker.make_recipe(
-                'registration.tests.utils.bc_greenhouse_gas_id',
-                issued_by=approved_user_operator.user,
+                'registration.tests.utils.bcghg_id',
+                issued_by=cas_director,
             ),
         )
 
-        OperationService.clear_bcghg_id(approved_user_operator.user.user_guid, operation.id)
+        OperationService.clear_bcghg_id(cas_director.user_guid, operation.id)
         operation.refresh_from_db()
 
         assert operation.bcghg_id is None
