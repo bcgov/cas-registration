@@ -197,16 +197,3 @@ class InvoiceQueryResponse:
     invoiceFeeBalance: Decimal
     invoiceInterestBalance: Decimal
     fees: List[InvoiceFee]
-
-
-@dataclass
-class PaymentRecord:
-    """Internal schema for payment records from eLicensing"""
-
-    id: str
-    paymentReceivedDate: str
-    paymentAmountApplied: Decimal
-    paymentMethod: str
-    transactionType: str
-    referenceNumber: str
-    receiptNumber: str

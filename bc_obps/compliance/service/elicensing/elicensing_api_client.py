@@ -22,12 +22,6 @@ from .schema import (
 logger = logging.getLogger(__name__)
 
 
-class ELicensingAPIError(Exception):
-    """Exception for eLicensing API errors"""
-
-    pass
-
-
 class ELicensingAPIClient:
     """
     Client for communicating with the eLicensing API.
