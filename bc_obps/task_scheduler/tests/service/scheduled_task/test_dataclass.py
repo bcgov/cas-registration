@@ -38,6 +38,7 @@ class TestScheduledTaskConfig(SimpleTestCase):
             'schedule_day_of_week': 1,
             'schedule_interval': None,
             'schedule_day_of_month': None,
+            'schedule_month': None,
         }
 
         self.assertEqual(result, expected)
@@ -92,7 +93,7 @@ class TestScheduledTaskConfig(SimpleTestCase):
         mock_func = MagicMock()
         with self.assertRaises(ValueError) as context:
             ScheduledTaskConfig(func=mock_func, schedule_type='daily', schedule_minute=30)
-        self.assertIn("daily schedule requires schedule_hour and schedule_minute", str(context.exception))
+        self.assertIn("schedule requires schedule_hour and schedule_minute", str(context.exception))
 
     def test_scheduled_task_config_daily_validation_invalid_hour_range(self):
         mock_func = MagicMock()
@@ -159,3 +160,74 @@ class TestScheduledTaskConfig(SimpleTestCase):
                 func=mock_func, schedule_type='monthly', schedule_day_of_month=32, schedule_hour=9, schedule_minute=0
             )
         self.assertIn("schedule_day_of_month must be between 1 and 31", str(context.exception))
+
+    def test_scheduled_task_config_yearly_validation_success(self):
+        mock_func = MagicMock()
+        config = ScheduledTaskConfig(
+            func=mock_func,
+            schedule_type='yearly',
+            schedule_month=6,
+            schedule_day_of_month=15,
+            schedule_hour=9,
+            schedule_minute=0,
+        )
+        self.assertEqual(config.schedule_month, 6)
+        self.assertEqual(config.schedule_day_of_month, 15)
+        self.assertEqual(config.schedule_hour, 9)
+        self.assertEqual(config.schedule_minute, 0)
+
+    def test_scheduled_task_config_yearly_validation_missing_month(self):
+        mock_func = MagicMock()
+        with self.assertRaises(ValueError) as context:
+            ScheduledTaskConfig(
+                func=mock_func, schedule_type='yearly', schedule_day_of_month=15, schedule_hour=9, schedule_minute=0
+            )
+        self.assertIn("yearly schedule requires schedule_month", str(context.exception))
+
+    def test_scheduled_task_config_yearly_validation_missing_day(self):
+        mock_func = MagicMock()
+        with self.assertRaises(ValueError) as context:
+            ScheduledTaskConfig(
+                func=mock_func, schedule_type='yearly', schedule_month=6, schedule_hour=9, schedule_minute=0
+            )
+        self.assertIn("yearly schedule requires schedule_day_of_month", str(context.exception))
+
+    def test_scheduled_task_config_yearly_validation_invalid_month_range(self):
+        mock_func = MagicMock()
+        with self.assertRaises(ValueError) as context:
+            ScheduledTaskConfig(
+                func=mock_func,
+                schedule_type='yearly',
+                schedule_month=13,
+                schedule_day_of_month=15,
+                schedule_hour=9,
+                schedule_minute=0,
+            )
+        self.assertIn("schedule_month must be between 1 and 12", str(context.exception))
+
+    def test_scheduled_task_config_yearly_validation_invalid_day_range(self):
+        mock_func = MagicMock()
+        with self.assertRaises(ValueError) as context:
+            ScheduledTaskConfig(
+                func=mock_func,
+                schedule_type='yearly',
+                schedule_month=6,
+                schedule_day_of_month=32,
+                schedule_hour=9,
+                schedule_minute=0,
+            )
+        self.assertIn("schedule_day_of_month must be between 1 and 31", str(context.exception))
+
+    def test_scheduled_task_config_yearly_validation_invalid_interval(self):
+        mock_func = MagicMock()
+        with self.assertRaises(ValueError) as context:
+            ScheduledTaskConfig(
+                func=mock_func,
+                schedule_type='yearly',
+                schedule_month=6,
+                schedule_day_of_month=15,
+                schedule_hour=9,
+                schedule_minute=0,
+                schedule_interval=2,
+            )
+        self.assertIn("yearly schedule should not specify schedule_interval", str(context.exception))

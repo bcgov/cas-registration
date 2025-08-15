@@ -25,6 +25,7 @@ class TestScheduledTask(BaseTestCase):
             ("schedule_minute", "schedule minute", None, None),
             ("schedule_day_of_week", "schedule day of week", None, None),
             ("schedule_day_of_month", "schedule day of month", None, None),
+            ("schedule_month", "schedule month", None, None),
             ("next_run_time", "next run time", None, None),
             ("last_run_time", "last run time", None, None),
             ("lock_acquired_at", "lock acquired at", None, None),
@@ -97,6 +98,23 @@ class TestScheduledTask(BaseTestCase):
 
         # Verify that the method returns a time with correct day, hour and minute
         self.assertIsNotNone(next_run)
+        self.assertEqual(next_run.day, 15)
+        self.assertEqual(next_run.hour, 14)
+        self.assertEqual(next_run.minute, 45)
+
+        # Test yearly schedule type
+        self.test_object.schedule_type = ScheduledTask.ScheduleType.YEARLY
+        self.test_object.schedule_month = 6  # June
+        self.test_object.schedule_day_of_month = 15
+        self.test_object.schedule_hour = 14
+        self.test_object.schedule_minute = 45
+        self.test_object.save()
+        self.test_object.refresh_from_db()
+        next_run = self.test_object.calculate_next_run_time()
+
+        # Verify that the method returns a time with correct month, day, hour and minute
+        self.assertIsNotNone(next_run)
+        self.assertEqual(next_run.month, 6)  # June
         self.assertEqual(next_run.day, 15)
         self.assertEqual(next_run.hour, 14)
         self.assertEqual(next_run.minute, 45)

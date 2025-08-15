@@ -14,6 +14,7 @@ class ScheduledTask(Task):
         DAILY = "daily", "Daily at Fixed Time"
         WEEKLY = "weekly", "Weekly on Specific Day"
         MONTHLY = "monthly", "Monthly on Specific Day"
+        YEARLY = "yearly", "Yearly on Specific Date"
 
     schedule_type = models.CharField(max_length=20, choices=ScheduleType.choices, help_text="Type of schedule")
     schedule_interval = models.PositiveIntegerField(
@@ -25,6 +26,7 @@ class ScheduledTask(Task):
         null=True, blank=True, help_text="Day of week (0=Monday, 6=Sunday)"
     )
     schedule_day_of_month = models.PositiveIntegerField(null=True, blank=True, help_text="Day of month (1-31)")
+    schedule_month = models.PositiveIntegerField(null=True, blank=True, help_text="Month (1-12) for yearly schedules")
 
     class Meta:
         db_table = 'common"."scheduled_task'
@@ -59,6 +61,7 @@ class ScheduledTask(Task):
             self.ScheduleType.DAILY: self._calculate_daily_schedule,
             self.ScheduleType.WEEKLY: self._calculate_weekly_schedule,
             self.ScheduleType.MONTHLY: self._calculate_monthly_schedule,
+            self.ScheduleType.YEARLY: self._calculate_yearly_schedule,
         }
         calculator = schedule_calculators.get(self.schedule_type)
         if calculator:
@@ -144,5 +147,42 @@ class ScheduledTask(Task):
                 next_run = next_run.replace(year=next_run.year + 1, month=1)
             else:
                 next_run = next_run.replace(month=next_run.month + 1)
+
+        return next_run
+
+    def _calculate_yearly_schedule(self, now: datetime) -> Optional[datetime]:
+        if (
+            self.schedule_month is None
+            or self.schedule_day_of_month is None
+            or self.schedule_hour is None
+            or self.schedule_minute is None
+        ):
+            return None
+
+        # Try to set the date for this year
+        try:
+            next_run = now.replace(
+                month=self.schedule_month,
+                day=self.schedule_day_of_month,
+                hour=self.schedule_hour,
+                minute=self.schedule_minute,
+                second=0,
+                microsecond=0,
+            )
+        except ValueError:
+            # Date doesn't exist in this year, try next year
+            next_run = now.replace(
+                year=now.year + 1,
+                month=self.schedule_month,
+                day=self.schedule_day_of_month,
+                hour=self.schedule_hour,
+                minute=self.schedule_minute,
+                second=0,
+                microsecond=0,
+            )
+
+        # If the time has already passed, move to next year
+        if next_run <= now:
+            next_run = next_run.replace(year=next_run.year + 1)
 
         return next_run
