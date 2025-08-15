@@ -13,7 +13,11 @@ class TestComplianceReportVersionService:
     @patch(
         'compliance.service.compliance_report_version_service.ComplianceObligationService.create_compliance_obligation'
     )
-    def test_create_compliance_report_version_with_excess_emissions(self, mock_create_obligation):
+    @patch('compliance.service.compliance_report_version_service.retryable_process_obligation_integration')
+    @patch('compliance.service.compliance_report_version_service.transaction')
+    def test_create_compliance_report_version_with_excess_emissions(
+        self, mock_transaction, mock_retryable_integration, mock_create_obligation
+    ):
         # Arrange
         report_compliance_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
@@ -22,6 +26,15 @@ class TestComplianceReportVersionService:
             'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
         )
 
+        mock_obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
+        mock_create_obligation.return_value = mock_obligation
+
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+
         # Act
         result = ComplianceReportVersionService.create_compliance_report_version(
             compliance_report, report_compliance_summary.report_version.id
@@ -29,6 +42,8 @@ class TestComplianceReportVersionService:
 
         # Assert
         mock_create_obligation.assert_called_once()
+        mock_transaction.on_commit.assert_called_once()
+        mock_retryable_integration.execute.assert_called_once_with(mock_obligation.id)
 
         assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         assert result.report_compliance_summary_id == report_compliance_summary.id
@@ -257,3 +272,30 @@ class TestComplianceReportVersionService:
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_1) == Decimal("100.00")
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_2) == Decimal("2.0")
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_3) == Decimal("0")
+
+    def test_update_compliance_status(self):
+        report_compliance_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=Decimal('10'),
+            credited_emissions=Decimal('5'),
+        )
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
+        )
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        ComplianceReportVersionService.update_compliance_status(compliance_report_version)
+        compliance_report_version.refresh_from_db()
+
+        # Verify the status was updated based on the current emissions data
+        # The status should be determined by _determine_compliance_status method
+        expected_status = ComplianceReportVersionService._determine_compliance_status(
+            compliance_report_version.report_compliance_summary.excess_emissions,
+            compliance_report_version.report_compliance_summary.credited_emissions,
+        )
+        assert compliance_report_version.status == expected_status
+        assert compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET

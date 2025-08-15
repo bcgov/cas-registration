@@ -1,6 +1,6 @@
+from compliance.tasks import retryable_process_obligation_integration
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
-from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
@@ -60,7 +60,7 @@ class ComplianceReportVersionService:
 
                 # Integration operation - handle eLicensing integration
                 # This is done outside of the main transaction to prevent rollback if integration fails
-                transaction.on_commit(lambda: ElicensingObligationService.process_obligation_integration(obligation.id))
+                transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation.id))
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
@@ -104,6 +104,15 @@ class ComplianceReportVersionService:
             return ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+
+    @classmethod
+    def update_compliance_status(cls, compliance_report_version: ComplianceReportVersion) -> None:
+        """Updates the compliance status of a compliance report version using _determine_compliance_status."""
+        excess_emissions = compliance_report_version.report_compliance_summary.excess_emissions
+        credited_emissions = compliance_report_version.report_compliance_summary.credited_emissions
+        proper_status = cls._determine_compliance_status(excess_emissions, credited_emissions)
+        compliance_report_version.status = proper_status
+        compliance_report_version.save(update_fields=["status"])
 
     @staticmethod
     def calculate_outstanding_balance_tco2e(compliance_report_version: ComplianceReportVersion) -> Decimal:
