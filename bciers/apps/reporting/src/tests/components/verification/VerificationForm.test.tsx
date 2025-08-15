@@ -24,7 +24,7 @@ const config = {
   actionPost: {
     endPoint: "reporting/report-version/3/report-verification",
     method: "POST",
-    revalidatePath: "reporting/reports",
+    revalidatePath: "reporting/reports/current-reports",
   },
   mockVersionId: 3,
   mockRouteSubmit: `/reports/3/attachments?`,

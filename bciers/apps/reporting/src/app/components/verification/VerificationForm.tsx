@@ -70,7 +70,7 @@ export default function VerificationForm({
     // 🚀 API variables
     const endpoint = `reporting/report-version/${version_id}/report-verification`;
     const method = "POST";
-    const pathToRevalidate = "reporting/reports";
+    const pathToRevalidate = "reporting/reports/current-reports";
     const response = await actionHandler(endpoint, method, pathToRevalidate, {
       body: JSON.stringify(payload),
     });

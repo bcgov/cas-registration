@@ -38,7 +38,7 @@ class ComplianceDashboardService:
             compliance_report_versions = compliance_report_version_queryset.all()
         else:
             operations = (
-                OperationDataAccessService.get_all_operations_for_user(user)
+                OperationDataAccessService.get_all_current_operations_for_user(user)
                 .filter(status=Operation.Statuses.REGISTERED)
                 .values_list('id')
             )

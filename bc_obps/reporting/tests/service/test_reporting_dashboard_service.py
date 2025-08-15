@@ -2,26 +2,30 @@ from unittest.mock import AsyncMock, patch, MagicMock
 import pytest
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, operator_baker, user_baker
+from model_bakery.baker import make_recipe
+from reporting.models.report_operation import ReportOperation
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
 from service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
 from typing import Optional
-from reporting.schema.operation import ReportingDashboardOperationFilterSchema
+from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema
 
 
 @pytest.mark.django_db
 class TestReportingDashboardService:
-    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
+    @patch(
+        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
+    )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_operations_for_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
-        mock_get_all_operations_for_user: MagicMock | AsyncMock,
+        mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
     ):
         user = user_baker()
         mock_get_by_guid.return_value = user
-        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
@@ -38,12 +42,12 @@ class TestReportingDashboardService:
         filters = ReportingDashboardOperationFilterSchema()  # Provide actual test data
 
         # Create reports for first two operations
-        r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
-        r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
+        r0_r1v1_id = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0_version1 = ReportVersion.objects.get(id=r0_r1v1_id)
         r0_version1.status = "Submitted"
         r0_version1.save()
 
-        r0 = ReportVersion.objects.get(pk=r0_version1_id).report
+        r0 = ReportVersion.objects.get(pk=r0_r1v1_id).report
         latest_r0_revision = report_version_baker(report=r0)
 
         r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
@@ -76,12 +80,12 @@ class TestReportingDashboardService:
         assert op0_result["report_status"] == latest_r0_revision.status
 
         # Test operation with single version
-        op1_result = result_dict[str(operations[1].id)]
-        assert op1_result["name"] == operations[1].name
-        assert op1_result["bcghg_id_id"] == (operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None)
-        assert op1_result["report_id"] == r1.id
-        assert op1_result["report_version_id"] == r1.report_versions.first().id
-        assert op1_result["report_status"] == r1.report_versions.first().status
+        rep3_result = result_dict[str(operations[1].id)]
+        assert rep3_result["name"] == operations[1].name
+        assert rep3_result["bcghg_id_id"] == (operations[1].bcghg_id.id if operations[0].bcghg_id is not None else None)
+        assert rep3_result["report_id"] == r1.id
+        assert rep3_result["report_version_id"] == r1.report_versions.first().id
+        assert rep3_result["report_status"] == r1.report_versions.first().status
 
         # Test operation with no report
         op2_result = result_dict[str(operations[2].id)]
@@ -91,31 +95,115 @@ class TestReportingDashboardService:
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
 
-    @patch("service.data_access_service.operation_service.OperationDataAccessService.get_all_operations_for_user")
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
-    def test_sorting_and_filtering(
+    def test_get_past_reports_for_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
-        mock_get_all_operations_for_user: MagicMock | AsyncMock,
+    ):
+        uo = make_recipe('registration.tests.utils.approved_user_operator')
+        mock_get_by_guid.return_value = uo.user
+
+        current_year = 2061
+        last_year = current_year - 1
+        laster_year = current_year - 2
+        years = [current_year, last_year, laster_year]
+        [reporting_year_baker(reporting_year=year) for year in years]
+
+        operations = operation_baker(operator_id=uo.operator.id, _quantity=3)
+
+        sort_field: Optional[str] = "operation_name"
+        sort_order: Optional[str] = "asc"
+        filters = ReportingDashboardOperationFilterSchema()
+
+        # Create reports
+        ## Create current year reports (the service should not return these)
+        [ReportService.create_report(operation.id, current_year) for operation in operations]
+
+        ## Create past reports
+        ### Report 1 - Operation 1: Laster year Report Version 1
+        rep1_op1_v1_version_id = ReportService.create_report(operations[0].id, laster_year)
+        rep1_op1_v1_version = ReportVersion.objects.get(pk=rep1_op1_v1_version_id)
+        rep1_report_operation = ReportOperation.objects.get(report_version=rep1_op1_v1_version_id)
+        rep1_op1_v1_version.status = "Submitted"
+        rep1_op1_v1_version.save()
+        ### Report 1 - Operation 1: Laster year Report Version 2
+        rep1_op1_report = ReportVersion.objects.get(pk=rep1_op1_v1_version_id).report
+        rep1_op1_latest_version = report_version_baker(report=rep1_op1_report)
+        rep1_report_operation = ReportOperation.objects.get(report_version=rep1_op1_latest_version)
+
+        ### Report 2 - Operation 1: Last year Report Version 1
+        rep2_op1_v1_version_id = ReportService.create_report(operations[0].id, last_year)
+        rep2_op1_v1_version = ReportVersion.objects.get(pk=rep2_op1_v1_version_id)
+        rep2_op1_report = ReportVersion.objects.get(pk=rep2_op1_v1_version_id).report
+        rep2_op1_latest_version = rep2_op1_v1_version
+        rep2_report_operation = ReportOperation.objects.get(report_version=rep2_op1_latest_version)
+
+        ### Report 3 - Operation 2: Last year Report Version 1
+        rep3_op2_v1_version_id = ReportService.create_report(operations[1].id, last_year)
+        rep3_op2_latest_version = ReportVersion.objects.get(pk=rep3_op2_v1_version_id)
+        rep3_op2_report = rep3_op2_latest_version.report
+        rep3_report_operation = ReportOperation.objects.get(report_version=rep3_op2_latest_version)
+
+        result = ReportingDashboardService.get_past_reports_for_reporting_dashboard(
+            uo.user.user_guid, current_year, sort_field, sort_order, filters
+        ).values()
+        result_list = list(result)
+        assert len(result_list) == 3
+
+        # Create dictionaries for easy lookup by report ID
+        result_dict = {str(item["id"]): item for item in result_list}
+
+        # Test report with multiple versions
+        rep1_result = result_dict[str(rep1_op1_report.id)]
+        assert rep1_result["operation_name"] == rep1_report_operation.operation_name
+        assert rep1_result["reporting_year_id"] == rep1_op1_report.reporting_year_id
+        assert rep1_result["report_id"] == rep1_op1_report.id
+        assert rep1_result["report_version_id"] == rep1_op1_latest_version.id
+        assert rep1_result["report_status"] == rep1_op1_latest_version.status
+
+        # Test report from previous year
+        rep2_result = result_dict[str(rep2_op1_report.id)]
+        assert rep2_result["operation_name"] == rep2_report_operation.operation_name
+        assert rep2_result["reporting_year_id"] == rep2_op1_report.reporting_year_id
+        assert rep2_result["report_id"] == rep2_op1_report.id
+        assert rep2_result["report_version_id"] == rep2_op1_latest_version.id
+        assert rep2_result["report_status"] == rep2_op1_latest_version.status
+
+        # Test report with single version
+        rep3_result = result_dict[str(rep3_op2_report.id)]
+        assert rep3_result["operation_name"] == rep3_report_operation.operation_name
+        assert rep3_result["reporting_year_id"] == rep3_op2_report.reporting_year_id
+        assert rep3_result["report_id"] == rep3_op2_report.id
+        assert rep3_result["report_version_id"] == rep3_op2_latest_version.id
+        assert rep3_result["report_status"] == rep3_op2_latest_version.status
+
+    @patch(
+        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
+    )
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_operations_sorting_and_filtering(
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+        mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
     ):
 
         # SETUP
         user = user_baker()
         mock_get_by_guid.return_value = user
-        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
         operator = operator_baker()
         operations = operation_baker(operator_id=operator.id, _quantity=4)
 
         # r0 orginal, report_version_id=1
-        r0_version1_id = ReportService.create_report(operations[0].id, year.reporting_year)
-        r0_version1 = ReportVersion.objects.get(id=r0_version1_id)
+        r0_r1v1_id = ReportService.create_report(operations[0].id, year.reporting_year)
+        r0_version1 = ReportVersion.objects.get(id=r0_r1v1_id)
         r0_version1.status = "Submitted"
         r0_version1.save()
 
         # r0 supplementary, report_version_id=2, status draft (default)
-        r0 = ReportVersion.objects.get(pk=r0_version1_id).report
+        r0 = ReportVersion.objects.get(pk=r0_r1v1_id).report
         latest_r0_revision = report_version_baker(report=r0)
 
         # r1 original, report_version_id=3, status draft (default)

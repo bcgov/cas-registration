@@ -22,7 +22,7 @@ export enum RegistrationTileText {
 }
 
 export enum ReportingTileText {
-  SUBMIT_REPORT = "Submit Annual Report(s)",
+  SUBMIT_REPORT = "View Annual Reports",
 }
 
 export enum ComplianceTileText {

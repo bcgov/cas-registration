@@ -8,10 +8,16 @@
         "access_roles": ["industry_user", "industry_user_admin"],
         "tiles": [
           {
-            "title": "Submit Annual Report(s)",
+            "title": "View Annual Reports",
             "icon": "File",
             "content": "Submit, view and edit your annual reports.",
-            "href": "/reporting/reports"
+            "href": "/reporting/reports/current-reports"
+          },
+          {
+            "title": "View Past Reports",
+            "icon": "File",
+            "content": "View reports from previous years.",
+            "href": "/reporting/reports/previous-years"
           }
         ]
       }

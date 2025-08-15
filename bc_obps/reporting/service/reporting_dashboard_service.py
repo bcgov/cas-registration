@@ -10,13 +10,25 @@ from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
-from reporting.schema.operation import ReportingDashboardOperationFilterSchema
+from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema
+from service.user_operator_service import UserOperatorService
 
 
 class ReportingDashboardService:
     """
     Service providing data operations for the reporting dashboard
     """
+
+    report_status_sort_key = Case(
+        When(
+            Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
+            then=Value("Draft Supplementary Report"),
+        ),
+        When(report_status="Draft", then=Value("Draft")),
+        When(report_status=None, then=Value("Not Started")),
+        default=F("report_status"),
+        output_field=CharField(),
+    )
 
     @classmethod
     def get_operations_for_reporting_dashboard(
@@ -61,7 +73,7 @@ class ReportingDashboardService:
         ).values("operation_name")[:1]
 
         queryset = (
-            OperationDataAccessService.get_all_operations_for_user(user)
+            OperationDataAccessService.get_all_current_operations_for_user(user)
             .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
@@ -75,26 +87,69 @@ class ReportingDashboardService:
                 report_submitted_by=report_subquery.values("latest_version_updated_by"),
                 operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
-                report_status_sort_key=Case(
-                    When(
-                        Q(report_status="Draft") & ~Q(report_version_id=F("first_report_version_id")),
-                        then=Value("Draft Supplementary Report"),
-                    ),
-                    When(report_status="Draft", then=Value("Draft")),
-                    When(report_status=None, then=Value("Not Started")),
-                    default=F("report_status"),
-                    output_field=CharField(),
-                ),
+                report_status_sort_key=cls.report_status_sort_key,
             )
         )
 
-        sort_field = sort_field or "id"
-        sort_order = sort_order or "asc"
-        sort_direction = "-" if sort_order == "desc" else ""
-
-        sort_fields = [f"{sort_direction}{sort_field}"]
-
-        if sort_field == "report_status":
-            sort_fields = [f"{sort_direction}report_status_sort_key"]
+        sort_fields = cls._get_sort_fields(sort_field, sort_order)
 
         return filters.filter(queryset).order_by(*sort_fields)
+
+    @classmethod
+    def get_past_reports_for_reporting_dashboard(
+        cls,
+        user_guid: UUID,
+        current_reporting_year: int,
+        sort_field: Optional[str] = None,
+        sort_order: Optional[str] = None,
+        filters: ReportingDashboardOperationFilterSchema = Query(...),
+    ) -> QuerySet[Report]:
+        """
+        Fetches all past reports for the user, and annotates it with the associated operation data required for the API call
+        """
+        user = UserDataAccessService.get_by_guid(user_guid)
+        operator_id = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator.id
+        first_report_version_subquery = (
+            ReportVersion.objects.filter(report_id=OuterRef("id"))
+            .order_by("id")  # ascending → earliest version first
+            .values("id")[:1]
+        )
+        latest_report_version_subquery = (
+            ReportVersion.objects.filter(report_id=OuterRef("id"))
+            .order_by("-id")
+            .annotate(
+                full_name=Concat(F("updated_by__first_name"), Value(" "), F("updated_by__last_name")),
+                operation_name=F("report_operation__operation_name"),
+            )[:1]
+        )
+
+        queryset = (
+            Report.objects.filter(operator_id=operator_id)
+            .exclude(reporting_year=current_reporting_year)
+            .annotate(
+                report_id=F("id"),
+                first_report_version_id=first_report_version_subquery.values("id")[:1],
+                report_updated_at=latest_report_version_subquery.values("updated_at"),
+                report_version_id=latest_report_version_subquery.values("id"),
+                report_status=latest_report_version_subquery.values("status"),
+                report_submitted_by=latest_report_version_subquery.values("full_name"),
+                operation_name=Coalesce(
+                    Subquery(latest_report_version_subquery.values("operation_name")), F("operation__name")
+                ),
+                report_status_sort_key=cls.report_status_sort_key,
+            )
+        )
+
+        sort_fields = cls._get_sort_fields(sort_field, sort_order)
+
+        return filters.filter(queryset).order_by(*sort_fields)
+
+    @classmethod
+    def _get_sort_fields(cls, sort_field: Optional[str] = "id", sort_order: Optional[str] = "asc") -> list[str]:
+        """
+        Helper method to determine the sort fields based on the provided sort field and order.
+        """
+        sort_direction = "-" if sort_order == "desc" else ""
+        if sort_field == "report_status":
+            return [f"{sort_direction}report_status_sort_key"]
+        return [f"{sort_direction}{sort_field}"]

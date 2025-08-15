@@ -174,8 +174,12 @@
             ],
             "links": [
               {
-                "title": "Submit Annual Report(s)",
-                "href": "/reporting/reports"
+                "title": "View Annual Reports",
+                "href": "/reporting/reports/current-reports"
+              },
+              {
+                "title": "View Past Reports",
+                "href": "/reporting/reports/previous-years"
               }
             ]
           },

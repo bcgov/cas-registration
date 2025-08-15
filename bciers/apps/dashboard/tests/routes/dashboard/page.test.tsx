@@ -56,7 +56,7 @@ const tiles = [
       "Submit Annual Report for an operation, and to view or update previous years' reports here.",
     links: [
       {
-        title: "Submit Annual Reports",
+        title: "View Annual Reports",
         href: "/reporting/tbd",
       },
       {
@@ -178,7 +178,7 @@ describe("Registration dashboard page", () => {
     expect(reportingTitleLink).toBeVisible();
     expect(reportingTitleLink).toHaveAttribute("href", "/reporting/dashboard");
     const reportingLink1 = screen.getByRole("link", {
-      name: /Submit Annual Reports/i,
+      name: /View Annual Reports/i,
     });
     expect(reportingLink1).toBeVisible();
     expect(reportingLink1).toHaveAttribute("href", "/reporting/tbd");
