@@ -666,6 +666,17 @@ class OperationService:
         return operation.bcghg_id
 
     @classmethod
+    def clear_bcghg_id(cls, user_guid: UUID, operation_id: UUID) -> None:
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_director():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        # This service is only used by internal users who are authorized to view everything, so we don't have to use get_if_authorized
+        operation = OperationDataAccessService.get_by_id(operation_id)
+
+        operation.bcghg_id = None
+        operation.save(update_fields=['bcghg_id'])
+
+    @classmethod
     @transaction.atomic()
     def update_operator(cls, user_guid: UUID, operation: Operation, operator_id: UUID) -> Operation:
         """

@@ -26,3 +26,18 @@ def operation_bcghg_id(
         operation_id,
         payload.bcghg_id if payload else None,
     )
+
+
+@router.delete(
+    "/operations/{uuid:operation_id}/bcghg-id",
+    response={200: int, custom_codes_4xx: Message},
+    tags=OPERATION_TAGS,
+    description="""Clears the BCGHG ID for the operation if it is already set.""",
+    auth=authorize('cas_director'),
+)
+def delete_operation_bcghg_id(request: HttpRequest, operation_id: UUID) -> Literal[200]:
+    OperationService.clear_bcghg_id(
+        get_current_user_guid(request),
+        operation_id,
+    )
+    return 200

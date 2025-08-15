@@ -26,3 +26,18 @@ def facility_bcghg_id(
         facility_id,
         payload.bcghg_id if payload else None,
     )
+
+
+@router.delete(
+    "/facilities/{uuid:facility_id}/bcghg-id",
+    response={200: int, custom_codes_4xx: Message},
+    tags=FACILITY_TAGS,
+    description="""Clears the BCGHG ID for the facility if it is already set.""",
+    auth=authorize('cas_director'),
+)
+def delete_facility_bcghg_id(request: HttpRequest, facility_id: UUID) -> Literal[200]:
+    FacilityService.clear_bcghg_id(
+        get_current_user_guid(request),
+        facility_id,
+    )
+    return 200
