@@ -262,6 +262,13 @@ class FacilityService:
         return facility.bcghg_id
 
     @classmethod
+    def clear_bcghg_id(cls, user_guid: UUID, facility_id: UUID) -> None:
+        facility = FacilityService.get_if_authorized(user_guid, facility_id)
+
+        facility.bcghg_id = None
+        facility.save(update_fields=['bcghg_id'])
+
+    @classmethod
     @transaction.atomic()
     def update_operation_for_facility(cls, user_guid: UUID, facility: Facility, operation_id: UUID) -> Facility:
         """

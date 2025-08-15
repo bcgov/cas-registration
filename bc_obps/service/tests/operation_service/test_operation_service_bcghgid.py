@@ -8,7 +8,7 @@ from service.operation_service import OperationService
 pytestmark = pytest.mark.django_db
 
 
-class TestGenerateBCGHGId:
+class TestManageBCGHGId:
     @staticmethod
     def test_raise_exception_if_user_not_cas_director():
         cas_analyst = baker.make_recipe('registration.tests.utils.cas_analyst')
@@ -144,3 +144,21 @@ class TestGenerateBCGHGId:
 
         with pytest.raises(Exception, match=UNAUTHORIZED_MESSAGE):
             OperationService.generate_bcghg_id(industry_user.user_guid, operation.id, "11111111111")
+
+    def test_clear_bcghg_id(self):
+        """Test clearing BCGHG ID for an operation"""
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=approved_user_operator.operator,
+            bcghg_id=baker.make_recipe(
+                'registration.tests.utils.bc_greenhouse_gas_id',
+                issued_by=approved_user_operator.user,
+            ),
+        )
+
+        OperationService.clear_bcghg_id(approved_user_operator.user.user_guid, operation.id)
+        operation.refresh_from_db()
+
+        assert operation.bcghg_id is None
