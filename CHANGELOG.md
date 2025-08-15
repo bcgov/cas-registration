@@ -1,3 +1,23 @@
+# [3.16.0](https://github.com/bcgov/cas-registration/compare/v3.14.0...v3.16.0) (2025-08-15)
+
+### Bug Fixes
+
+- change date widget format to Mon DD, YYYY ([ba4cb3c](https://github.com/bcgov/cas-registration/commit/ba4cb3c0e0f6410576cb917b93632e1c969fffec))
+- fix cas-bciers-dags timezone issue ([342edcb](https://github.com/bcgov/cas-registration/commit/342edcb67ed40933e77e47b3b022ebf979931d1a))
+- handle penalty status resolution for both dict and object types ([cb221d9](https://github.com/bcgov/cas-registration/commit/cb221d95afd03060212d941928f06ed4089ed1f8))
+- let operation name in compliance summary grid take from reporting rather than admin ([f3775d6](https://github.com/bcgov/cas-registration/commit/f3775d6fbf4aa31490c8a8251ebb764d1925d4dd))
+
+### Features
+
+- add internal compliance obligation review page ([a9716ee](https://github.com/bcgov/cas-registration/commit/a9716ee9059843914a199a7e583f840de8e75eff))
+- add task scheduling and retry functionality with models and services ([c8d5a2c](https://github.com/bcgov/cas-registration/commit/c8d5a2c6d0cd85e8c9afcbe7656ab8ba932bf165))
+- conditionally show alert messages on the compliance summary page based on time and obligations ([6749c8b](https://github.com/bcgov/cas-registration/commit/6749c8b22c816944708c57c89b20fd6e142f36da))
+- front end work for generating penalty invoices ([6f353b2](https://github.com/bcgov/cas-registration/commit/6f353b2b4dfe2fa45c03fdb1dfb620a96b26e0c2))
+- implement DecreasedCreditHandler supplementary report functions ([6cca0d1](https://github.com/bcgov/cas-registration/commit/6cca0d123e9adaff32f4f07a757d717a0163b22c))
+- implement handling for decreased excess emissions in supplementary reports ([fc91273](https://github.com/bcgov/cas-registration/commit/fc9127359335f4c4d97b578a2aa2dac6825ef117))
+- implement penalty payment tracking and instructions download pages ([df55829](https://github.com/bcgov/cas-registration/commit/df55829be7556ff408cef82efa8682aa2b4a0155))
+- manual entry of BCGHGID ([a7cf6d4](https://github.com/bcgov/cas-registration/commit/a7cf6d4aa7c10fe5a7a75f08e98fa78e8f67e2e3))
+
 # [3.15.0](https://github.com/bcgov/cas-registration/compare/v3.14.0...v3.15.0) (2025-08-15)
 
 ### Bug Fixes
