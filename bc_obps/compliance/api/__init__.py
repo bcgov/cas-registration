@@ -10,6 +10,7 @@ from ._compliance_report_versions._compliance_report_version_id import (
     payment_instructions,
     obligation,
     automatic_overdue_penalty,
+    penalty,
 )
 from ._compliance_report_versions._compliance_report_version_id._automatic_overdue_penalty.invoice import (
     pdf as penalty_invoice,

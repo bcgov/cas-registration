@@ -83,9 +83,11 @@ describe("PaymentInstructionsDownloadComponent", () => {
 
     // Click back button and verify navigation
     fireEvent.click(backButton);
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      "/compliance-summaries/123/manage-obligation-review-summary",
-    );
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(
+        "/compliance-summaries/123/manage-obligation-review-summary",
+      );
+    });
 
     // Click continue button and verify navigation
     fireEvent.click(continueButton);
@@ -93,6 +95,33 @@ describe("PaymentInstructionsDownloadComponent", () => {
       expect(mockRouterPush).toHaveBeenCalledWith(
         "/compliance-summaries/123/pay-obligation-track-payments",
       );
+    });
+  });
+
+  it("uses custom back and continue URLs when props provided", async () => {
+    const customBack = `/compliance-summaries/321/review-penalty-summary`;
+    const customContinue = `/compliance-summaries/321/pay-penalty-track-payments`;
+
+    render(
+      <PaymentInstructionsDownloadComponent
+        complianceReportVersionId={321}
+        invoiceID="INV123"
+        customBackUrl={customBack}
+        customContinueUrl={customContinue}
+      />,
+    );
+
+    const backButton = screen.getByRole("button", { name: /back/i });
+    const continueButton = screen.getByRole("button", { name: /continue/i });
+
+    fireEvent.click(backButton);
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(customBack);
+    });
+
+    fireEvent.click(continueButton);
+    await waitFor(() => {
+      expect(mockRouterPush).toHaveBeenCalledWith(customContinue);
     });
   });
 

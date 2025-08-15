@@ -139,7 +139,6 @@ describe("ObligationTrackPaymentsPayPage", () => {
           payment_method: "Credit Card",
           transaction_type: "Payment",
           payment_object_id: "REC123456",
-          payment_header: "",
         },
       ],
     });

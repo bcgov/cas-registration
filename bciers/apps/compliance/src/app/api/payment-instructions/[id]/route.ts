@@ -30,7 +30,11 @@ export async function GET(
       }),
     });
 
-    const url = `${apiUrl}compliance/compliance-report-versions/${id}/payment_instructions/pdf`;
+    const { searchParams } = new URL(request.url);
+    const queryString = searchParams.toString();
+    const url = `${apiUrl}compliance/compliance-report-versions/${id}/payment_instructions/pdf${
+      queryString ? `?${queryString}` : ""
+    }`;
 
     const response = await fetch(url, {
       method: "GET",

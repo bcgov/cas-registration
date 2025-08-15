@@ -23,14 +23,12 @@ export const generateAutomaticOverduePenaltyTaskList: (
       link: `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`,
       isActive: activePage === ActivePage.ReviewPenaltySummary,
     },
-    // TODO: should be implemented in the task #91
     {
       type: "Page" as const,
       title: "Download Payment Instructions",
       link: `/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`,
       isActive: activePage === ActivePage.DownloadPaymentPenaltyInstruction,
     },
-    // TODO: should be implemented in the task #91
     {
       type: "Page" as const,
       title: "Pay Penalty and Track Payment(s)",

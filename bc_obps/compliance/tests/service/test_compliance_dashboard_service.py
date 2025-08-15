@@ -38,6 +38,42 @@ class TestComplianceDashboardService(TestCase):
         assert returned_data.data.last() == payment_2
 
     @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    def test_get_penalty_payments_by_compliance_report_version_id(self, mock_refresh):
+        """Test retrieval of penalty payments linked to a compliance report version"""
+        # Create two payments on the same invoice, both after the invoice due date
+        payment_1 = make_recipe(
+            'compliance.tests.utils.elicensing_payment',
+            received_date='2024-12-02',
+        )
+        payment_2 = make_recipe(
+            'compliance.tests.utils.elicensing_payment',
+            elicensing_line_item=payment_1.elicensing_line_item,
+            received_date='2024-12-03',
+        )
+
+        # Create a penalty tied to the same invoice
+        penalty = make_recipe(
+            'compliance.tests.utils.compliance_penalty',
+            elicensing_invoice=payment_1.elicensing_line_item.elicensing_invoice,
+        )
+
+        # Mock the elicensing data refresh service to return our invoice
+        mock_refresh.return_value = RefreshWrapperReturn(
+            data_is_fresh=True,
+            invoice=payment_1.elicensing_line_item.elicensing_invoice,
+        )
+
+        returned_data = ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id(
+            compliance_report_version_id=penalty.compliance_obligation.compliance_report_version_id
+        )
+
+        assert returned_data.data_is_fresh == True  # noqa: E712
+        assert returned_data.data.first() == payment_1
+        assert returned_data.data.last() == payment_2
+
+    @patch(
         'compliance.service.compliance_report_version_service.ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations'
     )
     def test_get_compliance_report_versions_for_dashboard_excludes_versions_correctly(self, mock_previously_owned):

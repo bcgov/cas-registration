@@ -9,7 +9,7 @@ import {
 import { FormBase } from "@bciers/components/form";
 import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
-import { InvoiceType } from "@/compliance/src/app/utils/generateInvoice";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
 
 interface Props {
@@ -40,7 +40,10 @@ export function ComplianceSummaryReviewComponent({
     setIsGeneratingInvoice(true);
 
     try {
-      await generateInvoice(complianceReportVersionId, InvoiceType.OBLIGATION);
+      await generateInvoice(
+        complianceReportVersionId,
+        ComplianceInvoiceTypes.OBLIGATION,
+      );
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       setErrors([msg]);

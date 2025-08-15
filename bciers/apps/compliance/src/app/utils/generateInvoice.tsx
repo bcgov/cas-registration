@@ -1,16 +1,18 @@
 "use client";
 
-export enum InvoiceType {
-  AUTOMATIC_OVERDUE_PENALTY = "automatic-overdue-penalty",
-  OBLIGATION = "obligation",
-}
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 
 const generateInvoice = async (
   complianceReportVersionId: number,
-  invoiceType: InvoiceType,
+  invoiceType: ComplianceInvoiceTypes,
 ) => {
+  const typeForUrl =
+    invoiceType === ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY
+      ? "automatic-overdue-penalty"
+      : "obligation";
+
   const res = await fetch(
-    `/compliance/api/invoice/${complianceReportVersionId}/${invoiceType}`,
+    `/compliance/api/invoice/${complianceReportVersionId}/${typeForUrl}`,
     {
       method: "GET",
       cache: "no-store",

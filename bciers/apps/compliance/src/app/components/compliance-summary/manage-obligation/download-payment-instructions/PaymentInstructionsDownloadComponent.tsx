@@ -8,18 +8,30 @@ import {
   downloadPaymentInstructionsUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/manageObligation/downloadPaymentInstructionsSchema";
 import FormAlerts from "@bciers/components/form/FormAlerts";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
+import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 
 interface Props {
-  complianceReportVersionId: number;
-  invoiceID: string;
+  readonly complianceReportVersionId: number;
+  readonly invoiceID: string;
+  readonly customContinueUrl?: string;
+  readonly customBackUrl?: string;
+  readonly invoiceType?: ComplianceInvoiceTypes;
 }
 
 export default function PaymentInstructionsDownloadComponent({
   complianceReportVersionId,
   invoiceID,
-}: Readonly<Props>) {
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  customContinueUrl,
+  customBackUrl,
+  invoiceType,
+}: Props) {
+  const backUrl =
+    customBackUrl ??
+    `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
+  const saveAndContinueUrl =
+    customContinueUrl ??
+    `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {
@@ -40,8 +52,11 @@ export default function PaymentInstructionsDownloadComponent({
     setIsGeneratingDownload(true);
 
     try {
+      const query = invoiceType
+        ? buildQueryParams({ invoice_type: invoiceType })
+        : "";
       const res = await fetch(
-        `/compliance/api/payment-instructions/${complianceReportVersionId}`,
+        `/compliance/api/payment-instructions/${complianceReportVersionId}${query}`,
         {
           method: "GET",
           cache: "no-store",

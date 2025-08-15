@@ -10,6 +10,7 @@ from compliance.service.elicensing.elicensing_data_refresh_service import Elicen
 from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from compliance.enums import ComplianceInvoiceTypes
 
 
 class ComplianceDashboardService:
@@ -142,6 +143,28 @@ class ComplianceDashboardService:
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
+        payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
+
+        return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
+
+    @classmethod
+    def get_penalty_payments_by_compliance_report_version_id(
+        cls, compliance_report_version_id: int
+    ) -> PaymentDataWithFreshnessFlag:
+        """
+        Fetches the monetary payments made towards a compliance penalty
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version the penalty belongs to
+        Returns:
+            The set of payment records that relate to the compliance penalty via the elicensing invoice
+        """
+
+        refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            compliance_report_version_id=compliance_report_version_id,
+            invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
+        )
+
         payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
 
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
