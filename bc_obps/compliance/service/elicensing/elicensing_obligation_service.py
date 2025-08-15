@@ -1,16 +1,14 @@
 import logging
 import uuid
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
     FeeCreationRequest,
     InvoiceCreationRequest,
-    InvoiceQueryResponse,
-    InvoiceFee,
 )
-from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
+from compliance.service.elicensing.schema import FeeCreationItem
 from django.db import transaction
 from compliance.models import ComplianceObligation, ElicensingInvoice, ComplianceReportVersion
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
@@ -26,71 +24,6 @@ class ElicensingObligationService:
     This service handles eLicensing integration for compliance obligations,
     including fee creation and synchronization with the eLicensing system.
     """
-
-    @classmethod
-    def _parse_invoice_payments(cls, invoice: InvoiceQueryResponse) -> List[PaymentRecord]:
-        """
-        Parse payments and adjustments from an invoice.
-
-        Args:
-            invoice: The invoice response from eLicensing
-
-        Returns:
-            List of payment records
-        """
-        payments = []
-        for fee in invoice.fees:
-            payments.extend(cls._parse_fee_payments(fee))
-            payments.extend(cls._parse_fee_adjustments(fee))
-        return payments
-
-    @classmethod
-    def _parse_fee_payments(cls, fee: InvoiceFee) -> List[PaymentRecord]:
-        """
-        Parse payments from a fee.
-
-        Args:
-            fee: The fee object from eLicensing
-
-        Returns:
-            List of payment records
-        """
-        return [
-            PaymentRecord(
-                id=str(payment.paymentObjectId),
-                paymentReceivedDate=payment.receivedDate,
-                paymentAmountApplied=payment.amount,
-                paymentMethod=payment.method,
-                transactionType="Payment",
-                referenceNumber=payment.referenceNumber,
-                receiptNumber=payment.receiptNumber,
-            )
-            for payment in fee.payments
-        ]
-
-    @classmethod
-    def _parse_fee_adjustments(cls, fee: InvoiceFee) -> List[PaymentRecord]:
-        """
-        Parse adjustments from a fee.
-
-        Args:
-            fee: The fee object from eLicensing
-
-        Returns:
-            List of adjustment records formatted as payments
-        """
-        return [
-            PaymentRecord(
-                id=str(adjustment.adjustmentObjectId),
-                paymentReceivedDate=adjustment.date,
-                paymentAmountApplied=adjustment.amount,
-                paymentMethod="Adjustment",
-                transactionType="Payment Adjustment",
-                referenceNumber=adjustment.reason,
-                receiptNumber=str(adjustment.adjustmentObjectId),
-            )
-            for adjustment in fee.adjustments
-        ]
 
     @classmethod
     def process_obligation_integration(cls, obligation_id: int) -> None:
