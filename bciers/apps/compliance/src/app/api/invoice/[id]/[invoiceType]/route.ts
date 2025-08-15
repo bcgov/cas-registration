@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "@bciers/actions";
 import * as Sentry from "@sentry/nextjs";
-import { InvoiceType } from "../../../../utils/generateInvoice";
 
 /**
  * API route handler for downloading invoice PDFs directly.
@@ -10,10 +9,9 @@ import { InvoiceType } from "../../../../utils/generateInvoice";
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string; invoiceType: InvoiceType } },
+  { params }: { params: { id: string; invoiceType: string } },
 ) {
-  const id = params.id;
-  const invoiceType = params.invoiceType as InvoiceType;
+  const { id, invoiceType } = params;
 
   try {
     // Build API URL and headers
