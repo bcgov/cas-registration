@@ -88,6 +88,12 @@ class Command(BaseCommand):
                 diff_file.replace(app_path, '') for diff_file in diff_files if diff_file.startswith(app_path)
             ]
 
+            # Filter out the release migration itself to avoid false positives
+            # when creating release branches with new tag migrations
+            edited_app_migrations = [
+                app_migration for app_migration in edited_app_migrations if app_migration != tagged_migration
+            ]
+
             immutable_files_modified = [
                 f'{app_path}{app_migration}'
                 for app_migration in edited_app_migrations
