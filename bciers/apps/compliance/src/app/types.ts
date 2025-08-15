@@ -113,10 +113,10 @@ export interface PaymentSummary {
 
 export interface Payment {
   id: string | number;
-  received_date: string;
+  formatted_received_date: string;
+  received_date?: string;
   amount: number;
   method?: string;
-  transaction_type: string;
   payment_object_id: string;
   payment_header?: string;
   receipt_number?: string;
