@@ -44,7 +44,6 @@ const mockData = {
       amount: 8000,
       received_date: "Dec 6, 2025",
       payment_method: "Credit Card",
-      transaction_type: "Payment",
       payment_object_id: "RCP-001",
       payment_header: "Payment 1",
       payment_amount_received: 8000,
