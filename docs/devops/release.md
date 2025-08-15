@@ -27,10 +27,8 @@ When you're ready to make a release, apply the following steps:
    - generate a change log
 1. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, common, and RLS)
 1. once the pull request is approved, if you disabled merging to `develop`, temporarily re-enable merging so you can merge the release PR, and then disable merging again
-1. once all required checks on the merge commit have passed:
-
-- update your local develop branch
-- fast-forward the `main` branch using:
+1. wait for the required checks on the merge commit to pass (note: check-migrations will fail until https://github.com/bcgov/cas-registration/issues/3590 is completed)
+1. update your local develop branch and fast-forward the `main` branch using:
 
 ```bash
 - git checkout main
