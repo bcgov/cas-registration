@@ -1,8 +1,6 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
-    KubernetesJobOperator,
-)
+from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
 from airflow.operators.python_operator import PythonOperator
 from datetime import datetime, timedelta
 from airflow import DAG
