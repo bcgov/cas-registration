@@ -24,6 +24,7 @@ class ReportComplianceSummary(TimeStampedModel):
         decimal_places=4,
         max_digits=20,
     )
+    # brianna
     emissions_attributable_for_compliance = models.DecimalField(
         db_comment="Total emissions in tCO2e that are counted for compliance. This is the total difference between reporting emissions and reporting-only emissions",
         decimal_places=4,
