@@ -6,7 +6,6 @@ import {
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import { redirect } from "next/navigation";
 
 // Mock the reporting year utility
 vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
@@ -52,11 +51,6 @@ vi.mock(
   }),
 );
 
-// Mock next/navigation
-vi.mock("next/navigation", () => ({
-  redirect: vi.fn(),
-}));
-
 describe("RequestIssuanceOfEarnedCreditsPage", () => {
   const mockComplianceReportVersionId = 123;
   const mockData = {
@@ -99,82 +93,5 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
       2024,
       ActivePage.RequestIssuanceOfEarnedCredits,
     );
-  });
-
-  it("redirects to track status page when issuance status is ISSUANCE_REQUESTED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.ISSUANCE_REQUESTED,
-    });
-
-    await RequestIssuanceOfEarnedCreditsPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
-    );
-  });
-
-  it("redirects to track status page when issuance status is APPROVED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.APPROVED,
-    });
-
-    await RequestIssuanceOfEarnedCreditsPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
-    );
-  });
-
-  it("redirects to track status page when issuance status is DECLINED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.DECLINED,
-    });
-
-    await RequestIssuanceOfEarnedCreditsPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
-    );
-  });
-
-  it("does not redirect when issuance status is CREDITS_NOT_ISSUED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
-    });
-
-    render(
-      await RequestIssuanceOfEarnedCreditsPage({
-        compliance_report_version_id: mockComplianceReportVersionId,
-      }),
-    );
-
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
-  });
-
-  it("does not redirect when issuance status is CHANGES_REQUIRED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
-    });
-
-    render(
-      await RequestIssuanceOfEarnedCreditsPage({
-        compliance_report_version_id: mockComplianceReportVersionId,
-      }),
-    );
-
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 });

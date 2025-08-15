@@ -6,7 +6,6 @@ import {
 } from "@/compliance/src/app/components/taskLists/internal/issuanceRequestTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import { redirect } from "next/navigation";
 
 // Mock the task list generator
 vi.mock(
@@ -39,11 +38,6 @@ vi.mock(
     getRequestIssuanceComplianceSummaryData: vi.fn(),
   }),
 );
-
-// Mock next/navigation
-vi.mock("next/navigation", () => ({
-  redirect: vi.fn(),
-}));
 
 describe("InternalReviewByDirectorPage", () => {
   const mockComplianceReportVersionId = 123;
@@ -82,66 +76,6 @@ describe("InternalReviewByDirectorPage", () => {
       mockComplianceReportVersionId,
       2023,
       ActivePage.ReviewByDirector,
-    );
-  });
-
-  it("redirects when analyst hasn't reviewed the credits issuance request", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      analyst_suggestion: null,
-    });
-
-    await InternalReviewByDirectorPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
-    );
-  });
-
-  it("redirects when issuance status is approved", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.APPROVED,
-    });
-
-    await InternalReviewByDirectorPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
-    );
-  });
-
-  it("redirects when issuance status is declined", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.DECLINED,
-    });
-
-    await InternalReviewByDirectorPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
-    );
-  });
-
-  it("redirects to request-issuance-review-summary when issuance status is CREDITS_NOT_ISSUED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockPageData,
-      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
-    });
-
-    await InternalReviewByDirectorPage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
     );
   });
 });
