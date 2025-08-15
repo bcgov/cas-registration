@@ -23,10 +23,20 @@ const styles = {
   font: "inherit",
 };
 
+function clearBcghgId(entityId: string, entityType: EntityWithBcghgType) {
+  const endpoint =
+    entityType === EntityWithBcghgType.OPERATION
+      ? `registration/operations/${entityId}/bcghg-id`
+      : `registration/facilities/${entityId}/bcghg-id`;
+
+  return actionHandler(endpoint, "DELETE", "");
+}
+
 function generateBcghgId(
   entityId: string,
   entityType: EntityWithBcghgType,
   bcghgIdOverride?: string,
+  method: "PATCH" | "DELETE" = "PATCH",
 ) {
   const endpoint =
     entityType === EntityWithBcghgType.OPERATION
@@ -37,7 +47,7 @@ function generateBcghgId(
     ? JSON.stringify({ bcghg_id: bcghgIdOverride })
     : "{}";
 
-  return actionHandler(endpoint, "PATCH", "", {
+  return actionHandler(endpoint, method, "", {
     body: payload,
   });
 }
@@ -54,6 +64,21 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   const [editBcghgId, setEditBcghgId] = useState(false);
   const [manualBcghgId, setManualBcghgId] = useState("");
 
+  const entityId = formContext?.operationId || formContext?.facilityId;
+  const entityType = formContext?.operationId
+    ? EntityWithBcghgType.OPERATION
+    : EntityWithBcghgType.FACILITY;
+
+  const handleClearBcghgId = async () => {
+    const response = await clearBcghgId(entityId, entityType);
+    if (response?.error) {
+      setError(response?.error);
+      return;
+    }
+    setBcghgId(undefined);
+    setEditBcghgId(false);
+  };
+
   const handleSetBcghgId = async (
     bcghgIdToSet: string | undefined = undefined,
   ) => {
@@ -63,10 +88,8 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     }
 
     const response = await generateBcghgId(
-      formContext?.operationId || formContext?.facilityId,
-      formContext?.operationId
-        ? EntityWithBcghgType.OPERATION
-        : EntityWithBcghgType.FACILITY,
+      entityId,
+      entityType,
       editBcghgId ? bcghgIdToSet : undefined,
     );
 
@@ -147,6 +170,16 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
         >
           {bcghgId ? `${bcghgId}` : "Pending"}
         </div>
+      )}
+      {formContext?.isCasDirector && bcghgId && !formContext?.isSfo && (
+        <Button
+          variant="outlined"
+          sx={{ ml: "14px" }}
+          disabled={editBcghgId}
+          onClick={() => handleClearBcghgId()}
+        >
+          Clear BCGHG ID
+        </Button>
       )}
       {formContext?.isCasDirector && !formContext?.isSfo && editBcghgIdJsx}
       <SnackBar
