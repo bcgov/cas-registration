@@ -16,13 +16,13 @@ report_new_entrant_emission
 report_attachment
 operation_designated_operator_timeline
 facility_designated_operation_timeline
+elicensing_adjustment
 document
 report_sign_off
 report_electricity_import_data
 report_attachment_confirmation
 report_additional_data
 elicensing_payment
-elicensing_adjustment
 compliance_penalty_rate
 compliance_penalty_accrual
 compliance_charge_rate

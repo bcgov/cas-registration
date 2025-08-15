@@ -74,13 +74,13 @@ report_verification_visit
 compliance_charge_rate
 compliance_penalty_accrual
 compliance_penalty_rate
-elicensing_adjustment
 elicensing_payment
 report_additional_data
 report_attachment_confirmation
 report_electricity_import_data
 report_sign_off
 document
+elicensing_adjustment
 facility_designated_operation_timeline
 operation_designated_operator_timeline
 report_attachment

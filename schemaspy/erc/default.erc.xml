@@ -453,6 +453,7 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_penalty_updated_by_id_2a12db0a_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="fee_date" nullable="true" remarks="The date the fee was created" size="13" type="date" typeCode="91"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_penalty_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -639,6 +640,7 @@
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="compliance_report_version_id" foreignKey="compliance_earned_cr_compliance_report_ve_d9d2d8c3_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credit"/>
             <child column="compliance_report_version_id" foreignKey="compliance_obligatio_compliance_report_ve_4a01c295_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
+            <child column="supplementary_compliance_report_version_id" foreignKey="elicensing_adjustmen_supplementary_compli_1faa2840_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -976,6 +978,9 @@
          <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="elicensing_line_item_id" nullable="false" remarks="Foreign key to the line item record this adjustment relates to" size="19" type="int8" typeCode="-5">
             <parent column="id" foreignKey="elicensing_adjustmen_elicensing_line_item_3d0404f0_fk_elicensin" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_line_item"/>
          </column>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="supplementary_compliance_report_version_id" nullable="true" remarks="Foreign key to the supplementary compliance report version that triggered this adjustment. When a supplementary report reduces excess emissions, an adjustment is created and applied to the existing invoice from the original compliance report version, but this field tracks which supplementary version caused the adjustment." size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="elicensing_adjustmen_supplementary_compli_1faa2840_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_report_version"/>
+         </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="elicensing_adjustment_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -988,6 +993,9 @@
          </index>
          <index name="elicensing_adjustment_elicensing_line_item_id_3d0404f0" unique="false">
             <column ascending="true" name="elicensing_line_item_id"/>
+         </index>
+         <index name="elicensing_adjustment_supplementary_compliance_r_1faa2840" unique="false">
+            <column ascending="true" name="supplementary_compliance_report_version_id"/>
          </index>
          <index name="elicensing_adjustment_updated_by_id_a9b4d72e" unique="false">
             <column ascending="true" name="updated_by_id"/>
