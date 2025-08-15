@@ -30,13 +30,12 @@ class TestFacilityBcghgIdEndpoint(CommonTestSetup):
         facility = baker.make_recipe(
             'registration.tests.utils.facility',
             operation=operation,
-            bcghg_id=baker.make_recipe('registration.tests.utils.bc_greenhouse_gas_id', id='12233445566'),
+            bcghg_id=baker.make_recipe('registration.tests.utils.bcghg_id', id='12233445566'),
         )
 
         response = TestUtils.mock_delete_with_auth_role(
             self,
             'cas_director',
-            self.content_type,
             custom_reverse_lazy(
                 "delete_facility_bcghg_id",
                 kwargs={'facility_id': facility.id},

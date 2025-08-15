@@ -566,7 +566,7 @@ class TestManageBcghgId:
         facility = baker.make_recipe(
             'registration.tests.utils.facility',
             operation=operation,
-            bcghg_id=baker.make_recipe('registration.tests.utils.bc_greenhouse_gas_id'),
+            bcghg_id=baker.make_recipe('registration.tests.utils.bcghg_id'),
         )
 
         FacilityService.clear_bcghg_id(approved_user_operator.user.user_guid, facility.id)
