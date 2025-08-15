@@ -12,7 +12,7 @@ from compliance.service.elicensing.elicensing_api_client import (
 )
 from compliance.service.elicensing.schema import FeeCreationItem, PaymentRecord
 from django.db import transaction
-from compliance.models import ComplianceObligation, ElicensingInvoice
+from compliance.models import ComplianceObligation, ElicensingInvoice, ComplianceReportVersion
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
 logger = logging.getLogger(__name__)
@@ -105,6 +105,9 @@ class ElicensingObligationService:
             ComplianceObligation.DoesNotExist: If the obligation doesn't exist
             requests.RequestException: If there's an API error
         """
+        from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+
+        obligation = ComplianceObligation.objects.get(id=obligation_id)
         try:
             with transaction.atomic():
                 # Validate the obligation exists
@@ -136,9 +139,14 @@ class ElicensingObligationService:
                 obligation.elicensing_invoice = invoice_record
                 obligation.save()
 
-                logger.info(f"Successfully processed obligation {obligation_id} integration with eLicensing")
-        except Exception as e:
-            logger.error(f"Failed to process obligation {obligation_id} integration with eLicensing: {str(e)}")
+                # If successful, update the compliance status
+                ComplianceReportVersionService.update_compliance_status(obligation.compliance_report_version)
+
+        except Exception:
+            obligation.compliance_report_version.status = (
+                ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+            )
+            obligation.compliance_report_version.save(update_fields=["status"])
             raise
 
     @classmethod

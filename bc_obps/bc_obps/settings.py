@@ -85,6 +85,7 @@ LOCAL_APPS = [
     "reporting",
     "common",
     "rls",
+    "task_scheduler",
 ]
 
 NON_PROD_APPS = ["compliance"]

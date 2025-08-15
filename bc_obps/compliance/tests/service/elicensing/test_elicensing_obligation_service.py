@@ -3,9 +3,7 @@ import uuid
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from datetime import date
 from decimal import Decimal
-
 import pytest
-
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_period import CompliancePeriod
@@ -15,6 +13,8 @@ from registration.models.operator import Operator
 from model_bakery.baker import make_recipe
 from compliance.service.elicensing.schema import FeeResponse, FeeItem
 from dataclasses import dataclass
+
+pytestmark = pytest.mark.django_db
 
 
 @dataclass
@@ -51,8 +51,6 @@ def mock_obligation() -> MagicMock:
 
 
 class TestElicensingObligationService:
-    """Tests for the ElicensingObligationService class"""
-
     def test_map_obligation_to_fee_data(self, mock_obligation: MagicMock) -> None:
         """Test mapping obligation data to fee data"""
         result = ElicensingObligationService._map_obligation_to_fee_data(mock_obligation)
@@ -80,7 +78,12 @@ class TestElicensingObligationService:
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice'
     )
-    def test_process_obligation_integration_success(self, mock_refresh, mock_create_invoice, mock_create_fees) -> None:
+    @patch(
+        'compliance.service.compliance_report_version_service.ComplianceReportVersionService.update_compliance_status'
+    )
+    def test_process_obligation_integration_success(
+        self, mock_update_status, mock_refresh, mock_create_invoice, mock_create_fees
+    ) -> None:
         """Test successful full obligation integration process"""
         # Setup mocks
 
@@ -94,7 +97,7 @@ class TestElicensingObligationService:
         mock_fee_response = FeeResponse(
             clientObjectId=client_operator.client_object_id,
             clientGUID=client_operator.client_guid,
-            fees=[FeeItem(feeGUID=str(uuid.uuid4()), feeObjectId=1)],
+            fees=[FeeItem(feeGUID=str(uuid.uuid4()), feeObjectId="1")],
         )
 
         mock_create_fees.return_value = mock_fee_response
@@ -103,6 +106,7 @@ class TestElicensingObligationService:
         mock_create_invoice.return_value = mock_invoice_response
 
         mock_refresh.return_value = None
+        mock_update_status.return_value = None
 
         invoice = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='inv-001')
 
@@ -113,3 +117,33 @@ class TestElicensingObligationService:
 
         # Invoice has been assigned to obligation
         assert obligation.elicensing_invoice_id == invoice.id
+
+        mock_update_status.assert_called_once_with(obligation.compliance_report_version)
+
+    @patch('compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.create_fees')
+    @patch(
+        'compliance.service.elicensing.elicensing_operator_service.ElicensingOperatorService.sync_client_with_elicensing'
+    )
+    def test_process_obligation_integration_failure_sets_pending_status(
+        self, mock_sync_client, mock_create_fees
+    ) -> None:
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        compliance_report_version = obligation.compliance_report_version
+        mock_client_operator = make_recipe('compliance.tests.utils.elicensing_client_operator')
+        mock_sync_client.return_value = mock_client_operator
+
+        # Set initial status
+        compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        compliance_report_version.save()
+
+        # Mock create_fees to raise an exception
+        mock_create_fees.side_effect = Exception("API Error")
+
+        with pytest.raises(Exception, match="API Error"):
+            ElicensingObligationService.process_obligation_integration(obligation.id)
+
+        compliance_report_version.refresh_from_db()
+        assert (
+            compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
