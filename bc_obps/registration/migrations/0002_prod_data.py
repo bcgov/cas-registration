@@ -28,6 +28,10 @@ def init_app_role_data(apps, schema_monitor):
                 role_name='industry_user',
                 role_description='External user from industry. All industry_users have the same initial privileges. Their privileges for individual operators are further defined and applied in the user_operator through table.',
             ),
+            AppRole(
+                role_name='test_role',
+                role_description='test role for testing purposes',
+            ),
         ]
     )
 
