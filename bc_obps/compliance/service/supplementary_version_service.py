@@ -165,8 +165,7 @@ class IncreasedCreditHandler:
             return False
 
         if (
-            previous_summary.credited_emissions > Decimal('0')
-            and new_summary.credited_emissions > previous_summary.credited_emissions
+            Decimal('0') < previous_summary.credited_emissions < new_summary.credited_emissions
             and original_earned_credit_record.issuance_status
             == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
         ):
@@ -249,14 +248,12 @@ class DecreasedCreditHandler:
             compliance_report=compliance_report, is_supplementary=False
         )
         # Get the original earned credit record
-        original_earned_credit_record = ComplianceEarnedCredit.objects.get(
-            compliance_report_version=original_compliance_report_version
-        )
+        original_earned_credit_record = original_compliance_report_version.compliance_earned_credit
         # Adjust original credits record by the delta
         original_earned_credit_record.earned_credits_amount = (
             original_earned_credit_record.earned_credits_amount + credited_emission_delta
         )
-        original_earned_credit_record.save()
+        original_earned_credit_record.save(update_fields=['earned_credits_amount'])
 
         return compliance_report_version
 
