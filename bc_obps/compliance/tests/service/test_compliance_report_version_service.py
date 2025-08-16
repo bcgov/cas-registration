@@ -219,7 +219,7 @@ class TestComplianceReportVersionService:
         result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
 
         # Assert
-        assert result == Decimal("2.0")  # 100.00 / 50.00
+        assert result == Decimal("2.0000")  # 100.00 / 50.00
 
     def test_calculate_outstanding_balance_tco2e_zero_balance_returns_0_00(self):
         # Arrange
@@ -249,8 +249,8 @@ class TestComplianceReportVersionService:
         result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
 
         # Assert
-        assert result == Decimal("0.00")  # Not "0E+2"
-        assert str(result) == "0.00"
+        assert result == Decimal("0.0000")  # Not "0E+2"
+        assert str(result) == "0.0000"
 
     def test_calculate_display_value_excess_emissions(self):
         version_1 = baker.make_recipe('compliance.tests.utils.compliance_report_version')
