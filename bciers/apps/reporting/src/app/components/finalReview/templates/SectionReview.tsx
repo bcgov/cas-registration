@@ -22,18 +22,16 @@ interface SectionProps {
 }
 
 function getNestedValue(obj: any, path?: string) {
-  if (!path) return undefined;
+  if (!obj || !path) return undefined;
 
   // For direct fields
   if (obj[path]) {
-    // If it's a modified value object, return it directly
     if (obj[path].value !== undefined) {
       return obj[path];
     }
     return obj[path];
   }
 
-  // For nested paths (e.g., 'other_excluded.lfo_excluded')
   const parts = path.split(".");
   let current = obj;
 

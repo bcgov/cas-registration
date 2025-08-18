@@ -10,6 +10,7 @@ import { EmissionAllocationChangeView } from "./EmissionAllocationChangeView";
 import { EmissionSummaryChangeView } from "./EmissionSummaryChangeView";
 import { ProductionDataChangeView } from "./ProductionDataChangeView";
 import { ActivityDataChangeView } from "./ActivityDataChangeView";
+import { ChangeItemDisplay } from "@reporting/src/app/components/changeReview/templates/ChangeItemDisplay";
 
 interface ModifiedFacilityData {
   field: string;
@@ -633,38 +634,74 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                     value={facilityData.nonAttributableEmissions.length > 0}
                   />
                   {facilityData.nonAttributableEmissions.map(
-                    (change: NonAttributableEmission, index: number) => (
-                      <Box key={index} mb={2}>
-                        {change.change_type && (
-                          <StatusLabel
-                            type={
-                              change.change_type === "deleted" ||
-                              change.change_type === "removed"
-                                ? "deleted"
-                                : change.change_type === "added"
-                                ? "added"
-                                : "modified"
-                            }
-                          />
-                        )}
-                        {/* For removed/deleted items, show old_value. For others, show new_value */}
-                        {Object.entries(
-                          change.change_type === "removed" ||
-                            change.change_type === "deleted"
-                            ? change.old_value || {}
-                            : change.new_value || {},
-                        ).map(([key, value]) => (
-                          <FieldDisplay
-                            key={key}
-                            {...getFieldDisplayProps(change, key, value)}
-                          />
-                        ))}
-                        {index <
-                          facilityData.nonAttributableEmissions.length - 1 && (
-                          <hr className="my-4" />
-                        )}
-                      </Box>
-                    ),
+                    (change: NonAttributableEmission, index: number) => {
+                      if (change.change_type === "modified") {
+                        // Get all unique keys from old and new value
+                        const keys = Array.from(
+                          new Set([
+                            ...Object.keys(change.old_value || {}),
+                            ...Object.keys(change.new_value || {}),
+                          ]),
+                        );
+                        return (
+                          <Box key={index} mb={2}>
+                            {keys
+                              .filter(
+                                (key) =>
+                                  change.old_value?.[key] !==
+                                  change.new_value?.[key],
+                              )
+                              .map((key) => (
+                                <ChangeItemDisplay
+                                  key={key}
+                                  item={{
+                                    field: key,
+                                    displayLabel:
+                                      nonAttributableEmissionLabels[key] || key,
+                                    old_value: change.old_value?.[key] ?? null,
+                                    new_value: change.new_value?.[key] ?? null,
+                                    change_type: "modified",
+                                  }}
+                                />
+                              ))}
+                            {index <
+                              facilityData.nonAttributableEmissions.length -
+                                1 && <hr className="my-4" />}
+                          </Box>
+                        );
+                      }
+                      // ...handle added/deleted/removed as before
+                      return (
+                        <Box key={index} mb={2}>
+                          {change.change_type && (
+                            <StatusLabel
+                              type={
+                                change.change_type === "deleted" ||
+                                change.change_type === "removed"
+                                  ? "deleted"
+                                  : change.change_type === "added"
+                                  ? "added"
+                                  : "modified"
+                              }
+                            />
+                          )}
+                          {Object.entries(
+                            change.change_type === "removed" ||
+                              change.change_type === "deleted"
+                              ? change.old_value || {}
+                              : change.new_value || {},
+                          ).map(([key, value]) => (
+                            <FieldDisplay
+                              key={key}
+                              {...getFieldDisplayProps(change, key, value)}
+                            />
+                          ))}
+                          {index <
+                            facilityData.nonAttributableEmissions.length -
+                              1 && <hr className="my-4" />}
+                        </Box>
+                      );
+                    },
                   )}
                 </Box>
               </SectionReview>

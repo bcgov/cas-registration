@@ -16,7 +16,7 @@ export function parseFacilityReportField(field: string): {
   if (!facilityMatch) return null;
 
   // Remove any surrounding quotes from facility name
-  const facilityName = facilityMatch[1].replace(/^['"]|['"]$/g, "");
+  const facilityName = facilityMatch[1].replace(/^(?:['"])|(?:['"])$/g, "");
 
   const remainingPath = field.substring(
     facilityMatch.index! + facilityMatch[0].length,
@@ -24,7 +24,7 @@ export function parseFacilityReportField(field: string): {
 
   const pathSegments = remainingPath.match(/\[[^\[\]]*\]/g) || [];
   const cleanSegments = pathSegments.map((segment) =>
-    segment.slice(1, -1).replace(/^'|'$/g, ""),
+    segment.replace(/^(['"])(.*)\1$/, "$2"),
   );
 
   if (cleanSegments.length === 0) {
