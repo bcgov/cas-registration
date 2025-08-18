@@ -30,19 +30,29 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
           cellText: "Pending Invoice Creation",
           basePath: "#",
         };
-      }
-      return {
-        cellText: "Manage Obligation",
-        basePath: `${basePath}/manage-obligation-review-summary`,
-      };
-    } else {
-      if (status === ComplianceSummaryStatus.OBLIGATION_NOT_MET) {
+      } else if (status === ComplianceSummaryStatus.OBLIGATION_NOT_MET) {
         return {
-          cellText: "View Details",
-          basePath: `${basePath}/review-obligation-summary`,
+          cellText: "Manage Obligation",
+          basePath: `${basePath}/manage-obligation-review-summary`,
         };
       }
+      return {
+        cellText: "View Details",
+        basePath: `${basePath}/review-obligation-summary`,
+      };
     }
+    if (
+      status === ComplianceSummaryStatus.OBLIGATION_PENDING_INVOICE_CREATION
+    ) {
+      return {
+        cellText: "Pending Invoice Creation",
+        basePath: "#",
+      };
+    }
+    return {
+      cellText: "View Details",
+      basePath: `${basePath}/review-obligation-summary`,
+    };
   }
 
   // Earned Credits logic

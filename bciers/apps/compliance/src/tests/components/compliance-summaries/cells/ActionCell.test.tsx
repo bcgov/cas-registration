@@ -40,15 +40,33 @@ describe("ActionCell", () => {
   // Test cases for obligation rows
   describe("Obligation Flow", () => {
     describe("External users (isAllowedCas: false)", () => {
-      it("displays 'Manage Obligation' when obligation_id and invoice_number are present", () => {
+      it("displays 'Manage Obligation' when obligation & invoice exist and status is obligation not met", () => {
         render(
           ActionCell(
-            createMockParams(123, false, "24-0001-1-1", undefined, undefined),
+            createMockParams(
+              123,
+              false,
+              "24-0001-1-1",
+              "Obligation not met",
+              undefined,
+            ),
           ),
         );
         expectLink(
           "Manage Obligation",
           "/compliance-summaries/123/manage-obligation-review-summary",
+        );
+      });
+
+      it("displays 'View Details' when obligation & invoice exist and status is obligation met", () => {
+        render(
+          ActionCell(
+            createMockParams(123, false, "24-0001-1-1", "Obligation fully met"),
+          ),
+        );
+        expectLink(
+          "View Details",
+          "/compliance-summaries/123/review-obligation-summary",
         );
       });
 
@@ -78,6 +96,20 @@ describe("ActionCell", () => {
           "View Details",
           "/compliance-summaries/123/review-obligation-summary",
         );
+      });
+
+      it("displays 'Pending Invoice Creation' when status is 'Obligation pending invoice creation'", () => {
+        render(
+          ActionCell(
+            createMockParams(
+              123,
+              true,
+              "24-0001-1-1",
+              "Obligation pending invoice creation",
+            ),
+          ),
+        );
+        expectLink("Pending Invoice Creation", "#");
       });
     });
   });
@@ -299,23 +331,5 @@ describe("ActionCell", () => {
       );
       expectLink("View Details", "/compliance-summaries/123/review-summary");
     });
-  });
-
-  it("prioritizes 'Manage Obligation' over other conditions", () => {
-    render(
-      ActionCell(
-        createMockParams(
-          123,
-          false,
-          "24-0001-1-1",
-          "Earned credits",
-          IssuanceStatus.ISSUANCE_REQUESTED,
-        ),
-      ),
-    );
-    expectLink(
-      "Manage Obligation",
-      "/compliance-summaries/123/manage-obligation-review-summary",
-    );
   });
 });
