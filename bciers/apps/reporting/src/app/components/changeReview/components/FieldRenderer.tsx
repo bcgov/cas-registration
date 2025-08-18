@@ -18,10 +18,8 @@ export const renderFieldChange = (
   const isAdded = !field.old_value && field.new_value;
   const isDeleted = field.old_value && !field.new_value;
 
-  // Math.random() is used here only for generating a unique React key for rendering purposes.
-  const fieldKey = `${
-    field.field || "field"
-  }-${indentLevel}-${Date.now()}-${Math.random()}`;
+  // Use a stable key for React rendering. If field.field is unique per change, use it; otherwise, fallback to index or another unique property.
+  const fieldKey = `${field.field || "field"}-${indentLevel}`;
 
   const changeItem = {
     field: field.field || "unknown",

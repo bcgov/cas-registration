@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { StatusLabel } from "@bciers/components/form/fields/StatusLabel";
 import { SectionReview } from "../finalReview/templates/SectionReview";
 import ActivitiesView from "../finalReview/templates/ActivityView";
@@ -25,7 +25,7 @@ interface FacilityReportSectionProps {
   facilityData: any;
   isAdded?: boolean;
   isRemoved?: boolean;
-  showReportingOnlyConditions?: boolean; // For conditional rendering based on flow
+  showReportingOnlyConditions?: boolean;
 }
 
 interface NonAttributableEmissionRecord {
@@ -35,6 +35,7 @@ interface NonAttributableEmissionRecord {
   gas_type: string;
   change_type?: "added" | "removed" | "modified";
   old_value?: any;
+  [key: string]: any;
 }
 
 export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
@@ -63,12 +64,13 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
 
     return emissions;
   }, [facilityData.reportnonattributableemissions_records, isAdded, isRemoved]);
-  console.log("facilitydta in facility report section", facilityData);
 
   return (
     <Box>
       <SectionReview
-        title={`Report Information - ${facilityData.facility_name || facilityName}`}
+        title={`Report Information - ${
+          facilityData.facility_name || facilityName
+        }`}
         data={{}}
         fields={[]}
         expandable={true}

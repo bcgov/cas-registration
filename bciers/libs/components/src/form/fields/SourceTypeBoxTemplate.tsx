@@ -55,12 +55,13 @@ export function SourceTypeBoxTemplate({
         fontSize: "0.875rem",
         fontWeight: "bold",
         color: "white",
+
         bgcolor:
           sourceTypeChange?.type === "deleted"
             ? BC_GOV_SEMANTICS_RED
             : sourceTypeChange?.type === "added"
-              ? BC_GOV_SEMANTICS_GREEN
-              : "warning.main",
+            ? BC_GOV_SEMANTICS_GREEN
+            : "warning.main",
       }}
     >
       ({sourceTypeChange.type.toUpperCase()})

@@ -1,7 +1,7 @@
 // Types for change review components
 export interface ChangeItem {
-  facilityName: any;
-  deletedActivities: any;
+  facilityName?: any;
+  deletedActivities?: any;
   field: string;
   old_value: string | Record<string, any> | null;
   new_value: string | Record<string, any> | null;
