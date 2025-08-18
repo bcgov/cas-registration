@@ -138,7 +138,7 @@ class PenaltyCalculationService:
         fee_data: Dict[str, Any] = {
             "businessAreaCode": "OBPS",
             "feeGUID": str(uuid.uuid4()),
-            "feeProfileGroupName": "OBPS Compliance Obligation",
+            "feeProfileGroupName": "OBPS Administrative Penalty",
             "feeDescription": "Automatic Overdue Penalty",
             "feeAmount": float(total_penalty),
             "feeDate": (final_accrual_date + timedelta(days=1)).strftime("%Y-%m-%d"),
