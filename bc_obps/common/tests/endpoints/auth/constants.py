@@ -419,6 +419,10 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_current_user_operator_has_registered_regulated_operation",
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_current_user_operator_has_required_fields",
         },
         {

@@ -190,8 +190,8 @@
             "content": "View compliance summaries, manage obligations, pay penalties, request issuance of earned credits.",
             "conditions": [
               {
-                "api": "registration/user-operators/current/has_registered_operation",
-                "field": "has_registered_operation",
+                "api": "registration/user-operators/current/has_registered_regulated_operation",
+                "field": "has_registered_regulated_operation",
                 "operator": "equals",
                 "value": true
               }

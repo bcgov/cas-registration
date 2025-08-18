@@ -33,6 +33,7 @@ from ._user_operators import current, user_operator_id
 from ._user_operators._current import (
     access_requests,
     has_registered_operation,
+    has_registered_regulated_operation,
     has_required_fields,
     is_current_user_approved_admin,
     operator,
