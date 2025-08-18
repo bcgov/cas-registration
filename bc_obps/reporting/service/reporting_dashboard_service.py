@@ -65,7 +65,8 @@ class ReportingDashboardService:
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_subquery = (
-            Report.objects.filter(**filters)
+            Report.objects.filter(**filter_dict)
+            .order_by("-id")
             .annotate(latest_version_id=latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=latest_report_version_subquery.values("status"))
             .annotate(latest_version_updated_at=latest_report_version_subquery.values("updated_at"))
