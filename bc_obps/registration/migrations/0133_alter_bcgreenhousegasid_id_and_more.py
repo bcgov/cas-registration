@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0131_alter_bcgreenhousegasid_id_and_more'),
+        ('registration', '0132_V3_15_0'),
     ]
 
     operations = [
