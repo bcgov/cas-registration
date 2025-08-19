@@ -48,5 +48,71 @@
             <column ascending="true" name="name"/>
          </index>
       </table>
+      <table name="retry_task" remarks="Retry tasks created when functions fail" schema="common" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="function_path" nullable="false" remarks="" size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="tag" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="status" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="next_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="last_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="lock_acquired_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="error_history" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="kwargs" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="max_retries" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="retry_count" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="retry_delay_minutes" nullable="false" remarks="" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="retry_task_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="retry_task_status_006913_idx" unique="false">
+            <column ascending="true" name="status"/>
+            <column ascending="true" name="next_run_time"/>
+         </index>
+         <index name="retry_task_tag_233003_idx" unique="false">
+            <column ascending="true" name="tag"/>
+            <column ascending="true" name="status"/>
+         </index>
+         <checkConstraint constraint="((max_retries &gt;= 0))" name="retry_task_max_retries_check"/>
+         <checkConstraint constraint="((retry_count &gt;= 0))" name="retry_task_retry_count_check"/>
+         <checkConstraint constraint="((retry_delay_minutes &gt;= 0))" name="retry_task_retry_delay_minutes_check"/>
+      </table>
+      <table name="scheduled_task" remarks="Scheduled tasks that run on a regular basis" schema="common" type="TABLE">
+         <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="function_path" nullable="false" remarks="" size="512" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="tag" nullable="false" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="status" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="4" name="next_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="last_run_time" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="lock_acquired_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="6" id="7" name="created_at" nullable="false" remarks="" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="error_history" nullable="false" remarks="" size="2147483647" type="jsonb" typeCode="1111"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="schedule_type" nullable="false" remarks="" size="20" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="schedule_interval" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="schedule_hour" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="schedule_minute" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="schedule_day_of_week" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="14" name="schedule_day_of_month" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="15" name="schedule_month" nullable="true" remarks="" size="10" type="int4" typeCode="4"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="scheduled_task_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+         <index name="scheduled_t_status_bbd93c_idx" unique="false">
+            <column ascending="true" name="status"/>
+            <column ascending="true" name="next_run_time"/>
+         </index>
+         <index name="scheduled_t_tag_aef11c_idx" unique="false">
+            <column ascending="true" name="tag"/>
+            <column ascending="true" name="status"/>
+         </index>
+         <checkConstraint constraint="((schedule_day_of_month &gt;= 0))" name="scheduled_task_schedule_day_of_month_check"/>
+         <checkConstraint constraint="((schedule_day_of_week &gt;= 0))" name="scheduled_task_schedule_day_of_week_check"/>
+         <checkConstraint constraint="((schedule_hour &gt;= 0))" name="scheduled_task_schedule_hour_check"/>
+         <checkConstraint constraint="((schedule_interval &gt;= 0))" name="scheduled_task_schedule_interval_check"/>
+         <checkConstraint constraint="((schedule_minute &gt;= 0))" name="scheduled_task_schedule_minute_check"/>
+         <checkConstraint constraint="((schedule_month &gt;= 0))" name="scheduled_task_schedule_month_check"/>
+      </table>
    </tables>
 </database>
