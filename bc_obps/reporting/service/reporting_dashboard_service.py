@@ -93,8 +93,8 @@ class ReportingDashboardService:
         # need to fetch previously owned operations in case reports were filed for them already or if they need to
         # create a new report version for an operation they once owned.
         if user.user_operators.exists():
-            previous_operations = OperationDataAccessService.get_all_previously_owned_operations_for_operator(
-                user, user.user_operators.first().operator_id
+            previous_operations = OperationDataAccessService.get_previously_owned_operations_for_operator(
+                user, user.user_operators.first().operator_id, reporting_year
             )
         else:
             previous_operations = Operation.objects.none()
@@ -105,36 +105,25 @@ class ReportingDashboardService:
             all_operations.filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
-                report_id=report_subquery.values("id"),
-                report_version_id=report_subquery.values("latest_version_id")[
+                # the [:1] is necessary for the sorting and filters to work
+                report_id=Subquery(report_subquery.values("id")[:1]),
+                report_version_id=Subquery(report_subquery.values("latest_version_id")[
                     :1
-                ],  # the [:1] is necessary for the sorting and filters to work
-                first_report_version_id=report_subquery.values("first_version_id")[:1],
-                report_status=report_subquery.values("latest_version_status"),
-                report_updated_at=report_subquery.values("latest_version_updated_at"),
-                report_submitted_by=report_subquery.values("latest_version_updated_by"),
+                ]),  
+                first_report_version_id=Subquery(report_subquery.values("first_version_id")[:1]),
+                report_status=Subquery(report_subquery.values("latest_version_status")[:1]),
+                report_updated_at=Subquery(report_subquery.values("latest_version_updated_at")[:1]),
+                report_submitted_by=Subquery(report_subquery.values("latest_version_updated_by")[:1]),
                 operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
-            # need to ensure distinct() because the annotation above can produce duplicates when there's multiple reports for an operation
-            .distinct()
         )
 
-        # FIXME - duplicated variable sort_fields - figure out which one to use
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
         print("\n\n\n\n\n\n**************************")
         print(f"{queryset.count()} operations found")
         print("**************************\n\n\n\n\n")
-
-        sort_field = sort_field or "id"
-        sort_order = sort_order or "asc"
-        sort_direction = "-" if sort_order == "desc" else ""
-
-        sort_fields = [f"{sort_direction}{sort_field}"]
-
-        if sort_field == "report_status":
-            sort_fields = [f"{sort_direction}report_status_sort_key"]
 
         return filters.filter(queryset).order_by(*sort_fields)
 
