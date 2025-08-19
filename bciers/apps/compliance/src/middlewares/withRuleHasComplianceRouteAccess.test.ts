@@ -3,7 +3,7 @@ import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 import { withRuleHasComplianceRouteAccess } from "./withRuleHasComplianceRouteAccess";
 import * as constants from "./constants";
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import hasRegisteredRegulatedOperationForCurrentUser from "@bciers/actions/api/hasRegisteredRegulatedOperationForCurrentUser";
+import hasRegisteredOperationForCurrentUser from "@bciers/actions/api/hasRegisteredOperationForCurrentUser";
 import { getToken } from "@bciers/actions";
 import {
   mockCasUserToken,
@@ -14,13 +14,10 @@ import {
 vi.mock("@bciers/actions", () => ({
   getToken: vi.fn(),
 }));
-vi.mock(
-  "@bciers/actions/api/hasRegisteredRegulatedOperationForCurrentUser",
-  () => ({
-    __esModule: true,
-    default: vi.fn(),
-  }),
-);
+vi.mock("@bciers/actions/api/hasRegisteredOperationForCurrentUser", () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
 vi.mock("@/compliance/src/app/utils/getComplianceAppliedUnits", () => ({
   __esModule: true,
   default: vi.fn(),
@@ -57,8 +54,8 @@ beforeEach(() => {
   (getToken as vi.Mock).mockResolvedValue(mockIndustryUserToken);
 
   // Default: registration check passes
-  (hasRegisteredRegulatedOperationForCurrentUser as vi.Mock).mockResolvedValue({
-    has_registered_regulated_operation: true,
+  (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
+    has_registered_operation: true,
   });
 
   // Default: can apply units
@@ -85,10 +82,8 @@ async function runMiddleware(path: string) {
 describe("withRuleHasComplianceRouteAccess middleware", () => {
   it("redirects to /onboarding if hasRegisteredOperation is false", async () => {
     // Arrange
-    (
-      hasRegisteredRegulatedOperationForCurrentUser as vi.Mock
-    ).mockResolvedValue({
-      has_registered_regulated_operation: false,
+    (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
+      has_registered_operation: false,
     });
 
     // Act
@@ -110,10 +105,8 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       defaultVersionId,
     );
     // Ensure registration check passes
-    (
-      hasRegisteredRegulatedOperationForCurrentUser as vi.Mock
-    ).mockResolvedValue({
-      has_registered_regulated_operation: true,
+    (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
+      has_registered_operation: true,
     });
     // Mock units failure
     (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
@@ -138,10 +131,8 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
       defaultVersionId,
     );
-    (
-      hasRegisteredRegulatedOperationForCurrentUser as vi.Mock
-    ).mockResolvedValue({
-      has_registered_regulated_operation: true,
+    (hasRegisteredOperationForCurrentUser as vi.Mock).mockResolvedValue({
+      has_registered_operation: true,
     });
     (getComplianceAppliedUnits as vi.Mock).mockResolvedValue({
       can_apply_compliance_units: true,
@@ -183,9 +174,7 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
     vi.spyOn(constants, "extractComplianceReportVersionId").mockReturnValue(
       null,
     );
-    (
-      hasRegisteredRegulatedOperationForCurrentUser as vi.Mock
-    ).mockImplementation(() => {
+    (hasRegisteredOperationForCurrentUser as vi.Mock).mockImplementation(() => {
       throw new Error("Simulated failure");
     });
 

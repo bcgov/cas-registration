@@ -10,7 +10,7 @@ import { getUserRole } from "@bciers/middlewares";
 import { IDP } from "@bciers/utils/src/enums";
 
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
-import hasRegisteredRegulatedOperationForCurrentUser from "@bciers/actions/api/hasRegisteredRegulatedOperationForCurrentUser";
+import hasRegisteredOperationForCurrentUser from "@bciers/actions/api/hasRegisteredOperationForCurrentUser";
 
 // --------------------
 // Rule Context & Types
@@ -41,9 +41,8 @@ const createRuleContext = (): RuleContext => {
     },
     getHasRegisteredOperation: async () => {
       if (hasRegisteredOperationCache === undefined) {
-        const result = await hasRegisteredRegulatedOperationForCurrentUser();
-        hasRegisteredOperationCache =
-          result.has_registered_regulated_operation === true;
+        const result = await hasRegisteredOperationForCurrentUser();
+        hasRegisteredOperationCache = result.has_registered_operation === true;
       }
       return hasRegisteredOperationCache;
     },
