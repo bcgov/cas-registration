@@ -22,6 +22,15 @@ export const SourceTypeRenderer: React.FC<SourceTypeRendererProps> = ({
   sourceTypeIndex,
   sourceTypeChangesForActivity,
 }) => {
+  // 🔹 Label formatter
+  const formatLabel = (prefix: string) => {
+    const lower = prefix.toLowerCase();
+    if (lower === "units") return "Unit";
+    if (lower === "fuels") return "Fuel";
+    if (lower === "emissions") return "Emission";
+    return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+  };
+
   // Detect source type changes
   const { changeType: sourceTypeChangeType, changeData } =
     detectSourceTypeChanges(
@@ -41,11 +50,7 @@ export const SourceTypeRenderer: React.FC<SourceTypeRendererProps> = ({
           ) {
             return (
               <div key={key} style={{ marginBottom: 4 }}>
-                <strong>
-                  {key
-                    .replace(/([A-Z])/g, " $1")
-                    .replace(/^./, (s) => s.toUpperCase())}
-                </strong>
+                <strong>{formatLabel(key)}</strong>
                 <span>{`: ${String(value)}`}</span>
               </div>
             );
@@ -62,17 +67,22 @@ export const SourceTypeRenderer: React.FC<SourceTypeRendererProps> = ({
     sourceTypeChangeType,
   );
 
+  const normalizedChangeType =
+    (sourceTypeChangeType as string) === "removed"
+      ? "deleted"
+      : sourceTypeChangeType;
+
   // If source type is added or deleted, use SourceTypeBoxTemplate
-  if (sourceTypeChangeType === "added" || sourceTypeChangeType === "deleted") {
+  if (normalizedChangeType === "added" || normalizedChangeType === "deleted") {
     let displayValue = sourceTypeValue;
     let displayName = sourceTypeName;
 
     if (changeData) {
       displayName = changeData.sourceTypeName || sourceTypeName;
 
-      if (sourceTypeChangeType === "added" && changeData.newValue) {
+      if (normalizedChangeType === "added" && changeData.newValue) {
         displayValue = changeData.newValue;
-      } else if (sourceTypeChangeType === "deleted" && changeData.oldValue) {
+      } else if (normalizedChangeType === "deleted" && changeData.oldValue) {
         displayValue = changeData.oldValue;
       }
     }
@@ -84,16 +94,16 @@ export const SourceTypeRenderer: React.FC<SourceTypeRendererProps> = ({
       description: (
         <div style={styles.dataCard}>
           {typeof displayValue === "object"
-            ? renderObject(displayValue, "", sourceTypeChangeType === "deleted")
+            ? renderObject(displayValue, "", normalizedChangeType === "deleted")
             : String(displayValue)}
         </div>
       ),
       readonly: false,
     };
 
-    if (sourceTypeChangeType === "added") {
+    if (normalizedChangeType === "added") {
       sourceTypeProps.sourceTypeChange = { type: "added" };
-    } else if (sourceTypeChangeType === "deleted") {
+    } else if (normalizedChangeType === "deleted") {
       sourceTypeProps.isDeleted = true;
       sourceTypeProps.sourceTypeChange = { type: "deleted" };
     }
@@ -102,7 +112,7 @@ export const SourceTypeRenderer: React.FC<SourceTypeRendererProps> = ({
   }
 
   // For all other cases (modified or nested changes), use SourceTypeCard
-  if (hasNestedStructureChanges || sourceTypeChangeType === "modified") {
+  if (hasNestedStructureChanges || normalizedChangeType === "modified") {
     const modifiedChangeData = changeData || {
       sourceTypeName: sourceTypeName,
       changeType: "modified",
@@ -124,7 +134,7 @@ export const SourceTypeRenderer: React.FC<SourceTypeRendererProps> = ({
     <SourceTypeBoxTemplate
       key={sourceTypeIndex}
       classNames="source-type-box"
-      label={sourceTypeName}
+      label={formatLabel(sourceTypeName)}
       description={
         <div style={styles.dataCard}>
           {typeof sourceTypeValue === "object"

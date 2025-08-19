@@ -44,10 +44,13 @@ export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
   }
 
   if (activityChangeType === "modified") {
+    // Prevent rendering if actually an added or deleted activity
+    if (activity.changeType === "added" || activity.changeType === "deleted") {
+      return null;
+    }
     const sourceTypes = isModifiedActivity
       ? activity.new_value?.source_types || {}
       : activity.sourceTypes || {};
-
     return (
       <Box key={activityName} mb={3} style={styles.sourceCard}>
         <Box

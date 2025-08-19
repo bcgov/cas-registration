@@ -112,361 +112,6 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
     ...detectAddedSourceTypes(),
   ];
 
-  if (modifiedFacilityData && modifiedFacilityData.change_type === "modified") {
-    const oldFacilityData = Object.values(
-      modifiedFacilityData.old_value,
-    )[0] as any;
-    const newFacilityData = Object.values(
-      modifiedFacilityData.new_value,
-    )[0] as any;
-
-    const actualFacilityName = newFacilityData?.facility_name || facilityName;
-
-    const prepareEmissionSummaryData = () => {
-      const oldSummary = oldFacilityData?.emission_summary;
-      const newSummary = newFacilityData?.emission_summary;
-
-      // Avoid variable shadowing by renaming local variables
-      const localFacilityName =
-        newFacilityData?.facility_name || oldFacilityData?.facility_name || "";
-      const localDeletedActivities: any[] = [];
-
-      if (!oldSummary && !newSummary) return [];
-      if (!oldSummary && newSummary)
-        return [
-          {
-            field: "emission_summary",
-            old_value: null,
-            new_value: newSummary,
-            change_type: "added",
-            facilityName: localFacilityName,
-            deletedActivities: localDeletedActivities,
-          },
-        ];
-      if (oldSummary && !newSummary)
-        return [
-          {
-            field: "emission_summary",
-            old_value: oldSummary,
-            new_value: null,
-            change_type: "deleted",
-            facilityName: localFacilityName,
-            deletedActivities: localDeletedActivities,
-          },
-        ];
-
-      // Compare old and new emission summaries
-      return [
-        {
-          field: "emission_summary",
-          old_value: oldSummary,
-          new_value: newSummary,
-          change_type: "modified",
-          facilityName: localFacilityName,
-          deletedActivities: localDeletedActivities,
-        },
-      ];
-    };
-
-    const prepareProductionData = () => {
-      const oldProducts = oldFacilityData?.report_products || {};
-      const newProducts = newFacilityData?.report_products || {};
-
-      const allProductNames = new Set([
-        ...Object.keys(oldProducts),
-        ...Object.keys(newProducts),
-      ]);
-      const productChanges: any[] = [];
-
-      allProductNames.forEach((productName) => {
-        const oldProduct = oldProducts[productName];
-        const newProduct = newProducts[productName];
-
-        if (!oldProduct && newProduct) {
-          productChanges.push({
-            old_value: null,
-            new_value: { [productName]: newProduct },
-            change_type: "added",
-          });
-        } else if (oldProduct && !newProduct) {
-          productChanges.push({
-            old_value: { [productName]: oldProduct },
-            new_value: null,
-            change_type: "deleted",
-          });
-        } else if (oldProduct && newProduct) {
-          productChanges.push({
-            old_value: { [productName]: oldProduct },
-            new_value: { [productName]: newProduct },
-            change_type: "modified",
-          });
-        }
-      });
-
-      return productChanges;
-    };
-
-    const prepareEmissionAllocationData = () => {
-      const oldAllocation = oldFacilityData?.report_emission_allocation;
-      const newAllocation = newFacilityData?.report_emission_allocation;
-
-      const allocationChanges: any[] = [];
-
-      // Handle main allocation data
-      if (!oldAllocation && newAllocation) {
-        allocationChanges.push({
-          field: "report_emission_allocation",
-          old_value: null,
-          new_value: newAllocation,
-          change_type: "added",
-        });
-      } else if (oldAllocation && !newAllocation) {
-        allocationChanges.push({
-          field: "report_emission_allocation",
-          old_value: oldAllocation,
-          new_value: null,
-          change_type: "deleted",
-        });
-      } else if (oldAllocation && newAllocation) {
-        const oldAllocations =
-          oldAllocation.report_product_emission_allocations || [];
-        const newAllocations =
-          newAllocation.report_product_emission_allocations || [];
-
-        const maxLength = Math.max(
-          oldAllocations.length,
-          newAllocations.length,
-        );
-        for (let i = 0; i < maxLength; i++) {
-          const oldItem = oldAllocations[i] || null;
-          const newItem = newAllocations[i] || null;
-
-          if (!oldItem && newItem) {
-            allocationChanges.push({
-              field: `root['facility_reports']['${actualFacilityName}']['report_emission_allocation']['report_product_emission_allocations'][${i}]`,
-              old_value: null,
-              new_value: newItem,
-              change_type: "added",
-            });
-          } else if (oldItem && !newItem) {
-            allocationChanges.push({
-              field: `root['facility_reports']['${actualFacilityName}']['report_emission_allocation']['report_product_emission_allocations'][${i}]`,
-              old_value: oldItem,
-              new_value: null,
-              change_type: "deleted",
-            });
-          } else if (
-            oldItem &&
-            newItem &&
-            JSON.stringify(oldItem) !== JSON.stringify(newItem)
-          ) {
-            allocationChanges.push({
-              field: `root['facility_reports']['${actualFacilityName}']['report_emission_allocation']['report_product_emission_allocations'][${i}]`,
-              old_value: oldItem,
-              new_value: newItem,
-              change_type: "modified",
-            });
-          }
-        }
-
-        // Handle Report Product Emission Allocation Totals
-        const oldTotals =
-          oldAllocation.report_product_emission_allocation_totals || [];
-        const newTotals =
-          newAllocation.report_product_emission_allocation_totals || [];
-
-        // Compare each total item
-        const maxTotalsLength = Math.max(oldTotals.length, newTotals.length);
-        for (let i = 0; i < maxTotalsLength; i++) {
-          const oldTotal = oldTotals[i] || null;
-          const newTotal = newTotals[i] || null;
-
-          if (!oldTotal && newTotal) {
-            allocationChanges.push({
-              field: `Report Product Emission Allocation Totals[${i}]`,
-              old_value: null,
-              new_value: newTotal,
-              change_type: "added",
-            });
-          } else if (oldTotal && !newTotal) {
-            allocationChanges.push({
-              field: `Report Product Emission Allocation Totals[${i}]`,
-              old_value: oldTotal,
-              new_value: null,
-              change_type: "deleted",
-            });
-          } else if (
-            oldTotal &&
-            newTotal &&
-            JSON.stringify(oldTotal) !== JSON.stringify(newTotal)
-          ) {
-            allocationChanges.push({
-              field: `Report Product Emission Allocation Totals[${i}]`,
-              old_value: oldTotal,
-              new_value: newTotal,
-              change_type: "modified",
-            });
-          }
-        }
-      }
-
-      return allocationChanges;
-    };
-
-    const prepareNonAttributableEmissionsData = () => {
-      const oldEmissions =
-        oldFacilityData?.reportnonattributableemissions_records || [];
-      const newEmissions =
-        newFacilityData?.reportnonattributableemissions_records || [];
-
-      // Simple comparison - you might want to make this more sophisticated
-      if (oldEmissions.length === 0 && newEmissions.length > 0) {
-        return newEmissions.map((emission: any) => ({
-          old_value: null,
-          new_value: emission,
-          change_type: "added",
-        }));
-      } else if (oldEmissions.length > 0 && newEmissions.length === 0) {
-        return oldEmissions.map((emission: any) => ({
-          old_value: emission,
-          new_value: null,
-          change_type: "deleted",
-        }));
-      } else if (
-        oldEmissions.length !== newEmissions.length ||
-        JSON.stringify(oldEmissions) !== JSON.stringify(newEmissions)
-      ) {
-        return newEmissions.map((emission: any, index: number) => ({
-          old_value: oldEmissions[index] || null,
-          new_value: emission,
-          change_type: oldEmissions[index] ? "modified" : "added",
-        }));
-      }
-
-      return [];
-    };
-
-    const activityData = prepareActivityData();
-    const emissionSummaryData = prepareEmissionSummaryData();
-    const productionData = prepareProductionData();
-    const emissionAllocationData = prepareEmissionAllocationData();
-    const nonAttributableEmissionsData = prepareNonAttributableEmissionsData();
-
-    return (
-      <Box>
-        <SectionReview
-          title={`Report Information - ${actualFacilityName}`}
-          fields={[]}
-          data={{}}
-          expandable={true}
-        >
-          {/* Activity Data Changes */}
-          {activityData.length > 0 && (
-            <Box mb={4}>
-              <ActivityDataChangeView
-                activities={{}}
-                addedActivities={activityData.filter(
-                  (a) => a.change_type === "added",
-                )}
-                sourceTypeChanges={[]}
-                modifiedActivities={activityData.filter(
-                  (a) => a.change_type === "modified",
-                )}
-                deletedActivities={activityData.filter(
-                  (a) => a.change_type === "deleted",
-                )}
-              />
-            </Box>
-          )}
-
-          {/* Emission Summary Changes */}
-          {emissionSummaryData.length > 0 && (
-            <Box mb={3}>
-              <EmissionSummaryChangeView data={emissionSummaryData} />
-            </Box>
-          )}
-
-          {/* Production Data Changes */}
-          {productionData.length > 0 && (
-            <Box mb={3}>
-              <ProductionDataChangeView data={productionData} />
-            </Box>
-          )}
-
-          {/* Emission Allocation Changes */}
-          {emissionAllocationData.length > 0 && (
-            <Box mb={3}>
-              <EmissionAllocationChangeView data={emissionAllocationData} />
-            </Box>
-          )}
-
-          {/* Non-Attributable Emissions Changes */}
-          {nonAttributableEmissionsData.length > 0 && (
-            <Box mb={3}>
-              <SectionReview
-                title="Non-Attributable Emissions"
-                data={{}}
-                fields={[]}
-              >
-                <Box ml={2}>
-                  <FieldDisplay
-                    label="Did your non-attributable emissions exceed 100 tCO2e?"
-                    value={nonAttributableEmissionsData.length > 0}
-                  />
-                  {nonAttributableEmissionsData.map(
-                    (change: any, index: number) => (
-                      <Box key={index} mb={2}>
-                        {change.change_type && (
-                          <StatusLabel
-                            type={
-                              change.change_type === "deleted" ||
-                              change.change_type === "removed"
-                                ? "deleted"
-                                : change.change_type === "added"
-                                  ? "added"
-                                  : "modified"
-                            }
-                          />
-                        )}
-                        {/* For removed/deleted items, show old_value. For others, show new_value */}
-                        {Object.entries(
-                          change.change_type === "removed" ||
-                            change.change_type === "deleted"
-                            ? change.old_value || {}
-                            : change.new_value || {},
-                        ).map(([key, value]) => (
-                          <FieldDisplay
-                            key={key}
-                            label={nonAttributableEmissionLabels[key] || key}
-                            value={value}
-                            isAdded={change.change_type === "added"}
-                            isDeleted={
-                              change.change_type === "deleted" ||
-                              change.change_type === "removed"
-                            }
-                            oldValue={
-                              typeof change.old_value === "object" &&
-                              change.old_value !== null
-                                ? change.old_value[key]
-                                : change.old_value
-                            }
-                          />
-                        ))}
-                        {index < nonAttributableEmissionsData.length - 1 && (
-                          <hr className="my-4" />
-                        )}
-                      </Box>
-                    ),
-                  )}
-                </Box>
-              </SectionReview>
-            </Box>
-          )}
-        </SectionReview>
-      </Box>
-    );
-  }
-
   // Check if this is a modified facility (has changes but not added/removed)
   const isFacilityModified =
     !facilityData.isFacilityAdded &&
@@ -512,9 +157,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
           expandable={true}
         >
           {/* Activity Data Changes */}
-          {(Object.keys(facilityData.activities).length > 0 ||
-            (addedActivities && addedActivities.length > 0) ||
-            (deletedActivities && deletedActivities.length > 0)) && (
+          {Object.keys(facilityData.activities).length > 0 && (
             <Box mb={3}>
               <ActivityDataChangeView
                 activities={facilityData.activities}
@@ -565,20 +208,26 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                     (change: NonAttributableEmission, index: number) => {
                       if (change.change_type === "modified") {
                         // Get all unique keys from old and new value
+                        const oldObj =
+                          typeof change.old_value === "object" &&
+                          change.old_value !== null
+                            ? change.old_value
+                            : {};
+                        const newObj =
+                          typeof change.new_value === "object" &&
+                          change.new_value !== null
+                            ? change.new_value
+                            : {};
                         const keys = Array.from(
                           new Set([
-                            ...Object.keys(change.old_value || {}),
-                            ...Object.keys(change.new_value || {}),
+                            ...Object.keys(oldObj),
+                            ...Object.keys(newObj),
                           ]),
                         );
                         return (
                           <Box key={index} mb={2}>
                             {keys
-                              .filter(
-                                (key) =>
-                                  change.old_value?.[key] !==
-                                  change.new_value?.[key],
-                              )
+                              .filter((key) => oldObj[key] !== newObj[key])
                               .map((key) => (
                                 <ChangeItemDisplay
                                   key={key}
@@ -586,8 +235,8 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                                     field: key,
                                     displayLabel:
                                       nonAttributableEmissionLabels[key] || key,
-                                    old_value: change.old_value?.[key] ?? null,
-                                    new_value: change.new_value?.[key] ?? null,
+                                    old_value: oldObj[key] ?? null,
+                                    new_value: newObj[key] ?? null,
                                     change_type: "modified",
                                   }}
                                 />
@@ -599,6 +248,17 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                         );
                       }
                       // ...handle added/deleted/removed as before
+                      const valueObj =
+                        change.change_type === "removed" ||
+                        change.change_type === "deleted"
+                          ? typeof change.old_value === "object" &&
+                            change.old_value !== null
+                            ? change.old_value
+                            : {}
+                          : typeof change.new_value === "object" &&
+                            change.new_value !== null
+                          ? change.new_value
+                          : {};
                       return (
                         <Box key={index} mb={2}>
                           {change.change_type && (
@@ -608,17 +268,12 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                                 change.change_type === "removed"
                                   ? "deleted"
                                   : change.change_type === "added"
-                                    ? "added"
-                                    : "modified"
+                                  ? "added"
+                                  : "modified"
                               }
                             />
                           )}
-                          {Object.entries(
-                            change.change_type === "removed" ||
-                              change.change_type === "deleted"
-                              ? change.old_value || {}
-                              : change.new_value || {},
-                          ).map(([key, value]) => (
+                          {Object.entries(valueObj).map(([key, value]) => (
                             <FieldDisplay
                               key={key}
                               {...getFieldDisplayProps(change, key, value)}

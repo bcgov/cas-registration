@@ -305,10 +305,10 @@ describe("ReviewChanges", () => {
       },
     ];
 
-    const {
-      getSection,
-    } = require("@reporting/src/app/components/changeReview/utils/utils");
-    getSection.mockReturnValue("Other");
+    // const {
+    //   getSection,
+    // } = require("@reporting/src/app/components/changeReview/utils/utils");
+    // getSection.mockReturnValue("Other");
 
     render(<ReviewChanges changes={otherChanges} />);
 

@@ -16,7 +16,7 @@ export function parseFacilityReportField(field: string): {
   if (!facilityMatch) return null;
 
   // Remove any surrounding quotes from facility name
-  const facilityName = facilityMatch[1].replace(/^['"]|['"]$/g, "");
+  const facilityName = facilityMatch[1].replace(/(^['"])|(['"]$)/g, "");
 
   const remainingPath = field.substring(
     facilityMatch.index! + facilityMatch[0].length,
@@ -24,7 +24,7 @@ export function parseFacilityReportField(field: string): {
 
   const pathSegments = remainingPath.match(/\[[^\[\]]*\]/g) || [];
   const cleanSegments = pathSegments.map((segment) =>
-    segment.slice(1, -1).replace(/^'|'$/g, ""),
+    segment.slice(1, -1).replace(/^['"]|['"]$/g, ""),
   );
 
   if (cleanSegments.length === 0) {
@@ -165,18 +165,24 @@ export function detectActivityChangesInModifiedFacility(change: ChangeItem): {
   let newActivities: Record<string, any> = {};
 
   if (change.change_type === "removed") {
-    // Old value contains the activity, new is null
     if (isValidFacilityObject(oldValue)) {
       oldActivities = oldValue.activity_data || {};
-    } else if (oldValue?.activity) {
-      oldActivities = { [oldValue.activity]: oldValue };
+    } else if (
+      oldValue &&
+      typeof oldValue === "object" &&
+      "activity" in oldValue
+    ) {
+      oldActivities = { [(oldValue as any).activity]: oldValue };
     }
   } else if (change.change_type === "added") {
-    // New value contains the activity, old is null
     if (isValidFacilityObject(newValue)) {
       newActivities = newValue.activity_data || {};
-    } else if (newValue?.activity) {
-      newActivities = { [newValue.activity]: newValue };
+    } else if (
+      newValue &&
+      typeof newValue === "object" &&
+      "activity" in newValue
+    ) {
+      newActivities = { [(newValue as any).activity]: newValue };
     }
   } else if (change.change_type === "modified") {
     // Both sides contain activities

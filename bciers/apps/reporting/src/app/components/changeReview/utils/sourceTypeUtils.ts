@@ -1,89 +1,76 @@
-import {
-  SourceTypeChange,
-  SourceTypeChangeDetection,
-} from "../../finalReview/templates/types";
+import { SourceTypeChange } from "../../finalReview/templates/types";
 
-// Function to detect and handle source type changes
+export type DetectedSourceTypeChange = {
+  changeType: "added" | "deleted" | "modified" | null;
+  changeData?: {
+    newValue: any;
+    sourceTypeName: string;
+    changeType: "added" | "deleted" | "modified";
+    oldValue: any;
+    fields: any[];
+  };
+};
+
 export const detectSourceTypeChanges = (
   sourceTypeName: string,
   sourceTypeData: any,
   sourceTypeChanges?: SourceTypeChange[],
-): SourceTypeChangeDetection => {
-  // First, check if sourceTypeData itself contains change information
-  if (sourceTypeData && typeof sourceTypeData === "object") {
-    if (
-      sourceTypeData.sourceTypeName &&
-      sourceTypeData.fields &&
-      Array.isArray(sourceTypeData.fields)
-    ) {
-      const field = sourceTypeData.fields[0];
-      if (field) {
-        const changeType =
-          field.change_type ||
-          (!field.old_value && field.new_value
-            ? "added"
-            : field.old_value && !field.new_value
-            ? "deleted"
-            : "modified");
+): DetectedSourceTypeChange => {
+  // Case 1: sourceTypeData provided
+  if (
+    sourceTypeData &&
+    typeof sourceTypeData === "object" &&
+    sourceTypeData.sourceTypeName &&
+    Array.isArray(sourceTypeData.fields) &&
+    sourceTypeData.fields.length > 0
+  ) {
+    const field = sourceTypeData.fields[0];
+    const changeType: "added" | "deleted" | "modified" =
+      field.change_type ||
+      (!field.old_value && field.new_value
+        ? "added"
+        : field.old_value && !field.new_value
+        ? "deleted"
+        : "modified");
 
-        return {
-          changeType,
-          changeData: {
-            sourceTypeName: sourceTypeData.sourceTypeName,
-            changeType,
-            oldValue: field.old_value,
-            newValue: field.new_value,
-            fields: sourceTypeData.fields,
-          },
-        };
-      }
-    }
+    return {
+      changeType,
+      changeData: {
+        sourceTypeName: sourceTypeData.sourceTypeName,
+        changeType,
+        oldValue: field.old_value,
+        newValue: field.new_value,
+        fields: sourceTypeData.fields,
+      },
+    };
   }
 
-  // Fallback to existing logic for backward compatibility
+  // Case 2: sourceTypeChanges array
   if (!sourceTypeChanges) return { changeType: null };
 
-  const change = sourceTypeChanges.find((sourceTypeChange) => {
-    if (sourceTypeChange.sourceTypeName === sourceTypeName) {
-      return true;
-    }
-
-    if (sourceTypeChange.fields && Array.isArray(sourceTypeChange.fields)) {
-      return sourceTypeChange.fields.some((field: any) => {
-        if (!field.field) return false;
-
-        const fieldPath = field.field;
-        const sourceTypeMatch = fieldPath.match(
-          /\['source_types'\]\['([^']+)'\]/,
+  const change = sourceTypeChanges.find((stc) => {
+    if (stc.sourceTypeName === sourceTypeName) return true;
+    if (Array.isArray(stc.fields)) {
+      return stc.fields.some((f: any) => {
+        if (!f.field) return false;
+        const match = f.field.match(/\['source_types'\]\['([^']+)'\]/);
+        return (
+          match?.[1] === sourceTypeName || f.field.includes(sourceTypeName)
         );
-
-        if (sourceTypeMatch && sourceTypeMatch[1]) {
-          const extractedSourceTypeName = sourceTypeMatch[1];
-          return extractedSourceTypeName === sourceTypeName;
-        }
-
-        return fieldPath.includes(sourceTypeName);
       });
     }
-
     return false;
   });
 
   if (!change) return { changeType: null };
 
-  if (
-    change.fields &&
-    Array.isArray(change.fields) &&
-    change.fields.length > 0
-  ) {
+  if (Array.isArray(change.fields) && change.fields.length > 0) {
     const fieldChange = change.fields[0];
-
     let changeType: "added" | "deleted" | "modified" = "modified";
+
     if (
       fieldChange.change_type &&
-      (fieldChange.change_type === "added" ||
-        fieldChange.change_type === "deleted" ||
-        fieldChange.change_type === "modified")
+      ["added", "deleted", "modified"].includes(fieldChange.change_type)
     ) {
       changeType = fieldChange.change_type;
     } else if (!fieldChange.old_value && fieldChange.new_value) {
@@ -95,15 +82,25 @@ export const detectSourceTypeChanges = (
     return {
       changeType,
       changeData: {
-        ...change,
+        sourceTypeName: change.sourceTypeName ?? sourceTypeName,
         changeType,
         oldValue: fieldChange.old_value,
         newValue: fieldChange.new_value,
+        fields: change.fields ?? [],
       },
     };
   }
 
-  return { changeType: change.changeType, changeData: change };
+  return {
+    changeType: change.changeType ?? null,
+    changeData: {
+      sourceTypeName: change.sourceTypeName ?? sourceTypeName,
+      changeType: "modified",
+      oldValue: null,
+      newValue: null,
+      fields: change.fields ?? [],
+    },
+  };
 };
 
 // Check if source type has nested changes
@@ -128,9 +125,7 @@ export const groupSourceTypeChangesByActivity = (
 ) => {
   return sourceTypeChanges.reduce(
     (acc, change) => {
-      if (!acc[change.activityName]) {
-        acc[change.activityName] = [];
-      }
+      if (!acc[change.activityName]) acc[change.activityName] = [];
       acc[change.activityName].push(change);
       return acc;
     },
