@@ -118,6 +118,7 @@ class ReportingDashboardService:
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
+            .distinct() # this prevents duplication in cases where the operation has had multiple owners
         )
 
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
