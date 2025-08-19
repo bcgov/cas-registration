@@ -1,3 +1,14 @@
+# [3.16.0](https://github.com/bcgov/cas-registration/compare/v3.15.0...v3.16.0) (2025-08-19)
+
+### Bug Fixes
+
+- correctly set actioncell text on compliance version status ([a618ddc](https://github.com/bcgov/cas-registration/commit/a618ddc4b863b77b802e35c7f4114825cfaf25ba))
+
+### Features
+
+- add task scheduling and retry functionality with models and services ([c8d5a2c](https://github.com/bcgov/cas-registration/commit/c8d5a2c6d0cd85e8c9afcbe7656ab8ba932bf165))
+- past reports page ([4aecd81](https://github.com/bcgov/cas-registration/commit/4aecd81c9e1e845ec1f3082c06f4014cd65ef892))
+
 # [3.15.0](https://github.com/bcgov/cas-registration/compare/v3.14.0...v3.15.0) (2025-08-15)
 
 ### Bug Fixes
