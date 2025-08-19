@@ -178,6 +178,76 @@ class TestComplianceDashboardService(TestCase):
         assert active_result.count() == 1
         assert active_result.first() == active_compliance_report_version
 
+    @patch(
+        'compliance.service.compliance_report_version_service.ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations'
+    )
+    def test_get_compliance_report_versions_for_dashboard_excludes_supplementary_reports_with_no_obligation_and_no_credits(
+        self, mock_previously_owned
+    ):
+        user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+
+        # Create a registered operation with a compliance report version with earned credits status
+        operation_1 = make_recipe(
+            'registration.tests.utils.operation', operator=user_operator.operator, status=Operation.Statuses.REGISTERED
+        )
+        report_1 = make_recipe('reporting.tests.utils.report', operator=user_operator.operator, operation=operation_1)
+        compliance_report_1 = make_recipe('compliance.tests.utils.compliance_report', report=report_1)
+        compliance_report_version_1_1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_1,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        # create a supplementary compliance report version with no obligation and no earned credits
+        make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_1,
+            is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+        )
+
+        # Create a registered operation with a compliance report version with no obligation and no earned credits
+        operation_2 = make_recipe(
+            'registration.tests.utils.operation', operator=user_operator.operator, status=Operation.Statuses.REGISTERED
+        )
+        report_2 = make_recipe('reporting.tests.utils.report', operator=user_operator.operator, operation=operation_2)
+        compliance_report_2 = make_recipe('compliance.tests.utils.compliance_report', report=report_2)
+        compliance_report_version_2_1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report_2,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+        )
+
+        # Mock the previously owned operations to return a an original and supplementary report with no obligation and no earned credits
+        previous_compliance_report_version_1 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+        )
+        previous_compliance_report_version_2 = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+        )
+
+        mock_previously_owned.return_value = ComplianceReportVersion.objects.filter(
+            id__in=[previous_compliance_report_version_1.id, previous_compliance_report_version_2.id]
+        )
+
+        result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=user_operator.user.user_guid
+        )
+
+        # Returns the union of reports for currently owned operations & reports for previously owned operations as long as they are not supplementary reports with no obligation and no earned credits
+        assert result.count() == 3
+
+        assert list(result.values_list('id', flat=True)) == [
+            compliance_report_version_1_1.id,
+            compliance_report_version_2_1.id,
+            previous_compliance_report_version_1.id,
+        ]
+
     def test_user_access_control_for_compliance_report_versions(self):
         """Test that CAS director can see all compliance report versions while industry users can only see their own"""
         cas_director = make_recipe('registration.tests.utils.cas_director')
@@ -392,6 +462,7 @@ class TestComplianceDashboardService(TestCase):
             compliance_report=compliance_report_2,
             excess_emissions_delta_from_previous=Decimal("5.0"),
             is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
         compliance_report_version_2_2.report_compliance_summary.excess_emissions = Decimal("25.0")
         compliance_report_version_2_2.report_compliance_summary.save()
