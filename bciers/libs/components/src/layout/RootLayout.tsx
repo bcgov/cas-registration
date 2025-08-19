@@ -13,6 +13,7 @@ import {
   Footer,
   Header,
   Bread,
+  BreadcrumbProvider,
 } from "@bciers/components";
 import { Main } from "@bciers/components/server";
 import SessionRoleContextProvider from "@bciers/utils/src/sessionRoleContext";
@@ -82,18 +83,20 @@ export default async function RootLayout({
             <NextAppDirEmotionCacheProvider options={{ key: "mui" }}>
               <ThemeProvider theme={theme}>
                 <CssBaseline />
-                <Header />
-                <Bread
-                  separator={<span aria-hidden="true"> &gt; </span>}
-                  capitalizeLinks
-                  defaultLinks={defaultLinks}
-                  zone={zone}
-                />
-                <Main>
-                  <SessionTimeoutHandler />
-                  {children}
-                </Main>
-                <Footer />
+                <BreadcrumbProvider>
+                  <Header />
+                  <Bread
+                    separator={<span aria-hidden="true"> &gt; </span>}
+                    capitalizeLinks
+                    defaultLinks={defaultLinks}
+                    zone={zone}
+                  />
+                  <Main>
+                    <SessionTimeoutHandler />
+                    {children}
+                  </Main>
+                  <Footer />
+                </BreadcrumbProvider>
               </ThemeProvider>
             </NextAppDirEmotionCacheProvider>
           </SessionRoleContextProvider>

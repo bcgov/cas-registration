@@ -3,6 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "@mui/material/Link";
 import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
+import { useBreadcrumb } from "./BreadcrumbContext";
 
 // 📐 type for breadcrumb props
 type TBreadCrumbProps = {
@@ -46,6 +47,7 @@ export default function Bread({
   const pathNames = paths.split("/").filter((path) => path);
   const searchParams = useSearchParams();
   const crumbTitles = Object.fromEntries(searchParams.entries());
+  const { lastTitle } = useBreadcrumb();
 
   // Not showing breadcrumbs on the onboarding page
   const showBreadcrumb = paths !== "/onboarding";
@@ -196,7 +198,7 @@ export default function Bread({
                       fontWeight: "bold",
                     }}
                   >
-                    {crumb.content}
+                    {lastTitle ?? crumb.content}
                   </li>
                 );
               }

@@ -26,7 +26,7 @@ describe("generateRequestIssuanceTaskList", () => {
     // Check Review Summary task
     expect(taskItems?.[0]).toEqual({
       type: "Page",
-      title: "Review 2024 Compliance Summary",
+      title: "Review 2024 Compliance Report",
       link: "/compliance-summaries/123/request-issuance-review-summary",
       isActive: true, // Default active page is ReviewComplianceSummary
     });

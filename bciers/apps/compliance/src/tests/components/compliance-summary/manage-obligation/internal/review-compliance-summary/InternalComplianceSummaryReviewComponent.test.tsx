@@ -9,6 +9,18 @@ vi.mock("@/compliance/src/app/components/ComplianceStepButtons", () => ({
   ),
 }));
 
+// Mock breadcrumb hook
+vi.mock("@bciers/components", async () => {
+  const actual =
+    await vi.importActual<typeof import("@bciers/components")>(
+      "@bciers/components",
+    );
+  return {
+    ...actual,
+    useBreadcrumb: () => ({ lastTitle: null, setLastTitle: vi.fn() }),
+  };
+});
+
 describe("InternalComplianceSummaryReviewComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
