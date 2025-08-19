@@ -1332,6 +1332,95 @@ class TestOperationServiceV2CheckCurrentUsersRegisteredOperation:
             is False
         )
 
+    @pytest.mark.parametrize(
+        "registration_purpose",
+        [
+            Operation.Purposes.OBPS_REGULATED_OPERATION,
+            Operation.Purposes.NEW_ENTRANT_OPERATION,
+            Operation.Purposes.OPTED_IN_OPERATION,
+        ],
+    )
+    def test_check_current_users_registered_regulated_operation_returns_true(self, registration_purpose):
+        # Create a user operator and a registered operation
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        # Create an operation with status 'Registered'
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status="Registered",
+            registration_purpose=registration_purpose,
+        )
+
+        # Check that the method returns True when there is a registered and regulated operation
+        assert Operation.objects.count() == 1
+        assert (
+            OperationDataAccessService.check_current_users_registered_regulated_operation(
+                approved_user_operator.operator.id
+            )
+            is True
+        )
+
+    @pytest.mark.parametrize(
+        "registration_purpose",
+        [
+            Operation.Purposes.POTENTIAL_REPORTING_OPERATION,
+            Operation.Purposes.REPORTING_OPERATION,
+            Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,
+        ],
+    )
+    def test_check_current_users_registered_regulated_operation_returns_false(self, registration_purpose):
+        # Create a user operator and a registered operation
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        # Create an operation with status 'Registered'
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status="Registered",
+            registration_purpose=registration_purpose,
+        )
+
+        # Check that the method returns False when there is a registered but not regulated operation
+        assert Operation.objects.count() == 1
+        assert (
+            OperationDataAccessService.check_current_users_registered_regulated_operation(
+                approved_user_operator.operator.id
+            )
+            is False
+        )
+
+    def test_check_current_users_registered_regulated_operation_returns_true_with_a_mix_of_purposes(self):
+        # Create a user operator and a registered operation
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status="Registered",
+            registration_purpose=Operation.Purposes.OBPS_REGULATED_OPERATION,  # regulated purpose
+        )
+
+        baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            created_by=approved_user_operator.user,
+            status="Registered",
+            registration_purpose=Operation.Purposes.ELECTRICITY_IMPORT_OPERATION,  # non-regulated purpose
+        )
+
+        # Check that the method returns True when there is at least one registered and regulated operation
+        assert Operation.objects.count() == 2
+        assert (
+            OperationDataAccessService.check_current_users_registered_regulated_operation(
+                approved_user_operator.operator.id
+            )
+            is True
+        )
+
     def test_returns_true_when_operation_is_registered_and_not_potential_reporting(self):
         # Create a user operator and a valid registered operation
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')

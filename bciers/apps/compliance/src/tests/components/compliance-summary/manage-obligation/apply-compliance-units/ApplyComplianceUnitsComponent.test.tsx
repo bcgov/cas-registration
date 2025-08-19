@@ -60,7 +60,6 @@ const MOCK_UNITS = [
     equivalent_value: 0,
   },
 ];
-
 const setupMocks = () => {
   (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValue({
     bccr_trading_name: MOCK_TRADING_NAME,
