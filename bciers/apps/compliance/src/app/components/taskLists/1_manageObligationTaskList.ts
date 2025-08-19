@@ -29,7 +29,7 @@ export const generateManageObligationTaskList: (
     activePage === ActivePage.ApplyComplianceUnits
       ? {
           type: "Subsection" as const,
-          title: `Review ${reportingYear} Compliance Obligation Report`,
+          title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`,
           isExpanded: true,
           elements: [
@@ -43,7 +43,7 @@ export const generateManageObligationTaskList: (
         }
       : {
           type: "Page" as const,
-          title: `Review ${reportingYear} Compliance Obligation Report`,
+          title: `Review ${reportingYear} Compliance Summary`,
           link: `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`,
           isActive: activePage === ActivePage.ReviewComplianceSummary,
         },

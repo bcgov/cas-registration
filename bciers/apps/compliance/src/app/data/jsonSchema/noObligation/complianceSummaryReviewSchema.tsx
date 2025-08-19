@@ -12,7 +12,7 @@ export const complianceSummaryReviewSchema = (
   reportingYear: number,
 ): RJSFSchema => ({
   type: "object",
-  title: `Review ${reportingYear} Compliance Report`,
+  title: `Review ${reportingYear} Compliance Summary`,
   properties: {
     // Summary Section
     summary_header: readOnlyObjectField(`From ${reportingYear} Report`),

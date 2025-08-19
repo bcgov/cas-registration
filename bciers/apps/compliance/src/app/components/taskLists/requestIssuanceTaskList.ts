@@ -18,7 +18,7 @@ export const generateRequestIssuanceTaskList: (
   const taskItems = [
     {
       type: "Page" as const,
-      title: `Review ${reportingYear} Compliance Report`,
+      title: `Review ${reportingYear} Compliance Summary`,
       link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
       isActive: activePage === ActivePage.ReviewComplianceSummary,
     },
