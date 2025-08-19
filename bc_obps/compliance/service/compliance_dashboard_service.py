@@ -31,6 +31,9 @@ class ComplianceDashboardService:
             'obligation',
             'compliance_earned_credit',
             'report_compliance_summary',
+            # Filter out compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
+        ).exclude(
+            is_supplementary=True, status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
         )
 
         if user.is_irc_user():
@@ -53,6 +56,9 @@ class ComplianceDashboardService:
                 compliance_report_versions
                 | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
                     user_guid=user_guid
+                ).exclude(
+                    is_supplementary=True,
+                    status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
                 )
             )
 
