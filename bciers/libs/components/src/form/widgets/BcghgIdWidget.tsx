@@ -116,21 +116,15 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
           inputRef={(el) => el?.focus()}
         />
         <Button onClick={() => handleSetBcghgId(manualBcghgId)}>Save</Button>
-        <Button onClick={() => setEditBcghgId(false)}>Cancel</Button>
+        <Button
+          onClick={() => {
+            setEditBcghgId(false);
+            setError(undefined);
+          }}
+        >
+          Cancel
+        </Button>
       </div>
-      {error && (
-        <div style={{ height: "0px", overflow: "visible" }}>
-          <div
-            className="w-full flex items-center text-red-600 ml-0"
-            role="alert"
-          >
-            <div className="hidden md:block mr-3">
-              <AlertIcon />
-            </div>
-            <span>{error}</span>
-          </div>
-        </div>
-      )}
     </div>
   ) : (
     <div data-testid="edit-bcghg-id-text" style={{ marginLeft: "8px" }}>
@@ -152,42 +146,50 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   );
 
   return (
-    <>
-      {formContext?.isCasDirector && !bcghgId && !formContext?.isSfo ? (
-        <Button
-          variant="outlined"
-          sx={{ mr: "14px" }}
-          disabled={editBcghgId}
-          onClick={() => handleSetBcghgId()}
-        >
-          &#xFF0B; Issue BCGHG ID
-        </Button>
-      ) : (
+    <div className="flex flex-col w-full" style={{ paddingLeft: "14px" }}>
+      <div className="flex items-center w-full">
+        {formContext?.isCasDirector && !bcghgId && !formContext?.isSfo ? (
+          <Button
+            variant="outlined"
+            disabled={editBcghgId}
+            onClick={() => handleSetBcghgId()}
+          >
+            &#xFF0B; Issue BCGHG ID
+          </Button>
+        ) : (
+          <div id={id} className="whitespace-pre-line">
+            {bcghgId ? `${bcghgId}` : "Pending"}
+          </div>
+        )}
+        {formContext?.isCasDirector && bcghgId && !formContext?.isSfo && (
+          <Button
+            variant="outlined"
+            disabled={editBcghgId}
+            sx={{ ml: "14px" }}
+            onClick={() => handleClearBcghgId()}
+          >
+            Clear BCGHG ID
+          </Button>
+        )}
+        {formContext?.isCasDirector && !formContext?.isSfo && editBcghgIdJsx}
+        <SnackBar
+          isSnackbarOpen={isSnackbarOpen}
+          message="BCGHG ID issued successfully"
+          setIsSnackbarOpen={setIsSnackbarOpen}
+        />
+      </div>
+      {error && (
         <div
-          id={id}
-          className="whitespace-pre-line"
-          style={{ paddingLeft: "14px" }}
+          className="flex items-center w-full text-red-600 ml-0"
+          role="alert"
         >
-          {bcghgId ? `${bcghgId}` : "Pending"}
+          <div className="hidden md:block mr-3">
+            <AlertIcon />
+          </div>
+          <span>{error}</span>
         </div>
       )}
-      {formContext?.isCasDirector && bcghgId && !formContext?.isSfo && (
-        <Button
-          variant="outlined"
-          sx={{ ml: "14px" }}
-          disabled={editBcghgId}
-          onClick={() => handleClearBcghgId()}
-        >
-          Clear BCGHG ID
-        </Button>
-      )}
-      {formContext?.isCasDirector && !formContext?.isSfo && editBcghgIdJsx}
-      <SnackBar
-        isSnackbarOpen={isSnackbarOpen}
-        message="BCGHG ID issued successfully"
-        setIsSnackbarOpen={setIsSnackbarOpen}
-      />
-    </>
+    </div>
   );
 };
 export default BcghgIdWidget;
