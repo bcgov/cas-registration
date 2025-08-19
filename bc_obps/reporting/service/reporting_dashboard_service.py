@@ -60,12 +60,13 @@ class ReportingDashboardService:
         # build a dict version of the filters schema
         filter_dict = filters.dict(exclude_none=True)
 
+        # Filter results for operator if user is external
         if (op := user.user_operators.first()) is not None:
             filter_dict["operator_id"] = op.operator_id
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_subquery = (
-            Report.objects.filter(**filter_dict)
+            Report.objects.filter(**filter_dict, operation_id=OuterRef("id"))
             .order_by("-id")
             .annotate(latest_version_id=latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=latest_report_version_subquery.values("status"))
@@ -107,6 +108,7 @@ class ReportingDashboardService:
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
+            .distinct() # this prevents duplication in cases where the operation has had multiple owners
         )
 
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
