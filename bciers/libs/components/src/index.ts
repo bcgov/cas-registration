@@ -6,3 +6,7 @@ export { default as Bread } from "./navigation/Bread";
 export * from "./theme/ThemeRegistry";
 export * from "./theme/EmotionCache";
 export * from "./theme/theme";
+export {
+  BreadcrumbProvider,
+  useBreadcrumb,
+} from "./navigation/BreadcrumbContext";

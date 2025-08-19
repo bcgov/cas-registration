@@ -1,7 +1,7 @@
 "use client";
 
 import ComplianceStepButtons from "@/compliance/src/app/components/ComplianceStepButtons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   complianceSummaryReviewUiSchema,
   createComplianceSummaryReviewSchema,
@@ -11,6 +11,7 @@ import FormAlerts from "@bciers/components/form/FormAlerts";
 import { ComplianceSummaryReviewPageData } from "@/compliance/src/app/types";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 import generateInvoice from "@/compliance/src/app/utils/generateInvoice";
+import { useBreadcrumb } from "@bciers/components";
 
 interface Props {
   data: ComplianceSummaryReviewPageData;
@@ -23,9 +24,20 @@ export function ComplianceSummaryReviewComponent({
 }: Readonly<Props>) {
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
+  const { setLastTitle } = useBreadcrumb();
 
   const backUrl = "/compliance-summaries";
   const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
+
+  // Set breadcrumb title for this page
+  useEffect(() => {
+    if (data?.reporting_year) {
+      setLastTitle(
+        `Review ${data.reporting_year} Compliance Obligation Report`,
+      );
+    }
+    return () => setLastTitle(null);
+  }, [data?.reporting_year, setLastTitle]);
 
   /**
    * Attempts to fetch and open a compliance invoice PDF in a new window.

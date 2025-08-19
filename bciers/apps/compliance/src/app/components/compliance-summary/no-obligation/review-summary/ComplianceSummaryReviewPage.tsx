@@ -26,7 +26,7 @@ export default async function ComplianceSummaryReviewPage({
       elements: [
         {
           type: "Page" as const,
-          title: `Review ${complianceSummary.reporting_year} Compliance Summary`,
+          title: `Review ${complianceSummary.reporting_year} Compliance Report`,
           link: `/compliance-summaries/${complianceReportVersionId}/review-summary`,
           isActive: true,
         },
