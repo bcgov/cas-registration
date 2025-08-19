@@ -2,7 +2,7 @@ from typing import List, Optional
 from uuid import UUID
 from registration.models import Operation, User, RegulatedProduct, Activity, Operator
 from ninja.types import DictStrAny
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from service.user_operator_service import UserOperatorService
 from registration.constants import UNAUTHORIZED_MESSAGE
 
@@ -101,12 +101,15 @@ class OperationDataAccessService:
         )
 
     @classmethod
-    def get_all_previously_owned_operations_for_operator(cls, user: User, operator_id: UUID) -> QuerySet[Operation]:
+    def get_previously_owned_operations_for_operator(cls, user: User, operator_id: UUID, reporting_year: Optional[int] = None) -> QuerySet[Operation]:
         """
         Returns all operations that were previously owned by the operator.
+        If a param is specified for reporting_year, the results will additionally be filtered such that the ownership
+        end data is greater than or equal to the reporting year.
+        Otherwise, all past operations will be returned.
         """
         if user.is_irc_user():
-            # to be implemented later
+            #TODO to be implemented later
             return
         else:
             operator = Operator.objects.get(id=operator_id)
@@ -115,10 +118,13 @@ class OperationDataAccessService:
                 # Raise an exception if access is denied
                 raise Exception(UNAUTHORIZED_MESSAGE)
 
+            filters = Q(designated_operators__operator_id=operator_id) & Q(designated_operators__end_date__isnull=False)
+            if reporting_year is not None:
+                filters &= Q(designated_operators__end_date__year__gte=reporting_year)
+
             return (
                 Operation.objects.filter(
-                    designated_operators__operator_id=operator_id,
-                    designated_operators__end_date__isnull=False,
+                    filters,
                 )
                 .select_related("operator", "bc_obps_regulated_operation")
                 .exclude(status__in=[Operation.Statuses.NOT_STARTED, Operation.Statuses.DRAFT])
