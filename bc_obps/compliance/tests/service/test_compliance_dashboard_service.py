@@ -462,6 +462,7 @@ class TestComplianceDashboardService(TestCase):
             compliance_report=compliance_report_2,
             excess_emissions_delta_from_previous=Decimal("5.0"),
             is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
         compliance_report_version_2_2.report_compliance_summary.excess_emissions = Decimal("25.0")
         compliance_report_version_2_2.report_compliance_summary.save()
