@@ -36,7 +36,6 @@ function generateBcghgId(
   entityId: string,
   entityType: EntityWithBcghgType,
   bcghgIdOverride?: string,
-  method: "PATCH" | "DELETE" = "PATCH",
 ) {
   const endpoint =
     entityType === EntityWithBcghgType.OPERATION
@@ -47,7 +46,7 @@ function generateBcghgId(
     ? JSON.stringify({ bcghg_id: bcghgIdOverride })
     : "{}";
 
-  return actionHandler(endpoint, method, "", {
+  return actionHandler(endpoint, "PATCH", "", {
     body: payload,
   });
 }

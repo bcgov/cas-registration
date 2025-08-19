@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -34,7 +34,7 @@ const defaultFacilityFormContext = {
 
 describe("RJSF bcghgIdWidget", () => {
   beforeEach(() => {
-    actionHandler.mockClear();
+    actionHandler.mockReset();
   });
 
   it("for an external user, should show message when operation does not have a BCGHG ID yet", () => {
@@ -287,7 +287,7 @@ describe("RJSF bcghgIdWidget", () => {
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
     expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      "this_is_a_fake_facility_bcghgid BCGHG ID issued",
+      "this_is_a_fake_facility_bcghgid",
     );
   });
 
@@ -305,9 +305,7 @@ describe("RJSF bcghgIdWidget", () => {
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(screen.getByText(/Invalid BCGHGID/i)).toBeVisible();
     await waitFor(() => {
-      expect(
-        screen.queryByText(/123456 BCGHG ID issued/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/123456/i)).not.toBeInTheDocument();
     });
   });
 
@@ -328,7 +326,8 @@ describe("RJSF bcghgIdWidget", () => {
     );
   });
 
-  it("Displays a clear button if the BCGHG ID is set", async () => {
+  it("Displays a functional clear button if the BCGHG ID is set", async () => {
+    actionHandler.mockReturnValueOnce(200);
     render(
       <FormBase
         schema={bcghgIdWidgetSchema}
@@ -337,8 +336,8 @@ describe("RJSF bcghgIdWidget", () => {
         formData={{ bcghgIdTestField: bcghgIdValue }}
       />,
     );
-    await userEvent.click(
-      screen.getByRole("button", { name: "Clear BCGHG ID" }),
+    await act(async () =>
+      userEvent.click(screen.getByRole("button", { name: "Clear BCGHG ID" })),
     );
 
     expect(actionHandler).toHaveBeenCalledWith(

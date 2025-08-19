@@ -66,3 +66,6 @@ class TestOperationBcghgIdEndpoint(CommonTestSetup):
             ),
         )
         assert response.status_code == 200
+
+        operation.refresh_from_db()
+        assert operation.bcghg_id is None

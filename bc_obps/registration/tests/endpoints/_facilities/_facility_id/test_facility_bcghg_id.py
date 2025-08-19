@@ -42,3 +42,6 @@ class TestFacilityBcghgIdEndpoint(CommonTestSetup):
             ),
         )
         assert response.status_code == 200
+
+        facility.refresh_from_db()
+        assert facility.bcghg_id is None
