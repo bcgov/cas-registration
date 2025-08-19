@@ -45,11 +45,16 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
     RegistrationPurposes.REPORTING_OPERATION;
 
   const isSFOReportingOnly = isSFO && isReportingOnly;
+  const facilityReportsArray: FacilityReport[] = Array.isArray(
+    data.facility_reports,
+  )
+    ? data.facility_reports
+    : (Object.values(data.facility_reports) as FacilityReport[]);
 
   // Component for rendering facility report information
   const renderFacilityReportInformation = () => (
     <>
-      {data?.facility_reports.map((facilityReport: FacilityReport, index) => (
+      {facilityReportsArray.map((facilityReport: FacilityReport, index) => (
         <SectionReview
           key={facilityReport.facility || `facility-${index}`}
           title={`Report Information - ${facilityReport.facility_name}`}

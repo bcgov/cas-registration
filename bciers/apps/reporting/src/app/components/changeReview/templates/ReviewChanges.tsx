@@ -82,16 +82,48 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
       detectActivityChangesInModifiedFacility(change);
     if (activityChangesResult) {
       if (activityChangesResult.addedActivities?.length) {
-        modifiedFacilityReportsWithAddedActivities[
-          activityChangesResult.facilityName
-        ] = activityChangesResult.addedActivities;
+        if (
+          !modifiedFacilityReportsWithAddedActivities[
+            activityChangesResult.facilityName
+          ]
+        ) {
+          modifiedFacilityReportsWithAddedActivities[
+            activityChangesResult.facilityName
+          ] = [];
+        }
+
+        // Append only activities not already present
+        activityChangesResult.addedActivities.forEach((activity) => {
+          const exists = modifiedFacilityReportsWithAddedActivities[
+            activityChangesResult.facilityName
+          ].some((a) => a.activity === activity.activity);
+
+          if (!exists) {
+            modifiedFacilityReportsWithAddedActivities[
+              activityChangesResult.facilityName
+            ].push(structuredClone(activity));
+          }
+        });
       }
+
       if (activityChangesResult.removedActivities?.length) {
+        if (
+          !modifiedFacilityReportsWithDeletedActivities[
+            activityChangesResult.facilityName
+          ]
+        ) {
+          modifiedFacilityReportsWithDeletedActivities[
+            activityChangesResult.facilityName
+          ] = [];
+        }
+
+        // Append instead of overwrite
         modifiedFacilityReportsWithDeletedActivities[
           activityChangesResult.facilityName
-        ] = activityChangesResult.removedActivities;
+        ].push(...structuredClone(activityChangesResult.removedActivities));
       }
     }
+
     const sourceTypeChangeResults = detectSourceTypeChanges(change);
     if (sourceTypeChangeResults.length > 0) {
       sourceTypeChanges.push(...sourceTypeChangeResults);

@@ -104,25 +104,6 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
       },
     );
 
-    if (addedActivities) {
-      addedActivities.forEach((activity) => {
-        if (activity.source_types) {
-          Object.entries(activity.source_types).forEach(
-            ([sourceTypeName, sourceTypeData]) => {
-              addedSourceTypes.push({
-                facilityName,
-                activityName: activity.activity || activity.name,
-                sourceTypeName,
-                changeType: "added",
-                newValue: sourceTypeData,
-                oldValue: null,
-              });
-            },
-          );
-        }
-      });
-    }
-
     return addedSourceTypes;
   };
 
@@ -140,59 +121,6 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
     )[0] as any;
 
     const actualFacilityName = newFacilityData?.facility_name || facilityName;
-
-    const prepareActivityData = () => {
-      const oldActivities = oldFacilityData?.activity_data || {};
-      const newActivities = newFacilityData?.activity_data || {};
-
-      const allActivityNames = new Set([
-        ...Object.keys(oldActivities),
-        ...Object.keys(newActivities),
-      ]);
-      const activityChanges: any[] = [];
-
-      allActivityNames.forEach((activityName) => {
-        const oldActivity = oldActivities[activityName];
-        const newActivity = newActivities[activityName];
-
-        if (!oldActivity && newActivity) {
-          // Added activity
-          activityChanges.push({
-            activity: activityName,
-            ...newActivity,
-            change_type: "added",
-          });
-        } else if (oldActivity && !newActivity) {
-          const keys = Object.keys(oldActivity).filter(
-            (key) => key !== "activity" && key !== "change_type",
-          );
-          const hasValidData = keys.some((key) => {
-            const value = oldActivity[key];
-            if (Array.isArray(value)) return value.length > 0;
-            if (typeof value === "object" && value !== null)
-              return Object.keys(value).length > 0;
-            return value !== undefined && value !== null && value !== "";
-          });
-          if (hasValidData) {
-            activityChanges.push({
-              activity: activityName,
-              ...oldActivity,
-              change_type: "deleted",
-            });
-          }
-        } else if (oldActivity && newActivity) {
-          // Modified activity - pass both old and new for comparison
-          activityChanges.push({
-            activity: activityName,
-            old_value: oldActivity,
-            new_value: newActivity,
-            change_type: "modified",
-          });
-        }
-      });
-
-      return activityChanges;
-    };
 
     const prepareEmissionSummaryData = () => {
       const oldSummary = oldFacilityData?.emission_summary;
@@ -495,8 +423,8 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                               change.change_type === "removed"
                                 ? "deleted"
                                 : change.change_type === "added"
-                                ? "added"
-                                : "modified"
+                                  ? "added"
+                                  : "modified"
                             }
                           />
                         )}
@@ -680,8 +608,8 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                                 change.change_type === "removed"
                                   ? "deleted"
                                   : change.change_type === "added"
-                                  ? "added"
-                                  : "modified"
+                                    ? "added"
+                                    : "modified"
                               }
                             />
                           )}

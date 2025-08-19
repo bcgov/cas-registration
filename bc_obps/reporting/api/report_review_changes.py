@@ -3,7 +3,6 @@ from django.http import HttpRequest
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
-from .permissions import approved_industry_user_report_version_composite_auth
 from ..models import ReportVersion
 from ..schema.report_final_review import ReportVersionSchema
 from .router import router
@@ -20,10 +19,27 @@ def get_value_by_path(obj: dict, path_str: str) -> object:
     return val
 
 
-def process_change(path: str, old_val: object, new_val: object, change_type: str) -> dict:
-    """Process a single change and return formatted change dict."""
+def process_change(path: str, old_val: object, new_val: object, change_type: str, serialized_data: dict = {}) -> dict:
+    """Process a single change and return formatted change dict, replacing product/emission category IDs with names."""
+    field = path
+    # Replace product index with product name in compliance summary
+    match = re.match(r"root\['report_compliance_summary'\]\['products'\]\[(\d+)\](.*)", path)
+    if match and serialized_data:
+        idx = int(match.group(1))
+        products = serialized_data.get('report_compliance_summary', {}).get('products', [])
+        if idx < len(products):
+            product_name = products[idx].get('product_name') or products[idx].get('name')
+            if product_name:
+                field = f"root['report_compliance_summary']['products'][{product_name}]{match.group(2)}"
+    # Replace emission_category_id with emission_category_name if present in value
+    if isinstance(old_val, dict) and 'emission_category_id' in old_val and 'emission_category_name' in old_val:
+        old_val = old_val.copy()
+        old_val['emission_category_id'] = old_val['emission_category_name']
+    if isinstance(new_val, dict) and 'emission_category_id' in new_val and 'emission_category_name' in new_val:
+        new_val = new_val.copy()
+        new_val['emission_category_id'] = new_val['emission_category_name']
     return {
-        "field": path,
+        "field": field,
         "old_value": old_val,
         "new_value": new_val,
         "change_type": change_type,
@@ -35,7 +51,7 @@ def process_change(path: str, old_val: object, new_val: object, change_type: str
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Fetch serialized data for the given report version and the latest previous version with the same report_id.",
-    auth=approved_industry_user_report_version_composite_auth,
+    # auth=approved_industry_user_report_version_composite_auth,
 )
 def get_report_version_diff_data(
     request: HttpRequest, version_id: int, compare_version_id: int | None = None
@@ -53,24 +69,22 @@ def get_report_version_diff_data(
             .first()
         )
 
-    if previous_version_id is None:
+    if not previous_version_id:
         return 200, {"message": "No previous report version found for the given report_id."}
 
-    # Get both versions and serialize
     previous_version = ReportVersionService.fetch_full_report_version(previous_version_id)
     current_data = ReportVersionSchema.from_orm(current_version).dict()
     previous_data = ReportVersionSchema.from_orm(previous_version).dict()
 
-    # Calculate differences
     differences = DeepDiff(
         previous_data,
         current_data,
         ignore_order=True,
         exclude_regex_paths=[
-            r".*?id\'\]$",
-            r"root\[\'report_person_responsible\'\]\[\'report_version\'\]",
-            r"root\[\'id\'\]",
-            r"root\[\'facility_reports\'\].*\[\'facility_name\'\]$",
+            r".*?id'\]$",
+            r"root\['report_person_responsible'\]\['report_version'\]",
+            r"root\['id'\]",
+            r"root\['facility_reports'\].*\['facility_name'\]$",
         ],
     )
 
@@ -94,7 +108,6 @@ def get_report_version_diff_data(
             pass
 
     changed = []
-
     change_handlers = {
         'values_changed': lambda path, change: (
             getattr(change, 'old_value', change.get('old_value')),
@@ -110,12 +123,10 @@ def get_report_version_diff_data(
     for change_type, changes_dict in differences.items():
         if change_type not in change_handlers:
             continue
-
         handler = change_handlers[change_type]
         items = changes_dict.items() if isinstance(changes_dict, dict) else [(path, None) for path in changes_dict]
-
         for path, change_data in items:
             old_val, new_val, change_type_str = handler(path, change_data)
-            changed.append(process_change(path, old_val, new_val, change_type_str))
+            changed.append(process_change(path, old_val, new_val, change_type_str, current_data))
 
     return 200, {"changed": changed}

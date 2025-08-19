@@ -63,7 +63,7 @@ interface ActivitiesViewProps {
   };
 }
 
-const excludedKeys = ["units", "fuels", "emissions", "fuel type"];
+const excludedKeys = ["units", "fuels", "emissions", "fuelType"];
 
 // --- Helper functions ---
 const getDeletedStyles = (isDeleted: boolean) =>
@@ -81,7 +81,18 @@ const renderObject = (
 
   if (Array.isArray(obj)) {
     return obj.map((item, index) => {
-      const title = labelPrefix ? `${labelPrefix} ${index + 1}:` : "";
+      // Format the label prefix to singular form and proper case
+      const formatLabel = (prefix: string) => {
+        const lower = prefix.toLowerCase();
+        if (lower === "units") return "Unit";
+        if (lower === "fuels") return "Fuel";
+        if (lower === "emissions") return "Emission";
+        return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+      };
+
+      const title = labelPrefix
+        ? `${formatLabel(labelPrefix)} ${index + 1}:`
+        : "";
       const containerStyle = {
         marginLeft: 20,
         marginBottom: 8,

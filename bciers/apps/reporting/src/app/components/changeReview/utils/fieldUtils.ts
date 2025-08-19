@@ -2,21 +2,20 @@ import { FieldChange } from "../../finalReview/templates/types";
 
 // Helper function to generate display labels
 export const generateDisplayLabel = (field: string): string => {
-  let cleanField = field;
+  if (!field) return "";
 
-  if (field.includes("['") && field.includes("']")) {
-    const matches = field.match(/\['([^']+)']$/);
-    if (matches && matches[1]) {
-      cleanField = matches[1];
-    }
+  // Extract all bracketed keys ['key']
+  const bracketMatches = field.match(/\['([^']+)']/g);
+  if (bracketMatches && bracketMatches.length > 0) {
+    field = bracketMatches[bracketMatches.length - 1].replace(/\['|']/g, "");
   } else if (field.includes(".")) {
+    // Otherwise take last segment from dot notation
     const parts = field.split(".");
-    cleanField = parts[parts.length - 1];
-  } else {
-    cleanField = field;
+    field = parts[parts.length - 1];
   }
 
-  return cleanField
+  // Convert camelCase or PascalCase to spaced words
+  return field
     .replace(/([A-Z])/g, " $1")
     .replace(/^./, (s) => s.toUpperCase())
     .trim();
