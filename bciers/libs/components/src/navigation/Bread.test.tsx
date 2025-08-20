@@ -1,6 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { usePathname, useSearchParams } from "@bciers/testConfig/mocks";
 import Bread from "./Bread";
+import { useBreadcrumb } from "./BreadcrumbContext";
+
+vi.mock("./BreadcrumbContext", () => ({
+  useBreadcrumb: vi.fn(),
+}));
 
 // Utility function to set up mocks based on the URL
 const setupMocks = (url: string) => {
@@ -12,6 +17,11 @@ const setupMocks = (url: string) => {
 describe("The Breadcrumb component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Default: no override title from context
+    (useBreadcrumb as any).mockReturnValue({
+      lastTitle: null,
+      setLastTitle: vi.fn(),
+    });
   });
 
   const testCases = [
@@ -189,6 +199,23 @@ describe("The Breadcrumb component", () => {
     );
     const lastItem = screen.getByTestId("breadcrumb-last-item");
     expect(lastItem).toHaveStyle("font-weight: bold");
+  });
+  it("should use lastTitle from BreadcrumbContext for the last breadcrumb item when provided", () => {
+    setupMocks("http://localhost:3000/administration/contacts");
+    (useBreadcrumb as any).mockReturnValue({
+      lastTitle: "Custom Last Title",
+      setLastTitle: vi.fn(),
+    });
+    render(
+      <Bread
+        separator=">"
+        capitalizeLinks={true}
+        defaultLinks={[{ label: "Dashboard", href: "/" }]}
+      />,
+    );
+    expect(screen.getByText("Custom Last Title")).toBeVisible();
+    // Original last item label should not render when lastTitle is present
+    expect(screen.queryByText("Contacts")).not.toBeInTheDocument();
   });
   it("should not capitalize links when capitalizeLinks is false", () => {
     setupMocks("http://localhost:3000/administration/add-contact");
