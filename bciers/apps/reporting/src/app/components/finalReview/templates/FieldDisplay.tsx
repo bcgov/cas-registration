@@ -28,7 +28,6 @@ export const FieldDisplay: React.FC<FieldDisplayProps> = ({
   showSeparator = true,
   isDate = false,
   isDeleted = false,
-  isAdded = false,
   oldValue,
   changeType,
 }) => {

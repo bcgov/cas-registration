@@ -1,4 +1,4 @@
-from deepdiff import DeepDiff  # type: ignore
+from deepdiff import DeepDiff
 from django.http import HttpRequest
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS

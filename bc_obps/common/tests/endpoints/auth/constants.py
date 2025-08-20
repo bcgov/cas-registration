@@ -74,6 +74,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_report_version_diff_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "generate_compliance_report_version_invoice",
             "kwargs": {"compliance_report_version_id": MOCK_INT},
         },

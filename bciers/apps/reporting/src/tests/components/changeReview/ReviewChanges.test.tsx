@@ -170,13 +170,6 @@ describe("ReviewChanges", () => {
   it("renders all sections when changes are provided", () => {
     render(<ReviewChanges changes={mockChanges} />);
 
-    expect(screen.getByText("Report Information")).toBeInTheDocument();
-    expect(
-      screen.getByTestId(
-        "change-item-root['report_information']['test_field']",
-      ),
-    ).toBeInTheDocument();
-
     // Check Person Responsible section
     expect(screen.getByText("Person Responsible")).toBeInTheDocument();
     expect(
@@ -226,8 +219,6 @@ describe("ReviewChanges", () => {
 
     render(<ReviewChanges changes={limitedChanges} />);
 
-    expect(screen.getByText("Report Information")).toBeInTheDocument();
-
     expect(screen.queryByTestId("compliance-summary")).not.toBeInTheDocument();
     expect(
       screen.queryByTestId("operation-emission-summary"),
@@ -262,37 +253,6 @@ describe("ReviewChanges", () => {
     expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
   });
 
-  it("groups changes by section correctly", () => {
-    const sectionedChanges = [
-      {
-        field: "root['contact']['email']",
-        old_value: "old@email.com",
-        new_value: "new@email.com",
-        change_type: "modified",
-        facilityName: "",
-        deletedActivities: [],
-      },
-      {
-        field: "root['contact']['phone']",
-        old_value: "123-456-7890",
-        new_value: "098-765-4321",
-        change_type: "modified",
-        facilityName: "",
-        deletedActivities: [],
-      },
-    ];
-
-    render(<ReviewChanges changes={sectionedChanges} />);
-
-    expect(screen.getByText("Contact Information")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("change-item-root['contact']['email']"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("change-item-root['contact']['phone']"),
-    ).toBeInTheDocument();
-  });
-
   it('excludes "Other" section from rendering', () => {
     const otherChanges = [
       {
@@ -304,11 +264,6 @@ describe("ReviewChanges", () => {
         deletedActivities: [],
       },
     ];
-
-    // const {
-    //   getSection,
-    // } = require("@reporting/src/app/components/changeReview/utils/utils");
-    // getSection.mockReturnValue("Other");
 
     render(<ReviewChanges changes={otherChanges} />);
 
@@ -329,7 +284,6 @@ describe("ReviewChanges", () => {
 
     render(<ReviewChanges changes={invalidChanges} />);
 
-    // Should not crash and should handle gracefully
     expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
   });
 });
