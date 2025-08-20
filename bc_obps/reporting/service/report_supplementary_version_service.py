@@ -217,13 +217,17 @@ class ReportSupplementaryVersionService:
     def clone_report_version_facilities(old_report_version: ReportVersion, new_report_version: ReportVersion) -> None:
         # Retrieve all FacilityReport instances associated with the old report version.
         facility_reports_to_clone = FacilityReport.objects.filter(report_version=old_report_version)
+
         for facility_report_to_clone in facility_reports_to_clone:
+            activities = facility_report_to_clone.activities.all()
             # Use a deep copy so that the original instance (with its relationships) is preserved.
             cloned_facility_report = copy.deepcopy(facility_report_to_clone)
             cloned_facility_report.pk = None  # Reset the primary key.
             cloned_facility_report.report_version = new_report_version  # Set the new report version.
             cloned_facility_report.is_completed = False
             cloned_facility_report.save()
+
+            cloned_facility_report.activities.set(activities)
 
             ReportSupplementaryVersionService.clone_report_version_facility_activities(
                 facility_report_to_clone, cloned_facility_report
@@ -240,34 +244,36 @@ class ReportSupplementaryVersionService:
         old_facility_report: FacilityReport, new_facility_report: FacilityReport
     ) -> None:
         # Retrieve and clone each ReportActivity for the new facility report.
-        cloned_activities = [
-            ReportSupplementaryVersionService.clone_report_version_facility_activity(old_activity, new_facility_report)
-            for old_activity in ReportActivity.objects.filter(facility_report=old_facility_report)
-        ]
-        # Update the many-to-many relationship on the new facility report
-        new_facility_report.activities.set([activity.activity for activity in cloned_activities])
+        for report_activity in ReportActivity.objects.filter(facility_report=old_facility_report):
+            ReportSupplementaryVersionService.clone_report_version_facility_activity(
+                report_activity, new_facility_report
+            )
 
     @staticmethod
     def clone_report_version_facility_activity(
-        old_activity_to_clone: ReportActivity, new_facility_report: FacilityReport
+        old_report_activity_to_clone: ReportActivity, new_facility_report: FacilityReport
     ) -> ReportActivity:
         # Create a deep copy of the old activity so that the original remains unchanged.
-        cloned_activity = copy.deepcopy(old_activity_to_clone)
+        cloned_report_activity = copy.deepcopy(old_report_activity_to_clone)
         # Reset the primary key so that Django creates a new record.
-        cloned_activity.pk = None
+        cloned_report_activity.pk = None
         # Update the foreign keys to point to the new report and facility.
-        cloned_activity.report_version = new_facility_report.report_version
-        cloned_activity.facility_report = new_facility_report
-        cloned_activity.save()
+        cloned_report_activity.report_version = new_facility_report.report_version
+        cloned_report_activity.facility_report = new_facility_report
+        cloned_report_activity.save()
 
         # Clone the related ReportRawActivityData record for the activity
-        ReportSupplementaryVersionService.clone_activity_raw_json_data(old_activity_to_clone, new_facility_report)
+        ReportSupplementaryVersionService.clone_activity_raw_json_data(
+            old_report_activity_to_clone, new_facility_report
+        )
 
         # Clone each related ReportSourceType associated with the old activity
-        for old_source_type_to_clone in ReportSourceType.objects.filter(report_activity=old_activity_to_clone):
-            ReportSupplementaryVersionService.clone_activity_source_type(old_source_type_to_clone, cloned_activity)
+        for old_source_type_to_clone in ReportSourceType.objects.filter(report_activity=old_report_activity_to_clone):
+            ReportSupplementaryVersionService.clone_activity_source_type(
+                old_source_type_to_clone, cloned_report_activity
+            )
 
-        return cloned_activity
+        return cloned_report_activity
 
     @staticmethod
     def clone_activity_raw_json_data(
