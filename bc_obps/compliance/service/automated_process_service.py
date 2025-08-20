@@ -9,23 +9,17 @@ class AutomatedProcessService:
     @classmethod
     def refresh_all_obligation_invoices(cls) -> None:
         """
-        Refreshes data for all obligation-type invoices by calling refresh_data_by_invoice
-        for each invoice that has a related compliance_obligation.
-
-        This method is designed to be run as a scheduled task to keep all obligation
+        Refreshes data for all invoices
+        This method is designed to be run as a scheduled task to keep all
         invoice data fresh from the eLicensing API.
         """
-        # Find all obligation invoices
-        obligation_invoices = ElicensingInvoice.objects.filter(compliance_obligation__isnull=False).select_related(
-            'elicensing_client_operator'
-        )
-
-        total_invoices = obligation_invoices.count()
+        all_invoices = ElicensingInvoice.objects.select_related('elicensing_client_operator')
+        total_invoices = all_invoices.count()
         successful_refreshes = 0
 
-        logger.info(f"Found {total_invoices} obligation invoices to refresh")
+        logger.info(f"Found {total_invoices} invoices to refresh")
 
-        for invoice in obligation_invoices:
+        for invoice in all_invoices:
             logger.info(f"Refreshing invoice {invoice.invoice_number}")
 
             ElicensingDataRefreshService.refresh_data_by_invoice(
@@ -34,7 +28,4 @@ class AutomatedProcessService:
 
             successful_refreshes += 1
             logger.info(f"Successfully refreshed invoice {invoice.invoice_number}")
-
-        logger.info(
-            f"Completed refresh of obligation invoices. Total: {total_invoices}, Success: {successful_refreshes}"
-        )
+        logger.info(f"Completed refresh of all invoices. Total: {total_invoices}, Success: {successful_refreshes}")
