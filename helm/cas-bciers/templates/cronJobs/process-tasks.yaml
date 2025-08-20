@@ -6,6 +6,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   schedule: "*/5 * * * *" # every 5 minutes
+  concurrencyPolicy: Forbid  # Prevent overlapping executions
   jobTemplate:
     spec:
       backoffLimit: 0
