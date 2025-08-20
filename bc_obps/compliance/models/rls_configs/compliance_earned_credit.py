@@ -9,7 +9,6 @@ class Rls:
             RlsOperations.SELECT,
             RlsOperations.INSERT,
             RlsOperations.UPDATE,
-            RlsOperations.DELETE,
         ],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT, RlsOperations.UPDATE],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
