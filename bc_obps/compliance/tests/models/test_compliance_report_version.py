@@ -46,6 +46,8 @@ class TestComplianceReportVersionRls(BaseTestCase):
             'reporting.tests.utils.report_version',
             report=approved_report,
         )
+        approved_report_compliance_summary = make_recipe('reporting.tests.utils.report_compliance_summary', report_version=approved_report_version)
+        # Create compliance report
         # approved compliance report
         approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
         # create a compliance report version for the approved compliance report version
@@ -84,21 +86,53 @@ class TestComplianceReportVersionRls(BaseTestCase):
             # breakpoint()
             # new_report_compliance_summary = make_recipe('reporting.tests.utils.report_compliance_summary')
             # Create compliance report version
-            ComplianceReportVersion.objects.create(
+            # ComplianceReportVersion.objects.create(
+            #     compliance_report=approved_compliance_report,
+            #     # report_compliance_summary=new_report_compliance_summary,
+            #     status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
+            #     excess_emissions_delta_from_previous=10,
+            #     credited_emissions_delta_from_previous=10,
+            #     is_supplementary=True,
+            #     compliance_report__report__operation__operator=approved_user_operator.operator,
+            #     # compliance_report__report__operation__naics_code=naics,
+            # )
+            # make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=new_approved_compliance_report, status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET, excess_emissions_delta_from_previous=10, credited_emissions_delta_from_previous=10, is_supplementary=True)
+            cursor.execute(
+                """
+                INSERT INTO "erc"."compliance_report_version" (
+                    compliance_report_id,
+                    report_compliance_summary_id,
+                    status,
+                    excess_emissions_delta_from_previous,
+                    credited_emissions_delta_from_previous,
+                    is_supplementary
+                ) VALUES (
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s
+                )
+            """,
+                (
+                    approved_compliance_report.id,
+                    approved_report_compliance_summary.id,
+                    ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
+                    10,
+                    10,
+                    True,
+                ),
+            )
+
+
+            assert ComplianceReportVersion.objects.filter(
                 compliance_report=approved_compliance_report,
-                # report_compliance_summary=new_report_compliance_summary,
-                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
+                report_compliance_summary=approved_report_compliance_summary,
                 excess_emissions_delta_from_previous=10,
                 credited_emissions_delta_from_previous=10,
                 is_supplementary=True,
-                compliance_report__report__operation__operator=approved_user_operator.operator,
-                # compliance_report__report__operation__naics_code=naics,
-            )
-            # make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=new_approved_compliance_report, status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET, excess_emissions_delta_from_previous=10, credited_emissions_delta_from_previous=10, is_supplementary=True)
-            breakpoint()
-
-
-            assert ComplianceReportVersion.objects.filter(status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET).exists()
+                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET).exists()
 
             # with pytest.raises(
             #     ProgrammingError, match='new row violates row-level security policy for table "compliance_report_version'
