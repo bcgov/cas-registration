@@ -6,7 +6,6 @@ import {
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
-import { redirect } from "next/navigation";
 
 // Mock the compliance summary data function
 vi.mock(
@@ -50,11 +49,6 @@ vi.mock(
   }),
 );
 
-// Mock next/navigation
-vi.mock("next/navigation", () => ({
-  redirect: vi.fn(),
-}));
-
 describe("TrackStatusOfIssuancePage", () => {
   const mockComplianceReportVersionId = 123;
   const mockData = {
@@ -90,51 +84,5 @@ describe("TrackStatusOfIssuancePage", () => {
       2024,
       ActivePage.TrackStatusOfIssuance,
     );
-  });
-
-  it("redirects to request issuance page when status is CREDITS_NOT_ISSUED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
-    });
-
-    await TrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
-    );
-  });
-
-  it("redirects to request issuance page when status is CHANGES_REQUIRED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.CHANGES_REQUIRED,
-    });
-
-    await TrackStatusOfIssuancePage({
-      compliance_report_version_id: mockComplianceReportVersionId,
-    });
-
-    expect(redirect).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
-    );
-  });
-
-  it("does not redirect when status is APPROVED", async () => {
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue({
-      ...mockData,
-      issuance_status: IssuanceStatus.APPROVED,
-    });
-
-    render(
-      await TrackStatusOfIssuancePage({
-        compliance_report_version_id: mockComplianceReportVersionId,
-      }),
-    );
-
-    expect(redirect).not.toHaveBeenCalled();
-    expect(screen.getByText("Mock Layout")).toBeVisible();
   });
 });

@@ -454,6 +454,7 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_all_attachments"},
     ],
     "approved_authorized_roles": [
+        {"method": "get", "endpoint_name": "get_user_compliance_access_status"},
         {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},
         {
             "method": "get",
