@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 from model_bakery.baker import make_recipe
 from django.core.files.base import ContentFile
 from registration.models import Operation
+from reporting.models.report_raw_activity_data import ReportRawActivityData
 from reporting.tests.service.test_report_activity_save_service import data
 from reporting.service.report_supplementary_version_service import ReportSupplementaryVersionService
 from reporting.models import (
@@ -31,9 +32,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.old_report_version = make_recipe(
             'reporting.tests.utils.report_version',
             status=ReportVersion.ReportVersionStatus.Draft,
-            is_latest_submitted=True,
         )
-        self.new_report_version = make_recipe('reporting.tests.utils.report_version')
 
         # Create a regulated product.
         self.old_regulated_product = make_recipe('registration.tests.utils.regulated_product')
@@ -99,8 +98,17 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         )
 
         # Create an old FacilityReport associated with the old report version
-        self.old_facility_report = make_recipe(
+        self.old_facility_report: FacilityReport = make_recipe(
             "reporting.tests.utils.facility_report", report_version=self.old_report_version
+        )
+
+        # Simulate user adding a few extra activities, since the workflow allows it
+        self.old_facility_report.activities.set(
+            [
+                self.old_activity,
+                make_recipe('reporting.tests.utils.activity'),
+                make_recipe('reporting.tests.utils.activity'),
+            ]
         )
 
         # Create a ReportActivity for the old FacilityReport with realistic test data
@@ -112,7 +120,7 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         )
 
         # Create a ReportRawActivityData for self.old_facility_activity
-        self.old_facility_activity = make_recipe(
+        self.old_facility_activity_raw_data = make_recipe(
             "reporting.tests.utils.report_raw_activity_data",
             facility_report=self.old_facility_activity.facility_report,
             activity=self.old_facility_activity.activity,
@@ -127,10 +135,18 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         )
 
         self.old_report_version.status = ReportVersion.ReportVersionStatus.Submitted
+        self.old_report_version.is_latest_submitted = True
         self.old_report_version.save()
+
+        self.new_report_version: ReportVersion = make_recipe(
+            'reporting.tests.utils.report_version',
+            report=self.old_report_version.report,
+            status=ReportVersion.ReportVersionStatus.Draft,
+        )
 
     def test_create_report_supplementary_version(self):
         # ACT: Call the method to create a supplementary version.
+        self.new_report_version.delete()
         new_version = ReportSupplementaryVersionService.create_report_supplementary_version(self.old_report_version.id)
 
         # ASSERT: Verify that the new report version is correctly created.
@@ -471,13 +487,8 @@ class ReportSupplementaryVersionServiceTests(TestCase):
         self.assertEqual(new_facility_report.facility_bcghgid, self.old_facility_report.facility_bcghgid)
         self.assertFalse(new_facility_report.is_completed, "Cloned FacilityReport should have is_completed=False.")
 
-        # ASSERT: Verify that the associated ReportActivity is cloned.
-        cloned_activities = new_facility_report.activities.all()
-        self.assertTrue(cloned_activities.exists(), "Cloned FacilityReport should have at least one activity.")
-        self.assertIn(
-            self.old_facility_activity.activity,
-            cloned_activities,
-            "The activity from the old ReportActivity should be present on the cloned FacilityReport.",
+        self.assertQuerySetEqual(
+            new_facility_report.activities.all(), self.old_facility_report.activities.all(), ordered=False
         )
 
         # ASSERT: Verify that the ReportActivity ReportRawActivityData is cloned.
@@ -487,6 +498,14 @@ class ReportSupplementaryVersionServiceTests(TestCase):
             cloned_report_activity.json_data,
             self.old_facility_activity.json_data,
             "The json_data of the cloned ReportActivity should match the original.",
+        )
+
+        new_raw_data = ReportRawActivityData.objects.filter(facility_report=new_facility_report).all()
+        self.assertEqual(new_raw_data.count(), 1, "There should be one cloned ReportRawActivityData.")
+        self.assertEqual(
+            new_raw_data[0].json_data,
+            self.old_facility_activity_raw_data.json_data,
+            "The raw data should have been cloned",
         )
 
     def test_reapply_emission_categories(self):
