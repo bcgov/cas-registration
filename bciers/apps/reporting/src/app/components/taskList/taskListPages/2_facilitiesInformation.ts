@@ -10,6 +10,17 @@ const activitiesPageFactory: TaskListPageFactory = async (
   facilityId,
   context,
 ) => {
+  if (!facilityId) {
+    return {
+      element: {
+        type: "Section",
+        title: "Activities information",
+        isExpanded: false,
+        elements: [],
+      },
+    };
+  }
+
   const orderedActivities =
     context?.orderedActivities ??
     (await getOrderedActivities(reportVersionId, facilityId));
