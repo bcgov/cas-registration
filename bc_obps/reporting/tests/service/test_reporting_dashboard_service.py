@@ -38,7 +38,7 @@ class TestReportingDashboardService:
             }
         )
         mock_get_by_guid.return_value = user_operator.user
-        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
         operations = operation_baker(operator_id=user_operator.operator.id, _quantity=5)
@@ -107,9 +107,6 @@ class TestReportingDashboardService:
         assert op2_result["report_version_id"] is None
         assert op2_result["report_status"] is None
 
-    @patch(
-        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
-    )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_past_reports_for_reporting_dashboard(
         self,
@@ -281,7 +278,7 @@ class TestReportingDashboardService:
             }
         )
         mock_get_by_guid.return_value = user_operator.user
-        mock_get_all_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
 
         year = reporting_year_baker(reporting_year=5091)
         operations = operation_baker(operator_id=user_operator.operator.id, _quantity=4)
