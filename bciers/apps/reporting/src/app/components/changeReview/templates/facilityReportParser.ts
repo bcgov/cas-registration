@@ -23,9 +23,10 @@ export function parseFacilityReportField(field: string): {
   );
 
   const pathSegments = remainingPath.match(/\[[^\[\]]*\]/g) || [];
-  const cleanSegments = pathSegments.map((segment) =>
-    segment.slice(1, -1).replace(/^['"]|['"]$/g, ""),
-  );
+  const cleanSegments = pathSegments.map((segment) => {
+    const match = segment.match(/^\[(?:'|")?(.*?)(?:'|")?\]$/);
+    return match ? match[1] : "";
+  });
 
   if (cleanSegments.length === 0) {
     return {
