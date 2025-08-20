@@ -19,7 +19,7 @@ bccr_service = BCCarbonRegistryAccountService()
     auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def get_bccr_account_details(
-    request: HttpRequest, account_id: FifteenDigitString
+    request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
 ) -> Tuple[Literal[200], Dict[str, Optional[str]]]:
     account_details = bccr_service.get_account_details(account_id=account_id)
     trading_name = getattr(account_details, "trading_name", None) if account_details else None
