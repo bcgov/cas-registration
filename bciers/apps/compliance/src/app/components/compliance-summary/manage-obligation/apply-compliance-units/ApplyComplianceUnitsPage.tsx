@@ -4,16 +4,18 @@ import {
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
+import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
 
 export default async function ApplyComplianceUnitsPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
-  const reportingYearData = await getReportingYear();
+  const tasklistData = await getObligationTasklistData(
+    complianceReportVersionId,
+  );
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYearData,
+    tasklistData,
     ActivePage.ApplyComplianceUnits,
   );
 
@@ -24,7 +26,7 @@ export default async function ApplyComplianceUnitsPage({
     >
       <ApplyComplianceUnitsComponent
         complianceReportVersionId={complianceReportVersionId}
-        reportingYear={reportingYearData.reporting_year}
+        reportingYear={tasklistData.reporting_year}
       />
     </CompliancePageLayout>
   );

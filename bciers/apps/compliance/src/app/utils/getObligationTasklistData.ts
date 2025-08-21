@@ -1,9 +1,9 @@
 import { actionHandler } from "@bciers/actions";
-import { TasklistData } from "@/compliance/src/app/types";
+import { ObligationTasklistData } from "@/compliance/src/app/types";
 
 export const getObligationTasklistData = async (
   complianceReportVersionId: number,
-): Promise<TasklistData> => {
+): Promise<ObligationTasklistData> => {
   const data = await actionHandler(
     `compliance/compliance-report-versions/${complianceReportVersionId}/obligation-tasklist`,
     "GET",
@@ -18,5 +18,5 @@ export const getObligationTasklistData = async (
     throw new Error("Invalid response format from tasklist data endpoint");
   }
 
-  return data as TasklistData;
+  return data as ObligationTasklistData;
 };

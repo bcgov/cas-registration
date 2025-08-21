@@ -5,16 +5,18 @@ import {
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import PaymentInstructionsDownloadComponent from "./PaymentInstructionsDownloadComponent";
 import getInvoiceByComplianceReportVersionId from "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
+import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
 
 export default async function PaymentInstructionsDownloadPage({
   compliance_report_version_id: complianceReportVersionId,
 }: HasComplianceReportVersion) {
-  const reportingYearData = await getReportingYear();
+  const tasklistData = await getObligationTasklistData(
+    complianceReportVersionId,
+  );
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYearData,
+    tasklistData,
     ActivePage.DownloadPaymentObligationInstructions,
   );
 

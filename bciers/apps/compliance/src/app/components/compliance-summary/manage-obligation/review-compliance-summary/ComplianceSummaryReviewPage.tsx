@@ -9,15 +9,19 @@ import {
   ComplianceSummaryReviewPageData,
   HasComplianceReportVersion,
 } from "@/compliance/src/app/types";
+import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
 
 export default async function ComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
   const complianceSummaryReviewPageData: ComplianceSummaryReviewPageData =
     await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
+  const tasklistData = await getObligationTasklistData(
+    complianceReportVersionId,
+  );
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    complianceSummaryReviewPageData,
+    tasklistData,
     ActivePage.ReviewComplianceSummary,
   );
 

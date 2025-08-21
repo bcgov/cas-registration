@@ -10,6 +10,7 @@ import {
   ObligationData,
   PayObligationTrackPaymentsFormData,
 } from "@/compliance/src/app/types";
+import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
 
 export default async function ObligationTrackPaymentsPayPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -22,10 +23,12 @@ export default async function ObligationTrackPaymentsPayPage({
     ...obligationWithPayments,
     payments: obligationWithPayments.payment_data.rows,
   };
-
+  const tasklistData = await getObligationTasklistData(
+    complianceReportVersionId,
+  );
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    data,
+    tasklistData,
     ActivePage.PayObligationTrackPayments,
   );
 

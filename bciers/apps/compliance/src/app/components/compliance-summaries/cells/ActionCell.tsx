@@ -35,10 +35,16 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
           cellText: "Manage Obligation",
           basePath: `${basePath}/review-compliance-obligation-report`,
         };
+      } else if (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET) {
+        return {
+          cellText: "View Details",
+          basePath: `${basePath}/manage-obligation-review-summary`,
+        };
       }
+      // brianna check if this is needed/different
       return {
         cellText: "View Details",
-        basePath: `${basePath}/review-obligation-summary`,
+        basePath: `${basePath}/review-summary`,
       };
     }
     if (

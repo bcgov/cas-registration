@@ -207,3 +207,9 @@ export interface PenaltyData {
 export interface PayPenaltyTrackPaymentsFormData extends PenaltyData {
   payments: Payment[];
 }
+
+export interface ObligationTasklistData {
+  reporting_year: number;
+  penalty_status: string;
+  outstanding_balance: number;
+}

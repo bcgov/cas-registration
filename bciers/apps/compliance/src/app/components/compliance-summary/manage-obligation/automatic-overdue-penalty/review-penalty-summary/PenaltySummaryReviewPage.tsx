@@ -1,11 +1,11 @@
-import {
-  generateAutomaticOverduePenaltyTaskList,
-  ActivePage,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import PenaltySummaryReviewComponent from "./PenaltySummaryReviewComponent";
 import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
+import {
+  ActivePage,
+  generateManageObligationTaskList,
+} from "../../../../taskLists/1_manageObligationTaskList";
 
 interface Props {
   compliance_report_version_id: number;
@@ -17,11 +17,13 @@ export default async function PenaltySummaryReviewPage({
   const penaltyData = await getAutomaticOverduePenalty(
     complianceReportVersionId,
   );
-  const { reporting_year: reportingYear } = await getReportingYear();
-
-  const taskListElements = generateAutomaticOverduePenaltyTaskList(
+  const tasklistData = await getObligationTasklistData(
     complianceReportVersionId,
-    reportingYear,
+  );
+
+  const taskListElements = generateManageObligationTaskList(
+    complianceReportVersionId,
+    tasklistData,
     ActivePage.ReviewPenaltySummary,
   );
 
@@ -32,7 +34,7 @@ export default async function PenaltySummaryReviewPage({
     >
       <PenaltySummaryReviewComponent
         data={penaltyData}
-        reportingYear={reportingYear}
+        reportingYear={tasklistData.reporting_year}
         complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
