@@ -1,4 +1,5 @@
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
+from compliance.service.automated_process_service import AutomatedProcessService
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
 from service.email.email_service import EmailService
@@ -56,5 +57,12 @@ SCHEDULED_TASKS = [
         schedule_hour=2,
         schedule_minute=0,
         tag="daily_function_at_2am",
-    )
+    ),
+    ScheduledTaskConfig(
+        func=AutomatedProcessService.refresh_all_obligation_invoices,
+        schedule_type="daily",
+        schedule_hour=2,
+        schedule_minute=0,
+        tag="elicensing",
+    ),
 ]
