@@ -17,6 +17,7 @@ export default async function TrackStatusOfIssuancePage({
   const taskListElements = generateRequestIssuanceTaskList(
     complianceReportVersionId,
     pageData.reporting_year,
+    pageData.issuance_status,
     ActivePage.TrackStatusOfIssuance,
   );
 

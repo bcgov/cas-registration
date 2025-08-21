@@ -61,7 +61,7 @@ export interface ComplianceSummaryReviewNoEmissionNoObligationData {
 
 export interface RequestIssuanceTrackStatusData {
   earned_credits: number;
-  issuance_status: string;
+  issuance_status: IssuanceStatus;
   bccr_trading_name: string;
   holding_account_id: string;
   director_comment: string;

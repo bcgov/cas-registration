@@ -19,6 +19,7 @@ export default async function ComplianceSummaryReviewPage({
   const taskListElements = generateRequestIssuanceTaskList(
     complianceReportVersionId,
     complianceSummary.reporting_year,
+    complianceSummary.issuance_status,
     ActivePage.ReviewComplianceSummary,
   );
 
