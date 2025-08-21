@@ -313,7 +313,7 @@ LOGGING = {
     # Root logger: the default logger that all other loggers inherit from
     'root': {
         'handlers': ['console'],  # Send all root logs to console
-        'level': 'DEBUG' if DEBUG else 'WARNING',  # Show DEBUG in local, WARNING+ in other environments
+        'level': 'DEBUG' if DEBUG else 'INFO',  # Show DEBUG in local, INFO+ in other environments
     },
     # Specific loggers for different parts of the application
     'loggers': {
