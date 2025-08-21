@@ -1,13 +1,15 @@
 import pytest
 from unittest.mock import patch
-from compliance.service.automated_process_service import AutomatedProcessService
+from compliance.service.automated_process.automated_process_service import AutomatedProcessService
 from model_bakery.baker import make_recipe
 
 pytestmark = pytest.mark.django_db
 
 
 class TestAutomatedProcessService:
-    @patch('compliance.service.automated_process_service.ElicensingDataRefreshService.refresh_data_by_invoice')
+    @patch(
+        'compliance.service.automated_process.automated_process_service.ElicensingDataRefreshService.refresh_data_by_invoice'
+    )
     def test_refresh_all_obligation_invoices_calls_refresh_for_each_invoice(self, mock_refresh_data):
         invoice1 = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='INV-001')
         invoice2 = make_recipe('compliance.tests.utils.elicensing_invoice', invoice_number='INV-002')

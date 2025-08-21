@@ -1,5 +1,5 @@
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
-from compliance.service.automated_process_service import AutomatedProcessService
+from compliance.service.automated_process.automated_process_service import AutomatedProcessService
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
 from service.email.email_service import EmailService
