@@ -7,7 +7,6 @@ from django.db.models import Min, F
 from dataclasses import dataclass
 from django.db.models import Prefetch
 from reporting.models import ReportVersion, FacilityReport, ReportActivity, ReportNonAttributableEmissions
-from registration.models import Activity, RegulatedProduct
 
 
 @dataclass
@@ -152,7 +151,9 @@ class ReportVersionService:
                 "report_operation_representatives",
                 Prefetch(
                     "report_non_attributable_emissions",
-                    queryset=ReportNonAttributableEmissions.objects.prefetch_related("emission_category", "gas_type"),
+                    queryset=ReportNonAttributableEmissions.objects.select_related(
+                        "emission_category"
+                    ).prefetch_related("gas_type"),
                 ),
                 Prefetch(
                     "facility_reports",
@@ -163,8 +164,8 @@ class ReportVersionService:
                         ),
                     ),
                 ),
-                Prefetch("report_operation__activities", queryset=Activity.objects.all()),
-                Prefetch("report_operation__regulated_products", queryset=RegulatedProduct.objects.all()),
+                "report_operation__activities",
+                "report_operation__regulated_products",
             )
             .get(id=version_id)
         )
