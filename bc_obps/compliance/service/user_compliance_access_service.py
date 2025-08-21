@@ -36,8 +36,8 @@ class UserComplianceAccessService:
         # Get the operator associated with the current user
         operator = UserDataAccessService.get_operator_by_user(user_guid)
 
-        # Check if the operator has a registered operation
-        if not OperationDataAccessService.check_current_users_registered_operation(operator.id):
+        # Check if the operator has a registered regulated operation
+        if not OperationDataAccessService.check_current_users_registered_regulated_operation(operator.id):
             return UserStatusEnum.INVALID.value
 
         # If a compliance report version ID is provided, check if it belongs to this operator
