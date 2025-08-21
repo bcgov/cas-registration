@@ -26,7 +26,7 @@ const ReportHistoryDataGrid = ({
   const browserSearchParams = useSearchParams();
   const router = useRouter();
   const columns = reportHistoryColumns();
-  const backUrl = "/reports";
+  const backUrl = "/reports/current-reports";
 
   const fetchPageData = useCallback(() => {
     const searchParams = Object.fromEntries(browserSearchParams.entries());

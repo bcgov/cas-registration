@@ -49,8 +49,8 @@ describe("The getNavigationInformation function", () => {
 
     expect(navInfo).toEqual({
       taskList: [{ page1: true }, { page2: true }, { page3: true }],
-      backUrl: "/reports",
-      continueUrl: "/reports",
+      backUrl: "/reports/current-reports",
+      continueUrl: "/reports/current-reports",
       headerSteps: ["TestHeader"],
       headerStepIndex: 0,
     });

@@ -33,7 +33,7 @@ const SubmittedForm: React.FC<Props> = ({ version_id }) => {
           <FinalReviewReportSections data={data} />
           <Button
             variant="outlined"
-            onClick={() => router.push(`/reporting/reports`)}
+            onClick={() => router.push(`/reporting/reports/current-reports`)}
             sx={{ width: "fit-content" }}
           >
             Back to All Reports
