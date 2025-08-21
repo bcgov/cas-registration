@@ -29,12 +29,14 @@ class TestPenaltyByComplianceReportVersionEndpoint(CommonTestSetup):
             "payments": ElicensingPayment.objects.none(),
         }
 
+        # Mock authorization
         operator = make_recipe('registration.tests.utils.operator')
-        # Act
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
+        # Act
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=operator,
+            compliance_report__report__operation__operator=operator,
         )
         response = TestUtils.mock_get_with_auth_role(
             self,

@@ -29,6 +29,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=approved_user_operator.operator,
+            compliance_report__report__operation__operator=approved_user_operator.operator,
         )
 
         mock_obligation_data = ObligationData(
@@ -84,6 +85,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=approved_user_operator.operator,
+            compliance_report__report__operation__operator=approved_user_operator.operator,
         )
 
         mock_obligation_data = ObligationData(
@@ -131,6 +133,7 @@ class TestObligationByComplianceReportVersionEndpoint(CommonTestSetup):
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=approved_user_operator.operator,
+            compliance_report__report__operation__operator=approved_user_operator.operator,
         )
 
         mock_obligation_data = ObligationData(

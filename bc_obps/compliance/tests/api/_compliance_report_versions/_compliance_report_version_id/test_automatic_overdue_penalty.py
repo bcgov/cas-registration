@@ -38,6 +38,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
+            compliance_report__report__operation__operator=operator,
             compliance_report__report__operator=operator,
         )
 
