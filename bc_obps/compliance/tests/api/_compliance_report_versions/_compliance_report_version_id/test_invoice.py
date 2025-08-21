@@ -17,6 +17,7 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=operator,
+            compliance_report__report__operation__operator=operator,
         )
 
         # Act
@@ -49,6 +50,7 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report__report__operator=operator,
+            compliance_report__report__operation__operator=operator,
         )
 
         # Act
