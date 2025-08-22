@@ -18,6 +18,7 @@ from .schema import (
     InvoiceFee,
     InvoiceQueryResponse,
     InterestRateResponse,
+    InterestRatePeriod,
 )
 
 logger = logging.getLogger(__name__)
@@ -518,7 +519,14 @@ class ELicensingAPIClient:
         endpoint = "/interestRates"
         response = self._make_request(endpoint, method='GET')
         response.raise_for_status()
-        return InterestRateResponse(**response.json())
+
+        data = response.json()
+        periods = []
+        for period_data in data.get("periods", []):
+            period = InterestRatePeriod(rate=period_data["rate"], startDate=period_data["startDate"])
+            periods.append(period)
+
+        return InterestRateResponse(daysPerYear=data.get("daysPerYear", 365), periods=periods)
 
 
 # Create a singleton instance
