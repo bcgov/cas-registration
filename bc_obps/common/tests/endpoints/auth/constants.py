@@ -31,7 +31,7 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_obligation_tasklist_data",
-            "kwargs": {"version_id": MOCK_INT},
+            "kwargs": {"compliance_report_version_id": MOCK_INT},
         },
         {
             "method": "get",
