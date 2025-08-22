@@ -66,7 +66,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-summaries/123/review-obligation-summary",
+          "/compliance-summaries/123/manage-obligation-review-summary",
         );
       });
 

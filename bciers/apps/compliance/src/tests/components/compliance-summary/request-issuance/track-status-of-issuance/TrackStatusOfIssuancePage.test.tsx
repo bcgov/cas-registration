@@ -82,6 +82,7 @@ describe("TrackStatusOfIssuancePage", () => {
     expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
       2024,
+      IssuanceStatus.APPROVED,
       ActivePage.TrackStatusOfIssuance,
     );
   });

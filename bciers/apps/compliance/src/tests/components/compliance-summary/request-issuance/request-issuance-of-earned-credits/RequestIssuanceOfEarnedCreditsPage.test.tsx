@@ -5,7 +5,7 @@ import {
   generateRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
 
 // Mock the reporting year utility
 vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
@@ -44,36 +44,31 @@ vi.mock(
 );
 
 // Mock the compliance summary data function
-vi.mock(
-  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
-  () => ({
-    getRequestIssuanceComplianceSummaryData: vi.fn(),
-  }),
-);
+// vi.mock(
+//   "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+//   () => ({
+//     getRequestIssuanceComplianceSummaryData: vi.fn(),
+//   }),
+// );
+// Mock the request issuance data function
+vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
+  getRequestIssuanceTrackStatusData: vi.fn(),
+}));
 
 describe("RequestIssuanceOfEarnedCreditsPage", () => {
   const mockComplianceReportVersionId = 123;
   const mockData = {
-    id: "123",
-    reporting_year: 2024,
-    earned_credits_amount: 100,
-    issuance_status: IssuanceStatus.CREDITS_NOT_ISSUED,
-    bccr_trading_name: "Test Trading Name",
-    bccr_holding_account_id: "123456789",
-    analyst_comment: "Test comment",
-    analyst_suggestion: "ready_to_approve",
-    analyst_submitted_date: "2024-01-01",
-    analyst_submitted_by: "Test Analyst",
-    director_comment: "Test director comment",
-    director_submitted_date: "2024-01-01",
-    director_submitted_by: "Test Director",
+    earned_credits: 5,
+    issuance_status: IssuanceStatus.APPROVED,
+    bccr_trading_name: "name",
+    holding_account_id: "id",
+    director_comment: "comment",
+    analyst_comment: "comment",
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(
-      mockData,
-    );
+    (getRequestIssuanceTrackStatusData as any).mockResolvedValue(mockData);
   });
 
   it("renders with correct content and generates task list", async () => {
@@ -91,6 +86,7 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     expect(generateRequestIssuanceTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
       2024,
+      IssuanceStatus.APPROVED,
       ActivePage.RequestIssuanceOfEarnedCredits,
     );
   });

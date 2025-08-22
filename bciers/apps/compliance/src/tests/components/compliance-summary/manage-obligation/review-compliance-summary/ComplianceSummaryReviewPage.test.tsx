@@ -19,6 +19,15 @@ vi.mock(
   }),
 );
 
+// Mock the task list data fetching function
+vi.mock("@/compliance/src/app/utils/getObligationTasklistData", () => ({
+  getObligationTasklistData: vi.fn().mockResolvedValue({
+    penalty_status: "NONE",
+    outstanding_balance: 5,
+    reporting_year: 2024,
+  }),
+}));
+
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
@@ -94,8 +103,9 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
       expect.objectContaining({
-        reporting_year: 2025,
-        operation_name: "Mock Operation",
+        penalty_status: "NONE",
+        outstanding_balance: 5,
+        reporting_year: 2024,
       }),
       ActivePage.ReviewComplianceSummary,
     );

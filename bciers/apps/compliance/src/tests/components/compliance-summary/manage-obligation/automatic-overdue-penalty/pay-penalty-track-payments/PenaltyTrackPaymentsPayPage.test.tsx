@@ -1,24 +1,34 @@
 import { render, screen } from "@testing-library/react";
 import PenaltyTrackPaymentsPayPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/automatic-overdue-penalty/pay-penalty-track-payments/PenaltyTrackPaymentsPayPage";
-import {
-  generateAutomaticOverduePenaltyTaskList,
-  ActivePage,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
 import { actionHandler } from "@bciers/actions";
+import {
+  ActivePage,
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 // Mock the actionHandler
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
 
-// Mock the task list generator
 vi.mock(
-  "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList",
+  "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
   () => ({
-    generateAutomaticOverduePenaltyTaskList: vi.fn(),
-    ActivePage: { PayPenaltyTrackPayments: "PayPenaltyTrackPayments" },
+    generateManageObligationTaskList: vi.fn(() => ["mock-task"]),
+    ActivePage: {
+      ReviewComplianceSummary: "ReviewComplianceSummary",
+    },
   }),
 );
+
+// Mock the task list data fetching function
+vi.mock("@/compliance/src/app/utils/getObligationTasklistData", () => ({
+  getObligationTasklistData: vi.fn().mockResolvedValue({
+    penalty_status: "NOT PAID",
+    outstanding_balance: 0,
+    reporting_year: 2024,
+  }),
+}));
 
 // Mock the layout component
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
@@ -99,9 +109,13 @@ describe("PenaltyTrackPaymentsPayPage", () => {
     expect(screen.getByText("Mock Component - ID: 111")).toBeVisible();
 
     // Verify task list generation
-    expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
+    expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       111,
-      2024,
+      {
+        penalty_status: "NOT PAID",
+        outstanding_balance: 0,
+        reporting_year: 2024,
+      },
       ActivePage.PayPenaltyTrackPayments,
     );
   });
