@@ -213,3 +213,7 @@ export interface ObligationTasklistData {
   penaltyStatus?: string;
   outstandingBalance?: number;
 }
+export type ElicensingLastRefreshData = {
+  last_refreshed_display: string;
+  data_is_fresh: boolean;
+};

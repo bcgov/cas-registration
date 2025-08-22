@@ -1,0 +1,49 @@
+<style id="bciers-elicensing-alert-styles">
+  .bciers-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #fff7e0;
+    border: 1px solid #f0d48a;
+    color: #5a4100;
+    padding: 10px 12px;
+    margin: 0 0 16px 0;
+    border-radius: 4px;
+    page-break-inside: avoid;
+  }
+  .bciers-alert__icon {
+    line-height: 0;
+  }
+  .bciers-alert a {
+    color: #38598a;
+    text-decoration: none;
+  }
+  .bciers-alert a:visited {
+    color: #38598a;
+  }
+  .bciers-alert strong {
+    font-weight: 700;
+  }
+</style>
+
+{% if not data_is_fresh %}
+<div class="bciers-alert" role="status" aria-live="polite">
+  <span class="bciers-alert__icon" aria-hidden="true">
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="#ffd75e"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M1 21h22L12 2 1 21zm12-3h-2v2h2v-2zm0-8h-2v6h2v-6z" />
+    </svg>
+  </span>
+  <span>
+    Connection to source could not be established. Invoice data last updated
+    <strong>{{ last_refreshed_display|default:"n/a" }}</strong>. Refreshing the
+    page may resolve this issue. If the problem persists, contact
+    <a href="mailto:ghgregulator@gov.bc.ca">ghgregulator@gov.bc.ca</a> for help.
+  </span>
+</div>
+{% endif %}

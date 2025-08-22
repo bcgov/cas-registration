@@ -13,7 +13,7 @@ from compliance.models import (
 )
 from datetime import datetime, timedelta
 from decimal import Decimal
-from compliance.dataclass import RefreshWrapperReturn
+from compliance.dataclass import LastRefreshMetaData, RefreshWrapperReturn
 import logging
 from pydantic import ValidationError
 from django.utils import timezone
@@ -169,3 +169,37 @@ class ElicensingDataRefreshService:
                 adjustment_object_id=adjustment.adjustmentObjectId,
                 defaults=adjustment_defaults,
             )
+
+    @staticmethod
+    def format_last_refresh_metadata(
+        refresh_result: object,
+        *,
+        fmt: str = "%Y-%m-%d %H:%M:%S",
+        default_fresh: bool = True,
+    ) -> LastRefreshMetaData:
+        """
+        Extract last-refresh metadata from a refresh_result.
+
+        - Formats invoice.last_refreshed in local time
+        - If missing/None, returns an empty string.
+        - data_is_fresh defaults to `default_fresh` when absent.
+        """
+        invoice = getattr(refresh_result, "invoice", None)
+        last_refreshed = getattr(invoice, "last_refreshed", None)
+
+        if last_refreshed:
+            # Make aware if naive, then convert to local time
+            if timezone.is_naive(last_refreshed):
+                last_refreshed = timezone.make_aware(
+                    last_refreshed, timezone.get_current_timezone()
+                )
+            last_refreshed_str = timezone.localtime(last_refreshed).strftime(fmt)
+        else:
+            last_refreshed_str = ""
+
+        data_is_fresh = bool(getattr(refresh_result, "data_is_fresh", default_fresh))
+
+        return {
+            "last_refreshed_display": last_refreshed_str,
+            "data_is_fresh": data_is_fresh,
+        }

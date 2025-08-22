@@ -115,11 +115,7 @@ class ComplianceInvoiceService:
             refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
                 compliance_report_version_id=compliance_report_version_id
             )
-            if not refresh_result.data_is_fresh:
-                raise ComplianceInvoiceError(
-                    "stale_data",
-                    "Invoice data could not be refreshed from Elicensing.  Please try again, or contact support if the problem persists.",
-                )
+            last_refresh_meta = ElicensingDataRefreshService.format_last_refresh_metadata(refresh_result)
 
             # Get compliance obligation information
             # compliance_report_version_id  → ComplianceObligation
@@ -183,7 +179,11 @@ class ComplianceInvoiceService:
                 compliance_obligation_equivalent_amount=compliance_obligation_fee_amount_dollars,
             )
 
+            
             context = context_obj.__dict__
+            
+            # Update the dataclass dict with the refresh meta
+            context.update(last_refresh_meta) 
 
             # Generate filename
             filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"

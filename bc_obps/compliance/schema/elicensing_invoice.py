@@ -1,5 +1,7 @@
 from compliance.models.elicensing_invoice import ElicensingInvoice
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
+from datetime import datetime
+
 
 
 class ElicensingInvoiceOut(ModelSchema):
@@ -15,3 +17,8 @@ class ElicensingInvoiceOut(ModelSchema):
             'outstanding_balance',
             'due_date',
         ]
+
+class ElicensingLastRefreshOut(Schema):
+    """Schema for the E-licensing last refresh status."""
+    last_refreshed_display: str | None
+    data_is_fresh: bool
