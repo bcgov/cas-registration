@@ -20,7 +20,9 @@ DASHBOARD_SERVICE_PATH = f"{BASE_PATH}.ComplianceDashboardService"
 
 # Method paths to patch
 GET_OPERATOR_BY_USER_PATH = f"{USER_DATA_ACCESS_PATH}.get_operator_by_user"
-CHECK_REGISTERED_OPERATION_PATH = f"{OPERATION_DATA_ACCESS_PATH}.check_current_users_registered_operation"
+CHECK_REGISTERED_REGULATED_OPERATION_PATH = (
+    f"{OPERATION_DATA_ACCESS_PATH}.check_current_users_registered_regulated_operation"
+)
 GET_REPORT_VERSION_BY_ID_PATH = f"{DASHBOARD_SERVICE_PATH}.get_compliance_report_version_by_id"
 
 OPERATOR_GUID = uuid4()
@@ -41,7 +43,7 @@ def mock_user_data_access():
 
 @pytest.fixture
 def mock_operation_data_access():
-    with patch(CHECK_REGISTERED_OPERATION_PATH) as mock:
+    with patch(CHECK_REGISTERED_REGULATED_OPERATION_PATH) as mock:
         mock.return_value = True
         yield mock
 
