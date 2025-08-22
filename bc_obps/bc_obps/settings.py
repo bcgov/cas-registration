@@ -85,10 +85,9 @@ LOCAL_APPS = [
     "reporting",
     "common",
     "rls",
-    "task_scheduler",
 ]
 
-NON_PROD_APPS = ["compliance"]
+NON_PROD_APPS = ["compliance", "task_scheduler"]
 
 RLS_GRANT_APPS = [
     "registration",
