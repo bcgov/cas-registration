@@ -59,7 +59,7 @@ SCHEDULED_TASKS = [
         tag="daily_function_at_2am",
     ),
     ScheduledTaskConfig(
-        func=AutomatedProcessService.refresh_all_obligation_invoices,
+        func=AutomatedProcessService.run_scheduled_compliance_sync,
         schedule_type="daily",
         schedule_hour=2,
         schedule_minute=0,

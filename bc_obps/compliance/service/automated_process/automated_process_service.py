@@ -1,6 +1,5 @@
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 from compliance.models.elicensing_invoice import ElicensingInvoice
-from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.automated_process.compliance_handlers import ComplianceHandlerManager
 from django.db import transaction
 import logging
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class AutomatedProcessService:
     @classmethod
-    def refresh_all_obligation_invoices(cls) -> None:
+    def run_scheduled_compliance_sync(cls) -> None:
         """
         Refreshes data for all invoices and processes automated compliance updates.
         This method is designed to be run as a scheduled task to keep all
@@ -32,8 +31,6 @@ class AutomatedProcessService:
             cls._process_compliance_updates(invoice)
             successful_updates += 1
 
-            logger.info(f"Successfully processed invoice {invoice.invoice_number}")
-
         logger.info(
             f"Completed processing of all invoices. Total: {total_invoices}, Refreshes: {successful_refreshes}, Updates: {successful_updates}"
         )
@@ -50,18 +47,7 @@ class AutomatedProcessService:
     @classmethod
     def _process_compliance_updates(cls, invoice: ElicensingInvoice) -> None:
         logger.info(f"Processing compliance updates for invoice {invoice.invoice_number}")
-
-        obligation = getattr(invoice, 'compliance_obligation', None)
-        if not obligation:
-            logger.info(f"No compliance obligation found for invoice {invoice.invoice_number}")
-            return
-
         with transaction.atomic():
-            cls._process_obligation_updates(invoice, obligation)
-
+            handler_manager = ComplianceHandlerManager()
+            handler_manager.process_compliance_updates(invoice)
         logger.info(f"Completed compliance updates for invoice {invoice.invoice_number}")
-
-    @classmethod
-    def _process_obligation_updates(cls, invoice: ElicensingInvoice, obligation: ComplianceObligation) -> None:
-        handler_manager = ComplianceHandlerManager()
-        handler_manager.process_compliance_updates(invoice, obligation)
