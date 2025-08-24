@@ -30,7 +30,7 @@ export const generateManageObligationTaskList: (
       ? {
           type: "Subsection" as const,
           title: `Review ${reportingYear} Compliance Obligation Report`,
-          link: `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`,
+          link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
           isExpanded: true,
           elements: [
             {
@@ -44,7 +44,7 @@ export const generateManageObligationTaskList: (
       : {
           type: "Page" as const,
           title: `Review ${reportingYear} Compliance Obligation Report`,
-          link: `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`,
+          link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
           isActive: activePage === ActivePage.ReviewComplianceSummary,
         },
     {

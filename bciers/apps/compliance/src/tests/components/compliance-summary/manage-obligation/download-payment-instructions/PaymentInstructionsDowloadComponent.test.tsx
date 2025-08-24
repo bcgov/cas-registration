@@ -85,7 +85,7 @@ describe("PaymentInstructionsDownloadComponent", () => {
     fireEvent.click(backButton);
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        "/compliance-summaries/123/manage-obligation-review-summary",
+        "/compliance-summaries/123/review-compliance-obligation-report",
       );
     });
 

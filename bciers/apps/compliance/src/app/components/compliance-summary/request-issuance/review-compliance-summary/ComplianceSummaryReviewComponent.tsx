@@ -9,8 +9,6 @@ import {
 import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { useBreadcrumb } from "@bciers/components";
-import { useEffect } from "react";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
@@ -25,16 +23,6 @@ const ComplianceSummaryReviewComponent = ({
   const backUrl = "/compliance-summaries";
 
   let saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
-
-  const { setLastTitle } = useBreadcrumb();
-
-  // Set breadcrumb title for this page
-  useEffect(() => {
-    if (data?.reporting_year) {
-      setLastTitle(`Review ${data.reporting_year} Compliance Report`);
-    }
-    return () => setLastTitle(null);
-  }, [data?.reporting_year, setLastTitle]);
 
   if (isCasStaff) {
     saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
