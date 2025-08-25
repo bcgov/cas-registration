@@ -49,6 +49,7 @@ class Command(BaseCommand):
 
         if environment == 'local':
             call_command('load_fixtures')
+            call_command('load_compliance_fixtures')
             call_command('load_reporting_fixtures')
         elif environment == 'dev' and settings.CI != 'true':
             call_command("pgtrigger", "disable", "--schema", "erc")
