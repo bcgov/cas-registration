@@ -58,6 +58,7 @@ repos:
     rev: "1.7.5"
     hooks:
       - id: bandit
+        additional_dependencies: [pbr]
         args: ["-c", "bc_obps/bandit.yaml"]
 
   - repo: https://github.com/zricethezav/gitleaks
