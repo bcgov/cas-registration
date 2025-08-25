@@ -147,18 +147,20 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
   );
 
   return (
-    <div className="flex flex-col w-full" style={{ paddingLeft: "14px" }}>
+    <div className="flex flex-col w-full">
       <div className="flex items-center w-full">
         {formContext?.isCasDirector && !bcghgId && !formContext?.isSfo ? (
-          <Button
-            variant="outlined"
-            disabled={editBcghgId}
-            onClick={() => handleSetBcghgId()}
-          >
-            &#xFF0B; Issue BCGHG ID
-          </Button>
+          <div style={{ paddingLeft: "14px" }}>
+            <Button
+              variant="outlined"
+              disabled={editBcghgId}
+              onClick={() => handleSetBcghgId()}
+            >
+              &#xFF0B; Issue BCGHG ID
+            </Button>
+          </div>
         ) : (
-          <div id={id} className="whitespace-pre-line">
+          <div id={id} className="read-only-widget whitespace-pre-line">
             {bcghgId ? `${bcghgId}` : "Pending"}
           </div>
         )}
