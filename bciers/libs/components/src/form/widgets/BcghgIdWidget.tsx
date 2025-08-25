@@ -160,7 +160,11 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
             </Button>
           </div>
         ) : (
-          <div id={id} className="read-only-widget whitespace-pre-line">
+          <div
+            id={id}
+            className="read-only-widget whitespace-pre-line"
+            style={{ width: "auto" }}
+          >
             {bcghgId ? `${bcghgId}` : "Pending"}
           </div>
         )}
