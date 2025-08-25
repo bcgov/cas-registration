@@ -76,6 +76,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     }
     setBcghgId(undefined);
     setEditBcghgId(false);
+    setError(undefined);
   };
 
   const handleSetBcghgId = async (
@@ -99,6 +100,7 @@ const BcghgIdWidget: React.FC<WidgetProps> = ({
     setIsSnackbarOpen(true);
     setBcghgId(response?.id);
     setEditBcghgId(false);
+    setError(undefined);
   };
 
   const editBcghgIdJsx = editBcghgId ? (
