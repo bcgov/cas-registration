@@ -81,7 +81,6 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       setErrors([response.error || "Failed to submit request"]);
       setIsSubmitting(false); // we only set isSubmitting to false if there was an error so that the button will remain disabled if user tries to submit again
     }
-    setIsSubmitting(false);
   };
 
   return (
@@ -107,7 +106,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
         <FormAlerts errors={errors} />
         <ComplianceStepButtons backUrl={backUrl} className="mt-4">
           <SubmitButton isSubmitting={isSubmitting} disabled={!canSubmit}>
-            Requests Issuance of Earned Credits
+            Request Issuance of Earned Credits
           </SubmitButton>
         </ComplianceStepButtons>
       </div>

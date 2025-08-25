@@ -56,8 +56,9 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     );
 
     expect(
-      screen.getByText("Request Issuance of Earned Credits"),
-    ).toBeVisible();
+      screen.getAllByText("Request Issuance of Earned Credits"),
+    ).toHaveLength(2);
+
     expect(
       screen.getByText("B.C. Carbon Registry (BCCR) Account Information"),
     ).toBeVisible();
@@ -128,7 +129,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     const backButton = screen.getByRole("button", { name: "Back" });
     const continueButton = screen.getByRole("button", {
-      name: "Requests Issuance of Earned Credits",
+      name: "Request Issuance of Earned Credits",
     });
 
     // Should be enabled after valid account
@@ -140,7 +141,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     // Should be disabled with invalid account
     const disabledContinueButton = screen.getByRole("button", {
-      name: "Requests Issuance of Earned Credits",
+      name: "Request Issuance of Earned Credits",
     });
     expect(disabledContinueButton).toBeDisabled();
   });
@@ -156,7 +157,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     );
 
     const continueButton = screen.getByRole("button", {
-      name: "Requests Issuance of Earned Credits",
+      name: "Request Issuance of Earned Credits",
     });
     fireEvent.click(continueButton);
 
@@ -208,7 +209,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     await setupValidAccount();
 
     const continueButton = screen.getByRole("button", {
-      name: "Requests Issuance of Earned Credits",
+      name: "Request Issuance of Earned Credits",
     });
     fireEvent.click(continueButton);
 
@@ -225,7 +226,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     await setupValidAccount();
 
     const continueButton = screen.getByRole("button", {
-      name: "Requests Issuance of Earned Credits",
+      name: "Request Issuance of Earned Credits",
     });
     fireEvent.click(continueButton);
 
@@ -245,7 +246,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     await setupValidAccount();
 
     const continueButton = screen.getByRole("button", {
-      name: "Requests Issuance of Earned Credits",
+      name: "Request Issuance of Earned Credits",
     });
     fireEvent.click(continueButton);
 
@@ -282,7 +283,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("button", {
-          name: "Requests Issuance of Earned Credits",
+          name: "Request Issuance of Earned Credits",
         }),
       ).toBeDisabled();
     });
