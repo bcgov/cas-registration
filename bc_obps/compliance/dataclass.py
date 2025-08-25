@@ -56,7 +56,7 @@ class BCCRAccountResponseDetails:
 
     entity_id: str
     organization_classification_id: str
-    type_of_account_holder: str
+    type_of_account_holder: Optional[str]
     trading_name: str
 
 

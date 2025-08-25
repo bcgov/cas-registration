@@ -3,6 +3,7 @@ from compliance.models import ComplianceReport
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.bc_carbon_registry.bc_carbon_registry_api_client import BCCarbonRegistryAPIClient
 from compliance.dataclass import BCCRAccountResponseDetails, BCCRComplianceAccountResponseDetails
+from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 
 T = TypeVar('T', bound=Dict[str, Any])
 
@@ -136,6 +137,9 @@ class BCCarbonRegistryAccountService:
         compliance_year = compliance_report.compliance_period.end_date.year
         boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
 
+        if not holding_account_details.type_of_account_holder:
+            raise ValueError("type_of_account_holder is required to create a compliance account")
+
         new_compliance_account = self.create_compliance_account(
             holding_account_id=holding_account_details.entity_id,
             organization_classification_id=holding_account_details.organization_classification_id,
@@ -151,6 +155,44 @@ class BCCarbonRegistryAccountService:
             compliance_report.save(update_fields=["bccr_subaccount_id"])
 
         return new_compliance_account
+
+    def validate_holding_account_ownership(
+        self,
+        holding_account_id: str,
+        compliance_report_version_id: int,
+    ) -> bool:
+        """Validate that the provided holding account should own the compliance sub-account for this operation.
+
+        Args:
+            holding_account_id: The BCCR holding account ID to validate
+            compliance_report_version_id: The compliance report version ID to fetch and check ownership for
+
+        Returns:
+            True if the holding account should own the compliance sub-account, False otherwise
+        """
+        # Fetch compliance report from version ID
+        compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
+            compliance_report_version_id
+        )
+        compliance_report = compliance_report_version.compliance_report
+        compliance_year = compliance_report.compliance_period.end_date.year
+        boro_id = compliance_report.report.operation.bc_obps_regulated_operation.id  # type: ignore[union-attr]
+
+        # If we already have a bccr_subaccount_id, check if it belongs to this holding account
+        if compliance_report.bccr_subaccount_id:
+            subaccount_details = self.client.get_account_details(account_id=compliance_report.bccr_subaccount_id)
+            subaccount_entity = self._get_first_entity(subaccount_details)
+
+            if subaccount_entity:
+                master_account_id = subaccount_entity.get("masterAccountId")
+                return str(master_account_id) == str(holding_account_id)
+
+        # Check if there should be a compliance account for this holding account, year, and boro_id
+        existing_compliance_account = self.client.get_compliance_account(
+            master_account_id=holding_account_id, compliance_year=compliance_year, boro_id=boro_id
+        )
+
+        return bool(self._get_first_entity(existing_compliance_account))
 
     def get_or_create_compliance_account(
         self,

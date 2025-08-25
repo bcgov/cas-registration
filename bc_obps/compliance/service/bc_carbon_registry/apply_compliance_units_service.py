@@ -214,10 +214,27 @@ class ApplyComplianceUnitsService:
                 compliance_unit_cap_remaining=None,
             )
 
+        # Validate that this holding account should own the compliance sub-account for this operation
+        if not bccr_account_service.validate_holding_account_ownership(
+            holding_account_id=account_id,
+            compliance_report_version_id=compliance_report_version_id,
+        ):
+            return ComplianceUnitsPageData(
+                bccr_trading_name=None,
+                bccr_compliance_account_id=None,
+                charge_rate=None,
+                outstanding_balance=None,
+                bccr_units=[],
+                compliance_unit_cap_limit=None,
+                compliance_unit_cap_remaining=None,
+            )
+
+        # Get compliance report data for subsequent operations
         compliance_report_version = ComplianceReportVersionService.get_compliance_report_version(
             compliance_report_version_id
         )
         compliance_report = compliance_report_version.compliance_report
+
         bccr_compliance_account = bccr_account_service.get_or_create_compliance_account(
             holding_account_details=holding_account_details,
             compliance_report=compliance_report,
@@ -267,6 +284,13 @@ class ApplyComplianceUnitsService:
         Raises:
             UserError: If any validation or transfer step fails.
         """
+        # Validate holding account ownership first
+        if not bccr_account_service.validate_holding_account_ownership(
+            holding_account_id=account_id,
+            compliance_report_version_id=compliance_report_version_id,
+        ):
+            raise UserError("The provided holding account does not own the compliance sub-account for this operation.")
+
         # Check we are working with fresh elicensing data
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id

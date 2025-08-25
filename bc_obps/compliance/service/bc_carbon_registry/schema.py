@@ -82,9 +82,9 @@ class AccountDetailEntity(BaseModel):
     mainContactName: Optional[str] = None  # "Kelly Konrad"
     accountTypeName: Optional[str] = None  # "General Participant"
     accountTypeId: Optional[NonNegativeInt] = None  # 10
-    type_of_account_holder: str  # "Corporation"
-    # Below fields are also part of the response, but we are not interested in them for now
-    # masterAccountId: Optional[PositiveInt] = None  # 102000000001000
+    type_of_account_holder: Optional[str] = None  # "Corporation"
+    masterAccountId: Optional[PositiveInt] = None  # 102000000001000 - Needed for ownership validation
+    # Below fields are also part of the response, but we are not interested in them for now except masterAccountId
     # masterAccountName: Optional[str] = None  # "British Columbia Government Account"
     # billingContactEmail: Optional[str] = None  # "someone.email@gov.bc.ca"
     # auxiliaries: Optional[Any] = None  # None

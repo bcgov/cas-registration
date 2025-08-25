@@ -84,6 +84,31 @@ class TestBCCarbonRegistryAccountService:
         assert result.type_of_account_holder == "Corporation"
         assert result.trading_name == "Test Corp"
 
+    def test_get_account_details_with_null_type_of_account_holder(self, service, mock_api_client):
+        # Arrange - Test the schema change where type_of_account_holder can be null
+        service.client = mock_api_client
+        mock_api_client.get_account_details.return_value = {
+            "entities": [
+                {
+                    "entityId": "123",
+                    "organizationClassificationId": "456",
+                    "type_of_account_holder": None,  # This should now be allowed
+                    "tradingName": "Test Corp",
+                }
+            ]
+        }
+
+        # Act
+        result = service.get_account_details("123")
+
+        # Assert
+        mock_api_client.get_account_details.assert_called_once_with(account_id="123")
+        assert isinstance(result, BCCRAccountResponseDetails)
+        assert result.entity_id == "123"
+        assert result.organization_classification_id == "456"
+        assert result.type_of_account_holder is None  # Should handle None gracefully
+        assert result.trading_name == "Test Corp"
+
     def test_get_account_details_not_found(self, service, mock_api_client):
         # Arrange
         service.client = mock_api_client
@@ -178,6 +203,198 @@ class TestBCCarbonRegistryAccountService:
         assert result.entity_id == "123456789012345"
         assert result.master_account_name == "Test Corp"
         mock_api_client.create_sub_account.assert_not_called()
+
+    def test_validate_holding_account_ownership_with_existing_subaccount_valid(self, service, mock_api_client):
+        # Arrange
+        service.client = mock_api_client
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report",
+            bccr_subaccount_id="987654321012345",
+            report__operation=operation,
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+        )
+
+        # Mock sub-account details with matching master account
+        mock_api_client.get_account_details.return_value = {
+            "entities": [
+                {
+                    "entityId": "987654321012345",
+                    "masterAccountId": 123456789012345,  # Matches holding account
+                }
+            ]
+        }
+
+        # Act
+        result = service.validate_holding_account_ownership(
+            holding_account_id="123456789012345",
+            compliance_report_version_id=compliance_report_version.id,
+        )
+
+        # Assert
+        assert result is True
+        mock_api_client.get_account_details.assert_called_once_with(account_id="987654321012345")
+
+    def test_validate_holding_account_ownership_with_existing_subaccount_invalid(self, service, mock_api_client):
+        # Arrange
+        service.client = mock_api_client
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report",
+            bccr_subaccount_id="987654321012345",
+            report__operation=operation,
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+        )
+
+        # Mock sub-account details with different master account
+        mock_api_client.get_account_details.return_value = {
+            "entities": [
+                {
+                    "entityId": "987654321012345",
+                    "masterAccountId": 999999999999999,  # Different holding account
+                }
+            ]
+        }
+
+        # Act
+        result = service.validate_holding_account_ownership(
+            holding_account_id="123456789012345",
+            compliance_report_version_id=compliance_report_version.id,
+        )
+
+        # Assert
+        assert result is False
+        mock_api_client.get_account_details.assert_called_once_with(account_id="987654321012345")
+
+    def test_validate_holding_account_ownership_no_existing_subaccount_valid(self, service, mock_api_client):
+        # Arrange
+        service.client = mock_api_client
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report", bccr_subaccount_id=None, report__operation=operation
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+        )
+
+        # Mock holding account details
+        mock_api_client.get_account_details.return_value = {
+            "entities": [
+                {
+                    "entityId": "123456789012345",
+                    "organizationClassificationId": "456",
+                    "type_of_account_holder": "Corporation",
+                    "tradingName": "Test Corp",
+                }
+            ]
+        }
+
+        # Mock compliance account search returning a result (valid ownership)
+        mock_api_client.get_compliance_account.return_value = {
+            "entities": [
+                {
+                    "entityId": "999",
+                }
+            ]
+        }
+
+        # Act
+        result = service.validate_holding_account_ownership(
+            holding_account_id="123456789012345",
+            compliance_report_version_id=compliance_report_version.id,
+        )
+
+        # Assert
+        assert result is True
+        mock_api_client.get_compliance_account.assert_called_once()
+
+    def test_validate_holding_account_ownership_no_existing_subaccount_invalid(self, service, mock_api_client):
+        # Arrange
+        service.client = mock_api_client
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report", bccr_subaccount_id=None, report__operation=operation
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+        )
+
+        # Mock holding account details
+        mock_api_client.get_account_details.return_value = {
+            "entities": [
+                {
+                    "entityId": "123456789012345",
+                    "organizationClassificationId": "456",
+                    "type_of_account_holder": "Corporation",
+                    "tradingName": "Test Corp",
+                }
+            ]
+        }
+
+        # Mock compliance account search returning no result (invalid ownership)
+        mock_api_client.get_compliance_account.return_value = {"entities": []}
+
+        # Act
+        result = service.validate_holding_account_ownership(
+            holding_account_id="123456789012345",
+            compliance_report_version_id=compliance_report_version.id,
+        )
+
+        # Assert
+        assert result is False
+        mock_api_client.get_compliance_account.assert_called_once()
+
+    def test_validate_holding_account_ownership_holding_account_not_found(self, service, mock_api_client):
+        # Arrange
+        service.client = mock_api_client
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id", id="24-0019"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        compliance_report = baker.make_recipe(
+            "compliance.tests.utils.compliance_report", bccr_subaccount_id=None, report__operation=operation
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report,
+        )
+
+        # Mock holding account not found
+        mock_api_client.get_account_details.return_value = {"entities": []}
+
+        # Act
+        result = service.validate_holding_account_ownership(
+            holding_account_id="123456789012345",
+            compliance_report_version_id=compliance_report_version.id,
+        )
+
+        # Assert
+        assert result is False
 
     def test_get_or_create_compliance_account_new(self, service, mock_api_client):
         # Arrange

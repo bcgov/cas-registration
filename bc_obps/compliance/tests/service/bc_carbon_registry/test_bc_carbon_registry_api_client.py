@@ -46,6 +46,7 @@ BASE_ACCOUNT_RESPONSE = {
             "accountTypeName": "Test Account Type",
             "accountTypeId": 10,
             "type_of_account_holder": "Test Type",
+            "masterAccountId": None,
         }
     ],
 }
@@ -172,6 +173,7 @@ def assert_account_keys(entities):
             "accountTypeName",
             "accountTypeId",
             "type_of_account_holder",
+            "masterAccountId",
         ]
     )
 
@@ -425,6 +427,7 @@ class TestBCCarbonRegistryAPIClient:
                         "accountTypeName": "Test Account Type 2",
                         "accountTypeId": 20,
                         "type_of_account_holder": "Test Type 2",
+                        "masterAccountId": None,
                     },
                 ],
             },
@@ -719,7 +722,7 @@ class TestBCCarbonRegistryAPIClient:
                 "entities": [
                     {
                         **BASE_ACCOUNT_RESPONSE["entities"][0],
-                        "masterAccountId": MOCK_FIFTEEN_DIGIT_STRING,
+                        "masterAccountId": MOCK_FIFTEEN_DIGIT_INT,
                         "masterAccountName": "Test Holding Account",
                         "entityId": 123456789012345,
                     }
@@ -734,7 +737,7 @@ class TestBCCarbonRegistryAPIClient:
         # Assert
         assert result["totalEntities"] == 1
         assert len(result["entities"]) == 1
-        assert result["entities"][0]["masterAccountId"] == MOCK_FIFTEEN_DIGIT_STRING
+        assert result["entities"][0]["masterAccountId"] == MOCK_FIFTEEN_DIGIT_INT
         assert result["entities"][0]["masterAccountName"] == "Test Holding Account"
         assert result["entities"][0]["entityId"] == 123456789012345
         mock_request.assert_called_once_with(
