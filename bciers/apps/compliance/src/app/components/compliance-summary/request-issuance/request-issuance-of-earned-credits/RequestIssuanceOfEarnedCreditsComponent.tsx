@@ -79,6 +79,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       router.push(saveAndContinueUrl);
     } else {
       setErrors([response.error || "Failed to submit request"]);
+      setIsSubmitting(false); // we only set isSubmitting to false if there was an error so that the button will remain disabled if user tries to submit again
     }
     setIsSubmitting(false);
   };
