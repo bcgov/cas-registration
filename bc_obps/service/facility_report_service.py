@@ -48,6 +48,15 @@ class FacilityReportService:
         return list(facility_report.activities.values_list('id', flat=True))
 
     @classmethod
+    def add_activities_to_facility_report(cls, facility_report: FacilityReport, activities: List[int]) -> None:
+        """
+        Add activities to a facility report without removing or duplicating existing ones.
+        """
+        facility_report.activities.add(
+            *Activity.objects.exclude(id__in=facility_report.activities.all()).filter(id__in=activities)
+        )
+
+    @classmethod
     def set_activities_for_facility_report(cls, facility_report: FacilityReport, activities: List[int]) -> None:
         facility_report.activities.set(Activity.objects.filter(id__in=activities))
         report_activities_to_prune = ReportActivity.objects.filter(facility_report_id=facility_report.id).exclude(

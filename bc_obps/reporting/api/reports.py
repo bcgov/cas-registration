@@ -13,10 +13,6 @@ from service.report_service import ReportService
 from service.report_version_service import ReportVersionService, ReportVersionData
 from service.reporting_year_service import ReportingYearService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
-from reporting.schema.report_operation import (
-    ReportOperationIn,
-    ReportOperationOut,
-)
 from reporting.schema.reporting_year import ReportingYearOut
 from .router import router
 from ..schema.report_regulated_products import RegulatedProductOut
@@ -25,7 +21,7 @@ from reporting.api.permissions import (
     approved_industry_user_report_version_composite_auth,
     approved_authorized_roles_report_version_composite_auth,
 )
-from reporting.models import ReportingYear, ReportVersion, ReportOperation
+from reporting.models import ReportingYear, ReportVersion
 
 
 @router.post(
@@ -39,21 +35,6 @@ from reporting.models import ReportingYear, ReportVersion, ReportOperation
 def start_report(request: HttpRequest, payload: StartReportIn) -> Tuple[Literal[201], int]:
     report_version_id = ReportService.create_report(payload.operation_id, payload.reporting_year)
     return 201, report_version_id
-
-
-@router.post(
-    "/report-version/{version_id}/report-operation",
-    response={201: ReportOperationOut, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Updates given report operation with fields: Operator Legal Name, Operator Trade Name, Operation Name, Operation Type,
-    Operation BC GHG ID, BC OBPS Regulated Operation ID, Operation Representative Name, and Activities.""",
-    auth=approved_industry_user_report_version_composite_auth,
-)
-def save_report(
-    request: HttpRequest, version_id: int, payload: ReportOperationIn
-) -> Tuple[Literal[201], ReportOperation]:
-    report_operation = ReportService.save_report_operation(version_id, payload)
-    return 201, report_operation
 
 
 @router.post(
