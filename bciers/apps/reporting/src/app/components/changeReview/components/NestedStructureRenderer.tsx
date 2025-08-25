@@ -30,6 +30,7 @@ export const renderEmissionsChanges = (
   oldEmissions: any[],
   newEmissions: any[],
 ): React.ReactNode => {
+  console.log("Rendering emissions changes:", { oldEmissions, newEmissions });
   const maxEmissions = Math.max(oldEmissions.length, newEmissions.length);
   if (maxEmissions === 0) return null;
 
@@ -68,7 +69,10 @@ export const renderFuelsChanges = (
 ): React.ReactNode => {
   const maxFuels = Math.max(oldFuels.length, newFuels.length);
   if (maxFuels === 0) return null;
+  console.log("Rendering fuels changes:", { oldFuels, newFuels });
 
+  const fieldAdded = isWholeAdded(oldFuels, newFuels);
+  const fieldDeleted = isWholeDeleted(oldFuels, newFuels);
   return (
     <>
       {Array.from({ length: maxFuels }, (_, fuelIndex) => {
@@ -87,10 +91,6 @@ export const renderFuelsChanges = (
             </Box>
 
             {renderFieldChanges(oldFuel, newFuel, ["emissions"])}
-            {renderEmissionsChanges(
-              oldFuel?.emissions || [],
-              newFuel?.emissions || [],
-            )}
           </Box>
         );
       })}
@@ -120,13 +120,8 @@ export const renderUnitsChanges = (
             >
               Unit {unitIndex + 1}
             </Box>
-
             {renderFieldChanges(oldUnit, newUnit, ["fuels", "emissions"])}
             {renderFuelsChanges(oldUnit?.fuels || [], newUnit?.fuels || [])}
-            {renderEmissionsChanges(
-              oldUnit?.emissions || [],
-              newUnit?.emissions || [],
-            )}
           </Box>
         );
       })}
@@ -138,14 +133,9 @@ export const renderNestedSourceTypeChanges = (
   sourceTypeData: any,
 ): React.ReactNode => {
   if (!sourceTypeData || typeof sourceTypeData !== "object") return null;
-
+  console.log("Rendering nested source type changes:", { sourceTypeData });
   return (
     <Box>
-      {/* Render source type fields */}
-      {(sourceTypeData.fields || []).map((field: any) =>
-        renderFieldChange(field, generateDisplayLabel(field.field), 0),
-      )}
-
       {/* Render units */}
       {Object.entries(sourceTypeData.units || {}).map(
         ([unitIndex, unitData]) => {
@@ -173,8 +163,6 @@ export const renderNestedSourceTypeChanges = (
               {Object.entries(typedUnitData.fuels || {}).map(
                 ([fuelIndex, fuelData]) => {
                   const typedFuelData = fuelData as any;
-                  const fuelAdded = isWholeAdded({}, typedFuelData);
-                  const fuelDeleted = isWholeDeleted({}, typedFuelData);
 
                   return (
                     <Box key={`fuel-${fuelIndex}`} ml={2} mb={2}>
@@ -182,64 +170,30 @@ export const renderNestedSourceTypeChanges = (
                         className="font-bold mb-2"
                         sx={{ fontSize: "1rem", color: "#38598A" }}
                       >
-                        Fuel {parseInt(fuelIndex) + 1}{" "}
-                        {(fuelAdded || fuelDeleted) && (
-                          <StatusLabel type={fuelAdded ? "added" : "deleted"} />
-                        )}
+                        Fuel {parseInt(fuelIndex) + 1}
                       </Box>
 
-                      {(typedFuelData.fields || []).map((field: any) =>
-                        renderFieldChange(
-                          field,
-                          generateDisplayLabel(field.field),
-                          2,
-                        ),
-                      )}
-
-                      {/* Emissions */}
-                      {Object.entries(typedFuelData.emissions || {}).map(
-                        ([emissionIndex, emissionData]) => {
-                          const typedEmissionData = emissionData as any;
-
-                          const emissionAdded = isWholeAdded(
-                            {},
-                            typedEmissionData,
-                          );
-                          const emissionDeleted = isWholeDeleted(
-                            {},
-                            typedEmissionData,
-                          );
-
-                          return (
-                            <Box
-                              key={`emission-${emissionIndex}`}
-                              ml={2}
-                              mb={2}
-                            >
-                              <Box
-                                className="font-bold mb-2"
-                                sx={{ fontSize: "0.9rem", color: "#38598A" }}
-                              >
-                                Emission {parseInt(emissionIndex) + 1}{" "}
-                                {(emissionAdded || emissionDeleted) && (
-                                  <StatusLabel
-                                    type={emissionAdded ? "added" : "deleted"}
-                                  />
-                                )}
-                              </Box>
-
-                              {(typedEmissionData.fields || []).map(
-                                (field: any) =>
-                                  renderFieldChange(
-                                    field,
-                                    generateDisplayLabel(field.field),
-                                    3,
-                                  ),
+                      {/* Only render field diffs for fuel fields, and emission changes if present */}
+                      {(typedFuelData.fields || []).map((field: any) => {
+                        const fieldAdded = isWholeAdded({}, field);
+                        const fieldDeleted = isWholeDeleted({}, field);
+                        return (
+                          <React.Fragment key={field.field}>
+                            <Box display="flex" alignItems="center">
+                              {renderFieldChange(
+                                field,
+                                generateDisplayLabel(field.field),
+                                2,
+                              )}
+                              {(fieldAdded || fieldDeleted) && (
+                                <StatusLabel
+                                  type={fieldAdded ? "added" : "deleted"}
+                                />
                               )}
                             </Box>
-                          );
-                        },
-                      )}
+                          </React.Fragment>
+                        );
+                      })}
                     </Box>
                   );
                 },

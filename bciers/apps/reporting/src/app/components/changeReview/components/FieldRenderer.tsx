@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { ChangeItemDisplay } from "@reporting/src/app/components/changeReview/templates/ChangeItemDisplay";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
 import { generateDisplayLabel } from "@reporting/src/app/components/changeReview/utils/fieldUtils";
+import { renderEmissionsChanges } from "@reporting/src/app/components/changeReview/components/NestedStructureRenderer";
 export const renderFieldChange = (
   field: any,
   label: string,
@@ -18,6 +19,20 @@ export const renderFieldChange = (
 
   const fieldKey = `${field.field || "field"}-${indentLevel}`;
 
+  // Handle arrays (e.g., emissions)
+  if (
+    (Array.isArray(old_value) || Array.isArray(new_value)) &&
+    field.field &&
+    field.field.toLowerCase().includes("emissions")
+  ) {
+    // Only render formatted emissions diff, not raw array
+    return (
+      <Box key={fieldKey} ml={indentLevel * 2} mb={2}>
+        {renderEmissionsChanges(old_value || [], new_value || [])}
+      </Box>
+    );
+  }
+
   // Nested object → recurse
   if (
     (old_value && typeof old_value === "object" && !Array.isArray(old_value)) ||
@@ -30,12 +45,10 @@ export const renderFieldChange = (
       <Box key={fieldKey} ml={indentLevel * 2} mb={2}>
         {!shouldSuppressHeading && (
           <Box sx={{ fontWeight: "bold", mb: 1, color: "#38598A" }}>
-            {label}{" "}
             {!suppressNestedStatus && isAdded && <StatusLabel type="added" />}
             {!suppressNestedStatus && isDeleted && (
               <StatusLabel type="deleted" />
             )}
-            :
           </Box>
         )}
         <Box ml={shouldSuppressHeading ? 0 : 2}>
@@ -59,10 +72,8 @@ export const renderFieldChange = (
         sx={{ display: "flex", gap: 1 }}
       >
         <Box sx={{ fontWeight: "bold", minWidth: "150px" }}>
-          {label}{" "}
-          {!suppressNestedStatus && isAdded && <StatusLabel type="added" />}
-          {!suppressNestedStatus && isDeleted && <StatusLabel type="deleted" />}
-          :
+          {label} {field.isNewAddition && <StatusLabel type="added" />}{" "}
+          {field.isDeleted && <StatusLabel type="deleted" />}:
         </Box>
         <Box>{String(isAdded ? new_value : old_value)}</Box>
       </Box>
@@ -76,6 +87,8 @@ export const renderFieldChange = (
       new_value,
       change_type: "modified", // required for ChangeItemDisplay
       displayLabel: label,
+      isNewAddition: field.isNewAddition,
+      isDeleted: field.isDeleted,
     };
 
     return (
@@ -104,6 +117,8 @@ export const renderFieldChanges = (
       {keys.map((key) => {
         const oldValue = oldFields?.[key];
         const newValue = newFields?.[key];
+        const isAdded = oldValue == null && newValue != null;
+        const isDeleted = oldValue != null && newValue == null;
 
         if (oldValue === newValue) return null;
 
@@ -119,6 +134,8 @@ export const renderFieldChanges = (
                   old_value: oldValue,
                   new_value: newValue,
                   field: key,
+                  isNewAddition: isAdded,
+                  isDeleted: isDeleted,
                 },
                 generateDisplayLabel(key),
                 0,
@@ -133,6 +150,8 @@ export const renderFieldChanges = (
             old_value: oldValue,
             new_value: newValue,
             field: key,
+            isNewAddition: isAdded,
+            isDeleted: isDeleted,
           },
           generateDisplayLabel(key),
           0,

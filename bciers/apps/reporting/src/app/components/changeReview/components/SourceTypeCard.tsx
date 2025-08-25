@@ -71,6 +71,7 @@ export const SourceTypeCard: React.FC<SourceTypeCardProps> = ({
   sourceTypeName,
   changeData,
 }) => {
+  console.log("Rendering source type card:", { sourceTypeName, changeData });
   // Handle nested changes (units/fuels/emissions)
   if (changeData.newValue && typeof changeData.newValue === "object") {
     return (
@@ -85,12 +86,12 @@ export const SourceTypeCard: React.FC<SourceTypeCardProps> = ({
     const oldValue = changeData.oldValue || {};
     const newValue = changeData.newValue || {};
     const changes = compareAndRenderChanges(oldValue, newValue);
+    console.log("Detected changes:", changes);
 
     return (
-      <CollapsibleCard title={changeData.sourceTypeName}>
-        {renderUnitsChanges(oldValue.units || [], newValue.units || [])}
-        {changes.map((change) =>
-          renderFieldChange(change, change.displayLabel, 0),
+      <CollapsibleCard title={sourceTypeName}>
+        {changeData.fields.map((field: any) =>
+          renderFieldChange(field, generateDisplayLabel(field.field), 1),
         )}
       </CollapsibleCard>
     );

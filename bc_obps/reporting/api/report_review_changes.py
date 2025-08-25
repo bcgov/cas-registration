@@ -15,7 +15,7 @@ from reporting.service.report_review_changes_service import ReportReviewChangesS
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Fetch serialized data for the given report version and the latest previous version with the same report_id.",
-    auth=approved_industry_user_report_version_composite_auth,
+    # auth=approved_industry_user_report_version_composite_auth,
 )
 def get_report_version_diff_data(
     request: HttpRequest, version_id: int, compare_version_id: int | None = None
