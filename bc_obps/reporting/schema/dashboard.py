@@ -47,6 +47,8 @@ class ReportingDashboardOperationFilterSchema(FilterSchema):
     operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
     report_status: Optional[str] = Field(None, json_schema_extra={'q': 'report_status__icontains'})
     reporting_year: Optional[int] = Field(None, json_schema_extra={'q': 'report__reporting_year'})
+    report_version_id: Optional[int] = Field(None, json_schema_extra={'q': 'report_version_id'})
+    report_updated_at: Optional[datetime] = Field(None, json_schema_extra={'q': 'report_updated_at__date'})
 
     def filter_report_status(self, value: str) -> Q:
         """

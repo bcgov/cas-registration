@@ -60,7 +60,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
             assert item['report_status'] is None
 
     @patch(
-        "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_past_reports_for_reporting_dashboard"
+        "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_reports_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
