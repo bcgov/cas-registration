@@ -198,6 +198,7 @@ class InvoiceQueryResponse:
     invoiceInterestBalance: Decimal
     fees: List[InvoiceFee]
 
+
 @dataclass
 class InterestRatePeriod:
     """Interest rate period from eLicensing API"""
