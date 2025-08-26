@@ -17,7 +17,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         mock_get_obligation.return_value = obligation
 
         penalty_data = {
-            "penalty_status": "Accruing",
+            "penalty_status": "ACCRUING",
             "penalty_type": PenaltyCalculationService.PenaltyType.AUTOMATIC_OVERDUE.value,
             "days_late": 3,
             "penalty_charge_rate": Decimal("0.38"),
@@ -51,7 +51,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         response_data = response.json()
 
         # Verify the response structure and data matches AutomaticOverduePenaltyOut schema
-        assert response_data["penalty_status"] == "Accruing"
+        assert response_data["penalty_status"] == "Accruing"  # resolver makes this title case
         assert response_data["penalty_type"] == "Automatic Overdue"
         assert response_data["days_late"] == 3
         assert response_data["penalty_charge_rate"] == "0.38"

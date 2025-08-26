@@ -41,7 +41,6 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
           basePath: `${basePath}/manage-obligation-review-summary`,
         };
       }
-      // brianna check if this is needed/different
       return {
         cellText: "View Details",
         basePath: `${basePath}/review-summary`,

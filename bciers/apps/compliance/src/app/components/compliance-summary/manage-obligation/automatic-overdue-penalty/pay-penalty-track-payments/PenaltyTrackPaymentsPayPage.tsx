@@ -6,7 +6,7 @@ import {
   PayPenaltyTrackPaymentsFormData,
   PenaltyData,
 } from "@/compliance/src/app/types";
-import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import {
   ActivePage,
   generateManageObligationTaskList,
@@ -24,13 +24,19 @@ export default async function PenaltyTrackPaymentsPayPage({
     payments: penaltyWithPayments.payment_data.rows,
   };
 
-  const tasklistData = await getObligationTasklistData(
-    complianceReportVersionId,
-  );
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
 
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    tasklistData,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.PayPenaltyTrackPayments,
   );
 

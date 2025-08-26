@@ -1,7 +1,7 @@
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import PenaltySummaryReviewComponent from "./PenaltySummaryReviewComponent";
 import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
-import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import {
   ActivePage,
   generateManageObligationTaskList,
@@ -17,13 +17,19 @@ export default async function PenaltySummaryReviewPage({
   const penaltyData = await getAutomaticOverduePenalty(
     complianceReportVersionId,
   );
-  const tasklistData = await getObligationTasklistData(
-    complianceReportVersionId,
-  );
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
 
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    tasklistData,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.ReviewPenaltySummary,
   );
 
@@ -34,7 +40,7 @@ export default async function PenaltySummaryReviewPage({
     >
       <PenaltySummaryReviewComponent
         data={penaltyData}
-        reportingYear={tasklistData.reporting_year}
+        reportingYear={reportingYear}
         complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>

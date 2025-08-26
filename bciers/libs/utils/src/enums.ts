@@ -127,12 +127,11 @@ export enum ComplianceSummaryStatus {
   NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits",
 }
 
-// Note that in the databse, these statuses are uppercase
 export enum PenaltyStatus {
-  ACCRUING = "Accruing",
-  PAID = "Paid",
-  NONE = "None",
-  NOT_PAID = "Not Paid",
+  ACCRUING = "ACCRUING",
+  PAID = "PAID",
+  NONE = "NONE",
+  NOT_PAID = "NOT PAID",
 }
 
 export enum ComplianceInvoiceTypes {

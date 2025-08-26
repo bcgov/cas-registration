@@ -23,9 +23,9 @@ vi.mock(
 describe("generateManageObligationTaskList", () => {
   const mockComplianceReportVersionId = 123;
   const mockObligationTasklistData = {
-    penalty_status: "NONE",
-    outstanding_balance: 50,
-    reporting_year: 2024,
+    penaltyStatus: "NONE",
+    outstandingBalance: 50,
+    reportingYear: 2024,
   };
 
   it("generates task list with correct structure when not in Apply Units page", () => {
@@ -103,9 +103,9 @@ describe("generateManageObligationTaskList", () => {
 
   it("does not add automatic penalty section when outstanding balance is > 0", () => {
     const dataWithBalance = {
-      reporting_year: 2024,
-      outstanding_balance: 6,
-      penalty_status: PenaltyStatus.NOT_PAID,
+      reportingYear: 2024,
+      outstandingBalance: 6,
+      penaltyStatus: PenaltyStatus.NOT_PAID,
     };
 
     // Generate task list
@@ -129,9 +129,9 @@ describe("generateManageObligationTaskList", () => {
     "does not add automatic penalty section when there is no confirmed penalty",
     (penaltyStatus) => {
       const dataWithZeroBalance = {
-        reporting_year: 2024,
-        outstanding_balance: 0,
-        penalty_status: penaltyStatus,
+        reportingYear: 2024,
+        outstandingBalance: 0,
+        penaltyStatus: penaltyStatus,
       };
 
       // Generate task list
@@ -155,9 +155,9 @@ describe("generateManageObligationTaskList", () => {
     "adds automatic penalty section when there is a paid or unpaid penalty and outstanding balance is 0",
     (penaltyStatus) => {
       const dataWithZeroBalance = {
-        reporting_year: 2024,
-        outstanding_balance: 0,
-        penalty_status: penaltyStatus,
+        reportingYear: 2024,
+        outstandingBalance: 0,
+        penaltyStatus: penaltyStatus,
       };
 
       // Generate task list
@@ -165,7 +165,6 @@ describe("generateManageObligationTaskList", () => {
         mockComplianceReportVersionId,
         dataWithZeroBalance,
       );
-      console.log("tasklist", taskList);
       // Verify that the automatic penalty section was added
       expect(taskList).toHaveLength(2);
       expect(taskList[0].title).toBe("2024 Compliance Summary");

@@ -1,6 +1,7 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { generateAutomaticOverduePenaltyTaskList } from "./automaticOverduePenaltyTaskList";
 import { ObligationTasklistData } from "../../types";
+import { PenaltyStatus } from "@bciers/utils/src/enums";
 
 export enum ActivePage {
   ReviewComplianceSummary = "ReviewComplianceSummary",
@@ -37,11 +38,7 @@ export const generateManageObligationTaskList: (
     defaultActiveIndex === undefined
       ? ActivePage.ReviewComplianceSummary
       : defaultActiveIndex;
-  const {
-    reporting_year: reportingYear,
-    outstanding_balance: outstandingBalance,
-    penalty_status: penaltyStatus,
-  } = tasklistData;
+  const { reportingYear, outstandingBalance, penaltyStatus } = tasklistData;
 
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
@@ -94,7 +91,8 @@ export const generateManageObligationTaskList: (
 
   if (
     Number(outstandingBalance) === 0 &&
-    (penaltyStatus === "NOT PAID" || penaltyStatus === "PAID")
+    (penaltyStatus === PenaltyStatus.NOT_PAID ||
+      penaltyStatus === PenaltyStatus.PAID)
   ) {
     automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
       complianceReportVersionId,

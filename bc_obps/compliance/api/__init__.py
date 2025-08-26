@@ -4,7 +4,6 @@ from .router import router
 from .compliance_report_versions import get_compliance_report_versions_list
 from ._compliance_report_versions.compliance_report_version_id import get_compliance_report_version
 from ._compliance_report_versions._compliance_report_version_id import (
-    obligation_tasklist,
     operation,
     invoice,
     earned_credits,

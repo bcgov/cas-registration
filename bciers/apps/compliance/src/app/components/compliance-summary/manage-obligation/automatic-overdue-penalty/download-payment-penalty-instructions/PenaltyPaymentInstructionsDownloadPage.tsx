@@ -3,7 +3,7 @@ import PaymentInstructionsDownloadComponent from "@/compliance/src/app/component
 import getInvoiceByComplianceReportVersionId from "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
-import { getObligationTasklistData } from "@/compliance/src/app/utils/getObligationTasklistData";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import {
   ActivePage,
   generateManageObligationTaskList,
@@ -15,13 +15,19 @@ export default async function PenaltyPaymentInstructionsDownloadPage({
   const customBackUrl = `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
   const customContinueUrl = `/compliance-summaries/${complianceReportVersionId}/pay-penalty-track-payments`;
 
-  const tasklistData = await getObligationTasklistData(
-    complianceReportVersionId,
-  );
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
 
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    tasklistData,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.DownloadPaymentPenaltyInstruction,
   );
 

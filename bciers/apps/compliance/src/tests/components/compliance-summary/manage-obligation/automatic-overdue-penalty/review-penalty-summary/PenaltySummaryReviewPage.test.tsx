@@ -17,8 +17,8 @@ vi.mock(
 );
 
 // Mock the task list data fetching function
-vi.mock("@/compliance/src/app/utils/getObligationTasklistData", () => ({
-  getObligationTasklistData: vi.fn().mockResolvedValue({
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
+  getComplianceSummary: vi.fn().mockResolvedValue({
     penalty_status: "NOT PAID",
     outstanding_balance: 0,
     reporting_year: 2024,
@@ -73,9 +73,9 @@ describe("PenaltySummaryReviewPage", () => {
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
       {
-        penalty_status: "NOT PAID",
-        outstanding_balance: 0,
-        reporting_year: 2024,
+        penaltyStatus: "NOT PAID",
+        outstandingBalance: 0,
+        reportingYear: 2024,
       },
       ActivePage.ReviewPenaltySummary,
     );
