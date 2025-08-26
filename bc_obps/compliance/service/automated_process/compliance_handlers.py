@@ -66,7 +66,7 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
-        """Update penalty status to ACCRUING and create a penalty if needed."""
+        """Update penalty status to ACCRUING."""
         obligation = invoice.compliance_obligation
         if obligation.penalty_status != ComplianceObligation.PenaltyStatus.ACCRUING:
             ComplianceObligationService.update_penalty_status(
