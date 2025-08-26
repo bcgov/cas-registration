@@ -84,15 +84,11 @@ class ReportingDashboardService:
             .annotate(latest_version_updated_by=cls.latest_report_version_subquery.values("full_name"))
             .annotate(first_version_id=cls.first_report_version_subquery.values("id"))
         )
-        report_operation_name_subquery = ReportOperation.objects.filter(
-            report_version__report__operation_id=OuterRef("id"),
-            report_version__report__reporting_year=reporting_year,
-        ).values("operation_name")[:1]
 
         current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
         # need to fetch previously owned operations in case reports were filed for them already or if they need to
         # create a new report version for an operation they once owned.
-        if user.user_operators.exists():
+        if user.user_operators.first():
             previous_operations = OperationDataAccessService.get_previously_owned_operations_for_operator(
                 user, user.user_operators.first().operator_id, reporting_year
             )
@@ -107,24 +103,31 @@ class ReportingDashboardService:
             .annotate(
                 # the [:1] is necessary for the sorting and filters to work
                 report_id=Subquery(report_subquery.values("id")[:1]),
-                report_version_id=Subquery(report_subquery.values("latest_version_id")[
-                    :1
-                ]),  
+                report_version_id=Subquery(report_subquery.values("latest_version_id")[:1]),
                 first_report_version_id=Subquery(report_subquery.values("first_version_id")[:1]),
                 report_status=Subquery(report_subquery.values("latest_version_status")[:1]),
                 report_updated_at=Subquery(report_subquery.values("latest_version_updated_at")[:1]),
                 report_submitted_by=Subquery(report_subquery.values("latest_version_updated_by")[:1]),
-                operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
+                operation_name=Coalesce(
+                    Subquery(
+                        ReportOperation.objects.filter(
+                            report_version__report__operation_id=OuterRef("id"),
+                            report_version__report__reporting_year=reporting_year,
+                        ).values("operation_name")[:1]
+                    ),
+                    F("name"),
+                ),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
-            .distinct() # this prevents duplication in cases where the operation has had multiple owners
+            .distinct()  # this prevents duplication in cases where the operation has had multiple owners
         )
 
+        # Filter results for operator if user is external - they should only see results for their own operator
+        if (op := user.user_operators.first()) is not None:
+            queryset = queryset.filter(operator_id=op.operator_id)
+
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
-        print("\n\n\n\n\n\n**************************")
-        print(f"{queryset.count()} operations found")
-        print("**************************\n\n\n\n\n")
 
         return filters.filter(queryset).order_by(*sort_fields)
 
