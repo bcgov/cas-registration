@@ -1,4 +1,5 @@
 import { Tabs } from "@bciers/components/tabs/Tabs";
+import { getSessionRole } from "@bciers/utils/src/sessionUtils";
 import { ReactNode } from "react";
 import { getReportingYear } from "../../utils/getReportingYear";
 import dayjs from "dayjs";
