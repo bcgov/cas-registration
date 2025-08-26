@@ -119,4 +119,4 @@ compliance_penalty = Recipe(
 compliance_penalty_accrual = Recipe(CompliancePenaltyAccrual, compliance_penalty=foreign_key(compliance_penalty))
 
 # ElicensingInterestRate recipe
-elicensing_interest_rate = Recipe(ElicensingInterestRate, interest_rate=Decimal('0.0007'))
+elicensing_interest_rate = Recipe(ElicensingInterestRate, interest_rate=Decimal('0.0007'), is_current_rate=False)
