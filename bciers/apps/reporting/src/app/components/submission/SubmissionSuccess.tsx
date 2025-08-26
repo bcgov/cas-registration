@@ -64,7 +64,7 @@ export default function SubmissionSuccess({
           <Button
             variant="outlined"
             component={Link}
-            href="/reports"
+            href="/reports/current-reports"
             sx={{
               width: 200,
               color: BC_GOV_LINKS_COLOR,

@@ -15,7 +15,7 @@ Goals:
 
 | Page                       | URL                                | Comments                                                                                                   |
 | -------------------------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Report list - current year | `/reports`                         |                                                                                                            |
+| Report list - current year | `/reports/current-reports`         |                                                                                                            |
 | Report list - past years   | `/reports/previous-years`          |                                                                                                            |
 | Report - View              | `/reports/{report_version_id}`     | Using a specific version will allow us to link to past revisions. May redirect to a more appropriate place |
 | Report - Edit              | `/reports/{report_version_id}/***` | General pattern for the pages                                                                              |

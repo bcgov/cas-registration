@@ -181,8 +181,8 @@ export async function getNavigationInformation(
     taskList: rootElement
       ? [...taskListHeaders, { ...rootElement, elements: taskList }]
       : [...taskListHeaders, ...taskList],
-    backUrl: backUrl ?? "/reports",
-    continueUrl: continueUrl ?? "/reports",
+    backUrl: backUrl ?? "/reports/current-reports",
+    continueUrl: continueUrl ?? "/reports/current-reports",
     headerSteps: headerSteps,
     headerStepIndex: headerSteps.indexOf(step),
   };

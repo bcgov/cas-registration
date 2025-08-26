@@ -125,7 +125,7 @@ describe("The SubmittedForm component", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls router.push('/reporting/reports') when Back to All Reports button is clicked", async () => {
+  it("calls router.push('/reporting/reports/current-reports') when Back to All Reports button is clicked", async () => {
     const mockData = {
       report_operation: {
         operation_name: "Test Operation",
@@ -156,7 +156,9 @@ describe("The SubmittedForm component", () => {
     });
 
     await user.click(screen.getByText("Back to All Reports"));
-    expect(mockRouterPush).toHaveBeenCalledWith("/reporting/reports");
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/reporting/reports/current-reports",
+    );
   });
 
   it("fetches data with correct version_id", () => {
