@@ -73,7 +73,7 @@ class ComplianceInvoiceService:
         # Operator → Address
 
         operator_address_line1, operator_address_line2 = ComplianceInvoiceService.format_operator_address(
-            operator.physical_address
+            operator.mailing_address
         )
 
         invoice_number = invoice.invoice_number
