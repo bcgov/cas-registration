@@ -144,8 +144,8 @@ class TestReportingDashboardService:
         rep3_op2_report = rep3_op2_latest_version.report
         rep3_report_operation = ReportOperation.objects.get(report_version=rep3_op2_latest_version)
 
-        result = ReportingDashboardService.get_past_reports_for_reporting_dashboard(
-            uo.user.user_guid, current_year, sort_field, sort_order, filters
+        result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            uo.user.user_guid, current_year, True, sort_field, sort_order, filters
         ).values()
         result_list = list(result)
         assert len(result_list) == 3
