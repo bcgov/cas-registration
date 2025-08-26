@@ -55,8 +55,12 @@ class ElicensingInterestRateService:
         """Process and store interest rate periods in the database."""
         for index, period in enumerate(periods):
             start_date = date.fromisoformat(period.startDate)
+            is_latest = index == len(periods) - 1
 
             if ElicensingInterestRate.objects.filter(start_date=start_date).exists():
+                # If this is the latest period, ensure it's marked as current
+                if is_latest:
+                    ElicensingInterestRate.objects.filter(start_date=start_date).update(is_current_rate=True)
                 continue
 
             end_date = cls._calculate_period_end_date(periods[index + 1] if index < len(periods) - 1 else None)
@@ -67,7 +71,7 @@ class ElicensingInterestRateService:
                 start_date=start_date,
                 interest_rate=quantized_rate,
                 end_date=end_date,
-                is_current_rate=index == len(periods) - 1,
+                is_current_rate=is_latest,
             )
             cls._update_previous_period_end_date(index, start_date, periods)
 
