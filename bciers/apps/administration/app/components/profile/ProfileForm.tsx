@@ -32,10 +32,26 @@ export const userSchema: RJSFSchema = {
   },
 };
 
+const emailHelpText = (
+  <>
+    <div>
+      This email is used to log in. To change your login email, contact{" "}
+      <a href="mailto:ghgregulator@gov.bc.ca">ghgregulator@gov.bc.ca</a>
+    </div>
+    <div>
+      To change the email you are contacted with, edit the email in your{" "}
+      <a href="">contact details page</a>.
+    </div>
+  </>
+);
+
 export const userUiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   phone_number: {
     "ui:widget": "PhoneWidget",
+  },
+  email: {
+    "ui:help": emailHelpText,
   },
 };
 
