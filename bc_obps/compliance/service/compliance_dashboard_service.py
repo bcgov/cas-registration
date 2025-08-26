@@ -11,6 +11,7 @@ from compliance.dataclass import PaymentDataWithFreshnessFlag
 from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.enums import ComplianceInvoiceTypes
+from service.reporting_year_service import ReportingYearService
 
 
 class ComplianceDashboardService:
@@ -24,16 +25,24 @@ class ComplianceDashboardService:
         Fetches all compliance summaries for the user's operations
         """
         user = UserDataAccessService.get_by_guid(user_guid)
-        compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
-            'compliance_report__report__operation',
-            'compliance_report__compliance_period',
-            'compliance_report__report__operator',
-            'obligation',
-            'compliance_earned_credit',
-            'report_compliance_summary',
-            # Filter out compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
-        ).exclude(
-            is_supplementary=True, status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        # Get current reporting
+        reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
+
+        compliance_report_version_queryset = (
+            ComplianceReportVersion.objects.select_related(
+                "compliance_report__report__operation",
+                "compliance_report__compliance_period",
+                "compliance_report__report__operator",
+                "obligation",
+                "compliance_earned_credit",
+                "report_compliance_summary",
+            ).exclude(
+                # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
+                is_supplementary=True,
+                status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            )
+            # filter for current reporting year
+            .filter(compliance_report__compliance_period__reporting_year=reporting_year)
         )
 
         if user.is_irc_user():
