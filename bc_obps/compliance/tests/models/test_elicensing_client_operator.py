@@ -1,6 +1,10 @@
+import pytest
+from django.db import ProgrammingError
+from rls.tests.helpers import assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
+from compliance.models.elicensing_client_operator import ElicensingClientOperator
 
 
 class ElicensingClientOperatorTest(BaseTestCase):
@@ -15,3 +19,67 @@ class ElicensingClientOperatorTest(BaseTestCase):
             ("client_guid", "client guid", None, None),
             ("elicensing_invoices", "elicensing invoice", None, None),
         ]
+
+
+#  RLS tests
+class TestElicensingClientOperatorRls(BaseTestCase):
+    def test_elicensing_client_operator_rls_industry_user(self):
+        # first object
+        operator = make_recipe('registration.tests.utils.operator', id=1)
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
+        # operation belonging to the approved user operator
+        make_recipe(
+            'compliance.tests.utils.elicensing_client_operator',
+            operator=approved_user_operator.operator,
+            client_object_id="1147483647",
+        )
+
+        # second object
+        random_operator = make_recipe('registration.tests.utils.operator', id=2)
+        # operation belonging to a random operator
+        make_recipe(
+            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
+        )
+
+        assert ElicensingClientOperator.objects.count() == 2  # Two operations created
+
+        def select_function(cursor):
+            assert ElicensingClientOperator.objects.count() == 1
+
+        def insert_function(cursor):
+            ElicensingClientOperator.objects.create(
+                operator_id=approved_user_operator.operator.id,
+                client_object_id="2147483646",
+                client_guid="d7611864-7e81-4eb8-91e2-3562f952d002",
+            )
+
+            assert ElicensingClientOperator.objects.filter(operator_id=approved_user_operator.operator.id).exists()
+
+            with pytest.raises(
+                ProgrammingError,
+                match='new row violates row-level security policy for table "elicensing_client_operator"',
+            ):
+                cursor.execute(
+                    """
+                    INSERT INTO "erc"."elicensing_client_operator" (
+                        operator_id
+                    ) VALUES (
+                        %s
+                    )
+                """,
+                    (random_operator.id,),
+                )
+
+        def update_function(cursor):
+            ElicensingClientOperator.objects.update(client_object_id="2147483647")
+            assert (
+                ElicensingClientOperator.objects.filter(client_object_id="2147483647").count() == 1
+            )  # only affected 1
+
+        assert_policies_for_industry_user(
+            ElicensingClientOperator,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+        )
