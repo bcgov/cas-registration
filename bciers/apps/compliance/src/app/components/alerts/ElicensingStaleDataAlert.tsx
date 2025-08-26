@@ -7,16 +7,13 @@ import { AlertIcon } from "@bciers/components/icons";
 import { BC_GOV_YELLOW } from "@bciers/styles";
 import { AppRoutes } from "@/compliance/src/app/utils/constants";
 
-// helpers local to the client component
-const leafOf = (s: string) =>
-  s.split(/[?#]/, 1)[0].split("/").filter(Boolean).pop()?.toLowerCase() ?? "";
-
 const isExcludedLeaf = (leafOrPath: string) => {
   const excluded = new Set<string>([
-    leafOf(AppRoutes.DOWNLOAD_PAYMENT_INSTRUCTIONS),
+    AppRoutes.DOWNLOAD_PAYMENT_INSTRUCTIONS,
+    AppRoutes.DOWNLOAD_PENALTY_PAYMENT_INSTRUCTIONS,
     // add more exclusions here if needed
   ]);
-  return excluded.has(leafOf(leafOrPath));
+  return excluded.has(leafOrPath);
 };
 
 type Props = {

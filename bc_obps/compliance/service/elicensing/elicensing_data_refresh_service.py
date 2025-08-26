@@ -172,13 +172,13 @@ class ElicensingDataRefreshService:
 
     @staticmethod
     def format_last_refresh_metadata(
-        refresh_result: object,
+        refresh_result: RefreshWrapperReturn,
         *,
         fmt: str = "%Y-%m-%d %H:%M:%S",
         default_fresh: bool = True,
     ) -> LastRefreshMetaData:
         """
-        Extract last-refresh metadata from a refresh_result.
+        Extract last-refresh metadata from a RefreshWrapperReturn.
 
         - Formats invoice.last_refreshed in local time
         - If missing/None, returns an empty string.

@@ -27,6 +27,6 @@ def format_last_refresh_metadatadata(
     )
 
     # Build the refresh data metadata payload
-    payload = ElicensingDataRefreshService.format_last_refresh_metadata(refresh_result)
+    refresh_result_metadata = ElicensingDataRefreshService.format_last_refresh_metadata(refresh_result)
 
-    return 200, payload
+    return 200, refresh_result_metadata

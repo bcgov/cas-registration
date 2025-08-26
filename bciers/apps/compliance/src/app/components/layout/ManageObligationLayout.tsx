@@ -12,14 +12,14 @@ export default async function ManageObligationLayout({
   complianceReportVersionId,
   children,
 }: Props) {
-  const meta: ElicensingLastRefreshData =
+  const metadata: ElicensingLastRefreshData =
     await getElicensingLastRefreshMetaData(complianceReportVersionId);
 
   return (
     <div className="min-h-screen">
       <ElicensingStaleDataAlert
-        lastUpdated={meta?.last_refreshed_display ?? ""}
-        dataIsFresh={meta?.data_is_fresh ?? false}
+        lastUpdated={metadata?.last_refreshed_display ?? ""}
+        dataIsFresh={metadata?.data_is_fresh ?? false}
       />
       <main className="container mx-auto p-4">{children}</main>
     </div>
