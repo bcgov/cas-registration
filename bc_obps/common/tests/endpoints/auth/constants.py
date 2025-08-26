@@ -349,7 +349,7 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "format_last_refresh_metadatadata",
+            "endpoint_name": "get_last_refreshed_metadata",
             "kwargs": {
                 "compliance_report_version_id": MOCK_INT,
             },

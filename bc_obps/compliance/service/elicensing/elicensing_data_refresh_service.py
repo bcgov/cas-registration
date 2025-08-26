@@ -171,35 +171,30 @@ class ElicensingDataRefreshService:
             )
 
     @staticmethod
-    def format_last_refresh_metadata(
+    def get_last_refreshed_metadata(
         refresh_result: RefreshWrapperReturn,
         *,
-        fmt: str = "%Y-%m-%d %H:%M:%S",
-        default_fresh: bool = True,
+        fmt: str = "%Y-%m-%d %H:%M:%S %Z",
+        default_fresh: bool = False,
     ) -> LastRefreshMetaData:
+
         """
         Extract last-refresh metadata from a RefreshWrapperReturn.
 
-        - Formats invoice.last_refreshed in local time
-        - If missing/None, returns an empty string.
-        - data_is_fresh defaults to `default_fresh` when absent.
+        - Formats invoice.last_refreshed
+        - data_is_fresh defaults to `default_fresh` when absent
         """
         invoice = getattr(refresh_result, "invoice", None)
         last_refreshed = getattr(invoice, "last_refreshed", None)
 
         if last_refreshed:
-            # Make aware if naive, then convert to local time
-            if timezone.is_naive(last_refreshed):
-                last_refreshed = timezone.make_aware(
-                    last_refreshed, timezone.get_current_timezone()
-                )
-            last_refreshed_str = timezone.localtime(last_refreshed).strftime(fmt)
+            last_refreshed_str = last_refreshed.strftime(fmt)
         else:
             last_refreshed_str = ""
 
-        data_is_fresh = bool(getattr(refresh_result, "data_is_fresh", default_fresh))
+        data_is_fresh = getattr(refresh_result, "data_is_fresh", default_fresh)
 
         return {
             "last_refreshed_display": last_refreshed_str,
-            "data_is_fresh": data_is_fresh,
+            "data_is_fresh": bool(data_is_fresh),
         }

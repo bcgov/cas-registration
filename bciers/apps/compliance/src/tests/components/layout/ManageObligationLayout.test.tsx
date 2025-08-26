@@ -21,16 +21,19 @@ vi.mock("@bciers/components/icons", () => ({ AlertIcon: () => null }));
 vi.mock("@bciers/styles", () => ({ BC_GOV_YELLOW: "#ffd75e" }));
 
 // 3) Mock the server util that the layout calls
-vi.mock("@/compliance/src/app/utils/getElicensingLastRefreshMetaData", () => ({
-  getElicensingLastRefreshMetaData: vi.fn(),
-}));
+vi.mock(
+  "@/compliance/src/app/utils/getElicensingLastRefreshedMetaData",
+  () => ({
+    getElicensingLastRefreshedMetaData: vi.fn(),
+  }),
+);
 
 // 4) Import the mocked symbols and get typed mock handles
 import { useSelectedLayoutSegments } from "next/navigation";
 const mockUseSelectedLayoutSegments = vi.mocked(useSelectedLayoutSegments);
 
-import { getElicensingLastRefreshMetaData } from "@/compliance/src/app/utils/getElicensingLastRefreshMetaData";
-const mockGetMeta = vi.mocked(getElicensingLastRefreshMetaData);
+import { getElicensingLastRefreshedMetaData } from "@/compliance/src/app/utils/getElicensingLastRefreshedMetaData";
+const mockGetMeta = vi.mocked(getElicensingLastRefreshedMetaData);
 
 // 5) Import the server layout AFTER mocks
 import ManageObligationLayout from "@/compliance/src/app/components/layout/ManageObligationLayout";

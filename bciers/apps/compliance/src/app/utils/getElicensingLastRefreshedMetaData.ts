@@ -1,10 +1,10 @@
 import { actionHandler } from "@bciers/actions";
 import type { ElicensingLastRefreshData } from "@/compliance/src/app/types";
 
-export async function getElicensingLastRefreshMetaData(
+export async function getElicensingLastRefreshedMetaData(
   complianceReportVersionId: number,
 ): Promise<ElicensingLastRefreshData> {
-  const endpoint = `compliance/elicensing/compliance-report-versions/${complianceReportVersionId}/last-refresh-metadata`;
+  const endpoint = `compliance/elicensing/compliance-report-versions/${complianceReportVersionId}/last-refreshed-metadata`;
   const response = await actionHandler(endpoint, "GET", "");
 
   if (response?.error) {

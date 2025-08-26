@@ -85,6 +85,7 @@ class LastRefreshMetaData(TypedDict):
     last_refreshed_display: str
     data_is_fresh: bool
 
+
 @dataclass
 class MixedUnit:
     """Data model for a unit in the mixed unit list for BCCR transfer"""

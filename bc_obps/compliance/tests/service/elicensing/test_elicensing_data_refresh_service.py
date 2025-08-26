@@ -11,18 +11,43 @@ from model_bakery.baker import make_recipe
 from django.utils import timezone
 from datetime import timedelta
 from compliance.enums import ComplianceInvoiceTypes
+from compliance.dataclass import RefreshWrapperReturn
 
-ELICENSING_QUERY_INVOICE_PATH = "compliance.service.elicensing.elicensing_api_client.ELicensingAPIClient.query_invoice"
-ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = (
-    "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_by_invoice"
+
+pytestmark = pytest.mark.django_db
+
+ELICENSING_SERVICE_PATH = "compliance.service.elicensing"
+ELICENSING_QUERY_INVOICE_PATH = f"{ELICENSING_SERVICE_PATH}.elicensing_api_client.ELicensingAPIClient.query_invoice"
+ELICENSING_DATA_REFRESH_SERVICE = (
+    f"{ELICENSING_SERVICE_PATH}.elicensing_data_refresh_service.ElicensingDataRefreshService"
 )
+ELICENSING_REFRESH_DATA_BY_INVOICE_PATH = f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_by_invoice"
+ELICENSING_REFRESH_DATA_WRAPPER = (
+    f"{ELICENSING_DATA_REFRESH_SERVICE}.refresh_data_wrapper_by_compliance_report_version_id"
+)
+
+
+@pytest.fixture
+def mock_query_invoice():
+    with patch(ELICENSING_QUERY_INVOICE_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_refresh_invoice():
+    with patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_refresh_wrapper():
+    with patch(ELICENSING_REFRESH_DATA_WRAPPER) as mock:
+        yield mock
 
 
 class TestElicensingOperatorService:
     """Tests for the ElicensingDataRefreshService class"""
 
-    @pytest.mark.django_db
-    @patch(ELICENSING_QUERY_INVOICE_PATH)
     def test_refreshes_data_from_elicensing(self, mock_query_invoice):
         """Test sync_client_with_elicensing successfully creates a new client"""
         # Setup mocks
@@ -97,23 +122,19 @@ class TestElicensingOperatorService:
         assert payment.receipt_number == 'R192883'
         assert adjustment.amount == Decimal('10.11')
 
-    @pytest.mark.django_db
-    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
-    def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh):
+    def test_compliance_report_version_id_wrapper_stale_data(self, mock_refresh_invoice):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
         )
         obligation = make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=invoice)
-        mock_refresh.side_effect = ValueError("Failed to parse API response")
+        mock_refresh_invoice.side_effect = ValueError("Failed to parse API response")
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
         assert returned_data.data_is_fresh == False  # noqa: E712
         assert returned_data.invoice == invoice
 
-    @pytest.mark.django_db
-    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
-    def test_compliance_report_version_id_wrapper_successful_refresh(self, mock_refresh):
+    def test_compliance_report_version_id_wrapper_successful_refresh(self, mock_refresh_invoice):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(days=3)
         )
@@ -121,13 +142,11 @@ class TestElicensingOperatorService:
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        mock_refresh.assert_called_once()
+        mock_refresh_invoice.assert_called_once()
         assert returned_data.data_is_fresh == True  # noqa: E712
         assert returned_data.invoice == invoice
 
-    @pytest.mark.django_db
-    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
-    def test_compliance_report_version_id_wrapper_skips_refresh(self, mock_refresh):
+    def test_compliance_report_version_id_wrapper_skips_refresh(self, mock_refresh_invoice):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(seconds=30)
         )
@@ -135,13 +154,11 @@ class TestElicensingOperatorService:
         returned_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        mock_refresh.assert_not_called()
+        mock_refresh_invoice.assert_not_called()
         assert returned_data.data_is_fresh == True  # noqa: E712
         assert returned_data.invoice == invoice
 
-    @pytest.mark.django_db
-    @patch(ELICENSING_REFRESH_DATA_BY_INVOICE_PATH)
-    def test_force_refresh_data(self, mock_refresh):
+    def test_force_refresh_data(self, mock_refresh_invoice):
         invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now() - timedelta(minutes=300)
         )
@@ -150,11 +167,10 @@ class TestElicensingOperatorService:
             compliance_report_version_id=obligation.compliance_report_version_id,
             force_refresh=True,  # should bypass last_refresh
         )
-        mock_refresh.assert_called_once()
+        mock_refresh_invoice.assert_called_once()
         assert returned_data.data_is_fresh == True  # noqa: E712
         # python
 
-    @pytest.mark.django_db
     def test_refresh_data_wrapper_by_compliance_report_version_id_obligation(self):
         # Create an obligation with an associated invoice
         invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
@@ -165,7 +181,6 @@ class TestElicensingOperatorService:
         )
         assert result.invoice == invoice
 
-    @pytest.mark.django_db
     def test_refresh_data_wrapper_by_compliance_report_version_id_penalty(self):
         # Create an obligation and a penalty, each with their own invoice
         penalty_invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
@@ -182,3 +197,42 @@ class TestElicensingOperatorService:
             invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
         )
         assert result.invoice == penalty_invoice
+
+    def test_wrapper_last_refreshed_metadata_fresh(mock_refresh_wrapper):
+        # Arrange
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
+
+        # Mocked wrapper result
+        mock_refresh_wrapper.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=invoice)
+
+        # Act
+        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(mock_refresh_wrapper.return_value)
+
+        # Assert
+        assert metadata["data_is_fresh"] is True
+        assert metadata["last_refreshed_display"] == invoice.last_refreshed.strftime("%Y-%m-%d %H:%M:%S %Z")
+
+    def test_wrapper_last_refreshed_metadata_stale(mock_refresh_wrapper):
+        # Arrange
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', last_refreshed=timezone.now())
+
+        # Mocked wrapper result
+        mock_refresh_wrapper.return_value = RefreshWrapperReturn(data_is_fresh=False, invoice=invoice)
+
+        # Act
+        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(mock_refresh_wrapper.return_value)
+
+        # Assert
+        assert metadata["data_is_fresh"] is False
+        assert metadata["last_refreshed_display"] == invoice.last_refreshed.strftime("%Y-%m-%d %H:%M:%S %Z")
+
+    def test_wrapper_last_refreshed_metadata_defaults(mock_refresh_wrapper):
+        # Mocked wrapper result
+        mock_refresh_wrapper.return_value = RefreshWrapperReturn(data_is_fresh=None, invoice=None)
+
+        # Act
+        metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(mock_refresh_wrapper.return_value)
+
+        # Assert
+        assert metadata["data_is_fresh"] is False
+        assert metadata["last_refreshed_display"] == ""

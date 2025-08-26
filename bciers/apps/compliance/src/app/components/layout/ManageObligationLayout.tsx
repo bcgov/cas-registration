@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { ElicensingStaleDataAlert } from "@/compliance/src/app/components/alerts/ElicensingStaleDataAlert";
-import { getElicensingLastRefreshMetaData } from "@/compliance/src/app/utils/getElicensingLastRefreshMetaData";
+import { getElicensingLastRefreshedMetaData } from "@/compliance/src/app/utils/getElicensingLastRefreshedMetaData";
 import { ElicensingLastRefreshData } from "@/compliance/src/app/types";
 
 type Props = {
@@ -13,7 +13,7 @@ export default async function ManageObligationLayout({
   children,
 }: Props) {
   const metadata: ElicensingLastRefreshData =
-    await getElicensingLastRefreshMetaData(complianceReportVersionId);
+    await getElicensingLastRefreshedMetaData(complianceReportVersionId);
 
   return (
     <div className="min-h-screen">
