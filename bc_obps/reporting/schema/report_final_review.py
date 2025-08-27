@@ -217,15 +217,12 @@ class FacilityReportSchema(ModelSchema):
     @staticmethod
     def resolve_activity_data(obj: FacilityReport) -> Dict[str, ReportRawActivityData]:
         activities = obj.reportrawactivitydata_records.all()
-        return {
-            activity.activity.name if activity.activity else f"activity_{activity.id}": activity
-            for activity in activities
-        }
+        return {activity.activity.name: activity for activity in activities}
 
     @staticmethod
     def resolve_report_products(obj: FacilityReport) -> Dict[str, ReportProduct]:
         products = obj.report_products.all()
-        return {product.product.name if product.product else f"product_{product.id}": product for product in products}
+        return {product.product.name: product for product in products}
 
     @staticmethod
     def resolve_emission_summary(obj: FacilityReport) -> Optional[Any]:

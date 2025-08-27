@@ -17,6 +17,7 @@ import {
 } from "./NestedStructureRenderer";
 import { generateDisplayLabel } from "@reporting/src/app/components/changeReview/utils/fieldUtils";
 import { collapseStyles } from "@reporting/src/app/components/changeReview/constants/styles";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 
 interface SourceTypeCardProps {
   sourceTypeName: string;
@@ -34,7 +35,10 @@ const CollapsibleCard: React.FC<{
         <Grid item xs={10}>
           <CardHeader
             sx={{ color: "blue" }}
-            titleTypographyProps={{ variant: "h6", color: "#38598A" }}
+            titleTypographyProps={{
+              variant: "h6",
+              color: BC_GOV_BACKGROUND_COLOR_BLUE,
+            }}
             title={title}
           />
         </Grid>

@@ -146,8 +146,6 @@ class ReportVersionService:
             .values_list("report_operation__operation_type", flat=True)
             .get(id=version_id)
         )
-        print('operation_type', operation_type)
-
         # Build prefetches
         prefetches = [
             "report_electricity_import_data",
@@ -165,7 +163,6 @@ class ReportVersionService:
             "report_operation__regulated_products",
         ]
         if operation_type != Operation.Types.EIO:
-            print('operation_type not EIO')
             prefetches.append(
                 Prefetch(
                     "facility_reports",
@@ -177,14 +174,10 @@ class ReportVersionService:
                     ),
                 )
             )
-        # Fetch and return the fully-prefetched object in one query
-        a = (
+        return (
             ReportVersion.objects.select_related(
                 "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
             )
             .prefetch_related(*prefetches)
             .get(id=version_id)
         )
-        print('data', a.__dict__)
-
-        return a

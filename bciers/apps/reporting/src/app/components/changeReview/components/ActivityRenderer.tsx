@@ -8,6 +8,7 @@ import {
   isNonEmptyValue,
   normalizeChangeType,
 } from "@reporting/src/app/components/changeReview/utils/utils";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 
 // Renders an activity and its source types, handling added, deleted, and modified cases
 export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
@@ -40,7 +41,7 @@ export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
     <Box key={activityName} mb={3} style={styles.sourceCard}>
       <Box
         className="font-bold"
-        sx={{ fontSize: "1.2rem", color: "#38598A", mb: 2 }}
+        sx={{ fontSize: "1.2rem", color: BC_GOV_BACKGROUND_COLOR_BLUE, mb: 2 }}
       >
         {activityName}
       </Box>

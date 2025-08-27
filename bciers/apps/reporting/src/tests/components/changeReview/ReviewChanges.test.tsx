@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import ReviewChanges from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
+import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
 
 // Mock all the template components
@@ -9,7 +9,7 @@ vi.mock(
   () => ({
     ChangeItemDisplay: ({ item }: any) => (
       <div data-testid={`change-item-${item.field}`}>
-        {item.field}: {item.old_value} → {item.new_value}
+        {item.field}: {item.oldValue} → {item.newValue}
       </div>
     ),
   }),
@@ -79,6 +79,7 @@ vi.mock("@reporting/src/app/components/changeReview/utils/utils", () => ({
     return "Other";
   }),
   groupPersonResponsibleChanges: vi.fn((changes) => changes),
+  normalizeChangeKeys: vi.fn((changes) => changes),
 }));
 
 vi.mock(
@@ -111,56 +112,56 @@ describe("ReviewChanges", () => {
   const mockChanges: ChangeItem[] = [
     {
       field: "root['report_information']['test_field']",
-      old_value: "old_value",
-      new_value: "new_value",
+      oldValue: "oldValue",
+      newValue: "newValue",
       facilityName: "Mock Facility",
       change_type: "modified",
       deletedActivities: [],
     },
     {
       field: "root['report_compliance_summary']['compliance_field']",
-      old_value: "old_compliance",
-      new_value: "new_compliance",
+      oldValue: "old_compliance",
+      newValue: "new_compliance",
       facilityName: "", // required, even if empty
       change_type: "modified",
       deletedActivities: [],
     },
     {
       field: "root['facility_reports']['facility_1']['some_field']",
-      old_value: "old_facility",
-      new_value: "new_facility",
+      oldValue: "old_facility",
+      newValue: "new_facility",
       facilityName: "Mock Facility",
       change_type: "modified",
       deletedActivities: [],
     },
     {
       field: "root['report_electricity_import_data']['electricity_field']",
-      old_value: "old_electricity",
-      new_value: "new_electricity",
+      oldValue: "old_electricity",
+      newValue: "new_electricity",
       facilityName: "", // required
       change_type: "modified",
       deletedActivities: [],
     },
     {
       field: "root['report_new_entrant']['new_entrant_field']",
-      old_value: "old_entrant",
-      new_value: "new_entrant",
+      oldValue: "old_entrant",
+      newValue: "new_entrant",
       facilityName: "", // required
       change_type: "modified",
       deletedActivities: [],
     },
     {
       field: "root['operation_emission_summary']['emission_field']",
-      old_value: "old_emission",
-      new_value: "new_emission",
+      oldValue: "old_emission",
+      newValue: "new_emission",
       facilityName: "", // required
       change_type: "modified",
       deletedActivities: [],
     },
     {
       field: "root['person_responsible']['name']",
-      old_value: "old_name",
-      new_value: "new_name",
+      oldValue: "old_name",
+      newValue: "new_name",
       facilityName: "", // required
       change_type: "modified",
       deletedActivities: [],
@@ -209,8 +210,8 @@ describe("ReviewChanges", () => {
     const limitedChanges = [
       {
         field: "root['report_information']['test_field']",
-        old_value: "old_value",
-        new_value: "new_value",
+        oldValue: "oldValue",
+        newValue: "newValue",
         change_type: "modified",
         facilityName: "Mock Facility",
         deletedActivities: [],
@@ -233,11 +234,11 @@ describe("ReviewChanges", () => {
     const bulkFacilityChanges: ChangeItem[] = [
       {
         field: "root['facility_reports']",
-        old_value: {
+        oldValue: {
           "Facility A": { name: "Facility A", data: "old" },
           "Facility B": { name: "Facility B", data: "old" },
         },
-        new_value: {
+        newValue: {
           "Facility A": { name: "Facility A", data: "new" },
           "Facility B": { name: "Facility B", data: "new" },
         },
@@ -257,8 +258,8 @@ describe("ReviewChanges", () => {
     const otherChanges = [
       {
         field: "root['some_other_field']",
-        old_value: "old_other",
-        new_value: "new_other",
+        oldValue: "old_other",
+        newValue: "new_other",
         change_type: "modified",
         facilityName: "",
         deletedActivities: [],
@@ -274,8 +275,8 @@ describe("ReviewChanges", () => {
     const invalidChanges = [
       {
         field: "root['facility_reports']",
-        old_value: null,
-        new_value: "invalid_value",
+        oldValue: null,
+        newValue: "invalid_value",
         change_type: "modified",
         facilityName: "Test Facility",
         deletedActivities: [],

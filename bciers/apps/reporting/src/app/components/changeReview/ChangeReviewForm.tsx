@@ -1,16 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import {
-  changeReviewSchema,
-  changeReviewUiSchema,
-} from "@reporting/src/data/jsonSchema/changeReview/changeReview";
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
-import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
+import ReasonForChangeForm from "@reporting/src/app/components/changeReview/templates/ReasonForChange";
 
 interface ChangeReviewProps {
   versionId: number;
@@ -29,24 +25,34 @@ export default function ChangeReviewForm({
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<string[]>();
   const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
+  const [reasonForChange, setReasonForChange] = useState(
+    initialFormData.reason_for_change || "",
+  );
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<void> => {
     setIsRedirecting(true);
+
+    const payload = {
+      ...formData,
+      reason_for_change: reasonForChange,
+    };
+
     const endpoint = `reporting/report-version/${versionId}`;
     const method = "POST";
+
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(formData),
+      body: JSON.stringify(payload),
     });
+
     if (response?.error) {
       setErrors([response.error]);
       setIsRedirecting(false);
-      return false;
+      return; // <--- just return void instead of false
     }
 
     setErrors(undefined);
-    // Redirect to continue URL after successful submission
     router.push(navigationInformation.continueUrl);
-    return true;
+    // don't return true
   };
 
   return (
@@ -62,15 +68,13 @@ export default function ChangeReviewForm({
       noSaveButton={true}
     >
       <ReviewChanges changes={changes} />
-      <FormBase
-        schema={changeReviewSchema}
-        className="flex flex-col flex-grow mt-10"
-        uiSchema={changeReviewUiSchema}
-        onChange={(data: any) => {
-          setFormData(data.formData);
+      <ReasonForChangeForm
+        reasonForChange={reasonForChange}
+        onReasonChange={(val) => {
+          setReasonForChange(val);
+          setFormData({ ...formData, reason_for_change: val });
         }}
-        formData={formData}
-        omitExtraData={true}
+        onSubmit={handleSubmit}
       />
     </MultiStepWrapperWithTaskList>
   );

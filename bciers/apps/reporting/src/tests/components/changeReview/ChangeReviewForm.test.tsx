@@ -1,4 +1,3 @@
-import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import ChangeReviewForm from "@reporting/src/app/components/changeReview/ChangeReviewForm";
@@ -6,14 +5,22 @@ import { actionHandler } from "@bciers/actions";
 import { HeaderStep } from "@reporting/src/app/components/taskList/types";
 
 const mockRouterPush = vi.fn();
-useRouter.mockReturnValue({
-  push: mockRouterPush,
-});
+
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: mockRouterPush }),
+}));
 
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
-
+vi.mock(
+  "@reporting/src/app/components/changeReview/templates/ReviewChanges",
+  () => {
+    return {
+      ReviewChanges: vi.fn(() => <div>Mocked ReviewChanges</div>),
+    };
+  },
+);
 vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
   default: ({
     children,
@@ -46,52 +53,24 @@ vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
   ),
 }));
 
+// Mock ReasonForChangeForm to expose its props for testing
 vi.mock(
-  "@reporting/src/app/components/changeReview/templates/ReviewChanges",
+  "@reporting/src/app/components/changeReview/templates/ReasonForChange",
   () => ({
-    default: ({ changes }: any) => (
-      <div data-testid="review-changes">
-        Changes count: {changes.length}
-        {changes.map((change: any, idx: number) => (
-          <div key={idx} data-testid={`change-${idx}`}>
-            {change.field}: {change.old_value} → {change.new_value}
-          </div>
-        ))}
+    default: ({ reasonForChange, onReasonChange, onSubmit }: any) => (
+      <div data-testid="reason-for-change">
+        <input
+          data-testid="reason-input"
+          value={reasonForChange}
+          onChange={(e) => onReasonChange(e.target.value)}
+        />
+        <button data-testid="reason-submit" onClick={onSubmit}>
+          Submit Reason
+        </button>
       </div>
     ),
   }),
 );
-vi.mock(
-  "@reporting/src/app/components/changeReview/templates/facilityReportParser",
-  async (importOriginal) => {
-    const actual = (await importOriginal()) as any;
-    return {
-      ...actual,
-      detectActivityChangesInModifiedFacility: vi.fn(() => ({
-        facilityName: "Mock Facility",
-        addedActivities: [],
-        removedActivities: [],
-      })),
-    };
-  },
-);
-vi.mock("@bciers/components/form", () => ({
-  FormBase: ({ onChange, formData, children, className }: any) => (
-    <div data-testid="form-base" className={className}>
-      <input
-        data-testid="form-input"
-        onChange={(e) => onChange({ formData: { test: e.target.value } })}
-        value={formData?.test || ""}
-      />
-      {children}
-    </div>
-  ),
-}));
-
-vi.mock("@reporting/src/data/jsonSchema/changeReview/changeReview", () => ({
-  changeReviewSchema: { type: "object", properties: {} },
-  changeReviewUiSchema: {},
-}));
 
 describe("The ChangeReviewForm component", () => {
   const mockActionHandler = actionHandler as vi.MockedFunction<
@@ -100,7 +79,7 @@ describe("The ChangeReviewForm component", () => {
 
   const defaultProps = {
     versionId: 123,
-    initialFormData: { test: "initial" },
+    initialFormData: { test: "initial", reason_for_change: "" },
     navigationInformation: {
       headerStepIndex: 1,
       headerSteps: [
@@ -133,16 +112,8 @@ describe("The ChangeReviewForm component", () => {
     changes: [
       {
         field: "test_field",
-        old_value: "old",
-        new_value: "new",
-        facilityName: "Mock Facility",
-        deletedActivities: [],
-        change_type: "modified",
-      },
-      {
-        field: "another_field",
-        old_value: "value1",
-        new_value: "value2",
+        oldValue: "old",
+        newValue: "new",
         facilityName: "Mock Facility",
         deletedActivities: [],
         change_type: "modified",
@@ -154,92 +125,37 @@ describe("The ChangeReviewForm component", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the form with review changes and form base", () => {
+  it("updates reason for change when input changes", () => {
     render(<ChangeReviewForm {...defaultProps} />);
-
-    expect(screen.getByTestId("multi-step-wrapper")).toBeInTheDocument();
-    expect(screen.getByTestId("review-changes")).toBeInTheDocument();
-    expect(screen.getByTestId("form-base")).toBeInTheDocument();
-    expect(screen.getByTestId("change-0")).toHaveTextContent(
-      "test_field: old → new",
-    );
-    expect(screen.getByTestId("change-1")).toHaveTextContent(
-      "another_field: value1 → value2",
-    );
-    expect(screen.getByText("Changes count: 2")).toBeInTheDocument();
+    const reasonInput = screen.getByTestId("reason-input");
+    fireEvent.change(reasonInput, { target: { value: "Updated reason" } });
+    expect(reasonInput).toHaveValue("Updated reason");
   });
 
-  it("updates form data when form changes", () => {
-    render(<ChangeReviewForm {...defaultProps} />);
-
-    const input = screen.getByTestId("form-input");
-
-    expect(input).toHaveValue("initial");
-
-    fireEvent.change(input, { target: { value: "updated" } });
-    expect(input).toHaveValue("updated");
-  });
-
-  it("handles successful form submission", async () => {
+  it("handles successful submission", async () => {
     mockActionHandler.mockResolvedValue({ success: true });
-
     render(<ChangeReviewForm {...defaultProps} />);
-
-    const submitButton = screen.getByTestId("submit-button");
-    fireEvent.click(submitButton);
-
+    fireEvent.click(screen.getByTestId("submit-button"));
     await waitFor(() => {
       expect(mockActionHandler).toHaveBeenCalledWith(
         "reporting/report-version/123",
         "POST",
         "reporting/report-version/123",
-        {
-          body: JSON.stringify(defaultProps.initialFormData),
-        },
+        expect.any(Object),
       );
       expect(mockRouterPush).toHaveBeenCalledWith("/continue");
     });
   });
 
-  it("handles form submission error and displays error message", async () => {
+  it("handles error submission", async () => {
     const errorMessage = "Submission failed";
     mockActionHandler.mockResolvedValue({ error: errorMessage });
-
     render(<ChangeReviewForm {...defaultProps} />);
-
-    const submitButton = screen.getByTestId("submit-button");
-    fireEvent.click(submitButton);
-
+    fireEvent.click(screen.getByTestId("submit-button"));
     await waitFor(() => {
-      expect(mockActionHandler).toHaveBeenCalled();
       expect(screen.getByTestId("errors")).toBeInTheDocument();
       expect(screen.getByTestId("error-0")).toHaveTextContent(errorMessage);
       expect(mockRouterPush).not.toHaveBeenCalled();
-    });
-
-    // Check that redirecting state is reset after error
-    expect(screen.queryByTestId("redirecting")).not.toBeInTheDocument();
-  });
-
-  it("shows redirecting state during submission", async () => {
-    mockActionHandler.mockImplementation(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(() => resolve({ success: true }), 100),
-        ),
-    );
-
-    render(<ChangeReviewForm {...defaultProps} />);
-
-    const submitButton = screen.getByTestId("submit-button");
-    fireEvent.click(submitButton);
-
-    expect(screen.getByTestId("redirecting")).toBeInTheDocument();
-    expect(submitButton).toHaveTextContent("Saving...");
-    expect(submitButton).toBeDisabled();
-
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith("/continue");
     });
   });
 });

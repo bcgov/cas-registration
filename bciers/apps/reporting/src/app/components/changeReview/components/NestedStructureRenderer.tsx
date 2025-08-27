@@ -7,6 +7,7 @@ import {
   isWholeObjectAdded,
   isWholeObjectDeleted,
 } from "@reporting/src/app/components/changeReview/utils/utils";
+import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 
 // Render a single field
 export const renderFieldChange = (
@@ -122,7 +123,7 @@ const renderArrayChanges = (
                 fontWeight: "bold",
                 mb: 1,
                 fontSize: labelSize,
-                color: wholeAdded || wholeDeleted ? "#38598A" : "#222",
+                color: BC_GOV_BACKGROUND_COLOR_BLUE,
               }}
             >
               {itemLabel}
