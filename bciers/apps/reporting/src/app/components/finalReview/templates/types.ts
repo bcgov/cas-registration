@@ -1,3 +1,5 @@
+import { SourceTypeChange } from "@reporting/src/app/components/changeReview/constants/types";
+
 export interface ActivityDataChangeViewProps {
   activities: Record<string, any>;
   addedActivities?: any[];
@@ -6,26 +8,29 @@ export interface ActivityDataChangeViewProps {
   deletedActivities?: any[];
 }
 
-export interface SourceTypeChange {
-  activityName: string;
-  sourceTypeName?: string;
-  changeType?: "added" | "deleted" | "modified";
-  fields?: any[];
-}
-
 export interface FieldChange {
   field: string;
   displayLabel: string;
-  old_value: any;
-  new_value: any;
+  oldValue: any;
+  newValue: any;
   category: "unit" | "fuel" | "emission";
   fuelIndex?: number;
   emissionIndex?: number;
-}
-
-export interface SourceTypeChangeDetection {
-  changeType: "added" | "deleted" | "modified" | null;
-  changeData?: any;
+  changeType: ChangeType;
+  isNewAddition?: boolean;
+  isDeleted?: boolean;
 }
 
 export type ChangeType = "added" | "deleted" | "modified";
+
+export interface Activity {
+  changeType?: ChangeType;
+  newValue?: {
+    source_types?: SourceTypeChange;
+  };
+  oldValue?: {
+    source_types?: SourceTypeChange;
+  };
+  activity?: string;
+  sourceTypes?: SourceTypeChange;
+}

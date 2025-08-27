@@ -1,4 +1,4 @@
-import { SourceTypeChange } from "../../finalReview/templates/types";
+import { SourceTypeChange } from "../constants/types";
 
 export type DetectedSourceTypeChange = {
   changeType: "added" | "deleted" | "modified" | null;
@@ -27,9 +27,9 @@ export const detectSourceTypeChanges = (
     const field = sourceTypeData.fields[0];
     const changeType: "added" | "deleted" | "modified" =
       field.change_type ||
-      (!field.old_value && field.new_value
+      (!field.oldValue && field.newValue
         ? "added"
-        : field.old_value && !field.new_value
+        : field.oldValue && !field.newValue
         ? "deleted"
         : "modified");
 
@@ -38,8 +38,8 @@ export const detectSourceTypeChanges = (
       changeData: {
         sourceTypeName: sourceTypeData.sourceTypeName,
         changeType,
-        oldValue: field.old_value,
-        newValue: field.new_value,
+        oldValue: field.oldValue,
+        newValue: field.newValue,
         fields: sourceTypeData.fields,
       },
     };
@@ -73,9 +73,9 @@ export const detectSourceTypeChanges = (
       ["added", "deleted", "modified"].includes(fieldChange.change_type)
     ) {
       changeType = fieldChange.change_type;
-    } else if (!fieldChange.old_value && fieldChange.new_value) {
+    } else if (!fieldChange.oldValue && fieldChange.newValue) {
       changeType = "added";
-    } else if (fieldChange.old_value && !fieldChange.new_value) {
+    } else if (fieldChange.oldValue && !fieldChange.newValue) {
       changeType = "deleted";
     }
 
@@ -84,8 +84,8 @@ export const detectSourceTypeChanges = (
       changeData: {
         sourceTypeName: change.sourceTypeName ?? sourceTypeName,
         changeType,
-        oldValue: fieldChange.old_value,
-        newValue: fieldChange.new_value,
+        oldValue: fieldChange.oldValue,
+        newValue: fieldChange.newValue,
         fields: change.fields ?? [],
       },
     };
@@ -98,7 +98,7 @@ export const detectSourceTypeChanges = (
       changeType: "modified",
       oldValue: null,
       newValue: null,
-      fields: change.fields ?? [],
+      fields: Array.isArray(change.fields) ? change.fields : [],
     },
   };
 };

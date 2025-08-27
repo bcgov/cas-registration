@@ -40,8 +40,8 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
         </Grid>
         <Grid item xs={12} md={9}>
           <ChangeValueBox
-            oldValue={item.old_value}
-            newValue={item.new_value}
+            oldValue={item.oldValue}
+            newValue={item.newValue}
             changeType={item.change_type}
             isDeleted={isDeleted}
           />

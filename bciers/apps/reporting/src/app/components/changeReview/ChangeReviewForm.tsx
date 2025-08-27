@@ -7,7 +7,7 @@ import {
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
-import ReviewChanges from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
+import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
 import { FormBase } from "@bciers/components/form";
 import { useRouter } from "next/navigation";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";

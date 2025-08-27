@@ -3,77 +3,62 @@ import { Box } from "@mui/material";
 import ActivityView from "../../finalReview/templates/ActivityView";
 import { SourceTypeRenderer } from "./SourceTypeRenderer";
 import { styles } from "@reporting/src/app/components/changeReview/constants/styles";
+import { ActivityRendererProps } from "@reporting/src/app/components/changeReview/constants/types";
 import {
-  SourceTypeChange,
-  ChangeType,
-} from "../../finalReview/templates/types";
+  isNonEmptyValue,
+  normalizeChangeType,
+} from "@reporting/src/app/components/changeReview/utils/utils";
 
-interface ActivityRendererProps {
-  activityName: string;
-  activity: any;
-  sourceTypeChangesForActivity: SourceTypeChange[];
-  isModifiedActivity?: boolean;
-}
-
+// Renders an activity and its source types, handling added, deleted, and modified cases
 export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
   activityName,
   activity,
   sourceTypeChangesForActivity,
-  isModifiedActivity = false,
 }) => {
-  const activityChangeType: ChangeType = activity.changeType || "modified";
-
-  // Handle Added activity
-  if (activityChangeType === "added") {
-    const activityData = activity.new_value ? [activity.new_value] : [];
+  const activityChangeType = normalizeChangeType(activity.changeType);
+  if (["added", "deleted"].includes(activityChangeType)) {
+    const activityData = activity.newValue || activity.oldValue;
+    const viewChangeType = activityChangeType as "added" | "deleted";
     return (
       <Box key={activityName} mb={3}>
-        <ActivityView activity_data={activityData} changeType="added" />
+        <ActivityView
+          activity_data={isNonEmptyValue(activityData) ? [activityData] : []}
+          changeType={viewChangeType}
+        />
       </Box>
     );
   }
 
-  // Handle Deleted activity
-  if (activityChangeType === "deleted") {
-    const activityData = activity.old_value ? [activity.old_value] : [];
-    return (
-      <Box key={activityName} mb={3}>
-        <ActivityView activity_data={activityData} changeType="deleted" />
+  // Handle modified activity
+  // Renders all source types for the activity, sorted so emissions are last
+  const sourceTypes =
+    activity.sourceTypes ||
+    activity.newValue?.source_types ||
+    activity.oldValue?.source_types ||
+    {};
+  return (
+    <Box key={activityName} mb={3} style={styles.sourceCard}>
+      <Box
+        className="font-bold"
+        sx={{ fontSize: "1.2rem", color: "#38598A", mb: 2 }}
+      >
+        {activityName}
       </Box>
-    );
-  }
-
-  if (activityChangeType === "modified") {
-    console.log("Rendering modified activity:", activity);
-    const sourceTypes = isModifiedActivity
-      ? activity.new_value?.source_types || {}
-      : activity.sourceTypes || {};
-    return (
-      <Box key={activityName} mb={3} style={styles.sourceCard}>
-        <Box
-          className="font-bold"
-          sx={{ fontSize: "1.2rem", color: "#38598A", mb: 2 }}
-        >
-          {isModifiedActivity ? activity.activity : activityName}
-        </Box>
-
-        {Object.entries(sourceTypes)
-          .sort(([keyA], [keyB]) => {
-            if (keyA.toLowerCase().includes("emissions")) return 1;
-            if (keyB.toLowerCase().includes("emissions")) return -1;
-            return 0;
-          })
-          .map(([sourceTypeName, sourceTypeValue], sourceTypeIndex) => (
-            <SourceTypeRenderer
-              key={sourceTypeIndex}
-              sourceTypeName={sourceTypeName}
-              sourceTypeValue={sourceTypeValue}
-              sourceTypeIndex={sourceTypeIndex}
-              sourceTypeChangesForActivity={sourceTypeChangesForActivity}
-            />
-          ))}
-      </Box>
-    );
-  }
-  return null;
+      {Object.entries(sourceTypes)
+        .sort(([keyA], [keyB]) => {
+          const aEm = keyA.toLowerCase().includes("emissions");
+          const bEm = keyB.toLowerCase().includes("emissions");
+          return aEm === bEm ? 0 : aEm ? 1 : -1;
+        })
+        .map(([sourceTypeName, sourceTypeValue], idx) => (
+          <SourceTypeRenderer
+            key={idx}
+            sourceTypeName={sourceTypeName}
+            sourceTypeValue={sourceTypeValue}
+            sourceTypeIndex={idx}
+            sourceTypeChangesForActivity={sourceTypeChangesForActivity}
+          />
+        ))}
+    </Box>
+  );
 };

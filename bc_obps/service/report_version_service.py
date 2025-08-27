@@ -1,4 +1,6 @@
 from django.db import transaction
+
+from registration.models import Operation
 from reporting.models.report import Report
 from reporting.models.report_operation import ReportOperation
 from service.data_access_service.facility_service import FacilityDataAccessService
@@ -138,23 +140,33 @@ class ReportVersionService:
         """
         Fetch a ReportVersion object with all related data for serialization (shared by final review and diff endpoints).
         """
+        # Get operation_type in a single lightweight query
+        operation_type = (
+            ReportVersion.objects.select_related("report_operation")
+            .values_list("report_operation__operation_type", flat=True)
+            .get(id=version_id)
+        )
+        print('operation_type', operation_type)
 
-        return (
-            ReportVersion.objects.select_related(
-                "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
-            )
-            .prefetch_related(
-                "report_electricity_import_data",
-                "report_new_entrant",
-                "report_compliance_summary",
-                "report_products",
-                "report_operation_representatives",
-                Prefetch(
-                    "report_non_attributable_emissions",
-                    queryset=ReportNonAttributableEmissions.objects.select_related(
-                        "emission_category"
-                    ).prefetch_related("gas_type"),
+        # Build prefetches
+        prefetches = [
+            "report_electricity_import_data",
+            "report_new_entrant",
+            "report_compliance_summary",
+            "report_products",
+            "report_operation_representatives",
+            Prefetch(
+                "report_non_attributable_emissions",
+                queryset=ReportNonAttributableEmissions.objects.select_related("emission_category").prefetch_related(
+                    "gas_type"
                 ),
+            ),
+            "report_operation__activities",
+            "report_operation__regulated_products",
+        ]
+        if operation_type != Operation.Types.EIO:
+            print('operation_type not EIO')
+            prefetches.append(
                 Prefetch(
                     "facility_reports",
                     queryset=FacilityReport.objects.prefetch_related(
@@ -163,9 +175,16 @@ class ReportVersionService:
                             queryset=ReportActivity.objects.select_related("activity", "activity_base_schema"),
                         ),
                     ),
-                ),
-                "report_operation__activities",
-                "report_operation__regulated_products",
+                )
             )
+        # Fetch and return the fully-prefetched object in one query
+        a = (
+            ReportVersion.objects.select_related(
+                "report_operation", "report_verification", "report_additional_data", "report_person_responsible"
+            )
+            .prefetch_related(*prefetches)
             .get(id=version_id)
         )
+        print('data', a.__dict__)
+
+        return a

@@ -44,7 +44,7 @@ export const FinalReviewForm: React.FC<Props> = ({
 
   // Helper functions to determine flow type
   const isEIO = () =>
-    data?.report_operation.registration_purpose === OperationTypes.EIO;
+    data?.report_operation.operation_type === OperationTypes.EIO;
   const isLFO = () =>
     data?.report_operation.operation_type === OperationTypes.LFO;
   const isSFO = () =>

@@ -1,6 +1,6 @@
 import React from "react";
 import { SectionReview } from "./SectionReview";
-import ActivitiesView from "@reporting/src/app/components/finalReview/templates/ActivityView";
+import ActivityView from "@reporting/src/app/components/finalReview/templates/ActivityView";
 import { FieldDisplay } from "@reporting/src/app/components/finalReview/templates/FieldDisplay";
 import { FacilityReport, ReportData } from "../reportTypes";
 import { EmissionAllocationView } from "@reporting/src/app/components/finalReview/templates/EmissionAllocationView";
@@ -62,7 +62,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
           fields={[]}
           expandable
         >
-          <ActivitiesView activity_data={facilityReport.activity_data} />
+          <ActivityView activity_data={facilityReport.activity_data} />
 
           <SectionReview
             title="Non-Attributable Emissions"

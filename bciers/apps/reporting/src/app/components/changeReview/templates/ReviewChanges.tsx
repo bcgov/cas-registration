@@ -1,18 +1,18 @@
 import React from "react";
 import { Box, Typography, Divider } from "@mui/material";
-import { ReviewChangesProps } from "../constants/types";
+import { ReviewChangesProps, SourceTypeChange } from "../constants/types";
 import { ChangeItemDisplay } from "./ChangeItemDisplay";
 import { FacilityReportChanges } from "./FacilityReportChanges";
 import { organizeFacilityReportChanges } from "./facilityReportOrganizer";
 import {
   detectActivityChangesInModifiedFacility,
   detectSourceTypeChanges,
-  SourceTypeChange,
 } from "./facilityReportParser";
 import {
   filterExcludedFields,
   getSection,
   groupPersonResponsibleChanges,
+  normalizeChangeKeys,
 } from "../utils/utils";
 import OperationEmissionSummary from "./OperationEmissionSummary";
 import ElectricityImportData from "./ElectricityImportData";
@@ -20,13 +20,14 @@ import NewEntrantChanges from "./NewEntrantChanges";
 import ComplianceSummary from "@reporting/src/app/components/changeReview/templates/ ComplianceSummary";
 import AdditionalReportingData from "@reporting/src/app/components/changeReview/templates/AdditionalReportingData";
 
-const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
-  const filteredChanges = filterExcludedFields(changes);
+export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
+  // Normalize keys for all changes at the root level
+  const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
 
   // Helper to filter changes by field prefix or inclusion
   const filterByField = (prefixes: string[], includes: string[] = []) =>
-    filteredChanges.filter(
-      (c) =>
+    normalizedChanges.filter(
+      (c: { field: string }) =>
         prefixes.some((p) => c.field.startsWith(p)) ||
         includes.some((inc) => c.field.includes(inc)),
     );
@@ -60,8 +61,8 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
     "root['operation_emission_summary']",
   ]);
 
-  const otherChanges = filteredChanges.filter(
-    (c) =>
+  const otherChanges = normalizedChanges.filter(
+    (c: any) =>
       ![
         ...facilityReportChanges,
         ...complianceChanges,
@@ -74,7 +75,7 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
 
   // Organize other changes into sections
   const sectioned: Record<string, any[]> = {};
-  otherChanges.forEach((change) => {
+  otherChanges.forEach((change: any) => {
     const section = getSection(change.field);
     if (!sectioned[section]) sectioned[section] = [];
     sectioned[section].push(change);
@@ -85,7 +86,7 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
     {};
   const sourceTypeChanges: SourceTypeChange[] = [];
 
-  facilityReportChanges.forEach((change) => {
+  facilityReportChanges.forEach((change: any) => {
     const activityResult = detectActivityChangesInModifiedFacility(change);
     if (activityResult) {
       const { facilityName, addedActivities, removedActivities } =
@@ -126,7 +127,7 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
   );
 
   const bulkFacilityChanges = facilityReportChanges.filter(
-    (c) =>
+    (c: any) =>
       c.field === "root['facility_reports']" && c.change_type === "modified",
   );
 
@@ -167,7 +168,7 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
 
       {/* Facility Reports */}
       {Object.entries(organizedFacilityReports).map(
-        ([facilityName, facilityData]) => (
+        ([facilityName, facilityData]: [string, any]) => (
           <Box key={facilityName} mb={4}>
             <FacilityReportChanges
               facilityName={facilityName}
@@ -187,20 +188,16 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
       )}
 
       {/* Bulk Facility Changes */}
-      {bulkFacilityChanges.map((change, idx) => {
-        const oldFacilities = isRecord(change.old_value)
-          ? change.old_value
-          : {};
-        const newFacilities = isRecord(change.new_value)
-          ? change.new_value
-          : {};
+      {bulkFacilityChanges.map((change: any, idx: number) => {
+        const oldFacilities = isRecord(change.oldValue) ? change.oldValue : {};
+        const newFacilities = isRecord(change.newValue) ? change.newValue : {};
 
         return Array.from(
           new Set([
             ...Object.keys(oldFacilities),
             ...Object.keys(newFacilities),
           ]),
-        ).map((facilityName) => (
+        ).map((facilityName: string) => (
           <Box key={`bulk-${facilityName}-${idx}`} mb={4}>
             <FacilityReportChanges
               facilityName={facilityName}
@@ -214,8 +211,16 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
               }}
               modifiedFacilityData={{
                 field: `facility_reports.${facilityName}`,
-                old_value: { [facilityName]: oldFacilities[facilityName] },
-                new_value: { [facilityName]: newFacilities[facilityName] },
+                oldValue: {
+                  [facilityName]: (oldFacilities as Record<string, any>)[
+                    facilityName
+                  ],
+                },
+                newValue: {
+                  [facilityName]: (newFacilities as Record<string, any>)[
+                    facilityName
+                  ],
+                },
                 change_type: "modified",
               }}
               addedActivities={
@@ -257,5 +262,3 @@ const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
     </Box>
   );
 };
-
-export default ReviewChanges;

@@ -1,35 +1,132 @@
 import re
+from typing import Any, Dict, List, Optional, Tuple, Union
 from deepdiff import DeepDiff
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ReportReviewChangesService:
+    # Configs for index-to-name replacement
+    CONFIGS: List[Dict[str, Any]] = [
+        {
+            'regex': r"root\['report_compliance_summary'\]\['products'\]\[(\d+)\](.*)",
+            'index_groups': [1],
+            'root': 'report_compliance_summary',
+            'subkeys': ['products'],
+            'name_key': 'product_name',
+            'format': "root['report_compliance_summary']['products']['{name}']{suffix}",
+            'suffix_group': 2,
+        },
+        {
+            'regex': r"root\['report_new_entrant'\]\[(\d+)\]\['productions'\]\[(\d+)\](.*)",
+            'index_groups': [1, 2],
+            'root': 'report_new_entrant',
+            'subkeys': ['productions'],
+            'name_key': 'product',
+            'format': "root['report_new_entrant'][{entrant_idx}]['productions']['{name}']{suffix}",
+            'suffix_group': 3,
+        },
+        {
+            'regex': r"root\['report_new_entrant'\]\[(\d+)\]\['report_new_entrant_emission'\]\[(\d+)\](.*)",
+            'index_groups': [1, 2],
+            'root': 'report_new_entrant',
+            'subkeys': ['report_new_entrant_emission'],
+            'name_key': 'emission_category',
+            'format': "root['report_new_entrant'][{entrant_idx}]['report_new_entrant_emission']['{name}']{suffix}",
+            'suffix_group': 3,
+        },
+    ]
+
     @staticmethod
-    def get_value_by_path(obj: dict, path_str: str) -> object:
+    def get_value_by_path(obj: dict, path_str: str) -> Any:
+        """
+        Traverses a nested dictionary using a string path and returns the value at that path.
+        Example path_str: "root['facility_reports'][0]['facility_name']"
+        """
         keys = re.findall(r"\[(?:'([^']+)'|(\d+))\]", path_str)
-        val = obj
+        val: Any = obj
         for string_key, numeric_key in keys:
             val = val[string_key if string_key else int(numeric_key)]
         return val
 
     @staticmethod
-    def process_change(
-        path: str, old_val: object, new_val: object, change_type: str, serialized_data: dict = {}
-    ) -> dict:
-        field = path
-        match = re.match(r"root\['report_compliance_summary'\]\['products'\]\[(\d+)\](.*)", path)
+    def _get_item_by_indexes(
+        serialized_data: dict, root: str, subkeys: List[str], idxs: List[int]
+    ) -> Optional[Union[dict, Any]]:
+        """
+        Retrieves an item from serialized_data using root, subkeys, and index list.
+        Used for index-to-name replacement in diff paths.
+        """
+        data = serialized_data.get(root, [])
+        for i, key in enumerate(subkeys):
+            if idxs[i] < len(data):
+                data = data[idxs[i]].get(key, [])
+            else:
+                return None
+        if isinstance(data, dict):
+            return data
+        return data[idxs[-1]] if idxs[-1] < len(data) else None
+
+    @staticmethod
+    def _replace_index_with_name(path: str, serialized_data: dict, config: dict) -> str:
+        """
+        Replaces numeric indexes in a diff path with human-readable names using config rules.
+        Always returns a string.
+        """
+        match = re.match(config['regex'], path)
         if match and serialized_data:
-            idx = int(match.group(1))
-            products = serialized_data.get('report_compliance_summary', {}).get('products', [])
-            if idx < len(products):
-                product_name = products[idx].get('product_name') or products[idx].get('name')
-                if product_name:
-                    field = f"root['report_compliance_summary']['products'][{product_name}]{match.group(2)}"
-        if isinstance(old_val, dict) and 'emission_category_id' in old_val and 'emission_category_name' in old_val:
-            old_val = old_val.copy()
-            old_val['emission_category_id'] = old_val['emission_category_name']
-        if isinstance(new_val, dict) and 'emission_category_id' in new_val and 'emission_category_name' in new_val:
-            new_val = new_val.copy()
-            new_val['emission_category_id'] = new_val['emission_category_name']
+            idxs = [int(match.group(i)) for i in config['index_groups']]
+            item = ReportReviewChangesService._get_item_by_indexes(
+                serialized_data, config['root'], config['subkeys'], idxs
+            )
+            if item:
+                name = item.get(config['name_key'])
+                if isinstance(name, str):
+                    return str(
+                        config['format'].format(
+                            entrant_idx=idxs[0], name=name, suffix=match.group(config['suffix_group'])
+                        )
+                    )
+        return path
+
+    @staticmethod
+    def _replace_emission_category(val: Any) -> Any:
+        """
+        If val is a dict with 'emission_category_id' and 'emission_category_name',
+        replaces 'emission_category_id' with the value of 'emission_category_name'.
+        Returns the updated value.
+        """
+        if isinstance(val, dict):
+            if 'emission_category_id' in val and 'emission_category_name' in val:
+                val = val.copy()
+                val['emission_category_id'] = val['emission_category_name']
+        return val
+
+    @classmethod
+    def process_change(
+        cls,
+        path: str,
+        old_val: Any,
+        new_val: Any,
+        change_type: str,
+        serialized_data: Optional[dict] = None,
+    ) -> Dict[str, Any]:
+        """
+        Processes a diff change and returns a dict with a human-readable field path and values.
+        Uses index-to-name replacement for supported field types and handles emission category renaming.
+        """
+        if serialized_data is None:
+            serialized_data = {}
+
+        field = path
+        for config in cls.CONFIGS:
+            new_field = cls._replace_index_with_name(path, serialized_data, config)
+            if new_field != path:
+                field = new_field
+                break
+        old_val = cls._replace_emission_category(old_val)
+        new_val = cls._replace_emission_category(new_val)
         return {
             "field": field,
             "old_value": old_val,
@@ -38,7 +135,12 @@ class ReportReviewChangesService:
         }
 
     @classmethod
-    def get_report_version_diff_changes(cls, previous_data: dict, current_data: dict) -> list:
+    def get_report_version_diff_changes(cls, previous_data: dict, current_data: dict) -> List[Dict[str, Any]]:
+        """
+        Compares previous and current report data using DeepDiff, filters out irrelevant changes,
+        and returns a list of processed changes with human-readable field names and values.
+        """
+        fac_key = "root['facility_reports']"
         differences = DeepDiff(
             previous_data,
             current_data,
@@ -47,58 +149,43 @@ class ReportReviewChangesService:
                 r".*?id'\]$",
                 r"root\['report_person_responsible'\]\['report_version'\]",
                 r"root\['id'\]",
-                r"root\['facility_reports'\].*\['facility_name'\]$",
+                rf"{fac_key}.*\['facility_name'\]$",
             ],
         )
 
-        if "values_changed" in differences and "root['facility_reports']" in differences["values_changed"]:
-            try:
-                old_facilities = list(differences["values_changed"]["root['facility_reports']"]["old_value"].values())
-                new_facilities = list(differences["values_changed"]["root['facility_reports']"]["new_value"].values())
-                if (
-                    len(old_facilities) == len(new_facilities)
-                    and old_facilities
-                    and all(
-                        {k: v for k, v in old.items() if k != 'facility_name'}
-                        == {k: v for k, v in new.items() if k != 'facility_name'}
-                        for old, new in zip(old_facilities, new_facilities)
-                    )
-                ):
-                    del differences["values_changed"]["root['facility_reports']"]
-            except (KeyError, AttributeError, TypeError):
-                pass
+        changed: List[Dict[str, Any]] = []
 
-        changed = []
-        change_handlers = {
-            'values_changed': lambda path, change: (
-                getattr(change, 'old_value', change.get('old_value')),
-                getattr(change, 'new_value', change.get('new_value')),
-                "modified",
-            ),
-            'dictionary_item_added': lambda path, val: (
-                None,
-                val or cls.get_value_by_path(current_data, path),
-                "added",
-            ),
-            'iterable_item_added': lambda path, val: (None, val or cls.get_value_by_path(current_data, path), "added"),
-            'dictionary_item_removed': lambda path, val: (
-                val or cls.get_value_by_path(previous_data, path),
-                None,
-                "removed",
-            ),
-            'iterable_item_removed': lambda path, val: (
-                val or cls.get_value_by_path(previous_data, path),
-                None,
-                "removed",
-            ),
-        }
+        def extract_values(
+            path: str, change: Any, old_data: dict, new_data: dict, typ: str
+        ) -> Tuple[Any, Any, Optional[str]]:
+            """
+            Helper to extract old and new values for a diff change depending on change type.
+            """
+            if typ == 'values_changed':
+                return (
+                    getattr(change, 'old_value', change.get('old_value')),
+                    getattr(change, 'new_value', change.get('new_value')),
+                    'modified',
+                )
+            if typ.endswith('added'):
+                val = change or cls.get_value_by_path(new_data, path)
+                return (None, val, 'added')
+            if typ.endswith('removed'):
+                val = change or cls.get_value_by_path(old_data, path)
+                return (val, None, 'removed')
+            return (None, None, None)
 
         for change_type, changes_dict in differences.items():
-            if change_type not in change_handlers:
-                continue
-            handler = change_handlers[change_type]
+            # DeepDiff returns a dict for most change types, but for some (like iterable_item_added/removed),
+            # it returns a list of paths. This line ensures we can iterate over both dict and list results.
             items = changes_dict.items() if isinstance(changes_dict, dict) else [(path, None) for path in changes_dict]
             for path, change_data in items:
-                old_val, new_val, change_type_str = handler(path, change_data)
-                changed.append(cls.process_change(path, old_val, new_val, change_type_str, current_data))
+                try:
+                    old_val, new_val, change_type_str = extract_values(
+                        path, change_data, previous_data, current_data, change_type
+                    )
+                    changed.append(cls.process_change(path, old_val, new_val, change_type_str or '', current_data))
+                except (KeyError, IndexError, TypeError) as e:
+                    logger.debug(f"Skipping change due to error: {e}, path: {path}")
+                    continue
         return changed

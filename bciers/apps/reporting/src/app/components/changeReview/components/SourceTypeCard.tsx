@@ -9,15 +9,13 @@ import {
 } from "@mui/material";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { renderFieldChange } from "./FieldRenderer";
 import {
   renderNestedSourceTypeChanges,
-  renderUnitsChanges,
+  renderFuelsChanges,
+  renderEmissionsChanges,
+  renderFieldChange,
 } from "./NestedStructureRenderer";
-import {
-  generateDisplayLabel,
-  compareAndRenderChanges,
-} from "@reporting/src/app/components/changeReview/utils/fieldUtils";
+import { generateDisplayLabel } from "@reporting/src/app/components/changeReview/utils/fieldUtils";
 import { collapseStyles } from "@reporting/src/app/components/changeReview/constants/styles";
 
 interface SourceTypeCardProps {
@@ -25,18 +23,11 @@ interface SourceTypeCardProps {
   changeData: any;
 }
 
-// Reusable collapsible card component
-interface CollapsibleCardProps {
+const CollapsibleCard: React.FC<{
   title: string;
   children: React.ReactNode;
-}
-
-const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
-  title,
-  children,
-}) => {
+}> = ({ title, children }) => {
   const [expand, setExpand] = useState(true);
-
   return (
     <Card style={{ textAlign: "left", marginBottom: "16px" }}>
       <Grid container spacing={1} sx={{ justifyContent: "space-between" }}>
@@ -66,13 +57,38 @@ const CollapsibleCard: React.FC<CollapsibleCardProps> = ({
   );
 };
 
-// Main SourceTypeCard component
 export const SourceTypeCard: React.FC<SourceTypeCardProps> = ({
   sourceTypeName,
   changeData,
 }) => {
-  console.log("Rendering source type card:", { sourceTypeName, changeData });
-  // Handle nested changes (units/fuels/emissions)
+  // Fuels
+  const fuels = changeData.newValue?.fuels || changeData.oldValue?.fuels;
+  if (fuels && fuels.length) {
+    return (
+      <CollapsibleCard title={sourceTypeName}>
+        {renderFuelsChanges(
+          changeData.oldValue?.fuels || [],
+          changeData.newValue?.fuels || [],
+        )}
+      </CollapsibleCard>
+    );
+  }
+
+  // Emissions
+  const emissions =
+    changeData.newValue?.emissions || changeData.oldValue?.emissions;
+  if (emissions && emissions.length) {
+    return (
+      <CollapsibleCard title={sourceTypeName}>
+        {renderEmissionsChanges(
+          changeData.oldValue?.emissions || [],
+          changeData.newValue?.emissions || [],
+        )}
+      </CollapsibleCard>
+    );
+  }
+
+  // Nested objects
   if (changeData.newValue && typeof changeData.newValue === "object") {
     return (
       <CollapsibleCard title={sourceTypeName}>
@@ -81,13 +97,8 @@ export const SourceTypeCard: React.FC<SourceTypeCardProps> = ({
     );
   }
 
-  // Handle modified source types
-  if (changeData.changeType === "modified") {
-    const oldValue = changeData.oldValue || {};
-    const newValue = changeData.newValue || {};
-    const changes = compareAndRenderChanges(oldValue, newValue);
-    console.log("Detected changes:", changes);
-
+  // Field-level changes
+  if (Array.isArray(changeData.fields) && changeData.fields.length) {
     return (
       <CollapsibleCard title={sourceTypeName}>
         {changeData.fields.map((field: any) =>
@@ -97,12 +108,5 @@ export const SourceTypeCard: React.FC<SourceTypeCardProps> = ({
     );
   }
 
-  // Fallback for non-modified changes
-  return (
-    <CollapsibleCard title={sourceTypeName}>
-      {(changeData.fields || []).map((field: any) =>
-        renderFieldChange(field, generateDisplayLabel(field.field), 1),
-      )}
-    </CollapsibleCard>
-  );
+  return null;
 };

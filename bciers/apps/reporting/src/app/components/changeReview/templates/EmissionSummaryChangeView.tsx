@@ -136,12 +136,12 @@ export const EmissionSummaryChangeView: React.FC<
             let changeType = change.change_type;
             let isNewAddition = false;
 
-            if (change.old_value === null || change.old_value === undefined) {
+            if (change.oldValue === null || change.oldValue === undefined) {
               changeType = "added";
               isNewAddition = true;
             } else if (
-              change.new_value === null ||
-              change.new_value === undefined
+              change.newValue === null ||
+              change.newValue === undefined
             ) {
               changeType = "deleted";
             }

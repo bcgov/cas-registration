@@ -1,4 +1,4 @@
-import { ChangeItem } from "../constants/types";
+import { ActivityItem, ChangeItem, SourceTypeChange } from "../constants/types";
 
 export function parseFacilityReportField(field: string): {
   facilityName: string;
@@ -11,7 +11,7 @@ export function parseFacilityReportField(field: string): {
   fieldKey: string;
   isFacilityLevel?: boolean;
 } | null {
-  // Updated regex to handle facility names with spaces and special characters
+  // regex to handle facility names with spaces and special characters
   const facilityMatch = field.match(/\['facility_reports'\]\[(.*?)\]/);
   if (!facilityMatch) return null;
 
@@ -23,6 +23,8 @@ export function parseFacilityReportField(field: string): {
   );
 
   const pathSegments = remainingPath.match(/\[[^\[\]]*\]/g) || [];
+  // This regex extracts the value inside square brackets, optionally surrounded by single or double quotes.
+  // For example, it matches ["section"], ['activity'], or [index] and returns section, activity, or index respectively.
   const cleanSegments = pathSegments.map((segment) => {
     const match = segment.match(/^\[(?:'|")?(.*?)(?:'|")?\]$/);
     return match ? match[1] : "";
@@ -58,13 +60,18 @@ export function parseFacilityReportField(field: string): {
       let emissionIndex: number | undefined;
       let fieldKey = "";
 
+      // Iterate through the remaining segments to extract indices and field key.
+      // This loop looks for specific segment names (units, fuels, emissions) followed by an index, and sets the corresponding variable.
+      // If none of those match, it tries to determine the fieldKey from the last or second-to-last segment.
       for (let i = 4; i < cleanSegments.length; i++) {
         const segment = cleanSegments[i];
         const nextSegment = cleanSegments[i + 1];
 
+        // If segment is 'units' and next is a number, set unitIndex
         if (segment === "units" && nextSegment && /^\d+$/.test(nextSegment)) {
           unitIndex = parseInt(nextSegment);
           i++;
+          // If segment is 'fuels' and next is a number, set fuelIndex
         } else if (
           segment === "fuels" &&
           nextSegment &&
@@ -72,6 +79,7 @@ export function parseFacilityReportField(field: string): {
         ) {
           fuelIndex = parseInt(nextSegment);
           i++;
+          // If segment is 'emissions' and next is a number, set emissionIndex
         } else if (
           segment === "emissions" &&
           nextSegment &&
@@ -79,8 +87,10 @@ export function parseFacilityReportField(field: string): {
         ) {
           emissionIndex = parseInt(nextSegment);
           i++;
+          // If this is the last segment, set fieldKey
         } else if (i === cleanSegments.length - 1) {
           fieldKey = segment;
+          // If this is the second-to-last segment, set fieldKey to the last segment and break
         } else if (i === cleanSegments.length - 2 && cleanSegments[i + 1]) {
           fieldKey = cleanSegments[i + 1];
           break;
@@ -150,10 +160,12 @@ export function detectActivityChangesInModifiedFacility(change: ChangeItem): {
   if (!facilityMatch) return null;
 
   const facilityName = facilityMatch[1];
-  const oldValue = change.old_value;
-  const newValue = change.new_value;
+  const oldValue = change.oldValue;
+  const newValue = change.newValue;
 
-  const isValidFacilityObject = (value: any): value is Record<string, any> => {
+  const isValidFacilityObject = (
+    value: any,
+  ): value is Record<string, any> & { activity_data: any } => {
     return (
       value &&
       typeof value === "object" &&
@@ -171,6 +183,7 @@ export function detectActivityChangesInModifiedFacility(change: ChangeItem): {
     } else if (
       oldValue &&
       typeof oldValue === "object" &&
+      !Array.isArray(oldValue) &&
       "activity" in oldValue
     ) {
       oldActivities = { [(oldValue as any).activity]: oldValue };
@@ -181,12 +194,12 @@ export function detectActivityChangesInModifiedFacility(change: ChangeItem): {
     } else if (
       newValue &&
       typeof newValue === "object" &&
+      !Array.isArray(newValue) &&
       "activity" in newValue
     ) {
       newActivities = { [(newValue as any).activity]: newValue };
     }
   } else if (change.change_type === "modified") {
-    // Both sides contain activities
     if (isValidFacilityObject(oldValue)) {
       oldActivities = oldValue.activity_data || {};
     }
@@ -223,15 +236,6 @@ export function detectActivityChangesInModifiedFacility(change: ChangeItem): {
   };
 }
 
-export interface SourceTypeChange {
-  facilityName: string;
-  activityName: string;
-  sourceTypeName: string;
-  changeType: "added" | "deleted" | "modified";
-  oldValue?: any;
-  newValue?: any;
-}
-
 export function detectSourceTypeChanges(
   change: ChangeItem,
 ): SourceTypeChange[] {
@@ -248,8 +252,8 @@ export function detectSourceTypeChanges(
   const activityName = activityMatch[1];
 
   // Check if this is a source type change
-  const oldValue = change.old_value;
-  const newValue = change.new_value;
+  const oldValue = change.oldValue;
+  const newValue = change.newValue;
 
   // Type guard to check if values are objects with source_types
   const isValidSourceTypeObject = (
@@ -286,6 +290,7 @@ export function detectSourceTypeChanges(
   for (const sourceType of allSourceTypes) {
     if (!(sourceType in oldSourceTypes)) {
       changes.push({
+        fields: "",
         facilityName,
         activityName,
         sourceTypeName: sourceType,
@@ -294,6 +299,7 @@ export function detectSourceTypeChanges(
       });
     } else if (!(sourceType in newSourceTypes)) {
       changes.push({
+        fields: "",
         facilityName,
         activityName,
         sourceTypeName: sourceType,
@@ -305,6 +311,7 @@ export function detectSourceTypeChanges(
       JSON.stringify(newSourceTypes[sourceType])
     ) {
       changes.push({
+        fields: "",
         facilityName,
         activityName,
         sourceTypeName: sourceType,
@@ -316,10 +323,4 @@ export function detectSourceTypeChanges(
   }
 
   return changes;
-}
-
-interface ActivityItem {
-  activity: string;
-  source_types?: Record<string, any>;
-  [key: string]: any;
 }

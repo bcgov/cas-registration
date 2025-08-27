@@ -1,61 +1,163 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { renderFieldChange, renderFieldChanges } from "./FieldRenderer";
 import { generateDisplayLabel } from "@reporting/src/app/components/changeReview/utils/fieldUtils";
+import { ChangeItemDisplay } from "@reporting/src/app/components/changeReview/templates/ChangeItemDisplay";
 import StatusLabel from "@bciers/components/form/fields/StatusLabel";
-// Helper function to determine if all fields are new (added)
-const isWholeAdded = (oldObj: any, newObj: any) => {
-  // If object has fields, check if any field is added
-  if (newObj?.fields && Array.isArray(newObj.fields)) {
-    return newObj.fields.some(
-      (f: any) => f.old_value == null && f.new_value != null,
+import {
+  isWholeObjectAdded,
+  isWholeObjectDeleted,
+} from "@reporting/src/app/components/changeReview/utils/utils";
+
+// Render a single field
+export const renderFieldChange = (
+  field: any,
+  label: string,
+  indent: number = 0,
+  parentWholeObjectStatus: "added" | "deleted" | null = null,
+): React.ReactNode => {
+  if (!field) return null;
+
+  const { oldValue, newValue } = field;
+  const isAdded = oldValue == null && newValue != null;
+  const isDeleted = oldValue != null && newValue == null;
+
+  // skip unchanged fields
+  if (oldValue === newValue) return null;
+
+  const isPlainObject = (val: any) =>
+    val && typeof val === "object" && !Array.isArray(val);
+
+  if (isPlainObject(oldValue) || isPlainObject(newValue)) {
+    const keys = Array.from(
+      new Set([
+        ...(isPlainObject(oldValue) ? Object.keys(oldValue) : []),
+        ...(isPlainObject(newValue) ? Object.keys(newValue) : []),
+      ]),
+    );
+    return (
+      <Box key={label} ml={indent}>
+        {keys.map((key) =>
+          renderFieldChange(
+            {
+              field: key,
+              oldValue: oldValue?.[key],
+              newValue: newValue?.[key],
+            },
+            key,
+            indent + 1,
+            parentWholeObjectStatus,
+          ),
+        )}
+      </Box>
     );
   }
-  // Otherwise, consider whole object added if newObj exists
-  return !oldObj && !!newObj;
-};
 
-const isWholeDeleted = (oldObj: any, newObj: any) => {
-  // If object has fields, check if any field is deleted
-  if (oldObj?.fields && Array.isArray(oldObj.fields)) {
-    return oldObj.fields.some(
-      (f: any) => f.old_value != null && f.new_value == null,
+  if (Array.isArray(oldValue) || Array.isArray(newValue)) {
+    const maxLen = Math.max(
+      Array.isArray(oldValue) ? oldValue.length : 0,
+      Array.isArray(newValue) ? newValue.length : 0,
+    );
+    return (
+      <Box key={label} ml={indent}>
+        {Array.from({ length: maxLen }, (_, idx) =>
+          renderFieldChange(
+            {
+              field: `${label}-${idx}`,
+              oldValue: oldValue?.[idx],
+              newValue: newValue?.[idx],
+            },
+            `${label} ${idx + 1}`,
+            indent + 1,
+            parentWholeObjectStatus,
+          ),
+        )}
+      </Box>
     );
   }
-  // Otherwise, consider whole object deleted if oldObj exists but newObj does not
-  return !!oldObj && !newObj;
+
+  // If the parent object is fully added/deleted, don't show field StatusLabel
+  const showFieldStatus = parentWholeObjectStatus === null;
+
+  return (
+    <ChangeItemDisplay
+      item={{
+        field: label,
+        oldValue,
+        newValue,
+        change_type: isAdded ? "added" : isDeleted ? "deleted" : "modified",
+        isNewAddition: showFieldStatus && isAdded,
+      }}
+      isDeleted={showFieldStatus && isDeleted}
+    />
+  );
 };
 
-export const renderEmissionsChanges = (
-  oldEmissions: any[],
-  newEmissions: any[],
+// Render arrays (Unit, Fuel, Emission)
+const renderArrayChanges = (
+  type: string,
+  oldArr: any[] = [],
+  newArr: any[] = [],
+  ml: number = 2,
+  labelSize: string = "1rem",
 ): React.ReactNode => {
-  console.log("Rendering emissions changes:", { oldEmissions, newEmissions });
-  const maxEmissions = Math.max(oldEmissions.length, newEmissions.length);
-  if (maxEmissions === 0) return null;
+  const maxLen = Math.max(oldArr.length, newArr.length);
+  if (maxLen === 0) return null;
 
   return (
     <>
-      {Array.from({ length: maxEmissions }, (_, emissionIndex) => {
-        const oldEmission = oldEmissions[emissionIndex];
-        const newEmission = newEmissions[emissionIndex];
+      {Array.from({ length: maxLen }, (_, idx) => {
+        const oldItem = oldArr[idx];
+        const newItem = newArr[idx];
 
-        if (!oldEmission && !newEmission) return null;
+        const wholeAdded = isWholeObjectAdded(oldItem, newItem);
+        const wholeDeleted = isWholeObjectDeleted(oldItem, newItem);
 
-        const added = isWholeAdded(oldEmission || {}, newEmission || {});
-        const deleted = isWholeDeleted(oldEmission || {}, newEmission || {});
+        const itemLabel = `${type} ${idx + 1}`;
 
         return (
-          <Box key={`emission-${emissionIndex}`} ml={4} mb={2}>
+          <Box key={`${type}-${idx}`} ml={ml} mb={2}>
+            {/* Header with StatusLabel only if whole object is added/deleted */}
             <Box
-              className="font-bold mb-2"
-              sx={{ fontSize: "0.9rem", color: "#38598A" }}
+              sx={{
+                fontWeight: "bold",
+                mb: 1,
+                fontSize: labelSize,
+                color: wholeAdded || wholeDeleted ? "#38598A" : "#222",
+              }}
             >
-              Emission {emissionIndex + 1}{" "}
-              {added && <StatusLabel type="added" />}{" "}
-              {deleted && <StatusLabel type="deleted" />}
+              {itemLabel}
+              {wholeAdded && <StatusLabel type="added" />}
+              {wholeDeleted && <StatusLabel type="deleted" />}
             </Box>
-            {renderFieldChanges(oldEmission, newEmission, [])}
+
+            {/* Render fields */}
+            {(newItem?.fields || oldItem?.fields || []).map((f: any) =>
+              renderFieldChange(
+                f,
+                generateDisplayLabel(f.field),
+                ml + 1,
+                wholeAdded ? "added" : wholeDeleted ? "deleted" : null,
+              ),
+            )}
+
+            {/* Nested Fuels under Unit */}
+            {type === "Unit" &&
+              renderArrayChanges(
+                "Fuel",
+                oldItem?.fuels ? Object.values(oldItem.fuels) : [],
+                newItem?.fuels ? Object.values(newItem.fuels) : [],
+                ml + 1,
+              )}
+
+            {/* Nested Emissions under Fuel */}
+            {type === "Fuel" &&
+              renderArrayChanges(
+                "Emission",
+                oldItem?.emissions ? Object.values(oldItem.emissions) : [],
+                newItem?.emissions ? Object.values(newItem.emissions) : [],
+                ml + 1,
+                "0.9rem",
+              )}
           </Box>
         );
       })}
@@ -63,145 +165,25 @@ export const renderEmissionsChanges = (
   );
 };
 
-export const renderFuelsChanges = (
-  oldFuels: any[],
-  newFuels: any[],
-): React.ReactNode => {
-  const maxFuels = Math.max(oldFuels.length, newFuels.length);
-  if (maxFuels === 0) return null;
-  console.log("Rendering fuels changes:", { oldFuels, newFuels });
-
-  const fieldAdded = isWholeAdded(oldFuels, newFuels);
-  const fieldDeleted = isWholeDeleted(oldFuels, newFuels);
-  return (
-    <>
-      {Array.from({ length: maxFuels }, (_, fuelIndex) => {
-        const oldFuel = oldFuels[fuelIndex];
-        const newFuel = newFuels[fuelIndex];
-
-        if (!oldFuel && !newFuel) return null;
-
-        return (
-          <Box key={`fuel-${fuelIndex}`} ml={2} mb={2}>
-            <Box
-              className="font-bold mb-2"
-              sx={{ fontSize: "1rem", color: "#38598A" }}
-            >
-              Fuel {fuelIndex + 1}
-            </Box>
-
-            {renderFieldChanges(oldFuel, newFuel, ["emissions"])}
-          </Box>
-        );
-      })}
-    </>
-  );
-};
-// Helper function to render units changes
-export const renderUnitsChanges = (
-  oldUnits: any[],
-  newUnits: any[],
-): React.ReactNode => {
-  const maxUnits = Math.max(oldUnits.length, newUnits.length);
-
-  return (
-    <>
-      {Array.from({ length: maxUnits }, (_, unitIndex) => {
-        const oldUnit = oldUnits[unitIndex];
-        const newUnit = newUnits[unitIndex];
-
-        if (!oldUnit && !newUnit) return null;
-
-        return (
-          <Box key={`unit-${unitIndex}`} mb={3}>
-            <Box
-              className="font-bold mb-2"
-              sx={{ fontSize: "1.1rem", color: "#38598A" }}
-            >
-              Unit {unitIndex + 1}
-            </Box>
-            {renderFieldChanges(oldUnit, newUnit, ["fuels", "emissions"])}
-            {renderFuelsChanges(oldUnit?.fuels || [], newUnit?.fuels || [])}
-          </Box>
-        );
-      })}
-    </>
-  );
-};
-
-export const renderNestedSourceTypeChanges = (
-  sourceTypeData: any,
-): React.ReactNode => {
-  if (!sourceTypeData || typeof sourceTypeData !== "object") return null;
-  console.log("Rendering nested source type changes:", { sourceTypeData });
+// Top-level renderers
+export const renderUnitsChanges = (unitsData: any) => {
+  if (!unitsData || typeof unitsData !== "object") return null;
   return (
     <Box>
-      {/* Render units */}
-      {Object.entries(sourceTypeData.units || {}).map(
-        ([unitIndex, unitData]) => {
-          const typedUnitData = unitData as any;
-          const unitAdded = isWholeAdded({}, typedUnitData);
-          const unitDeleted = isWholeDeleted({}, typedUnitData);
-
-          return (
-            <Box key={`unit-${unitIndex}`} mb={3}>
-              <Box
-                className="font-bold mb-2"
-                sx={{ fontSize: "1.1rem", color: "#38598A" }}
-              >
-                Unit {parseInt(unitIndex) + 1}{" "}
-                {(unitAdded || unitDeleted) && (
-                  <StatusLabel type={unitAdded ? "added" : "deleted"} />
-                )}
-              </Box>
-
-              {(typedUnitData.fields || []).map((field: any) =>
-                renderFieldChange(field, generateDisplayLabel(field.field), 1),
-              )}
-
-              {/* Fuels */}
-              {Object.entries(typedUnitData.fuels || {}).map(
-                ([fuelIndex, fuelData]) => {
-                  const typedFuelData = fuelData as any;
-
-                  return (
-                    <Box key={`fuel-${fuelIndex}`} ml={2} mb={2}>
-                      <Box
-                        className="font-bold mb-2"
-                        sx={{ fontSize: "1rem", color: "#38598A" }}
-                      >
-                        Fuel {parseInt(fuelIndex) + 1}
-                      </Box>
-
-                      {/* Only render field diffs for fuel fields, and emission changes if present */}
-                      {(typedFuelData.fields || []).map((field: any) => {
-                        const fieldAdded = isWholeAdded({}, field);
-                        const fieldDeleted = isWholeDeleted({}, field);
-                        return (
-                          <React.Fragment key={field.field}>
-                            <Box display="flex" alignItems="center">
-                              {renderFieldChange(
-                                field,
-                                generateDisplayLabel(field.field),
-                                2,
-                              )}
-                              {(fieldAdded || fieldDeleted) && (
-                                <StatusLabel
-                                  type={fieldAdded ? "added" : "deleted"}
-                                />
-                              )}
-                            </Box>
-                          </React.Fragment>
-                        );
-                      })}
-                    </Box>
-                  );
-                },
-              )}
-            </Box>
-          );
-        },
+      {Object.values(unitsData).map((unitData: any, idx: number) =>
+        renderArrayChanges("Unit", [], [unitData], idx, "1.1rem"),
       )}
     </Box>
   );
 };
+
+export const renderFuelsChanges = (oldFuels: any[], newFuels: any[]) =>
+  renderArrayChanges("Fuel", oldFuels, newFuels, 2);
+
+export const renderEmissionsChanges = (
+  oldEmissions: any[],
+  newEmissions: any[],
+) => renderArrayChanges("Emission", oldEmissions, newEmissions, 4);
+
+export const renderNestedSourceTypeChanges = (sourceTypeData: any) =>
+  renderUnitsChanges(sourceTypeData.units || {});

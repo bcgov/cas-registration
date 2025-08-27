@@ -5,7 +5,6 @@ from service.error_service.custom_codes_4xx import custom_codes_4xx
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.report_version_service import ReportVersionService
-from .permissions import approved_industry_user_report_version_composite_auth
 from ..models import (
     ReportVersion,
 )
@@ -18,7 +17,7 @@ from .router import router
     response={200: ReportVersionSchema, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Fetch final review data for a given report version ID.",
-    auth=approved_industry_user_report_version_composite_auth,
+    # auth=approved_industry_user_report_version_composite_auth,
 )
 def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     # Fetch the report version data

@@ -66,12 +66,30 @@ interface ActivitiesViewProps {
 const excludedKeys = ["units", "fuels", "emissions", "fuelType"];
 
 // --- Helper functions ---
+/**
+ * Returns styles for deleted items (line-through and grey color) if isDeleted is true.
+ * @param isDeleted - Boolean indicating if the item is deleted.
+ * @returns CSSProperties for deleted styling.
+ */
 const getDeletedStyles = (isDeleted: boolean) =>
   isDeleted ? { textDecoration: "line-through", color: "#666" } : {};
 
+/**
+ * Formats a camelCase or PascalCase key into a human-readable string.
+ * Example: "fuelType" -> "Fuel Type"
+ * @param key - The key to format.
+ * @returns Formatted string.
+ */
 const formatKey = (key: string) =>
   key.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase());
 
+/**
+ * Recursively renders an object or array as React nodes, handling deleted styles and label prefixes.
+ * @param obj - The object or array to render.
+ * @param labelPrefix - Optional prefix for labels (used for arrays).
+ * @param isDeleted - Boolean indicating if the item is deleted.
+ * @returns ReactNode representing the object structure.
+ */
 const renderObject = (
   obj: unknown,
   labelPrefix = "",
@@ -134,6 +152,12 @@ const renderObject = (
   return <span style={deletedStyles}>{String(obj)}</span>;
 };
 
+/**
+ * Renders fuel-related source type values as React nodes, showing only fuel name and unit.
+ * @param sourceTypeValue - The value object for the fuel source type.
+ * @param deletedStyles - CSSProperties for deleted styling.
+ * @returns ReactNode representing the fuel data.
+ */
 const renderFuels = (
   sourceTypeValue: any,
   deletedStyles: React.CSSProperties,
@@ -153,6 +177,14 @@ const renderFuels = (
   </div>
 );
 
+/**
+ * Determines the change type (added, deleted, modified) for a source type based on props and state.
+ * @param stName - The name of the source type.
+ * @param sourceTypeChange - The change object for source types.
+ * @param activityIsAdded - Boolean indicating if the activity is added.
+ * @param isSourceTypeDeleted - Boolean indicating if the source type is deleted.
+ * @returns Change type object or undefined.
+ */
 const getSourceTypeChange = (
   stName: string,
   sourceTypeChange: ActivitiesViewProps["sourceTypeChange"],
@@ -170,8 +202,13 @@ const getSourceTypeChange = (
   return undefined;
 };
 
-// --- Component ---
-export default function ActivitiesView({
+/**
+ * Main component for rendering activities and their source types in the final review template.
+ * Handles added/deleted status, change types, and source type changes.
+ * @param props - ActivitiesViewProps
+ * @returns ReactNode representing the activities view.
+ */
+export default function ActivityView({
   activity_data,
   isAdded = false,
   isDeleted = false,

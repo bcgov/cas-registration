@@ -21,26 +21,18 @@ interface SectionProps {
   showModifiedValues?: boolean;
 }
 
+/**
+ * Traverses the object step by step following the keys in the path.
+ * Returns `undefined` if the path does not exist or the object is null/undefined.
+ *
+ * @param obj - The object to retrieve the value from.
+ * @param path - Dot-separated string representing the property path (e.g. "user.address.city").
+ * @returns The value at the given path, or `undefined` if not found.
+ */
 function getNestedValue(obj: any, path?: string) {
   if (!obj || !path) return undefined;
 
-  // For direct fields
-  if (obj[path]) {
-    if (obj[path].value !== undefined) {
-      return obj[path];
-    }
-    return obj[path];
-  }
-
-  const parts = path.split(".");
-  let current = obj;
-
-  for (const part of parts) {
-    if (!current) return undefined;
-    current = current[part];
-  }
-
-  return current;
+  return path.split(".").reduce((acc, key) => acc?.[key], obj);
 }
 
 export const SectionReview: React.FC<React.PropsWithChildren<SectionProps>> = ({

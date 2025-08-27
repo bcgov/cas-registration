@@ -153,12 +153,12 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
           </Typography>
 
           {items.map((item) => {
-            if (isRecord(item.new_value) || isRecord(item.old_value)) {
-              const newValueRecord = isRecord(item.new_value)
-                ? item.new_value
+            if (isRecord(item.newValue) || isRecord(item.oldValue)) {
+              const newValueRecord = isRecord(item.newValue)
+                ? item.newValue
                 : {};
-              const oldValueRecord = isRecord(item.old_value)
-                ? item.old_value
+              const oldValueRecord = isRecord(item.oldValue)
+                ? item.oldValue
                 : {};
 
               return Object.entries(newValueRecord || oldValueRecord).map(
@@ -180,8 +180,8 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
                       key={item.field + key}
                       item={{
                         field: key,
-                        old_value: oldValueRecord[key],
-                        new_value: newValueRecord[key],
+                        oldValue: oldValueRecord[key],
+                        newValue: newValueRecord[key],
                         change_type: item.change_type,
                         displayLabel: productFieldLabels[key] || key,
                       }}
@@ -192,8 +192,8 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
             } else {
               const fieldKey =
                 getComplianceFieldDetails(item.field)?.fieldKey || item.field;
-              const oldVal = item.old_value?.toString();
-              const newVal = item.new_value?.toString();
+              const oldVal = item.oldValue?.toString();
+              const newVal = item.newValue?.toString();
               if (
                 oldVal &&
                 newVal &&
@@ -206,8 +206,8 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
                   key={item.field}
                   item={{
                     field: fieldKey,
-                    old_value: item.old_value,
-                    new_value: item.new_value,
+                    oldValue: item.oldValue,
+                    newValue: item.newValue,
                     change_type: item.change_type,
                     displayLabel: productFieldLabels[fieldKey] || fieldKey,
                   }}

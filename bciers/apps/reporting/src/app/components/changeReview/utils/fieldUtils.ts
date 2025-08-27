@@ -83,9 +83,15 @@ export const compareAndRenderChanges = (
       changes.push({
         field: key,
         displayLabel: generateDisplayLabel(key),
-        old_value: oldObj[key],
-        new_value: newObj[key],
+        oldValue: oldObj[key],
+        newValue: newObj[key],
         category: categorizeField(fullPath),
+        changeType:
+          oldObj[key] === undefined
+            ? "added"
+            : newObj[key] === undefined
+            ? "deleted"
+            : "modified",
       });
     }
   };
@@ -101,3 +107,64 @@ export const compareAndRenderChanges = (
 
   return changes;
 };
+
+// Unified change detection utility
+export function detectObjectChanges({
+  newObj,
+  oldObj,
+  pathPrefix = "",
+  excludes = [],
+  onChange,
+}: {
+  newObj: any;
+  oldObj: any;
+  pathPrefix?: string;
+  excludes?: string[];
+  onChange: (change: any) => void;
+}) {
+  const allKeys = new Set([
+    ...Object.keys(newObj || {}),
+    ...Object.keys(oldObj || {}),
+  ]);
+  allKeys.forEach((key) => {
+    if (excludes.includes(key)) return;
+    const value = newObj ? newObj[key] : undefined;
+    const oldValue = oldObj ? oldObj[key] : undefined;
+    const fieldPath = pathPrefix ? `${pathPrefix}[${key}]` : key;
+    if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      detectObjectChanges({
+        newObj: value,
+        oldObj: oldValue,
+        pathPrefix: fieldPath,
+        excludes,
+        onChange,
+      });
+    } else if (Array.isArray(value) && Array.isArray(oldValue)) {
+      if (!value || !oldValue) return;
+      const maxLen = Math.max(value.length, oldValue.length);
+      for (let i = 0; i < maxLen; i++) {
+        detectObjectChanges({
+          newObj: value[i] || {},
+          oldObj: oldValue[i] || {},
+          pathPrefix: `${fieldPath}[${i}]`,
+          excludes,
+          onChange,
+        });
+      }
+    } else {
+      let changeType = undefined;
+      if (oldValue === undefined && value !== undefined) changeType = "added";
+      else if (value === undefined && oldValue !== undefined)
+        changeType = "deleted";
+      else if (value !== oldValue) changeType = "modified";
+      if (changeType) {
+        onChange({
+          field: fieldPath,
+          oldValue: oldValue ?? null,
+          newValue: value ?? null,
+          change_type: changeType,
+        });
+      }
+    }
+  });
+}

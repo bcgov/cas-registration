@@ -22,7 +22,6 @@ export const ActivityDataChangeView: React.FC<ActivityDataChangeViewProps> = ({
             activityName={activityName}
             activity={activity}
             sourceTypeChangesForActivity={sourceTypeChangesForActivity}
-            isModifiedActivity={false}
           />
         );
       })}

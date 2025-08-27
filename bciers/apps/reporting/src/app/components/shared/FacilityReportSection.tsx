@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import { StatusLabel } from "@bciers/components/form/fields/StatusLabel";
 import { SectionReview } from "../finalReview/templates/SectionReview";
-import ActivitiesView from "../finalReview/templates/ActivityView";
+import ActivityView from "../finalReview/templates/ActivityView";
 import { FieldDisplay } from "../finalReview/templates/FieldDisplay";
 import { EmissionAllocationView } from "../finalReview/templates/EmissionAllocationView";
 import {
@@ -78,7 +78,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
         isDeleted={isRemoved}
       >
         {/* Activities */}
-        <ActivitiesView
+        <ActivityView
           activity_data={facilityData.activity_data || []}
           isDeleted={isRemoved}
         />

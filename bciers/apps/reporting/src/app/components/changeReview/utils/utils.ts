@@ -1,4 +1,5 @@
 import { ChangeItem } from "../constants/types";
+import { ChangeType } from "@reporting/src/app/components/finalReview/templates/types";
 
 /**
  * Generate a human-readable label from a field key
@@ -107,11 +108,11 @@ export function groupPersonResponsibleChanges(
     const combinedNameChange: ChangeItem = {
       change_type: "",
       field: "root['report_person_responsible']['name']",
-      old_value: `${firstNameChange?.old_value || ""} ${
-        lastNameChange?.old_value || ""
+      oldValue: `${firstNameChange?.oldValue || ""} ${
+        lastNameChange?.oldValue || ""
       }`.trim(),
-      new_value: `${firstNameChange?.new_value || ""} ${
-        lastNameChange?.new_value || ""
+      newValue: `${firstNameChange?.newValue || ""} ${
+        lastNameChange?.newValue || ""
       }`.trim(),
     };
 
@@ -141,4 +142,51 @@ export function filterExcludedFields(changes: ChangeItem[]): ChangeItem[] {
     );
     return !isExcludedField;
   });
+}
+
+/**
+ * Checks if a value is a plain object (not array, not null)
+ */
+export function isDictObject(value: any): boolean {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+export const normalizeChangeType = (type?: string): ChangeType =>
+  type === "removed" ? "deleted" : (type as ChangeType) || "modified"; // Determine the change type for the activity
+
+export const isNonEmptyValue = (v: unknown): boolean =>
+  v != null &&
+  (typeof v !== "string" ? true : v.trim() !== "") &&
+  (Array.isArray(v) ? v.length > 0 : true) &&
+  (typeof v === "object" && !Array.isArray(v)
+    ? Object.keys(v).length > 0
+    : true);
+export const isWholeObjectAdded = (oldObj: any, newObj: any) => {
+  if (!oldObj && newObj)
+    return newObj.fields && newObj.fields.every((f: any) => f.oldValue == null);
+  return false;
+};
+
+export const isWholeObjectDeleted = (oldObj: any, newObj: any) => {
+  if (oldObj && !newObj)
+    return oldObj.fields && oldObj.fields.every((f: any) => f.newValue == null);
+  return false;
+};
+
+// Utility to normalize old_value/new_value to oldValue/newValue recursively
+export function normalizeChangeKeys(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(normalizeChangeKeys);
+  }
+  if (obj && typeof obj === "object") {
+    const newObj: any = {};
+    for (const key in obj) {
+      let newKey = key;
+      if (key === "old_value") newKey = "oldValue";
+      if (key === "new_value") newKey = "newValue";
+      newObj[newKey] = normalizeChangeKeys(obj[key]);
+    }
+    return newObj;
+  }
+  return obj;
 }

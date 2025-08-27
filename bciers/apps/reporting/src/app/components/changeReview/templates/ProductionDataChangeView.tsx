@@ -18,16 +18,43 @@ interface ProductionDataChangeViewProps {
 
 interface ProcessedProduct {
   productName: string;
-  productIndex: number;
   changes: DisplayChangeItem[];
   changeType: "added" | "modified" | "deleted";
   productData?: any;
 }
 
+// Helper to extract product name from field string
+const getProductName = (field: string) => {
+  const match = field.match(/\['report_products'\]\['([^']+)'\]/);
+  return match ? match[1] : undefined;
+};
+// Helper to extract field key from field string
+const getFieldKey = (field: string) => {
+  const match = field.match(/\['report_products'\]\['[^']+'\]\['([^']+)'\]/);
+  return match ? match[1] : undefined;
+};
+// Helper to determine change type and flags
+const getChangeMeta = (
+  change: ChangeItem,
+): {
+  changeType: "added" | "deleted" | "modified";
+  isNewAddition: boolean;
+  isDeletion: boolean;
+} => {
+  if (change.oldValue == null)
+    return { changeType: "added", isNewAddition: true, isDeletion: false };
+  if (change.newValue == null)
+    return { changeType: "deleted", isNewAddition: false, isDeletion: true };
+  return { changeType: "modified", isNewAddition: false, isDeletion: false };
+};
+// Helper to determine if change is for full product
+const isFullProductChange = (field: string) =>
+  /\['report_products'\]\['([^']+)'\]/.test(field) &&
+  !/\['report_products'\]\['[^']+'\]\['[^']+'\]/.test(field);
+
 export const ProductionDataChangeView: React.FC<
   ProductionDataChangeViewProps
 > = ({ data }) => {
-  // Field labels mapping based on productionDataFields
   const fieldLabels: Record<string, string> = {
     product: "Product",
     unit: "Unit",
@@ -45,149 +72,94 @@ export const ProductionDataChangeView: React.FC<
       "Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable",
   };
 
-  // Process changes and group by product
+  // Process changes and group by product name
   const processChanges = (): ProcessedProduct[] => {
-    const productGroups: Record<number, ProcessedProduct> = {};
+    const productGroups: Record<string, ProcessedProduct> = {};
 
     data.forEach((change) => {
-      // Extract product index from the path: root['facility_reports'][Facility Name]['report_products'][1]
-      let productIndex = 0;
-      let isFullProductChange = false;
-
-      const productIndexMatch = change.field.match(
-        /report_products']\[(\d+)]$/,
-      );
-      const fieldMatch = change.field.match(
-        /report_products']\[(\d+)']\['([^']+)/,
-      );
-
-      if (productIndexMatch) {
-        // This is a full product add/delete/modify
-        productIndex = parseInt(productIndexMatch[1]);
-        isFullProductChange = true;
-      } else if (fieldMatch) {
-        // This is a specific field change within a product
-        productIndex = parseInt(fieldMatch[1]);
-        isFullProductChange = false;
-      }
-
-      if (isFullProductChange) {
-        // Handle full product changes (added/deleted/modified products)
-        const productData = change.new_value || change.old_value;
-        const productName =
+      const productName = getProductName(change.field);
+      if (!productName) return;
+      const { changeType, isNewAddition, isDeletion } = getChangeMeta(change);
+      if (isFullProductChange(change.field)) {
+        const productData = change.newValue || change.oldValue;
+        const displayProductName =
           (typeof productData === "object" && productData?.product) ||
-          `Product ${productIndex + 1}`;
-
-        // Determine change type based on old and new values
-        let changeType: "added" | "modified" | "deleted" = "modified";
-        if (change.old_value === null || change.old_value === undefined) {
-          changeType = "added";
-        } else if (
-          change.new_value === null ||
-          change.new_value === undefined
-        ) {
-          changeType = "deleted";
-        }
-
-        if (!productGroups[productIndex]) {
-          productGroups[productIndex] = {
-            productName,
-            productIndex,
+          productName;
+        if (!productGroups[productName]) {
+          productGroups[productName] = {
+            productName: displayProductName,
             changes: [],
             changeType,
             productData,
           };
         }
-
-        // Create individual field changes for display
         const dataToProcess =
-          changeType === "deleted" ? change.old_value : change.new_value;
+          changeType === "deleted" ? change.oldValue : change.newValue;
         if (dataToProcess && typeof dataToProcess === "object") {
           Object.entries(dataToProcess).forEach(([fieldKey]) => {
             if (fieldLabels[fieldKey]) {
-              const displayLabel = fieldLabels[fieldKey];
-
-              productGroups[productIndex].changes.push({
+              productGroups[productName].changes.push({
                 ...change,
                 field: `${change.field}.${fieldKey}`,
-                displayLabel,
-                old_value:
+                displayLabel: fieldLabels[fieldKey],
+                oldValue:
                   changeType === "added"
                     ? null
-                    : typeof change.old_value === "object"
-                    ? change.old_value?.[fieldKey]
+                    : typeof change.oldValue === "object"
+                    ? change.oldValue?.[fieldKey]
                     : null,
-                new_value:
+                newValue:
                   changeType === "deleted"
                     ? null
-                    : typeof change.new_value === "object"
-                    ? change.new_value?.[fieldKey]
+                    : typeof change.newValue === "object"
+                    ? change.newValue?.[fieldKey]
                     : null,
                 change_type: changeType,
-                isNewAddition: changeType === "added",
-                isDeletion: changeType === "deleted",
-              } as DisplayChangeItem);
+                isNewAddition,
+                isDeletion,
+              });
             }
           });
         }
-      } else if (fieldMatch) {
-        // Handle individual field changes
-        const fieldKey = fieldMatch[2];
-
-        if (fieldLabels[fieldKey]) {
-          const displayLabel = fieldLabels[fieldKey];
-
-          // Get product name from the data
-          const productData = change.new_value || change.old_value;
-          const productName =
+      } else {
+        const fieldKey = getFieldKey(change.field);
+        if (fieldKey && fieldLabels[fieldKey]) {
+          const productData = change.newValue || change.oldValue;
+          const displayProductName =
             (typeof productData === "object" && productData?.product) ||
-            `Product ${productIndex + 1}`;
-
-          // Determine change type based on old and new values
-          let changeType: "added" | "modified" | "deleted" = "modified";
-          let isNewAddition = false;
-          let isDeletion = false;
-
-          if (change.old_value === null || change.old_value === undefined) {
-            changeType = "added";
-            isNewAddition = true;
-          } else if (
-            change.new_value === null ||
-            change.new_value === undefined
-          ) {
-            changeType = "deleted";
-            isDeletion = true;
-          }
-
-          if (!productGroups[productIndex]) {
-            productGroups[productIndex] = {
-              productName,
-              productIndex,
+            productName;
+          if (!productGroups[productName]) {
+            productGroups[productName] = {
+              productName: displayProductName,
               changes: [],
               changeType: "modified",
             };
           }
-
-          productGroups[productIndex].changes.push({
+          productGroups[productName].changes.push({
             ...change,
-            displayLabel,
+            displayLabel: fieldLabels[fieldKey],
             change_type: changeType,
             isNewAddition,
             isDeletion,
-          } as DisplayChangeItem);
+          });
         }
       }
     });
 
-    return Object.values(productGroups).sort(
-      (a, b) => a.productIndex - b.productIndex,
-    );
+    return Object.values(productGroups);
   };
 
   const processedProducts = processChanges();
 
   if (processedProducts.length === 0) {
-    return null;
+    return (
+      <Box mb={4}>
+        <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-4">
+          Production Data
+        </Typography>
+        <Typography color="textSecondary">No changes found.</Typography>
+      </Box>
+    );
   }
 
   return (
@@ -195,9 +167,8 @@ export const ProductionDataChangeView: React.FC<
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue mb-4">
         Production Data
       </Typography>
-
       {processedProducts.map((product, productIndex) => (
-        <React.Fragment key={`product-${product.productIndex}`}>
+        <React.Fragment key={`product-${product.productName}`}>
           {/* For full product changes (added/deleted), display in final review format */}
           {(product.changeType === "added" ||
             product.changeType === "deleted") &&
@@ -206,27 +177,18 @@ export const ProductionDataChangeView: React.FC<
               <SectionReview
                 data={product.productData}
                 fields={productionDataFields(product.productData).map(
-                  (field) => {
-                    // Modify the heading field to include StatusLabel
-                    if (field.heading) {
-                      return {
-                        ...field,
-                        heading: (
-                          <Box display="flex" alignItems="center" gap={1}>
-                            <span>{field.heading}</span>
-                            <StatusLabel
-                              type={
-                                product.changeType === "deleted"
-                                  ? "deleted"
-                                  : "added"
-                              }
-                            />
-                          </Box>
-                        ),
-                      };
-                    }
-                    return field;
-                  },
+                  (field) =>
+                    field.heading
+                      ? {
+                          ...field,
+                          heading: (
+                            <Box display="flex" alignItems="center" gap={1}>
+                              <span>{field.heading}</span>
+                              <StatusLabel type={product.changeType} />
+                            </Box>
+                          ),
+                        }
+                      : field,
                 )}
                 isAdded={product.changeType === "added"}
                 isDeleted={product.changeType === "deleted"}

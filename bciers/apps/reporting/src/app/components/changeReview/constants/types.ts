@@ -1,13 +1,16 @@
 // Types for change review components
+import { Activity } from "@reporting/src/app/components/finalReview/templates/types";
+
 export interface ChangeItem {
   facilityName?: any;
   deletedActivities?: any;
   field: string;
-  old_value: string | Record<string, any> | null;
-  new_value: string | Record<string, any> | null;
+  oldValue: string | Record<string, any> | any[] | null;
+  newValue: string | Record<string, any> | any[] | null;
   change_type: string;
   displayLabel?: string;
   isNewAddition?: boolean;
+  isDeleted?: boolean;
 }
 
 export interface ReviewChangesProps {
@@ -30,7 +33,7 @@ export interface ActivityStructure {
   activityName: string;
   sourceTypes: Record<string, SourceTypeStructure>;
   changeType?: string;
-  new_value?: any;
+  newValue?: any;
 }
 
 export interface SourceTypeStructure {
@@ -55,4 +58,64 @@ export interface FuelStructure {
 export interface EmissionStructure {
   emissionIndex: number;
   fields: ChangeItem[];
+}
+
+export interface DisplayChangeItem extends ChangeItem {
+  displayLabel: string;
+  isNewAddition?: boolean;
+}
+
+export interface EmissionAllocationChangeViewProps {
+  data: ChangeItem[];
+}
+
+export interface ProcessedChange {
+  categoryName: string;
+  changes: DisplayChangeItem[];
+}
+
+export interface Product {
+  report_product_id: number;
+  product_name: string;
+  allocated_quantity: string;
+}
+
+export interface ProductAllocationTotal {
+  report_product_id: number;
+  product_name: string;
+  allocated_quantity: string;
+}
+
+export interface EmissionCategoryData {
+  emission_category_name: string;
+  emission_total: string;
+  products: Product[];
+}
+
+export interface ActivityItem {
+  activity: string;
+  source_types?: Record<string, any>;
+  [key: string]: any;
+}
+export interface SourceTypeChange {
+  fields: string;
+  facilityName: string;
+  activityName: string;
+  sourceTypeName: string;
+  changeType: "added" | "deleted" | "modified";
+  oldValue?: any;
+  newValue?: any;
+}
+export interface ActivityRendererProps {
+  activityName: string;
+  activity: Activity;
+  sourceTypeChangesForActivity: SourceTypeChange[];
+}
+
+export interface FieldChange {
+  field?: string;
+  oldValue: any;
+  newValue: any;
+  isNewAddition?: boolean;
+  isDeleted?: boolean;
 }

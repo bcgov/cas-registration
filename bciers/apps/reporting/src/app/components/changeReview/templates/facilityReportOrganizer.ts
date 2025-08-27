@@ -1,86 +1,130 @@
 import { ChangeItem, FacilityReportStructure } from "../constants/types";
 import { parseFacilityReportField } from "./facilityReportParser";
+// Utility to ensure nested array exists
+function ensureArray(obj: any, key: string) {
+  if (!obj[key]) obj[key] = [];
+  return obj[key];
+}
 
-function handleFuelsData(
-  unit: any,
-  fuelsData: any[],
-  change: ChangeItem,
-  sourceTypeName: string,
-  unitIndex: number,
-) {
-  fuelsData.forEach((fuelData: any, fuelIndex: number) => {
-    if (!unit.fuels[fuelIndex]) {
-      unit.fuels[fuelIndex] = {
-        fuelIndex,
-        fields: [],
-        emissions: {},
-      };
-    }
-
-    const fuel = unit.fuels[fuelIndex];
-
-    // Add fuel-level fields
-    Object.entries(fuelData).forEach(([key, value]) => {
-      if (key !== "emissions") {
-        fuel.fields.push({
-          field: `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}][fuels][${fuelIndex}][${key}]`,
-          old_value: null,
-          new_value: value,
-          change_type: "added",
+// Generic recursive handler for nested data
+function handleNestedChanges({
+  parent,
+  newData,
+  oldData,
+  path,
+  arrayKey,
+  childArrayKey,
+  fieldExcludes = [],
+}: {
+  parent: any;
+  newData: any[];
+  oldData: any[];
+  path: string;
+  arrayKey: string;
+  childArrayKey?: string;
+  fieldExcludes?: string[];
+}) {
+  const arr = ensureArray(parent, arrayKey);
+  (newData || []).forEach((item: any, idx: number) => {
+    if (!arr[idx]) arr[idx] = { fields: [], [childArrayKey || "children"]: [] };
+    const container = arr[idx];
+    const oldItem = oldData && oldData[idx] ? oldData[idx] : {};
+    // Detect field changes
+    Object.entries(item).forEach(([key, value]) => {
+      if (key === childArrayKey || fieldExcludes.includes(key)) return;
+      const oldValue = oldItem[key];
+      let changeType;
+      if (oldValue === undefined) changeType = "added";
+      else if (value === undefined) changeType = "deleted";
+      else if (value !== oldValue) changeType = "modified";
+      else return;
+      container.fields.push({
+        field: `${path}[${arrayKey}][${idx}][${key}]`,
+        oldValue: oldValue ?? null,
+        newValue: value,
+        change_type: changeType,
+      });
+    });
+    // Detect deleted fields
+    Object.entries(oldItem).forEach(([key, oldValue]) => {
+      if (key === childArrayKey || fieldExcludes.includes(key)) return;
+      if (item[key] === undefined) {
+        container.fields.push({
+          field: `${path}[${arrayKey}][${idx}][${key}]`,
+          oldValue: oldValue,
+          newValue: null,
+          change_type: "deleted",
         });
       }
     });
-
-    // Handle fuel emissions
-    if (fuelData.emissions && Array.isArray(fuelData.emissions)) {
-      fuelData.emissions.forEach((emissionData: any, emissionIndex: number) => {
-        if (!fuel.emissions[emissionIndex]) {
-          fuel.emissions[emissionIndex] = {
-            emissionIndex,
-            fields: [],
-          };
-        }
-
-        const emission = fuel.emissions[emissionIndex];
-        Object.entries(emissionData).forEach(([key, value]) => {
-          emission.fields.push({
-            field: `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}][fuels][${fuelIndex}][emissions][${emissionIndex}][${key}]`,
-            old_value: null,
-            new_value: value,
-            change_type: "added",
-          });
-        });
+    // Recursively handle child arrays
+    if (
+      childArrayKey &&
+      item[childArrayKey] &&
+      Array.isArray(item[childArrayKey])
+    ) {
+      handleNestedChanges({
+        parent: container,
+        newData: item[childArrayKey],
+        oldData: oldItem[childArrayKey] || [],
+        path: `${path}[${arrayKey}][${idx}]`,
+        arrayKey: childArrayKey,
+        fieldExcludes,
       });
+    }
+    // Handle deleted child arrays
+    if (childArrayKey && oldItem[childArrayKey]) {
+      (oldItem[childArrayKey] || []).forEach(
+        (oldChild: any, childIdx: number) => {
+          if (!item[childArrayKey] || !item[childArrayKey][childIdx]) {
+            const childArr = ensureArray(container, childArrayKey);
+            if (!childArr[childIdx]) childArr[childIdx] = { fields: [] };
+            Object.entries(oldChild).forEach(([k, v]) => {
+              childArr[childIdx].fields.push({
+                field: `${path}[${arrayKey}][${idx}][${childArrayKey}][${childIdx}][${k}]`,
+                oldValue: v,
+                newValue: null,
+                change_type: "deleted",
+              });
+            });
+          }
+        },
+      );
     }
   });
 }
 
-function handleUnitEmissionsData(
+// Usage for fuels/emissions
+function handleUnitNestedData(
   unit: any,
-  emissionsData: any[],
-  change: ChangeItem,
-  sourceTypeName: string,
-  unitIndex: number,
+  unitData: any,
+  oldUnitData: any,
+  path: string,
 ) {
-  emissionsData.forEach((emissionData: any, emissionIndex: number) => {
-    if (!unit.emissions[emissionIndex]) {
-      unit.emissions[emissionIndex] = {
-        emissionIndex,
-        fields: [],
-      };
-    }
-
-    const emission = unit.emissions[emissionIndex];
-    Object.entries(emissionData).forEach(([key, value]) => {
-      emission.fields.push({
-        field: `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}][emissions][${emissionIndex}][${key}]`,
-        old_value: null,
-        new_value: value,
-        change_type: "added",
-      });
+  if (unitData.fuels && Array.isArray(unitData.fuels)) {
+    handleNestedChanges({
+      parent: unit,
+      newData: unitData.fuels,
+      oldData: oldUnitData?.fuels || [],
+      path,
+      arrayKey: "fuels",
+      childArrayKey: "emissions",
+      fieldExcludes: [],
     });
-  });
+  }
+  if (unitData.emissions && Array.isArray(unitData.emissions)) {
+    handleNestedChanges({
+      parent: unit,
+      newData: unitData.emissions,
+      oldData: oldUnitData?.emissions || [],
+      path,
+      arrayKey: "emissions",
+      childArrayKey: undefined,
+      fieldExcludes: [],
+    });
+  }
 }
+
 function handleUnitChanges(sourceType: any, parsed: any, change: ChangeItem) {
   if (!sourceType.units[parsed.unitIndex]) {
     sourceType.units[parsed.unitIndex] = {
@@ -133,11 +177,14 @@ function parseActivityData(
   parsed: any,
   change: ChangeItem,
 ) {
-  // Type guard to ensure we have the right structure
-  if (typeof change.new_value !== "object" || !change.new_value?.source_types)
+  if (
+    typeof change.newValue !== "object" ||
+    Array.isArray(change.newValue) ||
+    !change.newValue?.source_types
+  )
     return;
 
-  Object.entries(change.new_value.source_types).forEach(
+  Object.entries(change.newValue.source_types).forEach(
     ([sourceTypeName, sourceTypeData]: [string, any]) => {
       const activity = facility.activities[parsed.activityName];
 
@@ -171,8 +218,8 @@ function parseActivityData(
                 deletedActivities: undefined,
                 facilityName: undefined,
                 field: `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}][${key}]`,
-                old_value: change.old_value as string | Record<string, any>,
-                new_value: value as string | Record<string, any>,
+                oldValue: change.oldValue as string | Record<string, any>,
+                newValue: value as string | Record<string, any>,
                 change_type: "added",
               });
             }
@@ -180,23 +227,21 @@ function parseActivityData(
 
           // Handle fuels
           if (unitData.fuels && Array.isArray(unitData.fuels)) {
-            handleFuelsData(
+            handleUnitNestedData(
               unit,
-              unitData.fuels,
-              change,
-              sourceTypeName,
-              unitIndex,
+              unitData,
+              {},
+              `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}]`,
             );
           }
 
           // Handle unit-level emissions
           if (unitData.emissions && Array.isArray(unitData.emissions)) {
-            handleUnitEmissionsData(
+            handleUnitNestedData(
               unit,
-              unitData.emissions,
-              change,
-              sourceTypeName,
-              unitIndex,
+              unitData,
+              {},
+              `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}]`,
             );
           }
         });
@@ -255,11 +300,11 @@ function handleActivityChanges(
 
     facility.activities[parsed.activityName].changeType = change.change_type;
 
-    if (change.change_type === "added" && change.new_value) {
-      facility.activities[parsed.activityName].new_value = change.new_value;
+    if (change.change_type === "added" && change.newValue) {
+      facility.activities[parsed.activityName].newValue = change.newValue;
       parseActivityData(facility, parsed, change);
-    } else if (change.change_type === "removed" && change.old_value) {
-      facility.activities[parsed.activityName].new_value = change.old_value;
+    } else if (change.change_type === "removed" && change.oldValue) {
+      facility.activities[parsed.activityName].newValue = change.oldValue;
     }
     return;
   }
@@ -332,11 +377,11 @@ export function organizeFacilityReportChanges(
     if (parsed.isFacilityLevel) {
       if (change.change_type === "added") {
         facility.isFacilityAdded = true;
-        facility.facilityData = change.new_value;
+        facility.facilityData = change.newValue;
         return;
       } else if (change.change_type === "removed") {
         facility.isFacilityRemoved = true;
-        facility.facilityData = change.old_value;
+        facility.facilityData = change.oldValue;
         return;
       }
     }

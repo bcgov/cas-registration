@@ -58,12 +58,9 @@ class ReportProductEmissionAllocationSchema(ModelSchema):
     products: Dict[str, ReportProductSchema] = {}
 
     @staticmethod
-    def resolve_products(obj: ReportProductEmissionAllocation) -> Dict[str, ReportProduct]:
-        products = getattr(obj, 'products', [])  # Replace with actual relationship
-        return {
-            f"product:{product.product.name}" if product.product else f"product_{product.id}": product
-            for product in products
-        }
+    def resolve_products(obj: ReportProductEmissionAllocation) -> Optional[ReportProduct]:
+        product = getattr(obj, 'product', None)
+        return product
 
     class Meta:
         model = ReportProductEmissionAllocation
@@ -86,10 +83,7 @@ class ReportEmissionAllocationSchema(ModelSchema):
     ) -> Dict[str, ReportProductEmissionAllocation]:
         allocations = obj.reportproductemissionallocation_records.all()
         return {
-            f"emission_category:{allocation.emission_category.category_name}"
-            if allocation.emission_category
-            else f"allocation_{allocation.id}": allocation
-            for allocation in allocations
+            f"emission_category:{allocation.emission_category.category_name}": allocation for allocation in allocations
         }
 
     @staticmethod
@@ -373,8 +367,14 @@ class ReportVersionSchema(ModelSchema):
 
     @staticmethod
     def resolve_facility_reports(obj: ReportVersion) -> Dict[str, FacilityReport]:
-        facilities = obj.facility_reports.all()
-        return {facility.facility_name or f"facility_{facility.id}": facility for facility in facilities}
+        if (
+            hasattr(obj, 'report_operation')
+            and obj.report_operation
+            and obj.report_operation.operation_type == Operation.Types.EIO
+        ):
+            return {}
+        facility_reports = obj.facility_reports.all()
+        return {facility.facility_name or f"facility_{facility.id}": facility for facility in facility_reports}
 
     @staticmethod
     def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceData]:

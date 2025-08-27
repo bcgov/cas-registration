@@ -1,10 +1,9 @@
 import React from "react";
 import { Box } from "@mui/material";
 import { StatusLabel } from "@bciers/components/form/fields/StatusLabel";
-import { FacilityReportStructure } from "../constants/types";
+import { FacilityReportStructure, SourceTypeChange } from "../constants/types";
 import { FacilityReportSection } from "../../shared/FacilityReportSection";
 import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
-import { SourceTypeChange } from "./facilityReportParser";
 import { FieldDisplay } from "@reporting/src/app/components/finalReview/templates/FieldDisplay";
 import { EmissionAllocationChangeView } from "./EmissionAllocationChangeView";
 import { EmissionSummaryChangeView } from "./EmissionSummaryChangeView";
@@ -14,8 +13,8 @@ import { ChangeItemDisplay } from "@reporting/src/app/components/changeReview/te
 
 interface ModifiedFacilityData {
   field: string;
-  old_value: Record<string, any>;
-  new_value: Record<string, any>;
+  oldValue: Record<string, any>;
+  newValue: Record<string, any>;
   change_type: "modified";
 }
 
@@ -29,8 +28,8 @@ interface FacilityReportChangesProps {
 }
 
 interface NonAttributableEmission {
-  new_value: string | Record<string, any> | null;
-  old_value?: string | Record<string, any> | null;
+  newValue: string | Record<string, any> | null;
+  oldValue?: string | Record<string, any> | null;
   change_type?: string;
 }
 
@@ -55,9 +54,9 @@ function getFieldDisplayProps(
     isAdded: change.change_type === "added",
     isDeleted,
     oldValue:
-      typeof change.old_value === "object" && change.old_value !== null
-        ? change.old_value[key]
-        : change.old_value,
+      typeof change.oldValue === "object" && change.oldValue !== null
+        ? change.oldValue[key]
+        : change.oldValue,
   };
 }
 
@@ -84,17 +83,18 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
             ([sourceTypeName, sourceTypeData]) => {
               if (
                 sourceTypeData &&
-                (sourceTypeData.old_value === null ||
-                  sourceTypeData.old_value === undefined) &&
-                sourceTypeData.new_value !== null &&
-                sourceTypeData.new_value !== undefined
+                (sourceTypeData.oldValue === null ||
+                  sourceTypeData.oldValue === undefined) &&
+                sourceTypeData.newValue !== null &&
+                sourceTypeData.newValue !== undefined
               ) {
                 addedSourceTypes.push({
+                  fields: "",
                   facilityName,
                   activityName,
                   sourceTypeName,
                   changeType: "added",
-                  newValue: sourceTypeData.new_value,
+                  newValue: sourceTypeData.newValue,
                   oldValue: null,
                 });
               }
@@ -209,14 +209,14 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                       if (change.change_type === "modified") {
                         // Get all unique keys from old and new value
                         const oldObj =
-                          typeof change.old_value === "object" &&
-                          change.old_value !== null
-                            ? change.old_value
+                          typeof change.oldValue === "object" &&
+                          change.oldValue !== null
+                            ? change.oldValue
                             : {};
                         const newObj =
-                          typeof change.new_value === "object" &&
-                          change.new_value !== null
-                            ? change.new_value
+                          typeof change.newValue === "object" &&
+                          change.newValue !== null
+                            ? change.newValue
                             : {};
                         const keys = Array.from(
                           new Set([
@@ -235,8 +235,8 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                                     field: key,
                                     displayLabel:
                                       nonAttributableEmissionLabels[key] || key,
-                                    old_value: oldObj[key] ?? null,
-                                    new_value: newObj[key] ?? null,
+                                    oldValue: oldObj[key] ?? null,
+                                    newValue: newObj[key] ?? null,
                                     change_type: "modified",
                                   }}
                                 />
@@ -251,13 +251,13 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                       const valueObj =
                         change.change_type === "removed" ||
                         change.change_type === "deleted"
-                          ? typeof change.old_value === "object" &&
-                            change.old_value !== null
-                            ? change.old_value
+                          ? typeof change.oldValue === "object" &&
+                            change.oldValue !== null
+                            ? change.oldValue
                             : {}
-                          : typeof change.new_value === "object" &&
-                            change.new_value !== null
-                          ? change.new_value
+                          : typeof change.newValue === "object" &&
+                            change.newValue !== null
+                          ? change.newValue
                           : {};
                       return (
                         <Box key={index} mb={2}>
