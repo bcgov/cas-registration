@@ -85,8 +85,38 @@
       "id": 7,
       "operation_id": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488f",
       "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "created_at": "2025-05-28 20:09:05.41476+00",
+      "created_at": "2024-05-28 20:09:05.41476+00",
       "reporting_year_id": 2023
+    }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 8,
+      "operation_id": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2023-05-28 20:09:05.41476+00",
+      "reporting_year_id": 2023
+    }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 9,
+      "operation_id": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2023-05-28 20:09:05.41476+00",
+      "reporting_year_id": 2022
+    }
+  },
+  {
+    "model": "reporting.report",
+    "fields": {
+      "id": 10,
+      "operation_id": "b65a3fbc-c81a-49c0-a43a-67bd3a0b488e",
+      "operator_id": "4242ea9d-b917-4129-93c2-db00b7451051",
+      "created_at": "2022-05-28 20:09:05.41476+00",
+      "reporting_year_id": 2021
     }
   }
 ]
