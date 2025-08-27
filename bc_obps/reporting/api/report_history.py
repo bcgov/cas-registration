@@ -21,7 +21,7 @@ from ..service.report_history_dashboard_service import ReportingHistoryDashboard
     response={200: List[ReportHistoryResponse], custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns json object with current reporting year and due date.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 @paginate(PageNumberPagination, page_size=PAGE_SIZE)
 def get_report_history(request: HttpRequest, report_id: int) -> QuerySet[ReportVersion]:
@@ -34,7 +34,7 @@ def get_report_history(request: HttpRequest, report_id: int) -> QuerySet[ReportV
     response={200: ReportOperationResponse, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Returns the operation details given report.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("approved_authorized_roles"),
 )
 def get_report_operation(request: HttpRequest, report_id: int) -> Tuple[int, Operation]:
     operation = Report.objects.select_related('operation').get(id=report_id).operation
