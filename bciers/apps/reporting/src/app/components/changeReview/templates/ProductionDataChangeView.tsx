@@ -83,7 +83,9 @@ export const ProductionDataChangeView: React.FC<
       if (isFullProductChange(change.field)) {
         const productData = change.newValue || change.oldValue;
         const displayProductName =
-          (typeof productData === "object" && productData?.product) ||
+          (typeof productData === "object" &&
+            !Array.isArray(productData) &&
+            productData?.product) ||
           productName;
         if (!productGroups[productName]) {
           productGroups[productName] = {
@@ -105,13 +107,15 @@ export const ProductionDataChangeView: React.FC<
                 oldValue:
                   changeType === "added"
                     ? null
-                    : typeof change.oldValue === "object"
+                    : typeof change.oldValue === "object" &&
+                      !Array.isArray(change.oldValue)
                     ? change.oldValue?.[fieldKey]
                     : null,
                 newValue:
                   changeType === "deleted"
                     ? null
-                    : typeof change.newValue === "object"
+                    : typeof change.newValue === "object" &&
+                      !Array.isArray(change.newValue)
                     ? change.newValue?.[fieldKey]
                     : null,
                 change_type: changeType,
@@ -126,7 +130,9 @@ export const ProductionDataChangeView: React.FC<
         if (fieldKey && fieldLabels[fieldKey]) {
           const productData = change.newValue || change.oldValue;
           const displayProductName =
-            (typeof productData === "object" && productData?.product) ||
+            (typeof productData === "object" &&
+              !Array.isArray(productData) &&
+              productData?.product) ||
             productName;
           if (!productGroups[productName]) {
             productGroups[productName] = {
