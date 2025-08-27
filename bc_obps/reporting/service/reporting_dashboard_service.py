@@ -118,7 +118,9 @@ class ReportingDashboardService:
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Report]:
         """
-        Fetches all past reports for the user, and annotates it with the associated operation data required for the API call
+        Fetches reports, and annotates it with the associated operation data required for the API call
+        If external user, only fetch reports for their operator
+
         """
         user = UserDataAccessService.get_by_guid(user_guid)
         is_internal = "cas_" in user.app_role_id

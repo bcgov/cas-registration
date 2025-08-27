@@ -51,7 +51,7 @@ def get_dashboard_operations_list(
     "/reports",
     response={200: List[ReportingDashboardReportOut], custom_codes_4xx: Message},
     tags=DASHBOARD_TAGS,
-    description="""Returns a list of reports for the current user.""",
+    description="""Returns a list of reports for the current user. Can return reports for current year, past years, or both.""",
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(PageNumberPagination)
