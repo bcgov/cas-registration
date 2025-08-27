@@ -23,6 +23,11 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
 
     if version_id:
         report_version = ReportVersion.objects.select_related('report', 'report__operation').get(id=version_id)
+
+        if report_version.report.reporting_year_id < 2024:
+            logger.info("Compliance module is not enabled for reports before 2024")
+            return
+
         if not report_version.report.operation.is_regulated_operation:
             logger.info(f"Non-regulated operation: Ignoring compliance summary for version id {version_id}")
             return

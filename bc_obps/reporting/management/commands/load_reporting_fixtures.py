@@ -110,4 +110,5 @@ class Command(BaseCommand):
                     )
 
             # create supplmentary report
-            ReportVersionService.create_report_version(Report.objects.get(operation_id=operation_ids_to_submit[0]))
+            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+                ReportVersionService.create_report_version(report)
