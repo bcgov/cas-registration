@@ -70,6 +70,7 @@ class Command(BaseCommand):
 
             for operation_id in operation_ids_to_submit:
                 # set up required data for submission
+                # multiple report versions to submit if there are multiple years
                 report_versions = ReportVersion.objects.filter(report__operation_id=operation_id)
 
                 for report_version in report_versions:
