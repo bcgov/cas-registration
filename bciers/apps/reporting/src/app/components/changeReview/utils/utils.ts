@@ -161,18 +161,29 @@ export const isNonEmptyValue = (v: unknown): boolean =>
   (typeof v === "object" && !Array.isArray(v)
     ? Object.keys(v).length > 0
     : true);
-export const isWholeObjectAdded = (oldObj: any, newObj: any) => {
-  if (!oldObj && newObj)
-    return newObj.fields && newObj.fields.every((f: any) => f.oldValue == null);
+// Check if the object itself is entirely added at this level
+export const isWholeObjectAdded = (oldObj: any, newObj: any): boolean => {
+  if (!oldObj && newObj) {
+    const fields = newObj.fields || [];
+    // Only consider fields at this level; ignore nested children
+    return fields.length > 0
+      ? fields.every((f: any) => f.oldValue == null)
+      : false;
+  }
   return false;
 };
 
-export const isWholeObjectDeleted = (oldObj: any, newObj: any) => {
-  if (oldObj && !newObj)
-    return oldObj.fields && oldObj.fields.every((f: any) => f.newValue == null);
+// Check if the object itself is entirely deleted at this level
+export const isWholeObjectDeleted = (oldObj: any, newObj: any): boolean => {
+  if (oldObj && !newObj) {
+    const fields = oldObj.fields || [];
+    // Only consider fields at this level; ignore nested children
+    return fields.length > 0
+      ? fields.every((f: any) => f.newValue == null)
+      : false;
+  }
   return false;
 };
-
 // Utility to normalize old_value/new_value to oldValue/newValue recursively
 export function normalizeChangeKeys(obj: any): any {
   if (Array.isArray(obj)) {

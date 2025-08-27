@@ -89,6 +89,9 @@ export const renderFieldChange = (
         isNewAddition: showFieldStatus && isAdded,
       }}
       isDeleted={showFieldStatus && isDeleted}
+      parentWholeObjectStatus={
+        parentWholeObjectStatus !== null ? true : undefined
+      }
     />
   );
 };

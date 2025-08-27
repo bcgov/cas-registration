@@ -9,12 +9,14 @@ interface ChangeItemDisplayProps {
   item: ChangeItem & { displayLabel?: string };
   context?: string;
   isDeleted?: boolean;
+  parentWholeObjectStatus?: boolean;
 }
 
 export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
   item,
   context,
   isDeleted = false,
+  parentWholeObjectStatus = false,
 }) => {
   const isDeletedItem = item.change_type === "deleted" || isDeleted;
 
@@ -35,7 +37,10 @@ export const ChangeItemDisplay: React.FC<ChangeItemDisplayProps> = ({
           >
             {fieldLabel}
             {isDeletedItem && <StatusLabel type="deleted" />}
-            {item.isNewAddition && <StatusLabel type="added" />}
+            {!parentWholeObjectStatus &&
+              (item.change_type === "added" || item.isNewAddition) && (
+                <StatusLabel type="added" />
+              )}
           </Typography>
         </Grid>
         <Grid item xs={12} md={9}>

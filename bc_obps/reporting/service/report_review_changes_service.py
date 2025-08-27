@@ -140,7 +140,6 @@ class ReportReviewChangesService:
         Compares previous and current report data using DeepDiff, filters out irrelevant changes,
         and returns a list of processed changes with human-readable field names and values.
         """
-        fac_key = "root['facility_reports']"
         differences = DeepDiff(
             previous_data,
             current_data,
@@ -149,9 +148,9 @@ class ReportReviewChangesService:
                 r".*?id'\]$",
                 r"root\['report_person_responsible'\]\['report_version'\]",
                 r"root\['id'\]",
-                rf"{fac_key}.*\['facility_name'\]$",
             ],
         )
+        print('differences', differences)
 
         changed: List[Dict[str, Any]] = []
 
@@ -167,15 +166,21 @@ class ReportReviewChangesService:
                     getattr(change, 'new_value', change.get('new_value')),
                     'modified',
                 )
-            if typ.endswith('added'):
+            elif typ == 'type_changes':
+                old_val = change.get('old_value')
+                new_val = change.get('new_value')
+                change_type_str = 'added' if old_val is None and new_val is not None else 'modified'
+                return old_val, new_val, change_type_str
+            elif typ.endswith('added'):
                 val = change or cls.get_value_by_path(new_data, path)
                 return (None, val, 'added')
-            if typ.endswith('removed'):
+            elif typ.endswith('removed'):
                 val = change or cls.get_value_by_path(old_data, path)
                 return (val, None, 'removed')
             return (None, None, None)
 
         for change_type, changes_dict in differences.items():
+            print('change_type', change_type, changes_dict)
             # DeepDiff returns a dict for most change types, but for some (like iterable_item_added/removed),
             # it returns a list of paths. This line ensures we can iterate over both dict and list results.
             items = changes_dict.items() if isinstance(changes_dict, dict) else [(path, None) for path in changes_dict]

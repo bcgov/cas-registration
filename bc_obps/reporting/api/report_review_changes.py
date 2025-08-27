@@ -24,6 +24,7 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
     The compare_version_id parameter is removed; this endpoint only compares with the latest previous version.
     """
     current_version = ReportVersionService.fetch_full_report_version(version_id)
+    print('current_version', current_version.__dict__)
 
     previous_version_id = (
         ReportVersion.objects.filter(report_id=current_version.report_id, id__lt=current_version.id)
