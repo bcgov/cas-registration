@@ -1,5 +1,5 @@
 import pytest
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 from unittest.mock import patch
 from model_bakery import baker
@@ -24,7 +24,7 @@ class TestPenaltyCalculationService:
         )
         self.invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
-            due_date=datetime(2025, 11, 30),
+            due_date=date(2025, 11, 30),
             outstanding_balance=Decimal("0.00"),
             invoice_interest_balance=Decimal("5000.00"),
         )
@@ -51,13 +51,13 @@ class TestPenaltyCalculationService:
             "compliance.tests.utils.elicensing_adjustment",
             elicensing_line_item=self.line_item,
             amount=Decimal("50000.00"),
-            adjustment_date=datetime(2025, 12, 5),
+            adjustment_date=date(2025, 12, 5),
         )
         baker.make_recipe(
             "compliance.tests.utils.elicensing_adjustment",
             elicensing_line_item=self.line_item,
             amount=Decimal("-30000.00"),
-            adjustment_date=datetime(2025, 12, 8),
+            adjustment_date=date(2025, 12, 8),
         )
 
     def test_sum_payments_and_adjustments(self):
@@ -88,7 +88,7 @@ class TestPenaltyCalculationService:
         """Test calculate_penalty returns correct penalty data"""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
-            due_date=datetime(2025, 11, 30),
+            due_date=date(2025, 11, 30),
             outstanding_balance=Decimal("1000000.00"),
             invoice_interest_balance=Decimal("0.00"),
         )
@@ -115,7 +115,7 @@ class TestPenaltyCalculationService:
         """Test calculate_penalty returns correct penalty data when persisted"""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
-            due_date=datetime(2025, 11, 30),
+            due_date=date(2025, 11, 30),
             outstanding_balance=Decimal("1000000.00"),
             invoice_interest_balance=Decimal("0.00"),
         )
@@ -127,7 +127,7 @@ class TestPenaltyCalculationService:
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
         mock_create_invoice.return_value = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
-            due_date=datetime(2026, 1, 10),
+            due_date=date(2026, 1, 10),
             outstanding_balance=Decimal("1000000.00"),
             invoice_interest_balance=Decimal("0.00"),
         )
@@ -151,7 +151,7 @@ class TestPenaltyCalculationService:
         """Test create_penalty calls calculate_penalty with expected data"""
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
-            due_date=datetime(2025, 11, 30),
+            due_date=date(2025, 11, 30),
             outstanding_balance=Decimal("1000000.00"),
             invoice_interest_balance=Decimal("0.00"),
         )

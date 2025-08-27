@@ -1,7 +1,7 @@
 import json
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 import pytest
-from datetime import datetime
+from datetime import date
 from django.utils import timezone
 from decimal import Decimal
 from unittest.mock import patch
@@ -27,7 +27,7 @@ class TestComplianceInvoiceService:
             "compliance.tests.utils.compliance_obligation",
             compliance_report_version=self.compliance_report_version,
             fee_amount_dollars=Decimal("300.00"),
-            fee_date=datetime(2025, 6, 1),
+            fee_date=date(2025, 6, 1),
             obligation_id="25-0001-1",
         )
 
@@ -38,12 +38,12 @@ class TestComplianceInvoiceService:
         # Set up invoice and line items
         self.invoice = make_recipe(
             "compliance.tests.utils.elicensing_invoice",
-            due_date=datetime(2025, 7, 1),
+            due_date=date(2025, 7, 1),
         )
         self.line_item = make_recipe(
             "compliance.tests.utils.elicensing_line_item",
             elicensing_invoice=self.invoice,
-            fee_date=datetime(2025, 6, 1),
+            fee_date=date(2025, 6, 1),
             base_amount=Decimal("300.00"),
             description="Compliance Fee",
         )
@@ -100,7 +100,7 @@ class TestComplianceInvoiceService:
             (Decimal("300.00"), [], [], Decimal("300.00"), 1),
             (
                 Decimal("300.00"),
-                [{"amount": Decimal("100.00"), "date": datetime(2025, 6, 10).date(), "description": "Partial Payment"}],
+                [{"amount": Decimal("100.00"), "date": date(2025, 6, 10), "description": "Partial Payment"}],
                 [],
                 Decimal("200.00"),
                 2,
@@ -108,14 +108,14 @@ class TestComplianceInvoiceService:
             (
                 Decimal("300.00"),
                 [],
-                [{"amount": Decimal("-50.00"), "date": datetime(2025, 6, 12).date(), "description": "Rebate"}],
+                [{"amount": Decimal("-50.00"), "date": date(2025, 6, 12), "description": "Rebate"}],
                 Decimal("250.00"),
                 2,
             ),
             (
                 Decimal("300.00"),
-                [{"amount": Decimal("100.00"), "date": datetime(2025, 6, 10).date(), "description": "Partial Payment"}],
-                [{"amount": Decimal("-25.00"), "date": datetime(2025, 6, 12).date(), "description": "Rebate"}],
+                [{"amount": Decimal("100.00"), "date": date(2025, 6, 10), "description": "Partial Payment"}],
+                [{"amount": Decimal("-25.00"), "date": date(2025, 6, 12), "description": "Rebate"}],
                 Decimal("175.00"),
                 3,
             ),
@@ -133,7 +133,7 @@ class TestComplianceInvoiceService:
                 elicensing_invoice=invoice,
                 line_item_type=ElicensingLineItem.LineItemType.FEE,
                 base_amount=fee_amount,
-                fee_date=datetime(2025, 6, 1).date(),
+                fee_date=date(2025, 6, 1),
                 description="Compliance Fee",
             )
 
