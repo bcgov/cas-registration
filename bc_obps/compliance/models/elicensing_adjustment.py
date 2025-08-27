@@ -40,7 +40,7 @@ class ElicensingAdjustment(TimeStampedModel):
         db_comment="The amount of this adjustment in dollars from elicensing",
     )
 
-    adjustment_date = models.DateTimeField(db_comment="date of the adjustment in elicensing", null=True, blank=True)
+    adjustment_date = models.DateField(db_comment="date of the adjustment in elicensing", null=True, blank=True)
 
     reason = models.CharField(
         db_comment="Reason for adjustment in elicesning", choices=Reason.choices, null=True, blank=True

@@ -19,7 +19,7 @@ class ElicensingInvoice(TimeStampedModel):
         related_name="elicensing_invoices",
     )
 
-    due_date = models.DateTimeField(db_comment="The due date of the invoice. invoicePaymentDueDate in elicensing")
+    due_date = models.DateField(db_comment="The due date of the invoice. invoicePaymentDueDate in elicensing")
 
     outstanding_balance = models.DecimalField(
         decimal_places=2,
