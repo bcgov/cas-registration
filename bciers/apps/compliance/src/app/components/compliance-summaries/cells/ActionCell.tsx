@@ -38,7 +38,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
       } else if (status === ComplianceSummaryStatus.OBLIGATION_FULLY_MET) {
         return {
           cellText: "View Details",
-          basePath: `${basePath}/manage-obligation-review-summary`,
+          basePath: `${basePath}/review-compliance-obligation-report`,
         };
       }
       return {
