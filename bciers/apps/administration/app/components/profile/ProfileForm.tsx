@@ -91,14 +91,14 @@ export default function ProfileForm({ formData, isCreate }: Props) {
             "/profile",
           );
 
-          if (response?.contactId) {
+          if (response) {
             setEmailHelpText(
               <>
                 {emailHelpTextFirstClause}
                 <div>
                   To change the email you are contacted with, edit the email in
                   your{" "}
-                  <a href={`/contacts/${response.contactId}`}>
+                  <a href={`administration/contacts/${response}`}>
                     contact details page
                   </a>
                   .
