@@ -3,7 +3,7 @@ import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
-import { generateNoObligationNoCreditsTaskList } from "../../../taskLists/noObligationNoCreditsTasklist";
+import { generateNoObligationNoCreditsTaskList } from "@/compliance/src/app/components/taskLists/noObligationNoCreditsTasklist";
 
 export default async function ComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,

@@ -1,7 +1,7 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { generateAutomaticOverduePenaltyTaskList } from "./automaticOverduePenaltyTaskList";
-import { ObligationTasklistData } from "../../types";
 import { PenaltyStatus } from "@bciers/utils/src/enums";
+import { ObligationTasklistData } from "@/compliance/src/app/types";
 
 export enum ActivePage {
   ReviewComplianceSummary = "ReviewComplianceSummary",

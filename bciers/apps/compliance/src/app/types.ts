@@ -66,6 +66,7 @@ export interface RequestIssuanceTrackStatusData {
   holding_account_id: string;
   director_comment: string;
   analyst_comment: string;
+  reporting_year: number;
 }
 
 export interface ComplianceAppliedUnits {
@@ -147,7 +148,6 @@ export interface ComplianceSummary {
   operation_name: string;
   reporting_year: number;
   excess_emissions: number;
-  outstanding_balance?: number;
   status?: ComplianceSummaryStatus;
   penalty_status?: string;
   obligation_id?: string;

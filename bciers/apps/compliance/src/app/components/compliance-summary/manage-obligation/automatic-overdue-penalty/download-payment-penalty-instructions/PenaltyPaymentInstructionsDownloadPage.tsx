@@ -7,7 +7,7 @@ import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSu
 import {
   ActivePage,
   generateManageObligationTaskList,
-} from "../../../../taskLists/1_manageObligationTaskList";
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 export default async function PenaltyPaymentInstructionsDownloadPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -18,7 +18,7 @@ export default async function PenaltyPaymentInstructionsDownloadPage({
   const {
     penalty_status: penaltyStatus,
     reporting_year: reportingYear,
-    outstanding_balance: outstandingBalance,
+    outstanding_balance_tco2e: outstandingBalance,
   } = await getComplianceSummary(complianceReportVersionId);
 
   const taskListElements = generateManageObligationTaskList(

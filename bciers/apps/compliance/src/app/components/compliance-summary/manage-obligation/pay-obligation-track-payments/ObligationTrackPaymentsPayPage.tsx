@@ -26,7 +26,7 @@ export default async function ObligationTrackPaymentsPayPage({
   const {
     penalty_status: penaltyStatus,
     reporting_year: reportingYear,
-    outstanding_balance: outstandingBalance,
+    outstanding_balance_tco2e: outstandingBalance,
   } = await getComplianceSummary(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,

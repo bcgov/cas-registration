@@ -9,7 +9,6 @@ import {
   ComplianceSummaryReviewPageData,
   HasComplianceReportVersion,
 } from "@/compliance/src/app/types";
-import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 
 export default async function ComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -17,11 +16,11 @@ export default async function ComplianceSummaryReviewPage({
   const complianceSummaryReviewPageData: ComplianceSummaryReviewPageData =
     await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
 
-  const {
-    penalty_status: penaltyStatus,
-    reporting_year: reportingYear,
-    outstanding_balance: outstandingBalance,
-  } = await getComplianceSummary(complianceReportVersionId);
+  const penaltyStatus = complianceSummaryReviewPageData.penalty_status;
+  const reportingYear = complianceSummaryReviewPageData.reporting_year;
+  const outstandingBalance =
+    complianceSummaryReviewPageData.outstanding_balance_tco2e;
+
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
     {

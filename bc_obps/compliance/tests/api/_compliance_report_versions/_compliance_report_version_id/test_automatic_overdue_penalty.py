@@ -1,5 +1,6 @@
 from decimal import Decimal
 from unittest.mock import patch
+from compliance.models.compliance_obligation import ComplianceObligation
 from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
@@ -17,7 +18,7 @@ class TestAutomaticOverduePenaltyEndpoint(CommonTestSetup):
         mock_get_obligation.return_value = obligation
 
         penalty_data = {
-            "penalty_status": "ACCRUING",
+            "penalty_status": ComplianceObligation.PenaltyStatus.ACCRUING,
             "penalty_type": PenaltyCalculationService.PenaltyType.AUTOMATIC_OVERDUE.value,
             "days_late": 3,
             "penalty_charge_rate": Decimal("0.38"),
