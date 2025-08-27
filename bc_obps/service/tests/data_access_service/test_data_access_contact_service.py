@@ -53,3 +53,55 @@ class TestDataAccessContactService:
         operator.contacts.set([contact])
         user_operator_baker({"user": user, "operator": operator, "status": UserOperator.Statuses.APPROVED})
         assert ContactDataAccessService.user_has_access(user.user_guid, contact.id)
+
+    @staticmethod
+    def test_get_contact_for_internal_user_returns_none():
+        internal_user = user_baker({'app_role': AppRole.objects.get(role_name='cas_analyst')})
+        assert ContactDataAccessService.get_contact_for_user(internal_user) is None
+
+    @staticmethod
+    def test_get_contact_for_industry_user_by_unique_email_returns_contact():
+        industry_user = user_baker(
+            {
+                'app_role': AppRole.objects.get(role_name='industry_user'),
+                'first_name': 'Mickey',
+                'last_name': 'Mouse',
+                'email': 'mickey.mouse@email.com',
+            }
+        )
+        users_operator = operator_baker()
+        random_contacts: List[Contact] = contact_baker(_quantity=10)
+        user_contact: Contact = contact_baker(
+            _quantity=1, first_name='Mickey', last_name='Mouse', email='mickey.mouse@email.com'
+        )
+        users_operator.contacts.set([*random_contacts, user_contact])
+        user_operator_baker(
+            {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
+        )
+        contact = ContactDataAccessService.get_contact_for_user(industry_user)
+        assert contact.email == 'mickey.mouse@email.com'
+        assert contact.first_name == 'Mickey'
+        assert contact.last_name == 'Mouse'
+
+    @staticmethod
+    def test_get_contact_for_industry_user_by_name_returns_contact():
+        industry_user = user_baker(
+            {
+                'app_role': AppRole.objects.get(role_name='industry_user'),
+                'first_name': 'Mickey',
+                'last_name': 'Mouse',
+                'email': 'mickey.mouse@email.com',
+            }
+        )
+        users_operator = operator_baker()
+        random_contacts: List[Contact] = contact_baker(_quantity=10)
+        user_contact: Contact = contact_baker(
+            _quantity=1, first_name='Mickey', last_name='Mouse', email='some.other.address@email.com'
+        )
+        users_operator.contacts.set([*random_contacts, user_contact])
+        user_operator_baker(
+            {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
+        )
+        contact = ContactDataAccessService.get_contact_for_user(industry_user)
+        assert contact.first_name == 'Mickey'
+        assert contact.last_name == 'Mouse'
