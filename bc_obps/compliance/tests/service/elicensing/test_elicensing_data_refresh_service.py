@@ -69,7 +69,7 @@ class TestElicensingOperatorService:
                             adjustmentTotal=Decimal('10.11'),
                             amount=Decimal('10.11'),
                             date='2025-11-30',
-                            reason='reason',
+                            reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
                             type='adj',
                         )
                     ],

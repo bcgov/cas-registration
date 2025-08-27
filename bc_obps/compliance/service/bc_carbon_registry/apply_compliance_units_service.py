@@ -54,7 +54,8 @@ class ApplyComplianceUnitsService:
         if not obligation or not obligation.fee_amount_dollars:
             raise UserError("Unable to calculate unit cap: missing obligation or fee amount.")
         total_supplementary_report_adjustments = cls._get_total_adjustments_for_report_version_by_reason(
-            compliance_report_version_id=compliance_report_version_id, reason='Supplementary Report Adjustment'
+            compliance_report_version_id=compliance_report_version_id,
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
         )
         return (obligation.fee_amount_dollars + total_supplementary_report_adjustments) * Decimal(
             "0.5"

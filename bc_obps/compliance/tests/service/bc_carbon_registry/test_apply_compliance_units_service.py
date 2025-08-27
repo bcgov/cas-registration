@@ -1,3 +1,4 @@
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 import pytest
 from unittest.mock import patch, Mock
 from model_bakery import baker
@@ -651,7 +652,7 @@ class TestApplyComplianceUnitsService:
         supplementary_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         baker.make_recipe(
             "compliance.tests.utils.elicensing_adjustment",
-            reason='Supplementary Report Adjustment',
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
             supplementary_compliance_report_version=supplementary_version,
             elicensing_line_item=line_item,
             amount=Decimal('-500'),

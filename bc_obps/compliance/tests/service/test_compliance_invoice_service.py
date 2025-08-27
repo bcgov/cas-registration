@@ -1,4 +1,5 @@
 import json
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 import pytest
 from datetime import datetime
 from django.utils import timezone
@@ -150,7 +151,7 @@ class TestComplianceInvoiceService:
                     elicensing_line_item=line_item,
                     amount=a["amount"],
                     adjustment_date=a["date"],
-                    reason=a["description"],
+                    reason=ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED,
                     type="CREDIT",
                 )
 

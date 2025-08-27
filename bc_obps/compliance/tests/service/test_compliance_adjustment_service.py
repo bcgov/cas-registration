@@ -1,5 +1,6 @@
 from datetime import timedelta
 import uuid
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from django.utils import timezone
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 import pytest
@@ -202,7 +203,7 @@ class TestComplianceAdjustmentService:
         assert adjustment["feeObjectId"] == elicensing_line_item.object_id
         assert uuid.UUID(adjustment["adjustmentGUID"], version=4)
         assert adjustment["adjustmentTotal"] == Decimal("160.0")
-        assert adjustment["reason"] == "Supplementary Report Adjustment"
+        assert adjustment["reason"] == ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
         assert adjustment["type"] == "Adjustment"
 
         mock_refresh_data_wrapper.assert_called_once_with(
