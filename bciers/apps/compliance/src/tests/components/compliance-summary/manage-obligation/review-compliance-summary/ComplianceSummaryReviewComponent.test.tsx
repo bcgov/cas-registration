@@ -21,6 +21,18 @@ vi.mock(
   }),
 );
 
+// Mock breadcrumb hook
+vi.mock("@bciers/components", async () => {
+  const actual =
+    await vi.importActual<typeof import("@bciers/components")>(
+      "@bciers/components",
+    );
+  return {
+    ...actual,
+    useBreadcrumb: () => ({ lastTitle: null, setLastTitle: vi.fn() }),
+  };
+});
+
 const mockData: ComplianceSummaryReviewPageData = {
   id: 2,
   obligation_id: "24-0019-3-3",
@@ -70,7 +82,9 @@ describe("ComplianceSummaryReviewComponent", () => {
 
   it("renders the component with all sections", () => {
     setupComponent();
-    expect(screen.getByText("Review 2025 Compliance Summary")).toBeVisible();
+    expect(
+      screen.getByText("Review 2025 Compliance Obligation Report"),
+    ).toBeVisible();
     expect(screen.getByText("From 2025 Report")).toBeVisible();
     expect(screen.getByText("2025 Compliance Obligation")).toBeVisible();
     expect(screen.getByText("Monetary Payments Made")).toBeVisible();

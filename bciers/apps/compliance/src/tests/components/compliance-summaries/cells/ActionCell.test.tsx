@@ -54,7 +54,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Manage Obligation",
-          "/compliance-summaries/123/manage-obligation-review-summary",
+          "/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 
@@ -94,7 +94,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-summaries/123/review-obligation-summary",
+          "/compliance-summaries/123/review-compliance-obligation-report",
         );
       });
 

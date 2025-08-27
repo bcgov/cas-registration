@@ -112,6 +112,13 @@ const setupValidAccountAndSubmit = async () => {
     ).toBeVisible();
   });
 
+  // Ensure the quantity inputs in the DataGrid have rendered before returning
+  await screen.findAllByLabelText(
+    "quantity_to_be_applied",
+    {},
+    { timeout: 3000 },
+  );
+
   return renderResult;
 };
 
@@ -455,13 +462,6 @@ describe("ApplyComplianceUnitsComponent", () => {
   it("enables Apply button when units are selected and below 50% limit", async () => {
     await setupValidAccountAndSubmit();
 
-    // Wait for quantity inputs to be available
-    await waitFor(() => {
-      expect(
-        screen.getAllByLabelText("quantity_to_be_applied").length,
-      ).toBeGreaterThan(0);
-    });
-
     // Select units below 50% limit (8000/50 = 160 units max, so 50% is 80 units)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     // Change value to something below 80, e.g., 50
@@ -475,13 +475,6 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("disables Apply button when units exceed 50% compliance limit", async () => {
     await setupValidAccountAndSubmit();
-
-    // Wait for quantity inputs to be available
-    await waitFor(() => {
-      expect(
-        screen.getAllByLabelText("quantity_to_be_applied").length,
-      ).toBeGreaterThan(0);
-    });
 
     // Select units that exceed 50% limit (8000/50 = 160 units max)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
@@ -570,13 +563,6 @@ describe("ApplyComplianceUnitsComponent", () => {
 
     await setupValidAccountAndSubmit();
 
-    // Wait for quantity inputs to be available
-    await waitFor(() => {
-      expect(
-        screen.getAllByLabelText("quantity_to_be_applied").length,
-      ).toBeGreaterThan(0);
-    });
-
     // Select some units
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInputs[0], { target: { value: "75" } });
@@ -611,13 +597,6 @@ describe("ApplyComplianceUnitsComponent", () => {
       .mockResolvedValueOnce({ error: "Failed to apply compliance units" });
 
     await setupValidAccountAndSubmit();
-
-    // Wait for quantity inputs to be available
-    await waitFor(() => {
-      expect(
-        screen.getAllByLabelText("quantity_to_be_applied").length,
-      ).toBeGreaterThan(0);
-    });
 
     // Select some units
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
@@ -788,7 +767,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.click(cancelButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/manage-obligation-review-summary`,
+      `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/review-compliance-obligation-report`,
     );
   });
 
@@ -895,11 +874,6 @@ describe("ApplyComplianceUnitsComponent", () => {
     await setupValidAccountAndSubmit();
 
     // Update quantities for both units
-    await waitFor(() => {
-      expect(
-        screen.getAllByLabelText("quantity_to_be_applied").length,
-      ).toBeGreaterThan(1);
-    });
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");
     fireEvent.change(quantityInputs[0], { target: { value: "50" } });
     fireEvent.change(quantityInputs[1], { target: { value: "25" } });
@@ -921,13 +895,6 @@ describe("ApplyComplianceUnitsComponent", () => {
 
   it("prevents applying more units than available quantity", async () => {
     await setupValidAccountAndSubmit();
-
-    // Wait for quantity inputs to be available
-    await waitFor(() => {
-      expect(
-        screen.getAllByLabelText("quantity_to_be_applied").length,
-      ).toBeGreaterThan(0);
-    });
 
     // Try to enter more than available (1000 is max for first unit)
     const quantityInputs = screen.getAllByLabelText("quantity_to_be_applied");

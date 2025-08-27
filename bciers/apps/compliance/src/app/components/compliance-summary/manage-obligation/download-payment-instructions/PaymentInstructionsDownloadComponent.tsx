@@ -28,7 +28,7 @@ export default function PaymentInstructionsDownloadComponent({
 }: Props) {
   const backUrl =
     customBackUrl ??
-    `/compliance-summaries/${complianceReportVersionId}/manage-obligation-review-summary`;
+    `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
   const saveAndContinueUrl =
     customContinueUrl ??
     `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;

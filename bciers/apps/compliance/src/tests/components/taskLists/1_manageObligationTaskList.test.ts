@@ -37,8 +37,8 @@ describe("generateManageObligationTaskList", () => {
     // Check Review Summary task
     expect(taskItems?.[0]).toEqual({
       type: "Page",
-      title: "Review 2024 Compliance Summary",
-      link: "/compliance-summaries/123/manage-obligation-review-summary",
+      title: "Review 2024 Compliance Obligation Report",
+      link: "/compliance-summaries/123/review-compliance-obligation-report",
       isActive: true, // Default activeIndex is 0
     });
 
@@ -72,8 +72,8 @@ describe("generateManageObligationTaskList", () => {
     // Check Review Summary with Apply Units subsection
     expect(taskItems?.[0]).toEqual({
       type: "Subsection",
-      title: "Review 2024 Compliance Summary",
-      link: "/compliance-summaries/123/manage-obligation-review-summary",
+      title: "Review 2024 Compliance Obligation Report",
+      link: "/compliance-summaries/123/review-compliance-obligation-report",
       isExpanded: true,
       elements: [
         {

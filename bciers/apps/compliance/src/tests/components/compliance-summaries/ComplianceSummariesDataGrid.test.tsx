@@ -154,7 +154,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       within(firstRow!).getByRole("link", { name: "Manage Obligation" }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/1/manage-obligation-review-summary",
+      "/compliance-summaries/1/review-compliance-obligation-report",
     );
 
     // Check second row - No obligation or earned credits (Operation 2)

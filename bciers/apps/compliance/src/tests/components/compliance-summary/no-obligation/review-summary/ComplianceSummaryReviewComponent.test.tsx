@@ -9,6 +9,18 @@ useRouter.mockReturnValue({
   push: mockRouterPush,
 });
 
+// Mock breadcrumb hook
+vi.mock("@bciers/components", async () => {
+  const actual =
+    await vi.importActual<typeof import("@bciers/components")>(
+      "@bciers/components",
+    );
+  return {
+    ...actual,
+    useBreadcrumb: () => ({ lastTitle: null, setLastTitle: vi.fn() }),
+  };
+});
+
 const mockData = {
   reporting_year: 2024,
   excess_emissions: 0,
@@ -27,7 +39,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     render(<ComplianceSummaryReviewComponent data={mockData} />);
 
     // Check form title
-    expect(screen.getByText("Review 2024 Compliance Summary")).toBeVisible();
+    expect(screen.getByText("Review 2024 Compliance Report")).toBeVisible();
 
     // Check Summary section
     expect(screen.getByText("From 2024 Report")).toBeVisible();
