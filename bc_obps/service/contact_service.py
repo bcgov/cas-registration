@@ -4,6 +4,7 @@ from uuid import UUID
 from common.exceptions import UserError
 from registration.constants import UNAUTHORIZED_MESSAGE
 from registration.models.contact import Contact
+from registration.models.user import User
 from registration.schema import (
     ContactFilterSchema,
     ContactWithPlacesAssigned,
@@ -30,6 +31,12 @@ class ContactService:
         if user.is_industry_user() and not contact:
             raise Exception(UNAUTHORIZED_MESSAGE)
         return contact
+    
+    @classmethod
+    def get_contact_id_for_user(cls, user_guid: UUID) -> Optional[int]:
+        user = UserDataAccessService.get_by_guid(user_guid)
+        contact = ContactDataAccessService.get_contact_for_user(user)
+        return contact.id if contact else None
 
     @classmethod
     def list_contacts(
