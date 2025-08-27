@@ -1,3 +1,25 @@
+## [3.17.1](https://github.com/bcgov/cas-registration/compare/v3.16.0...v3.17.1) (2025-08-27)
+
+### Bug Fixes
+
+- jinja template in dag can't directly use python var ([4af5950](https://github.com/bcgov/cas-registration/commit/4af59502261186df45e8407306db58ae65e65678))
+- put api back into the middleware matcher ([18e19d7](https://github.com/bcgov/cas-registration/commit/18e19d7334d337a76f335f52738167ddc190ba9a))
+- removing activities from operations doesn't remove them from facility reports ([1706799](https://github.com/bcgov/cas-registration/commit/17067991568090e0bc971aa18d892118ea95ec64))
+- selected activities without emissions reports get deselected when creating a supplementary report ([86523df](https://github.com/bcgov/cas-registration/commit/86523df4e594dd52dec16e527280575a51bdfe70))
+- timezone issue in task scheduler ([a2c37e4](https://github.com/bcgov/cas-registration/commit/a2c37e4cc7fe0e29311a47c76d3041be78ca7ff5))
+- update outstanding balance calculation to support four decimal digits ([e7da6ee](https://github.com/bcgov/cas-registration/commit/e7da6ee23d4984b7756f37cd42a7fbaed685253b))
+
+### Features
+
+- implement automated process for refreshing obligation invoices and handling compliance updates ([469e00f](https://github.com/bcgov/cas-registration/commit/469e00f559062f920e0e0c92e0d8a4407ebbcc9f))
+- implement dynamic breadcrumb titles with BreadcrumbContext provider ([2d6a490](https://github.com/bcgov/cas-registration/commit/2d6a490420b57807e8399ab39cf868574ca768a8))
+- implement dynamic breadcrumb titles with BreadcrumbContext provider ([c788ac0](https://github.com/bcgov/cas-registration/commit/c788ac0c72011440f8eefdb394fb000a9f85c966))
+- refresh all obligation invoices daily ([170dd47](https://github.com/bcgov/cas-registration/commit/170dd471b2c496c4a136ee4f69010fdbad93930c))
+
+### Reverts
+
+- Revert "feat: implement dynamic breadcrumb titles with BreadcrumbContext provider" ([ff3e864](https://github.com/bcgov/cas-registration/commit/ff3e864e6ba36baf8d7eae758f967f4e11412bed))
+
 # [3.16.0](https://github.com/bcgov/cas-registration/compare/v3.15.0...v3.16.0) (2025-08-19)
 
 ### Bug Fixes
