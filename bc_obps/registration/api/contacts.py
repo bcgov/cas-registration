@@ -33,8 +33,9 @@ def list_contacts(
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return ContactService.list_contacts(get_current_user_guid(request), sort_field, sort_order, filters)
 
+
 @router.get(
-    "/contact",
+    "/contact/",
     response={200: int, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves the contact ID for the corresponding external user.""",
@@ -42,8 +43,8 @@ def list_contacts(
 )
 def get_contact_id_for_current_user(request: HttpRequest) -> int | None:
     user_guid = get_current_user_guid(request)
-    contact = ContactService.get_contact_id_for_user(user_guid)
-    return contact.id if contact else None
+    contact_id = ContactService.get_contact_id_for_user(user_guid)
+    return contact_id if contact_id else None
 
 
 #### POST #####
