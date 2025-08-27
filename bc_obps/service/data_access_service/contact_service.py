@@ -48,3 +48,19 @@ class ContactDataAccessService:
             # fetching all contacts associated with the user's operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
             return Contact.objects.filter(operator=user_operator.operator)
+        
+    @classmethod
+    def get_contact_for_user(cls, user: User) -> QuerySet[Contact]:
+        if user.is_industry_user():
+            user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
+            breakpoint()
+            # first try querying by email address - return result if there is one
+            query_by_email = Contact.objects.filter(operator=user_operator.operator, email=user.email)
+            if query_by_email.count() == 1:
+                return query_by_email
+            # if we can't get the contact by the user's email, query by name
+            query_by_name = Contact.objects.filter(operator=user_operator.operator, first_name=user.first_name, last_name=user.last_name)
+            if query_by_name.count() == 1:
+                return query_by_name
+            # if neither of these are successful, return an empty queryset
+            return Contact.objects.none()

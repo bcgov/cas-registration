@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
@@ -32,29 +32,6 @@ export const userSchema: RJSFSchema = {
   },
 };
 
-const emailHelpText = (
-  <>
-    <div>
-      This email is used to log in. To change your login email, contact{" "}
-      <a href="mailto:ghgregulator@gov.bc.ca">ghgregulator@gov.bc.ca</a>
-    </div>
-    <div>
-      To change the email you are contacted with, edit the email in your{" "}
-      <a href="">contact details page</a>.
-    </div>
-  </>
-);
-
-export const userUiSchema = {
-  "ui:FieldTemplate": FieldTemplate,
-  phone_number: {
-    "ui:widget": "PhoneWidget",
-  },
-  email: {
-    "ui:help": emailHelpText,
-  },
-};
-
 // 📐 Interface: expected properties and their types for UserForm component
 
 interface Props {
@@ -70,6 +47,75 @@ export default function ProfileForm({ formData, isCreate }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const [emailHelpText, setEmailHelpText] = useState<JSX.Element | null>(null);
+
+  const emailHelpTextFirstClause = (
+    <div>
+      This email is used to log in. To change your login email, contact{" "}
+      <a href="mailto:ghgregulator@gov.bc.ca">ghgregulator@gov.bc.ca</a>
+    </div>
+  );
+
+  useEffect(() => {
+    const fetchHelpText = async () => {
+      // Create help text for email address field depending on several conditions:
+      // 1. if the user is internal, no help text is required
+      // 2. if it's an external user and their profile is just being created, there is no contact for them and they shouldn't be able
+      // to navigate away from the Profile page
+      // 3. if it's an external user who already has a contact record for themselves, then they should also see the link to their contact details page
+      const session = await getSession();
+      const idp = session?.identity_provider || "";
+      const businessGuid = session?.user?.bceid_business_guid;
+
+      // if the user is internal, no help text is required
+      if (idp === "idir") {
+        setEmailHelpText(null);
+        return;
+      }
+
+      // if the user is external but being created, there's no contact record for them, so
+      // the help text message is simplified
+      if (isCreate) {
+        setEmailHelpText(emailHelpTextFirstClause);
+        return;
+      }
+
+      // if the user is external and a contact record already exists for them, the
+      // help text message is more detailed
+      if (businessGuid) {
+        try {
+          const response = await actionHandler(
+            `registration/contact/`,
+            "GET",
+            "/profile",
+          );
+
+          if (response?.contactId) {
+            setEmailHelpText(
+              <>
+                {emailHelpTextFirstClause}
+                <div>
+                  To change the email you are contacted with, edit the email in
+                  your{" "}
+                  <a href={`/contacts/${response.contactId}`}>
+                    contact details page
+                  </a>
+                  .
+                </div>
+              </>,
+            );
+          } else {
+            // fallback if no contact found
+            setEmailHelpText(emailHelpTextFirstClause);
+          }
+        } catch (e) {
+          setEmailHelpText(emailHelpTextFirstClause);
+        }
+      }
+    };
+    fetchHelpText();
+  }, [isCreate]);
 
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
@@ -90,6 +136,16 @@ export default function ProfileForm({ formData, isCreate }: Props) {
       // 🛸 Redirect: after the update is complete, navigate to the dashboard
       window.location.href = "/dashboard";
     }
+  };
+
+  const userUiSchema = {
+    "ui:FieldTemplate": FieldTemplate,
+    phone_number: {
+      "ui:widget": "PhoneWidget",
+    },
+    email: {
+      "ui:help": emailHelpText,
+    },
   };
 
   // 🛠️ Function to submit user form data to API
