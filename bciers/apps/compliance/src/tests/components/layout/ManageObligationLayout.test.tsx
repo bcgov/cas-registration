@@ -50,7 +50,7 @@ describe("ManageObligationLayout + ElicensingStaleDataAlert", () => {
   it("hides the alert on excluded leaf (ex: download-payment-instructions)", async () => {
     // Even if backend says stale, excluded leaf should hide alert
     mockGetMeta.mockResolvedValue({
-      last_refreshed_display: "2025-08-25 17:44:08",
+      last_refreshed_display: "Aug 27, 2025 6:48 a.m. PDT",
       data_is_fresh: false,
     });
 
@@ -73,7 +73,7 @@ describe("ManageObligationLayout + ElicensingStaleDataAlert", () => {
 
   it("shows the alert when data is stale on a non-excluded leaf", async () => {
     mockGetMeta.mockResolvedValue({
-      last_refreshed_display: "2025-08-25 17:44:08",
+      last_refreshed_display: "Aug 27, 2025 6:48 a.m. PDT",
       data_is_fresh: false,
     });
 
@@ -93,14 +93,14 @@ describe("ManageObligationLayout + ElicensingStaleDataAlert", () => {
       "Invoice data last updated",
     );
     expect(screen.getByTestId("alertnote")).toHaveTextContent(
-      "2025-08-25 17:44:08",
+      "Aug 27, 2025 6:48 a.m. PDT",
     );
     expect(screen.getByTestId("child")).toBeInTheDocument();
   });
 
   it("does not show the alert when data is fresh on a non-excluded leaf", async () => {
     mockGetMeta.mockResolvedValue({
-      last_refreshed_display: "2025-08-25 17:44:08",
+      last_refreshed_display: "Aug 27, 2025 6:48 a.m. PDT",
       data_is_fresh: true,
     });
 

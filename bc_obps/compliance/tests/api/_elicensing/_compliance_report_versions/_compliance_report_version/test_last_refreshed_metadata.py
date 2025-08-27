@@ -35,7 +35,7 @@ class TestGetLastRefreshedMetadataEndpoint(SimpleTestCase):
         mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=None)
         payload = {
             "data_is_fresh": True,
-            "last_refreshed_display": "2025-08-25 19:37:03 UTC",
+            "last_refreshed_display": "Aug 27, 2025 6:48 a.m. PDT",
         }
         mock_refresh_data_metadata.return_value = payload
 

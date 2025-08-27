@@ -12,6 +12,7 @@ from django.utils import timezone
 from datetime import timedelta
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.dataclass import RefreshWrapperReturn
+from common.utils import format_timestamp_en_ca
 
 
 pytestmark = pytest.mark.django_db
@@ -210,7 +211,7 @@ class TestElicensingOperatorService:
 
         # Assert
         assert metadata["data_is_fresh"] is True
-        assert metadata["last_refreshed_display"] == invoice.last_refreshed.strftime("%Y-%m-%d %H:%M:%S %Z")
+        assert metadata["last_refreshed_display"] == format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
 
     def test_wrapper_last_refreshed_metadata_stale(mock_refresh_wrapper):
         # Arrange
@@ -224,7 +225,7 @@ class TestElicensingOperatorService:
 
         # Assert
         assert metadata["data_is_fresh"] is False
-        assert metadata["last_refreshed_display"] == invoice.last_refreshed.strftime("%Y-%m-%d %H:%M:%S %Z")
+        assert metadata["last_refreshed_display"] == format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
 
     def test_wrapper_last_refreshed_metadata_defaults(mock_refresh_wrapper):
         # Mocked wrapper result

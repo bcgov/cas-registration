@@ -18,6 +18,8 @@ import logging
 from pydantic import ValidationError
 from django.utils import timezone
 
+from common.utils import format_timestamp_en_ca
+
 logger = logging.getLogger(__name__)
 
 elicensing_api_client = ELicensingAPIClient()
@@ -174,7 +176,6 @@ class ElicensingDataRefreshService:
     def get_last_refreshed_metadata(
         refresh_result: RefreshWrapperReturn,
         *,
-        fmt: str = "%Y-%m-%d %H:%M:%S %Z",
         default_fresh: bool = False,
     ) -> LastRefreshMetaData:
 
@@ -188,13 +189,13 @@ class ElicensingDataRefreshService:
         last_refreshed = getattr(invoice, "last_refreshed", None)
 
         if last_refreshed:
-            last_refreshed_str = last_refreshed.strftime(fmt)
+            last_refreshed_display = format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
         else:
-            last_refreshed_str = ""
+            last_refreshed_display = ""
 
         data_is_fresh = getattr(refresh_result, "data_is_fresh", default_fresh)
 
         return {
-            "last_refreshed_display": last_refreshed_str,
+            "last_refreshed_display": last_refreshed_display,
             "data_is_fresh": bool(data_is_fresh),
         }

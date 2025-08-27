@@ -1,4 +1,3 @@
-from ninja.types import DictStrAny
 from compliance.api.router import router
 from typing import Literal, Tuple
 from django.http import HttpRequest
@@ -14,19 +13,15 @@ from compliance.schema.elicensing_invoice import ElicensingLastRefreshOut
     "/elicensing/compliance-report-versions/{compliance_report_version_id}/last-refreshed-metadata",
     response={200: ElicensingLastRefreshOut, custom_codes_4xx: Message},
     tags=COMPLIANCE,
-    description="""Returns E-licensing sync metadata: `last_refreshed_date` (ISO-8601 | null) — timestamp of the most recent successful sync, and `data_is_fresh` (boolean) — whether that sync is within the configured freshness window.""",
+    description="""Returns E-licensing sync metadata: last_refreshed_date (ISO-8601 | null) — timestamp of the most recent successful sync, and data_is_fresh (boolean) — whether that sync is within the configured freshness window.""",
     auth=approved_industry_user_compliance_report_version_composite_auth,
 )
 def get_last_refreshed_metadata(
     request: HttpRequest, compliance_report_version_id: int
-) -> Tuple[Literal[200], DictStrAny]:
-
-    # Get the refresh_data_wrapper result
+) -> Tuple[Literal[200], ElicensingLastRefreshOut]:
     refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
         compliance_report_version_id=compliance_report_version_id
     )
+    metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(refresh_result)
 
-    # Build the refresh data metadata payload
-    refresh_result_metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(refresh_result)
-
-    return 200, refresh_result_metadata
+    return 200, ElicensingLastRefreshOut(**metadata)

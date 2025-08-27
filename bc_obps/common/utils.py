@@ -4,6 +4,46 @@ from django.apps import apps
 from django.core.management import call_command
 from decimal import Decimal
 
+from datetime import datetime, timezone as dt_timezone
+from zoneinfo import ZoneInfo
+from django.utils import timezone as dj_timezone
+
+
+def format_timestamp_en_ca(
+    dt: Optional[datetime],
+    tz: str = "America/Vancouver",
+) -> str:
+    """
+    Mirror FE format:
+      'Aug 27, 2025\\n6:39 a.m. PDT'
+    - Converts to the given IANA timezone (default: America/Vancouver)
+    - Uses 'en-CA' style month/day/year and 'a.m./p.m.' casing
+    - Returns '' if dt is falsy
+    """
+    if not dt:
+        return ""
+
+    # Ensure aware; assume UTC if naive
+    if dj_timezone.is_naive(dt):
+        dt = dj_timezone.make_aware(dt, timezone=dt_timezone.utc)  # <- use datetime's UTC
+
+    local_dt = dj_timezone.localtime(dt, ZoneInfo(tz))
+
+    # Date: 'Aug 27, 2025'
+    month = local_dt.strftime("%b")  # 'Aug'
+    day = local_dt.day  # 27 (no leading zero)
+    year = local_dt.year  # 2025
+    date_part = f"{month} {day}, {year}"
+
+    # Time: '6:39 a.m. PDT' (avoid %-I/%#I portability issues)
+    hour_12 = local_dt.hour % 12 or 12
+    minute = local_dt.strftime("%M")
+    ampm = "a.m." if local_dt.hour < 12 else "p.m."
+    tz_abbr = local_dt.strftime("%Z")
+    time_part = f"{hour_12}:{minute} {ampm} {tz_abbr}"
+
+    return f"{date_part}\n{time_part}"
+
 
 def get_fixture_files() -> List[str]:
     """Return list of fixture files based on environment."""
