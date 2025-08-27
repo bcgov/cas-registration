@@ -70,41 +70,46 @@ class Command(BaseCommand):
 
             for operation_id in operation_ids_to_submit:
                 # set up required data for submission
-                report_version = ReportVersion.objects.get(report__operation_id=operation_id)
-                ReportVerificationService.save_report_verification(
-                    report_version.id,
-                    ReportVerificationIn(
-                        verification_conclusion='conclude',
-                    ),
-                )
-                ReportAttachmentService.set_attachment(
-                    report_version.id,
-                    'ba2ba62a-1218-42e0-942a-ab9e92ce8822',
-                    "verification_statement",
-                    ContentFile(b"data1", "file1.pdf"),
-                )
-                verification_statement = ReportAttachmentService.get_attachments(report_version.id).first()
-                verification_statement.status = 'Clean'
-                verification_statement.save()
+                # multiple report versions to submit if there are multiple years
+                report_versions = ReportVersion.objects.filter(report__operation_id=operation_id)
 
-                # submit!
-                ReportSubmissionService.submit_report(
-                    report_version.id,
-                    UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'),
-                    ReportSignOffData(
-                        ReportSignOffAcknowledgements(
-                            acknowledgement_of_records=True,
-                            acknowledgement_of_review=True,
-                            acknowledgement_of_certification=True,
-                            acknowledgement_of_information=True,
-                            acknowledgement_of_possible_costs=True,
-                            acknowledgement_of_new_version=True,
-                            acknowledgement_of_corrections=True,
-                            acknowledgement_of_errors=True,
+                for report_version in report_versions:
+
+                    ReportVerificationService.save_report_verification(
+                        report_version.id,
+                        ReportVerificationIn(
+                            verification_conclusion='conclude',
                         ),
-                        signature='me',
-                    ),
-                )
+                    )
+                    ReportAttachmentService.set_attachment(
+                        report_version.id,
+                        'ba2ba62a-1218-42e0-942a-ab9e92ce8822',
+                        "verification_statement",
+                        ContentFile(b"data1", "file1.pdf"),
+                    )
+                    verification_statement = ReportAttachmentService.get_attachments(report_version.id).first()
+                    verification_statement.status = 'Clean'
+                    verification_statement.save()
+
+                    # submit!
+                    ReportSubmissionService.submit_report(
+                        report_version.id,
+                        UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'),
+                        ReportSignOffData(
+                            ReportSignOffAcknowledgements(
+                                acknowledgement_of_records=True,
+                                acknowledgement_of_review=True,
+                                acknowledgement_of_certification=True,
+                                acknowledgement_of_information=True,
+                                acknowledgement_of_possible_costs=True,
+                                acknowledgement_of_new_version=True,
+                                acknowledgement_of_corrections=True,
+                                acknowledgement_of_errors=True,
+                            ),
+                            signature='me',
+                        ),
+                    )
 
             # create supplmentary report
-            ReportVersionService.create_report_version(Report.objects.get(operation_id=operation_ids_to_submit[0]))
+            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+                ReportVersionService.create_report_version(report)
