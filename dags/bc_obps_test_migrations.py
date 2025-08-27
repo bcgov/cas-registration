@@ -24,10 +24,9 @@ test_migrations_dag = DAG(
         "destination_namespace": "abc123-test",
         "source_namespace": "abc123-prod",
         "backend_chart_tag": "latest",
+        "helm_options": "--atomic --wait-for-jobs --timeout 2400s",
     },
 )
-
-HELM_OPTIONS = "--atomic --wait-for-jobs --timeout 2400s"
 
 # Postgres operator chart
 POSTGRES_CHART_INSTANCE = os.getenv("POSTGRES_CHART_INSTANCE", "postgres-migration-test")
@@ -51,7 +50,7 @@ postgres_helm_install = KubernetesJobOperator(
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
         "helm repo update && "
-        "helm install {{ HELM_OPTIONS }} "
+        "helm install {{ params.helm_options }} "
         "--namespace {{ params.destination_namespace }} "
         "--set sourceNamespace={{ params.source_namespace }} "
         "{{ params.postgres_chart_instance | default('postgres-migration-test') }} "
@@ -95,7 +94,7 @@ backend_helm_install = KubernetesJobOperator(
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
         "helm repo update && "
-        "helm install {{ HELM_OPTIONS }} "
+        "helm install {{ params.helm_options }} "
         "--namespace {{ params.destination_namespace }} "
         "--set sourceNamespace={{ params.source_namespace }} "
         "{{ params.backend_chart_instance | default('backend-migration-test') }} "
