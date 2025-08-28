@@ -15,6 +15,7 @@ from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
     ReportingDashboardOperationOut,
     ReportingDashboardReportOut,
+    ReportsPeriod,
 )
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -61,14 +62,14 @@ def get_dashboard_reports_list(
     sort_field: Optional[str] = "reporting_year",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
-    get_past_reports: Optional[bool] = Query(None),
+    reports_period: ReportsPeriod = ReportsPeriod.ALL,
 ) -> QuerySet[Report]:
     user_guid: UUID = get_current_user_guid(request)
     reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
     return ReportingDashboardService.get_reports_for_reporting_dashboard(
         user_guid,
         reporting_year,
-        get_past_reports=get_past_reports,
+        reports_period=reports_period,
         sort_field=sort_field,
         sort_order=sort_order,
         filters=filters,
