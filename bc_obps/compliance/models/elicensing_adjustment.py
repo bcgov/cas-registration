@@ -10,6 +10,10 @@ class ElicensingAdjustment(TimeStampedModel):
     Adjustment data synced with elicensing.
     """
 
+    class Reason(models.TextChoices):
+        SUPPLEMENTARY_REPORT_ADJUSTMENT = 'Supplementary Report Adjustment'
+        COMPLIANCE_UNITS_APPLIED = 'Compliance Units Applied'
+
     adjustment_object_id = models.IntegerField(
         db_comment="The object id of the adjustment in elicensing (adjustmentObjectId)"
     )
@@ -38,7 +42,9 @@ class ElicensingAdjustment(TimeStampedModel):
 
     adjustment_date = models.DateTimeField(db_comment="date of the adjustment in elicensing", null=True, blank=True)
 
-    reason = models.CharField(db_comment="Reason for adjustment in elicesning", null=True, blank=True)
+    reason = models.CharField(
+        db_comment="Reason for adjustment in elicesning", choices=Reason.choices, null=True, blank=True
+    )
 
     type = models.CharField(db_comment="Type of adjustment in elicesning", null=True, blank=True)
 

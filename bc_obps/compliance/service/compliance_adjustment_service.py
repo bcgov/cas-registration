@@ -1,6 +1,7 @@
 import uuid
 import logging
 from decimal import Decimal
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from django.utils import timezone
 from compliance.models.elicensing_client_operator import ElicensingClientOperator
 from compliance.models.elicensing_line_item import ElicensingLineItem
@@ -96,9 +97,9 @@ class ComplianceAdjustmentService:
 
         # Determine the reason based on whether this is a supplementary report adjustment
         reason = (
-            "Supplementary Report Adjustment"
+            ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
             if supplementary_compliance_report_version_id
-            else "Compliance Units Applied"
+            else ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED
         )
 
         adjustment_data = [
