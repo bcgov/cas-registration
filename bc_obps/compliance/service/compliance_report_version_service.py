@@ -229,3 +229,13 @@ class ComplianceReportVersionService:
             'compliance_report__compliance_period',
             'compliance_earned_credit',
         )
+
+    @staticmethod
+    def get_previous_compliance_version(
+        compliance_report: ComplianceReport, previous_summary: ReportComplianceSummary
+    ) -> ComplianceReportVersion:
+        """Get the previous compliance report version."""
+        return ComplianceReportVersion.objects.get(
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
+        )
