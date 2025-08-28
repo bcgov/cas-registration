@@ -58,4 +58,5 @@ class Command(BaseCommand):
         elif environment == 'test':
             call_command("pgtrigger", "disable", "--schema", "erc")
             call_command('load_test_data')
+            call_command('load_reporting_test_data')
             call_command("pgtrigger", "enable", "--schema", "erc")
