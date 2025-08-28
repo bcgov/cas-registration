@@ -28,8 +28,6 @@ const AdditionalReportingData: React.FC<AdditionalReportingDataProps> = ({
   changes,
 }) => {
   if (!changes || changes.length === 0) return null;
-  console.log("Rendering AdditionalReportingData with changes:", changes);
-
   return (
     <Box mb={4}>
       <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
