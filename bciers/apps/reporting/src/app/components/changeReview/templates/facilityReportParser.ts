@@ -290,7 +290,7 @@ export function detectSourceTypeChanges(
   for (const sourceType of allSourceTypes) {
     if (!(sourceType in oldSourceTypes)) {
       changes.push({
-        fields: "",
+        fields: change.field,
         facilityName,
         activityName,
         sourceTypeName: sourceType,
@@ -299,7 +299,7 @@ export function detectSourceTypeChanges(
       });
     } else if (!(sourceType in newSourceTypes)) {
       changes.push({
-        fields: "",
+        fields: change.field,
         facilityName,
         activityName,
         sourceTypeName: sourceType,
@@ -311,7 +311,7 @@ export function detectSourceTypeChanges(
       JSON.stringify(newSourceTypes[sourceType])
     ) {
       changes.push({
-        fields: "",
+        fields: change.field,
         facilityName,
         activityName,
         sourceTypeName: sourceType,

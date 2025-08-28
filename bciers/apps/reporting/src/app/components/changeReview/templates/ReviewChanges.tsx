@@ -17,8 +17,8 @@ import {
 import OperationEmissionSummary from "./OperationEmissionSummary";
 import ElectricityImportData from "./ElectricityImportData";
 import NewEntrantChanges from "./NewEntrantChanges";
-import ComplianceSummary from "@reporting/src/app/components/changeReview/templates/ ComplianceSummary";
 import AdditionalReportingData from "@reporting/src/app/components/changeReview/templates/AdditionalReportingData";
+import ComplianceSummary from "@reporting/src/app/components/changeReview/templates/ComplianceSummary";
 
 export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
   // Normalize keys for all changes at the root level

@@ -29,10 +29,8 @@ vi.mock(
 vi.mock(
   "@reporting/src/app/components/changeReview/templates/ComplianceSummary",
   () => ({
-    default: ({ changes }: any) => (
-      <div data-testid="compliance-summary">
-        Compliance changes: {changes.length}
-      </div>
+    default: () => (
+      <div data-testid="compliance-summary">Compliance Summary</div>
     ),
   }),
 );
@@ -122,7 +120,7 @@ describe("ReviewChanges", () => {
       field: "root['report_compliance_summary']['compliance_field']",
       oldValue: "old_compliance",
       newValue: "new_compliance",
-      facilityName: "", // required, even if empty
+      facilityName: "",
       change_type: "modified",
       deletedActivities: [],
     },
@@ -138,7 +136,7 @@ describe("ReviewChanges", () => {
       field: "root['report_electricity_import_data']['electricity_field']",
       oldValue: "old_electricity",
       newValue: "new_electricity",
-      facilityName: "", // required
+      facilityName: "",
       change_type: "modified",
       deletedActivities: [],
     },
@@ -146,7 +144,7 @@ describe("ReviewChanges", () => {
       field: "root['report_new_entrant']['new_entrant_field']",
       oldValue: "old_entrant",
       newValue: "new_entrant",
-      facilityName: "", // required
+      facilityName: "",
       change_type: "modified",
       deletedActivities: [],
     },
@@ -154,7 +152,7 @@ describe("ReviewChanges", () => {
       field: "root['operation_emission_summary']['emission_field']",
       oldValue: "old_emission",
       newValue: "new_emission",
-      facilityName: "", // required
+      facilityName: "",
       change_type: "modified",
       deletedActivities: [],
     },
@@ -162,7 +160,7 @@ describe("ReviewChanges", () => {
       field: "root['person_responsible']['name']",
       oldValue: "old_name",
       newValue: "new_name",
-      facilityName: "", // required
+      facilityName: "",
       change_type: "modified",
       deletedActivities: [],
     },
@@ -177,13 +175,8 @@ describe("ReviewChanges", () => {
       screen.getByTestId("change-item-root['person_responsible']['name']"),
     ).toBeInTheDocument();
 
-    // Check Compliance Summary section (rendered as regular section, not component)
+    // Check Compliance Summary section (rendered as specialized component)
     expect(screen.getByText("Compliance Summary")).toBeInTheDocument();
-    expect(
-      screen.getByTestId(
-        "change-item-root['report_compliance_summary']['compliance_field']",
-      ),
-    ).toBeInTheDocument();
 
     // Check specialized component sections
     expect(

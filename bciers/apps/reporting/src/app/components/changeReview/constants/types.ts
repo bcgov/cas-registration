@@ -111,11 +111,3 @@ export interface ActivityRendererProps {
   activity: Activity;
   sourceTypeChangesForActivity: SourceTypeChange[];
 }
-
-export interface FieldChange {
-  field?: string;
-  oldValue: any;
-  newValue: any;
-  isNewAddition?: boolean;
-  isDeleted?: boolean;
-}

@@ -150,7 +150,6 @@ class ReportReviewChangesService:
                 r"root\['id'\]",
             ],
         )
-        print('differences', differences)
 
         changed: List[Dict[str, Any]] = []
 
@@ -180,7 +179,6 @@ class ReportReviewChangesService:
             return (None, None, None)
 
         for change_type, changes_dict in differences.items():
-            print('change_type', change_type, changes_dict)
             # DeepDiff returns a dict for most change types, but for some (like iterable_item_added/removed),
             # it returns a list of paths. This line ensures we can iterate over both dict and list results.
             items = changes_dict.items() if isinstance(changes_dict, dict) else [(path, None) for path in changes_dict]
