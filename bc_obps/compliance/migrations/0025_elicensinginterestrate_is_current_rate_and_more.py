@@ -9,7 +9,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0023_compliancepenalty_fee_date'),
+        ('compliance', '0024_alter_elicensingadjustment_reason'),
     ]
 
     operations = [
