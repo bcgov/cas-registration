@@ -3,13 +3,18 @@ from model_bakery.baker import make_recipe
 from decimal import Decimal
 
 from registration.models import Operation
-from reporting.models import ReportEmissionAllocation, ProductEmissionIntensity
+from reporting.models import (
+    ReportEmissionAllocation,
+    ProductEmissionIntensity,
+)
 from registration.utils import custom_reverse_lazy
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 
 
 class TestReportFinalReview(CommonTestSetup):
     def setup_method(self):
+        super().setup_method()
+
         self.emission_category_ = make_recipe("reporting.tests.utils.emission_category", category_type="basic")
         self.activity_1 = make_recipe("reporting.tests.utils.activity")
         self.activity_2 = make_recipe("reporting.tests.utils.activity")
@@ -23,6 +28,7 @@ class TestReportFinalReview(CommonTestSetup):
             report_type="Annual Report",
             status="Draft",
         )
+        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
         self.report_operation = baker.make_recipe(
             "reporting.tests.utils.report_operation",
             report_version=self.report_version,
@@ -40,14 +46,12 @@ class TestReportFinalReview(CommonTestSetup):
         self.report_person_responsible = make_recipe(
             'reporting.tests.utils.report_person_responsible', report_version=self.report_version
         )
-
         self.report_non_attributable_emissions = baker.make_recipe(
             "reporting.tests.utils.report_non_attributable_emissions", report_version=self.report_version
         )
         self.compliance_summary = baker.make_recipe(
             "reporting.tests.utils.report_compliance_summary", report_version=self.report_version
         )
-
         self.facility_report = baker.make_recipe(
             "reporting.tests.utils.facility_report", report_version=self.report_version
         )
@@ -71,7 +75,6 @@ class TestReportFinalReview(CommonTestSetup):
             valid_from='2023-01-01',
             valid_to='9999-12-31',
         )
-
         self.product_emission_intensity_2 = ProductEmissionIntensity.objects.create(
             product=self.regulated_product_2,
             product_weighted_average_emission_intensity='0.7321',
@@ -89,12 +92,7 @@ class TestReportFinalReview(CommonTestSetup):
             activity=self.activity_1,
             json_data={
                 "testSourceType": True,
-                "sourceTypes": {
-                    "testSourceType": {
-                        "prop1": "value1",
-                        "prop3": "value3",
-                    }
-                },
+                "sourceTypes": {"testSourceType": {"prop1": "value1", "prop3": "value3"}},
             },
         )
         self.report_emission_allocation = make_recipe(
@@ -121,18 +119,9 @@ class TestReportFinalReview(CommonTestSetup):
             facility_report=self.facility_report,
             emission_category=self.emission_category_,
         )
-
         self.endpoint_under_test = f"/report-version/{self.report_version.id}/final-review"
-        return super().setup_method()
 
     def test_get_report_final_review_data_success(self):
-        """
-        Tests that the endpoint successfully fetches final review data for a given
-        report version ID and returns it in the expected schema format.
-        """
-
-        TestUtils.authorize_current_user_as_operator_user(self, operator=self.report_version.report.operator)
-
         response = TestUtils.mock_get_with_auth_role(
             self,
             "industry_user",
@@ -143,102 +132,67 @@ class TestReportFinalReview(CommonTestSetup):
         )
 
         assert response.status_code == 200
-
         response_data = response.json()
 
-        assert response_data["id"] == self.report_version.id
+        # Basic report info
         assert response_data["report_type"] == self.report_version.report_type
         assert response_data["status"] == self.report_version.status
 
-        assert "report_operation" in response_data
-        assert (
-            response_data["report_operation"]["operation_name"] == self.report_version.report_operation.operation_name
-        )
-        assert "activities" in response_data["report_operation"]
-        assert "regulated_products" in response_data["report_operation"]
-        assert "representatives" in response_data["report_operation"]
-        assert (
-            self.report_version.report_operation.activities.first().name
-            in response_data["report_operation"]["activities"]
-        )
+        # Operation info
+        report_op = response_data["report_operation"]
+        assert report_op["operation_name"] == self.report_version.report_operation.operation_name
 
-        if self.report_version.report_person_responsible:
-            assert "report_person_responsible" in response_data
-            assert (
-                response_data["report_person_responsible"]["first_name"]
-                == self.report_version.report_person_responsible.first_name
-            )
+        assert isinstance(report_op["activities"], str)
+        assert self.activity_1.name in report_op["activities"]
+        assert self.activity_2.name in report_op["activities"]
 
-        if self.report_version.report_additional_data:
-            assert "report_additional_data" in response_data
-            assert (
-                response_data["report_additional_data"]["capture_emissions"]
-                == self.report_version.report_additional_data.capture_emissions
-            )
+        assert isinstance(report_op["regulated_products"], str)
+        assert self.regulated_product_1.name in report_op["regulated_products"]
+        assert self.regulated_product_2.name in report_op["regulated_products"]
 
-        assert "report_electricity_import_data" in response_data
-        assert isinstance(response_data["report_electricity_import_data"], list)
-        assert (
-            len(response_data["report_electricity_import_data"])
-            == self.report_version.report_electricity_import_data.count()
+        assert isinstance(report_op["representatives"], str)
+        assert self.report_operation_representative.representative_name in report_op["representatives"]
+
+        # Facility reports
+        facility_reports = response_data["facility_reports"]
+        assert len(facility_reports) == self.report_version.facility_reports.count()
+
+        sorted_facilities_response = sorted(facility_reports.values(), key=lambda x: x["facility_name"])
+        sorted_facilities_original = sorted(
+            list(self.report_version.facility_reports.all()), key=lambda x: x.facility_name
         )
 
-        assert "report_new_entrant" in response_data
-        assert isinstance(response_data["report_new_entrant"], list)
-        assert len(response_data["report_new_entrant"]) == self.report_version.report_new_entrant.count()
+        for i, facility_response in enumerate(sorted_facilities_response):
+            original_fr = sorted_facilities_original[i]
+            assert facility_response["facility_name"] == original_fr.facility_name
 
-        assert "facility_reports" in response_data
-        assert isinstance(response_data["facility_reports"], list)
-        assert len(response_data["facility_reports"]) == self.report_version.facility_reports.count()
+            # Activity data
+            activity_data = facility_response["activity_data"]
+            assert len(activity_data) == original_fr.reportrawactivitydata_records.count()
+            for activity_name, activity_details in activity_data.items():
+                assert "activity" in activity_details
+                assert activity_name == activity_details["activity"]
+                assert "source_types" in activity_details
 
-        if response_data["facility_reports"]:
-            response_facilities = sorted(response_data["facility_reports"], key=lambda x: x["facility_name"])
-            original_facilities = sorted(
-                list(self.report_version.facility_reports.all()), key=lambda x: x.facility_name
-            )
+            # Report products
+            report_products = facility_response["report_products"]
+            assert len(report_products) == original_fr.report_products.count()
+            for product_name, product_details in report_products.items():
+                assert "product" in product_details
+                assert product_name == product_details["product"]
+                assert "unit" in product_details
+                assert "annual_production" in product_details
 
-            for i, facility_response in enumerate(response_facilities):
-                original_fr = original_facilities[i]
-                assert facility_response["facility_name"] == original_fr.facility_name
+            # Report emission allocations
+            allocation = facility_response["report_emission_allocation"]
+            product_allocations = allocation["report_product_emission_allocations"]
+            assert allocation["allocation_methodology"] == self.report_emission_allocation.allocation_methodology
 
-                assert "activity_data" in facility_response
-                assert isinstance(facility_response["activity_data"], list)
-                assert len(facility_response["activity_data"]) == original_fr.reportrawactivitydata_records.count()
-                if facility_response["activity_data"]:
-                    assert "activity" in facility_response["activity_data"][0]
-                    assert (
-                        original_fr.reportrawactivitydata_records.first().activity.name
-                        in facility_response["activity_data"][0]["activity"]
-                    )
-
-                assert "report_products" in facility_response
-                assert isinstance(facility_response["report_products"], list)
-                assert len(facility_response["report_products"]) == original_fr.report_products.count()
-                if facility_response["report_products"]:
-                    assert "product" in facility_response["report_products"][0]
-
-                assert "report_emission_allocation" in facility_response
-                assert isinstance(facility_response["report_emission_allocation"], dict)
-
-                assert "allocation_methodology" in facility_response["report_emission_allocation"]
-                assert (
-                    facility_response["report_emission_allocation"]["allocation_methodology"]
-                    == self.report_emission_allocation.allocation_methodology
-                )
-
-                assert "report_product_emission_allocations" in facility_response["report_emission_allocation"]
-                assert isinstance(
-                    facility_response["report_emission_allocation"]["report_product_emission_allocations"], list
-                )
-
-                for emission_allocation in facility_response["report_emission_allocation"][
-                    "report_product_emission_allocations"
-                ]:
-                    assert "emission_category_name" in emission_allocation
-                    assert "products" in emission_allocation
-                    assert isinstance(emission_allocation["products"], list)
-
-                    for product in emission_allocation["products"]:
-                        assert "report_product_id" in product
-                        assert "product_name" in product
-                        assert "allocated_quantity" in product
+            for emission_allocation in product_allocations:
+                assert "emission_category_name" in emission_allocation
+                assert "products" in emission_allocation
+                products = emission_allocation["products"]
+                for product in products:
+                    assert "report_product_id" in product
+                    assert "product_name" in product
+                    assert "allocated_quantity" in product

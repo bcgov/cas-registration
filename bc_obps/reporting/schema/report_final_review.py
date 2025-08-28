@@ -1,4 +1,4 @@
-from typing import List, Optional, Any
+from typing import List, Optional, Any, Dict
 from ninja import ModelSchema
 
 from registration.models import Operation
@@ -55,6 +55,12 @@ class ReportProductSchema(ModelSchema):
 class ReportProductEmissionAllocationSchema(ModelSchema):
     report_product: ReportProductSchema
     emission_category: EmissionCategorySchema
+    products: Dict[str, ReportProductSchema] = {}
+
+    @staticmethod
+    def resolve_products(obj: ReportProductEmissionAllocation) -> Optional[ReportProduct]:
+        product = getattr(obj, 'product', None)
+        return product
 
     class Meta:
         model = ReportProductEmissionAllocation
@@ -68,7 +74,25 @@ class ReportComplianceSummarySchema(ModelSchema):
 
 
 class ReportEmissionAllocationSchema(ModelSchema):
-    reportproductemissionallocation_records: List[ReportProductEmissionAllocationSchema] = []
+    report_product_emission_allocations: Dict[str, ReportProductEmissionAllocationSchema] = {}
+    report_product_emission_allocation_totals: Dict[str, ReportProductSchema] = {}
+
+    @staticmethod
+    def resolve_report_product_emission_allocations(
+        obj: ReportEmissionAllocation,
+    ) -> Dict[str, ReportProductEmissionAllocation]:
+        allocations = obj.reportproductemissionallocation_records.all()
+        return {
+            f"emission_category:{allocation.emission_category.category_name}": allocation for allocation in allocations
+        }
+
+    @staticmethod
+    def resolve_report_product_emission_allocation_totals(obj: ReportEmissionAllocation) -> Dict[str, ReportProduct]:
+        totals = getattr(obj, 'allocation_totals', [])
+        return {
+            f"product:{total.product_name}" if hasattr(total, 'product_name') else f"total_{total.id}": total
+            for total in totals
+        }
 
     class Meta:
         model = ReportEmissionAllocation
@@ -184,15 +208,21 @@ class ReportNonAttributableEmissionSchema(ModelSchema):
 
 
 class FacilityReportSchema(ModelSchema):
-    activity_data: List[ReportRawActivityDataSchema] = []
-    report_products: List[ReportProductionDataSchema] = []
+    activity_data: Dict[str, ReportRawActivityDataSchema] = {}
+    report_products: Dict[str, ReportProductionDataSchema] = {}
     reportnonattributableemissions_records: List[ReportNonAttributableEmissionSchema] = []
     emission_summary: Optional[Any] = None
     report_emission_allocation: Optional[Any] = None
 
     @staticmethod
-    def resolve_activity_data(obj: FacilityReport) -> List[ReportRawActivityData]:
-        return list(obj.reportrawactivitydata_records.all())
+    def resolve_activity_data(obj: FacilityReport) -> Dict[str, ReportRawActivityData]:
+        activities = obj.reportrawactivitydata_records.all()
+        return {activity.activity.name: activity for activity in activities}
+
+    @staticmethod
+    def resolve_report_products(obj: FacilityReport) -> Dict[str, ReportProduct]:
+        products = obj.report_products.all()
+        return {product.product.name: product for product in products}
 
     @staticmethod
     def resolve_emission_summary(obj: FacilityReport) -> Optional[Any]:
@@ -322,15 +352,26 @@ class ReportElectricityImportDataSchema(ModelSchema):
 
 
 class ReportVersionSchema(ModelSchema):
-    report_operation: ReportOperationSchema
+    report_operation: Optional[ReportOperationSchema] = None
     report_person_responsible: Optional[ReportPersonResponsibleOut] = None
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
-    report_electricity_import_data: List[ReportElectricityImportDataSchema]
+    report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
-    facility_reports: List[FacilityReportSchema] = []
+    facility_reports: Dict[str, FacilityReportSchema] = {}
     report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
     operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
+
+    @staticmethod
+    def resolve_facility_reports(obj: ReportVersion) -> Dict[str, FacilityReport]:
+        if (
+            hasattr(obj, 'report_operation')
+            and obj.report_operation
+            and obj.report_operation.operation_type == Operation.Types.EIO
+        ):
+            return {}
+        facility_reports = obj.facility_reports.all()
+        return {facility.facility_name or f"facility_{facility.id}": facility for facility in facility_reports}
 
     @staticmethod
     def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceData]:
@@ -358,4 +399,4 @@ class ReportVersionSchema(ModelSchema):
 
     class Meta:
         model = ReportVersion
-        fields = ['id', 'report_type', 'is_latest_submitted', 'reason_for_change', 'status']
+        fields = ['report_type', 'is_latest_submitted', 'reason_for_change', 'status']

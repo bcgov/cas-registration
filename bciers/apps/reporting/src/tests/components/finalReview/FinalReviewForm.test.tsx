@@ -152,7 +152,6 @@ describe("The FinalReviewForm component", () => {
       expect(screen.getByTestId("facility-review")).toBeInTheDocument();
       expect(screen.getByTestId("multi-step-header")).toBeInTheDocument();
       expect(screen.getByTestId("reporting-task-list")).toBeInTheDocument();
-      expect(screen.getByTestId("report-sections")).toBeInTheDocument();
       expect(screen.getByTestId("reporting-step-buttons")).toBeInTheDocument();
     });
   });

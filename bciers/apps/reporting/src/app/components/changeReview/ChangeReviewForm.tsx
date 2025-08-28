@@ -1,58 +1,81 @@
 "use client";
-
 import React, { useState } from "react";
-import MultiStepFormWithTaskList from "@bciers/components/form/MultiStepFormWithTaskList";
-import {
-  changeReviewSchema,
-  changeReviewUiSchema,
-} from "@reporting/src/data/jsonSchema/changeReview/changeReview";
 import { actionHandler } from "@bciers/actions";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
+import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
+import { useRouter } from "next/navigation";
+import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
+import ReasonForChangeForm from "@reporting/src/app/components/changeReview/templates/ReasonForChange";
 
 interface ChangeReviewProps {
   versionId: number;
   initialFormData: any;
   navigationInformation: NavigationInformation;
+  changes: ChangeItem[];
 }
 
 export default function ChangeReviewForm({
   versionId,
   initialFormData,
   navigationInformation,
+  changes,
 }: ChangeReviewProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState<string[]>();
+  const [isRedirecting, setIsRedirecting] = useState<boolean>(false);
+  const [reasonForChange, setReasonForChange] = useState(
+    initialFormData.reason_for_change || "",
+  );
 
-  const handleSubmit = async (data: FormData) => {
+  const handleSubmit = async (): Promise<void> => {
+    setIsRedirecting(true);
+
+    const payload = {
+      ...formData,
+      reason_for_change: reasonForChange,
+    };
+
     const endpoint = `reporting/report-version/${versionId}`;
     const method = "POST";
+
     const response = await actionHandler(endpoint, method, endpoint, {
-      body: JSON.stringify(data),
+      body: JSON.stringify(payload),
     });
+
     if (response?.error) {
       setErrors([response.error]);
-      return false;
+      setIsRedirecting(false);
+      return; // <--- just return void instead of false
     }
 
     setErrors(undefined);
-    return true;
+    router.push(navigationInformation.continueUrl);
+    // don't return true
   };
 
   return (
-    <MultiStepFormWithTaskList
+    <MultiStepWrapperWithTaskList
       initialStep={navigationInformation.headerStepIndex}
       steps={navigationInformation.headerSteps}
       taskListElements={navigationInformation.taskList}
-      schema={changeReviewSchema}
-      uiSchema={changeReviewUiSchema}
-      formData={formData}
       backUrl={navigationInformation.backUrl}
-      onChange={(data: any) => {
-        setFormData(data.formData);
-      }}
-      onSubmit={(data: any) => handleSubmit(data.formData)}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
-    />
+      onSubmit={handleSubmit}
+      isRedirecting={isRedirecting}
+      noSaveButton={true}
+    >
+      <ReviewChanges changes={changes} />
+      <ReasonForChangeForm
+        reasonForChange={reasonForChange}
+        onReasonChange={(val) => {
+          setReasonForChange(val);
+          setFormData({ ...formData, reason_for_change: val });
+        }}
+        onSubmit={handleSubmit}
+      />
+    </MultiStepWrapperWithTaskList>
   );
 }
