@@ -13,15 +13,23 @@ export default async function ReportsBasePage({
   activeTab,
   children,
 }: Readonly<ReportsBasePageProps>) {
+  const userRole = await getSessionRole();
+
+  const reportingYearObj = await getReportingYear();
+  const reportDueDate = reportingYearObj.report_due_date;
+  const reportDueYearOnly = dayjs(reportDueDate).year();
+
+  const currentReportsTabTitle = `View annual report${
+    //render the (s) for external users as they may only have one operation
+    userRole.includes("industry_") ? "(s)" : "s"
+  }`;
+
   const tabs = [
-    { label: "View annual reports", href: "/reports/current-reports" },
+    { label: currentReportsTabTitle, href: "/reports/current-reports" },
     { label: "View past reports", href: "/reports/previous-years" },
   ];
   const CURRENT_REPORTS_TAB_INDEX = 0;
   const PREVIOUS_REPORTS_TAB_INDEX = 1;
-  const reportingYearObj = await getReportingYear();
-  const reportDueDate = reportingYearObj.report_due_date;
-  const reportDueyearOnly = dayjs(reportDueDate).year();
   const pageTitle =
     activeTab === CURRENT_REPORTS_TAB_INDEX
       ? `Reporting year ${reportingYearObj.reporting_year}`
@@ -33,9 +41,11 @@ export default async function ReportsBasePage({
         {activeTab === CURRENT_REPORTS_TAB_INDEX && (
           <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold">{pageTitle}</h2>
-            <h3 className="text-bc-text text-right">
-              Reports due May 31, {reportDueyearOnly}
-            </h3>
+            {userRole.includes("industry_") && (
+              <h3 className="text-bc-text text-right">
+                Reports due May 31, {reportDueYearOnly}
+              </h3>
+            )}
           </div>
         )}
         {activeTab === PREVIOUS_REPORTS_TAB_INDEX && (
