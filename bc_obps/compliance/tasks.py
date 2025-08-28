@@ -1,3 +1,4 @@
+from compliance.service.elicensing.elicensing_interest_rate_service import ElicensingInterestRateService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from compliance.service.automated_process.automated_process_service import AutomatedProcessService
 from task_scheduler.service.retry_task.factories import create_retryable
@@ -25,38 +26,15 @@ retryable_process_obligation_integration = create_retryable(
 # Scheduled tasks #
 ###################
 
-
-def daily_function_at_2am() -> None:
-    try:
-        email_data = {
-            'bodyType': 'text',
-            'body': 'This is your daily 2 AM task.',
-            'contexts': [
-                {
-                    'context': {},
-                    'to': ['sepehr.sobhani@gov.bc.ca', 'Dylan.1.Leard@gov.bc.ca'],
-                }
-            ],
-            'from': 'no-reply.cas@gov.bc.ca',
-            'subject': 'Daily 2 AM task',
-        }
-
-        response = email_service.merge_template_and_send(email_data)
-        if response:
-            logger.info(f"Daily 2 AM email sent successfully. Transaction ID: {response.get('txId')}")
-        else:
-            logger.warning("Daily 2 AM email sent but no response received from email service")
-    except Exception as exc:
-        logger.error(f"Failed to send daily 2 AM email: {str(exc)}")
-
-
 SCHEDULED_TASKS = [
+    # We must run this task before refresh_all_obligation_invoices,
+    # so we get the latest interest rates and then do the calculations
     ScheduledTaskConfig(
-        func=daily_function_at_2am,
+        func=ElicensingInterestRateService.refresh_interest_rates,
         schedule_type="daily",
-        schedule_hour=2,
+        schedule_hour=1,
         schedule_minute=0,
-        tag="daily_function_at_2am",
+        tag="elicensing",
     ),
     ScheduledTaskConfig(
         func=AutomatedProcessService.run_scheduled_compliance_sync,

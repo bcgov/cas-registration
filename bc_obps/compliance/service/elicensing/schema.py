@@ -197,3 +197,19 @@ class InvoiceQueryResponse:
     invoiceFeeBalance: Decimal
     invoiceInterestBalance: Decimal
     fees: List[InvoiceFee]
+
+
+@dataclass
+class InterestRatePeriod:
+    """Interest rate period from eLicensing API"""
+
+    rate: Decimal
+    startDate: str  # Format: YYYY-MM-DD
+
+
+@dataclass
+class InterestRateResponse:
+    """Interest rate response from eLicensing API"""
+
+    daysPerYear: Decimal
+    periods: List[InterestRatePeriod]

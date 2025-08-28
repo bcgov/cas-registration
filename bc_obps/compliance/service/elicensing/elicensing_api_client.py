@@ -17,6 +17,8 @@ from .schema import (
     FeeAdjustment,
     InvoiceFee,
     InvoiceQueryResponse,
+    InterestRateResponse,
+    InterestRatePeriod,
 )
 
 logger = logging.getLogger(__name__)
@@ -114,7 +116,8 @@ class ELicensingAPIClient:
             logger.error(f"eLicensing API request failed: {str(e)}")
             raise
 
-    def _handle_error_response(self, response: requests.Response, operation_name: str) -> None:
+    @staticmethod
+    def _handle_error_response(response: requests.Response, operation_name: str) -> None:
         """
         Helper method to handle error responses consistently across API methods.
 
@@ -488,22 +491,42 @@ class ELicensingAPIClient:
 
         Raises:
             requests.RequestException: If the API request fails
+            requests.HTTPError: If the API returns an error response
         """
+        endpoint = f"/client/{client_id}/invoice"
         # Convert dataclass to dict for API request
         invoice_dict = {
             "paymentDueDate": invoice_data.paymentDueDate,
             "businessAreaCode": invoice_data.businessAreaCode,
             "fees": invoice_data.fees,
         }
-
-        response = self._make_request(
-            f"/client/{client_id}/invoice",
-            method='POST',
-            data=invoice_dict,
-        )
+        response = self._make_request(endpoint, method='POST', data=invoice_dict)
         response.raise_for_status()
-        json_response = response.json()
-        return InvoiceResponse(**json_response)
+
+        return InvoiceResponse(**response.json())
+
+    def get_interest_rates(self) -> InterestRateResponse:
+        """
+        Gets the current interest rates from eLicensing.
+
+        Returns:
+            InterestRateResponse: The current interest rates
+
+        Raises:
+            requests.RequestException: If the API request fails
+            requests.HTTPError: If the API returns an error response
+        """
+        endpoint = "/interestRates"
+        response = self._make_request(endpoint, method='GET')
+        response.raise_for_status()
+
+        data = response.json()
+        periods = []
+        for period_data in data.get("periods", []):
+            period = InterestRatePeriod(rate=period_data["rate"], startDate=period_data["startDate"])
+            periods.append(period)
+
+        return InterestRateResponse(daysPerYear=data.get("daysPerYear", 365), periods=periods)
 
 
 # Create a singleton instance
