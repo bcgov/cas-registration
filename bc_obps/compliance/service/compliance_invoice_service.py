@@ -115,11 +115,9 @@ class ComplianceInvoiceService:
             refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
                 compliance_report_version_id=compliance_report_version_id
             )
-            if not refresh_result.data_is_fresh:
-                raise ComplianceInvoiceError(
-                    "stale_data",
-                    "Invoice data could not be refreshed from Elicensing.  Please try again, or contact support if the problem persists.",
-                )
+
+            # Format RefreshWrapperReturn metadata
+            last_refresh_metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(refresh_result)
 
             # Get compliance obligation information
             # compliance_report_version_id  → ComplianceObligation
@@ -185,6 +183,9 @@ class ComplianceInvoiceService:
 
             context = context_obj.__dict__
 
+            # Update the dataclass dict with the refresh metadata
+            context.update(last_refresh_metadata)
+
             # Generate filename
             filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"
 
@@ -224,11 +225,9 @@ class ComplianceInvoiceService:
                 compliance_report_version_id=compliance_report_version_id,
                 invoice_type=ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY,
             )
-            if not penalty_refresh_result.data_is_fresh:
-                raise ComplianceInvoiceError(
-                    "stale_data",
-                    "Invoice data could not be refreshed from Elicensing.  Please try again, or contact support if the problem persists.",
-                )
+
+            # Format RefreshWrapperReturn metadata
+            last_refresh_metadata = ElicensingDataRefreshService.get_last_refreshed_metadata(penalty_refresh_result)
 
             # Get penalty invoice data
             penalty_invoice = penalty_refresh_result.invoice
@@ -263,6 +262,9 @@ class ComplianceInvoiceService:
             )
 
             context = context_obj.__dict__
+
+            # Update the dataclass dict with the refresh metadata
+            context.update(last_refresh_metadata)
 
             # Generate filename
             filename = f"invoice_{context['invoice_number']}_{timezone.now().strftime('%Y%m%d')}.pdf"

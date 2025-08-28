@@ -13,10 +13,12 @@ from compliance.models import (
 )
 from datetime import datetime, timedelta
 from decimal import Decimal
-from compliance.dataclass import RefreshWrapperReturn
+from compliance.dataclass import LastRefreshMetaData, RefreshWrapperReturn
 import logging
 from pydantic import ValidationError
 from django.utils import timezone
+
+from common.utils import format_timestamp_en_ca
 
 logger = logging.getLogger(__name__)
 
@@ -169,3 +171,31 @@ class ElicensingDataRefreshService:
                 adjustment_object_id=adjustment.adjustmentObjectId,
                 defaults=adjustment_defaults,
             )
+
+    @staticmethod
+    def get_last_refreshed_metadata(
+        refresh_result: RefreshWrapperReturn,
+        *,
+        default_fresh: bool = False,
+    ) -> LastRefreshMetaData:
+
+        """
+        Extract last-refresh metadata from a RefreshWrapperReturn.
+
+        - Formats invoice.last_refreshed
+        - data_is_fresh defaults to `default_fresh` when absent
+        """
+        invoice = getattr(refresh_result, "invoice", None)
+        last_refreshed = getattr(invoice, "last_refreshed", None)
+
+        if last_refreshed:
+            last_refreshed_display = format_timestamp_en_ca(getattr(invoice, "last_refreshed", None))
+        else:
+            last_refreshed_display = ""
+
+        data_is_fresh = getattr(refresh_result, "data_is_fresh", default_fresh)
+
+        return {
+            "last_refreshed_display": last_refreshed_display,
+            "data_is_fresh": bool(data_is_fresh),
+        }

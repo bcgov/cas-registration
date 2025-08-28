@@ -349,6 +349,13 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_last_refreshed_metadata",
+            "kwargs": {
+                "compliance_report_version_id": MOCK_INT,
+            },
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_apply_compliance_units_page_data",
             "kwargs": {
                 "account_id": MOCK_UUID,

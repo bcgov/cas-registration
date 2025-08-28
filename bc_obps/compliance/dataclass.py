@@ -1,6 +1,6 @@
 from decimal import Decimal
 from dataclasses import dataclass
-from typing import Literal, Optional, List
+from typing import Literal, Optional, List, TypedDict
 from django.db.models import QuerySet
 from compliance.models import ElicensingPayment, ElicensingInvoice
 
@@ -79,6 +79,11 @@ class PaymentDataWithFreshnessFlag:
 class RefreshWrapperReturn:
     data_is_fresh: bool
     invoice: ElicensingInvoice
+
+
+class LastRefreshMetaData(TypedDict):
+    last_refreshed_display: str
+    data_is_fresh: bool
 
 
 @dataclass

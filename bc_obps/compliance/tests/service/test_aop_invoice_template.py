@@ -131,3 +131,29 @@ class TestAOPInvoiceTemplate(SimpleTestCase):
         rendered_html = render_to_string('automatic_overdue_penalty_invoice.html', context)
         self.assertIn("fonts.googleapis.com", rendered_html)
         self.assertIn("Inter", rendered_html)
+
+    def test_invoice_template_omits_stale_alert_when_fresh(self):
+        context = {
+            **self.base_context.__dict__,
+            "data_is_fresh": True,
+            "last_refreshed_display": "ignored",
+        }
+        html = render_to_string("invoice.html", context)
+
+        # Partial is included but conditional block should NOT render
+        self.assertNotIn('<div class="bciers-alert"', html)
+        self.assertNotIn("Invoice data last updated", html)
+
+    def test_invoice_template_includes_stale_alert_when_not_fresh(self):
+        context = {
+            **self.base_context.__dict__,
+            "data_is_fresh": False,
+            "last_refreshed_display": "2025-08-25 19:37:03",
+        }
+        html = render_to_string("invoice.html", context)
+
+        # Partial is included and conditional renders alert div
+        self.assertIn('<div class="bciers-alert"', html)
+        self.assertIn("Invoice data last updated", html)
+        self.assertIn("2025-08-25 19:37:03", html)
+        self.assertIn('mailto:ghgregulator@gov.bc.ca', html)
