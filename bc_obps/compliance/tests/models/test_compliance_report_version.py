@@ -19,4 +19,6 @@ class ComplianceReportVersionTest(BaseTestCase):
             ("obligation", "compliance obligation", None, None),
             ("is_supplementary", "is supplementary", None, None),
             ("elicensing_adjustments", "elicensing adjustment", None, None),
+            ("previous_version", "previous version", None, None),
+            ("subsequent_versions", "compliance report version", None, None),
         ]
