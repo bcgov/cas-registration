@@ -10,7 +10,7 @@ from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
-from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema
+from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema, ReportsPeriod
 from service.user_operator_service import UserOperatorService
 
 
@@ -110,9 +110,7 @@ class ReportingDashboardService:
         cls,
         user_guid: UUID,
         current_reporting_year: int,
-        get_past_reports: Optional[
-            bool
-        ] = None,  # if True, fetch past reports. If False, fetch current year reports. If None, fetch all reports.
+        reports_period: ReportsPeriod = ReportsPeriod.ALL,
         sort_field: Optional[str] = None,
         sort_order: Optional[str] = None,
         filters: ReportingDashboardOperationFilterSchema = Query(...),
@@ -157,12 +155,11 @@ class ReportingDashboardService:
                 report_status_sort_key=cls.report_status_sort_key,
             )
 
-        if get_past_reports is not None:
-            if get_past_reports:
-                queryset = queryset.exclude(reporting_year=current_reporting_year)
-            else:
-                queryset = queryset.filter(reporting_year=current_reporting_year)
-        # else get_past_report is None, so we fetch all reports
+        if reports_period == ReportsPeriod.CURRENT:
+            queryset = queryset.filter(reporting_year=current_reporting_year)
+        elif reports_period == ReportsPeriod.PAST:
+            queryset = queryset.exclude(reporting_year=current_reporting_year)
+        # else reports_period == ALL, so we fetch all reports
 
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
 

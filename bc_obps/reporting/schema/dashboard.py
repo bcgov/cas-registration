@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 import re
 from typing import Optional
 from uuid import UUID
@@ -69,3 +70,9 @@ class ReportingDashboardOperationFilterSchema(FilterSchema):
         filters |= Q(report_status__icontains=value)
 
         return filters
+
+
+class ReportsPeriod(str, Enum):
+    ALL = "all"
+    PAST = "past"
+    CURRENT = "current"

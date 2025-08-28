@@ -8,7 +8,7 @@ export const fetchPastReportsPageData = async (
 ) => {
   const queryParams = buildQueryParams({
     ...searchParams,
-    get_past_reports: true,
+    reports_period: "past",
   });
   // fetch data from server
   const pageData = await actionHandler(
