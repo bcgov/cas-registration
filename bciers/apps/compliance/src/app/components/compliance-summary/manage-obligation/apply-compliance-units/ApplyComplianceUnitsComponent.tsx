@@ -316,7 +316,7 @@ export default function ApplyComplianceUnitsComponent({
         complianceLimitStatus,
         isApplied: status === "applied",
       }}
-      className="w-full min-h-[62vh] flex flex-col justify-between"
+      className="w-full flex flex-col justify-between"
     >
       <div>
         {canApply && status !== "applied" && (
@@ -332,7 +332,6 @@ export default function ApplyComplianceUnitsComponent({
               `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
             )
           }
-          className="mt-8"
         >
           {shouldShowSubmitButton && (
             <SubmitButton
