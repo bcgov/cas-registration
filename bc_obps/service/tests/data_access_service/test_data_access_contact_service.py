@@ -79,6 +79,7 @@ class TestDataAccessContactService:
             {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
         )
         contact = ContactDataAccessService.get_contact_for_user(industry_user)
+        print(str(contact))
         assert contact.email == 'mickey.mouse@email.com'
         assert contact.first_name == 'Mickey'
         assert contact.last_name == 'Mouse'
