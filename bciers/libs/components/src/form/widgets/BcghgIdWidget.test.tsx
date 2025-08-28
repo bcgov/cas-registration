@@ -1,5 +1,5 @@
 import { userEvent } from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { RJSFSchema } from "@rjsf/utils";
 import FormBase from "@bciers/components/form/FormBase";
 import { actionHandler } from "@bciers/testConfig/mocks";
@@ -34,7 +34,7 @@ const defaultFacilityFormContext = {
 
 describe("RJSF bcghgIdWidget", () => {
   beforeEach(() => {
-    actionHandler.mockClear();
+    actionHandler.mockReset();
   });
 
   it("for an external user, should show message when operation does not have a BCGHG ID yet", () => {
@@ -72,9 +72,7 @@ describe("RJSF bcghgIdWidget", () => {
       "#root_bcghgIdTestField",
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
-    expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      bcghgIdValue + " BCGHG ID issued",
-    );
+    expect(readOnlyBcghgIdTestField).toHaveTextContent(bcghgIdValue);
   });
 
   it("for an external user, should show message when facility does not have a BCGHG ID yet", () => {
@@ -112,9 +110,7 @@ describe("RJSF bcghgIdWidget", () => {
       "#root_bcghgIdTestField",
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
-    expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      bcghgIdValue + " BCGHG ID issued",
-    );
+    expect(readOnlyBcghgIdTestField).toHaveTextContent(bcghgIdValue);
   });
 
   it("for an internal user, should show the readonly BCGHG ID for an operation", () => {
@@ -130,9 +126,7 @@ describe("RJSF bcghgIdWidget", () => {
       "#root_bcghgIdTestField",
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
-    expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      bcghgIdValue + " BCGHG ID issued",
-    );
+    expect(readOnlyBcghgIdTestField).toHaveTextContent(bcghgIdValue);
   });
 
   it("for an internal user, should show the readonly BCGHG ID for a facility", () => {
@@ -148,9 +142,7 @@ describe("RJSF bcghgIdWidget", () => {
       "#root_bcghgIdTestField",
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
-    expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      bcghgIdValue + " BCGHG ID issued",
-    );
+    expect(readOnlyBcghgIdTestField).toHaveTextContent(bcghgIdValue);
   });
 
   it("for an internal user, should issue a BCGHG ID for an operation", async () => {
@@ -178,9 +170,7 @@ describe("RJSF bcghgIdWidget", () => {
       "#root_bcghgIdTestField",
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
-    expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      "23251209999 BCGHG ID issued",
-    );
+    expect(readOnlyBcghgIdTestField).toHaveTextContent("23251209999");
   });
 
   it("for an internal user, should issue a BCGHG ID for a facility", async () => {
@@ -208,9 +198,7 @@ describe("RJSF bcghgIdWidget", () => {
       "#root_bcghgIdTestField",
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
-    expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      "23251209999 BCGHG ID issued",
-    );
+    expect(readOnlyBcghgIdTestField).toHaveTextContent("23251209999");
   });
 
   it("for an internal user, should show an error if generation fails", async () => {
@@ -266,7 +254,7 @@ describe("RJSF bcghgIdWidget", () => {
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
     expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      "this_is_a_fake_bcghgid BCGHG ID issued",
+      "this_is_a_fake_bcghgid",
     );
   });
 
@@ -299,7 +287,7 @@ describe("RJSF bcghgIdWidget", () => {
     );
     expect(readOnlyBcghgIdTestField).toBeVisible();
     expect(readOnlyBcghgIdTestField).toHaveTextContent(
-      "this_is_a_fake_facility_bcghgid BCGHG ID issued",
+      "this_is_a_fake_facility_bcghgid",
     );
   });
 
@@ -317,9 +305,7 @@ describe("RJSF bcghgIdWidget", () => {
     await userEvent.click(screen.getByRole("button", { name: "Save" }));
     expect(screen.getByText(/Invalid BCGHGID/i)).toBeVisible();
     await waitFor(() => {
-      expect(
-        screen.queryByText(/123456 BCGHG ID issued/i),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText(/123456/i)).not.toBeInTheDocument();
     });
   });
 
@@ -336,7 +322,35 @@ describe("RJSF bcghgIdWidget", () => {
     await userEvent.type(screen.getByRole("textbox"), "123456");
     await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
     expect(screen.getByTestId("edit-bcghg-id-text").textContent).toBe(
-      "Or click edit to enter a BCGHGID",
+      "or click edit to enter a BCGHGID",
     );
+  });
+
+  it("Displays a functional clear button if the BCGHG ID is set", async () => {
+    actionHandler.mockReturnValueOnce(200);
+    render(
+      <FormBase
+        schema={bcghgIdWidgetSchema}
+        uiSchema={bcghgIdWidgetUiSchema}
+        formContext={defaultFacilityFormContext}
+        formData={{ bcghgIdTestField: bcghgIdValue }}
+      />,
+    );
+    await act(async () =>
+      userEvent.click(screen.getByRole("button", { name: "Clear BCGHG ID" })),
+    );
+
+    expect(actionHandler).toHaveBeenCalledWith(
+      "registration/facilities/ea4314ea-1974-465a-a851-278c8f9c8daa/bcghg-id",
+      "DELETE",
+      "",
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Clear BCGHG ID" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: `＋ Issue BCGHG ID` }),
+    ).toBeVisible();
   });
 });

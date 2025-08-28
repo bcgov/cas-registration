@@ -49,3 +49,23 @@ class TestOperationBcghgIdEndpoint(CommonTestSetup):
         )
         assert response.status_code == 200
         assert response.json() == {'id': '21234567890'}  # '1' and '486210' come from the recipe's mock data
+
+    def test_authorized_role_can_clear_id(self):
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            bcghg_id=baker.make_recipe('registration.tests.utils.bcghg_id', id='11234567890'),
+        )
+
+        response = TestUtils.mock_delete_with_auth_role(
+            self,
+            'cas_director',
+            custom_reverse_lazy(
+                "delete_operation_bcghg_id",
+                kwargs={'operation_id': operation.id},
+            ),
+        )
+        assert response.status_code == 200
+
+        operation.refresh_from_db()
+        assert operation.bcghg_id is None

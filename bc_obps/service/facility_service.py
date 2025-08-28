@@ -154,6 +154,15 @@ class FacilityService:
         return facility
 
     @classmethod
+    def get_if_director(cls, user_guid: UUID, facility_id: UUID) -> Facility:
+        """Retrieve a facility if the user is a CAS director."""
+        user: User = UserDataAccessService.get_by_guid(user_guid)
+        if not user.is_cas_director():
+            raise Exception(UNAUTHORIZED_MESSAGE)
+
+        return FacilityDataAccessService.get_by_id(facility_id)
+
+    @classmethod
     @transaction.atomic()
     def create_facility_with_designated_operation(cls, user_guid: UUID, payload: FacilityIn) -> Facility:
         """Create a facility with designated operation details."""
@@ -245,7 +254,7 @@ class FacilityService:
 
     @classmethod
     def generate_bcghg_id(cls, user_guid: UUID, facility_id: UUID, bcghg_id: str | None = None) -> BcGreenhouseGasId:
-        facility = FacilityService.get_if_authorized(user_guid, facility_id)
+        facility = FacilityService.get_if_director(user_guid, facility_id)
 
         if bcghg_id:
             bcghg_id_record, _ = BcGreenhouseGasId.objects.get_or_create(
@@ -260,6 +269,13 @@ class FacilityService:
             raise Exception('Failed to create a BCGHG ID for the facility.')
 
         return facility.bcghg_id
+
+    @classmethod
+    def clear_bcghg_id(cls, user_guid: UUID, facility_id: UUID) -> None:
+        facility = FacilityService.get_if_director(user_guid, facility_id)
+
+        facility.bcghg_id = None
+        facility.save(update_fields=['bcghg_id'])
 
     @classmethod
     @transaction.atomic()

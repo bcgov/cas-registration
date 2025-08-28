@@ -93,7 +93,7 @@ describe("the FacilitySfoForm component", () => {
     expect(facilityType).toHaveTextContent("Single Facility");
 
     const bcGhgId = container.querySelector("#root_section1_bcghg_id");
-    expect(bcGhgId).toHaveTextContent("23219999999 BCGHG ID issued");
+    expect(bcGhgId).toHaveTextContent("23219999999");
   });
 
   it(

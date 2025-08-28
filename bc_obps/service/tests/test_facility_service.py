@@ -506,54 +506,70 @@ class TestUpdateFacility:
         TestUtils.assert_facility_db_state(facility, expect_well_authorization_numbers=0)
 
 
-class TestGenerateBcghgId:
+class TestManageBcghgId:
     @staticmethod
     def test_generates_bcghg_id():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        director = baker.make_recipe('registration.tests.utils.cas_director')
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
         facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
-        FacilityService.generate_bcghg_id(approved_user_operator.user.user_guid, facility.id)
+        FacilityService.generate_bcghg_id(director.user_guid, facility.id)
         facility.refresh_from_db()
         assert facility.bcghg_id is not None
-        assert facility.bcghg_id.issued_by == approved_user_operator.user
+        assert facility.bcghg_id.issued_by == director
 
     @staticmethod
     def test_test_generate_bcghg_id_with_manual_id_success():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        director = baker.make_recipe('registration.tests.utils.cas_director')
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
         facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
-        FacilityService.generate_bcghg_id(approved_user_operator.user.user_guid, facility.id, "11234567899")
+        FacilityService.generate_bcghg_id(director.user_guid, facility.id, "11234567899")
         facility.refresh_from_db()
         assert facility.bcghg_id.id == "11234567899"
-        assert facility.bcghg_id.issued_by == approved_user_operator.user
+        assert facility.bcghg_id.issued_by == director
         assert facility.bcghg_id.comments == 'bcghg id manually set to facility'
 
     @staticmethod
     def test_generate_bcghg_id_with_existing_manual_id():
-        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+        director = baker.make_recipe('registration.tests.utils.cas_director')
         operation = baker.make_recipe(
             'registration.tests.utils.operation',
-            operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
         facility = baker.make_recipe('registration.tests.utils.facility', operation=operation)
         BcGreenhouseGasId.objects.create(
-            id="11234567890", issued_by_id=approved_user_operator.user.user_guid, comments='test'
+            id="11234567890",
+            issued_by_id=director.user_guid,
+            comments='test',
         )
 
-        FacilityService.generate_bcghg_id(approved_user_operator.user.user_guid, facility.id, "11234567890")
+        FacilityService.generate_bcghg_id(director.user_guid, facility.id, "11234567890")
         facility.refresh_from_db()
         assert facility.bcghg_id.id == "11234567890"
-        assert facility.bcghg_id.issued_by == approved_user_operator.user
+        assert facility.bcghg_id.issued_by == director
         assert facility.bcghg_id.comments == 'test'
+
+    @staticmethod
+    def test_clear_bcghg_id():
+        director = baker.make_recipe('registration.tests.utils.cas_director')
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+        )
+        facility = baker.make_recipe(
+            'registration.tests.utils.facility',
+            operation=operation,
+            bcghg_id=baker.make_recipe('registration.tests.utils.bcghg_id'),
+        )
+
+        FacilityService.clear_bcghg_id(director.user_guid, facility.id)
+        facility.refresh_from_db()
+        assert facility.bcghg_id is None
 
 
 class TestUpdateFacilitysOperation:
