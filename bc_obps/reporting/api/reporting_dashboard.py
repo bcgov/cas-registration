@@ -55,7 +55,7 @@ def get_dashboard_operations_list(
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(PageNumberPagination)
-def get_dashboard_past_reports_list(
+def get_dashboard_reports_list(
     request: HttpRequest,
     filters: ReportingDashboardOperationFilterSchema = Query(...),
     sort_field: Optional[str] = "reporting_year",

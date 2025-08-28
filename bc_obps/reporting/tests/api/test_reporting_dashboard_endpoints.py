@@ -71,7 +71,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
         mock_get_past_reports: MagicMock | AsyncMock,
     ):
 
-        endpoint_under_test = custom_reverse_lazy("get_dashboard_past_reports_list")
+        endpoint_under_test = custom_reverse_lazy("get_dashboard_reports_list")
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         operations = operation_baker(operator_id=operator.id, _quantity=3)
