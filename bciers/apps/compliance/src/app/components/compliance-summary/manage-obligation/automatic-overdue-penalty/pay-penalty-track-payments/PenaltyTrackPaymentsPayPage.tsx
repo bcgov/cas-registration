@@ -1,7 +1,3 @@
-import {
-  ActivePage,
-  generateAutomaticOverduePenaltyTaskList,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import { PenaltyTrackPaymentsComponent } from "./PenaltyTrackPaymentsComponent";
 import { getPenaltyData } from "@/compliance/src/app/utils/getPenalty";
@@ -10,7 +6,11 @@ import {
   PayPenaltyTrackPaymentsFormData,
   PenaltyData,
 } from "@/compliance/src/app/types";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
+import {
+  ActivePage,
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 export default async function PenaltyTrackPaymentsPayPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -24,11 +24,19 @@ export default async function PenaltyTrackPaymentsPayPage({
     payments: penaltyWithPayments.payment_data.rows,
   };
 
-  const { reporting_year: reportingYearData } = await getReportingYear();
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance_tco2e: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
 
-  const taskListElements = generateAutomaticOverduePenaltyTaskList(
+  const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYearData,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.PayPenaltyTrackPayments,
   );
 

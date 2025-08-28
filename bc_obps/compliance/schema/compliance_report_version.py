@@ -56,6 +56,7 @@ class ComplianceReportVersionOut(ModelSchema):
     equivalent_value: Optional[Decimal] = None
     outstanding_balance_tco2e: Optional[Decimal] = None
     outstanding_balance_equivalent_value: Optional[Decimal] = None
+    penalty_status: Optional[str] = Field(None, alias=OBLIGATION_PENALTY_STATUS_ALIAS)
 
     class Meta:
         model = ComplianceReportVersion

@@ -219,6 +219,7 @@ const permissionRules: PermissionRule[] = [
     validate: async (id, request, context) => {
       const statusOk = await checkAccess(context!, id, [
         ComplianceSummaryStatus.OBLIGATION_NOT_MET,
+        ComplianceSummaryStatus.OBLIGATION_FULLY_MET,
       ]);
       if (!statusOk) return false;
 

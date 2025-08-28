@@ -53,6 +53,8 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
   const mockData = {
     id: 1,
     reporting_year: 2025,
+    outstanding_balance_tco2e: 5,
+    penalty_status: "NONE",
     excess_emissions: 0,
     earned_credits_amount: 10,
     issuance_status: "Not Issued",
@@ -94,8 +96,9 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
       expect.objectContaining({
-        reporting_year: 2025,
-        operation_name: "Mock Operation",
+        penaltyStatus: "NONE",
+        outstandingBalance: 5,
+        reportingYear: 2025,
       }),
       ActivePage.ReviewComplianceSummary,
     );

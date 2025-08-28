@@ -24,6 +24,15 @@ vi.mock(
   }),
 );
 
+// Mock the task list data fetching function
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
+  getComplianceSummary: vi.fn().mockResolvedValue({
+    penalty_status: "NONE",
+    outstanding_balance_tco2e: 5,
+    reporting_year: 2024,
+  }),
+}));
+
 // Mock the invoice grabber
 vi.mock(
   "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId",
@@ -60,7 +69,7 @@ describe("PaymentInstructionsDownloadPage", () => {
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
-      expect.objectContaining({ reporting_year: 2024 }),
+      { penaltyStatus: "NONE", outstandingBalance: 5, reportingYear: 2024 },
       ActivePage.DownloadPaymentObligationInstructions,
     );
   });

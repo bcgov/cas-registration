@@ -75,6 +75,7 @@ describe("InternalReviewByDirectorPage", () => {
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
       2023,
+      IssuanceStatus.ISSUANCE_REQUESTED,
       ActivePage.ReviewByDirector,
     );
   });

@@ -1,9 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import PenaltyPaymentInstructionsDownloadPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/automatic-overdue-penalty/download-payment-penalty-instructions/PenaltyPaymentInstructionsDownloadPage";
+
 import {
-  generateAutomaticOverduePenaltyTaskList,
   ActivePage,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 // Mock the reporting year utility
 vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
@@ -15,14 +16,24 @@ vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
   }),
 }));
 
-// Mock the task list generator
 vi.mock(
-  "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList",
+  "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
   () => ({
-    generateAutomaticOverduePenaltyTaskList: vi.fn(),
-    ActivePage: { DownloadPaymentPenaltyInstruction: 1 },
+    generateManageObligationTaskList: vi.fn(() => ["mock-task"]),
+    ActivePage: {
+      ReviewComplianceSummary: "ReviewComplianceSummary",
+    },
   }),
 );
+
+// Mock the task list data fetching function
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
+  getComplianceSummary: vi.fn().mockResolvedValue({
+    penalty_status: "NOT PAID",
+    outstanding_balance_tco2e: 0,
+    reporting_year: 2024,
+  }),
+}));
 
 let capturedPaymentComponentProps: any;
 
@@ -71,9 +82,13 @@ describe("PenaltyPaymentInstructionsDownloadPage", () => {
     expect(screen.getByText("Mock Layout")).toBeVisible();
 
     // Verify task list generation
-    expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
+    expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
-      2024,
+      {
+        penaltyStatus: "NOT PAID",
+        outstandingBalance: 0,
+        reportingYear: 2024,
+      },
       ActivePage.DownloadPaymentPenaltyInstruction,
     );
   });

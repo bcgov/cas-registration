@@ -1,18 +1,29 @@
 import { render, screen } from "@testing-library/react";
 import PenaltySummaryReviewPage from "@/compliance/src/app/components/compliance-summary/manage-obligation/automatic-overdue-penalty/review-penalty-summary/PenaltySummaryReviewPage";
-import {
-  generateAutomaticOverduePenaltyTaskList,
-  ActivePage,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
 
-// Mock the task list generator
+import {
+  ActivePage,
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
+
 vi.mock(
-  "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList",
+  "@/compliance/src/app/components/taskLists/1_manageObligationTaskList",
   () => ({
-    generateAutomaticOverduePenaltyTaskList: vi.fn(),
-    ActivePage: { ReviewPenaltySummary: "ReviewPenaltySummary" },
+    generateManageObligationTaskList: vi.fn(() => ["mock-task"]),
+    ActivePage: {
+      ReviewComplianceSummary: "ReviewComplianceSummary",
+    },
   }),
 );
+
+// Mock the task list data fetching function
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
+  getComplianceSummary: vi.fn().mockResolvedValue({
+    penalty_status: "NOT PAID",
+    outstanding_balance_tco2e: 0,
+    reporting_year: 2024,
+  }),
+}));
 
 // Mock the automatic overdue penalty data getter
 vi.mock("@/compliance/src/app/utils/getAutomaticOverduePenalty", () => ({
@@ -26,13 +37,6 @@ vi.mock("@/compliance/src/app/utils/getAutomaticOverduePenalty", () => ({
     total_penalty: "1100.00",
     faa_interest: "50.00",
     total_amount: "1150.00",
-  }),
-}));
-
-// Mock the reporting year getter
-vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
-  getReportingYear: () => ({
-    reporting_year: 2025,
   }),
 }));
 
@@ -66,9 +70,13 @@ describe("PenaltySummaryReviewPage", () => {
     expect(screen.getByText("Penalty Summary Review Component")).toBeVisible();
 
     // Verify task list generation
-    expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
+    expect(generateManageObligationTaskList).toHaveBeenCalledWith(
       123,
-      2025,
+      {
+        penaltyStatus: "NOT PAID",
+        outstandingBalance: 0,
+        reportingYear: 2024,
+      },
       ActivePage.ReviewPenaltySummary,
     );
   });

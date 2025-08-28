@@ -4,16 +4,24 @@ import {
   generateManageObligationTaskList,
 } from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 import ApplyComplianceUnitsComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/apply-compliance-units/ApplyComplianceUnitsComponent";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 
 export default async function ApplyComplianceUnitsPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
-  const reportingYearData = await getReportingYear();
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance_tco2e: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYearData,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.ApplyComplianceUnits,
   );
 
@@ -24,7 +32,7 @@ export default async function ApplyComplianceUnitsPage({
     >
       <ApplyComplianceUnitsComponent
         complianceReportVersionId={complianceReportVersionId}
-        reportingYear={reportingYearData.reporting_year}
+        reportingYear={reportingYear}
       />
     </CompliancePageLayout>
   );

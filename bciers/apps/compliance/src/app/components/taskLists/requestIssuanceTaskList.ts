@@ -1,4 +1,5 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 export enum ActivePage {
   ReviewComplianceSummary = "ReviewComplianceSummary",
@@ -9,32 +10,44 @@ export enum ActivePage {
 export const generateRequestIssuanceTaskList: (
   complianceReportVersionId: number,
   reportingYear: number,
+  issuanceStatus: IssuanceStatus,
   activePage?: string,
 ) => TaskListElement[] = (
   complianceReportVersionId,
   reportingYear,
+  issuanceStatus,
   activePage = ActivePage.ReviewComplianceSummary,
 ) => {
-  const taskItems = [
-    {
-      type: "Page" as const,
-      title: `Review ${reportingYear} Compliance Report`,
-      link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
-      isActive: activePage === ActivePage.ReviewComplianceSummary,
-    },
-    {
-      type: "Page" as const,
-      title: "Request Issuance of Earned Credits",
-      link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`,
-      isActive: activePage === ActivePage.RequestIssuanceOfEarnedCredits,
-    },
-    {
-      type: "Page" as const,
-      title: "Track Status of Issuance",
-      link: `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
-      isActive: activePage === ActivePage.TrackStatusOfIssuance,
-    },
-  ];
+  let taskItems: TaskListElement[] = [];
+  if (
+    issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED ||
+    issuanceStatus === IssuanceStatus.APPROVED ||
+    issuanceStatus === IssuanceStatus.DECLINED
+  ) {
+    taskItems = [
+      {
+        type: "Page" as const,
+        title: "Track Status of Issuance",
+        link: `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
+        isActive: activePage === ActivePage.TrackStatusOfIssuance,
+      },
+    ];
+  } else {
+    taskItems = [
+      {
+        type: "Page" as const,
+        title: `Review ${reportingYear} Compliance Report`,
+        link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
+        isActive: activePage === ActivePage.ReviewComplianceSummary,
+      },
+      {
+        type: "Page" as const,
+        title: "Request Issuance of Earned Credits",
+        link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`,
+        isActive: activePage === ActivePage.RequestIssuanceOfEarnedCredits,
+      },
+    ];
+  }
 
   return [
     {

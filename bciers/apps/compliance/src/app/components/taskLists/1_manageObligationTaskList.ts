@@ -1,30 +1,45 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { generateAutomaticOverduePenaltyTaskList } from "./automaticOverduePenaltyTaskList";
+import { PenaltyStatus } from "@bciers/utils/src/enums";
+import { ObligationTasklistData } from "@/compliance/src/app/types";
 
 export enum ActivePage {
   ReviewComplianceSummary = "ReviewComplianceSummary",
   ApplyComplianceUnits = "ApplyComplianceUnits",
   DownloadPaymentObligationInstructions = "DownloadPaymentObligationInstructions",
   PayObligationTrackPayments = "PayObligationTrackPayments",
+  ReviewPenaltySummary = "ReviewPenaltySummary",
+  DownloadPaymentPenaltyInstruction = "DownloadPaymentPenaltyInstruction",
+  PayPenaltyTrackPayments = "PayPenaltyTrackPayments",
 }
+
+const compliancePages = [
+  ActivePage.ReviewComplianceSummary,
+  ActivePage.DownloadPaymentObligationInstructions,
+  ActivePage.PayObligationTrackPayments,
+];
+
+export const penaltyPages = [
+  ActivePage.ReviewPenaltySummary,
+  ActivePage.DownloadPaymentPenaltyInstruction,
+  ActivePage.PayPenaltyTrackPayments,
+];
 
 export const generateManageObligationTaskList: (
   complianceReportVersionId: number,
-  data: any,
+  tasklistData: ObligationTasklistData,
   defaultActiveIndex?: ActivePage | null,
 ) => TaskListElement[] = (
   complianceReportVersionId,
-  data,
+  tasklistData,
   defaultActiveIndex,
 ) => {
   const activePage =
     defaultActiveIndex === undefined
       ? ActivePage.ReviewComplianceSummary
       : defaultActiveIndex;
-  const {
-    reporting_year: reportingYear,
-    outstanding_balance: outstandingBalance,
-  } = data;
+  const { reportingYear, outstandingBalance, penaltyStatus } = tasklistData;
+
   const taskItems = [
     activePage === ActivePage.ApplyComplianceUnits
       ? {
@@ -47,12 +62,14 @@ export const generateManageObligationTaskList: (
           link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
           isActive: activePage === ActivePage.ReviewComplianceSummary,
         },
+
     {
       type: "Page" as const,
       title: "Download Payment Instructions",
       link: `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`,
       isActive: activePage === ActivePage.DownloadPaymentObligationInstructions,
     },
+
     {
       type: "Page" as const,
       title: "Pay Obligation and Track Payment(s)",
@@ -61,28 +78,27 @@ export const generateManageObligationTaskList: (
     },
   ];
 
-  const sections: TaskListElement[] = [
+  const complianceSection: TaskListElement[] = [
     {
       type: "Section",
       title: `${reportingYear} Compliance Summary`,
-      isExpanded: true,
+      isExpanded: compliancePages.includes(activePage as ActivePage),
       elements: taskItems,
     },
   ];
 
-  if (
-    activePage === ActivePage.PayObligationTrackPayments &&
-    Number(outstandingBalance) === 0 &&
-    (data?.penalty_status === "NOT PAID" || data?.penalty_status === "PAID")
-  ) {
-    const automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
-      complianceReportVersionId,
-      data.reporting_year,
-      null,
-    )[1];
+  let automaticPenaltySection: TaskListElement[] = [];
 
-    sections.push({ ...automaticPenaltySection, isExpanded: false });
+  if (
+    Number(outstandingBalance) === 0 &&
+    (penaltyStatus === PenaltyStatus.NOT_PAID ||
+      penaltyStatus === PenaltyStatus.PAID)
+  ) {
+    automaticPenaltySection = generateAutomaticOverduePenaltyTaskList(
+      complianceReportVersionId,
+      activePage,
+    );
   }
 
-  return sections;
+  return [...complianceSection, ...automaticPenaltySection];
 };

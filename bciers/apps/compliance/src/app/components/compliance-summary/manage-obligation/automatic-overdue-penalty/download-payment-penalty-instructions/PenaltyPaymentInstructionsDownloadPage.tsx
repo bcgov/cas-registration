@@ -1,13 +1,13 @@
-import {
-  ActivePage,
-  generateAutomaticOverduePenaltyTaskList,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import PaymentInstructionsDownloadComponent from "@/compliance/src/app/components/compliance-summary/manage-obligation/download-payment-instructions/PaymentInstructionsDownloadComponent";
 import getInvoiceByComplianceReportVersionId from "@/compliance/src/app/utils/getInvoiceByComplianceReportVersionId";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
+import {
+  ActivePage,
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 export default async function PenaltyPaymentInstructionsDownloadPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -15,11 +15,19 @@ export default async function PenaltyPaymentInstructionsDownloadPage({
   const customBackUrl = `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
   const customContinueUrl = `/compliance-summaries/${complianceReportVersionId}/pay-penalty-track-payments`;
 
-  const reportingYearData = await getReportingYear();
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance_tco2e: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
 
-  const taskListElements = generateAutomaticOverduePenaltyTaskList(
+  const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYearData.reporting_year,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.DownloadPaymentPenaltyInstruction,
   );
 

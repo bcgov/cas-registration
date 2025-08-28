@@ -17,6 +17,7 @@ export default async function InternalReviewCreditsIssuanceRequestPage({
   const taskListElements = generateIssuanceRequestTaskList(
     complianceReportVersionId,
     pageData.reporting_year,
+    pageData.issuance_status,
     ActivePage.ReviewCreditsIssuanceRequest,
   );
 

@@ -15,9 +15,19 @@ export default async function ComplianceSummaryReviewPage({
 }: Readonly<HasComplianceReportVersion>) {
   const complianceSummaryReviewPageData: ComplianceSummaryReviewPageData =
     await fetchComplianceSummaryReviewPageData(complianceReportVersionId);
+
+  const penaltyStatus = complianceSummaryReviewPageData.penalty_status;
+  const reportingYear = complianceSummaryReviewPageData.reporting_year;
+  const outstandingBalance =
+    complianceSummaryReviewPageData.outstanding_balance_tco2e;
+
   const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    complianceSummaryReviewPageData,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.ReviewComplianceSummary,
   );
 

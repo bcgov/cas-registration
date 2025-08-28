@@ -61,11 +61,12 @@ export interface ComplianceSummaryReviewNoEmissionNoObligationData {
 
 export interface RequestIssuanceTrackStatusData {
   earned_credits: number;
-  issuance_status: string;
+  issuance_status: IssuanceStatus;
   bccr_trading_name: string;
   holding_account_id: string;
   director_comment: string;
   analyst_comment: string;
+  reporting_year: number;
 }
 
 export interface ComplianceAppliedUnits {
@@ -147,7 +148,6 @@ export interface ComplianceSummary {
   operation_name: string;
   reporting_year: number;
   excess_emissions: number;
-  outstanding_balance?: number;
   status?: ComplianceSummaryStatus;
   penalty_status?: string;
   obligation_id?: string;
@@ -206,4 +206,10 @@ export interface PenaltyData {
 
 export interface PayPenaltyTrackPaymentsFormData extends PenaltyData {
   payments: Payment[];
+}
+
+export interface ObligationTasklistData {
+  reportingYear: number;
+  penaltyStatus?: string;
+  outstandingBalance?: number;
 }

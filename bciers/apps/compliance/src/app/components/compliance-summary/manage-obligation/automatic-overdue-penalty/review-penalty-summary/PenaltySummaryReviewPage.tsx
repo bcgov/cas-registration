@@ -1,11 +1,11 @@
-import {
-  generateAutomaticOverduePenaltyTaskList,
-  ActivePage,
-} from "@/compliance/src/app/components/taskLists/automaticOverduePenaltyTaskList";
 import CompliancePageLayout from "@/compliance/src/app/components/layout/CompliancePageLayout";
 import PenaltySummaryReviewComponent from "./PenaltySummaryReviewComponent";
 import getAutomaticOverduePenalty from "@/compliance/src/app/utils/getAutomaticOverduePenalty";
-import { getReportingYear } from "@reporting/src/app/utils/getReportingYear";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
+import {
+  ActivePage,
+  generateManageObligationTaskList,
+} from "@/compliance/src/app/components/taskLists/1_manageObligationTaskList";
 
 interface Props {
   compliance_report_version_id: number;
@@ -17,11 +17,19 @@ export default async function PenaltySummaryReviewPage({
   const penaltyData = await getAutomaticOverduePenalty(
     complianceReportVersionId,
   );
-  const { reporting_year: reportingYear } = await getReportingYear();
+  const {
+    penalty_status: penaltyStatus,
+    reporting_year: reportingYear,
+    outstanding_balance_tco2e: outstandingBalance,
+  } = await getComplianceSummary(complianceReportVersionId);
 
-  const taskListElements = generateAutomaticOverduePenaltyTaskList(
+  const taskListElements = generateManageObligationTaskList(
     complianceReportVersionId,
-    reportingYear,
+    {
+      penaltyStatus,
+      reportingYear,
+      outstandingBalance,
+    },
     ActivePage.ReviewPenaltySummary,
   );
 

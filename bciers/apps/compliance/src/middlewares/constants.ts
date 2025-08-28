@@ -35,7 +35,6 @@ export const joinCompliancePath = (...segs: (string | number | undefined)[]) =>
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
-  MO_REVIEW_SUMMARY = "manage-obligation-review-summary",
   MO_APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
   NO_REVIEW_SUMMARY = "review-summary",
   RI_EARNED_CREDITS = "request-issuance-of-earned-credits",
@@ -57,7 +56,7 @@ export const routesNoObligation = ["review-summary"];
 export const routesObligation = [
   "apply-compliance-units",
   "download-payment-instructions",
-  "manage-obligation-review-summary",
+  "review-compliance-obligation-report",
   "pay-obligation-track-payments",
 ];
 

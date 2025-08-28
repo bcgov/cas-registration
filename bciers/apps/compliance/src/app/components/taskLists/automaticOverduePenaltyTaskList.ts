@@ -1,21 +1,10 @@
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
-import { generateManageObligationTaskList } from "./1_manageObligationTaskList";
-
-export enum ActivePage {
-  ReviewPenaltySummary = "ReviewPenaltySummary",
-  DownloadPaymentPenaltyInstruction = "DownloadPaymentPenaltyInstruction",
-  PayPenaltyTrackPayments = "PayPenaltyTrackPayments",
-}
+import { ActivePage, penaltyPages } from "./1_manageObligationTaskList";
 
 export const generateAutomaticOverduePenaltyTaskList: (
   complianceReportVersionId: number,
-  reporting_year: number,
   activePage?: ActivePage | null,
-) => TaskListElement[] = (
-  complianceReportVersionId,
-  reporting_year,
-  activePage = ActivePage.ReviewPenaltySummary,
-) => {
+) => TaskListElement[] = (complianceReportVersionId, activePage) => {
   const taskItems = [
     {
       type: "Page" as const,
@@ -37,18 +26,13 @@ export const generateAutomaticOverduePenaltyTaskList: (
     },
   ];
 
-  const complianceObligationSection = generateManageObligationTaskList(
-    complianceReportVersionId,
-    { reporting_year },
-    null,
-  )[0];
-
   return [
-    { ...complianceObligationSection, isExpanded: false },
     {
       type: "Section",
       title: `Automatic Overdue Penalty`,
-      isExpanded: true,
+      isExpanded: Object.values(penaltyPages).includes(
+        activePage as ActivePage,
+      ),
       elements: taskItems,
     },
   ];

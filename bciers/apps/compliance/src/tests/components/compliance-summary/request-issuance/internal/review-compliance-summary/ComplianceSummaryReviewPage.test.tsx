@@ -79,6 +79,7 @@ describe("Internal ComplianceSummaryReviewPage", () => {
     expect(generateIssuanceRequestTaskList).toHaveBeenCalledWith(
       mockComplianceReportVersionId,
       2024,
+      IssuanceStatus.CREDITS_NOT_ISSUED,
       ActivePage.ReviewComplianceSummary,
     );
   });

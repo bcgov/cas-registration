@@ -3,6 +3,7 @@ import ComplianceSummaryReviewComponent from "./ComplianceSummaryReviewComponent
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
+import { generateNoObligationNoCreditsTaskList } from "@/compliance/src/app/components/taskLists/noObligationNoCreditsTasklist";
 
 export default async function ComplianceSummaryReviewPage({
   compliance_report_version_id: complianceReportVersionId,
@@ -18,21 +19,11 @@ export default async function ComplianceSummaryReviewPage({
       complianceSummary.emissions_attributable_for_compliance?.toString() ?? "",
   };
 
-  const taskListElements: TaskListElement[] = [
-    {
-      type: "Section",
-      title: `${complianceSummary.reporting_year} Compliance Summary`,
-      isExpanded: true,
-      elements: [
-        {
-          type: "Page" as const,
-          title: `Review ${complianceSummary.reporting_year} Compliance Report`,
-          link: `/compliance-summaries/${complianceReportVersionId}/review-summary`,
-          isActive: true,
-        },
-      ],
-    },
-  ];
+  const taskListElements: TaskListElement[] =
+    generateNoObligationNoCreditsTaskList(
+      complianceReportVersionId,
+      data.reporting_year,
+    );
 
   return (
     <CompliancePageLayout

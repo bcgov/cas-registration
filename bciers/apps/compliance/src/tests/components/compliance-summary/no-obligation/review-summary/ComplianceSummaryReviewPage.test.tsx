@@ -8,6 +8,8 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
     emissions_attributable_for_compliance: "0",
     emissions_limit: "0",
     excess_emissions: "0",
+    penalty_status: "NONE",
+    outstanding_balance_tco2e: 5,
   }),
 }));
 
