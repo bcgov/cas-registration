@@ -2,14 +2,9 @@ import json
 from uuid import UUID
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
+from reporting.management.commands.utils import submit_report_from_fixture
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from reporting.schema.report_verification import ReportVerificationIn
-from reporting.service.report_attachment_service import ReportAttachmentService
-from reporting.service.report_sign_off_service import ReportSignOffAcknowledgements, ReportSignOffData
-from reporting.service.report_submission_service import ReportSubmissionService
-from django.core.files.base import ContentFile
-from reporting.service.report_verification_service import ReportVerificationService
 from service.report_service import ReportService
 from service.report_version_service import ReportVersionService
 
@@ -71,44 +66,12 @@ class Command(BaseCommand):
             for operation_id in operation_ids_to_submit:
                 # set up required data for submission
                 # multiple report versions to submit if there are multiple years
-                report_versions = ReportVersion.objects.filter(report__operation_id=operation_id)
+                report_versions = ReportVersion.objects.filter(
+                    report__operation_id=operation_id,
+                )
 
                 for report_version in report_versions:
-
-                    ReportVerificationService.save_report_verification(
-                        report_version.id,
-                        ReportVerificationIn(
-                            verification_conclusion='conclude',
-                        ),
-                    )
-                    ReportAttachmentService.set_attachment(
-                        report_version.id,
-                        'ba2ba62a-1218-42e0-942a-ab9e92ce8822',
-                        "verification_statement",
-                        ContentFile(b"data1", "file1.pdf"),
-                    )
-                    verification_statement = ReportAttachmentService.get_attachments(report_version.id).first()
-                    verification_statement.status = 'Clean'
-                    verification_statement.save()
-
-                    # submit!
-                    ReportSubmissionService.submit_report(
-                        report_version.id,
-                        UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'),
-                        ReportSignOffData(
-                            ReportSignOffAcknowledgements(
-                                acknowledgement_of_records=True,
-                                acknowledgement_of_review=True,
-                                acknowledgement_of_certification=True,
-                                acknowledgement_of_information=True,
-                                acknowledgement_of_possible_costs=True,
-                                acknowledgement_of_new_version=True,
-                                acknowledgement_of_corrections=True,
-                                acknowledgement_of_errors=True,
-                            ),
-                            signature='me',
-                        ),
-                    )
+                    submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
 
             # create supplmentary report
             for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
