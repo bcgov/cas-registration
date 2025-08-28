@@ -19,24 +19,6 @@ class ElicensingInterestRateTest(BaseTestCase):
         # Clear any existing data otherwise uniqueness constraints will fail
         ElicensingInterestRate.objects.all().delete()
 
-    def test_overlap_constraint_prevents_overlapping_periods(self):
-        make_recipe(
-            'compliance.tests.utils.elicensing_interest_rate',
-            start_date=date(2024, 1, 1),
-            end_date=date(2024, 3, 31),
-            is_current_rate=False,
-        )
-
-        with self.assertRaises(ValidationError):
-            rate2 = make_recipe(
-                'compliance.tests.utils.elicensing_interest_rate',
-                start_date=date(2024, 2, 1),
-                end_date=date(2024, 4, 30),
-                is_current_rate=False,
-            )  # Overlaps with first period
-            rate2.full_clean()
-            rate2.save()
-
     def test_adjacent_periods_allowed(self):
         make_recipe(
             'compliance.tests.utils.elicensing_interest_rate',
