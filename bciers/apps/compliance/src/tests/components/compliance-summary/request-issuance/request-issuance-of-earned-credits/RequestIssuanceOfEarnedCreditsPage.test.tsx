@@ -43,13 +43,6 @@ vi.mock(
   }),
 );
 
-// Mock the compliance summary data function
-// vi.mock(
-//   "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
-//   () => ({
-//     getRequestIssuanceComplianceSummaryData: vi.fn(),
-//   }),
-// );
 // Mock the request issuance data function
 vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
   getRequestIssuanceTrackStatusData: vi.fn(),
@@ -64,6 +57,7 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
     holding_account_id: "id",
     director_comment: "comment",
     analyst_comment: "comment",
+    reporting_year: 2024,
   };
 
   beforeEach(() => {

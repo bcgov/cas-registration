@@ -19,15 +19,6 @@ vi.mock(
   }),
 );
 
-// Mock the task list data fetching function
-vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
-  getComplianceSummary: vi.fn().mockResolvedValue({
-    penalty_status: "NONE",
-    outstanding_balance: 5,
-    reporting_year: 2024,
-  }),
-}));
-
 vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
   __esModule: true,
   default: ({ children }: { children: React.ReactNode }) => (
@@ -62,6 +53,8 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
   const mockData = {
     id: 1,
     reporting_year: 2025,
+    outstanding_balance_tco2e: 5,
+    penalty_status: "NONE",
     excess_emissions: 0,
     earned_credits_amount: 10,
     issuance_status: "Not Issued",
@@ -105,7 +98,7 @@ describe("ComplianceSummaryReviewPage (Manage Obligation)", () => {
       expect.objectContaining({
         penaltyStatus: "NONE",
         outstandingBalance: 5,
-        reportingYear: 2024,
+        reportingYear: 2025,
       }),
       ActivePage.ReviewComplianceSummary,
     );

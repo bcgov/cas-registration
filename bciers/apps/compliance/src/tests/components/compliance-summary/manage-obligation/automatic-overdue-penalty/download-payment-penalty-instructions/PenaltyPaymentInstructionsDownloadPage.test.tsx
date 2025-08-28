@@ -30,7 +30,7 @@ vi.mock(
 vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
   getComplianceSummary: vi.fn().mockResolvedValue({
     penalty_status: "NOT PAID",
-    outstanding_balance: 0,
+    outstanding_balance_tco2e: 0,
     reporting_year: 2024,
   }),
 }));

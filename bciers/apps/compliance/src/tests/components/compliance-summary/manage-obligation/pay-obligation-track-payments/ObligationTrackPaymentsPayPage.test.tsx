@@ -24,7 +24,7 @@ vi.mock(
 vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
   getComplianceSummary: vi.fn().mockResolvedValue({
     penalty_status: "NONE",
-    outstanding_balance: 5,
+    outstanding_balance_tco2e: 5,
     reporting_year: 2024,
   }),
 }));
