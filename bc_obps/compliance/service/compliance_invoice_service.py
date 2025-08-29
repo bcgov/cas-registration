@@ -14,8 +14,6 @@ from compliance.service.elicensing.elicensing_data_refresh_service import Elicen
 
 from registration.models import (
     Address,
-    Operator,
-    Operation,
 )
 from reporting.models import (
     ReportComplianceSummary,
@@ -61,15 +59,14 @@ class ComplianceInvoiceService:
     def _prepare_partial_invoice_context(
         cls, compliance_report_version_id: int, invoice: ElicensingInvoice, compliance_obligation_id: str
     ) -> Dict[str, Any]:
-        # Get operation information
-        # compliance_report_version_id  →  ComplianceReportVersion → ComplianceReport → Report →  Operation
-        operation: Operation = ComplianceReportVersionService.get_operation_by_compliance_report_version(
+        # Get operation (from report, not admin) information
+        report_operation = ComplianceReportVersionService.get_report_operation_by_compliance_report_version(
             compliance_report_version_id
         )
 
-        # Get operator information
-        # Operation → Operator
-        operator: Operator = operation.operator
+        operator = ComplianceReportVersionService.get_operator_by_compliance_report_version(
+            compliance_report_version_id
+        )
         # Operator → Address
 
         operator_address_line1, operator_address_line2 = ComplianceInvoiceService.format_operator_address(
@@ -85,7 +82,7 @@ class ComplianceInvoiceService:
             "operator_name": operator.legal_name,
             "operator_address_line1": operator_address_line1,
             "operator_address_line2": operator_address_line2,
-            "operation_name": operation.name,
+            "operation_name": report_operation.operation_name,
             "invoice_number": invoice_number,
             "invoice_due_date": invoice_due_date,
             'invoice_printed_date': timezone.now().strftime("%b %-d, %Y"),

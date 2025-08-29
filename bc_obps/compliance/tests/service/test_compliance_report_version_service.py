@@ -5,6 +5,8 @@ from unittest.mock import patch
 from compliance.models import ComplianceReportVersion, ComplianceEarnedCredit
 from model_bakery import baker
 from registration.models import Operation
+from registration.models.operator import Operator
+from reporting.models.report_operation import ReportOperation
 
 pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
 
@@ -272,6 +274,72 @@ class TestComplianceReportVersionService:
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_1) == Decimal("100.00")
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_2) == Decimal("2.0")
         assert ComplianceReportVersionService.calculate_display_value_excess_emissions(version_3) == Decimal("0")
+
+    def test_get_operator_by_compliance_report_version(self):
+        # Arrange
+        operator = baker.make_recipe('registration.tests.utils.operator')
+        operation = baker.make_recipe('registration.tests.utils.operation', operator=operator)
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+        )
+
+        # Act
+        result = ComplianceReportVersionService.get_operator_by_compliance_report_version(compliance_report_version.id)
+
+        # Assert
+        assert isinstance(result, Operator)
+        assert result.id == operator.id
+
+    def test_get_operator_by_compliance_report_version_nonexistent_id(self):
+        # Arrange
+        nonexistent_id = 99999
+
+        # Act & Assert
+        with pytest.raises(ComplianceReportVersion.DoesNotExist):
+            ComplianceReportVersionService.get_operator_by_compliance_report_version(nonexistent_id)
+
+    def test_get_report_operation_by_compliance_report_version(self):
+        # Arrange
+        operation = baker.make_recipe('registration.tests.utils.operation', name='admin name')
+        report = baker.make_recipe('reporting.tests.utils.report', operation=operation)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+
+        # create the report_operation linked to the report_version
+        report_operation = baker.make_recipe(
+            'reporting.tests.utils.report_operation',
+            report_version=report_version,
+            operation_name='reporting name',
+        )
+
+        report_compliance_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version
+        )
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
+
+        # Act
+        result = ComplianceReportVersionService.get_report_operation_by_compliance_report_version(
+            compliance_report_version.id
+        )
+
+        # Assert
+        assert isinstance(result, ReportOperation)
+        assert result.id == report_operation.id
+        assert result.operation_name == 'reporting name'
+
+    def test_get_report_operation_by_compliance_report_version_nonexistent_id(self):
+        # Arrange
+        nonexistent_id = 99999
+
+        # Act & Assert
+        with pytest.raises(ComplianceReportVersion.DoesNotExist):
+            ComplianceReportVersionService.get_report_operation_by_compliance_report_version(nonexistent_id)
 
     def test_update_compliance_status(self):
         report_compliance_summary = baker.make_recipe(
