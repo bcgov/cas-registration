@@ -31,6 +31,7 @@ const ComplianceSummaryReviewComponent = ({
       saveAndContinueUrl = "";
     }
   }
+  console.log("data", data);
 
   return (
     <FormBase

@@ -80,7 +80,7 @@ export interface ComplianceAppliedUnits {
 
 export interface RequestIssuanceComplianceSummaryData {
   reporting_year: number;
-  emissions_attributable_for_compliance: number;
+  cumulative_emissions_attributable_for_compliance: number;
   emissions_limit: number;
   excess_emissions: number;
   earned_credits_amount: number;
