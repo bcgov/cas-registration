@@ -117,7 +117,9 @@ class TestReportingDashboardService:
 
         # Create reports
         ## Create current year reports (the service should not return these)
-        [ReportService.create_report(operation.id, current_year) for operation in operations]
+        current_report_version_ids = [
+            ReportService.create_report(operation.id, current_year) for operation in operations
+        ]
 
         ## Create past reports
         ### Report 1 - Operation 1: Laster year Report Version 1
@@ -144,10 +146,11 @@ class TestReportingDashboardService:
         rep3_op2_report = rep3_op2_latest_version.report
         rep3_report_operation = ReportOperation.objects.get(report_version=rep3_op2_latest_version)
 
-        result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+        # PAST REPORTS
+        past_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
             uo.user.user_guid, current_year, ReportsPeriod.PAST, sort_field, sort_order, filters
         ).values()
-        result_list = list(result)
+        result_list = list(past_result)
         assert len(result_list) == 3
 
         # Create dictionaries for easy lookup by report ID
@@ -176,6 +179,70 @@ class TestReportingDashboardService:
         assert rep3_result["report_id"] == rep3_op2_report.id
         assert rep3_result["report_version_id"] == rep3_op2_latest_version.id
         assert rep3_result["report_status"] == rep3_op2_latest_version.status
+
+        # CURRENT REPORTS
+        current_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            uo.user.user_guid, current_year, ReportsPeriod.CURRENT, sort_field, sort_order, filters
+        ).values()
+        result_list = list(current_result)
+        assert len(result_list) == 3
+        result_dict = {str(item["id"]): item for item in result_list}
+        for id in current_report_version_ids:
+            expected = ReportVersion.objects.get(id=id)
+            result = result_dict[str(expected.report.id)]
+            assert result["operation_name"] == expected.report_operation.operation_name
+            assert result["reporting_year_id"] == expected.report.reporting_year_id
+            assert result["report_id"] == expected.report.id
+            assert result["report_version_id"] == expected.id
+            assert result["report_status"] == expected.status
+
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_get_all_reports_for_internal_reporting_dashboard(
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+    ):
+        user = make_recipe('registration.tests.utils.cas_admin')
+        mock_get_by_guid.return_value = user
+
+        current_year = 2061
+        last_year = current_year - 1
+        laster_year = current_year - 2
+        years = [current_year, last_year, laster_year]
+        [reporting_year_baker(reporting_year=year) for year in years]
+        operators = [operator_baker() for _ in range(2)]
+        operations = [operation_baker(operator_id=op.id) for op in operators for _ in range(2)]
+        report_verions = [
+            report_version_baker(report__operation=op, report__operator=op.operator, report__reporting_year=year)
+            for op in operations
+            for year in years
+        ]
+        skip_id = report_verions[0].id
+        for rv in report_verions:
+            if rv.id == skip_id:
+                continue
+            rv.status = "Submitted"
+            rv.is_latest_submitted = True
+            rv.save()
+
+        result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user.user_guid, current_year, ReportsPeriod.ALL, filters=ReportingDashboardOperationFilterSchema()
+        ).values()
+        result_list = list(result)
+        assert (
+            len(result_list) == len(report_verions) - 1
+        )  # one report version was not submitted so should not be included
+        result_dict = {str(item["id"]): item for item in result_list}
+        for rv in report_verions:
+            if rv.id == skip_id:
+                assert str(rv.report.id) not in result_dict
+                continue
+            res = result_dict.get(str(rv.report.id))
+            assert res is not None
+            assert res["report_id"] == rv.report.id
+            assert res["report_version_id"] == rv.id
+            assert res["report_status"] == rv.status
+            assert res["operation_name"] == rv.report_operation.operation_name
+            assert res["reporting_year_id"] == rv.report.reporting_year_id
 
     @patch(
         "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"

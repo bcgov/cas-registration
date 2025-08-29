@@ -56,8 +56,8 @@ class ReportingDashboardService:
         cls,
         user_guid: UUID,
         reporting_year: int,
-        sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None,
+        sort_field: Optional[str] = "id",
+        sort_order: Optional[str] = "asc",
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
