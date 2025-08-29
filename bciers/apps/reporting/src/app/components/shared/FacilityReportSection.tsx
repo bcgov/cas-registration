@@ -21,11 +21,12 @@ const fieldLabels: Record<string, string> = {
 const fieldOrder = ["activity", "source_type", "emission_category", "gas_type"];
 
 interface FacilityReportSectionProps {
-  facilityName: string;
+  facilityName?: string;
   facilityData: any;
   isAdded?: boolean;
   isRemoved?: boolean;
   showReportingOnlyConditions?: boolean;
+  expandable?: boolean; // <-- add optional prop
 }
 
 interface NonAttributableEmissionRecord {
@@ -44,6 +45,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
   isAdded = false,
   isRemoved = false,
   showReportingOnlyConditions = true,
+  expandable,
 }) => {
   // Process non-attributable emissions to include change type
   const processedEmissions = React.useMemo(() => {
@@ -72,7 +74,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
         }`}
         data={{}}
         fields={[]}
-        expandable={true}
+        {...(expandable === false ? {} : { expandable: true })}
         isAdded={isAdded}
         isDeleted={isRemoved}
       >
