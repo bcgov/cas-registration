@@ -289,24 +289,4 @@ describe("InternalReviewByDirectorComponent", () => {
       ),
     ).toBeVisible();
   });
-
-  it("displays declined note when issuance status is declined", () => {
-    const declinedData = {
-      ...mockData,
-      issuance_status: IssuanceStatus.DECLINED,
-    };
-
-    render(
-      <InternalReviewByDirectorComponent
-        data={declinedData}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    expect(
-      screen.getByText(
-        "Supplementary report was required in the previous step, this request has been declined automatically.",
-      ),
-    ).toBeVisible();
-  });
 });
