@@ -7,6 +7,7 @@ from registration.schema.generic import Message
 from compliance.constants import BCCR
 from compliance.service.bc_carbon_registry.account_service import BCCarbonRegistryAccountService
 from compliance.api.permissions import approved_industry_user_compliance_report_version_composite_auth
+from common.exceptions import UserError
 
 bccr_service = BCCarbonRegistryAccountService()
 
@@ -22,5 +23,14 @@ def get_bccr_account_details(
     request: HttpRequest, account_id: FifteenDigitString, compliance_report_version_id: int
 ) -> Tuple[Literal[200], Dict[str, Optional[str]]]:
     account_details = bccr_service.get_account_details(account_id=account_id)
+    if not account_details:
+        return 200, {"bccr_trading_name": None}
+
+    if not bccr_service.validate_holding_account_ownership(
+        holding_account_id=account_id,
+        compliance_report_version_id=compliance_report_version_id,
+    ):
+        raise UserError("The provided holding account does not own the compliance sub-account for this operation.")
+
     trading_name = getattr(account_details, "trading_name", None) if account_details else None
     return 200, {"bccr_trading_name": trading_name}

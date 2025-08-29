@@ -184,32 +184,6 @@ describe("ApplyComplianceUnitsComponent", () => {
     expect(screen.getByText(/outstanding balance/i)).toBeVisible();
   });
 
-  it("does not show compliance details when account is invalid", async () => {
-    // Mock account details to fail
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error("Invalid account"),
-    );
-
-    render(
-      <ApplyComplianceUnitsComponent
-        complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
-        reportingYear={2024}
-      />,
-    );
-    const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
-    fireEvent.change(accountInput, { target: { value: VALID_ACCOUNT_ID } });
-
-    await waitFor(() => {
-      expect(getBccrAccountDetails).toHaveBeenCalledWith(
-        VALID_ACCOUNT_ID,
-        TEST_COMPLIANCE_REPORT_VERSION_ID,
-      );
-      // Should show error message instead of trading name
-      expect(screen.getByText("Invalid account")).toBeVisible();
-      expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
-    });
-  });
-
   it("shows confirmation checkbox when trading name is loaded", async () => {
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       bccr_trading_name: MOCK_TRADING_NAME,
@@ -302,6 +276,12 @@ describe("ApplyComplianceUnitsComponent", () => {
     await waitFor(() => {
       expect(screen.getByText("Invalid account")).toBeVisible();
     });
+
+    // Should not allow progression when there's an error
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Submit" }),
+    ).not.toBeInTheDocument();
   });
 
   it("hides confirmation checkbox when invalid account is entered after valid one", async () => {
@@ -326,10 +306,12 @@ describe("ApplyComplianceUnitsComponent", () => {
       expect(screen.getByRole("checkbox")).toBeInTheDocument();
     });
 
-    // Now enter an invalid account (null trading name response)
-    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      bccr_trading_name: null,
-    });
+    // Now enter an invalid account (error response)
+    (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+      new Error(
+        "The provided holding account does not own the compliance sub-account for this operation.",
+      ),
+    );
 
     fireEvent.change(accountInput, { target: { value: "999999999999999" } });
 
@@ -337,7 +319,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          /please enter a valid bccr holding account id to move to the next step/i,
+          "The provided holding account does not own the compliance sub-account for this operation.",
         ),
       ).toBeVisible();
       expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
@@ -670,7 +652,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     });
   });
 
-  it("handles submission errors correctly", async () => {
+  it("handles initial compliance data submission errors correctly", async () => {
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       bccr_trading_name: MOCK_TRADING_NAME,
     });
@@ -771,7 +753,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     );
   });
 
-  it("shows loading state when submitting", async () => {
+  it("shows loading state when submitting initial compliance data request", async () => {
     (getBccrAccountDetails as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
       bccr_trading_name: MOCK_TRADING_NAME,
     });

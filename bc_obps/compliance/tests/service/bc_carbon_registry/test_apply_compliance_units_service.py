@@ -164,6 +164,8 @@ class TestApplyComplianceUnitsService:
             trading_name="Test Corp",
         )
 
+        mock_bccr_service.validate_holding_account_ownership.return_value = True
+
         mock_bccr_service.get_or_create_compliance_account.return_value = Mock(
             entity_id="789",
             master_account_name="Test Corp Compliance",
@@ -224,6 +226,10 @@ class TestApplyComplianceUnitsService:
         assert result.compliance_unit_cap_remaining == Decimal("400.00")
 
         mock_get_obligation_data.assert_called_once_with(1)
+        mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
+            holding_account_id="123",
+            compliance_report_version_id=1,
+        )
 
     def test_get_apply_compliance_units_page_data_no_holding_account(
         self,
@@ -477,6 +483,8 @@ class TestApplyComplianceUnitsService:
         mock_invoice.elicensing_line_items.all.return_value = []
         mock_refresh_data.return_value.invoice = mock_invoice
 
+        mock_bccr_service.validate_holding_account_ownership.return_value = True
+
         compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
         payload = {
@@ -523,6 +531,10 @@ class TestApplyComplianceUnitsService:
         mock_can_apply_units.assert_called_once_with(compliance_report_version.id)
         mock_create_adjustment.assert_called_once()
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("80.00")
+        mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
+            holding_account_id=account_id,
+            compliance_report_version_id=compliance_report_version.id,
+        )
 
     def test_apply_compliance_units_filters_zero_quantities(
         self,
@@ -542,6 +554,8 @@ class TestApplyComplianceUnitsService:
         mock_refresh_data.return_value.invoice = mock_invoice
 
         mock_bccr_service.client.transfer_compliance_units.return_value = {"success": True}
+
+        mock_bccr_service.validate_holding_account_ownership.return_value = True
 
         compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
@@ -587,6 +601,10 @@ class TestApplyComplianceUnitsService:
         assert "BCO-2023-0001" not in serials
         assert "BCE-2023-0002" not in serials
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("80.00")
+        mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
+            holding_account_id=account_id,
+            compliance_report_version_id=compliance_report_version.id,
+        )
 
     def test_apply_compliance_units_all_zero_quantities(
         self,
@@ -606,6 +624,8 @@ class TestApplyComplianceUnitsService:
         mock_refresh_data.return_value.invoice = mock_invoice
 
         mock_bccr_service.client.transfer_compliance_units.return_value = {"success": True}
+
+        mock_bccr_service.validate_holding_account_ownership.return_value = True
 
         compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
         account_id = "123"
@@ -635,6 +655,10 @@ class TestApplyComplianceUnitsService:
         call_args = mock_bccr_service.client.transfer_compliance_units.call_args[0][0]
         assert call_args["mixedUnitList"] == []
         assert mock_create_adjustment.call_args.kwargs["adjustment_total"] == -Decimal("0.00")
+        mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
+            holding_account_id=account_id,
+            compliance_report_version_id=compliance_report_version.id,
+        )
 
     @patch(
         "compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
@@ -671,3 +695,100 @@ class TestApplyComplianceUnitsService:
         )
         print(result)
         assert result == (Decimal("250.00"), Decimal("150"))
+
+    def test_get_apply_compliance_units_page_data_invalid_ownership(
+        self,
+        mock_compute_compliance_unit_caps,
+        mock_bccr_service,
+        mock_compliance_report_version_service,
+        mock_compliance_charge_rate_service,
+        mock_get_obligation_data,
+    ):
+        """Test that invalid holding account ownership returns empty data."""
+        # Arrange
+        mock_bccr_service.get_account_details.return_value = Mock(
+            entity_id="123",
+            organization_classification_id="456",
+            type_of_account_holder="Corporation",
+            trading_name="Test Corp",
+        )
+
+        # Mock ownership validation to return False (invalid ownership)
+        mock_bccr_service.validate_holding_account_ownership.return_value = False
+
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        mock_compliance_report_version_service.get_compliance_report_version.return_value = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
+        )
+
+        # Act
+        result = ApplyComplianceUnitsService.get_apply_compliance_units_page_data(
+            account_id="123",
+            compliance_report_version_id=1,
+        )
+
+        # Assert
+        assert isinstance(result, ComplianceUnitsPageData)
+        assert result.bccr_trading_name is None
+        assert result.bccr_compliance_account_id is None
+        assert result.charge_rate is None
+        assert result.outstanding_balance is None
+        assert result.bccr_units == []
+        assert result.compliance_unit_cap_limit is None
+        assert result.compliance_unit_cap_remaining is None
+
+        # Verify that ownership validation was called
+        mock_bccr_service.validate_holding_account_ownership.assert_called_once()
+
+        # Verify that subsequent service calls were not made since ownership failed
+        mock_bccr_service.get_or_create_compliance_account.assert_not_called()
+        mock_bccr_service.client.list_all_units.assert_not_called()
+        mock_compliance_charge_rate_service.get_rate_for_year.assert_not_called()
+
+    def test_apply_compliance_units_invalid_ownership(
+        self,
+        mock_bccr_service,
+        mock_compliance_report_version_service,
+        mock_refresh_data,
+    ):
+        """Test that applying units with invalid ownership raises an error."""
+        # Arrange
+        operation = baker.make_recipe(
+            "registration.tests.utils.operation",
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
+            status=Operation.Statuses.REGISTERED,
+        )
+        compliance_report_version = baker.make_recipe(
+            "compliance.tests.utils.compliance_report_version", compliance_report__report__operation=operation
+        )
+
+        mock_compliance_report_version_service.get_compliance_report_version.return_value = compliance_report_version
+
+        # Mock ownership validation to return False (invalid ownership)
+        mock_bccr_service.validate_holding_account_ownership.return_value = False
+
+        account_id = "123"
+        payload = {
+            "bccr_compliance_account_id": "456",
+            "bccr_units": [],
+            "total_equivalent_value": "0.00",
+        }
+
+        # Act & Assert
+        with pytest.raises(
+            UserError, match="The provided holding account does not own the compliance sub-account for this operation."
+        ):
+            ApplyComplianceUnitsService.apply_compliance_units(account_id, compliance_report_version.id, payload)
+
+        # Verify that ownership validation was called
+        mock_bccr_service.validate_holding_account_ownership.assert_called_once_with(
+            holding_account_id=account_id,
+            compliance_report_version_id=compliance_report_version.id,
+        )
+
+        # Verify that no further processing occurred
+        mock_refresh_data.assert_not_called()
