@@ -46,6 +46,7 @@ The compliance period fixture follows this format:
       "start_date": "2023-01-01",
       "end_date": "2023-12-31",
       "compliance_deadline": "2024-06-30",
+      "invoice_generation_date": "2024-11-01",
       "reporting_year": 2023
     }
   }
