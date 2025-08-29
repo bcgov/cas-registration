@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0023_compliancepenalty_fee_date'),
+        ('compliance', '0025_elicensinginterestrate_is_current_rate_and_more'),
     ]
 
     operations = [
