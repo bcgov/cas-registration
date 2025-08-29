@@ -51,16 +51,6 @@ ENDPOINTS = {
             "endpoint_name": "get_initial_activity_data",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
-        {
-            "method": "get",
-            "endpoint_name": "get_report_history",
-            "kwargs": {"report_id": MOCK_INT},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_report_operation",
-            "kwargs": {"report_id": MOCK_INT},
-        },
         {"method": "get", "endpoint_name": "validate_user_reporting_access"},
         {
             "method": "get",
@@ -523,7 +513,7 @@ ENDPOINTS = {
         },
         {"method": "get", "endpoint_name": "build_form_schema"},
         {"method": "get", "endpoint_name": "get_dashboard_operations_list"},
-        {"method": "get", "endpoint_name": "get_dashboard_past_reports_list"},
+        {"method": "get", "endpoint_name": "get_dashboard_reports_list"},
         {
             "method": "get",
             "endpoint_name": "get_facility_report_form_data",
@@ -538,6 +528,16 @@ ENDPOINTS = {
             "method": "get",
             "endpoint_name": "get_facility_report_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_history",
+            "kwargs": {"report_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_operation",
+            "kwargs": {"report_id": MOCK_INT},
         },
         {
             "method": "put",

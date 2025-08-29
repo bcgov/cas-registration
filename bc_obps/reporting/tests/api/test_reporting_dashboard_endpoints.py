@@ -60,18 +60,18 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
             assert item['report_status'] is None
 
     @patch(
-        "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_past_reports_for_reporting_dashboard"
+        "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_reports_for_reporting_dashboard"
     )
     @patch("common.api.utils.get_current_user_guid")
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
-    def test_returns_past_report_data_as_provided_by_the_service(
+    def test_returns_report_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
         mock_get_current_user: MagicMock | AsyncMock,
         mock_get_past_reports: MagicMock | AsyncMock,
     ):
 
-        endpoint_under_test = custom_reverse_lazy("get_dashboard_past_reports_list")
+        endpoint_under_test = custom_reverse_lazy("get_dashboard_reports_list")
         operator = operator_baker()
         TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         operations = operation_baker(operator_id=operator.id, _quantity=3)

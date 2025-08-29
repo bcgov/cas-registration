@@ -1,13 +1,13 @@
 import { fetchPastReportsPageData } from "./fetchPastReportsPageData";
 import PastReportsDataGrid from "./PastReportsDataGrid";
-import { PastReportsRow, PastReportsSearchParams } from "./types";
+import { ReportRow, PastReportsSearchParams } from "./types";
 
 export default async function PastReports({
   searchParams,
 }: {
   searchParams: PastReportsSearchParams;
 }) {
-  const pastReports: { rows: PastReportsRow[]; row_count: number } =
+  const pastReports: { rows: ReportRow[]; row_count: number } =
     await fetchPastReportsPageData(searchParams);
   if (!pastReports) {
     return <div>No past reports data in database.</div>;
