@@ -2,7 +2,7 @@ import { IssuanceStatusDeclinedNote } from "@/compliance/src/app/components/comp
 import { vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { bcCarbonRegistryLink, bceabLink } from "@bciers/utils/src/urls";
+import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
 
 vi.mock("@bciers/components/icons/AlertIcon", () => ({
   __esModule: true,
@@ -22,11 +22,12 @@ describe("IssuanceStatusDeclinedNote", () => {
       /the earned credits will not be issued/i,
       /to your holding account/i,
       /as identified below/i,
-      /b\.c\. carbon registry/i,
+      /in the b\.c\. carbon registry/i,
       /\(bccr\)/i,
-      /you may appeal the decision/i,
-      /b\.c\. environmental appeal board/i,
-      /\(bceab\)/i,
+      /please contact us at/i,
+      /ghgregulator@gov\.bc\.ca/i,
+      /for further information or assistance/i,
+      /submitting a supplementary report/i,
     ];
 
     for (const textPattern of declinedNoteTextPatterns) {
@@ -43,21 +44,11 @@ describe("IssuanceStatusDeclinedNote", () => {
     expect(alertIcon).toHaveAttribute("height", "20");
   });
 
-  it("includes the correct BCCR link", () => {
+  it("includes the correct email link", () => {
     render(<IssuanceStatusDeclinedNote />);
 
-    const bccrLink = screen.getByText("B.C. Carbon Registry");
-    expect(bccrLink).toBeVisible();
-    expect(bccrLink).toHaveAttribute("href", bcCarbonRegistryLink);
-  });
-
-  it("includes the correct BCEAB link", () => {
-    render(<IssuanceStatusDeclinedNote />);
-
-    const bceabLinkElement = screen.getByText(
-      "B.C. Environmental Appeal Board",
-    );
-    expect(bceabLinkElement).toBeVisible();
-    expect(bceabLinkElement).toHaveAttribute("href", bceabLink);
+    const emailLink = screen.getByText("GHGRegulator@gov.bc.ca");
+    expect(emailLink).toBeVisible();
+    expect(emailLink).toHaveAttribute("href", ghgRegulatorEmail);
   });
 });

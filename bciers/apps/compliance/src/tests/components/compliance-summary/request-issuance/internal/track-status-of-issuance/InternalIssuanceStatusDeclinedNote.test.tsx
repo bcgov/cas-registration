@@ -15,10 +15,9 @@ describe("InternalIssuanceStatusDeclinedNote", () => {
     render(<InternalIssuanceStatusDeclinedNote />);
 
     const declinedNoteTextPatterns = [
-      /The issuance request is declined/i,
-      /The earned credits will not be issued/i,
-      /to the holding account/i,
-      /as identified below in B\.C\. Carbon Registry \(BCCR\)/i,
+      /Please contact the operator to clarify/i,
+      /the supplementary report requirement in the previous step./i,
+      /This request has been declined automatically./i,
     ];
 
     for (const textPattern of declinedNoteTextPatterns) {

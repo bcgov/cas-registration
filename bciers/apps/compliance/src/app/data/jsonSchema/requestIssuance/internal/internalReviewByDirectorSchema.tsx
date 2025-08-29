@@ -10,7 +10,6 @@ import InternalDirectorReviewAwaitingNote from "@/compliance/src/app/data/jsonSc
 import InternalDirectorReviewChangesNote from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewChangesNote";
 import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { InternalIssuanceDeclinedStatusNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/review-by-director/InternalIssuanceDeclinedStatusNote";
 
 export const internalReviewByDirectorSchema: RJSFSchema = {
   type: "object",
@@ -108,14 +107,6 @@ export const internalReviewByDirectorUiSchema: UiSchema = {
   },
   changes_note: {
     "ui:widget": InternalDirectorReviewChangesNote,
-    "ui:classNames": "[&>div>div]:w-full", // To match the width of comments section
-    "ui:options": {
-      label: false,
-      inline: true,
-    },
-  },
-  declined_note: {
-    "ui:widget": InternalIssuanceDeclinedStatusNote,
     "ui:classNames": "[&>div>div]:w-full", // To match the width of comments section
     "ui:options": {
       label: false,
