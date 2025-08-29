@@ -6,7 +6,7 @@ from registration.utils import custom_reverse_lazy
 VALIDATE_VERSION_OWNERSHIP_PATH = "compliance.api.permissions._validate_version_ownership_in_url"
 
 
-class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
+class TestReportOperationByComplianceReportVersionEndpoint(CommonTestSetup):
     @staticmethod
     def _get_endpoint_url(compliance_report_version_id):
         return custom_reverse_lazy(
@@ -14,12 +14,32 @@ class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
             kwargs={"compliance_report_version_id": compliance_report_version_id},
         )
 
-    def test_successful_operation_retrieval(self):
+    def test_successful_report_operation_retrieval(self):
         # Arrange
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        operation = make_recipe(
+            'registration.tests.utils.operation', name='admin name', operator=approved_user_operator.operator
+        )
+        report = make_recipe(
+            'reporting.tests.utils.report', operation=operation, operator=approved_user_operator.operator
+        )
+        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
+
+        # create the report_operation linked to the report_version
+        make_recipe(
+            'reporting.tests.utils.report_operation',
+            report_version=report_version,
+            operation_name='reporting name',
+        )
+
+        report_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version
+        )
+        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
         compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            compliance_report__report__operator=approved_user_operator.operator,
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
         )
 
         # Act
@@ -32,7 +52,7 @@ class TestOperationByComplianceReportVersionEndpoint(CommonTestSetup):
         )
         # Assert
         assert response.status_code == 200
-        assert response.json() == {"name": compliance_report_version.compliance_report.report.operation.name}
+        assert response.json() == {"operation_name": 'reporting name'}
 
     @patch(VALIDATE_VERSION_OWNERSHIP_PATH, return_value=True)
     def test_invalid_compliance_report_version_id(self, _):
