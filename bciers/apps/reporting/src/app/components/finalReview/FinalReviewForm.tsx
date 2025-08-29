@@ -5,8 +5,11 @@ import ReportingStepButtons from "@bciers/components/form/components/ReportingSt
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { SectionReview } from "./templates/SectionReview";
 import { FacilityReport, ReportData } from "./reportTypes";
-import type { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
+import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import {
+  getFinalReviewData,
+  getFinalReviewDataForLFO,
+} from "@reporting/src/app/utils/getFinalReviewData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { OperationTypes } from "@bciers/utils/src/enums";
 import {
@@ -20,27 +23,39 @@ import {
 } from "@reporting/src/app/components/finalReview/finalReviewFields";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { FacilityReportSection } from "@reporting/src/app/components/shared/FacilityReportSection";
+import FinalReviewFacilityGrid from "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid";
+import { Box } from "@mui/material";
 
 interface Props {
   version_id: any;
   navigationInformation: NavigationInformation;
+  children?: React.ReactNode;
 }
 
 export const FinalReviewForm: React.FC<Props> = ({
   version_id,
   navigationInformation,
+  children,
 }) => {
+  console.log("navigationInformation", navigationInformation);
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
-      const finalReviewData = await getFinalReviewData(version_id);
+      let finalReviewData;
+      if (navigationInformation.flow.includes("LFO")) {
+        console.log("Fetching LFO final review data");
+        finalReviewData = await getFinalReviewDataForLFO(version_id);
+      } else {
+        console.log("Fetching standard final review data");
+        finalReviewData = await getFinalReviewData(version_id);
+      }
       setData(finalReviewData);
       setLoading(false);
     }
     fetchData();
-  }, [version_id]);
+  }, [version_id, navigationInformation.flow]);
 
   // Helper functions to determine flow type
   const isEIO = () =>
@@ -74,20 +89,20 @@ export const FinalReviewForm: React.FC<Props> = ({
   );
 
   return (
-    <>
+    <Box sx={{ p: 3 }}>
       <div className="container mx-auto p-4" data-testid="facility-review">
         <MultiStepHeader
           stepIndex={navigationInformation.headerStepIndex}
           steps={navigationInformation.headerSteps}
         />
       </div>
-
       <div className="w-full flex">
+        {/* Make the task list hidden on small screens and visible on medium and up */}
         <div className="hidden md:block">
           <ReportingTaskList elements={navigationInformation.taskList} />
         </div>
-
-        <div>
+        <div className="w-full">
+          {children}
           {!loading && data ? (
             <>
               {/* Reason for Edits - for supplementary reports */}
@@ -128,7 +143,20 @@ export const FinalReviewForm: React.FC<Props> = ({
               )}
 
               {/* Non-EIO Flows - show facility report information */}
-              {!isEIO() && renderFacilityReportInformation()}
+              {!isEIO() &&
+                (isLFO() && data?.facility_reports ? (
+                  <FinalReviewFacilityGrid
+                    data={Object.values(data.facility_reports).map(
+                      (facilityReport: FacilityReport) => ({
+                        facility: facilityReport.facility,
+                        facility_name: facilityReport.facility_name,
+                      }),
+                    )}
+                    version_id={version_id}
+                  />
+                ) : (
+                  renderFacilityReportInformation()
+                ))}
 
               {/* Additional Reporting Data - ALL NON-EIO FLOWS */}
               {!isEIO() && data.report_additional_data && (
@@ -185,6 +213,6 @@ export const FinalReviewForm: React.FC<Props> = ({
           )}
         </div>
       </div>
-    </>
+    </Box>
   );
 };
