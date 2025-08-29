@@ -34,6 +34,19 @@ def list_contacts(
     return ContactService.list_contacts(get_current_user_guid(request), sort_field, sort_order, filters)
 
 
+@router.get(
+    "/contact/",
+    response={200: int | None, custom_codes_4xx: Message},
+    tags=CONTACT_TAGS,
+    description="""Retrieves the contact ID for the corresponding external user.""",
+    auth=authorize("approved_industry_user"),
+)
+def get_contact_id_for_current_user(request: HttpRequest) -> int | None:
+    user_guid = get_current_user_guid(request)
+    contact_id = ContactService.get_contact_id_for_user(user_guid)
+    return contact_id if contact_id else None
+
+
 #### POST #####
 @router.post(
     "/contacts",
