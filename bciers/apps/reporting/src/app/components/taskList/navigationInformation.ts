@@ -185,5 +185,6 @@ export async function getNavigationInformation(
     continueUrl: continueUrl ?? "/reports/current-reports",
     headerSteps: headerSteps,
     headerStepIndex: headerSteps.indexOf(step),
+    flow: flow,
   };
 }

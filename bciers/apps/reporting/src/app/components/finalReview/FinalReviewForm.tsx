@@ -21,6 +21,8 @@ import {
   reportNewEntrantFields,
 } from "@reporting/src/app/components/finalReview/finalReviewFields";
 import { FacilityReportSection } from "@reporting/src/app/components/shared/FacilityReportSection";
+import FinalReviewFacilityGrid from "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid";
+import { Box } from "@mui/material";
 import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
 
 interface Props {
