@@ -54,6 +54,15 @@ class ComplianceReportVersion(TimeStampedModel):
         db_comment="Boolean value identifies whether this record is the result of a supplementary emissions report version",
     )
 
+    previous_version = models.ForeignKey(
+        'self',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="subsequent_versions",
+        db_comment="Reference to the previous version of this compliance report version.",
+    )
+
     class Meta(TimeStampedModel.Meta):
         app_label = "compliance"
         db_table_comment = "The compliance_report_version table records are generated from the compliance summary data when an emission report is submitted"
