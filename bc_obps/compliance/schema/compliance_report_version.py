@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import Optional
 from ninja import ModelSchema, Field
 from compliance.models.compliance_report_version import ComplianceReportVersion
-from registration.models import Operation
+from reporting.models.report_operation import ReportOperation
 
 # report aliases
 OPERATOR_NAME_ALIAS = "compliance_report.report.operator.legal_name"
@@ -65,5 +65,5 @@ class ComplianceReportVersionOut(ModelSchema):
 
 class OperationByComplianceSummaryOut(ModelSchema):
     class Meta:
-        model = Operation
-        fields = ['name']
+        model = ReportOperation
+        fields = ['operation_name']

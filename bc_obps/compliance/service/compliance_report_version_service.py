@@ -1,4 +1,5 @@
 from compliance.tasks import retryable_process_obligation_integration
+from registration.models.operator import Operator
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from django.db import transaction
@@ -7,10 +8,10 @@ from compliance.models import ComplianceReport, ComplianceReportVersion, Complia
 import logging
 from uuid import UUID
 from django.db.models import QuerySet, Q
+from reporting.models.report_operation import ReportOperation
 from service.data_access_service.operation_designated_operator_timeline_service import (
     OperationDesignatedOperatorTimelineDataAccessService,
 )
-from registration.models import Operation
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_service import UserDataAccessService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
@@ -191,8 +192,16 @@ class ComplianceReportVersionService:
         return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))
 
     @staticmethod
-    def get_operation_by_compliance_report_version(compliance_report_version_id: int) -> Operation:
-        return ComplianceReportVersion.objects.get(id=compliance_report_version_id).compliance_report.report.operation
+    def get_operator_by_compliance_report_version(compliance_report_version_id: int) -> Operator:
+        return ComplianceReportVersion.objects.get(
+            id=compliance_report_version_id
+        ).compliance_report.report.operation.operator
+
+    @staticmethod
+    def get_report_operation_by_compliance_report_version(compliance_report_version_id: int) -> ReportOperation:
+        return ComplianceReportVersion.objects.get(
+            id=compliance_report_version_id
+        ).report_compliance_summary.report_version.report_operation
 
     @staticmethod
     def get_obligation_by_compliance_report_version(compliance_report_version_id: int) -> ComplianceObligation:
