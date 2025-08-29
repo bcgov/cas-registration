@@ -7,10 +7,11 @@ from reporting.schema.generic import Message
 from service.report_version_service import ReportVersionService
 from .permissions import approved_industry_user_report_version_composite_auth
 from ..models import (
-    ReportVersion,
+    ReportVersion, FacilityReport,
 )
-from ..schema.report_final_review import ReportVersionSchema
+from ..schema.report_final_review import ReportVersionSchema, FacilityReportSchema
 from .router import router
+from ..schema.report_final_review_lfo import ReportVersionSchemaForLFO
 
 
 @router.get(
@@ -24,3 +25,29 @@ def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple
     # Fetch the report version data
     report_version = ReportVersionService.fetch_full_report_version(version_id)
     return 200, report_version
+
+
+@router.get(
+    "/report-version/{version_id}/final-review-lfo",
+    response={200: ReportVersionSchemaForLFO, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="Fetch final review data for a given report version ID.",
+    auth=approved_industry_user_report_version_composite_auth,
+)
+def get_report_final_review_data_for_lfo(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
+    report_version = ReportVersionService.fetch_full_report_version(version_id, is_lfo=True)
+    return 200, report_version
+
+
+@router.get(
+    "/report-version/{version_id}/final-review/{facility_id}/facility-reports",
+    response={200: FacilityReportSchema, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="Fetch only the facility_report data for the given report version and facility id (final review format).",
+    # auth=approved_industry_user_report_version_composite_auth,
+)
+def get_report_version_facility_report(request: HttpRequest, version_id: int, facility_id: str) -> tuple[int, dict]:
+    """
+    Returns the facility_report data for the given report version and facility id, in the same format as the final review API.
+    """
+    return FacilityReport.objects.get(report_version_id=version_id, facility=facility_id)
