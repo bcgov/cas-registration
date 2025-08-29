@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import { AnnualReportRow } from "./types";
+import { ReportRow } from "./types";
 import annualReportsColumns from "../datagrid/models/annualReports/annualReportsColumns";
 import annualReportsGroupColumns from "../datagrid/models/annualReports/annualReportsGroupColumns";
 import { fetchAnnualReportsPageData } from "./fetchAnnualReportsPageData";
@@ -12,7 +12,7 @@ const AnnualReportsDataGrid = ({
   initialData,
 }: {
   initialData: {
-    rows: AnnualReportRow[];
+    rows: ReportRow[];
     row_count: number;
   };
 }) => {

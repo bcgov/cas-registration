@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
-import { PastReportsRow } from "./types";
+import { ReportRow } from "./types";
 import pastReportsColumns from "../datagrid/models/pastReports/pastReportsColumns";
 import pastReportsGroupColumns from "../datagrid/models/pastReports/pastReportsGroupColumns";
 import { fetchPastReportsPageData } from "./fetchPastReportsPageData";
@@ -12,7 +12,7 @@ const PastReportsDataGrid = ({
   initialData,
 }: {
   initialData: {
-    rows: PastReportsRow[];
+    rows: ReportRow[];
     row_count: number;
   };
 }) => {
