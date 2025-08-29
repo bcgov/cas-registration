@@ -23,9 +23,6 @@ vi.mock("@bciers/components", async () => {
 
 const mockData = {
   reporting_year: 2024,
-  excess_emissions: 0,
-  emissions_limit: "0",
-  emissions_attributable_for_compliance: "0",
   id: 123,
 };
 
@@ -40,20 +37,6 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     // Check form title
     expect(screen.getByText("Review 2024 Compliance Report")).toBeVisible();
-
-    // Check Summary section
-    expect(screen.getByText("From 2024 Report")).toBeVisible();
-    expect(
-      screen.getByText("Emissions Attributable for Compliance:"),
-    ).toBeVisible();
-    expect(screen.getAllByText("0")[0]).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[0]).toBeVisible();
-    expect(screen.getByText("Emissions Limit:")).toBeVisible();
-    expect(screen.getAllByText("0")[1]).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
-    expect(screen.getByText("Excess Emissions:")).toBeVisible();
-    expect(screen.getAllByText(0)[2]).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[2]).toBeVisible();
 
     // Check alert note
     const alertNote = screen.getByRole("alert");

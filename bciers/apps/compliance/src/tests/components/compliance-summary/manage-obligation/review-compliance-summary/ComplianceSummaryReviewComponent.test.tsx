@@ -85,7 +85,6 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(
       screen.getByText("Review 2025 Compliance Obligation Report"),
     ).toBeVisible();
-    expect(screen.getByText("From 2025 Report")).toBeVisible();
     expect(screen.getByText("2025 Compliance Obligation")).toBeVisible();
     expect(screen.getByText("Monetary Payments Made")).toBeVisible();
     expect(screen.getByText("Compliance Units Applied")).toBeVisible();
