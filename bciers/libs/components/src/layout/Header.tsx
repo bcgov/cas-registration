@@ -11,10 +11,15 @@ import HelpDrawer from "./HelpDrawer";
 export default function Header() {
   const { data: session } = useSession();
 
+  const bgColour =
+    process.env.NODE_ENV === "development"
+      ? "bg-bc-development-pink"
+      : "bg-bc-primary-blue";
+
   return (
     <header className={`relative w-full`}>
       <div
-        className={`bg-bc-primary-blue relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
+        className={`${bgColour} relative left-1/2 transform -translate-x-1/2 w-screen max-w-none`}
       >
         <div className={`max-w-page mx-auto padding-page py-3 h-fit text-lg`}>
           <div className="flex items-center w-full">
