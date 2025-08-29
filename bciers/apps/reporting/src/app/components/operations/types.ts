@@ -46,7 +46,7 @@ export interface PastReportsSearchParams {
   report_status?: string;
 }
 
-export interface PastReportsRow {
+export interface ReportRow {
   id: number;
   reporting_year: number;
   operation_name: string;
@@ -63,12 +63,4 @@ export interface ReportSearchParams {
   page?: number;
   sort_field?: string;
   sort_order?: string;
-}
-
-export interface AnnualReportRow {
-  id: number;
-  reporting_year: number;
-  operation_name: string;
-  operator: string; // TODO: Verify if operator field is needed
-  report_version_id: number;
 }

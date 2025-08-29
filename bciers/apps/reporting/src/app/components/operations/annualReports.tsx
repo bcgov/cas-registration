@@ -1,13 +1,13 @@
 import AnnualReportsDataGrid from "./annualReportsDataGrid";
 import { fetchAnnualReportsPageData } from "./fetchAnnualReportsPageData";
-import { AnnualReportRow, ReportSearchParams } from "./types";
+import { ReportRow, ReportSearchParams } from "./types";
 
 export default async function PastReports({
   searchParams,
 }: {
   searchParams: ReportSearchParams;
 }) {
-  const reports: { rows: AnnualReportRow[]; row_count: number } =
+  const reports: { rows: ReportRow[]; row_count: number } =
     await fetchAnnualReportsPageData(searchParams);
   if (!reports) {
     return <div>No reports data in database for the current year.</div>;

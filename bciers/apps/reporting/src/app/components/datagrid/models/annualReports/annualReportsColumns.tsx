@@ -17,14 +17,14 @@ const AnnualReportColumns = (): GridColDef[] => {
       flex: 1,
     },
     {
-      field: "report_updated_at",
-      headerName: "Date of submission",
-      renderCell: UpdatedAtCell,
+      field: "report_version_id",
+      headerName: "Report Version ID",
       width: 180,
     },
     {
-      field: "report_version_id",
-      headerName: "Report Version ID",
+      field: "report_updated_at",
+      headerName: "Date of submission",
+      renderCell: UpdatedAtCell,
       width: 180,
     },
     {
