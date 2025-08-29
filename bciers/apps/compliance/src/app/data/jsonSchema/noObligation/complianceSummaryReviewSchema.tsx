@@ -14,13 +14,6 @@ export const complianceSummaryReviewSchema = (
   type: "object",
   title: `Review ${reportingYear} Compliance Report`,
   properties: {
-    // Summary Section
-    summary_header: readOnlyObjectField(`From ${reportingYear} Report`),
-    emissions_attributable_for_compliance: readOnlyStringField(
-      "Emissions Attributable for Compliance:",
-    ),
-    emissions_limit: readOnlyStringField("Emissions Limit:"),
-    excess_emissions: readOnlyStringField("Excess Emissions:"),
     // Compliance Status Section
     compliance_status_header: readOnlyObjectField("Compliance Status"),
     no_obligation_or_credit_alert: readOnlyStringField(),
