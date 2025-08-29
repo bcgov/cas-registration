@@ -176,7 +176,7 @@ class ComplianceReportVersionService:
     @staticmethod
     def calculate_computed_value_excess_emissions(compliance_report_version: ComplianceReportVersion) -> Decimal:
         """
-        Get the display value of excess emissions for a report or supplementary report. Initial reports show
+        Get the computed value of excess emissions for a report or supplementary report. Initial reports show
         compliance_report_version.report_compliance_summary.excess_emissions, and supplementary reports show the delta between the supplementary report and the previous version.
 
         Args:
