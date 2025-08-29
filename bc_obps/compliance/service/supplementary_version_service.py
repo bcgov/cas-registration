@@ -5,7 +5,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
-from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+
 from django.db import transaction
 from decimal import Decimal
 from typing import Protocol, Optional
@@ -52,8 +52,10 @@ class IncreasedObligationHandler:
     ) -> Optional[ComplianceReportVersion]:
         # Handle increased obligation logic
         excess_emission_delta = new_summary.excess_emissions - previous_summary.excess_emissions
-        previous_compliance_version = ComplianceReportVersionService.get_previous_compliance_version(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
 
         compliance_report_version = ComplianceReportVersion.objects.create(
@@ -100,8 +102,10 @@ class DecreasedObligationHandler:
         adjustment_amount = (excess_emission_delta * charge_rate).quantize(Decimal('0.01'))
 
         # Get the previous compliance report version to create adjustment for
-        previous_compliance_version = ComplianceReportVersionService.get_previous_compliance_version(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
 
         compliance_report_version = ComplianceReportVersion.objects.create(
@@ -147,8 +151,10 @@ class NoChangeHandler:
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
         # Get the previous compliance report version
-        previous_compliance_version = ComplianceReportVersionService.get_previous_compliance_version(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
 
         compliance_report_version = ComplianceReportVersion.objects.create(
@@ -204,8 +210,10 @@ class IncreasedCreditHandler:
         earned_credit.save()
 
         # Get the previous compliance report version
-        previous_compliance_version = ComplianceReportVersionService.get_previous_compliance_version(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
 
         # Create a compliance_report_version record with the 'no obligation or earned credits' status
@@ -253,8 +261,10 @@ class DecreasedCreditHandler:
     ) -> Optional[ComplianceReportVersion]:
 
         credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
-        previous_compliance_version = ComplianceReportVersionService.get_previous_compliance_version(
-            compliance_report, previous_summary
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
         )
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
@@ -290,6 +300,15 @@ class SupplementaryVersionService:
             IncreasedCreditHandler(),
             DecreasedCreditHandler(),
         ]
+
+    @staticmethod
+    def _get_previous_compliance_version_by_report_and_summary(
+        compliance_report: ComplianceReport, previous_summary: ReportComplianceSummary
+    ) -> ComplianceReportVersion:
+        return ComplianceReportVersion.objects.get(
+            compliance_report=compliance_report,
+            report_compliance_summary=previous_summary,
+        )
 
     def handle_supplementary_version(
         self, compliance_report: ComplianceReport, report_version: ReportVersion, version_count: int

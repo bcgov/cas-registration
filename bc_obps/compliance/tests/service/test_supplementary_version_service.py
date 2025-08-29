@@ -791,7 +791,7 @@ class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
         assert result.is_supplementary is True
         assert result.previous_version == self.previous_compliance_report_version
 
-    def test_no_change_obligation_handler_unchanged_credited_emissions(self):
+    def test_can_handle_no_change_handler_unchanged_credited_emissions(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -811,7 +811,7 @@ class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
-    def test_no_change_obligation_handler_unchanged_excess_emissions(self):
+    def test_can_handle_no_change_handler_unchanged_excess_emissions(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
