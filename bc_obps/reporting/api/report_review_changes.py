@@ -23,7 +23,7 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
     Returns the diff data between the given report version and the latest previous version for the same report_id.
     The compare_version_id parameter is removed; this endpoint only compares with the latest previous version.
     """
-    current_version = ReportVersionService.fetch_full_report_version(version_id)
+    current_version = ReportVersionService.fetch_full_report_version(version_id, is_lfo=False)
 
     previous_version_id = (
         ReportVersion.objects.filter(report_id=current_version.report_id, id__lt=current_version.id)
@@ -35,7 +35,7 @@ def get_report_version_diff_data(request: HttpRequest, version_id: int) -> tuple
     if not previous_version_id:
         return 200, {"message": "No previous report version found for the given report_id."}
 
-    previous_version = ReportVersionService.fetch_full_report_version(previous_version_id)
+    previous_version = ReportVersionService.fetch_full_report_version(previous_version_id, is_lfo=False)
     current_data = ReportVersionSchema.from_orm(current_version).dict()
     previous_data = ReportVersionSchema.from_orm(previous_version).dict()
 
