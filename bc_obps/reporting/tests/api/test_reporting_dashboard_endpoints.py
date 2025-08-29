@@ -64,7 +64,7 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
     )
     @patch("common.api.utils.get_current_user_guid")
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
-    def test_returns_past_report_data_as_provided_by_the_service(
+    def test_returns_report_data_as_provided_by_the_service(
         self,
         mock_get_current_year: MagicMock | AsyncMock,
         mock_get_current_user: MagicMock | AsyncMock,
