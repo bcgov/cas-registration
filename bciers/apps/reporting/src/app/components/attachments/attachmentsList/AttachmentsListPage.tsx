@@ -19,12 +19,7 @@ interface Props {
 const AttachmentsListPage: React.FC<Props> = async ({ searchParams }) => {
   const data = await getAttachmentsList(searchParams);
 
-  return (
-    <div>
-      <h1>Report Attachments</h1>
-      <AttachmentsListGrid initialData={data} />
-    </div>
-  );
+  return <AttachmentsListGrid initialData={data} />;
 };
 
 export default AttachmentsListPage;
