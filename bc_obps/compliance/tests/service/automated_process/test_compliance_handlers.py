@@ -99,7 +99,7 @@ class TestPenaltyAccruingHandler:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("100.00"),
-            due_date=timezone.now() - timedelta(days=1),  # Past due
+            due_date=timezone.now().date() - timedelta(days=1),  # Past due
         )
         self.handler = PenaltyAccruingHandler()
 
@@ -126,7 +126,7 @@ class TestPenaltyAccruingHandler:
         assert result is False
 
     def test_can_not_handle_not_overdue(self):
-        self.invoice.due_date = timezone.now() + timedelta(days=1)
+        self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
 
         result = self.handler.can_handle(self.invoice)
@@ -168,7 +168,7 @@ class TestObligationPaidHandler:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
-            due_date=timezone.now() - timedelta(days=1),  # Past due
+            due_date=timezone.now().date() - timedelta(days=1),  # Past due
         )
         self.handler = ObligationPaidHandler()
 
@@ -210,7 +210,7 @@ class TestObligationPaidHandler:
 
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
     def test_handle_updates_compliance_status_but_does_not_create_penalty_when_not_overdue(self, mock_create_penalty):
-        self.invoice.due_date = timezone.now() + timedelta(days=1)
+        self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
 
         self.handler.handle(self.invoice)
@@ -244,7 +244,7 @@ class TestComplianceHandlerManager:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("100.00"),
-            due_date=timezone.now() + timedelta(days=1),  # Not overdue
+            due_date=timezone.now().date() + timedelta(days=1),  # Not overdue
         )
 
         # Mock the handle methods of all handlers
@@ -267,7 +267,7 @@ class TestComplianceHandlerManager:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("100.00"),
-            due_date=timezone.now() - timedelta(days=1),  # Overdue
+            due_date=timezone.now().date() - timedelta(days=1),  # Overdue
         )
 
         # Spy on all handlers to verify which ones are called
@@ -295,7 +295,7 @@ class TestComplianceHandlerManager:
             "compliance.tests.utils.elicensing_invoice",
             compliance_obligation=self.obligation,
             outstanding_balance=Decimal("0.00"),
-            due_date=timezone.now() - timedelta(days=1),  # Overdue
+            due_date=timezone.now().date() - timedelta(days=1),  # Overdue
         )
 
         # Spy on all handlers to verify which ones are called

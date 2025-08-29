@@ -62,7 +62,7 @@ class PenaltyAccruingHandler(ComplianceUpdateHandler):
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
             and invoice.outstanding_balance > Decimal('0.00')
-            and invoice.due_date < timezone.now()
+            and invoice.due_date < timezone.now().date()
         )
 
     def handle(self, invoice: ElicensingInvoice) -> None:
@@ -99,7 +99,7 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         compliance_report_version.save(update_fields=['status'])
         logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
-        if invoice.due_date < timezone.now():
+        if invoice.due_date < timezone.now().date():
             PenaltyCalculationService.create_penalty(obligation)
             logger.info(f"Created penalty for obligation {obligation.obligation_id}")
 

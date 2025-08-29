@@ -25,7 +25,7 @@ class ElicensingLineItem(TimeStampedModel):
         related_name="elicensing_line_items",
     )
 
-    fee_date = models.DateTimeField(db_comment="The date of the fee. feeDueDate in elicensing")
+    fee_date = models.DateField(db_comment="The date of the fee. feeDueDate in elicensing")
 
     description = models.CharField(db_comment="Description of the line item (fee).", blank=True, null=True)
 

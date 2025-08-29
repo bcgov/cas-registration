@@ -11,7 +11,7 @@ from compliance.models import (
     ElicensingAdjustment,
     ComplianceObligation,
 )
-from datetime import datetime, timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 from compliance.dataclass import LastRefreshMetaData, RefreshWrapperReturn
 import logging
@@ -113,7 +113,7 @@ class ElicensingDataRefreshService:
             elicensing_client_operator=client_operator,
             invoice_number=invoice_response.invoiceNumber,
             defaults={
-                "due_date": datetime.fromisoformat(invoice_response.invoicePaymentDueDate),
+                "due_date": date.fromisoformat(invoice_response.invoicePaymentDueDate),
                 "outstanding_balance": Decimal(invoice_response.invoiceOutstandingBalance).quantize(Decimal("0.00")),
                 "invoice_fee_balance": Decimal(invoice_response.invoiceFeeBalance).quantize(Decimal("0.00")),
                 "invoice_interest_balance": Decimal(invoice_response.invoiceInterestBalance).quantize(Decimal("0.00")),
@@ -127,7 +127,7 @@ class ElicensingDataRefreshService:
                 guid=fee.feeGUID,
                 line_item_type=ElicensingLineItem.LineItemType.FEE,
                 defaults={
-                    "fee_date": datetime.fromisoformat(fee.feeDate),
+                    "fee_date": date.fromisoformat(fee.feeDate),
                     "description": fee.description,
                     "base_amount": Decimal(fee.baseAmount).quantize(Decimal("0.00")),
                 },
@@ -142,7 +142,7 @@ class ElicensingDataRefreshService:
                 elicensing_line_item=fee_record,
                 payment_object_id=payment.paymentObjectId,
                 defaults={
-                    "received_date": datetime.fromisoformat(payment.receivedDate),
+                    "received_date": date.fromisoformat(payment.receivedDate),
                     "amount": Decimal(payment.amount).quantize(Decimal("0.00")),
                     "method": payment.method,
                     "receipt_number": payment.receiptNumber,
@@ -156,7 +156,7 @@ class ElicensingDataRefreshService:
         for adjustment in adjustments:
             adjustment_defaults = {
                 "amount": Decimal(adjustment.amount).quantize(Decimal("0.00")),
-                "adjustment_date": datetime.fromisoformat(adjustment.date),
+                "adjustment_date": date.fromisoformat(adjustment.date),
                 "reason": adjustment.reason,
                 "type": adjustment.type,
                 "comment": adjustment.comment,

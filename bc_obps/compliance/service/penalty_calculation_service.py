@@ -76,13 +76,13 @@ class PenaltyCalculationService:
         }
 
     @classmethod
-    def sum_payments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
+    def sum_payments_before_date(cls, invoice: ElicensingInvoice, cutoff_date: date) -> Decimal:
         """
         Calculate the sum of all payments received on or before the given date.
 
         Args:
             invoice: The eLicensing invoice
-            date: The cutoff date for payments
+            cutoff_date: The cutoff date for payments
 
         Returns:
             Decimal sum of payment amounts
@@ -90,18 +90,18 @@ class PenaltyCalculationService:
         # Get line items for this invoice and sum payments received on or before date
         line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
 
-        return ElicensingPayment.objects.filter(elicensing_line_item__in=line_items, received_date__lt=date).aggregate(
-            total=Sum('amount')
-        )['total'] or Decimal('0.00')
+        return ElicensingPayment.objects.filter(
+            elicensing_line_item__in=line_items, received_date__lt=cutoff_date
+        ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     @classmethod
-    def sum_adjustments_before_date(cls, invoice: ElicensingInvoice, date: date) -> Decimal:
+    def sum_adjustments_before_date(cls, invoice: ElicensingInvoice, cutoff_date: date) -> Decimal:
         """
         Calculate the sum of all adjustments made on or before the given date.
 
         Args:
             invoice: The eLicensing invoice
-            date: The cutoff date for adjustments
+            cutoff_date: The cutoff date for adjustments
 
         Returns:
             Decimal sum of adjustment amounts
@@ -110,7 +110,7 @@ class PenaltyCalculationService:
         line_items = ElicensingLineItem.objects.filter(elicensing_invoice=invoice)
 
         return ElicensingAdjustment.objects.filter(
-            elicensing_line_item__in=line_items, adjustment_date__lt=date
+            elicensing_line_item__in=line_items, adjustment_date__lt=cutoff_date
         ).aggregate(total=Sum('amount'))['total'] or Decimal('0.00')
 
     @staticmethod
@@ -220,8 +220,8 @@ class PenaltyCalculationService:
         base = obligation.fee_amount_dollars or Decimal('0.00')
         accumulated_penalty = Decimal('0.00')
         accumulated_compounding = Decimal('0.00')
-        days_late = max(0, (last_calculation_day - invoice.due_date.date()).days)
-        current_date = invoice.due_date.date() + timedelta(days=1)
+        days_late = max(0, (last_calculation_day - invoice.due_date).days)
+        current_date = invoice.due_date + timedelta(days=1)
         total_penalty = Decimal('0.00')
 
         for _ in range(1, days_late + 1):
