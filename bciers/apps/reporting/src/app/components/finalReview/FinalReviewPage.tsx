@@ -11,7 +11,8 @@ import { FinalReviewForm } from "@reporting/src/app/components/finalReview/Final
 
 export default async function FinalReviewPage({
   version_id,
-}: HasReportVersion) {
+  children,
+}: HasReportVersion & { children?: React.ReactNode }) {
   //🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
 
@@ -31,6 +32,8 @@ export default async function FinalReviewPage({
   );
 
   return (
-    <FinalReviewForm version_id={version_id} navigationInformation={navInfo} />
+    <FinalReviewForm version_id={version_id} navigationInformation={navInfo}>
+      {children}
+    </FinalReviewForm>
   );
 }
