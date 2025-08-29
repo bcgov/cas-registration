@@ -48,9 +48,6 @@ class ComplianceReportVersionOut(ModelSchema):
     operation_name: str = Field(..., alias=OPERATION_NAME_ALIAS)
     operation_bcghg_id: Optional[str] = Field(None, alias=OPERATION_BCGHG_ID_ALIAS)
     reporting_year: int = Field(..., alias=REPORTING_YEAR_ALIAS)
-    excess_emissions: Decimal = Field(..., alias=EXCESS_EMISSIONS_ALIAS)
-    emissions_attributable_for_compliance: Decimal = Field(..., alias=ATTRIBUTABLE_EMISSIONS_ALIAS)
-    emissions_limit: Decimal = Field(..., alias=EMISSIONS_LIMIT_ALIAS)
     credited_emissions: Decimal = Field(..., alias=CREDITED_EMISSIONS_ALIAS)
     compliance_charge_rate: Optional[Decimal] = None
     equivalent_value: Optional[Decimal] = None

@@ -18,9 +18,6 @@ describe("InternalComplianceSummaryReviewComponent", () => {
     id: 99,
     reporting_year: 2030,
     operation_name: "Test Operation",
-    emissions_attributable_for_compliance: 85.0,
-    emissions_limit: 100.0,
-    excess_emissions: -15.0,
     obligation_id: "24-0001-1-1",
     compliance_charge_rate: 80.0,
     equivalent_value: 800.0,
@@ -34,7 +31,6 @@ describe("InternalComplianceSummaryReviewComponent", () => {
     expect(
       screen.getByText("Review 2030 Compliance Obligation Report"),
     ).toBeVisible();
-    expect(screen.getByText("From 2030 Report")).toBeVisible();
     expect(screen.getByText("2030 Compliance Obligation")).toBeVisible();
     expect(screen.getByText("Outstanding Compliance Obligation")).toBeVisible();
   });
@@ -42,11 +38,6 @@ describe("InternalComplianceSummaryReviewComponent", () => {
   it("renders all field labels", () => {
     render(<InternalComplianceSummaryReviewComponent data={baseData} />);
 
-    expect(
-      screen.getByText("Emissions Attributable for Compliance:"),
-    ).toBeVisible();
-    expect(screen.getByText("Emissions Limit:")).toBeVisible();
-    expect(screen.getByText("Excess Emissions:")).toBeVisible();
     expect(screen.getByText("Obligation ID:")).toBeVisible();
     expect(screen.getByText("2030 Compliance Charge Rate:")).toBeVisible();
     expect(screen.getAllByText("Equivalent Value:")).toHaveLength(2);

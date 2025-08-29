@@ -64,20 +64,6 @@ describe("ComplianceSummaryReviewComponent", () => {
     // Check form title
     expect(screen.getByText("Review 2024 Compliance Report")).toBeVisible();
 
-    // Check Summary section
-    expect(screen.getByText("From 2024 Report")).toBeVisible();
-    expect(
-      screen.getByText("Emissions Attributable for Compliance:"),
-    ).toBeVisible();
-    expect(screen.getByText("85")).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[0]).toBeVisible();
-    expect(screen.getByText("Emissions Limit:")).toBeVisible();
-    expect(screen.getByText(100.0)).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[1]).toBeVisible();
-    expect(screen.getByText("Excess Emissions:")).toBeVisible();
-    expect(screen.getByText(-15.0)).toBeVisible();
-    expect(screen.getAllByText("tCO2e")[2]).toBeVisible();
-
     // Check Earned Credits section
     expect(screen.getByText("Earned Credits")).toBeVisible();
     expect(screen.getByText("Earned Credits:")).toBeVisible();
