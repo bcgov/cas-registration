@@ -19,21 +19,34 @@ export default async function ReportsBasePage({
   const reportDueDate = reportingYearObj.report_due_date;
   const reportDueYearOnly = dayjs(reportDueDate).year();
 
-  const currentReportsTabTitle = `View annual report${
-    //render the (s) for external users as they may only have one operation
-    userRole.includes("industry_") ? "(s)" : "s"
-  }`;
-
-  const tabs = [
-    { label: currentReportsTabTitle, href: "/reports/current-reports" },
-    { label: "View past reports", href: "/reports/previous-years" },
-  ];
+  const tabs = userRole.includes("industry_")
+    ? [
+        { label: "View annual report(s)", href: "/reports/current-reports" },
+        { label: "View past reports", href: "/reports/previous-years" },
+      ]
+    : [
+        { label: "View annual reports", href: "/reports/current-reports" },
+        { label: "View past reports", href: "/reports/previous-years" },
+        { label: "Download Report Attachments", href: "/reports/attachments" },
+      ];
   const CURRENT_REPORTS_TAB_INDEX = 0;
-  const PREVIOUS_REPORTS_TAB_INDEX = 1;
-  const pageTitle =
-    activeTab === CURRENT_REPORTS_TAB_INDEX
-      ? `Reporting year ${reportingYearObj.reporting_year}`
-      : "Past Reports";
+  const PAST_REPORTS_TAB_INDEX = 1;
+  const ATTACHMENTS_TAB_INDEX = 2;
+
+  let pageTitle = "";
+  switch (activeTab) {
+    case CURRENT_REPORTS_TAB_INDEX:
+      pageTitle = `Reporting year ${reportingYearObj.reporting_year}`;
+      break;
+    case PAST_REPORTS_TAB_INDEX:
+      pageTitle = "Past Reports";
+      break;
+    case ATTACHMENTS_TAB_INDEX:
+      pageTitle = "Download Report Attachments";
+      break;
+    default:
+      pageTitle = "Reports";
+  }
 
   return (
     <div className="py-4">
@@ -48,7 +61,7 @@ export default async function ReportsBasePage({
             )}
           </div>
         )}
-        {activeTab === PREVIOUS_REPORTS_TAB_INDEX && (
+        {activeTab !== CURRENT_REPORTS_TAB_INDEX && (
           <h2 className="text-2xl font-bold">{pageTitle}</h2>
         )}
         <Tabs
