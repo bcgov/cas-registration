@@ -3,8 +3,9 @@ import AlertNote from "@bciers/components/form/components/AlertNote";
 export const InternalIssuanceDeclinedStatusNote = () => {
   return (
     <AlertNote>
-      Supplementary report was required in the previous step, this request has
-      been declined automatically.
+      Please contact the operator to clarify the supplementary report
+      requirement in the previous step. This request has been declined
+      automatically.
     </AlertNote>
   );
 };
