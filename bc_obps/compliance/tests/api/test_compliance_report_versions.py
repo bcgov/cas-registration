@@ -55,7 +55,10 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
             items[0]["operation_name"]
             == version1.report_compliance_summary.report_version.report_operation.operation_name
         )
-        assert items[0]["reporting_year"] == version1.compliance_report.compliance_period.end_date.year
+        assert (
+            items[0]["reporting_year"]
+            == version1.report_compliance_summary.report_version.report.reporting_year.reporting_year
+        )
         assert Decimal(items[0]["excess_emissions"]) == Decimal("50.0000")
 
         # Verify second version
@@ -65,5 +68,8 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
             items[1]["operation_name"]
             == version2.report_compliance_summary.report_version.report_operation.operation_name
         )
-        assert items[1]["reporting_year"] == version2.compliance_report.compliance_period.end_date.year
+        assert (
+            items[1]["reporting_year"]
+            == version2.report_compliance_summary.report_version.report.reporting_year.reporting_year
+        )
         assert Decimal(items[1]["excess_emissions"]) == Decimal("75.0000")
