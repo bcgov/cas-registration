@@ -71,9 +71,7 @@ class TestDataAccessContactService:
         )
         users_operator = operator_baker()
         random_contacts: List[Contact] = contact_baker(_quantity=10)
-        user_contact: Contact = contact_baker(
-            _quantity=1, first_name='Mickey', last_name='Mouse', email='mickey.mouse@email.com'
-        )
+        user_contact: Contact = contact_baker(first_name='Mickey', last_name='Mouse', email='mickey.mouse@email.com')
         users_operator.contacts.set([*random_contacts, user_contact])
         user_operator_baker(
             {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
@@ -97,7 +95,7 @@ class TestDataAccessContactService:
         users_operator = operator_baker()
         random_contacts: List[Contact] = contact_baker(_quantity=10)
         user_contact: Contact = contact_baker(
-            _quantity=1, first_name='Mickey', last_name='Mouse', email='some.other.address@email.com'
+            first_name='Mickey', last_name='Mouse', email='some.other.address@email.com'
         )
         users_operator.contacts.set([*random_contacts, user_contact])
         user_operator_baker(
