@@ -16,7 +16,7 @@ export default async function ManageObligationLayout({
     await getElicensingLastRefreshedMetaData(complianceReportVersionId);
 
   return (
-    <div className="min-h-screen">
+    <div>
       <ElicensingStaleDataAlert
         lastUpdated={metadata?.last_refreshed_display ?? ""}
         dataIsFresh={metadata?.data_is_fresh ?? false}
