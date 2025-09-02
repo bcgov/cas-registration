@@ -6,6 +6,7 @@ import * as constants from "./constants";
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary";
 
 import { getToken } from "@bciers/actions";
 import { getUserRole } from "@bciers/middlewares";
@@ -16,6 +17,7 @@ import {
 } from "@bciers/utils/src/enums";
 
 import { mockIndustryUserToken } from "@bciers/testConfig/data/tokens";
+import { PenaltyStatus } from "@bciers/utils/src/enums";
 
 // --------------------
 // Mocks
@@ -40,6 +42,10 @@ vi.mock(
     getRequestIssuanceComplianceSummaryData: vi.fn(),
   }),
 );
+vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
+  __esModule: true,
+  getComplianceSummary: vi.fn(),
+}));
 
 // --------------------
 // Helpers & Setup
@@ -90,6 +96,14 @@ const requestIssuanceTrackPath = pathUnderSummaries(
   constants.AppRoutes.RI_TRACK_STATUS,
 );
 
+const noPaths = constants.routesNoObligation;
+const riPaths = [requestIssuanceReviewPath, requestIssuanceCreditPath];
+
+const moPaths = constants.routesObligation;
+const moPenaltyPaths = constants.routesObligationPenalty;
+const moNonPenaltyPaths = moPaths.filter(
+  (path) => !moPenaltyPaths.includes(path),
+);
 // --------------------
 // Mock Helpers
 // --------------------
@@ -111,6 +125,12 @@ const mockCanApplyComplianceUnits = (canApply: boolean) => {
   });
 };
 
+const mockComplianceSummary = (summary: {
+  outstanding_balance_tco2e: number;
+  penalty_status: PenaltyStatus;
+}) => {
+  (getComplianceSummary as unknown as vi.Mock).mockResolvedValue(summary);
+};
 // --------------------
 // Setup
 // --------------------
@@ -163,16 +183,17 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
 
-    it("allows when status === NO_OBLIGATION_OR_EARNED_CREDITS", async () => {
-      mockComplianceStatus(
-        ComplianceSummaryStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
-      );
-      const { next, res } = await runMiddleware(
-        `${reviewSummariesPath}/${constants.AppRoutes.NO_REVIEW_SUMMARY}`,
-      );
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
+    it.each(noPaths)(
+      "allows when status === NO_OBLIGATION_OR_EARNED_CREDITS and route is /%s",
+      async (path) => {
+        mockComplianceStatus(
+          ComplianceSummaryStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+        );
+        const { next, res } = await runMiddleware(pathForSeg(path));
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
   });
 
   describe("accessObligation", () => {
@@ -184,16 +205,17 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(res!.status).toBe(307);
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
+    it.each(moNonPenaltyPaths)(
+      "allows when status === OBLIGATION_NOT_MET and route is /%s",
+      async (path) => {
+        mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+        const { next, res } = await runMiddleware(pathForSeg(path));
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
 
-    it("allows when status === OBLIGATION_NOT_MET", async () => {
-      mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
-      const { next, res } = await runMiddleware(
-        pathForSeg(constants.routesObligation[0]),
-      );
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
-
+    // can_apply gate
     it("redirects from apply-compliance-units when can_apply=false", async () => {
       mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
       mockCanApplyComplianceUnits(false);
@@ -209,6 +231,52 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(next).toHaveBeenCalledOnce();
       expect(res!.status).toBe(200);
     });
+
+    // penalty gate
+    it.each(
+      moPaths.flatMap((path) =>
+        [PenaltyStatus.NOT_PAID, PenaltyStatus.PAID].map(
+          (status) => [path, status] as const,
+        ),
+      ),
+    )("allows route '%s' when penalty_status = '%s'", async (path, status) => {
+      mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+      mockComplianceSummary({
+        outstanding_balance_tco2e: 0,
+        penalty_status: status,
+      });
+
+      const { next, res } = await runMiddleware(pathForSeg(path));
+      expect(next).toHaveBeenCalledOnce();
+      expect(res!.status).toBe(200);
+    });
+    it.each(moPenaltyPaths)(
+      "redirects penalty routes to summaries when penalty_status is something else (%s)",
+      async (path) => {
+        mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+        mockComplianceSummary({
+          outstanding_balance_tco2e: 100,
+          penalty_status: PenaltyStatus.ACCRUING,
+        });
+        const { res } = await runMiddleware(pathForSeg(path));
+        expect(res!.status).toBe(307);
+        expect(getPathname(res)).toBe(reviewSummariesPath);
+      },
+    );
+    it.each(moNonPenaltyPaths)(
+      "allows non penalty routes when status is something else (%s)",
+      async (path) => {
+        mockComplianceStatus(ComplianceSummaryStatus.OBLIGATION_NOT_MET);
+        mockComplianceSummary({
+          outstanding_balance_tco2e: 100,
+          penalty_status: PenaltyStatus.ACCRUING,
+        });
+
+        const { next, res } = await runMiddleware(pathForSeg(path));
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
   });
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -235,15 +303,16 @@ describe("withRuleHasComplianceRouteAccess middleware", () => {
       expect(getPathname(res)).toBe(reviewSummariesPath);
     });
 
-    it("allows when status === EARNED_CREDITS", async () => {
-      mockComplianceStatus(ComplianceSummaryStatus.EARNED_CREDITS);
-      mockIssuanceStatus(IssuanceStatus.CREDITS_NOT_ISSUED);
-      const { next, res } = await runMiddleware(
-        `${requestIssuanceReviewPath}/`,
-      );
-      expect(next).toHaveBeenCalledOnce();
-      expect(res!.status).toBe(200);
-    });
+    it.each(riPaths)(
+      "allows when status === EARNED_CREDITS and route is /%s",
+      async (path) => {
+        mockComplianceStatus(ComplianceSummaryStatus.EARNED_CREDITS);
+        mockIssuanceStatus(IssuanceStatus.CREDITS_NOT_ISSUED);
+        const { next, res } = await runMiddleware(pathForSeg(path));
+        expect(next).toHaveBeenCalledOnce();
+        expect(res!.status).toBe(200);
+      },
+    );
 
     // request-issuance-of-earned-credits -> track-status-of-issuance when issuance ∈ toTrack
     it.each(toTrack)(
