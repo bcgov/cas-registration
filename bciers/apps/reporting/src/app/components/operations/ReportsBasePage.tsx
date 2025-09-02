@@ -21,13 +21,15 @@ export default async function ReportsBasePage({
 
   const tabs = userRole.includes("industry_")
     ? [
+        //tabs for external users
         { label: "View annual report(s)", href: "/reports/current-reports" },
         { label: "View past reports", href: "/reports/previous-years" },
       ]
     : [
+        //tabs for internal users
         { label: "View annual reports", href: "/reports/current-reports" },
         { label: "View past reports", href: "/reports/previous-years" },
-        { label: "Download Report Attachments", href: "/reports/attachments" },
+        { label: "Download report attachments", href: "/reports/attachments" },
       ];
   const CURRENT_REPORTS_TAB_INDEX = 0;
   const PAST_REPORTS_TAB_INDEX = 1;
