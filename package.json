@@ -27,5 +27,8 @@
       "before:git:beforeRelease": "./.bin/pre-commit-format.sh CHANGELOG.md"
     }
   },
-  "packageManager": "yarn@4.2.0"
+  "packageManager": "yarn@4.2.0",
+  "dependencies": {
+    "next": "14.2.32"
+  }
 }
