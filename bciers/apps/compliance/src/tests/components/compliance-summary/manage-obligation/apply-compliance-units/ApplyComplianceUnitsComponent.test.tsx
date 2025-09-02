@@ -24,9 +24,9 @@ vi.mock("@bciers/actions", () => ({
 }));
 
 vi.mock(
-  "@/compliance/src/app/utils/getOperationByComplianceReportVersionId",
+  "@/compliance/src/app/utils/getReportOperationByComplianceReportVersionId",
   () => ({
-    default: vi.fn().mockResolvedValue({ name: "Test Operation" }),
+    default: vi.fn().mockResolvedValue({ operation_name: "Test Operation" }),
   }),
 );
 

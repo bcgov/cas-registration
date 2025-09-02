@@ -33,7 +33,10 @@ class TestComplianceInvoiceService:
 
         self.address = make_recipe("registration.tests.utils.address")
         self.operator = make_recipe("registration.tests.utils.operator", physical_address=self.address)
-        self.operation = make_recipe("registration.tests.utils.operation", operator=self.operator)
+
+        self.report_operation = make_recipe(
+            "reporting.tests.utils.report_operation",
+        )
 
         # Set up invoice and line items
         self.invoice = make_recipe(
@@ -56,7 +59,7 @@ class TestComplianceInvoiceService:
 
     @patch("compliance.service.compliance_invoice_service.PDFGeneratorService.generate_pdf")
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_operation_by_compliance_report_version"
+        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
     )
     @patch(
         "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
@@ -70,7 +73,7 @@ class TestComplianceInvoiceService:
         mock_refresh_data,
         mock_get_charge_rate,
         mock_get_obligation,
-        mock_get_operation,
+        mock_get_report_operation,
         mock_generate_pdf,
     ):
         # Patch fresh data response
@@ -82,7 +85,7 @@ class TestComplianceInvoiceService:
 
         # Patch other services
         mock_get_obligation.return_value = self.obligation
-        mock_get_operation.return_value = self.operation
+        mock_get_report_operation.return_value = self.report_operation
         mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
 
         result = ComplianceInvoiceService.generate_obligation_invoice_pdf(self.compliance_report_version.id)
@@ -163,7 +166,10 @@ class TestComplianceInvoiceService:
         assert len(billing_items) == expected_billing_count
 
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_operation_by_compliance_report_version"
+        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_operator_by_compliance_report_version"
+    )
+    @patch(
+        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
     )
     @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
     @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.format_operator_address")
@@ -171,7 +177,8 @@ class TestComplianceInvoiceService:
         self,
         mock_format_operator_address,
         mock_calculate_invoice_amount_due,
-        mock_get_operation,
+        mock_get_report_operation,
+        mock_get_operator,
     ):
         # Arrange
         mock_format_operator_address.return_value = ("123 Main St", "City, BC  V1A 2B3")
@@ -183,7 +190,9 @@ class TestComplianceInvoiceService:
             },
             {'date': 'Aug 8, 2025', 'description': 'Payment 185262395', 'amount': '($1,000,000.00)'},
         ]
-        mock_get_operation.return_value = self.operation
+        mock_get_report_operation.return_value = self.report_operation
+
+        mock_get_operator.return_value = self.operator
 
         obligation_id = self.obligation.obligation_id
 
@@ -198,7 +207,7 @@ class TestComplianceInvoiceService:
         assert context["operator_name"] == self.operator.legal_name
         assert context["operator_address_line1"] == "123 Main St"
         assert context["operator_address_line2"] == "City, BC  V1A 2B3"
-        assert context["operation_name"] == self.operation.name
+        assert context["operation_name"] == self.report_operation.operation_name
         assert context["invoice_number"] == self.invoice.invoice_number
         assert context["invoice_due_date"] == self.invoice.due_date.strftime("%b %-d, %Y")
         assert context["invoice_printed_date"] == timezone.now().strftime("%b %-d, %Y")
@@ -241,7 +250,7 @@ class TestComplianceInvoiceService:
             "operator_name": self.operator.legal_name,
             "operator_address_line1": "123 Main St",
             "operator_address_line2": "City, BC  V1A 2B3",
-            "operation_name": self.operation.name,
+            "operation_name": self.report_operation.operation_name,
             "invoice_number": self.invoice.invoice_number,
             "invoice_due_date": self.invoice.due_date.strftime("%b %-d, %Y"),
             "invoice_printed_date": timezone.now().strftime("%b %-d, %Y"),

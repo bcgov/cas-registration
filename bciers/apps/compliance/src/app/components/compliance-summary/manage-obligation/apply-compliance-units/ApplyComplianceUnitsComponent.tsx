@@ -21,7 +21,7 @@ import { ApplyComplianceUnitsAlertNote } from "./ApplyComplianceUnitsAlertNote";
 import { IChangeEvent } from "@rjsf/core";
 import { actionHandler } from "@bciers/actions";
 import SubmitButton from "@bciers/components/button/SubmitButton";
-import getOperationByComplianceReportVersionId from "@/compliance/src/app/utils/getOperationByComplianceReportVersionId";
+import getReportOperationByComplianceReportVersionId from "@/compliance/src/app/utils/getReportOperationByComplianceReportVersionId";
 
 interface ApplyComplianceUnitsComponentProps {
   complianceReportVersionId: number;
@@ -54,10 +54,10 @@ export default function ApplyComplianceUnitsComponent({
 
   useEffect(() => {
     const fetchOperationName = async () => {
-      const operation = await getOperationByComplianceReportVersionId(
+      const operation = await getReportOperationByComplianceReportVersionId(
         complianceReportVersionId,
       );
-      setOperationName(operation?.name || "");
+      setOperationName(operation?.operation_name || "");
     };
 
     fetchOperationName();
@@ -288,7 +288,6 @@ export default function ApplyComplianceUnitsComponent({
         return applyComplianceUnitsBaseSchema;
     }
   }, [currentPhase]);
-
   return (
     <FormBase
       readonly={status === "applied"}
