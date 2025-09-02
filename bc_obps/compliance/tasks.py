@@ -6,6 +6,8 @@ from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
 from service.email.email_service import EmailService
 import logging
 
+from compliance.emails import send_earned_credit_notification_email
+
 logger = logging.getLogger(__name__)
 email_service = EmailService()
 
@@ -21,6 +23,13 @@ retryable_process_obligation_integration = create_retryable(
     retry_delay_minutes=1,
 )
 
+# Create retryable email function
+retryable_earned_credit_notification_email = create_retryable(
+    func=send_earned_credit_notification_email,
+    tag="email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10
+)
 
 ###################
 # Scheduled tasks #
@@ -42,5 +51,14 @@ SCHEDULED_TASKS = [
         schedule_hour=2,
         schedule_minute=0,
         tag="elicensing",
+    ),
+    ScheduledTaskConfig(
+        func=retryable_earned_credit_notification_email,
+        schedule_type="yearly",
+    schedule_month=9,           
+    schedule_day_of_month=24,   
+    schedule_hour=2,            
+    schedule_minute=0,          
+    tag="earned_credit_notification"
     ),
 ]
