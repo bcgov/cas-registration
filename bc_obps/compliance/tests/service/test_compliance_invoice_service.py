@@ -33,7 +33,6 @@ class TestComplianceInvoiceService:
 
         self.address = make_recipe("registration.tests.utils.address")
         self.operator = make_recipe("registration.tests.utils.operator", physical_address=self.address)
-        # self.operation = make_recipe("registration.tests.utils.operation", operator=self.operator)
 
         self.report_operation = make_recipe(
             "reporting.tests.utils.report_operation",

@@ -288,7 +288,6 @@ export default function ApplyComplianceUnitsComponent({
         return applyComplianceUnitsBaseSchema;
     }
   }, [currentPhase]);
-  console.log("operationName", operationName);
   return (
     <FormBase
       readonly={status === "applied"}
