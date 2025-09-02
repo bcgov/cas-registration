@@ -111,8 +111,8 @@ class ReportingDashboardService:
         user_guid: UUID,
         current_reporting_year: int,
         reports_period: ReportsPeriod = ReportsPeriod.ALL,
-        sort_field: Optional[str] = None,
-        sort_order: Optional[str] = None,
+        sort_field: Optional[str] = "reporting_year",
+        sort_order: Optional[str] = "asc",
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Report]:
         """
@@ -123,10 +123,6 @@ class ReportingDashboardService:
         user = UserDataAccessService.get_by_guid(user_guid)
         is_internal = "cas_" in user.app_role_id
 
-        queryset = Report.objects.all().annotate(
-            report_id=F("id"),
-            first_report_version_id=cls.first_report_version_subquery.values("id")[:1],
-        )
         if is_internal:
             queryset = Report.objects.filter(report_versions__is_latest_submitted=True).annotate(
                 report_id=F("id"),
