@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 from registration.models import Document
 import time
 from reporting.models.report_attachment import ReportAttachment
+from service.error_service.handle_exception import ExceptionHandler
 
 logger = logging.getLogger(__name__)
 
@@ -105,9 +106,11 @@ class Command(BaseCommand):
 
                 except Exception as e:
                     logger.warning(self.style.NOTICE(f"Error checking status of documents: {e}"))
+                    ExceptionHandler.capture_sentry_exception(e, "document_file_status_error")
                     raise e
 
             logger.info("Completed check loop")
         except Exception as e:
             logger.error(f"Unhandled error: {e}", exc_info=True)
+            ExceptionHandler.capture_sentry_exception(e, "document_file_status_error")
             raise e
