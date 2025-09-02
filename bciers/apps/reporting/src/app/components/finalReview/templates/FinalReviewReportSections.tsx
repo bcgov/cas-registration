@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { SectionReview } from "./SectionReview";
 import ActivityView from "@reporting/src/app/components/finalReview/templates/ActivityView";

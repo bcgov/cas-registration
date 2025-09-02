@@ -15,9 +15,12 @@ export interface ChangeItem {
 
 export interface ReviewChangesProps {
   changes: ChangeItem[];
+  showChanges?: boolean;
+  isReportingOnly?: boolean;
 }
 
 export interface FacilityReportStructure {
+  facilityNameChange: ChangeItem;
   facilityName: string;
   activities: Record<string, ActivityStructure>;
   emissionSummary: ChangeItem[];

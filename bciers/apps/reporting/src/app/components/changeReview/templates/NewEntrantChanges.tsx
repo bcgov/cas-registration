@@ -32,26 +32,28 @@ const groupChanges = (changes: any[]) => {
   const basicFields: any[] = [];
   const products: Record<string, { production?: any; emissions: any[] }> = {};
   const standaloneEmissions: any[] = [];
+
   changes.forEach((change) => {
     const { productName, emissionName } = parseFieldPath(change.field);
-    if (BASIC_FIELD_ORDER.some((key) => change.field.includes(key)))
+
+    if (BASIC_FIELD_ORDER.some((key) => change.field.includes(key))) {
       basicFields.push(change);
-    else if (productName && change.field.includes("production_amount")) {
+    } else if (productName && change.field.includes("production_amount")) {
       products[productName] = products[productName] || { emissions: [] };
       products[productName].production = change;
     } else if (emissionName) {
-      if (productName) {
-        products[productName] = products[productName] || { emissions: [] };
-        products[productName].emissions.push({ ...change, emissionName });
-      } else {
-        standaloneEmissions.push({ ...change, emissionName });
-      }
+      const target = productName
+        ? (products[productName] = products[productName] || { emissions: [] })
+            .emissions
+        : standaloneEmissions;
+      target.push({ ...change, emissionName });
     }
   });
+
   return { basicFields, products, standaloneEmissions };
 };
 
-// Deduplicate and order basic fields
+// Order and deduplicate basic fields
 const getOrderedBasicFields = (basicFields: any[]) => {
   const seen = new Set<string>();
   return BASIC_FIELD_ORDER.map((key) =>
@@ -65,22 +67,18 @@ const getOrderedBasicFields = (basicFields: any[]) => {
       if (seen.has(label)) return false;
       seen.add(label);
       return true;
-    })
-    .filter(
-      (item, idx, arr) => arr.findIndex((i) => i.field === item.field) === idx,
-    );
+    });
 };
 
-// Render value using ChangeItemDisplay
+// Render ChangeItemDisplay
 const renderValue = (
   change: any,
   label?: string,
   formatDateField?: boolean,
 ) => {
-  // Format basic field date values if requested
-  let formattedChange = change;
+  // Format date for basic fields
   if (formatDateField && change.newValue) {
-    formattedChange = {
+    change = {
       ...change,
       newValue: formatDate(change.newValue, "YYYY-MM-DD"),
       oldValue: change.oldValue
@@ -88,34 +86,35 @@ const renderValue = (
         : change.oldValue,
     };
   }
+
+  // Handle emissions (added/deleted/modified) or any object with 'emission'
   if (
-    (formattedChange.change_type === "added" ||
-      formattedChange.change_type === "deleted") &&
-    typeof formattedChange.newValue === "object" &&
-    formattedChange.newValue?.emission_category &&
-    formattedChange.newValue?.emission !== undefined
+    typeof change.newValue === "object" &&
+    change.newValue?.emission !== undefined
   ) {
     return (
       <ChangeItemDisplay
         item={{
-          field: formattedChange.newValue.emission_category,
-          oldValue: formattedChange.oldValue?.emission ?? null,
-          newValue: formattedChange.newValue.emission,
-          change_type: formattedChange.change_type,
-          displayLabel: formattedChange.newValue.emission_category,
-          isNewAddition: formattedChange.change_type === "added",
+          field: change.newValue.emission_category,
+          oldValue: change.oldValue?.emission ?? null,
+          newValue: change.newValue.emission,
+          change_type: change.change_type,
+          displayLabel: change.newValue.emission_category,
+          isNewAddition: change.change_type === "added",
         }}
       />
     );
   }
+
+  // Generic added objects
   if (
-    formattedChange.change_type === "added" &&
-    typeof formattedChange.newValue === "object" &&
-    formattedChange.newValue !== null
+    change.change_type === "added" &&
+    typeof change.newValue === "object" &&
+    change.newValue
   ) {
     return (
       <Box sx={{ pl: 2 }}>
-        {Object.entries(formattedChange.newValue).map(([k, v]) => (
+        {Object.entries(change.newValue).map(([k, v]) => (
           <ChangeItemDisplay
             key={k}
             item={{
@@ -131,12 +130,11 @@ const renderValue = (
       </Box>
     );
   }
+
+  // Default
   return (
     <ChangeItemDisplay
-      item={{
-        ...formattedChange,
-        displayLabel: label || formattedChange.field,
-      }}
+      item={{ ...change, displayLabel: label || change.field }}
     />
   );
 };
@@ -147,6 +145,7 @@ interface NewEntrantChangesProps {
 
 const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
   if (!changes?.length) return null;
+
   const { basicFields, products, standaloneEmissions } = groupChanges(changes);
   const orderedBasicFields = getOrderedBasicFields(basicFields);
 
@@ -156,26 +155,26 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
         Report New Entrant Information
       </Typography>
       <Divider sx={{ mb: 2 }} />
+
       {orderedBasicFields.map((item) => {
-        // Extract key for label mapping
-        const keyMatch = item.field.match(/\['([a-zA-Z0-9_]+)'\]$/);
-        const key = keyMatch ? keyMatch[1] : undefined;
-        const label = key ? newEntrantFieldLabels[key] : item.field;
+        const key = item.field.match(/\['([a-zA-Z0-9_]+)'\]$/)?.[1];
         return (
           <Box key={item.field} mb={1}>
             {renderValue(
               item,
-              label,
-              true, // format date for basic fields
+              key ? newEntrantFieldLabels[key] : item.field,
+              true,
             )}
           </Box>
         );
       })}
+
       {Object.entries(products).map(([productName, data]) => (
         <Box key={productName} mb={3}>
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
             Product: {productName}
           </Typography>
+
           {data.production && (
             <Box mb={1}>
               {renderValue(
@@ -184,6 +183,7 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
               )}
             </Box>
           )}
+
           {data.emissions.map((item) => (
             <Box key={item.field} mb={1}>
               <Typography variant="subtitle2" sx={{ fontWeight: "bold" }}>
@@ -194,6 +194,7 @@ const NewEntrantChanges: React.FC<NewEntrantChangesProps> = ({ changes }) => {
           ))}
         </Box>
       ))}
+
       {standaloneEmissions.length > 0 && (
         <Box mb={3}>
           <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">

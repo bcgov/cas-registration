@@ -1,5 +1,6 @@
 import { ChangeItem, FacilityReportStructure } from "../constants/types";
 import { parseFacilityReportField } from "./facilityReportParser";
+
 // Utility to ensure nested array exists
 function ensureArray(obj: any, key: string) {
   if (!obj[key]) obj[key] = [];
@@ -51,7 +52,7 @@ function handleNestedChanges({
       if (item[key] === undefined) {
         container.fields.push({
           field: `${path}[${arrayKey}][${idx}][${key}]`,
-          oldValue: oldValue,
+          oldValue,
           newValue: null,
           change_type: "deleted",
         });
@@ -94,7 +95,7 @@ function handleNestedChanges({
   });
 }
 
-// Usage for fuels/emissions
+// --- Functions for handling units, fuels, and emissions ---
 function handleUnitNestedData(
   unit: any,
   unitData: any,
@@ -134,17 +135,15 @@ function handleUnitChanges(sourceType: any, parsed: any, change: ChangeItem) {
       emissions: {},
     };
   }
-
   const unit = sourceType.units[parsed.unitIndex];
 
   if (parsed.fuelIndex !== undefined) {
-    if (!unit.fuels[parsed.fuelIndex]) {
+    if (!unit.fuels[parsed.fuelIndex])
       unit.fuels[parsed.fuelIndex] = {
         fuelIndex: parsed.fuelIndex,
         fields: [],
         emissions: {},
       };
-    }
 
     if (parsed.emissionIndex !== undefined) {
       if (!unit.fuels[parsed.fuelIndex].emissions[parsed.emissionIndex]) {
@@ -160,12 +159,11 @@ function handleUnitChanges(sourceType: any, parsed: any, change: ChangeItem) {
       unit.fuels[parsed.fuelIndex].fields.push(change);
     }
   } else if (parsed.emissionIndex !== undefined) {
-    if (!unit.emissions[parsed.emissionIndex]) {
+    if (!unit.emissions[parsed.emissionIndex])
       unit.emissions[parsed.emissionIndex] = {
         emissionIndex: parsed.emissionIndex,
         fields: [],
       };
-    }
     unit.emissions[parsed.emissionIndex].fields.push(change);
   } else {
     unit.fields.push(change);
@@ -187,31 +185,25 @@ function parseActivityData(
   Object.entries(change.newValue.source_types).forEach(
     ([sourceTypeName, sourceTypeData]: [string, any]) => {
       const activity = facility.activities[parsed.activityName];
-
-      if (!activity.sourceTypes[sourceTypeName]) {
+      if (!activity.sourceTypes[sourceTypeName])
         activity.sourceTypes[sourceTypeName] = {
           sourceTypeName,
           fields: [],
           units: {},
         };
-      }
-
       const sourceType = activity.sourceTypes[sourceTypeName];
 
       if (sourceTypeData.units && Array.isArray(sourceTypeData.units)) {
         sourceTypeData.units.forEach((unitData: any, unitIndex: number) => {
-          if (!sourceType.units[unitIndex]) {
+          if (!sourceType.units[unitIndex])
             sourceType.units[unitIndex] = {
               unitIndex,
               fields: [],
               fuels: {},
               emissions: {},
             };
-          }
-
           const unit = sourceType.units[unitIndex];
 
-          // Add unit-level fields
           Object.entries(unitData).forEach(([key, value]) => {
             if (key !== "fuels" && key !== "emissions") {
               unit.fields.push({
@@ -225,25 +217,20 @@ function parseActivityData(
             }
           });
 
-          // Handle fuels
-          if (unitData.fuels && Array.isArray(unitData.fuels)) {
+          if (unitData.fuels && Array.isArray(unitData.fuels))
             handleUnitNestedData(
               unit,
               unitData,
               {},
               `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}]`,
             );
-          }
-
-          // Handle unit-level emissions
-          if (unitData.emissions && Array.isArray(unitData.emissions)) {
+          if (unitData.emissions && Array.isArray(unitData.emissions))
             handleUnitNestedData(
               unit,
               unitData,
               {},
               `${change.field}[source_types][${sourceTypeName}][units][${unitIndex}]`,
             );
-          }
         });
       }
     },
@@ -255,33 +242,22 @@ function handleSourceTypeChanges(
   parsed: any,
   change: ChangeItem,
 ) {
-  if (!facility.activities[parsed.activityName]) {
+  if (!facility.activities[parsed.activityName])
     facility.activities[parsed.activityName] = {
       activityName: parsed.activityName,
       sourceTypes: {},
     };
-  }
-
   if (
     !facility.activities[parsed.activityName].sourceTypes[parsed.sourceTypeName]
-  ) {
+  )
     facility.activities[parsed.activityName].sourceTypes[
       parsed.sourceTypeName
-    ] = {
-      sourceTypeName: parsed.sourceTypeName,
-      fields: [],
-      units: {},
-    };
-  }
-
+    ] = { sourceTypeName: parsed.sourceTypeName, fields: [], units: {} };
   const sourceType =
     facility.activities[parsed.activityName].sourceTypes[parsed.sourceTypeName];
-
-  if (parsed.unitIndex !== undefined) {
+  if (parsed.unitIndex !== undefined)
     handleUnitChanges(sourceType, parsed, change);
-  } else {
-    sourceType.fields.push(change);
-  }
+  else sourceType.fields.push(change);
 }
 
 function handleActivityChanges(
@@ -289,47 +265,35 @@ function handleActivityChanges(
   parsed: any,
   change: ChangeItem,
 ) {
-  // Handle activity-level additions/removals
   if (parsed.fieldKey === "activity_data" && !parsed.sourceTypeName) {
-    if (!facility.activities[parsed.activityName]) {
+    if (!facility.activities[parsed.activityName])
       facility.activities[parsed.activityName] = {
         activityName: parsed.activityName,
         sourceTypes: {},
       };
-    }
-
     facility.activities[parsed.activityName].changeType = change.change_type;
 
-    if (change.change_type === "added" && change.newValue) {
-      facility.activities[parsed.activityName].newValue = change.newValue;
+    if (change.change_type === "added" && change.newValue)
       parseActivityData(facility, parsed, change);
-    } else if (change.change_type === "removed" && change.oldValue) {
+    else if (change.change_type === "removed" && change.oldValue)
       facility.activities[parsed.activityName].newValue = change.oldValue;
-    }
     return;
   }
 
-  // Handle source type level changes and field modifications
   if (parsed.sourceTypeName || parsed.activityName) {
-    // Ensure activity exists
-    if (!facility.activities[parsed.activityName]) {
+    if (!facility.activities[parsed.activityName])
       facility.activities[parsed.activityName] = {
         activityName: parsed.activityName,
         sourceTypes: {},
-        changeType: "modified", // Mark as modified since we have field changes
+        changeType: "modified",
       };
-    }
-
-    // If we don't have a change type set yet, mark as modified
-    if (!facility.activities[parsed.activityName].changeType) {
+    if (!facility.activities[parsed.activityName].changeType)
       facility.activities[parsed.activityName].changeType = "modified";
-    }
-
-    if (parsed.sourceTypeName) {
+    if (parsed.sourceTypeName)
       handleSourceTypeChanges(facility, parsed, change);
-    }
   }
 }
+
 function handleOtherFacilitySections(
   facility: FacilityReportStructure,
   parsed: any,
@@ -351,48 +315,80 @@ function handleOtherFacilitySections(
   }
 }
 
+// --- Updated function to include facility_name change ---
 export function organizeFacilityReportChanges(
   changes: ChangeItem[],
 ): Record<string, FacilityReportStructure> {
   const facilityReports: Record<string, FacilityReportStructure> = {};
-
   changes.forEach((change) => {
     const parsed = parseFacilityReportField(change.field);
     if (!parsed) return;
 
-    if (!facilityReports[parsed.facilityName]) {
-      facilityReports[parsed.facilityName] = {
-        facilityName: parsed.facilityName,
+    // Normalize old_value/new_value to oldValue/newValue
+    const normalizedChange = {
+      ...change,
+      oldValue: change.oldValue,
+      newValue: change.newValue,
+      change_type: change.change_type,
+    };
+
+    // Use new facility name if facility_name changed
+    const facilityKey = String(
+      parsed.fieldKey === "facility_name" && normalizedChange.newValue
+        ? normalizedChange.newValue
+        : parsed.facilityName,
+    );
+
+    if (!facilityReports[facilityKey]) {
+      facilityReports[facilityKey] = {
+        facilityName: facilityKey,
         activities: {},
         emissionSummary: [],
         productionData: [],
         emissionAllocation: [],
         nonAttributableEmissions: [],
+        facilityNameChange: {
+          field: "",
+          oldValue: null,
+          newValue: null,
+          change_type: "modified",
+        },
       };
     }
+    const facility = facilityReports[facilityKey];
 
-    const facility = facilityReports[parsed.facilityName];
-
-    // Handle facility-level additions/removals
+    // Handle facility-level changes
     if (parsed.isFacilityLevel) {
-      if (change.change_type === "added") {
+      if (normalizedChange.change_type === "added") {
         facility.isFacilityAdded = true;
-        facility.facilityData = change.newValue;
+        facility.facilityData = normalizedChange.newValue;
         return;
-      } else if (change.change_type === "removed") {
+      }
+      if (normalizedChange.change_type === "removed") {
         facility.isFacilityRemoved = true;
-        facility.facilityData = change.oldValue;
+        facility.facilityData = normalizedChange.oldValue;
+        return;
+      }
+      if (parsed.fieldKey === "facility_name") {
+        facility.facilityNameChange = {
+          ...normalizedChange,
+          displayLabel: "Facility Name Change",
+          field: normalizedChange.field,
+          isNewAddition: false,
+          isDeleted: false,
+          facilityName: parsed.facilityName,
+        };
+        if (typeof normalizedChange.newValue === "string") {
+          facility.facilityName = normalizedChange.newValue;
+        }
         return;
       }
     }
 
-    // Handle activity data changes
-    if (parsed.section === "activity_data" && parsed.activityName) {
-      handleActivityChanges(facility, parsed, change);
-    } else {
-      // Handle other facility sections
-      handleOtherFacilitySections(facility, parsed, change);
-    }
+    // Handle activity or other sections
+    if (parsed.section === "activity_data" && parsed.activityName)
+      handleActivityChanges(facility, parsed, normalizedChange);
+    else handleOtherFacilitySections(facility, parsed, normalizedChange);
   });
 
   return facilityReports;

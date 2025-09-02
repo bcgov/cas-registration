@@ -1,32 +1,22 @@
 import React from "react";
-import { complianceNote } from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
-
 interface ReasonForChangeProps {
   reasonForChange: string;
   onReasonChange: (val: string) => void;
-  onSubmit: () => void | Promise<void>;
 }
 
 const ReasonForChangeForm: React.FC<ReasonForChangeProps> = ({
   reasonForChange,
   onReasonChange,
-  onSubmit,
 }) => {
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit();
       }}
       className="change-review-form"
     >
-      <div className="w-full form-group field field-object form-heading-label">
-        <div className="form-heading">Reason for change</div>
-      </div>
-
-      {/* Compliance Note */}
-      <div className="form-group">
-        <div className="w-full my-8">{complianceNote}</div>
+      <div className="form-heading text-xl font-bold flex items-cente">
+        Reason for change
       </div>
 
       {/* Reason for Change */}

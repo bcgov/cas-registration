@@ -7,12 +7,13 @@ import { ReviewChanges } from "@reporting/src/app/components/changeReview/templa
 import { useRouter } from "next/navigation";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
 import ReasonForChangeForm from "@reporting/src/app/components/changeReview/templates/ReasonForChange";
-
 interface ChangeReviewProps {
   versionId: number;
   initialFormData: any;
   navigationInformation: NavigationInformation;
   changes: ChangeItem[];
+  showChanges: boolean;
+  isReportingOnly?: boolean;
 }
 
 export default function ChangeReviewForm({
@@ -20,6 +21,8 @@ export default function ChangeReviewForm({
   initialFormData,
   navigationInformation,
   changes,
+  showChanges = true,
+  isReportingOnly,
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
@@ -28,14 +31,15 @@ export default function ChangeReviewForm({
   const [reasonForChange, setReasonForChange] = useState(
     initialFormData.reason_for_change || "",
   );
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
-  const handleSubmit = async (): Promise<void> => {
-    setIsRedirecting(true);
-
+  const handleSubmit = async (canContinue: boolean) => {
     const payload = {
       ...formData,
       reason_for_change: reasonForChange,
     };
+
+    setIsSaving(true);
 
     const endpoint = `reporting/report-version/${versionId}`;
     const method = "POST";
@@ -44,15 +48,16 @@ export default function ChangeReviewForm({
       body: JSON.stringify(payload),
     });
 
-    if (response?.error) {
+    if (response.error) {
       setErrors([response.error]);
-      setIsRedirecting(false);
-      return; // <--- just return void instead of false
+    } else {
+      if (canContinue) {
+        setIsRedirecting(true);
+        router.push(navigationInformation.continueUrl);
+      }
     }
 
-    setErrors(undefined);
-    router.push(navigationInformation.continueUrl);
-    // don't return true
+    setIsSaving(false);
   };
 
   return (
@@ -63,18 +68,23 @@ export default function ChangeReviewForm({
       backUrl={navigationInformation.backUrl}
       continueUrl={navigationInformation.continueUrl}
       errors={errors}
-      onSubmit={handleSubmit}
+      onSubmit={() => handleSubmit(true)}
       isRedirecting={isRedirecting}
-      noSaveButton={true}
+      isSaving={isSaving}
+      noFormSave={() => handleSubmit(false)}
+      submitButtonDisabled={reasonForChange.trim() === ""}
     >
-      <ReviewChanges changes={changes} />
+      <ReviewChanges
+        changes={changes}
+        showChanges={showChanges}
+        isReportingOnly={isReportingOnly}
+      />
       <ReasonForChangeForm
         reasonForChange={reasonForChange}
         onReasonChange={(val) => {
           setReasonForChange(val);
           setFormData({ ...formData, reason_for_change: val });
         }}
-        onSubmit={handleSubmit}
       />
     </MultiStepWrapperWithTaskList>
   );

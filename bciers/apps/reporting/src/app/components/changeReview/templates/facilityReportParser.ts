@@ -39,6 +39,16 @@ export function parseFacilityReportField(field: string): {
     };
   }
 
+  // Added this block to handle facility_name as facility-level
+  if (cleanSegments.length === 1 && cleanSegments[0] === "facility_name") {
+    return {
+      facilityName,
+      section: "facility_info",
+      fieldKey: "facility_name",
+      isFacilityLevel: true,
+    };
+  }
+
   const mainSection = cleanSegments[0];
 
   if (mainSection === "activity_data") {

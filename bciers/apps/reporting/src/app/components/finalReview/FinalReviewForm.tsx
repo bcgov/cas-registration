@@ -93,7 +93,7 @@ export const FinalReviewForm: React.FC<Props> = ({
               {/* Reason for Edits - for supplementary reports */}
               {data.is_supplementary_report && (
                 <SectionReview
-                  title="Reason for Edits"
+                  title="Reason for Change"
                   data={data}
                   fields={[
                     {

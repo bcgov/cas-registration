@@ -19,8 +19,16 @@ import ElectricityImportData from "./ElectricityImportData";
 import NewEntrantChanges from "./NewEntrantChanges";
 import AdditionalReportingData from "@reporting/src/app/components/changeReview/templates/AdditionalReportingData";
 import ComplianceSummary from "@reporting/src/app/components/changeReview/templates/ComplianceSummary";
+import {
+  complianceNote,
+  reviewChangesNote,
+} from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
 
-export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
+export const ReviewChanges: React.FC<ReviewChangesProps> = ({
+  changes,
+  showChanges,
+  isReportingOnly,
+}) => {
   // Normalize keys for all changes at the root level
   const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
 
@@ -162,8 +170,19 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
 
   return (
     <Box>
+      <div className="form-heading text-xl font-bold flex items-cente">
+        Review Changes
+      </div>
+      {/* Compliance Note */}
+
+      <div className="form-group">
+        <div className="form-group w-full my-8">
+          {showChanges ? complianceNote : reviewChangesNote}
+        </div>
+      </div>
+
       {/* Explicitly render Report Operation, Person Responsible, Additional Reporting Data */}
-      {renderSection("Report Operation", reportOperationItems)}
+      {renderSection("Review Operation Information", reportOperationItems)}
       {renderSection("Person Responsible", personResponsibleItems, true)}
 
       {/* Facility Reports */}
@@ -182,6 +201,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
               sourceTypeChanges={sourceTypeChanges.filter(
                 (c) => c.facilityName === facilityName,
               )}
+              isReportingOnly={isReportingOnly}
             />
           </Box>
         ),
@@ -208,6 +228,12 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
                 productionData: [],
                 emissionAllocation: [],
                 nonAttributableEmissions: [],
+                facilityNameChange: {
+                  field: "",
+                  oldValue: null,
+                  newValue: null,
+                  change_type: "modified",
+                },
               }}
               modifiedFacilityData={{
                 field: `facility_reports.${facilityName}`,
@@ -232,6 +258,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({ changes }) => {
               sourceTypeChanges={sourceTypeChanges.filter(
                 (c) => c.facilityName === facilityName,
               )}
+              isReportingOnly={isReportingOnly}
             />
           </Box>
         ));
