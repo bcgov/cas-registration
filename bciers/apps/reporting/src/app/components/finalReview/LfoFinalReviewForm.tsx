@@ -24,7 +24,7 @@ export default function FacilityReportFinalReviewPage({
     {
       type: "Link",
       text: "Back to final review",
-      link: `reporting/reports/${version_id}/final-review`,
+      link: `/reporting/reports/${version_id}/final-review#facility-grid`,
       title: "Back to final review",
     },
   ];
