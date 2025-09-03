@@ -36,16 +36,6 @@ export interface ContactRow {
   email: string;
 }
 
-export interface PastReportsSearchParams {
-  [key: string]: string | number | undefined;
-  reporting_year?: number;
-  operation_name?: string;
-  page?: number;
-  sort_field?: string;
-  sort_order?: string;
-  report_status?: string;
-}
-
 export interface ReportRow {
   id: number;
   reporting_year: number;
