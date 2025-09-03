@@ -44,6 +44,6 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
         )
         assert (
             response_data["reporting_year"]
-            == compliance_report_version.compliance_report.compliance_period.end_date.year
+            == compliance_report_version.report_compliance_summary.report_version.report.reporting_year.reporting_year
         )
         assert Decimal(response_data["credited_emissions"]) == Decimal("25.0000")

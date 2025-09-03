@@ -632,6 +632,7 @@ class TestComplianceDashboardService:
             "reporting.tests.utils.report",
             operator=user_operator.operator,
             operation=operation,
+            reporting_year=ry_current,  # Ensure Report's reporting_year matches
         )
         cr_current = make_recipe(
             "compliance.tests.utils.compliance_report",
@@ -648,6 +649,7 @@ class TestComplianceDashboardService:
             "reporting.tests.utils.report",
             operator=user_operator.operator,
             operation=operation,
+            reporting_year=ry_past,  # Ensure Report's reporting_year matches
         )
         cr_past = make_recipe(
             "compliance.tests.utils.compliance_report",

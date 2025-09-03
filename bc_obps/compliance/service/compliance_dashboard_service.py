@@ -30,19 +30,20 @@ class ComplianceDashboardService:
 
         compliance_report_version_queryset = (
             ComplianceReportVersion.objects.select_related(
-                "compliance_report__report__operation",
-                "compliance_report__compliance_period",
-                "compliance_report__report__operator",
+                "compliance_report__compliance_period",  # Still needed for charge rate calculation
                 "obligation",
                 "compliance_earned_credit",
                 "report_compliance_summary",
+                "report_compliance_summary__report_version__report__operator",
+                "report_compliance_summary__report_version__report__operation",
+                "report_compliance_summary__report_version__report__reporting_year",
             ).exclude(
                 # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
                 is_supplementary=True,
                 status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
             )
             # filter for current reporting year
-            .filter(compliance_report__compliance_period__reporting_year=reporting_year)
+            .filter(report_compliance_summary__report_version__report__reporting_year=reporting_year)
         )
 
         if user.is_irc_user():
@@ -56,8 +57,8 @@ class ComplianceDashboardService:
             )
             # Get all compliance report versions for the filtered operations
             compliance_report_versions = compliance_report_version_queryset.filter(
-                compliance_report__report__operation_id__in=operations,
-                compliance_report__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                report_compliance_summary__report_version__report__operation_id__in=operations,
+                report_compliance_summary__report_version__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
                     user
                 ).operator,
             )
@@ -96,10 +97,12 @@ class ComplianceDashboardService:
         """
         user = UserDataAccessService.get_by_guid(user_guid)
         compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
-            'compliance_report__report__operation',
             'compliance_report__compliance_period',
             'obligation',
             'report_compliance_summary',
+            'report_compliance_summary__report_version__report__operator',
+            'report_compliance_summary__report_version__report__operation',
+            'report_compliance_summary__report_version__report__reporting_year',
         )
 
         if user.is_irc_user():
@@ -107,7 +110,7 @@ class ComplianceDashboardService:
         else:
             compliance_report_version = compliance_report_version_queryset.get(
                 id=compliance_report_version_id,
-                compliance_report__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
+                report_compliance_summary__report_version__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
                     user
                 ).operator,
             )
