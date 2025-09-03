@@ -143,7 +143,7 @@ class ReportReviewChangesService:
         """
         changed: List[Dict[str, Any]] = []
 
-        # ---  if registration_purpose changed ---
+        # --- If registration_purpose changed ---
         prev_purpose = previous_data.get("report_operation", {}).get("registration_purpose")
         curr_purpose = current_data.get("report_operation", {}).get("registration_purpose")
         if prev_purpose != curr_purpose:
@@ -161,59 +161,68 @@ class ReportReviewChangesService:
             old_facilities = previous_data["facility_reports"]
             new_facilities = current_data["facility_reports"]
 
-            removed = set(old_facilities.keys()) - set(new_facilities.keys())
-            added = set(new_facilities.keys()) - set(old_facilities.keys())
+            removed_keys = set(old_facilities.keys()) - set(new_facilities.keys())
+            added_keys = set(new_facilities.keys()) - set(old_facilities.keys())
 
-            if len(removed) == 1 and len(added) == 1:
-                old_key = removed.pop()
-                new_key = added.pop()
+            # Handle multiple facility renames by matching 'facility' ID
+            for old_key in removed_keys:
                 old_fac = old_facilities[old_key]
-                new_fac = new_facilities[new_key]
+                for new_key in added_keys.copy():  # copy to allow removal
+                    new_fac = new_facilities[new_key]
+                    if old_fac.get("facility") == new_fac.get("facility"):
+                        facility_name_new = new_fac.get("facility_name") or new_key
+                        other_old = {k: v for k, v in old_fac.items() if k != "facility_name"}
+                        other_new = {k: v for k, v in new_fac.items() if k != "facility_name"}
 
-                if old_fac.get("facility") == new_fac.get("facility"):
-                    facility_name_new = new_fac.get("facility_name") or new_key
-                    other_old = {k: v for k, v in old_fac.items() if k != "facility_name"}
-                    other_new = {k: v for k, v in new_fac.items() if k != "facility_name"}
-                    if other_old == other_new:
-                        changed.append(
-                            {
-                                "field": f"root['facility_reports']['{facility_name_new}']['facility_name']",
-                                "old_value": old_fac.get("facility_name"),
-                                "new_value": new_fac.get("facility_name"),
-                                "change_type": "modified",
-                            }
-                        )
-                        return changed
-
-                    # Compare full facility object
-                    differences = DeepDiff(
-                        old_fac,
-                        new_fac,
-                        ignore_order=True,
-                        exclude_regex_paths=[r".*?id'\]$"],
-                    )
-                    for change_type, changes_dict in differences.items():
-                        items = (
-                            changes_dict.items()
-                            if isinstance(changes_dict, dict)
-                            else [(path, None) for path in changes_dict]
-                        )
-                        for path, change_data in items:
-                            try:
-                                old_val, new_val, change_type_str = cls._extract_diff_values(
-                                    path, change_data, old_fac, new_fac, change_type
+                        # Only facility_name changed
+                        if other_old == other_new:
+                            changed.append(
+                                {
+                                    "field": f"root['facility_reports']['{facility_name_new}']['facility_name']",
+                                    "old_value": old_fac.get("facility_name"),
+                                    "new_value": new_fac.get("facility_name"),
+                                    "change_type": "modified",
+                                }
+                            )
+                        else:
+                            # Compare full facility object if other fields changed
+                            differences = DeepDiff(
+                                old_fac,
+                                new_fac,
+                                ignore_order=True,
+                                exclude_regex_paths=[r".*?id'\]$"],
+                            )
+                            for change_type, changes_dict in differences.items():
+                                items = (
+                                    changes_dict.items()
+                                    if isinstance(changes_dict, dict)
+                                    else [(path, None) for path in changes_dict]
                                 )
-                                processed = cls.process_change(path, old_val, new_val, change_type_str or '', new_fac)
-                                processed[
-                                    "field"
-                                ] = f"root['facility_reports']['{facility_name_new}']{processed['field'][4:]}"
-                                changed.append(processed)
-                            except (KeyError, IndexError, TypeError) as e:
-                                logger.debug(f"Skipping facility change due to error: {e}, path: {path}")
-                                continue
+                                for path, change_data in items:
+                                    try:
+                                        old_val, new_val, change_type_str = cls._extract_diff_values(
+                                            path, change_data, old_fac, new_fac, change_type
+                                        )
+                                        processed = cls.process_change(
+                                            path, old_val, new_val, change_type_str or '', new_fac
+                                        )
+                                        processed[
+                                            "field"
+                                        ] = f"root['facility_reports']['{facility_name_new}']{processed['field'][4:]}"
+                                        changed.append(processed)
+                                    except (KeyError, IndexError, TypeError) as e:
+                                        logger.debug(f"Skipping facility change due to error: {e}, path: {path}")
+                                        continue
 
-                    previous_data["facility_reports"].pop(old_key)
-                    current_data["facility_reports"].pop(new_key)
+                        # Remove matched new_key so it isn’t processed again
+                        added_keys.remove(new_key)
+                        break  # Move to next removed_key
+
+            # Remove processed keys from previous_data and current_data
+            for old_key in removed_keys:
+                previous_data["facility_reports"].pop(old_key, None)
+            for new_key in set(new_facilities.keys()) - added_keys:
+                current_data["facility_reports"].pop(new_key, None)
 
         # --- General DeepDiff for remaining data ---
         differences = DeepDiff(
@@ -228,7 +237,11 @@ class ReportReviewChangesService:
         )
 
         for change_type, changes_dict in differences.items():
-            items = changes_dict.items() if isinstance(changes_dict, dict) else [(path, None) for path in changes_dict]
+            items = (
+                changes_dict.items()
+                if isinstance(changes_dict, dict)
+                else [(path, None) for path in differences[change_type]]
+            )
             for path, change_data in items:
                 try:
                     old_val, new_val, change_type_str = cls._extract_diff_values(

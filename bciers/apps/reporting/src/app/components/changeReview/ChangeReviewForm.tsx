@@ -21,8 +21,8 @@ export default function ChangeReviewForm({
   initialFormData,
   navigationInformation,
   changes,
-  showChanges = true,
-  isReportingOnly,
+  showChanges,
+  isReportingOnly = false,
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
