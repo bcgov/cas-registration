@@ -12,6 +12,7 @@ def create_earned_credit_notice_email_template(apps, schema_editor):
         name='Notice of Earned Credits Generated',
         subject='BCIERS Notification – Earned Credits Available to Request ',
         body='''
+        <h1>{{testing_name}}</h1>
             <p style="text-align: center;">Province of British Columbia</p>
             <p style="text-align: center;">B.C. Industrial Emissions Reporting System (BCIERS)</p><br>
             <p>Dear {{ operator_legal_name }},</p><br>
