@@ -90,8 +90,6 @@ export const generateManageObligationTaskList: (
   let automaticPenaltySection: TaskListElement[] = [];
 
   if (
-    (activePage === ActivePage.PayObligationTrackPayments ||
-      penaltyPages.includes(activePage as ActivePage)) &&
     Number(outstandingBalance) === 0 &&
     (penaltyStatus === PenaltyStatus.NOT_PAID ||
       penaltyStatus === PenaltyStatus.PAID)
