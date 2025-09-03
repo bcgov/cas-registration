@@ -13,15 +13,18 @@ import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInf
 interface Facility {
   facility: string;
   facility_name: string;
+  row_count?: number;
 }
 
 interface FinalReviewFacilityGridProps {
   data: Facility[];
+  rowCount?: number;
   version_id: number;
 }
 
 const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   data,
+  rowCount,
   version_id,
 }) => {
   const router = useRouter();
@@ -81,7 +84,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   // Server-side fetch for grid
   const fetchPageData = useCallback(async () => {
     const params = Object.fromEntries(searchParams.entries());
-    const { rows, row_count: rowCount } = await fetchFacilitiesPageData({
+    const { rows, row_count: totalRowCount } = await fetchFacilitiesPageData({
       version_id,
       searchParams: params,
     });
@@ -92,7 +95,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         facility: r.facility,
         facility_name: r.facility_name,
       })),
-      rowCount,
+      row_count: totalRowCount,
     };
   }, [version_id, searchParams]);
 
@@ -107,7 +110,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         columnGroupModel={columnGroup}
         fetchPageData={fetchPageData}
         paginationMode="server"
-        initialData={{ rows: data }}
+        initialData={{ rows: data, row_count: rowCount }}
         getRowId={(row) => row.facility}
         pageSize={10}
         rowSelection={false}
