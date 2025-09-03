@@ -316,7 +316,7 @@ export default function ApplyComplianceUnitsComponent({
         complianceLimitStatus,
         isApplied: status === "applied",
       }}
-      className="w-full min-h-[62vh] flex flex-col justify-between"
+      className="w-full min-h-[52vh] flex flex-col justify-between"
     >
       <div>
         {canApply && status !== "applied" && (
