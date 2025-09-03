@@ -420,13 +420,12 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
-    @patch(
-        'compliance.service.elicensing.elicensing_obligation_service.ElicensingObligationService.process_obligation_integration'
-    )
+    @patch('compliance.service.supplementary_version_service.retryable_process_obligation_integration')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
+    @patch('compliance.service.supplementary_version_service.transaction')
     @patch('compliance.service.supplementary_version_service.timezone')
     def test_handle_creates_compliance_report_version_and_obligation_integration_runs(
-        self, mock_timezone, mock_create_obligation, mock_integration
+        self, mock_timezone, mock_transaction, mock_create_obligation, mock_retryable_integration
     ):
         # Arrange - Mock date to be after the invoice generation date
         mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025(invoice due_date)
@@ -458,6 +457,12 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
         mock_create_obligation.return_value = mock_obligation
 
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+
         # Act
         result = IncreasedObligationHandler.handle(
             compliance_report=self.compliance_report,
@@ -476,19 +481,16 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert result.is_supplementary is True
         assert result.previous_version == self.previous_compliance_report_version
 
-        # Verify ComplianceObligationService.create_compliance_obligation was called
         mock_create_obligation.assert_called_once_with(result.id, Decimal('300'))
+        mock_transaction.on_commit.assert_called_once()
+        mock_retryable_integration.execute.assert_called_once_with(mock_obligation.id)
 
-        # Verify ElicensingObligationService.process_obligation_integration was called
-        mock_integration.assert_called_once_with(mock_obligation.id)
-
-    @patch(
-        'compliance.service.elicensing.elicensing_obligation_service.ElicensingObligationService.process_obligation_integration'
-    )
+    @patch('compliance.service.supplementary_version_service.retryable_process_obligation_integration')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
+    @patch('compliance.service.supplementary_version_service.transaction')
     @patch('compliance.service.supplementary_version_service.timezone')
     def test_handle_creates_compliance_report_version_and_obligation_integration_skipped(
-        self, mock_timezone, mock_create_obligation, mock_integration
+        self, mock_timezone, mock_transaction, mock_create_obligation, mock_retryable_integration
     ):
         # Arrange
         mock_timezone.now.return_value.date.return_value = date(2025, 10, 15)  # Before Nov 1, 2025
@@ -537,16 +539,16 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert result.is_supplementary is True
         assert result.previous_version == self.previous_compliance_report_version
 
-        mock_create_obligation.assert_not_called()
-        mock_integration.assert_not_called()
+        mock_create_obligation.assert_called_once_with(result.id, Decimal('300'))
+        mock_transaction.on_commit.assert_not_called()
+        mock_retryable_integration.execute.assert_not_called()
 
+    @patch('compliance.service.supplementary_version_service.retryable_process_obligation_integration')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
-    @patch(
-        'compliance.service.elicensing.elicensing_obligation_service.ElicensingObligationService.process_obligation_integration'
-    )
+    @patch('compliance.service.supplementary_version_service.transaction')
     @patch('compliance.service.supplementary_version_service.timezone')
     def test_handle_calculates_correct_excess_emission_delta(
-        self, mock_timezone, mock_integration, mock_create_obligation
+        self, mock_timezone, mock_transaction, mock_create_obligation, mock_retryable_integration
     ):
         # Arrange
         mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025(invoice due_date)
@@ -573,6 +575,12 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         )
         version_count = 3
 
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+
         # Act
         result = IncreasedObligationHandler.handle(
             compliance_report=self.compliance_report,
@@ -585,7 +593,8 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         expected_delta = Decimal('550')  # 750 - 200
         assert result.excess_emissions_delta_from_previous == expected_delta
         mock_create_obligation.assert_called_once_with(result.id, expected_delta)
-        mock_integration.assert_called_once()
+        mock_transaction.on_commit.assert_called_once()
+        mock_retryable_integration.execute.assert_called_once()
 
 
 class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):

@@ -55,9 +55,10 @@ class ComplianceReportVersionService:
             )
 
             if excess_emissions > Decimal('0'):
-                cls._handle_obligation_integration(
-                    compliance_report_version.id, excess_emissions, compliance_report.compliance_period
+                obligation = ComplianceObligationService.create_compliance_obligation(
+                    compliance_report_version.id, excess_emissions
                 )
+                cls._handle_obligation_integration(obligation.id, compliance_report.compliance_period)
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
@@ -84,25 +85,19 @@ class ComplianceReportVersionService:
         return ComplianceReportVersion.objects.get(id=compliance_report_version_id)
 
     @classmethod
-    def _handle_obligation_integration(
-        cls, compliance_report_version_id: int, excess_emission_delta: Decimal, compliance_period: CompliancePeriod
-    ) -> None:
+    def _handle_obligation_integration(cls, obligation_id: int, compliance_period: CompliancePeriod) -> None:
         """
         Handle the obligation integration with eLicensing if the invoice generation date has passed.
 
         Args:
-            compliance_report_version_id: The ID of the compliance report version
-            excess_emission_delta: The increase in excess emissions
+            obligation_id: The ID of the compliance obligation
             compliance_period: The compliance period associated with the report
         """
         # Check if we should run the eLicensing integration based on the invoice generation date
         current_date = timezone.now().date()
         if current_date >= compliance_period.invoice_generation_date:
-            obligation = ComplianceObligationService.create_compliance_obligation(
-                compliance_report_version_id, excess_emission_delta
-            )
             # This is done outside the main transaction to prevent rollback if integration fails
-            transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation.id))
+            transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation_id))
 
     @staticmethod
     def _determine_compliance_status(excess_emissions: Decimal, credited_emissions: Decimal) -> str:

@@ -47,7 +47,7 @@ class TestComplianceReportVersionService:
         )
 
         # Assert
-        mock_create_obligation.assert_called_once()
+        mock_create_obligation.assert_called_once_with(result.id, Decimal('10'))
         mock_transaction.on_commit.assert_called_once()
         mock_retryable_integration.execute.assert_called_once_with(mock_obligation.id)
 
@@ -83,7 +83,7 @@ class TestComplianceReportVersionService:
         )
 
         # Assert
-        mock_create_obligation.assert_not_called()
+        mock_create_obligation.assert_called_once_with(result.id, Decimal('10'))
         mock_transaction.on_commit.assert_not_called()
         mock_retryable_integration.execute.assert_not_called()
 
