@@ -25,7 +25,7 @@ export default function FacilityReportFinalReviewPage({
       type: "Link",
       text: "Back to final review",
       link: `reporting/reports/${version_id}/final-review`,
-      title: "Back to facilities table",
+      title: "Back to final review",
     },
   ];
 
