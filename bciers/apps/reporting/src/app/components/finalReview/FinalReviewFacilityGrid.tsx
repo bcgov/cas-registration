@@ -1,14 +1,14 @@
+import React, { useMemo, useState, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
-import React, { useMemo, useState } from "react";
 import {
   GridColDef,
-  GridColumnGroupHeaderParams,
   GridColumnGroupingModel,
   GridRenderCellParams,
 } from "@mui/x-data-grid";
-import { useRouter } from "next/navigation";
 import createColumnGroup from "@bciers/components/datagrid/createColumnGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
+import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInformation/facilities/fetchFacilitiesPageData";
 
 interface Facility {
   facility: string;
@@ -25,68 +25,90 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   version_id,
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
+  // Memoized Header Search Cell
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
-    [lastFocusedField, setLastFocusedField],
+    [lastFocusedField],
   );
-  const columns: GridColDef[] = [
-    {
-      field: "facility_name",
-      headerName: "Facility Name",
-      flex: 1,
-    },
-    {
-      field: "action",
-      headerName: "Action",
-      width: 160,
-      sortable: false,
-      renderCell: (params: GridRenderCellParams) => (
-        <button
-          style={{
-            color: "#1976d2",
-            textDecoration: "underline",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-          }}
-          onClick={() =>
-            router.push(
-              `/reports/${version_id}/final-review/lfo?facility_id=${params.row.facility}`,
-            )
-          }
-          data-testid={`view-details-${params.row.facility}`}
-        >
-          View Details
-        </button>
-      ),
-    },
-  ];
 
-  const facilityGroupColumns = (
-    SearchCell: (params: GridColumnGroupHeaderParams) => JSX.Element,
-  ) => {
-    return [
-      createColumnGroup("facility_name", "Facility Name", SearchCell),
-    ] as GridColumnGroupingModel;
-  };
+  // Memoized columns
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: "facility_name",
+        headerName: "Facility Name",
+        flex: 1,
+        sortable: false,
+      },
+      {
+        field: "action",
+        headerName: "Action",
+        width: 160,
+        sortable: false,
+        renderCell: ({ row }: GridRenderCellParams) => (
+          <button
+            style={{
+              color: "#1976d2",
+              textDecoration: "underline",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+            }}
+            onClick={() =>
+              router.push(
+                `/reports/${version_id}/final-review/lfo?facility_id=${row.facility}`,
+              )
+            }
+            data-testid={`view-details-${row.facility}`}
+          >
+            View Details
+          </button>
+        ),
+      },
+    ],
+    [router, version_id],
+  );
 
-  const columnGroup = useMemo(
-    () => facilityGroupColumns(SearchCell),
+  // Column group for search
+  const columnGroup = useMemo<GridColumnGroupingModel>(
+    () => [createColumnGroup("facility_name", "Facility Name", SearchCell)],
     [SearchCell],
   );
+
+  // Server-side fetch for grid
+  const fetchPageData = useCallback(async () => {
+    const params = Object.fromEntries(searchParams.entries());
+    const { rows, row_count: rowCount } = await fetchFacilitiesPageData({
+      version_id,
+      searchParams: params,
+    });
+
+    // Map only the fields needed for the grid
+    return {
+      rows: rows.map((r: Facility) => ({
+        facility: r.facility,
+        facility_name: r.facility_name,
+      })),
+      rowCount,
+    };
+  }, [version_id, searchParams]);
+
   return (
-    <div className={"w-full mb-5"}>
+    <div className="w-full mb-5">
       <div className="w-full form-group field field-object form-heading-label">
         <div className="form-heading">Report Information</div>
       </div>
+
       <DataGrid
         columns={columns}
         columnGroupModel={columnGroup}
+        fetchPageData={fetchPageData}
+        paginationMode="server"
         initialData={{ rows: data }}
         getRowId={(row) => row.facility}
-        paginationMode="client"
         pageSize={10}
         rowSelection={false}
         sx={{ minHeight: 200 }}
