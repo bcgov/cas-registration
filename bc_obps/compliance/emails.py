@@ -41,6 +41,7 @@ def send_earned_credit_notification_email() -> None:
         compliance_report_version__compliance_report__report=report
     ).earned_credits_amount,
                 "email_address": user_operators.user.email,
+                "testing_name": user_operators.user.first_name
             }
             email_contexts.append(email_context)
 
