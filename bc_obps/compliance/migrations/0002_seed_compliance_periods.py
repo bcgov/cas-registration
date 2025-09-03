@@ -1,27 +1,22 @@
-# Generated manually
-
 from django.db import migrations
 
 
 def init_compliance_periods(apps, schema_editor):
-    '''
-    Add initial compliance period data from fixtures
-    '''
-    from django.core.management import call_command
+    CompliancePeriod = apps.get_model('compliance', 'CompliancePeriod')
+    ReportingYear = apps.get_model('reporting', 'ReportingYear')
 
-    fixture_files = [
-        'compliance/fixtures/production/compliance_periods.json',
-    ]
-
-    # Load the fixtures
-    for fixture in fixture_files:
-        call_command('loaddata', fixture)
+    CompliancePeriod.objects.create(
+        created_at='2024-01-01T00:00:00Z',
+        updated_at='2024-01-01T00:00:00Z',
+        start_date='2024-01-01',
+        end_date='2024-12-31',
+        compliance_deadline='2025-11-30',
+        invoice_generation_date='2025-11-01',
+        reporting_year=ReportingYear.objects.get(reporting_year=2024),
+    )
 
 
 def reverse_init_compliance_periods(apps, schema_editor):
-    '''
-    Remove seeded compliance periods
-    '''
     CompliancePeriod = apps.get_model('compliance', 'CompliancePeriod')
     CompliancePeriod.objects.all().delete()
 
