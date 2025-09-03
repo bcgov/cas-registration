@@ -33,6 +33,7 @@ export default function InternalTrackStatusOfIssuanceComponent({
       uiSchema={internalTrackStatusOfIssuanceUiSchema}
       formData={data}
       className="w-full"
+      formContext={{ analystSuggestion: data.analyst_suggestion }}
     >
       <ComplianceStepButtons
         key="form-buttons"
