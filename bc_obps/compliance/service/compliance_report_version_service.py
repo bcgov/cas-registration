@@ -4,7 +4,7 @@ from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from django.db import transaction
 from decimal import Decimal
-from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
+from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation, CompliancePeriod
 import logging
 from uuid import UUID
 from django.db.models import QuerySet, Q
@@ -15,6 +15,7 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_service import UserDataAccessService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +54,10 @@ class ComplianceReportVersionService:
                 ),
             )
 
-            # Create compliance obligation if there are excess emissions
             if excess_emissions > Decimal('0'):
-                obligation = ComplianceObligationService.create_compliance_obligation(
-                    compliance_report_version.id, excess_emissions
+                cls._handle_obligation_integration(
+                    compliance_report_version.id, excess_emissions, compliance_report.compliance_period
                 )
-
-                # Integration operation - handle eLicensing integration
-                # This is done outside of the main transaction to prevent rollback if integration fails
-                transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation.id))
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
@@ -86,6 +82,27 @@ class ComplianceReportVersionService:
             ComplianceReportVersion.DoesNotExist: If the compliance report version doesn't exist
         """
         return ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+
+    @classmethod
+    def _handle_obligation_integration(
+        cls, compliance_report_version_id: int, excess_emission_delta: Decimal, compliance_period: CompliancePeriod
+    ) -> None:
+        """
+        Handle the obligation integration with eLicensing if the invoice generation date has passed.
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version
+            excess_emission_delta: The increase in excess emissions
+            compliance_period: The compliance period associated with the report
+        """
+        # Check if we should run the eLicensing integration based on the invoice generation date
+        current_date = timezone.now().date()
+        if current_date >= compliance_period.invoice_generation_date:
+            obligation = ComplianceObligationService.create_compliance_obligation(
+                compliance_report_version_id, excess_emission_delta
+            )
+            # This is done outside the main transaction to prevent rollback if integration fails
+            transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation.id))
 
     @staticmethod
     def _determine_compliance_status(excess_emissions: Decimal, credited_emissions: Decimal) -> str:

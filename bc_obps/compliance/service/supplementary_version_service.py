@@ -1,6 +1,6 @@
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from reporting.models import ReportVersion, ReportComplianceSummary
-from compliance.models import ComplianceReport, ComplianceEarnedCredit
+from compliance.models import ComplianceReport, ComplianceEarnedCredit, CompliancePeriod
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
@@ -10,6 +10,7 @@ from django.db import transaction
 from decimal import Decimal
 from typing import Protocol, Optional
 import logging
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +37,28 @@ class SupplementaryScenarioHandler(Protocol):
 # Concrete strategy for increased obligations
 class IncreasedObligationHandler:
     @staticmethod
+    def _handle_obligation_integration(
+        compliance_report_version_id: int, excess_emission_delta: Decimal, compliance_period: CompliancePeriod
+    ) -> None:
+        """
+        Handle the obligation integration with eLicensing if the invoice generation date has passed.
+
+        Args:
+            compliance_report_version_id: The ID of the compliance report version
+            excess_emission_delta: The increase in excess emissions
+            compliance_period: The compliance period associated with the report
+        """
+        # Check if we should run the eLicensing integration based on the invoice generation date
+        current_date = timezone.now().date()
+        if current_date >= compliance_period.invoice_generation_date:
+            obligation = ComplianceObligationService.create_compliance_obligation(
+                compliance_report_version_id, excess_emission_delta
+            )
+            # Integration operation - handle eLicensing integration
+            # This is done outside the main transaction to prevent rollback if integration fails
+            transaction.on_commit(lambda: ElicensingObligationService.process_obligation_integration(obligation.id))
+
+    @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
         # Return True if excess emissions increased from previous version
         return (
@@ -43,8 +66,9 @@ class IncreasedObligationHandler:
             and previous_summary.excess_emissions < new_summary.excess_emissions
         )
 
-    @staticmethod
+    @classmethod
     def handle(
+        cls,
         compliance_report: ComplianceReport,
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
@@ -66,14 +90,9 @@ class IncreasedObligationHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-
-        obligation = ComplianceObligationService.create_compliance_obligation(
-            compliance_report_version.id, excess_emission_delta
+        cls._handle_obligation_integration(
+            compliance_report_version.id, excess_emission_delta, compliance_report.compliance_period
         )
-
-        # Integration operation - handle eLicensing integration
-        # This is done outside the main transaction to prevent rollback if integration fails
-        transaction.on_commit(lambda: ElicensingObligationService.process_obligation_integration(obligation.id))
         return compliance_report_version
 
 
