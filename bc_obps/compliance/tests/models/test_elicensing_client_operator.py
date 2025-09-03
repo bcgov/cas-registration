@@ -24,7 +24,7 @@ class ElicensingClientOperatorTest(BaseTestCase):
 #  RLS tests
 class TestElicensingClientOperatorRls(BaseTestCase):
     def test_elicensing_client_operator_rls_industry_user(self):
-        # first object
+        # approved object
         operator = make_recipe('registration.tests.utils.operator', id=1)
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
         # operation belonging to the approved user operator
@@ -41,7 +41,7 @@ class TestElicensingClientOperatorRls(BaseTestCase):
             'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
         )
 
-        assert ElicensingClientOperator.objects.count() == 2  # Two operations created
+        assert ElicensingClientOperator.objects.count() == 2
 
         def select_function(cursor):
             assert ElicensingClientOperator.objects.count() == 1
@@ -72,9 +72,7 @@ class TestElicensingClientOperatorRls(BaseTestCase):
 
         def update_function(cursor):
             ElicensingClientOperator.objects.update(client_object_id="2147483647")
-            assert (
-                ElicensingClientOperator.objects.filter(client_object_id="2147483647").count() == 1
-            )  # only affected 1
+            assert ElicensingClientOperator.objects.filter(client_object_id="2147483647").count() == 1
 
         assert_policies_for_industry_user(
             ElicensingClientOperator,
