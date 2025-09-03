@@ -15,3 +15,5 @@ export const LIGHT_GREY_COLOR_200: string = "#f5f5f5";
 export const LIGHT_GREY_COLOR_300: string = "#f0f0f0";
 export const LIGHT_BLUE_BG_COLOR: string = "#DCE9F6";
 export const WHITE: string = "#ffffff";
+// Development colors
+export const BC_GOV_DEVELOPMENT_PINK: string = "#FF69B4";
