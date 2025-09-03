@@ -35,6 +35,11 @@ ENDPOINTS = {
         },
         {
             "method": "get",
+            "endpoint_name": "get_report_final_review_data_for_lfo",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
             "endpoint_name": "get_report_final_review_data",
             "kwargs": {"version_id": MOCK_INT},
         },
@@ -49,6 +54,11 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_initial_activity_data",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_version_facility_report",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {"method": "get", "endpoint_name": "validate_user_reporting_access"},
