@@ -7,8 +7,9 @@ from model_bakery import baker
 from registration.models import Operation
 from registration.models.operator import Operator
 from reporting.models.report_operation import ReportOperation
+from datetime import date
 
-pytestmark = pytest.mark.django_db  # This is used to mark a test function as requiring the database
+pytestmark = pytest.mark.django_db
 
 
 class TestComplianceReportVersionService:
@@ -17,10 +18,13 @@ class TestComplianceReportVersionService:
     )
     @patch('compliance.service.compliance_report_version_service.retryable_process_obligation_integration')
     @patch('compliance.service.compliance_report_version_service.transaction')
-    def test_create_compliance_report_version_with_excess_emissions(
-        self, mock_transaction, mock_retryable_integration, mock_create_obligation
+    @patch('compliance.service.compliance_report_version_service.timezone')
+    def test_create_compliance_report_version_with_excess_emissions_integration_runs(
+        self, mock_timezone, mock_transaction, mock_retryable_integration, mock_create_obligation
     ):
-        # Arrange
+        # Arrange - Mock date to be after the invoice generation date
+        mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025
+
         report_compliance_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
         )
@@ -46,6 +50,42 @@ class TestComplianceReportVersionService:
         mock_create_obligation.assert_called_once()
         mock_transaction.on_commit.assert_called_once()
         mock_retryable_integration.execute.assert_called_once_with(mock_obligation.id)
+
+        assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        assert result.report_compliance_summary_id == report_compliance_summary.id
+        assert result.compliance_report_id == compliance_report.id
+
+    @patch(
+        'compliance.service.compliance_report_version_service.ComplianceObligationService.create_compliance_obligation'
+    )
+    @patch('compliance.service.compliance_report_version_service.retryable_process_obligation_integration')
+    @patch('compliance.service.compliance_report_version_service.transaction')
+    @patch('compliance.service.compliance_report_version_service.timezone')
+    def test_create_compliance_report_version_with_excess_emissions_integration_skipped(
+        self, mock_timezone, mock_transaction, mock_retryable_integration, mock_create_obligation
+    ):
+        # Arrange
+        mock_timezone.now.return_value.date.return_value = date(2025, 10, 15)  # Before Nov 1, 2025
+
+        report_compliance_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', excess_emissions=Decimal('10'), credited_emissions=0
+        )
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
+        )
+
+        mock_obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
+        mock_create_obligation.return_value = mock_obligation
+
+        # Act
+        result = ComplianceReportVersionService.create_compliance_report_version(
+            compliance_report, report_compliance_summary.report_version.id
+        )
+
+        # Assert
+        mock_create_obligation.assert_not_called()
+        mock_transaction.on_commit.assert_not_called()
+        mock_retryable_integration.execute.assert_not_called()
 
         assert result.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
         assert result.report_compliance_summary_id == report_compliance_summary.id
