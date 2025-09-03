@@ -164,6 +164,7 @@ describe("generateManageObligationTaskList", () => {
       const taskList = generateManageObligationTaskList(
         mockComplianceReportVersionId,
         dataWithZeroBalance,
+        ActivePage.PayObligationTrackPayments,
       );
       // Verify that the automatic penalty section was added
       expect(taskList).toHaveLength(2);
@@ -173,7 +174,7 @@ describe("generateManageObligationTaskList", () => {
       // Verify that generateAutomaticOverduePenaltyTaskList was called
       expect(generateAutomaticOverduePenaltyTaskList).toHaveBeenCalledWith(
         mockComplianceReportVersionId,
-        ActivePage.ReviewComplianceSummary, // this is the default for generateManageObligationTaskList
+        ActivePage.PayObligationTrackPayments,
       );
     },
   );
