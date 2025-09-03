@@ -11,9 +11,8 @@ from ..models import (
     ReportVersion,
     FacilityReport,
 )
-from ..schema.report_final_review import ReportVersionSchema, FacilityReportSchema
+from ..schema.report_final_review import ReportVersionSchema, FacilityReportSchema, ReportVersionSchemaForLFO
 from .router import router
-from ..schema.report_final_review_lfo import ReportVersionSchemaForLFO
 
 
 @router.get(
