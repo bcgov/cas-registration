@@ -25,6 +25,7 @@ interface FacilityReportChangesProps {
   deletedActivities?: any[];
   sourceTypeChanges?: SourceTypeChange[];
   modifiedFacilityData?: ModifiedFacilityData;
+  isReportingOnly?: boolean;
 }
 
 interface NonAttributableEmission {
@@ -67,7 +68,9 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
   deletedActivities,
   sourceTypeChanges = [],
   modifiedFacilityData,
+  isReportingOnly = false,
 }) => {
+  // Detect added source types from activities
   const detectAddedSourceTypes = (): SourceTypeChange[] => {
     const addedSourceTypes: SourceTypeChange[] = [];
 
@@ -121,6 +124,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
       facilityData.productionData.length > 0 ||
       facilityData.emissionAllocation.length > 0 ||
       facilityData.nonAttributableEmissions.length > 0 ||
+      facilityData.facilityNameChange ||
       (addedActivities && addedActivities.length > 0));
 
   // Handle facility-level additions/removals
@@ -147,7 +151,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
   }
 
   // Handle modified facility with various changes
-  if (isFacilityModified && !modifiedFacilityData) {
+  if (isFacilityModified) {
     return (
       <Box>
         <SectionReview
@@ -156,6 +160,32 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
           data={{}}
           expandable={true}
         >
+          {/* Facility Name Change */}
+          {(facilityData.facilityNameChange || modifiedFacilityData) && (
+            <Box ml={2}>
+              {facilityData?.facilityNameChange &&
+                facilityData?.facilityNameChange?.newValue !== null && (
+                  <ChangeItemDisplay
+                    item={{
+                      field: "facility_name",
+                      displayLabel: "Facility Name",
+                      oldValue: facilityData.facilityNameChange.oldValue,
+                      newValue: facilityData.facilityNameChange.newValue,
+                      change_type: facilityData.facilityNameChange.change_type,
+                    }}
+                  />
+                )}
+              {modifiedFacilityData && !facilityData.facilityNameChange && (
+                <ChangeItemDisplay
+                  item={{
+                    ...modifiedFacilityData,
+                    displayLabel: "Facility Information",
+                  }}
+                />
+              )}
+            </Box>
+          )}
+
           {/* Activity Data Changes */}
           {Object.keys(facilityData.activities).length > 0 && (
             <Box mb={3}>
@@ -176,14 +206,14 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
           )}
 
           {/* Production Data Changes */}
-          {facilityData.productionData.length > 0 && (
+          {!isReportingOnly && facilityData.productionData.length > 0 && (
             <Box mb={3}>
               <ProductionDataChangeView data={facilityData.productionData} />
             </Box>
           )}
 
           {/* Emission Allocation Changes */}
-          {facilityData.emissionAllocation.length > 0 && (
+          {!isReportingOnly && facilityData.emissionAllocation.length > 0 && (
             <Box mb={3}>
               <EmissionAllocationChangeView
                 data={facilityData.emissionAllocation}

@@ -48,7 +48,6 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
   // Process non-attributable emissions to include change type
   const processedEmissions = React.useMemo(() => {
     const emissions: NonAttributableEmissionRecord[] = [];
-
     if (facilityData.reportnonattributableemissions_records) {
       facilityData.reportnonattributableemissions_records.forEach(
         (record: any) => {
@@ -142,14 +141,14 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
         {/* Production Data - conditionally shown */}
         {showReportingOnlyConditions &&
           facilityData.report_products &&
-          facilityData.report_products.length > 0 && (
+          Object.keys(facilityData.report_products).length > 0 && (
             <SectionReview
               title="Production Data"
               data={facilityData.report_products}
               fields={[]}
               isDeleted={isRemoved}
             >
-              {facilityData.report_products.map(
+              {Object.values(facilityData.report_products).map(
                 (product: any, index: number) => (
                   <SectionReview
                     key={product.report_product_id || index}
@@ -164,7 +163,8 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
 
         {/* Allocation of Emissions - conditionally shown */}
         {showReportingOnlyConditions &&
-          facilityData.report_emission_allocation && (
+          facilityData.report_emission_allocation &&
+          Object.keys(facilityData.report_emission_allocation).length > 0 && (
             <EmissionAllocationView
               data={facilityData.report_emission_allocation}
               isDeleted={isRemoved}

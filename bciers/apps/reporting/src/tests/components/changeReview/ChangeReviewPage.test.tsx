@@ -6,6 +6,7 @@ import { getChangeReviewData } from "@reporting/src/app/utils/getReviewChangesDa
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 
 // Mock all the async utility functions
 vi.mock("@reporting/src/app/utils/getReportVersionDetails", () => ({
@@ -26,6 +27,10 @@ vi.mock("@reporting/src/app/utils/getReportVerificationStatus", () => ({
 
 vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
   getNavigationInformation: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
+  getRegistrationPurpose: vi.fn(),
 }));
 
 vi.mock("@reporting/src/app/components/changeReview/ChangeReviewForm", () => ({
@@ -68,6 +73,8 @@ describe("The ChangeReviewPage component", () => {
     getNavigationInformation as vi.MockedFunction<
       typeof getNavigationInformation
     >;
+  const mockGetRegistrationPurpose =
+    getRegistrationPurpose as vi.MockedFunction<typeof getRegistrationPurpose>;
 
   const mockFormData = { reportId: 123, status: "draft", operatorId: 1 };
   const mockChanges = [
@@ -114,6 +121,9 @@ describe("The ChangeReviewPage component", () => {
       show_verification_page: true,
     });
     mockGetNavigationInformation.mockResolvedValue(mockNavigationInfo);
+    mockGetRegistrationPurpose.mockResolvedValue({
+      registration_purpose: "New Registration",
+    });
   });
 
   it("renders ChangeReviewForm with correct props for supplementary report with verification", async () => {
@@ -138,28 +148,23 @@ describe("The ChangeReviewPage component", () => {
       "/reporting/123/sign-off",
     );
 
-    // Verify all utility functions were called with correct parameters
     await waitFor(() => {
       expect(mockGetReportVersionDetails).toHaveBeenCalledWith(123);
       expect(mockGetChangeReviewData).toHaveBeenCalledWith(123);
       expect(mockGetIsSupplementaryReport).toHaveBeenCalledWith(123);
       expect(mockGetReportVerificationStatus).toHaveBeenCalledWith(123);
       expect(mockGetNavigationInformation).toHaveBeenCalledWith(
-        "Sign-off & Submit", // HeaderStep.SignOffSubmit
-        "ChangeReview", // ReportingPage.ChangeReview
+        "Sign-off & Submit",
+        "ChangeReview",
         123,
         "",
-        {
-          skipVerification: false,
-          skipChangeReview: false,
-        },
+        { skipVerification: false, skipChangeReview: false },
       );
     });
   });
 
   it("handles non-supplementary report (skips change review)", async () => {
     mockGetIsSupplementaryReport.mockResolvedValue(false);
-
     const ChangeReviewPageComponent = await ChangeReviewPage({
       version_id: 456,
     });
@@ -167,14 +172,11 @@ describe("The ChangeReviewPage component", () => {
 
     await waitFor(() => {
       expect(mockGetNavigationInformation).toHaveBeenCalledWith(
-        "Sign-off & Submit", // HeaderStep.SignOffSubmit
-        "ChangeReview", // ReportingPage.ChangeReview
+        "Sign-off & Submit",
+        "ChangeReview",
         456,
         "",
-        {
-          skipVerification: false,
-          skipChangeReview: true,
-        },
+        { skipVerification: false, skipChangeReview: true },
       );
     });
   });
@@ -183,7 +185,6 @@ describe("The ChangeReviewPage component", () => {
     mockGetReportVerificationStatus.mockResolvedValue({
       show_verification_page: false,
     });
-
     const ChangeReviewPageComponent = await ChangeReviewPage({
       version_id: 789,
     });
@@ -191,21 +192,17 @@ describe("The ChangeReviewPage component", () => {
 
     await waitFor(() => {
       expect(mockGetNavigationInformation).toHaveBeenCalledWith(
-        "Sign-off & Submit", // HeaderStep.SignOffSubmit
-        "ChangeReview", // ReportingPage.ChangeReview
+        "Sign-off & Submit",
+        "ChangeReview",
         789,
         "",
-        {
-          skipVerification: true,
-          skipChangeReview: false,
-        },
+        { skipVerification: true, skipChangeReview: false },
       );
     });
   });
 
   it("handles empty changes data", async () => {
     mockGetChangeReviewData.mockResolvedValue({ changed: [] });
-
     const ChangeReviewPageComponent = await ChangeReviewPage({
       version_id: 999,
     });
@@ -219,7 +216,6 @@ describe("The ChangeReviewPage component", () => {
 
   it("handles error in data fetching gracefully", async () => {
     mockGetReportVersionDetails.mockRejectedValue(new Error("Failed to fetch"));
-
     await expect(ChangeReviewPage({ version_id: 123 })).rejects.toThrow(
       "Failed to fetch",
     );
@@ -238,14 +234,11 @@ describe("The ChangeReviewPage component", () => {
 
     await waitFor(() => {
       expect(mockGetNavigationInformation).toHaveBeenCalledWith(
-        "Sign-off & Submit", // HeaderStep.SignOffSubmit
-        "ChangeReview", // ReportingPage.ChangeReview
+        "Sign-off & Submit",
+        "ChangeReview",
         555,
         "",
-        {
-          skipVerification: true,
-          skipChangeReview: true,
-        },
+        { skipVerification: true, skipChangeReview: true },
       );
     });
   });
@@ -285,7 +278,6 @@ describe("The ChangeReviewPage component", () => {
     });
     render(ChangeReviewPageComponent);
 
-    // Verify the order and calls of all data fetching functions
     expect(mockGetReportVersionDetails).toHaveBeenCalledTimes(1);
     expect(mockGetChangeReviewData).toHaveBeenCalledTimes(1);
     expect(mockGetIsSupplementaryReport).toHaveBeenCalledTimes(1);

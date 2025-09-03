@@ -150,7 +150,7 @@ describe("The ChangeReviewForm component", () => {
   it("handles error submission", async () => {
     const errorMessage = "Submission failed";
     mockActionHandler.mockResolvedValue({ error: errorMessage });
-    render(<ChangeReviewForm {...defaultProps} />);
+    render(<ChangeReviewForm showChanges={false} {...defaultProps} />);
     fireEvent.click(screen.getByTestId("submit-button"));
     await waitFor(() => {
       expect(screen.getByTestId("errors")).toBeInTheDocument();

@@ -7,3 +7,9 @@ export const complianceNote = (
     made.
   </Alert>
 );
+
+export const reviewChangesNote = (
+  <Alert severity="warning" icon={false}>
+    Review the changes you have made and enter the reason for change.
+  </Alert>
+);

@@ -10,8 +10,8 @@ export const signOffSubmitPageFactories: {
       },
       element: {
         type: "Page",
-        title: "Change review",
-        link: `/reports/${reportVersionId}/change-review`,
+        title: "Review Changes",
+        link: `/reports/${reportVersionId}/review-changes`,
         isActive: activePage === ReportingPage.ChangeReview,
       },
     };

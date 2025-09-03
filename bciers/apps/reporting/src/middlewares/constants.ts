@@ -68,7 +68,7 @@ export const restrictedRoutesEIO = ["electricity-import-data"];
 export const restrictedRoutesSubmitted = ["submitted", "submission"];
 
 // App routes restricted to Supplementary Report
-export const restrictedSupplementaryReport = ["change-review"];
+export const restrictedSupplementaryReport = ["review-changes"];
 
 // App routes for submitted report
 export const reportRoutesSubmitted = ["submitted", "submission"];
@@ -81,7 +81,7 @@ export const reportRoutesReportingOperation = [
   "non-attributable",
   "emission-summary",
   "additional-reporting-data",
-  "change-review",
+  "review-changes",
   "final-review",
   "verification",
   "attachments",
@@ -95,7 +95,7 @@ export const reportRoutesEIO = [
   "review-operation-information",
   "person-responsible",
   "electricity-import-data",
-  "change-review",
+  "review-changes",
   "final-review",
   "verification",
   "attachments",
