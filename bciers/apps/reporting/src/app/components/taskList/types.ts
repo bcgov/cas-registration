@@ -62,7 +62,6 @@ export type NavigationInformation = {
   backUrl: string;
   headerSteps: HeaderStep[];
   headerStepIndex: number;
-  flow: string;
 };
 
 export interface TaskListPageFactoryData {

@@ -29,33 +29,44 @@ import { Box } from "@mui/material";
 interface Props {
   version_id: any;
   navigationInformation: NavigationInformation;
+  isOperationLFO?: boolean;
   children?: React.ReactNode;
 }
 
 export const FinalReviewForm: React.FC<Props> = ({
   version_id,
   navigationInformation,
+  isOperationLFO,
   children,
 }) => {
-  console.log("navigationInformation", navigationInformation);
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       let finalReviewData;
-      if (navigationInformation.flow.includes("LFO")) {
-        console.log("Fetching LFO final review data");
+      if (isOperationLFO) {
         finalReviewData = await getFinalReviewDataForLFO(version_id);
       } else {
-        console.log("Fetching standard final review data");
         finalReviewData = await getFinalReviewData(version_id);
       }
       setData(finalReviewData);
       setLoading(false);
     }
     fetchData();
-  }, [version_id, navigationInformation.flow]);
+  }, [version_id]);
+
+  useEffect(() => {
+    if (!loading && data) {
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+  }, [loading, data]);
 
   // Helper functions to determine flow type
   const isEIO = () =>
@@ -145,19 +156,21 @@ export const FinalReviewForm: React.FC<Props> = ({
               {/* Non-EIO Flows - show facility report information */}
               {!isEIO() &&
                 (isLFO() && data?.facility_reports ? (
-                  <FinalReviewFacilityGrid
-                    data={Object.values(data.facility_reports).map(
-                      (facilityReport: FacilityReport) => ({
-                        facility: facilityReport.facility,
-                        facility_name: facilityReport.facility_name,
-                      }),
-                    )}
-                    version_id={version_id}
-                  />
+                  <div id="facility-grid">
+                    <FinalReviewFacilityGrid
+                      data={Object.values(data.facility_reports).map(
+                        (facilityReport: FacilityReport) => ({
+                          facility: facilityReport.facility,
+                          facility_name: facilityReport.facility_name,
+                        }),
+                      )}
+                      rowCount={Object.keys(data.facility_reports).length}
+                      version_id={version_id}
+                    />
+                  </div>
                 ) : (
                   renderFacilityReportInformation()
                 ))}
-
               {/* Additional Reporting Data - ALL NON-EIO FLOWS */}
               {!isEIO() && data.report_additional_data && (
                 <SectionReview
