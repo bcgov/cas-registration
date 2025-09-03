@@ -20,22 +20,6 @@ class Rls:
             JOIN erc.user_operator uo ON o.operator_id = uo.operator_id
             WHERE uo.user_id = current_setting('my.guid', true)::uuid
                 AND uo.status = 'Approved'
-
-            UNION
-
-            SELECT cr.id
-            FROM erc.compliance_report cr
-            JOIN erc.report r ON cr.report_id = r.id
-            JOIN erc.operation o ON r.operation_id = o.id
-            JOIN erc.compliance_period cp ON cr.compliance_period_id = cp.id
-            JOIN erc.operation_designated_operator_timeline odot
-                ON odot.operation_id = o.id
-            JOIN erc.user_operator uo ON odot.operator_id = uo.operator_id
-            WHERE uo.user_id = current_setting('my.guid', true)::uuid
-                AND uo.status = 'Approved'
-                AND o.status = 'Registered'
-                AND cp.end_date >= odot.start_date
-                AND cp.end_date < odot.end_date
         )
     """
     role_grants_mapping = {
@@ -43,7 +27,6 @@ class Rls:
             RlsOperations.SELECT,
             RlsOperations.INSERT,
             RlsOperations.UPDATE,
-            RlsOperations.DELETE,
         ],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],

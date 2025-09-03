@@ -31,7 +31,7 @@ class ComplianceReportVersionTest(BaseTestCase):
 #  RLS tests
 class TestComplianceReportVersionRls(BaseTestCase):
     def test_compliance_report_version_rls_industry_user(self):
-        # first object
+        # approved object
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         # operation belonging to the approved user operator
         approved_operation = make_recipe(
@@ -50,9 +50,13 @@ class TestComplianceReportVersionRls(BaseTestCase):
         # Create approved compliance report
         approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
         # create a compliance report version for the approved compliance report version
-        make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=approved_compliance_report)
+        make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=approved_compliance_report,
+            is_supplementary=False,
+        )
 
-        # second object
+        # random object
         random_operator = make_recipe('registration.tests.utils.operator')
         # operation belonging to a random operator
         random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
@@ -69,7 +73,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
         # create a compliance report version for the random compliance report version
         make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report)
 
-        assert ComplianceReportVersion.objects.count() == 2  # Two operations created
+        assert ComplianceReportVersion.objects.count() == 2
 
         def select_function(cursor):
             assert ComplianceReportVersion.objects.count() == 1
@@ -127,15 +131,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
 
         def update_function(cursor):
             ComplianceReportVersion.objects.update(status='No obligation or earned credits')
-            assert (
-                ComplianceReportVersion.objects.filter(status='No obligation or earned credits').count() == 1
-            )  # only affected 1
-
-        def delete_function(cursor):
-            ComplianceReportVersion.objects.filter(status='No obligation or earned credits').delete()
-            assert (
-                ComplianceReportVersion.objects.filter(status='No obligation or earned credits').count() == 0
-            )  # only deleted 1
+            assert ComplianceReportVersion.objects.filter(status='No obligation or earned credits').count() == 1
 
         assert_policies_for_industry_user(
             ComplianceReportVersion,
@@ -143,5 +139,4 @@ class TestComplianceReportVersionRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            delete_function=delete_function,
         )

@@ -31,7 +31,7 @@ class ElicensingAdjustmentTest(BaseTestCase):
 #  RLS tests
 class TestElicensingAdjustmentRls(BaseTestCase):
     def test_elicensing_adjustment_rls_industry_user(self):
-        # first object
+        # approved object
         operator = make_recipe('registration.tests.utils.operator', id=1)
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
         approved_client_operator = make_recipe(
@@ -58,7 +58,7 @@ class TestElicensingAdjustmentRls(BaseTestCase):
         random_line_item = make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice)
         make_recipe('compliance.tests.utils.elicensing_adjustment', elicensing_line_item=random_line_item)
 
-        assert ElicensingAdjustment.objects.count() == 2  # Two operations created
+        assert ElicensingAdjustment.objects.count() == 2
 
         def select_function(cursor):
             assert ElicensingAdjustment.objects.count() == 1
@@ -87,7 +87,7 @@ class TestElicensingAdjustmentRls(BaseTestCase):
 
         def update_function(cursor):
             ElicensingAdjustment.objects.update(amount=Decimal('999'))
-            assert ElicensingAdjustment.objects.filter(amount=Decimal('999')).count() == 1  # only affected 1
+            assert ElicensingAdjustment.objects.filter(amount=Decimal('999')).count() == 1
 
         assert_policies_for_industry_user(
             ElicensingAdjustment,
