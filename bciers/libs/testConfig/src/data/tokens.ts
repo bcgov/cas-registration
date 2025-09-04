@@ -17,6 +17,10 @@ export const mockIndustryUserToken = {
   ...mockBaseToken,
   app_role: "industry_user",
   identity_provider: "bceidbusiness",
+  first_name: "First",
+  last_name: "Last",
+  email: "email@email.com",
+  bceid_business_guid: "guid-123",
 };
 
 export const mockCasPendingToken = {
