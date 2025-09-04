@@ -1,22 +1,19 @@
+import { generateMetadata } from "@bciers/components/layout/RootLayout";
 import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import InternalPastReportsPage from "@reporting/src/app/components/operations/InternalPastReportsPage";
 import ReportsBasePage from "@reporting/src/app/components/operations/ReportsBasePage";
+import { ReportSearchParams } from "@reporting/src/app/components/operations/types";
 
-function ReportsPage() {
+const title = "Reports";
+export const metadata = generateMetadata(title);
+
+function ReportsPage({ searchParams }: { searchParams: ReportSearchParams }) {
   return (
-    <ReportsBasePage activeTab={1}>
-      <div className="flex flex-col items-center justify-center py-12">
-        <h2 className="text-2xl font-bold mb-4 text-bc-bg-blue">
-          Previous Years Reports
-        </h2>
-        <p className="text-bc-text text-lg mb-2">
-          This feature is <b>coming soon</b>.
-        </p>
-        <p className="text-bc-text text-center max-w-xl">
-          You’ll be able to view reports from previous reporting years here.
-        </p>
+    <ReportsBasePage activeTab={0}>
+      <div className="flex flex-col">
+        <InternalPastReportsPage searchParams={searchParams || {}} />
       </div>
     </ReportsBasePage>
   );
 }
-
 export default defaultPageFactory(ReportsPage);
