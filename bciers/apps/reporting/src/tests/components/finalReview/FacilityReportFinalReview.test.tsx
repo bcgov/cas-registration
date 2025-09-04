@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { getLfoFinalReviewData } from "@reporting/src/app/utils/getLfoFinalReviewData";
 import { useRouter, useSearchParams } from "next/navigation";
-import FacilityReportFinalReview from "@reporting/src/app/components/finalReview/LfoFinalReviewForm";
+import FacilityReportFinalReview from "@reporting/src/app/components/finalReview/FacilityReportFinalReview";
 
 // --- Mocks ---
 vi.mock("@reporting/src/app/utils/getLfoFinalReviewData", () => ({
