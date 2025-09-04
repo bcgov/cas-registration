@@ -15,7 +15,6 @@ from unittest.mock import patch, MagicMock
 from model_bakery import baker
 import common.lib.pgtrigger as pgtrigger
 from registration.models import Operation
-from datetime import date
 
 pytestmark = pytest.mark.django_db(transaction=True)
 
@@ -420,16 +419,12 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
-    @patch('compliance.service.supplementary_version_service.retryable_process_obligation_integration')
+    @patch('compliance.service.supplementary_version_service.ElicensingObligationService.handle_obligation_integration')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
-    @patch('compliance.service.supplementary_version_service.transaction')
-    @patch('compliance.service.supplementary_version_service.timezone')
     def test_handle_creates_compliance_report_version_and_obligation_integration_runs(
-        self, mock_timezone, mock_transaction, mock_create_obligation, mock_retryable_integration
+        self, mock_create_obligation, mock_handle_integration
     ):
-        # Arrange - Mock date to be after the invoice generation date
-        mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025(invoice due_date)
-
+        # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
@@ -456,12 +451,6 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Mock the obligation creation
         mock_obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
         mock_create_obligation.return_value = mock_obligation
-
-        # Mock transaction.on_commit to execute the callback immediately
-        def mock_on_commit(callback):
-            callback()
-
-        mock_transaction.on_commit.side_effect = mock_on_commit
 
         # Act
         result = IncreasedObligationHandler.handle(
@@ -482,19 +471,14 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert result.previous_version == self.previous_compliance_report_version
 
         mock_create_obligation.assert_called_once_with(result.id, Decimal('300'))
-        mock_transaction.on_commit.assert_called_once()
-        mock_retryable_integration.execute.assert_called_once_with(mock_obligation.id)
+        mock_handle_integration.assert_called_once_with(mock_obligation.id, self.compliance_report.compliance_period)
 
-    @patch('compliance.service.supplementary_version_service.retryable_process_obligation_integration')
+    @patch('compliance.service.supplementary_version_service.ElicensingObligationService.handle_obligation_integration')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
-    @patch('compliance.service.supplementary_version_service.transaction')
-    @patch('compliance.service.supplementary_version_service.timezone')
     def test_handle_creates_compliance_report_version_and_obligation_integration_skipped(
-        self, mock_timezone, mock_transaction, mock_create_obligation, mock_retryable_integration
+        self, mock_create_obligation, mock_handle_integration
     ):
         # Arrange
-        mock_timezone.now.return_value.date.return_value = date(2025, 10, 15)  # Before Nov 1, 2025
-
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
@@ -540,18 +524,12 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         assert result.previous_version == self.previous_compliance_report_version
 
         mock_create_obligation.assert_called_once_with(result.id, Decimal('300'))
-        mock_transaction.on_commit.assert_not_called()
-        mock_retryable_integration.execute.assert_not_called()
+        mock_handle_integration.assert_called_once_with(mock_obligation.id, self.compliance_report.compliance_period)
 
-    @patch('compliance.service.supplementary_version_service.retryable_process_obligation_integration')
+    @patch('compliance.service.supplementary_version_service.ElicensingObligationService.handle_obligation_integration')
     @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
-    @patch('compliance.service.supplementary_version_service.transaction')
-    @patch('compliance.service.supplementary_version_service.timezone')
-    def test_handle_calculates_correct_excess_emission_delta(
-        self, mock_timezone, mock_transaction, mock_create_obligation, mock_retryable_integration
-    ):
+    def test_handle_calculates_correct_excess_emission_delta(self, mock_create_obligation, mock_handle_integration):
         # Arrange
-        mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025(invoice due_date)
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
@@ -575,11 +553,9 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         )
         version_count = 3
 
-        # Mock transaction.on_commit to execute the callback immediately
-        def mock_on_commit(callback):
-            callback()
-
-        mock_transaction.on_commit.side_effect = mock_on_commit
+        # Mock the obligation creation
+        mock_obligation = baker.make_recipe('compliance.tests.utils.compliance_obligation')
+        mock_create_obligation.return_value = mock_obligation
 
         # Act
         result = IncreasedObligationHandler.handle(
@@ -593,8 +569,7 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         expected_delta = Decimal('550')  # 750 - 200
         assert result.excess_emissions_delta_from_previous == expected_delta
         mock_create_obligation.assert_called_once_with(result.id, expected_delta)
-        mock_transaction.on_commit.assert_called_once()
-        mock_retryable_integration.execute.assert_called_once()
+        mock_handle_integration.assert_called_once_with(mock_obligation.id, self.compliance_report.compliance_period)
 
 
 class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):

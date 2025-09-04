@@ -1,16 +1,15 @@
-from compliance.tasks import retryable_process_obligation_integration
 from reporting.models import ReportVersion, ReportComplianceSummary
-from compliance.models import ComplianceReport, ComplianceEarnedCredit, CompliancePeriod
+from compliance.models import ComplianceReport, ComplianceEarnedCredit
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 
 from django.db import transaction
 from decimal import Decimal
 from typing import Protocol, Optional
 import logging
-from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -37,21 +36,6 @@ class SupplementaryScenarioHandler(Protocol):
 # Concrete strategy for increased obligations
 class IncreasedObligationHandler:
     @staticmethod
-    def _handle_obligation_integration(obligation_id: int, compliance_period: CompliancePeriod) -> None:
-        """
-        Handle the obligation integration with eLicensing if the invoice generation date has passed.
-
-        Args:
-            obligation_id: The ID of the compliance obligation
-            compliance_period: The compliance period associated with the report
-        """
-        # Check if we should run the eLicensing integration based on the invoice generation date
-        current_date = timezone.now().date()
-        if current_date >= compliance_period.invoice_generation_date:
-            # This is done outside the main transaction to prevent rollback if integration fails
-            transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation_id))
-
-    @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
         # Return True if excess emissions increased from previous version
         return (
@@ -59,9 +43,8 @@ class IncreasedObligationHandler:
             and previous_summary.excess_emissions < new_summary.excess_emissions
         )
 
-    @classmethod
+    @staticmethod
     def handle(
-        cls,
         compliance_report: ComplianceReport,
         new_summary: ReportComplianceSummary,
         previous_summary: ReportComplianceSummary,
@@ -86,7 +69,7 @@ class IncreasedObligationHandler:
         obligation = ComplianceObligationService.create_compliance_obligation(
             compliance_report_version.id, excess_emission_delta
         )
-        cls._handle_obligation_integration(obligation.id, compliance_report.compliance_period)
+        ElicensingObligationService.handle_obligation_integration(obligation.id, compliance_report.compliance_period)
         return compliance_report_version
 
 

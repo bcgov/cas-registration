@@ -147,3 +147,56 @@ class TestElicensingObligationService:
             compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
         )
+
+    @patch('compliance.tasks.retryable_process_obligation_integration')
+    @patch('compliance.service.elicensing.elicensing_obligation_service.transaction')
+    @patch('compliance.service.elicensing.elicensing_obligation_service.timezone')
+    def test_handle_obligation_integration_runs_when_invoice_generation_date_passed(
+        self, mock_timezone, mock_transaction, mock_retryable_integration
+    ):
+        # Arrange
+        mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025
+
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        compliance_period = make_recipe(
+            'compliance.tests.utils.compliance_period', invoice_generation_date=date(2025, 11, 1)
+        )
+
+        # Mock transaction.on_commit to execute the callback immediately
+        def mock_on_commit(callback):
+            callback()
+
+        mock_transaction.on_commit.side_effect = mock_on_commit
+
+        # Act
+        ElicensingObligationService.handle_obligation_integration(obligation.id, compliance_period)
+
+        # Assert
+        mock_transaction.on_commit.assert_called_once()
+        mock_retryable_integration.execute.assert_called_once_with(obligation.id)
+
+    @patch('compliance.service.elicensing.elicensing_obligation_service.timezone')
+    def test_handle_obligation_integration_sets_pending_status_when_invoice_generation_date_not_passed(
+        self, mock_timezone
+    ):
+        # Arrange
+        mock_timezone.now.return_value.date.return_value = date(2025, 10, 15)  # Before Nov 1, 2025
+
+        obligation = make_recipe('compliance.tests.utils.compliance_obligation')
+        compliance_period = make_recipe(
+            'compliance.tests.utils.compliance_period', invoice_generation_date=date(2025, 11, 1)
+        )
+
+        # Set initial status
+        obligation.compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+        obligation.compliance_report_version.save()
+
+        # Act
+        ElicensingObligationService.handle_obligation_integration(obligation.id, compliance_period)
+
+        # Assert
+        obligation.compliance_report_version.refresh_from_db()
+        assert (
+            obligation.compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
