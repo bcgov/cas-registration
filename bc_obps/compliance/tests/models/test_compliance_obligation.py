@@ -30,32 +30,7 @@ class ComplianceObligationTest(BaseTestCase):
 class TestComplianceObligationRls(BaseTestCase):
     def test_compliance_obligation_rls_industry_user(self):
         # approved object
-        operator = make_recipe('registration.tests.utils.operator', id=1)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
-        approved_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator',
-            operator=approved_user_operator.operator,
-            client_object_id="1147483647",
-        )
-        approved_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator
-        )
-        make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=approved_invoice)
-
-        # second object
-        random_operator = make_recipe('registration.tests.utils.operator', id=2)
-        random_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
-        )
-        random_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
-        )
-        make_recipe('compliance.tests.utils.compliance_obligation', elicensing_invoice=random_invoice)
-
-        # extra object for insert
-        approved_invoice_2 = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator
-        )
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         approved_operation = make_recipe(
             'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
         )
@@ -68,6 +43,32 @@ class TestComplianceObligationRls(BaseTestCase):
             compliance_report=approved_compliance_report,
             is_supplementary=False,
         )
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation', compliance_report_version=approved_compliance_report_version
+        )
+
+        # second object
+        random_operator = make_recipe('registration.tests.utils.operator')
+        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
+        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
+        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
+        random_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation', compliance_report_version=random_compliance_report_version
+        )
+
+        # extra object for insert
+        approved_operation2 = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+        )
+        # extra object for insert
+        approved_compliance_report_version_for_insert = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report__report__operation=approved_operation2,
+            is_supplementary=False,
+        )
 
         assert ComplianceObligation.objects.count() == 2
 
@@ -77,13 +78,14 @@ class TestComplianceObligationRls(BaseTestCase):
         def insert_function(cursor):
             ComplianceObligation.objects.create(
                 id=888,
-                elicensing_invoice=approved_invoice_2,
-                compliance_report_version=approved_compliance_report_version,
+                compliance_report_version=approved_compliance_report_version_for_insert,
                 obligation_id=888,
-                obligation_deadline="2024-11-30",
+                obligation_deadline="2025-11-30",
             )
 
-            assert ComplianceObligation.objects.filter(obligation_id=888).exists()
+            assert ComplianceObligation.objects.filter(
+                compliance_report_version=approved_compliance_report_version_for_insert
+            ).exists()
 
             with pytest.raises(
                 ProgrammingError,
@@ -92,12 +94,12 @@ class TestComplianceObligationRls(BaseTestCase):
                 cursor.execute(
                     """
                     INSERT INTO "erc"."compliance_obligation" (
-                        elicensing_invoice_id
+                        compliance_report_version_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_invoice.id,),
+                    (random_compliance_report_version.id,),
                 )
 
         def update_function(cursor):

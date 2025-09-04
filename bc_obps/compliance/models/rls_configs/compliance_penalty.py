@@ -8,22 +8,20 @@ class Rls:
     schema = "erc"
     table = ComplianceTableNames.COMPLIANCE_PENALTY
     using_statement = """
-        elicensing_invoice_id IN (
-            SELECT ei.id
-            FROM erc.elicensing_invoice ei
-            JOIN erc.elicensing_client_operator eco ON eco.id = ei.elicensing_client_operator_id
-            JOIN erc.operator o ON o.id = eco.operator_id
-            JOIN erc.user_operator uo ON uo.operator_id = o.id
+        compliance_obligation_id IN (
+            SELECT co.id
+            FROM erc.compliance_obligation co
+            JOIN erc.compliance_report_version crv ON co.compliance_report_version_id = crv.id
+            JOIN erc.compliance_report cr ON crv.compliance_report_id = cr.id
+            JOIN erc.report r ON cr.report_id = r.id
+            JOIN erc.operation o ON r.operation_id = o.id
+            JOIN erc.user_operator uo ON o.operator_id = uo.operator_id
             WHERE uo.user_id = current_setting('my.guid', true)::uuid
-            AND uo.status = 'Approved'
+                AND uo.status = 'Approved'
         )
     """
     role_grants_mapping = {
-        RlsRoles.INDUSTRY_USER: [
-            RlsOperations.SELECT,
-            RlsOperations.INSERT,
-            RlsOperations.UPDATE,
-        ],
+        RlsRoles.INDUSTRY_USER: [RlsOperations.SELECT],
         RlsRoles.CAS_DIRECTOR: [RlsOperations.SELECT],
         RlsRoles.CAS_ADMIN: [RlsOperations.SELECT],
         RlsRoles.CAS_ANALYST: [RlsOperations.SELECT],
