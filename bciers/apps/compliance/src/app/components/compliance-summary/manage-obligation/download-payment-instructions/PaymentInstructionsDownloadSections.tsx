@@ -1,3 +1,6 @@
+import Tooltip from "@mui/material/Tooltip";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+
 export const PaymentInstructionsDetails = () => {
   return (
     <div className="w-full mb-8">
@@ -44,13 +47,35 @@ export const PaymentRemarks = () => {
       <ul>
         <li>
           Pay by the due date to avoid{" "}
-          <a href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015">
-            penalties
-          </a>{" "}
+          <Tooltip title="Link opens in a new tab" placement="top" arrow>
+            <a
+              href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center"
+            >
+              penalties
+              <OpenInNewIcon
+                fontSize="inherit"
+                style={{ marginLeft: ".1rem" }}
+              />
+            </a>
+          </Tooltip>{" "}
           and/or{" "}
-          <a href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/214_83">
-            interests
-          </a>
+          <Tooltip title="Link opens in a new tab" placement="top" arrow>
+            <a
+              href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/214_83"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center"
+            >
+              interests
+              <OpenInNewIcon
+                fontSize="inherit"
+                style={{ marginLeft: ".1rem" }}
+              />
+            </a>
+          </Tooltip>
         </li>
         <li>Do not include other charges with your payment for this invoice</li>
         <li>Do not mail cash</li>
