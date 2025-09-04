@@ -113,4 +113,6 @@ export interface ActivityRendererProps {
   activityName: string;
   activity: Activity;
   sourceTypeChangesForActivity: SourceTypeChange[];
+  addedActivities?: Activity[];
+  deletedActivities?: Activity[];
 }

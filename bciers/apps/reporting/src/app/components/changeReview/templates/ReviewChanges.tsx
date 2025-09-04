@@ -40,6 +40,14 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
         includes.some((inc) => c.field.includes(inc)),
     );
 
+  // Filter Person Responsible changes, ignore trivial ones like report_version
+  const personResponsibleItems = filterByField([
+    "root['report_person_responsible']",
+  ]).filter(
+    (c: { field: string }) =>
+      c.field !== "root['report_person_responsible']['report_version']",
+  );
+
   const complianceChanges = filterByField([
     "root['report_compliance_summary']",
   ]);
@@ -49,6 +57,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   const electricityImportChanges = filterByField([
     "root['report_electricity_import_data']",
   ]);
+
   const additionalReportingDataChanges = filterByField([
     "root['report_additional_data']",
   ]);
@@ -141,7 +150,6 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
 
   const isRecord = (value: any): value is Record<string, any> =>
     typeof value === "object" && value !== null && !Array.isArray(value);
-
   const renderSection = (
     title: string,
     items: any[],
@@ -164,49 +172,51 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
     );
   };
 
-  // Extract specific sections
   const reportOperationItems = sectioned["Report Operation"] || [];
-  const personResponsibleItems = sectioned["Person Responsible"] || [];
 
   return (
     <Box>
       <div className="form-heading text-xl font-bold flex items-cente">
         Review Changes
       </div>
-      {/* Compliance Note */}
-
-      <div className="form-group">
-        <div className="form-group w-full my-8">
-          {showChanges ? complianceNote : reviewChangesNote}
-        </div>
+      <div className="form-group w-full my-8">
+        {showChanges ? complianceNote : reviewChangesNote}
       </div>
-
-      {/* Explicitly render Report Operation, Person Responsible, Additional Reporting Data */}
       {renderSection("Review Operation Information", reportOperationItems)}
       {renderSection("Person Responsible", personResponsibleItems, true)}
 
       {/* Facility Reports */}
       {Object.entries(organizedFacilityReports).map(
-        ([facilityName, facilityData]: [string, any]) => (
-          <Box key={facilityName} mb={4}>
-            <FacilityReportChanges
-              facilityName={facilityName}
-              facilityData={facilityData}
-              addedActivities={
-                modifiedFacilityReportsWithAddedActivities[facilityName]
-              }
-              deletedActivities={
-                modifiedFacilityReportsWithDeletedActivities[facilityName]
-              }
-              sourceTypeChanges={sourceTypeChanges.filter(
-                (c) => c.facilityName === facilityName,
-              )}
-              isReportingOnly={isReportingOnly}
-            />
-          </Box>
-        ),
-      )}
+        ([facilityName, facilityData]: [string, any]) => {
+          // Get added and deleted activities for this facility
+          const addedActivities =
+            modifiedFacilityReportsWithAddedActivities[facilityName] || [];
+          const deletedActivities =
+            modifiedFacilityReportsWithDeletedActivities[facilityName] || [];
 
+          // Ensure facilityData does not include added or deleted activities
+          const cleanFacilityData = {
+            ...facilityData, // Keep the rest of the core data
+            activities: facilityData.activities, // Explicitly include the activities (assuming they are part of core data)
+            // Do not include addedActivities and deletedActivities here
+          };
+
+          return (
+            <Box key={facilityName} mb={4}>
+              <FacilityReportChanges
+                facilityName={facilityName}
+                facilityData={cleanFacilityData} // Pass clean data (without added/deleted activities)
+                addedActivities={addedActivities} // Pass added activities separately
+                deletedActivities={deletedActivities} // Pass deleted activities separately
+                sourceTypeChanges={sourceTypeChanges.filter(
+                  (c) => c.facilityName === facilityName,
+                )}
+                isReportingOnly={isReportingOnly}
+              />
+            </Box>
+          );
+        },
+      )}
       {/* Bulk Facility Changes */}
       {bulkFacilityChanges.map((change: any, idx: number) => {
         const oldFacilities = isRecord(change.oldValue) ? change.oldValue : {};
@@ -263,11 +273,9 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
           </Box>
         ));
       })}
-
       {additionalReportingDataChanges.length > 0 && (
         <AdditionalReportingData changes={additionalReportingDataChanges} />
       )}
-      {/* New Entrant, Electricity, Operation, Compliance */}
       {newEntrantChanges.length > 0 && (
         <NewEntrantChanges changes={newEntrantChanges} />
       )}
@@ -280,7 +288,6 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
       {complianceChanges.length > 0 && (
         <ComplianceSummary changes={complianceChanges} />
       )}
-
       {changes.length === 0 && (
         <Typography color="text.secondary">
           No changes detected between the selected report versions.

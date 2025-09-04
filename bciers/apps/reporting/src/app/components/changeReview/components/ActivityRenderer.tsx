@@ -4,39 +4,61 @@ import ActivityView from "../../finalReview/templates/ActivityView";
 import { SourceTypeRenderer } from "./SourceTypeRenderer";
 import { styles } from "@reporting/src/app/components/changeReview/constants/styles";
 import { ActivityRendererProps } from "@reporting/src/app/components/changeReview/constants/types";
-import {
-  isNonEmptyValue,
-  normalizeChangeType,
-} from "@reporting/src/app/components/changeReview/utils/utils";
+import { isNonEmptyValue } from "@reporting/src/app/components/changeReview/utils/utils";
 import { BC_GOV_BACKGROUND_COLOR_BLUE } from "@bciers/styles";
 
 // Renders an activity and its source types, handling added, deleted, and modified cases
 export const ActivityRenderer: React.FC<ActivityRendererProps> = ({
   activityName,
   activity,
+  addedActivities,
+  deletedActivities,
   sourceTypeChangesForActivity,
 }) => {
-  const activityChangeType = normalizeChangeType(activity.changeType);
-  if (["added", "deleted"].includes(activityChangeType)) {
-    const activityData = activity.newValue || activity.oldValue;
-    const viewChangeType = activityChangeType as "added" | "deleted";
+  // Render for added activities
+  if (addedActivities && addedActivities.length > 0) {
     return (
-      <Box key={activityName} mb={3}>
-        <ActivityView
-          activity_data={isNonEmptyValue(activityData) ? [activityData] : []}
-          changeType={viewChangeType}
-        />
-      </Box>
+      <>
+        {addedActivities.map((addedActivity, idx) => (
+          <Box key={`${activityName}-added-${idx}`} mb={3}>
+            <ActivityView
+              activity_data={
+                isNonEmptyValue(addedActivity) ? [addedActivity] : []
+              }
+              changeType="added"
+            />
+          </Box>
+        ))}
+      </>
     );
   }
 
-  // Handle modified activity
-  // Renders all source types for the activity, sorted so emissions are last
+  // Render for deleted activities
+  if (deletedActivities && deletedActivities.length > 0) {
+    return (
+      <>
+        {deletedActivities.map((deletedActivity, idx) => (
+          <Box key={`${activityName}-deleted-${idx}`} mb={3}>
+            <ActivityView
+              activity_data={
+                isNonEmptyValue(deletedActivity) ? [deletedActivity] : []
+              }
+              changeType="deleted"
+            />
+          </Box>
+        ))}
+      </>
+    );
+  }
+
+  // Handle modified activities
+  // If the activity is neither added nor deleted, treat it as modified
   const sourceTypes =
     activity.sourceTypes ||
     activity.newValue?.source_types ||
     activity.oldValue?.source_types ||
     {};
+
   return (
     <Box key={activityName} mb={3} style={styles.sourceCard}>
       <Box
