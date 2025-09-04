@@ -4,11 +4,11 @@ import { useMemo, useState } from "react";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import HeaderSearchCell from "@bciers/components/datagrid/cells/HeaderSearchCell";
 import { ReportRow } from "./types";
-import pastReportsColumns from "../datagrid/models/pastReports/pastReportsColumns";
-import pastReportsGroupColumns from "../datagrid/models/pastReports/pastReportsGroupColumns";
-import { fetchPastReportsPageData } from "./fetchPastReportsPageData";
+import annualReportsColumns from "../datagrid/models/annualReports/annualReportsColumns";
+import annualReportsGroupColumns from "../datagrid/models/annualReports/annualReportsGroupColumns";
+import { fetchAnnualReportsPageData } from "./fetchAnnualReportsPageData";
 
-const PastReportsDataGrid = ({
+const AnnualReportsDataGrid = ({
   initialData,
 }: {
   initialData: {
@@ -23,10 +23,10 @@ const PastReportsDataGrid = ({
     [lastFocusedField, setLastFocusedField],
   );
 
-  const columns = pastReportsColumns();
+  const columns = annualReportsColumns();
 
   const columnGroup = useMemo(
-    () => pastReportsGroupColumns(SearchCell),
+    () => annualReportsGroupColumns(SearchCell),
     [SearchCell],
   );
 
@@ -38,11 +38,11 @@ const PastReportsDataGrid = ({
       key={gridKey} // This forces a remount when initialData changes.
       columns={columns}
       columnGroupModel={columnGroup}
-      fetchPageData={fetchPastReportsPageData}
+      fetchPageData={fetchAnnualReportsPageData}
       paginationMode="server"
       initialData={initialData}
     />
   );
 };
 
-export default PastReportsDataGrid;
+export default AnnualReportsDataGrid;

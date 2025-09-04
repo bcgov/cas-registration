@@ -36,21 +36,21 @@ export interface ContactRow {
   email: string;
 }
 
-export interface PastReportsSearchParams {
-  [key: string]: string | number | undefined;
-  reporting_year?: number;
-  operation_name?: string;
-  page?: number;
-  sort_field?: string;
-  sort_order?: string;
-  report_status?: string;
-}
-
-export interface PastReportsRow {
+export interface ReportRow {
   id: number;
   reporting_year: number;
   operation_name: string;
-  operator: string;
+  operator?: string;
   report_version_id: number;
-  report_status: string;
+  report_status?: string;
+}
+
+export interface ReportSearchParams {
+  [key: string]: string | number | undefined;
+  reporting_year?: number;
+  operation_name?: string;
+  report_version_id?: number;
+  page?: number;
+  sort_field?: string;
+  sort_order?: string;
 }

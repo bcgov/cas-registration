@@ -15,6 +15,7 @@ from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
     ReportingDashboardOperationOut,
     ReportingDashboardReportOut,
+    ReportsPeriod,
 )
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from service.error_service.custom_codes_4xx import custom_codes_4xx
@@ -48,22 +49,28 @@ def get_dashboard_operations_list(
 
 
 @router.get(
-    "/past-reports",
+    "/reports",
     response={200: List[ReportingDashboardReportOut], custom_codes_4xx: Message},
     tags=DASHBOARD_TAGS,
-    description="""Returns a list of past reports for the current user. Returns all reports for the operator excluding the current reporting year""",
+    description="""Returns a list of reports for the current user. Can return reports for current year, past years, or both.""",
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(PageNumberPagination)
-def get_dashboard_past_reports_list(
+def get_dashboard_reports_list(
     request: HttpRequest,
     filters: ReportingDashboardOperationFilterSchema = Query(...),
     sort_field: Optional[str] = "reporting_year",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
+    reports_period: ReportsPeriod = ReportsPeriod.ALL,
 ) -> QuerySet[Report]:
     user_guid: UUID = get_current_user_guid(request)
     reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
-    return ReportingDashboardService.get_past_reports_for_reporting_dashboard(
-        user_guid, reporting_year, sort_field=sort_field, sort_order=sort_order, filters=filters
+    return ReportingDashboardService.get_reports_for_reporting_dashboard(
+        user_guid,
+        reporting_year,
+        reports_period=reports_period,
+        sort_field=sort_field,
+        sort_order=sort_order,
+        filters=filters,
     )

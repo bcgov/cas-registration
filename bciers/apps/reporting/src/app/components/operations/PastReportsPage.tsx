@@ -1,10 +1,10 @@
 import PastReports from "./PastReports";
-import { PastReportsSearchParams } from "./types";
+import { ReportSearchParams } from "./types";
 
 export default async function PastReportsPage({
   searchParams,
 }: {
-  searchParams: PastReportsSearchParams;
+  searchParams: ReportSearchParams;
 }) {
   return <PastReports searchParams={searchParams} />;
 }

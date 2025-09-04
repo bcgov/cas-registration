@@ -2,13 +2,13 @@ import { actionHandler } from "@bciers/actions";
 import buildQueryParams from "@bciers/utils/src/buildQueryParams";
 import { ReportSearchParams } from "./types";
 
-// 🛠️ Function to fetch past reports
-export const fetchPastReportsPageData = async (
+// 🛠️ Function to fetch annual reports
+export const fetchAnnualReportsPageData = async (
   searchParams: ReportSearchParams,
 ) => {
   const queryParams = buildQueryParams({
     ...searchParams,
-    reports_period: "past",
+    reports_period: "current",
   });
   // fetch data from server
   const pageData = await actionHandler(
