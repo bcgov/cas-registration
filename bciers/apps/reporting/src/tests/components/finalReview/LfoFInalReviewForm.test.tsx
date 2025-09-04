@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { getLfoFinalReviewData } from "@reporting/src/app/utils/getLfoFinalReviewData";
 import { useRouter, useSearchParams } from "next/navigation";
-import FacilityReportFinalReviewPage from "@reporting/src/app/components/finalReview/LfoFinalReviewForm";
+import FacilityReportFinalReview from "@reporting/src/app/components/finalReview/LfoFinalReviewForm";
 
 // --- Mocks ---
 vi.mock("@reporting/src/app/utils/getLfoFinalReviewData", () => ({
@@ -46,7 +46,7 @@ vi.mock("@bciers/components/loading/SkeletonGrid", () => ({
   default: () => <div data-testid="loading">Loading...</div>,
 }));
 
-describe("FacilityReportFinalReviewPage", () => {
+describe("FacilityReportFinalReview", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useRouter as any).mockReturnValue({ push: mockRouterPush });
@@ -60,7 +60,7 @@ describe("FacilityReportFinalReviewPage", () => {
       () => new Promise(() => {}), // never resolves
     );
 
-    render(<FacilityReportFinalReviewPage version_id={1} />);
+    render(<FacilityReportFinalReview version_id={1} />);
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
     expect(getLfoFinalReviewData).toHaveBeenCalledWith(1, "facility-1");
@@ -74,7 +74,7 @@ describe("FacilityReportFinalReviewPage", () => {
       facility_name: "Test Facility",
     });
 
-    render(<FacilityReportFinalReviewPage version_id={123} />);
+    render(<FacilityReportFinalReview version_id={123} />);
 
     await waitFor(() => {
       expect(screen.getByTestId("facility-report-section")).toHaveTextContent(
@@ -91,7 +91,7 @@ describe("FacilityReportFinalReviewPage", () => {
       get: () => null,
     });
 
-    render(<FacilityReportFinalReviewPage version_id={42} />);
+    render(<FacilityReportFinalReview version_id={42} />);
 
     await waitFor(() => {
       expect(screen.getByTestId("loading")).toBeInTheDocument();
@@ -107,7 +107,7 @@ describe("FacilityReportFinalReviewPage", () => {
       facility_name: "Test Facility",
     });
 
-    render(<FacilityReportFinalReviewPage version_id={99} />);
+    render(<FacilityReportFinalReview version_id={99} />);
 
     const backButton = await screen.findByRole("button", { name: /back/i });
     backButton.click();
