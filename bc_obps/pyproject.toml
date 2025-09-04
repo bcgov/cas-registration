@@ -26,7 +26,7 @@ django-pgtrigger = "^4.13.3"
 weasyprint = "^65.0"
 jsonschema = "^4.23.0"
 types-jsonschema = "^4.23.0.20241208"
-deepdiff = "^7.0.0"
+deepdiff = "^8.6.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.3.0"
