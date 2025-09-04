@@ -25,31 +25,40 @@ class CompliancePenaltyAccrualTest(BaseTestCase):
 class TestCompliancePenaltyAccrualRls(BaseTestCase):
     def test_compliance_penalty_accrual_rls_industry_user(self):
         # approved object
-        operator = make_recipe('registration.tests.utils.operator', id=1)
-        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator', operator=operator)
-        approved_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator',
-            operator=approved_user_operator.operator,
-            client_object_id="1147483647",
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        approved_operation = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
         )
-        approved_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator
+        approved_report = make_recipe(
+            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
+        )
+        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
+        approved_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=approved_compliance_report,
+            is_supplementary=False,
+        )
+        approved_compliance_obligation = make_recipe(
+            'compliance.tests.utils.compliance_obligation', compliance_report_version=approved_compliance_report_version
         )
         approved_compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', elicensing_invoice=approved_invoice
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=approved_compliance_obligation
         )
         make_recipe('compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=approved_compliance_penalty)
 
         # second object
-        random_operator = make_recipe('registration.tests.utils.operator', id=2)
-        random_client_operator = make_recipe(
-            'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
+        random_operator = make_recipe('registration.tests.utils.operator')
+        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
+        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
+        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
+        random_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
         )
-        random_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
+        random_compliance_obligation = make_recipe(
+            'compliance.tests.utils.compliance_obligation', compliance_report_version=random_compliance_report_version
         )
         random_compliance_penalty = make_recipe(
-            'compliance.tests.utils.compliance_penalty', elicensing_invoice=random_invoice
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=random_compliance_obligation
         )
         make_recipe('compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=random_compliance_penalty)
 
