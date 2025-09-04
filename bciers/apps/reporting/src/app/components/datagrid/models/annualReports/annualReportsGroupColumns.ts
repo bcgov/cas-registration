@@ -11,7 +11,11 @@ const annualReportGroupColumns = (
   const columnGroupModel = [
     createColumnGroup("operation_name", "Operation", SearchCell),
     createColumnGroup("report_version_id", "Report Version ID", SearchCell),
-    createColumnGroup("report_updated_at", "Date of submission", SearchCell),
+    createColumnGroup(
+      "report_updated_at",
+      "Date of submission",
+      EmptyGroupCell,
+    ),
 
     createColumnGroup("report", "Report", EmptyGroupCell),
     createColumnGroup("history", "Report History", EmptyGroupCell),
