@@ -164,17 +164,15 @@ class ReportReviewChangesService:
             removed_keys = set(old_facilities.keys()) - set(new_facilities.keys())
             added_keys = set(new_facilities.keys()) - set(old_facilities.keys())
 
-            # Handle multiple facility renames by matching 'facility' ID
             for old_key in removed_keys:
                 old_fac = old_facilities[old_key]
-                for new_key in added_keys.copy():  # copy to allow removal
+                for new_key in added_keys.copy():
                     new_fac = new_facilities[new_key]
                     if old_fac.get("facility") == new_fac.get("facility"):
                         facility_name_new = new_fac.get("facility_name") or new_key
                         other_old = {k: v for k, v in old_fac.items() if k != "facility_name"}
                         other_new = {k: v for k, v in new_fac.items() if k != "facility_name"}
 
-                        # Only facility_name changed
                         if other_old == other_new:
                             changed.append(
                                 {
@@ -185,7 +183,6 @@ class ReportReviewChangesService:
                                 }
                             )
                         else:
-                            # Compare full facility object if other fields changed
                             differences = DeepDiff(
                                 old_fac,
                                 new_fac,
@@ -193,12 +190,12 @@ class ReportReviewChangesService:
                                 exclude_regex_paths=[r".*?id'\]$"],
                             )
                             for change_type, changes_dict in differences.items():
-                                items = (
-                                    changes_dict.items()
-                                    if isinstance(changes_dict, dict)
-                                    else [(path, None) for path in changes_dict]
-                                )
-                                for path, change_data in items:
+                                if isinstance(changes_dict, dict):
+                                    facility_items: List[Tuple[Any, Any]] = list(changes_dict.items())
+                                else:
+                                    facility_items = [(path, None) for path in changes_dict]
+
+                                for path, change_data in facility_items:
                                     try:
                                         old_val, new_val, change_type_str = cls._extract_diff_values(
                                             path, change_data, old_fac, new_fac, change_type
@@ -214,11 +211,9 @@ class ReportReviewChangesService:
                                         logger.debug(f"Skipping facility change due to error: {e}, path: {path}")
                                         continue
 
-                        # Remove matched new_key so it isn’t processed again
                         added_keys.remove(new_key)
-                        break  # Move to next removed_key
+                        break
 
-            # Remove processed keys from previous_data and current_data
             for old_key in removed_keys:
                 previous_data["facility_reports"].pop(old_key, None)
             for new_key in set(new_facilities.keys()) - added_keys:
@@ -237,11 +232,11 @@ class ReportReviewChangesService:
         )
 
         for change_type, changes_dict in differences.items():
-            items = (
-                changes_dict.items()
-                if isinstance(changes_dict, dict)
-                else [(path, None) for path in differences[change_type]]
-            )
+            if isinstance(changes_dict, dict):
+                items: List[Tuple[Any, Any]] = list(changes_dict.items())
+            else:
+                items = [(path, None) for path in changes_dict]
+
             for path, change_data in items:
                 try:
                     old_val, new_val, change_type_str = cls._extract_diff_values(
@@ -263,13 +258,12 @@ class ReportReviewChangesService:
         Returns a tuple: (old_value, new_value, change_type)
         """
         if typ == 'values_changed':
-            return (
-                getattr(change, 'old_value', change.get('old_value')),
-                getattr(change, 'new_value', change.get('new_value')),
-                'modified',
-            )
+            old_val = change.get('old_value')
+            new_val = change.get('new_value')
+            return old_val, new_val, 'modified'
         elif typ == 'type_changes':
-            old_val, new_val = change.get('old_value'), change.get('new_value')
+            old_val = change.get('old_value')
+            new_val = change.get('new_value')
             change_type_str = 'added' if old_val is None and new_val is not None else 'modified'
             return old_val, new_val, change_type_str
         elif typ.endswith('added'):
