@@ -10,7 +10,7 @@ import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 
-export default function FacilityReportFinalReviewPage({
+export default function FacilityReportFinalReview({
   version_id,
 }: {
   version_id: number;
