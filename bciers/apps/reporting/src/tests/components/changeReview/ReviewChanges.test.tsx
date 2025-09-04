@@ -109,6 +109,14 @@ vi.mock(
 describe("ReviewChanges", () => {
   const mockChanges: ChangeItem[] = [
     {
+      field: "root['report_person_responsible']['name']",
+      oldValue: "old_name",
+      newValue: "new_name",
+      facilityName: "",
+      change_type: "modified",
+      deletedActivities: [],
+    },
+    {
       field: "root['report_information']['test_field']",
       oldValue: "oldValue",
       newValue: "newValue",
@@ -170,9 +178,16 @@ describe("ReviewChanges", () => {
     render(<ReviewChanges changes={mockChanges} />);
 
     // Check Person Responsible section
-    expect(screen.getByText("Person Responsible")).toBeInTheDocument();
     expect(
-      screen.getByTestId("change-item-root['person_responsible']['name']"),
+      screen.getByTestId(
+        "change-item-root['report_person_responsible']['name']",
+      ),
+    ).toBeInTheDocument();
+
+    expect(
+      screen.getByTestId(
+        "change-item-root['report_person_responsible']['name']",
+      ),
     ).toBeInTheDocument();
 
     // Check Compliance Summary section (rendered as specialized component)

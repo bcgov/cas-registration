@@ -75,7 +75,8 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
   changes.forEach((item) => {
     const fieldInfo = getComplianceFieldDetails(item.field);
     if (fieldInfo?.isProduct) {
-      const productName = fieldInfo.productName || "Unknown Product";
+      const productName =
+        item.newValue?.name || item.oldValue?.name || "Unknown Product";
       if (!productChangesMap[productName]) productChangesMap[productName] = [];
       productChangesMap[productName].push(item);
     } else {
