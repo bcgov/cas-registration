@@ -10,6 +10,9 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_version_by_id"
     )
     def test_get_compliance_report_version_success(self, mock_get_version):
+        # Mock authorization
+        operator = make_recipe('registration.tests.utils.operator')
+        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
         # Arrange
         compliance_report_version = make_recipe(
             'compliance.tests.utils.compliance_report_version',
@@ -17,12 +20,10 @@ class TestComplianceReportVersionEndpoint(CommonTestSetup):
             report_compliance_summary__credited_emissions=Decimal("25.0000"),
             status="Obligation not met",
             report_compliance_summary__report_version__report_operation__operation_name="Test Operation",
+            compliance_report__report__operation__operator=operator,
+            compliance_report__report__operator=operator,
         )
         mock_get_version.return_value = compliance_report_version
-
-        # Mock authorization
-        operator = compliance_report_version.compliance_report.report.operator
-        TestUtils.authorize_current_user_as_operator_user(self, operator=operator)
 
         # Act
         endpoint = custom_reverse_lazy(
