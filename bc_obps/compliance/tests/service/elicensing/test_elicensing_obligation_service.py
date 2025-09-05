@@ -155,7 +155,9 @@ class TestElicensingObligationService:
         self, mock_timezone, mock_transaction, mock_retryable_integration
     ):
         # Arrange
-        mock_timezone.now.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025
+        mock_datetime = MagicMock()
+        mock_datetime.astimezone.return_value.date.return_value = date(2025, 11, 15)  # After Nov 1, 2025
+        mock_timezone.now.return_value = mock_datetime
 
         obligation = make_recipe('compliance.tests.utils.compliance_obligation')
         compliance_period = make_recipe(
@@ -180,7 +182,9 @@ class TestElicensingObligationService:
         self, mock_timezone
     ):
         # Arrange
-        mock_timezone.now.return_value.date.return_value = date(2025, 10, 15)  # Before Nov 1, 2025
+        mock_datetime = MagicMock()
+        mock_datetime.astimezone.return_value.date.return_value = date(2025, 10, 15)  # Before Nov 1, 2025
+        mock_timezone.now.return_value = mock_datetime
 
         obligation = make_recipe('compliance.tests.utils.compliance_obligation')
         compliance_period = make_recipe(

@@ -1,6 +1,7 @@
 import logging
 import uuid
 from typing import Dict, Any
+from zoneinfo import ZoneInfo
 
 from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
 from compliance.service.elicensing.elicensing_api_client import (
@@ -38,7 +39,9 @@ class ElicensingObligationService:
             compliance_period: The compliance period associated with the report
         """
         # Check if we should run the eLicensing integration based on the invoice generation date
-        current_date = timezone.now().date()
+        # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
+        vancouver_timezone = ZoneInfo("America/Vancouver")
+        current_date = timezone.now().astimezone(vancouver_timezone).date()
         if current_date >= compliance_period.invoice_generation_date:
             # Import here to avoid circular import
             from compliance.tasks import retryable_process_obligation_integration

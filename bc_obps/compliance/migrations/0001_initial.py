@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                 (
                     'invoice_generation_date',
                     models.DateField(
-                        db_comment='Date on which invoices for this compliance period should be generated, UTC-based'
+                        db_comment='Date on which invoices for this compliance period should be generated'
                     ),
                 ),
                 (
