@@ -64,7 +64,7 @@ postgres_helm_install = KubernetesJobOperator(
     namespace="{{ params.destination_namespace }}",
     service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
-    env_vars={"HOME": "/tmp"},
+    env_vars={"HOME": "/tmp"},  # nosec B108
     cmds=["bash", "-c"],
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
@@ -109,7 +109,7 @@ backend_helm_install = KubernetesJobOperator(
     namespace="{{ params.destination_namespace }}",
     service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
-    env_vars={"HOME": "/tmp"},
+    env_vars={"HOME": "/tmp"},  # nosec B108
     cmds=["bash", "-c"],
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
