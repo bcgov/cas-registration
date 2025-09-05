@@ -15,15 +15,15 @@
           {
             "title": "Compliance Administration",
             "icon": "File",
-            "content": "Track compliance obligations, approve or decline issuance requests of earned credits, and track monetary payment summaries here.",
+            "content": "Track compliance obligations, approve or decline issuance requests of earned credits, issue imposed penalties, and track invoices here.",
             "links": [
               {
                 "title": "Compliance Summaries",
                 "href": "/compliance/compliance-summaries"
               },
               {
-                "title": "Payment Summaries",
-                "href": "/compliance/payment-summaries"
+                "title": "Invoices",
+                "href": "/compliance/invoices"
               }
             ]
           }
