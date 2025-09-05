@@ -53,3 +53,79 @@ class TestDataAccessContactService:
         operator.contacts.set([contact])
         user_operator_baker({"user": user, "operator": operator, "status": UserOperator.Statuses.APPROVED})
         assert ContactDataAccessService.user_has_access(user.user_guid, contact.id)
+
+    @staticmethod
+    def test_get_contact_for_internal_user_returns_none():
+        internal_user = user_baker({'app_role': AppRole.objects.get(role_name='cas_analyst')})
+        assert ContactDataAccessService.get_contact_for_user(internal_user) is None
+
+    @staticmethod
+    def test_get_contact_for_industry_user_by_unique_email_returns_contact():
+        industry_user = user_baker(
+            {
+                'app_role': AppRole.objects.get(role_name='industry_user'),
+                'first_name': 'Mickey',
+                'last_name': 'Mouse',
+                'email': 'mickey.mouse@email.com',
+            }
+        )
+        users_operator = operator_baker()
+        random_contacts: List[Contact] = contact_baker(_quantity=10)
+        # make a contact with the same name & email address as the user
+        user_contact: Contact = contact_baker(first_name='Mickey', last_name='Mouse', email='mickey.mouse@email.com')
+        users_operator.contacts.set([*random_contacts, user_contact])
+        user_operator_baker(
+            {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
+        )
+        contact = ContactDataAccessService.get_contact_for_user(industry_user)
+        assert contact.email == 'mickey.mouse@email.com'
+        assert contact.first_name == 'Mickey'
+        assert contact.last_name == 'Mouse'
+
+    @staticmethod
+    def test_get_contact_for_industry_user_by_name_returns_contact():
+        industry_user = user_baker(
+            {
+                'app_role': AppRole.objects.get(role_name='industry_user'),
+                'first_name': 'Mickey',
+                'last_name': 'Mouse',
+                'email': 'mickey.mouse@email.com',
+            }
+        )
+        users_operator = operator_baker()
+        random_contacts: List[Contact] = contact_baker(_quantity=10)
+        # make a contact with the same name as the user but a different email address
+        # (mimics possible scenario where user changes their contact email address to be different
+        # from the email address they've used for their BCeID account)
+        user_contact: Contact = contact_baker(
+            first_name='Mickey', last_name='Mouse', email='some.other.address@email.com'
+        )
+        users_operator.contacts.set([*random_contacts, user_contact])
+        user_operator_baker(
+            {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
+        )
+        contact = ContactDataAccessService.get_contact_for_user(industry_user)
+        assert contact.first_name == 'Mickey'
+        assert contact.last_name == 'Mouse'
+
+    @staticmethod
+    def test_get_contact_for_industry_user_returns_none_when_multiple_contacts_match():
+        industry_user = user_baker(
+            {
+                'app_role': AppRole.objects.get(role_name='industry_user'),
+                'first_name': 'Donald',
+                'last_name': 'Duck',
+                'email': 'donald@email.com',
+            }
+        )
+        users_operator = operator_baker()
+        multiple_duplicate_contacts: List[Contact] = contact_baker(_quantity=10, first_name='Donald', last_name='Duck')
+        users_operator.contacts.set(multiple_duplicate_contacts)
+        user_operator_baker(
+            {"user": industry_user, "operator": users_operator, "status": UserOperator.Statuses.APPROVED}
+        )
+        retrieve_donald_contact = ContactDataAccessService.get_contact_for_user(industry_user)
+        # there are no user_operator contacts with the same email address as the user, and
+        # multiple user_operator contacts with the same name as the industry_user,
+        # so the service shouldn't return any of them
+        assert retrieve_donald_contact is None
