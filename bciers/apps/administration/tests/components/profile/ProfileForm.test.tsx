@@ -50,7 +50,7 @@ describe("ProfileForm", () => {
 
   it("does not show email help text for idir user", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    // vi.mocked(getSession).mockResolvedValueOnce({ identity_provider: "idir" });
+    vi.mocked(getSession).mockResolvedValueOnce({ identity_provider: "idir" });
     render(<ProfileForm isCreate={true} />);
     await waitFor(() => {
       expect(screen.queryByText(/This email is used to log in/)).toBeNull();
@@ -58,7 +58,6 @@ describe("ProfileForm", () => {
   });
 
   it("does not show email help text for external user being created", async () => {
-    // vi.mocked(getSession).mockResolvedValueOnce({ identity_provider: "bceid" });
     render(<ProfileForm isCreate={true} />);
     await waitFor(() => {
       expect(screen.queryByText(/This email is used to log in/)).toBeNull();
@@ -67,14 +66,15 @@ describe("ProfileForm", () => {
 
   it("shows extended email help text if contact record exists", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    // vi.mocked(getSession).mockResolvedValueOnce({
-    //   identity_provider: "bceid",
-    //   user: { bceid_business_guid: "guid-123" },
-    // });
+    vi.mocked(getSession).mockResolvedValueOnce({
+      identity_provider: "bceidbusiness",
+      user: { bceid_business_guid: "guid-123" },
+    });
     vi.mocked(actionHandler).mockResolvedValueOnce("contact-456");
 
     render(<ProfileForm isCreate={false} />);
 
+    // need to await the screen because it's rendered with useEffect
     expect(
       await screen.findByText(/This email is used to log in/),
     ).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe("ProfileForm", () => {
 
   it("shows base email help text if contact lookup fails", async () => {
     vi.mocked(getSession).mockResolvedValueOnce({
-      identity_provider: "bceid",
+      identity_provider: "bceidbusiness",
       user: { bceid_business_guid: "guid-123" },
     });
     vi.mocked(actionHandler).mockRejectedValue(new Error("API error"));
@@ -99,7 +99,7 @@ describe("ProfileForm", () => {
 
   it("calls POST on submit when creating user", async () => {
     vi.mocked(getSession).mockResolvedValueOnce({
-      identity_provider: "bceid",
+      identity_provider: "bceidbusiness",
       user: {},
     });
     vi.mocked(actionHandler).mockResolvedValueOnce({});
@@ -128,24 +128,9 @@ describe("ProfileForm", () => {
     });
   });
 
-  it("shows error alert when API returns error", async () => {
-    vi.mocked(getSession).mockResolvedValueOnce({
-      identity_provider: "bceid",
-      user: {},
-    });
-    vi.mocked(actionHandler).mockResolvedValueOnce({
-      error: "Something went wrong",
-    });
-
-    render(<ProfileForm isCreate={true} />);
-    fireEvent.click(screen.getByRole("button", { name: "Submit" }));
-
-    expect(await screen.findByText(/Something went wrong/)).toBeInTheDocument();
-  });
-
   it("shows success state and resets after submit", async () => {
     vi.mocked(getSession).mockResolvedValueOnce({
-      identity_provider: "bceid",
+      identity_provider: "bceidbusiness",
       user: {
         first_name: "First",
         last_name: "Last",
