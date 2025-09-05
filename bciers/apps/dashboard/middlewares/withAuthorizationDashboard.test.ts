@@ -27,6 +27,13 @@ vi.mock("next-auth/jwt", () => ({
 }));
 const mockGetToken = nextGetToken as ReturnType<typeof vi.fn>;
 
+function mockRequest(path: string): NextRequest {
+  const nextUrl = new NextURL(path, { base: domain });
+  when(mockedRequest.nextUrl).thenReturn(nextUrl);
+  when(mockedRequest.url).thenReturn(domain);
+  return instance(mockedRequest);
+}
+
 describe("withAuthorizationDashboard middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,13 +45,8 @@ describe("withAuthorizationDashboard middleware", () => {
 
   it("redirects to the onboarding page if the user is not authenticated", async () => {
     // The user tries to access the operations page
-    const nextUrl = new NextURL(`${domain}/registration/operations`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
     const result = await middleware(
-      instance(mockedRequest),
+      mockRequest("/registration/operations"),
       mockNextFetchEvent,
     );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
@@ -55,26 +57,19 @@ describe("withAuthorizationDashboard middleware", () => {
   });
 
   it("calls NextMiddleware if the user is not authenticated and the route is /onboarding", async () => {
-    const nextUrl = new NextURL(`${domain}/onboarding`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-
     const result = await middleware(
-      instance(mockedRequest),
+      mockRequest("/onboarding"),
       mockNextFetchEvent,
     );
+
     expect(result?.status).toBe(200);
   });
 
   it("redirects to the administration profile page if the user has no app role", async () => {
     getToken.mockResolvedValue(mockBaseToken);
-    const nextUrl = new NextURL(`${domain}/dashboard`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
 
     const result = await middleware(
-      instance(mockedRequest),
+      mockRequest("/dashboard"),
       mockNextFetchEvent,
     );
 
@@ -90,28 +85,23 @@ describe("withAuthorizationDashboard middleware", () => {
 
   it("calls NextMiddleware if the user has no app role and the route ends in /profile", async () => {
     getToken.mockResolvedValue(mockBaseToken);
-    const nextUrl = new NextURL(`${domain}/profile`);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
 
     const result = await middleware(
-      instance(mockedRequest),
+      mockRequest("/profile"),
       mockNextFetchEvent,
     );
+
     expect(result?.status).toBe(200);
   });
 
   it("redirects authenticated industry_user to the common dashboard if the route is /onboarding", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    const nextUrl = new NextURL("/onboarding", domain);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
 
     const result = await middleware(
-      instance(mockedRequest),
+      mockRequest("/onboarding"),
       mockNextFetchEvent,
     );
+
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -119,15 +109,9 @@ describe("withAuthorizationDashboard middleware", () => {
 
   it("redirects authenticated industry_user to the common dashboard if the route is /", async () => {
     getToken.mockResolvedValue(mockIndustryUserToken);
-    const nextUrl = new NextURL(domain);
 
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
+    const result = await middleware(mockRequest(""), mockNextFetchEvent);
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -135,15 +119,9 @@ describe("withAuthorizationDashboard middleware", () => {
 
   it("redirects authenticated, authorized cas_user to the common dashboard if the route is /", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL(domain);
 
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
+    const result = await middleware(mockRequest(""), mockNextFetchEvent);
 
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -164,15 +142,12 @@ describe("withAuthorizationDashboard middleware", () => {
 
   it("redirects authenticated, authorized cas_user to the common dashboard if the route is /onboarding", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL("/onboarding", domain);
-
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
 
     const result = await middleware(
-      instance(mockedRequest),
+      mockRequest("/onboarding"),
       mockNextFetchEvent,
     );
+
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -180,15 +155,8 @@ describe("withAuthorizationDashboard middleware", () => {
 
   it("redirects authenticated, NON-authorized cas_user to the common dashboard if the route is /", async () => {
     getToken.mockResolvedValue(mockCasPendingToken);
-    const nextUrl = new NextURL(domain);
+    const result = await middleware(mockRequest(""), mockNextFetchEvent);
 
-    when(mockedRequest.nextUrl).thenReturn(nextUrl);
-    when(mockedRequest.url).thenReturn(domain);
-
-    const result = await middleware(
-      instance(mockedRequest),
-      mockNextFetchEvent,
-    );
     expect(NextResponse.redirect).toHaveBeenCalledOnce();
     expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
     expect(result?.status).toBe(307);
@@ -199,14 +167,11 @@ describe("withAuthorizationDashboard middleware", () => {
 
     // Loop through the array of allowed paths
     for (const allowedPath of authAllowedPaths) {
-      const nextUrl = new NextURL(`${domain}/${allowedPath}`);
-
-      when(mockedRequest.nextUrl).thenReturn(nextUrl);
-
       const result = await middleware(
-        instance(mockedRequest),
+        mockRequest(allowedPath),
         mockNextFetchEvent,
       );
+
       expect(result?.status).toBe(200);
     }
   });
@@ -222,15 +187,8 @@ describe("withAuthorizationDashboard middleware", () => {
     ];
 
     for (const path of paths) {
-      const nextUrl = new NextURL(path, domain);
+      const result = await middleware(mockRequest(path), mockNextFetchEvent);
 
-      when(mockedRequest.nextUrl).thenReturn(nextUrl);
-      when(mockedRequest.url).thenReturn(domain);
-
-      const result = await middleware(
-        instance(mockedRequest),
-        mockNextFetchEvent,
-      );
       expect(NextResponse.redirect).toHaveBeenCalledWith(dashboardUrl);
       expect(result?.status).toBe(307);
     }
