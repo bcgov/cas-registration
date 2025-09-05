@@ -17,7 +17,7 @@ When you're ready to make a release, apply the following steps:
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
 1. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
 1. on `develop`, check migrations against prod data:
-   1. go to the cas-airflow-dev frontend and trigger the `cas_bciers_test_migrations` dag. You will need the source (where the database backup originates from, likely `abc123-prod`) and target (where to deploy the tests, likely (`abc123-test`)) namespaces, as well as the git hash of the commit you want to test (used by `BACKEND_CHART_TAG`).
+   1. go to the cas-airflow-test frontend and trigger the `cas_bciers_test_migrations` dag. You will need the source (where the database backup originates from, likely `abc123-prod`) and target (where to deploy the tests, (`abc123-test`)) namespaces, as well as the git hash of the commit with a backend image built that you want to test (used by `BACKEND_CHART_TAG`).
    1. Ensure the dag completes successfully. If any steps fail, the helm charts remain deployed in the target namespace for later inspection. If there are any problems with the migrations, create a branch, fix, and merge the fix before continuing.
 1. create a `chore/release` branch and create the upstream
 1. reset database with `make reset_db` (from `cas-registration/bc_obps`) for proper creation of migration files

@@ -2,6 +2,7 @@ from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
 from airflow.operators.python_operator import PythonOperator
+from airflow.models.param import Param
 from datetime import datetime, timedelta
 from airflow import DAG
 import os
@@ -12,6 +13,7 @@ TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
 TEST_MIGRATIONS_DAG_NAME = "cas_bciers_test_migrations"
 K8S_IMAGE = "alpine/k8s:1.29.15"
 SERVICE_ACCOUNT_NAME = "airflow-deployer"
+bciers_namespace = os.getenv("BCIERS_NAMESPACE")
 
 default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 
@@ -21,10 +23,26 @@ test_migrations_dag = DAG(
     schedule_interval=None,
     catchup=False,
     params={
-        "destination_namespace": "abc123-test",
-        "source_namespace": "abc123-prod",
-        "backend_chart_tag": "latest",
-        "helm_options": "--atomic --wait-for-jobs --timeout 2400s",
+        "destination_namespace": Param(
+            bciers_namespace,
+            type="string",
+            description="The namespace to deploy the test charts into. This will ONLY work if the environment matches this Airflow instance.",
+        ),
+        "source_namespace": Param(
+            bciers_namespace,
+            type="string",
+            description="The namespace to use as the source of backups. Generally, this should be '-prod'.",
+        ),
+        "backend_chart_tag": Param(
+            "latest",
+            type="string",
+            description="The built image tag to pull within the backend chart (not the chart tag).",
+        ),
+        "helm_options": Param(
+            "--atomic --wait-for-jobs --timeout 2400s",
+            type="string",
+            description="Helm install options, shouldn't need to be changed.",
+        ),
     },
 )
 
@@ -46,6 +64,7 @@ postgres_helm_install = KubernetesJobOperator(
     namespace="{{ params.destination_namespace }}",
     service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
+    env_vars={"HOME": "/tmp"},  # nosec B108
     cmds=["bash", "-c"],
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
@@ -90,6 +109,7 @@ backend_helm_install = KubernetesJobOperator(
     namespace="{{ params.destination_namespace }}",
     service_account_name=SERVICE_ACCOUNT_NAME,
     image=K8S_IMAGE,
+    env_vars={"HOME": "/tmp"},  # nosec B108
     cmds=["bash", "-c"],
     arguments=[
         "helm repo add cas-registration https://bcgov.github.io/cas-registration/ && "
