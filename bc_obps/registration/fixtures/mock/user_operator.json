@@ -79,7 +79,7 @@
       "user": "00000000-0000-0000-0000-000000000006",
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "role": "admin",
-      "status": "Declined",
+      "status": "Approved",
       "verified_at": null,
       "verified_by": null,
       "user_friendly_id": 9
