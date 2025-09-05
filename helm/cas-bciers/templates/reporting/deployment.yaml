@@ -29,6 +29,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "cas-bciers.fullname" . }}-frontend-env-configmap
+          env:
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-gold-client-secret
+                  key: kcClientSecret
+            - name: NEXTAUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cas-bciers-nextauth
+                  key: nextauth-secret
           image: "{{ .Values.reportingFrontend.image.repository }}:{{ .Values.defaultImageTag | default .Values.reportingFrontend.image.tag }}"
           imagePullPolicy: {{ .Values.reportingFrontend.image.pullPolicy }}
           ports:
