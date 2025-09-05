@@ -11,15 +11,19 @@
             "title": "My Compliance",
             "href": "/compliance/compliance-summaries",
             "icon": "File",
-            "content": "Request issuance of earned credits, manage compliance obligations, pay penalties, and track monetary payment summaries here.",
+            "content": "Manage compliance obligations, apply compliance units (earned credits, offset units) towards compliance obligations, pay penalties, request issuance of earned credits, track invoices and transactions here.",
             "links": [
               {
                 "title": "Compliance Summaries",
                 "href": "/compliance/compliance-summaries"
               },
               {
-                "title": "Payment Summaries",
-                "href": "/compliance/payment-summaries"
+                "title": "Invoices",
+                "href": "/compliance/invoices"
+              },
+              {
+                "title": "Transactions",
+                "href": "/compliance/transactions"
               }
             ]
           },
@@ -29,7 +33,7 @@
             "target": "_blank",
             "rel": "noopener noreferrer",
             "icon": "File",
-            "content": "Receive, trade, or apply compliance units (earned credits, offset units) towards compliance obligations here.",
+            "content": "Receive, view, and trade compliance units (earned credits, offset units) here.",
             "links": [
               {
                 "title": "Go to B.C. Carbon Registry",
