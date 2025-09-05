@@ -1,10 +1,10 @@
-from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from reporting.models import ReportVersion, ReportComplianceSummary
 from compliance.models import ComplianceReport, ComplianceEarnedCredit
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 
 from django.db import transaction
 from decimal import Decimal
@@ -66,14 +66,10 @@ class IncreasedObligationHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-
         obligation = ComplianceObligationService.create_compliance_obligation(
             compliance_report_version.id, excess_emission_delta
         )
-
-        # Integration operation - handle eLicensing integration
-        # This is done outside the main transaction to prevent rollback if integration fails
-        transaction.on_commit(lambda: ElicensingObligationService.process_obligation_integration(obligation.id))
+        ElicensingObligationService.handle_obligation_integration(obligation.id, compliance_report.compliance_period)
         return compliance_report_version
 
 

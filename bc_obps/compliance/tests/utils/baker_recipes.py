@@ -35,6 +35,7 @@ compliance_period = Recipe(
     start_date="2024-01-01",
     end_date="2024-12-31",
     compliance_deadline="2025-06-30",
+    invoice_generation_date="2025-11-01",
     reporting_year=foreign_key(reporting_year),
 )
 

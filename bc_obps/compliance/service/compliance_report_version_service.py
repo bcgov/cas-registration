@@ -1,7 +1,7 @@
-from compliance.tasks import retryable_process_obligation_integration
 from registration.models.operator import Operator
 from reporting.models.report_compliance_summary import ReportComplianceSummary
 from compliance.service.compliance_obligation_service import ComplianceObligationService
+from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from django.db import transaction
 from decimal import Decimal
 from compliance.models import ComplianceReport, ComplianceReportVersion, ComplianceObligation
@@ -53,15 +53,13 @@ class ComplianceReportVersionService:
                 ),
             )
 
-            # Create compliance obligation if there are excess emissions
             if excess_emissions > Decimal('0'):
                 obligation = ComplianceObligationService.create_compliance_obligation(
                     compliance_report_version.id, excess_emissions
                 )
-
-                # Integration operation - handle eLicensing integration
-                # This is done outside of the main transaction to prevent rollback if integration fails
-                transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation.id))
+                ElicensingObligationService.handle_obligation_integration(
+                    obligation.id, compliance_report.compliance_period
+                )
 
             # Else, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):

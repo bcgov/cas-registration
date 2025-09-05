@@ -13,6 +13,7 @@ class CompliancePeriodTest(BaseTestCase):
             ("start_date", "start date", None, None),
             ("end_date", "end date", None, None),
             ("compliance_deadline", "compliance deadline", None, None),
+            ("invoice_generation_date", "invoice generation date", None, None),
             ("reporting_year", "reporting year", None, None),
             ("compliance_reports", "compliance report", None, None),
             ("compliance_penalty_rate", "compliance penalty rate", None, None),

@@ -1,6 +1,7 @@
 import logging
 import uuid
 from typing import Dict, Any
+from zoneinfo import ZoneInfo
 
 from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
 from compliance.service.elicensing.elicensing_api_client import (
@@ -10,8 +11,10 @@ from compliance.service.elicensing.elicensing_api_client import (
 )
 from compliance.service.elicensing.schema import FeeCreationItem
 from django.db import transaction
-from compliance.models import ComplianceObligation, ElicensingInvoice, ComplianceReportVersion
+from compliance.models import ComplianceObligation, ElicensingInvoice, ComplianceReportVersion, CompliancePeriod
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
+
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +27,34 @@ class ElicensingObligationService:
     This service handles eLicensing integration for compliance obligations,
     including fee creation and synchronization with the eLicensing system.
     """
+
+    @classmethod
+    def handle_obligation_integration(cls, obligation_id: int, compliance_period: CompliancePeriod) -> None:
+        """
+        Handle the obligation integration with eLicensing if the invoice generation date has passed.
+        If the invoice generation date has not passed, update the status to pending invoice creation.
+
+        Args:
+            obligation_id: The ID of the compliance obligation
+            compliance_period: The compliance period associated with the report
+        """
+        # Check if we should run the eLicensing integration based on the invoice generation date
+        # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
+        vancouver_timezone = ZoneInfo("America/Vancouver")
+        current_date = timezone.now().astimezone(vancouver_timezone).date()
+        if current_date >= compliance_period.invoice_generation_date:
+            # Import here to avoid circular import
+            from compliance.tasks import retryable_process_obligation_integration
+
+            # This is done outside the main transaction to prevent rollback if integration fails
+            transaction.on_commit(lambda: retryable_process_obligation_integration.execute(obligation_id))
+        else:
+            # Update the status to pending invoice creation if the invoice generation date hasn't passed
+            obligation = ComplianceObligation.objects.get(id=obligation_id)
+            obligation.compliance_report_version.status = (
+                ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+            )
+            obligation.compliance_report_version.save(update_fields=["status"])
 
     @classmethod
     def process_obligation_integration(cls, obligation_id: int) -> None:
