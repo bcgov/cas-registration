@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import List
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from registration.models.user_operator import UserOperator
-from reporting.models.report import Report
 from service.email.email_service import EmailService
+from service.email.utils import Recipient
 import logging
 
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
@@ -12,51 +12,47 @@ logger = logging.getLogger(__name__)
 email_service = EmailService()
 
 
-def send_earned_credit_notification_email() -> None:
+def send_notice_of_earned_credits_generated_email(compliance_earned_credit_id: int) -> None:
     """
-    Sends an email to every operator's industry user for every operation that has earned credits, notifying of the credits’ availability.
+    Sends an email to every operator's industry user for the specific earned credit, notifying of the credits' availability.
 
-    Raises:
-        ValueError: If the email template is not found.
-
-    Returns:
-        None
+    Args:
+        compliance_earned_credit_id: The ID of the ComplianceEarnedCredit instance for which to send notification emails.
     """
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
 
-    reports_with_earned_credits = Report.objects.filter(
-    compliance_report__compliance_report_versions__compliance_earned_credit__isnull=False
-)
+    earned_credit = ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_id)
+    report = earned_credit.compliance_report_version.compliance_report.report
 
-    # populating email context 
-    email_contexts = []
-    for report in reports_with_earned_credits:
-        for user_operators in UserOperator.objects.filter(operator=report.operator, status=UserOperator.Statuses.APPROVED):
+    # All approved users for the operator of the report
+    user_operators = UserOperator.objects.filter(operator=report.operator, status=UserOperator.Statuses.APPROVED)
 
-            email_context = {
-                "operator_legal_name": report.operator.legal_name,
-                "operation_name": report.operation.name,
-                "compliance_year": report.reporting_year.reporting_year,
-                "earned_credit_amount": ComplianceEarnedCredit.objects.get(
-        compliance_report_version__compliance_report__report=report
-    ).earned_credits_amount,
-                "email_address": user_operators.user.email,
-                "testing_name": user_operators.user.first_name
-            }
-            email_contexts.append(email_context)
+    recipients: List[Recipient] = []
+    for user_operator in user_operators:
+        recipients.append(
+            Recipient(full_name=user_operator.user.get_full_name(), email_address=user_operator.user.email)
+        )
 
-    for context in email_contexts:
+    email_context = {
+        "operator_legal_name": report.operator.legal_name,
+        "operation_name": report.operation.name,
+        "compliance_year": report.reporting_year.reporting_year,
+        "earned_credit_amount": earned_credit.earned_credits_amount,
+    }
+
+    if recipients:
         try:
-            email_address_to_send_email_to: Optional[str] = context.get('email_address')
-            response_json = email_service.send_email_by_template(template, context, [email_address_to_send_email_to])
-            # Create email notification record to store transaction and message IDs
-            email_service.create_email_notification_record(
-                response_json['txId'],
-                response_json['messages'][0]['msgId'],
-                [email_address_to_send_email_to],
-                template.id,
-            )
+            recipient_emails = [recipient.email_address for recipient in recipients]
+
+            response_json = email_service.send_email_by_template(template, email_context, recipient_emails)
+            # Create an email notification record to store transaction and message IDs
+            if response_json:
+                email_service.create_email_notification_record(
+                    response_json['txId'],
+                    response_json['messages'][0]['msgId'],
+                    recipient_emails,
+                    template.pk,
+                )
         except Exception as exc:
-            logger.error(f'Logger: Exception sending {template} email - {str(exc)}')
-
-
+            logger.error(f'Exception sending {template} email to recipients - {str(exc)}')
+            raise  # raise exception because we want to use this function as a retryable task
