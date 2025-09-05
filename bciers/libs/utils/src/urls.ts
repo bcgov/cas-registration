@@ -19,6 +19,12 @@ export const naicsLink =
 export const ggerrLink =
   "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/249_2015";
 
+export const penaltiesRegulationLink =
+  "https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015";
+
+export const interestRegulationLink =
+  "https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/214_83";
+
 export const newEntrantBeforeMarch31 =
   "https://www2.gov.bc.ca/assets/download/F5375D72BE1C450AB52C2E3E6A618959";
 

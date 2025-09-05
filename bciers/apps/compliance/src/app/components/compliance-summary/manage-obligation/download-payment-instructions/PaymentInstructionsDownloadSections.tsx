@@ -1,5 +1,9 @@
 import Tooltip from "@mui/material/Tooltip";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import {
+  interestRegulationLink,
+  penaltiesRegulationLink,
+} from "@bciers/utils/src/urls";
 
 export const PaymentInstructionsDetails = () => {
   return (
@@ -49,7 +53,7 @@ export const PaymentRemarks = () => {
           Pay by the due date to avoid{" "}
           <Tooltip title="Link opens in a new tab" placement="top" arrow>
             <a
-              href="https://www.bclaws.gov.bc.ca/civix/document/id/complete/statreg/248_2015"
+              href={penaltiesRegulationLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center"
@@ -64,7 +68,7 @@ export const PaymentRemarks = () => {
           and/or{" "}
           <Tooltip title="Link opens in a new tab" placement="top" arrow>
             <a
-              href="https://www.bclaws.gov.bc.ca/civix/document/id/lc/statreg/214_83"
+              href={interestRegulationLink}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center"
