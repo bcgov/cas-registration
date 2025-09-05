@@ -42,7 +42,8 @@ class TestComplianceEarnedCreditsService:
         assert result.earned_credits_amount == 100
         assert result.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
 
-    def test_create_earned_credits_record(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_earned_credits_email')
+    def test_create_earned_credits_record(self, mock_send_email):
         report_compliance_summary = make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             credited_emissions=Decimal('100.9898'),
@@ -54,6 +55,7 @@ class TestComplianceEarnedCreditsService:
         result = ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
         assert result.earned_credits_amount == 100
+        mock_send_email.execute.assert_called_once_with(result.pk)
 
     def test_update_earned_credit_industry_user_success(self):
         # Arrange
