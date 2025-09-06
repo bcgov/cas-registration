@@ -8,16 +8,22 @@ import {
 
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
+import { getReportingOperation } from "@reporting/src/app/utils/getReportingOperation";
+import { OperationTypes } from "@bciers/utils/src/enums";
 
 export default async function FinalReviewPage({
   version_id,
-}: HasReportVersion) {
-  //🔍 Check if is a supplementary report
-  const isSupplementaryReport = await getIsSupplementaryReport(version_id);
+  children,
+}: HasReportVersion & { children?: React.ReactNode }) {
+  // Fetch report details
+  const [isSupplementaryReport, verificationStatus, operationInfo] =
+    await Promise.all([
+      getIsSupplementaryReport(version_id),
+      getReportVerificationStatus(version_id),
+      getReportingOperation(version_id),
+    ]);
 
-  //🔍 Check if reports need verification
-  const { show_verification_page: showVerificationPage } =
-    await getReportVerificationStatus(version_id);
+  const isLFO = operationInfo?.operation_type === OperationTypes.LFO;
 
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
@@ -25,12 +31,18 @@ export default async function FinalReviewPage({
     version_id,
     "",
     {
-      skipVerification: !showVerificationPage,
+      skipVerification: !verificationStatus.show_verification_page,
       skipChangeReview: !isSupplementaryReport,
     },
   );
 
   return (
-    <FinalReviewForm version_id={version_id} navigationInformation={navInfo} />
+    <FinalReviewForm
+      version_id={version_id}
+      navigationInformation={navInfo}
+      isOperationLFO={isLFO}
+    >
+      {children}
+    </FinalReviewForm>
   );
 }

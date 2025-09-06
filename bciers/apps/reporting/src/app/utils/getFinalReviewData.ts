@@ -10,3 +10,14 @@ export async function getFinalReviewData(reportVersionId: number) {
   }
   return response;
 }
+
+export async function getFinalReviewDataForLFO(reportVersionId: number) {
+  const endpoint = `reporting/report-version/${reportVersionId}/final-review-lfo`;
+  const response = await actionHandler(endpoint, "GET");
+  if (response?.error) {
+    throw new Error(
+      `Failed to fetch final review data for LFO report version ${reportVersionId}.`,
+    );
+  }
+  return response;
+}
