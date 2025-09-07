@@ -49,7 +49,7 @@ export enum InternalReportingTileText {
 
 export enum InternalComplianceTileText {
   COMPLIANCE_SUMMARIES = "Compliance Summaries",
-  PAYMENT_SUMMARIES = "Payment Summaries",
+  PAYMENT_SUMMARIES = "Invoices",
 }
 
 export enum InternalTransfersTileText {
