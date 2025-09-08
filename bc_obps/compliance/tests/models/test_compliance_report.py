@@ -22,8 +22,8 @@ class ComplianceReportTest(BaseTestCase):
 
 
 #  RLS tests
-class TestComplianceReportVersionRls(BaseTestCase):
-    def test_compliance_report_version_rls_industry_user(self):
+class TestComplianceReportRls(BaseTestCase):
+    def test_compliance_report_rls_industry_user(self):
         compliance_period = make_recipe('compliance.tests.utils.compliance_period')
         # approved object
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
