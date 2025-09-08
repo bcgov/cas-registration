@@ -6,24 +6,11 @@ import logging
 
 from registration.models import User
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
+from service.email.utils import Recipient
 
 logger = logging.getLogger(__name__)
 
 email_service = EmailService()
-
-
-class Recipient:
-    def __init__(self, full_name: str, email_address: str):
-        self.full_name = full_name
-        self.email_address = email_address
-
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Recipient):
-            return NotImplemented
-        return self.full_name == other.full_name and self.email_address == other.email_address
-
-    def __repr__(self) -> str:
-        return f"Recipient(full_name={self.full_name}, email_address={self.email_address})"
 
 
 def send_registration_and_boro_id_email(

@@ -1,6 +1,7 @@
 from compliance.service.elicensing.elicensing_interest_rate_service import ElicensingInterestRateService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from compliance.service.automated_process.automated_process_service import AutomatedProcessService
+from compliance.emails import send_notice_of_earned_credits_generated_email
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
 from service.email.email_service import EmailService
@@ -21,6 +22,12 @@ retryable_process_obligation_integration = create_retryable(
     retry_delay_minutes=1,
 )
 
+retryable_send_notice_of_earned_credits_email = create_retryable(
+    func=send_notice_of_earned_credits_generated_email,
+    tag="earned_credits_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
 
 ###################
 # Scheduled tasks #

@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.project_service import BCCarbonRegistryProjectService
 from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
+from compliance.tasks import retryable_send_notice_of_earned_credits_email
 from registration.models.user import User
 
 
@@ -46,12 +47,13 @@ class ComplianceEarnedCreditsService:
             compliance_report_version: The compliance report version to create an earned credits record for
 
         Returns:
-            The EarnedCredits object if it exists
+            The created EarnedCredits object
         """
         earned_credits_record = ComplianceEarnedCredit.objects.create(
             compliance_report_version=compliance_report_version,
             earned_credits_amount=int(compliance_report_version.report_compliance_summary.credited_emissions),
         )
+        retryable_send_notice_of_earned_credits_email.execute(earned_credits_record.id)
         return earned_credits_record
 
     @classmethod
