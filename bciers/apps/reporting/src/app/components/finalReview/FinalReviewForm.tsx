@@ -6,10 +6,7 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import { SectionReview } from "./templates/SectionReview";
 import { FacilityReport, ReportData } from "./reportTypes";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
-import {
-  getFinalReviewData,
-  getFinalReviewDataForLFO,
-} from "@reporting/src/app/utils/getFinalReviewData";
+import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { OperationTypes } from "@bciers/utils/src/enums";
 import {
@@ -36,7 +33,6 @@ interface Props {
 export const FinalReviewForm: React.FC<Props> = ({
   version_id,
   navigationInformation,
-  isOperationLFO,
   children,
 }) => {
   const [data, setData] = useState<ReportData | null>(null);
@@ -44,12 +40,7 @@ export const FinalReviewForm: React.FC<Props> = ({
 
   useEffect(() => {
     async function fetchData() {
-      let finalReviewData;
-      if (isOperationLFO) {
-        finalReviewData = await getFinalReviewDataForLFO(version_id);
-      } else {
-        finalReviewData = await getFinalReviewData(version_id);
-      }
+      let finalReviewData = await getFinalReviewData(version_id);
       setData(finalReviewData);
       setLoading(false);
     }
