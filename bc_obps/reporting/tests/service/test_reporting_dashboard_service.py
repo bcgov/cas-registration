@@ -9,7 +9,11 @@ from reporting.tests.utils.bakers import report_version_baker, reporting_year_ba
 from service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
 from typing import Optional
-from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema, ReportsPeriod
+from reporting.schema.dashboard import (
+    ReportingDashboardOperationFilterSchema,
+    ReportingDashboardReportFilterSchema,
+    ReportsPeriod,
+)
 
 
 @pytest.mark.django_db
@@ -113,7 +117,7 @@ class TestReportingDashboardService:
 
         sort_field: Optional[str] = "operation_name"
         sort_order: Optional[str] = "asc"
-        filters = ReportingDashboardOperationFilterSchema()
+        filters = ReportingDashboardReportFilterSchema()
 
         # Create reports
         ## Create current year reports (the service should not return these)
@@ -211,13 +215,13 @@ class TestReportingDashboardService:
         [reporting_year_baker(reporting_year=year) for year in years]
         operators = [operator_baker() for _ in range(2)]
         operations = [operation_baker(operator_id=op.id) for op in operators for _ in range(2)]
-        report_verions = [
+        report_versions = [
             report_version_baker(report__operation=op, report__operator=op.operator, report__reporting_year=year)
             for op in operations
             for year in years
         ]
-        skip_id = report_verions[0].id
-        for rv in report_verions:
+        skip_id = report_versions[0].id
+        for rv in report_versions:
             if rv.id == skip_id:
                 continue
             rv.status = "Submitted"
@@ -225,14 +229,14 @@ class TestReportingDashboardService:
             rv.save()
 
         result = ReportingDashboardService.get_reports_for_reporting_dashboard(
-            user.user_guid, current_year, ReportsPeriod.ALL, filters=ReportingDashboardOperationFilterSchema()
+            user.user_guid, current_year, ReportsPeriod.ALL, filters=ReportingDashboardReportFilterSchema()
         ).values()
         result_list = list(result)
         assert (
-            len(result_list) == len(report_verions) - 1
+            len(result_list) == len(report_versions) - 1
         )  # one report version was not submitted so should not be included
         result_dict = {str(item["id"]): item for item in result_list}
-        for rv in report_verions:
+        for rv in report_versions:
             if rv.id == skip_id:
                 assert str(rv.report.id) not in result_dict
                 continue
@@ -337,4 +341,131 @@ class TestReportingDashboardService:
             (operations[0].id, 'Draft', latest_r0_revision.id),
             (operations[3].id, None, None),
             (operations[2].id, 'Submitted', r2_version1_id),
+        ]
+
+    @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
+    def test_reports_sorting_and_filtering(
+        self,
+        mock_get_by_guid: MagicMock | AsyncMock,
+    ):
+        # ARRANGE
+        user = make_recipe('registration.tests.utils.cas_admin')
+        mock_get_by_guid.return_value = user
+
+        current_year = 2061
+        last_year = current_year - 1
+        laster_year = current_year - 2
+        years = [current_year, last_year, laster_year]
+        [reporting_year_baker(reporting_year=year) for year in years]
+        operation1 = operation_baker(name="a")
+        operation2 = operation_baker(name="b")
+        operations = [operation1, operation2]
+        # Change operation names so sorting by name produces consistent results
+        report_version_ids = [ReportService.create_report(op.id, year) for op in operations for year in years]
+
+        report_versions = ReportVersion.objects.filter(id__in=report_version_ids)
+
+        # Set all report versions except the skipped one to "Submitted"
+        for rv in report_versions:
+            rv.status = "Submitted"
+            rv.is_latest_submitted = True
+            rv.save()
+        print(
+            '******** report_versions *******',
+            report_versions.values_list('id', 'report__operation__name', 'report__reporting_year'),
+        )
+
+        # ASSERTIONS FOR FILTERING
+        sort_field: Optional[str] = "reporting_year"
+        sort_order: Optional[str] = "asc"
+
+        unfiltered_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user.user_guid, 5091, ReportsPeriod.ALL, sort_field, sort_order, ReportingDashboardReportFilterSchema()
+        ).values()
+        assert len(unfiltered_result) == 6
+        ## Filter by reporting_year
+
+        filtered_result = list(
+            ReportingDashboardService.get_reports_for_reporting_dashboard(
+                user.user_guid,
+                5091,
+                ReportsPeriod.ALL,
+                sort_field,
+                sort_order,
+                ReportingDashboardReportFilterSchema(reporting_year=last_year),
+            ).values()
+        )
+        assert len(filtered_result) == 2
+        for res in filtered_result:
+            assert res['reporting_year_id'] == last_year
+
+        ## Filter by operation name
+        filtered_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user.user_guid,
+            5091,
+            ReportsPeriod.ALL,
+            sort_field,
+            sort_order,
+            ReportingDashboardReportFilterSchema(operation_name=operation2.name),
+        ).values()
+        assert len(filtered_result) == 3
+        for res in filtered_result:
+            assert res['operation_name'] == operation2.name
+
+        # ASSERTIONS FOR SORTING
+        ## Sort by reporting_year
+        sort_field: Optional[str] = "reporting_year"
+        sort_order: Optional[str] = "asc"
+
+        sorted_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user.user_guid,
+            5091,
+            ReportsPeriod.ALL,
+            sort_field,
+            sort_order,
+            ReportingDashboardReportFilterSchema(operation_name=operation2.name),
+        ).values()
+        assert list(sorted_result.values_list('reporting_year', 'operation_name')) == [
+            (laster_year, operation2.name),
+            (last_year, operation2.name),
+            (current_year, operation2.name),
+        ]
+        ## Sort by operation_name
+        sort_field: Optional[str] = "operation_name"
+        sort_order: Optional[str] = "asc"
+
+        sorted_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user.user_guid,
+            5091,
+            ReportsPeriod.ALL,
+            sort_field,
+            sort_order,
+            ReportingDashboardReportFilterSchema(reporting_year=last_year),
+        ).values()
+
+        assert list(sorted_result.values_list('reporting_year', 'operation_name')) == [
+            (last_year, operation1.name),
+            (last_year, operation2.name),
+        ]
+
+        ## Sort by report_version
+        sort_field: Optional[str] = "report_version_id"
+        sort_order: Optional[str] = "desc"
+
+        sorted_result = ReportingDashboardService.get_reports_for_reporting_dashboard(
+            user.user_guid,
+            5091,
+            ReportsPeriod.ALL,
+            sort_field,
+            sort_order,
+            ReportingDashboardReportFilterSchema(operation_name=operation2.name),
+        ).values()
+        testing_version = (
+            ReportVersion.objects.filter(report__operation=operation2).order_by('-id').values_list('id', flat=True)
+        )
+
+        assert list(sorted_result.values_list('report_version_id', 'operation_name', 'reporting_year')) == [
+            (testing_version[0], operation2.name, laster_year),
+            (testing_version[1], operation2.name, last_year),
+            (testing_version[2], operation2.name, current_year),
         ]
