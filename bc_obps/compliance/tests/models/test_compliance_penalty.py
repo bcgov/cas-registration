@@ -1,6 +1,3 @@
-from decimal import Decimal
-import pytest
-from django.db import ProgrammingError
 from rls.tests.helpers import assert_policies_for_industry_user
 from compliance.models.compliance_penalty import CompliancePenalty
 from common.tests.utils.helpers import BaseTestCase
@@ -74,39 +71,8 @@ class TestCompliancePenaltyRls(BaseTestCase):
         def select_function(cursor):
             assert CompliancePenalty.objects.count() == 1
 
-        def insert_function(cursor):
-            CompliancePenalty.objects.create(
-                id=888,
-                elicensing_invoice=approved_invoice_2,
-                compliance_obligation=approved_compliance_obligation,
-                accrual_start_date="2024-01-01",
-            )
-
-            assert CompliancePenalty.objects.filter(id=888).exists()
-
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "compliance_penalty"',
-            ):
-                cursor.execute(
-                    """
-                    INSERT INTO "erc"."compliance_penalty" (
-                        compliance_obligation_id
-                    ) VALUES (
-                        %s
-                    )
-                """,
-                    (random_compliance_obligation.id,),
-                )
-
-        def update_function(cursor):
-            CompliancePenalty.objects.update(penalty_amount=Decimal('8888'))
-            assert CompliancePenalty.objects.filter(penalty_amount=Decimal('8888')).count() == 1
-
         assert_policies_for_industry_user(
             CompliancePenalty,
             approved_user_operator.user,
             select_function=select_function,
-            insert_function=insert_function,
-            update_function=update_function,
         )

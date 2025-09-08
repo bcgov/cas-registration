@@ -398,8 +398,8 @@ class ComplianceEarnedCreditIssuanceRequestedDateTriggerTest(BaseTestCase):
 
 
 #  RLS tests
-class TestComplianceReportVersionRls(BaseTestCase):
-    def test_compliance_report_version_rls_industry_user(self):
+class TestComplianceEarnedCreditRls(BaseTestCase):
+    def test_compliance_earned_credit_rls_industry_user(self):
         # approved object
         approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
         approved_operation = make_recipe(
@@ -497,7 +497,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
             update_function=update_function,
         )
 
-    def test_operation_rls_cas_users(self):
+    def test_compliance_earned_credit_rls_cas_users(self):
         new_compliance_report = make_recipe('compliance.tests.utils.compliance_report')
         new_report_compliance_summary = make_recipe('compliance.tests.utils.report_compliance_summary')
         new_compliance_report_version = make_recipe(
