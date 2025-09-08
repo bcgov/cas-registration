@@ -11,6 +11,7 @@ import {
   routesEarnedCredits,
   absolutize,
   hasSegment,
+  routesObligationPenalty,
 } from "./constants";
 import {
   runPermissionRules,
@@ -27,7 +28,10 @@ import {
 import getComplianceAppliedUnits from "@/compliance/src/app/utils/getComplianceAppliedUnits";
 import getUserComplianceAccessStatus from "@/compliance/src/app/utils/getUserComplianceAccessStatus";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
+import { getComplianceSummary } from "@/compliance/src/app/utils/getComplianceSummary"; // default import
 
+import { ComplianceSummary } from "@/compliance/src/app/types";
+import { PenaltyStatus } from "@bciers/utils/src/enums";
 // --------------------
 // Helpers
 // --------------------
@@ -48,11 +52,10 @@ interface IssuanceSummary {
 type RuleContext = {
   canApplyComplianceUnitsCache: Record<number, boolean>;
   issuanceSummaryCache: Record<number, IssuanceSummary>;
-
+  complianceSummaryCache: Record<number, ComplianceSummary>;
   // flags used by accessEarnedCredits to choose redirect target
   redirectToTrackStatusById: Record<number, boolean>;
   redirectToRequestIssuanceCreditsById: Record<number, boolean>;
-
   // optional generic target map (not required here, but supported by makeRuleRedirect)
   redirectTargetById?: Record<number, string | undefined>;
 
@@ -61,6 +64,7 @@ type RuleContext = {
     id?: number,
   ) => Promise<ComplianceStatus | undefined>;
   getIssuanceSummary: (id: number) => Promise<IssuanceSummary>;
+  getComplianceSummaryData: (id: number) => Promise<ComplianceSummary>;
 };
 
 type ContextAwareNextRequest = BaseContextAwareNextRequest<RuleContext>;
@@ -69,9 +73,10 @@ type PermissionRule = BasePermissionRule<RuleContext>;
 // --------------------
 // Context Factory (with caching)
 // --------------------
-const createRuleContext = (): RuleContext => {
+export const createRuleContext = (): RuleContext => {
   const canApplyComplianceUnitsCache: Record<number, boolean> = {};
   const issuanceSummaryCache: Record<number, IssuanceSummary> = {};
+  const complianceSummaryCache: Record<number, ComplianceSummary> = {};
   const redirectToTrackStatusById: Record<number, boolean> = {};
   const redirectToRequestIssuanceCreditsById: Record<number, boolean> = {};
   let getComplianceAccessCache: ComplianceStatus | undefined;
@@ -79,6 +84,7 @@ const createRuleContext = (): RuleContext => {
   return {
     canApplyComplianceUnitsCache,
     issuanceSummaryCache,
+    complianceSummaryCache,
     redirectToTrackStatusById,
     redirectToRequestIssuanceCreditsById,
 
@@ -106,6 +112,13 @@ const createRuleContext = (): RuleContext => {
           await getRequestIssuanceComplianceSummaryData(id);
       }
       return issuanceSummaryCache[id];
+    },
+
+    async getComplianceSummaryData(id) {
+      if (!complianceSummaryCache[id]) {
+        complianceSummaryCache[id] = await getComplianceSummary(id);
+      }
+      return complianceSummaryCache[id];
     },
   };
 };
@@ -191,17 +204,31 @@ const permissionRules: PermissionRule[] = [
    *
    * Access Criteria:
    *   - Applies to any route path in (manage-obligation)
-   *   - User must have a compliance report with status: OBLIGATION_NOT_MET.
+   *   - User must have a compliance report with status: OBLIGATION_NOT_MET | OBLIGATION_FULLY_MET.
    *   - If the route is MO_APPLY_COMPLIANCE_UNITS (/apply-compliance-units):
    *       • The user must also pass `getComplianceAppliedUnits(id)`.
+   *   - If the route is MO_DOWNLOAD_PAYMENT_INSTRUCTIONS (/download-payment-instructions) | MO_PAY_PENALTY_TRACK_PAYMENTS (/pay-obligation-track-payments)
+   *       • The obligation outstanding baliance is zero and penalty_status must be NOT PAID
    *
    * Redirect Rules:
    *
-   *  1. From Apply Units to Request Issuance
+   *  1. From Apply Units
    *      If the user is on:
    *        • MO_APPLY_COMPLIANCE_UNITS (/apply-compliance-units)
    *      AND getComplianceAppliedUnits(id).can_apply_compliance_units is:
    *        • False
+   *      → Redirect to:
+   *        • Redirect to REVIEW_COMPLIANCE_SUMMARIES
+   *
+   *  2. From Penalty routes
+   *      If the user is on:
+   *        •  MO_DOWNLOAD_PENALTY_PAYMENT_INSTRUCTIONS (/download-penalty-payment-instructions)
+   *        •  MO_PAY_PENALTY_TRACK_PAYMENTS (/pay-penalty-track-payments)
+   *        •  MO_REVIEW_PENALTY_SUMMARY (/review-penalty-summary)
+   *      AND obligation outstanding balance is:
+   *        • 0
+   *      AND penalty_status is:
+   *        • != (NOT PAID | PAID)
    *      → Redirect to:
    *        • Redirect to REVIEW_COMPLIANCE_SUMMARIES
    *
@@ -223,11 +250,40 @@ const permissionRules: PermissionRule[] = [
       ]);
       if (!statusOk) return false;
 
+      // Apply Units gate
       if (
         request?.nextUrl.pathname.includes(AppRoutes.MO_APPLY_COMPLIANCE_UNITS)
       ) {
-        return typeof id === "number" && context!.getComplianceAppliedUnits(id);
+        if (typeof id !== "number") return false;
+        return context!.getComplianceAppliedUnits(id);
       }
+
+      // Penalty routes gate
+      const isPenaltyRoute = routesObligationPenalty.some(
+        (route) => request?.nextUrl.pathname.includes(route),
+      );
+
+      if (isPenaltyRoute) {
+        if (typeof id !== "number") return false;
+
+        const summaryData = await context!.getComplianceSummaryData(id);
+
+        const outstandingBalance = Number(
+          summaryData?.outstanding_balance_tco2e ?? 0,
+        );
+        const penaltyStatus = summaryData?.penalty_status as
+          | PenaltyStatus
+          | undefined;
+
+        // Redirect if the balance is not 0 OR the penalty status is not NOT_PAID or PAID
+        const allowAccess =
+          outstandingBalance === 0 &&
+          (penaltyStatus === PenaltyStatus.NOT_PAID ||
+            penaltyStatus === PenaltyStatus.PAID);
+
+        if (!allowAccess) return false;
+      }
+
       return true;
     },
     redirect: makeRuleRedirect(HUB_SUMMARIES_PATH),

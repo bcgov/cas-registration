@@ -35,13 +35,20 @@ export const joinCompliancePath = (...segs: (string | number | undefined)[]) =>
 export enum AppRoutes {
   ONBOARDING = "onboarding",
   REVIEW_COMPLIANCE_SUMMARIES = "compliance-summaries",
+  MO_REVIEW_SUMMARY = "review-compliance-obligation-report",
   MO_APPLY_COMPLIANCE_UNITS = "apply-compliance-units",
+  MO_DOWNLOAD_PAYMENT_INSTRUCTIONS = "download-payment-instructions",
+  MO_PAY_OBLIGATION_TRACK_PAYMENTS = "pay-obligation-track-payments",
+  MO_REVIEW_PENALTY_SUMMARY = "review-penalty-summary",
+  MO_DOWNLOAD_PENALTY_PAYMENT_INSTRUCTIONS = "download-payment-penalty-instructions",
+  MO_PAY_PENALTY_TRACK_PAYMENTS = "pay-penalty-track-payments",
   NO_REVIEW_SUMMARY = "review-summary",
   RI_EARNED_CREDITS = "request-issuance-of-earned-credits",
   RI_REVIEW_SUMMARY = "request-issuance-review-summary",
   RI_REVIEW_SUMMARY_CREDITS = "review-credits-issuance-request",
   RI_TRACK_STATUS = "track-status-of-issuance",
   REVIEW_BY_DIRECTOR = "review-by-director",
+  REVIEW_PENALTY_SUMMARY = "review-penalty-summary",
 }
 
 export type ComplianceStatus =
@@ -50,19 +57,27 @@ export type ComplianceStatus =
   | ComplianceSummaryStatus;
 
 // App routes restricted to compliance report version status "No obligation or earned credits"
-export const routesNoObligation = ["review-summary"];
+export const routesNoObligation = [AppRoutes.NO_REVIEW_SUMMARY];
 
 // App routes restricted to compliance report version status "Obligation not met"
 export const routesObligation = [
-  "apply-compliance-units",
-  "download-payment-instructions",
-  "review-compliance-obligation-report",
-  "pay-obligation-track-payments",
+  AppRoutes.MO_REVIEW_SUMMARY,
+  AppRoutes.MO_APPLY_COMPLIANCE_UNITS,
+  AppRoutes.MO_DOWNLOAD_PAYMENT_INSTRUCTIONS,
+  AppRoutes.MO_PAY_OBLIGATION_TRACK_PAYMENTS,
+  AppRoutes.MO_REVIEW_PENALTY_SUMMARY,
+  AppRoutes.MO_DOWNLOAD_PENALTY_PAYMENT_INSTRUCTIONS,
+  AppRoutes.MO_PAY_PENALTY_TRACK_PAYMENTS,
+];
+export const routesObligationPenalty = [
+  AppRoutes.MO_REVIEW_PENALTY_SUMMARY,
+  AppRoutes.MO_DOWNLOAD_PENALTY_PAYMENT_INSTRUCTIONS,
+  AppRoutes.MO_PAY_PENALTY_TRACK_PAYMENTS,
 ];
 
 // App routes restricted to compliance report version status "Earned credits"
 export const routesEarnedCredits = [
-  "request-issuance-of-earned-credits",
-  "request-issuance-review-summary",
-  "track-status-of-issuance",
+  AppRoutes.RI_EARNED_CREDITS,
+  AppRoutes.RI_REVIEW_SUMMARY,
+  AppRoutes.RI_TRACK_STATUS,
 ];
