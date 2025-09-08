@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Alert } from "@mui/material";
 import { actionHandler } from "@bciers/actions";
 import FormBase from "@bciers/components/form/FormBase";
@@ -11,6 +11,7 @@ import {
   UserProfileFormData,
   UserProfilePartialFormData,
 } from "@bciers/types/form/formData";
+import { IDP } from "@bciers/utils/src/enums";
 
 export const userSchema: RJSFSchema = {
   type: "object",
@@ -37,9 +38,16 @@ export const userSchema: RJSFSchema = {
 interface Props {
   formData?: UserProfilePartialFormData;
   isCreate: boolean;
+  idp: string;
+  contactId?: number | null;
 }
 
-export default function ProfileForm({ formData, isCreate }: Props) {
+export default function ProfileForm({
+  formData,
+  isCreate,
+  idp,
+  contactId,
+}: Props) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
 
@@ -48,8 +56,6 @@ export default function ProfileForm({ formData, isCreate }: Props) {
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const [emailHelpText, setEmailHelpText] = useState<JSX.Element | null>(null);
-
   const emailHelpTextFirstClause = (
     <div>
       This email is used to log in. To change your login email, contact{" "}
@@ -57,65 +63,26 @@ export default function ProfileForm({ formData, isCreate }: Props) {
     </div>
   );
 
-  useEffect(() => {
-    const fetchHelpText = async () => {
-      // Create help text for email address field depending on several conditions:
-      // 1. if the user is internal, no help text is required
-      // 2. if it's an external user and their profile is just being created, there is no contact for them and they shouldn't be able
-      // to navigate away from the Profile page
-      // 3. if it's an external user who already has a contact record for themselves, then they should also see the link to their contact details page
-      const session = await getSession();
-      const idp = session?.identity_provider || "";
-      const businessGuid = session?.user?.bceid_business_guid;
+  let emailHelpText: JSX.Element | null = null;
 
-      // if the user is internal, no help text is required
-      if (idp === "idir") {
-        setEmailHelpText(null);
-        return;
-      }
-
-      // if the user is external but being created, there's no contact record for them, so
-      // the help text message is simplified
-      if (isCreate) {
-        setEmailHelpText(emailHelpTextFirstClause);
-        return;
-      }
-
-      // if the user is external and a contact record already exists for them, the
-      // help text message is more detailed
-      if (businessGuid) {
-        try {
-          const response = await actionHandler(
-            `registration/contact/`,
-            "GET",
-            "/profile",
-          );
-
-          if (response) {
-            setEmailHelpText(
-              <>
-                {emailHelpTextFirstClause}
-                <div>
-                  To change the email you are contacted with, edit the email in
-                  your{" "}
-                  <a href={`administration/contacts/${response}`}>
-                    contact details page
-                  </a>
-                  .
-                </div>
-              </>,
-            );
-          } else {
-            // fallback if no contact found
-            setEmailHelpText(emailHelpTextFirstClause);
-          }
-        } catch (e) {
-          setEmailHelpText(emailHelpTextFirstClause);
-        }
-      }
-    };
-    fetchHelpText();
-  }, [isCreate]);
+  if (idp === IDP.BCEIDBUSINESS) {
+    if (contactId !== null && contactId !== undefined) {
+      emailHelpText = (
+        <>
+          {emailHelpTextFirstClause}
+          <div>
+            To change the email you are contacted with, edit the email in your{" "}
+            <a href={`administration/contacts/${contactId.toString()}`}>
+              contact details page
+            </a>
+            .
+          </div>
+        </>
+      );
+    } else {
+      emailHelpText = emailHelpTextFirstClause;
+    }
+  }
 
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
@@ -150,8 +117,6 @@ export default function ProfileForm({ formData, isCreate }: Props) {
 
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserProfileFormData }) => {
-    const session = await getSession();
-    const idp = session?.identity_provider || "";
     //Set states
     setErrorList([]);
     setIsLoading(true);
@@ -162,12 +127,7 @@ export default function ProfileForm({ formData, isCreate }: Props) {
       isCreate ? "POST" : "PUT",
       "/profile",
       {
-        body: JSON.stringify({
-          ...data.formData,
-          business_guid: session?.user?.bceid_business_guid,
-          bceid_business_name: session?.user?.bceid_business_name,
-          identity_provider: idp,
-        }),
+        body: JSON.stringify(data.formData),
       },
     );
     // 🛑 Set loading to false after the API call is completed
