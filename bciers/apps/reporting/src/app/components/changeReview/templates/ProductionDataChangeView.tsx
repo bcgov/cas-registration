@@ -47,11 +47,6 @@ const getChangeMeta = (
     return { changeType: "deleted", isNewAddition: false, isDeletion: true };
   return { changeType: "modified", isNewAddition: false, isDeletion: false };
 };
-// Helper to determine if change is for full product
-const isFullProductChange = (field: string) =>
-  /\['report_products'\]\['([^']+)'\]/.test(field) &&
-  !/\['report_products'\]\['[^']+'\]\['[^']+'\]/.test(field);
-
 export const ProductionDataChangeView: React.FC<
   ProductionDataChangeViewProps
 > = ({ data }) => {
@@ -77,66 +72,80 @@ export const ProductionDataChangeView: React.FC<
     const productGroups: Record<string, ProcessedProduct> = {};
 
     data.forEach((change) => {
-      const productName = getProductName(change.field);
-      if (!productName) return;
-      const { changeType, isNewAddition, isDeletion } = getChangeMeta(change);
-      if (isFullProductChange(change.field)) {
-        const productData = change.newValue || change.oldValue;
-        const displayProductName =
-          (typeof productData === "object" &&
-            !Array.isArray(productData) &&
-            productData?.product) ||
-          productName;
-        if (!productGroups[productName]) {
-          productGroups[productName] = {
-            productName: displayProductName,
-            changes: [],
-            changeType,
-            productData,
-          };
-        }
-        const dataToProcess =
-          changeType === "deleted" ? change.oldValue : change.newValue;
-        if (dataToProcess && typeof dataToProcess === "object") {
-          Object.entries(dataToProcess).forEach(([fieldKey]) => {
-            if (fieldLabels[fieldKey]) {
-              productGroups[productName].changes.push({
-                ...change,
-                field: `${change.field}.${fieldKey}`,
-                displayLabel: fieldLabels[fieldKey],
-                oldValue:
-                  changeType === "added"
-                    ? null
-                    : typeof change.oldValue === "object" &&
-                      !Array.isArray(change.oldValue)
-                    ? change.oldValue?.[fieldKey]
-                    : null,
-                newValue:
-                  changeType === "deleted"
-                    ? null
-                    : typeof change.newValue === "object" &&
-                      !Array.isArray(change.newValue)
-                    ? change.newValue?.[fieldKey]
-                    : null,
-                change_type: changeType,
-                isNewAddition,
-                isDeletion,
-              });
+      if (
+        /\['report_products'\]$/.test(change.field) &&
+        typeof change.oldValue === "object" &&
+        typeof change.newValue === "object"
+      ) {
+        const oldProducts = (change.oldValue ?? {}) as Record<string, any>;
+        const newProducts = (change.newValue ?? {}) as Record<string, any>;
+
+        const allProductNames = new Set([
+          ...Object.keys(oldProducts),
+          ...Object.keys(newProducts),
+        ]);
+
+        allProductNames.forEach((productName) => {
+          const oldProduct = oldProducts[productName];
+          const newProduct = newProducts[productName];
+
+          if (oldProduct && !newProduct) {
+            // Product deleted
+            productGroups[productName] = {
+              productName,
+              changes: [],
+              changeType: "deleted",
+              productData: oldProduct,
+            };
+          } else if (!oldProduct && newProduct) {
+            productGroups[productName] = {
+              productName,
+              changes: [],
+              changeType: "added",
+              productData: newProduct,
+            };
+          } else if (oldProduct && newProduct) {
+            const productChanges: DisplayChangeItem[] = [];
+            Object.keys(fieldLabels).forEach((fieldKey) => {
+              const oldVal = oldProduct[fieldKey];
+              const newVal = newProduct[fieldKey];
+              if (oldVal !== newVal) {
+                const { changeType, isNewAddition, isDeletion } = getChangeMeta(
+                  { ...change, oldValue: oldVal, newValue: newVal },
+                );
+                productChanges.push({
+                  ...change,
+                  field: `${change.field}['${productName}']['${fieldKey}']`,
+                  displayLabel: fieldLabels[fieldKey],
+                  oldValue: oldVal,
+                  newValue: newVal,
+                  change_type: changeType,
+                  isNewAddition,
+                  isDeletion,
+                });
+              }
+            });
+
+            if (productChanges.length > 0) {
+              productGroups[productName] = {
+                productName,
+                changes: productChanges,
+                changeType: "modified",
+              };
             }
-          });
-        }
+          }
+        });
       } else {
+        // Fallback: single field or product change
+        const productName = getProductName(change.field);
+        if (!productName) return;
+        const { changeType, isNewAddition, isDeletion } = getChangeMeta(change);
+
         const fieldKey = getFieldKey(change.field);
         if (fieldKey && fieldLabels[fieldKey]) {
-          const productData = change.newValue || change.oldValue;
-          const displayProductName =
-            (typeof productData === "object" &&
-              !Array.isArray(productData) &&
-              productData?.product) ||
-            productName;
           if (!productGroups[productName]) {
             productGroups[productName] = {
-              productName: displayProductName,
+              productName,
               changes: [],
               changeType: "modified",
             };
@@ -207,11 +216,10 @@ export const ProductionDataChangeView: React.FC<
                 <Typography className="py-2 w-full font-bold text-bc-bg-blue mb-2">
                   {product.productName}
                 </Typography>
-
-                {/* Show StatusLabel for individual field changes that are added */}
-                {product.changes.some((change) => change.isNewAddition) && (
+                {(product.changeType === "added" ||
+                  product.changeType === "deleted") && (
                   <Box mb={2}>
-                    <StatusLabel type="added" />
+                    <StatusLabel type={product.changeType} />
                   </Box>
                 )}
               </Box>

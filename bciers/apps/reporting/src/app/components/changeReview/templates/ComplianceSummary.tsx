@@ -43,16 +43,27 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
   const isRecord = (value: any): value is Record<string, any> =>
     typeof value === "object" && value !== null && !Array.isArray(value);
 
+  // Extract product info from path or values
+  const getProductName = (item: any) => {
+    if (item.newValue?.name) return item.newValue.name;
+    if (item.oldValue?.name) return item.oldValue.name;
+
+    const match = item.field.match(/\['products']\['([^']+)']/);
+    if (match) return match[1];
+
+    return "Unknown Product";
+  };
+
   const getComplianceFieldDetails = (field: string) => {
     // Match product fields: ['products'][Product Name]['fieldName']
     const productFieldMatch = field.match(
-      /\['products']\[(.*?)\](?:\['([^']+)'])?/,
+      /\['products']\[(?:'([^']+)'|(\d+))\](?:\['([^']+)'])?/,
     );
     if (productFieldMatch) {
       return {
         isProduct: true,
-        productName: productFieldMatch[1],
-        fieldKey: productFieldMatch[2] || null,
+        productName: productFieldMatch[1] || productFieldMatch[2],
+        fieldKey: productFieldMatch[3] || null,
       };
     }
 
@@ -75,7 +86,7 @@ const ComplianceSummary: React.FC<ComplianceSummaryProps> = ({ changes }) => {
   changes.forEach((item) => {
     const fieldInfo = getComplianceFieldDetails(item.field);
     if (fieldInfo?.isProduct) {
-      const productName = fieldInfo.productName || "Unknown Product";
+      const productName = getProductName(item);
       if (!productChangesMap[productName]) productChangesMap[productName] = [];
       productChangesMap[productName].push(item);
     } else {
