@@ -136,7 +136,7 @@ class ReportVersionService:
         return is_initial_report_version
 
     @staticmethod
-    def fetch_full_report_version(version_id: int, is_lfo: bool) -> ReportVersion:
+    def fetch_full_report_version(version_id: int) -> ReportVersion:
         """
         Fetch a ReportVersion object with all related data for serialization (shared by final review and diff endpoints).
         """
@@ -162,7 +162,7 @@ class ReportVersionService:
             "report_operation__activities",
             "report_operation__regulated_products",
         ]
-        if is_lfo:
+        if operation_type == Operation.Types.LFO:
             prefetches.append(
                 Prefetch(
                     "facility_reports",
