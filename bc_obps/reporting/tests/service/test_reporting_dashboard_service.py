@@ -370,10 +370,6 @@ class TestReportingDashboardService:
             rv.status = "Submitted"
             rv.is_latest_submitted = True
             rv.save()
-        print(
-            '******** report_versions *******',
-            report_versions.values_list('id', 'report__operation__name', 'report__reporting_year'),
-        )
 
         # ASSERTIONS FOR FILTERING
         sort_field: Optional[str] = "reporting_year"

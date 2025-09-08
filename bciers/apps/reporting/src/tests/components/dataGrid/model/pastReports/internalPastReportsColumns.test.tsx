@@ -4,7 +4,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "@bciers/testConfig/mocks";
 import formatTimestamp from "@bciers/utils/src/formatTimestamp";
-import annualReportsColumns from "@reporting/src/app/components/datagrid/models/annualReports/annualReportsColumns";
 import internalPastReportsColumns from "@reporting/src/app/components/datagrid/models/pastReports/internalPastReportsColumns";
 
 vi.mock("@bciers/utils/src/formatTimestamp", () => ({
@@ -28,7 +27,7 @@ describe("internalPastReportsColumns function", () => {
 
     expect(columns[0].field).toBe("reporting_year");
     expect(columns[0].headerName).toBe("Reporting Year");
-    expect(columns[0].width).toBe(180);
+    expect(columns[0].width).toBe(150);
 
     expect(columns[1].field).toBe("operation_name");
     expect(columns[1].headerName).toBe("Operation");
@@ -52,7 +51,7 @@ describe("internalPastReportsColumns function", () => {
   });
 
   it("renders a formatted timestamp in UpdatedAtCell", () => {
-    const columns = annualReportsColumns();
+    const columns = internalPastReportsColumns();
     const params = {
       row: { report_status: "Submitted" },
       value: "2024-03-01T12:00:00Z",
@@ -64,7 +63,7 @@ describe("internalPastReportsColumns function", () => {
   });
 
   it("navigates to the view report page when clicking the View Report button", async () => {
-    const columns = annualReportsColumns();
+    const columns = internalPastReportsColumns();
     const row = {
       report_version_id: 123,
     };
@@ -85,7 +84,7 @@ describe("internalPastReportsColumns function", () => {
   });
 
   it("navigates to the report history page when clicking the View Report History button", async () => {
-    const columns = annualReportsColumns();
+    const columns = internalPastReportsColumns();
     const row = {
       report_id: 456,
     };

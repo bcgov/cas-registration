@@ -2,7 +2,7 @@ import { fetchPastReportsPageData } from "./fetchPastReportsPageData";
 import InternalPastReportsDataGrid from "./InternalPastReportsDataGrid";
 import { ReportRow, ReportSearchParams } from "./types";
 
-export default async function InteranlPastReports({
+export default async function InternalPastReports({
   searchParams,
 }: {
   searchParams: ReportSearchParams;
