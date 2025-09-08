@@ -52,7 +52,7 @@ def reverse_earned_credit_notice_email_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0074_V3_17_1'),
+        ('common', '0075_update_dashboard_data'),
     ]
 
     operations = [
