@@ -65,7 +65,7 @@ export default function ProfileForm({
 
   let emailHelpText: JSX.Element | null = null;
 
-  if (idp === IDP.BCEIDBUSINESS) {
+  if (!isCreate && idp === IDP.BCEIDBUSINESS) {
     if (contactId !== null && contactId !== undefined) {
       emailHelpText = (
         <>

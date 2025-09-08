@@ -44,21 +44,21 @@ describe("ProfileForm", () => {
   });
 
   it("renders form with Submit button", () => {
-    render(<ProfileForm isCreate={true} />);
+    render(<ProfileForm isCreate={true} idp={"idir"} />);
     expect(screen.getByRole("button", { name: "Submit" })).toBeInTheDocument();
   });
 
   it("does not show email help text for idir user", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
     vi.mocked(getSession).mockResolvedValueOnce({ identity_provider: "idir" });
-    render(<ProfileForm isCreate={true} />);
+    render(<ProfileForm isCreate={true} idp={"idir"} />);
     await waitFor(() => {
       expect(screen.queryByText(/This email is used to log in/)).toBeNull();
     });
   });
 
   it("does not show email help text for external user being created", async () => {
-    render(<ProfileForm isCreate={true} />);
+    render(<ProfileForm isCreate={true} idp={"bceidbusiness"} />);
     await waitFor(() => {
       expect(screen.queryByText(/This email is used to log in/)).toBeNull();
     });
@@ -72,7 +72,9 @@ describe("ProfileForm", () => {
     });
     vi.mocked(actionHandler).mockResolvedValueOnce("contact-456");
 
-    render(<ProfileForm isCreate={false} />);
+    render(
+      <ProfileForm isCreate={false} idp={"bceidbusiness"} contactId={2} />,
+    );
 
     // need to await the screen because it's rendered with useEffect
     expect(
@@ -88,7 +90,7 @@ describe("ProfileForm", () => {
     });
     vi.mocked(actionHandler).mockRejectedValue(new Error("API error"));
 
-    render(<ProfileForm isCreate={false} />);
+    render(<ProfileForm isCreate={false} idp={"bceidbusiness"} />);
     fillRequiredFields();
 
     // need to await the screen because it's rendered with useEffect
@@ -104,7 +106,7 @@ describe("ProfileForm", () => {
     });
     vi.mocked(actionHandler).mockResolvedValueOnce({});
 
-    render(<ProfileForm isCreate={true} />);
+    render(<ProfileForm isCreate={true} idp={"bceidbusiness"} />);
 
     fillRequiredFields();
 
@@ -121,7 +123,6 @@ describe("ProfileForm", () => {
             last_name: "Last",
             phone_number: "+1 250 123 5555",
             position_title: "CEO",
-            identity_provider: "",
           }),
         },
       );
@@ -139,7 +140,7 @@ describe("ProfileForm", () => {
     });
     vi.mocked(actionHandler).mockResolvedValue({});
 
-    render(<ProfileForm isCreate={false} />);
+    render(<ProfileForm isCreate={false} idp={"bceidbusiness"} />);
 
     fillRequiredFields();
 
