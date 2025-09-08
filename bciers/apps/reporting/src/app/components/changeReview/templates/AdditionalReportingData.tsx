@@ -50,12 +50,20 @@ const AdditionalReportingData: React.FC<AdditionalReportingDataProps> = ({
 
         const label = fieldDef.label || key;
         const unit = fieldDef.unit ? ` (${fieldDef.unit})` : "";
+
+        const changeType =
+          item.oldValue === null && item.newValue !== null
+            ? "added"
+            : item.oldValue !== null && item.newValue === null
+            ? "deleted"
+            : item.change_type;
         return (
           <ChangeItemDisplay
             key={item.field + idx}
             item={{
               ...item,
               displayLabel: `${label}${unit}`,
+              change_type: changeType,
             }}
           />
         );
