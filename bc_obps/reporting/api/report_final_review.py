@@ -11,7 +11,7 @@ from ..models import (
     ReportVersion,
     FacilityReport,
 )
-from ..schema.report_final_review import ReportVersionSchema, FacilityReportSchema, ReportVersionSchemaForLFO
+from ..schema.report_final_review import ReportVersionSchema, FacilityReportSchema
 from .router import router
 
 
@@ -24,19 +24,7 @@ from .router import router
 )
 def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     # Fetch the report version data
-    report_version = ReportVersionService.fetch_full_report_version(version_id, is_lfo=False)
-    return 200, report_version
-
-
-@router.get(
-    "/report-version/{version_id}/final-review-lfo",
-    response={200: ReportVersionSchemaForLFO, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="Fetch final review data for a given report version ID.",
-    auth=approved_industry_user_report_version_composite_auth,
-)
-def get_report_final_review_data_for_lfo(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
-    report_version = ReportVersionService.fetch_full_report_version(version_id, is_lfo=True)
+    report_version = ReportVersionService.fetch_full_report_version(version_id)
     return 200, report_version
 
 
