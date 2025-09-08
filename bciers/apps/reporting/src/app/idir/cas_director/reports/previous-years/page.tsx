@@ -9,7 +9,7 @@ export const metadata = generateMetadata(title);
 
 function ReportsPage({ searchParams }: { searchParams: ReportSearchParams }) {
   return (
-    <ReportsBasePage activeTab={0}>
+    <ReportsBasePage activeTab={1}>
       <div className="flex flex-col">
         <InternalPastReportsPage searchParams={searchParams || {}} />
       </div>
