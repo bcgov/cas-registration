@@ -15,6 +15,7 @@ from service.data_access_service.operation_designated_operator_timeline_service 
 from service.user_operator_service import UserOperatorService
 from service.data_access_service.user_service import UserDataAccessService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
+from compliance.tasks import retryable_send_notice_of_no_obligation_no_earned_credits_email
 
 logger = logging.getLogger(__name__)
 
@@ -43,14 +44,13 @@ class ComplianceReportVersionService:
 
             credited_emissions = report_compliance_summary.credited_emissions
             excess_emissions = report_compliance_summary.excess_emissions
+            status = ComplianceReportVersionService._determine_compliance_status(excess_emissions, credited_emissions)
 
             # Create compliance report version
             compliance_report_version = ComplianceReportVersion.objects.create(
                 compliance_report=compliance_report,
                 report_compliance_summary=report_compliance_summary,
-                status=ComplianceReportVersionService._determine_compliance_status(
-                    excess_emissions, credited_emissions
-                ),
+                status=status,
             )
 
             if excess_emissions > Decimal('0'):
@@ -61,11 +61,15 @@ class ComplianceReportVersionService:
                     obligation.id, compliance_report.compliance_period
                 )
 
-            # Else, create ComplianceEarnedCredit record if there are credited emissions
+            # Else if, create ComplianceEarnedCredit record if there are credited emissions
             elif credited_emissions > Decimal('0'):
                 from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
 
                 ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+
+            # Else send an email notification if no obligation or credits
+            elif status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS:
+                retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(compliance_report.report)
 
             return compliance_report_version
 
