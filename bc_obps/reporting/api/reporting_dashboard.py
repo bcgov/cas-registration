@@ -14,6 +14,7 @@ from reporting.constants import DASHBOARD_TAGS
 from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
     ReportingDashboardOperationOut,
+    ReportingDashboardReportFilterSchema,
     ReportingDashboardReportOut,
     ReportsPeriod,
 )
@@ -58,7 +59,7 @@ def get_dashboard_operations_list(
 @paginate(PageNumberPagination)
 def get_dashboard_reports_list(
     request: HttpRequest,
-    filters: ReportingDashboardOperationFilterSchema = Query(...),
+    filters: ReportingDashboardReportFilterSchema = Query(...),
     sort_field: Optional[str] = "reporting_year",
     sort_order: Optional[Literal["desc", "asc"]] = "desc",
     paginate_result: bool = Query(True, description="Whether to paginate the results"),
