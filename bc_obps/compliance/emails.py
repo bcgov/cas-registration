@@ -87,3 +87,21 @@ def send_notice_of_no_obligation_no_credits_generated_email(report: Report) -> N
     }
 
     _send_email_to_operators_approved_users_or_raise(report.operator, template, email_context)
+
+
+def send_notice_of_obligation_generated_email(report: Report) -> None:
+    """
+    Sends an email to every operator's industry user when there is an obligation, notifying that the obligation is available to view.
+
+    Args:
+        compliance_earned_credit_id: The ID of the ComplianceEarnedCredit instance for which to send notification emails.
+    """
+    template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
+
+    email_context = {
+        "operator_legal_name": report.operator.legal_name,
+        "operation_name": report.operation.name,
+        "compliance_year": report.reporting_year.reporting_year,
+    }
+
+    _send_email_to_operators_approved_users_or_raise(report.operator, template, email_context)
