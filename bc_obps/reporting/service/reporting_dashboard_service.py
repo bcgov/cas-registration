@@ -4,6 +4,7 @@ from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When,
 from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
+from registration.models.user_operator import UserOperator
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -70,13 +71,15 @@ class ReportingDashboardService:
         the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
+        user_operator: Optional[UserOperator] = user.user_operators.first()
+        operator_id: Optional[UUID] = user_operator.operator_id if user_operator else None
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
         report_subquery = (
             Report.objects.filter(
                 operation_id=OuterRef("id"),
                 reporting_year=reporting_year,
-                operator_id=user.user_operators.first().operator_id if user.user_operators.first().exists() else None,
+                operator_id=operator_id,
             )
             .annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=cls.latest_report_version_subquery.values("status"))
@@ -88,9 +91,9 @@ class ReportingDashboardService:
         current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
         # need to fetch previously owned operations in case reports were filed for them already or if they need to
         # create a new report version for an operation they once owned.
-        if user.user_operators.exists():
+        if user_operator:
             previous_operations = OperationDataAccessService.get_previously_owned_operations_for_operator(
-                user, user.user_operators.first().operator_id, reporting_year
+                user, operator_id, reporting_year
             )
         else:
             previous_operations = Operation.objects.none()
@@ -124,7 +127,7 @@ class ReportingDashboardService:
         )
 
         # Filter results for operator if user is external - they should only see results for their own operator
-        if (op := user.user_operators.first()) is not None:
+        if (op := user_operator) is not None:
             queryset = queryset.filter(operator_id=op.operator_id)
 
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
