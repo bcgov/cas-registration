@@ -240,4 +240,28 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
 
     expect(screen.getByText("Submitted by Test User")).toBeVisible();
   });
+
+  it("shows loading state and disables Continue while submitting; prevents repeated submit", async () => {
+    render(
+      <InternalReviewCreditsIssuanceRequestComponent
+        initialFormData={mockFormData}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const continueButton = screen.getByRole("button", { name: "Continue" });
+    expect(continueButton).not.toBeDisabled();
+
+    // First click triggers submission
+    fireEvent.click(continueButton);
+
+    // Wait until loading spinner is visible to ensure re-render happened
+    await waitFor(() => {
+      expect(screen.getByTestId("spinner")).toBeVisible();
+    });
+
+    // Further click on either button should be ignored
+    fireEvent.click(continueButton);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+  });
 });
