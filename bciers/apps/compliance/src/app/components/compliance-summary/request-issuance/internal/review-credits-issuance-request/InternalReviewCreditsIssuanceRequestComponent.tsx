@@ -49,6 +49,9 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       router.push(continueUrl);
       return;
     }
+    if (isSubmitting) {
+      return;
+    }
     setIsSubmitting(true);
     // only send the data that is needed for the update by the analyst
     const payload = {
@@ -64,8 +67,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       router.push(continueUrl);
     } else {
       setErrors([response.error || "Failed to submit request"]);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   return (

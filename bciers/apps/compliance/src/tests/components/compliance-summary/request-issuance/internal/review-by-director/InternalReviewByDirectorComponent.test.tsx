@@ -289,4 +289,32 @@ describe("InternalReviewByDirectorComponent", () => {
       ),
     ).toBeVisible();
   });
+
+  it("disables both action buttons while submitting and ignores further clicks on either", async () => {
+    render(
+      <InternalReviewByDirectorComponent
+        data={mockData}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    const approveButton = screen.getByRole("button", { name: "Approve" });
+    const declineButton = screen.getByRole("button", { name: "Decline" });
+    expect(approveButton).not.toBeDisabled();
+    expect(declineButton).not.toBeDisabled();
+
+    // Click one button (Approve)
+    fireEvent.click(approveButton);
+
+    // Spinner(s) should become visible indicating loading
+    await waitFor(() => {
+      const spinners = screen.getAllByTestId("spinner");
+      spinners.forEach((s) => expect(s).toBeVisible());
+    });
+
+    // Further clicks on either button should be ignored
+    fireEvent.click(approveButton);
+    fireEvent.click(declineButton);
+    expect(actionHandler).toHaveBeenCalledTimes(1);
+  });
 });
