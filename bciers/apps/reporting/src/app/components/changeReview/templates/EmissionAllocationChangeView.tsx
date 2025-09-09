@@ -64,8 +64,8 @@ export const EmissionAllocationChangeView: React.FC<
           oldTotal === "0"
             ? "added"
             : newTotal === "0"
-              ? "deleted"
-              : "modified",
+            ? "deleted"
+            : "modified",
       });
     }
 
@@ -95,8 +95,8 @@ export const EmissionAllocationChangeView: React.FC<
             oldQuantity === "0"
               ? "added"
               : newQuantity === "0"
-                ? "deleted"
-                : "modified",
+              ? "deleted"
+              : "modified",
           isNewAddition: oldQuantity === "0",
         });
       }
@@ -211,8 +211,8 @@ export const EmissionAllocationChangeView: React.FC<
         !oldValue && newValue
           ? "added"
           : oldValue && !newValue
-            ? "deleted"
-            : "modified";
+          ? "deleted"
+          : "modified";
       return {
         ...change,
         displayLabel:
@@ -249,8 +249,8 @@ export const EmissionAllocationChangeView: React.FC<
       change_type: !change.oldValue
         ? "added"
         : !change.newValue
-          ? "deleted"
-          : change.change_type,
+        ? "deleted"
+        : change.change_type,
     })) as DisplayChangeItem[];
 
   const categorizedChanges = processChanges();

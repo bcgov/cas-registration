@@ -70,9 +70,7 @@ class ReportReviewChangesService:
                 "['products']['{product_name}']{suffix}"
             ),
             'suffix_group': 4,
-        }
-
-
+        },
     ]
 
     COMPLIANCE_CONFIG: ComplianceConfig = {
@@ -160,7 +158,9 @@ class ReportReviewChangesService:
         # --- Special case: facility_reports emission allocations ---
         if "facility_reports" in config['root']:
             facility_name = match.group(1)  # captured in regex
-            allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation']['report_product_emission_allocations']
+            allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation'][
+                'report_product_emission_allocations'
+            ]
 
             alloc_idx, product_idx = idxs
             allocation = allocations[alloc_idx]
@@ -175,9 +175,7 @@ class ReportReviewChangesService:
             )
 
         # --- Generic fallback for other configs ---
-        item = ReportReviewChangesService._get_item_by_indexes(
-            serialized_data, config['root'], config['subkeys'], idxs
-        )
+        item = ReportReviewChangesService._get_item_by_indexes(serialized_data, config['root'], config['subkeys'], idxs)
         name = item[config['name_key']]
         return config['format'].format(
             entrant_idx=idxs[0],
