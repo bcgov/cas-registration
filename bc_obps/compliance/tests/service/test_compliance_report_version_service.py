@@ -114,6 +114,29 @@ class TestComplianceReportVersionService:
         assert result.compliance_report_id == compliance_report.id
         assert earned_credits_record.earned_credits_amount == 10
 
+    @patch(
+        'compliance.service.compliance_report_version_service.retryable_send_notice_of_no_obligation_no_earned_credits_email'
+    )
+    def test_create_compliance_report_version_with_no_obligation_and_no_credited_emissions(self, mock_send_email):
+        # Arrange
+        report_compliance_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', credited_emissions=0, excess_emissions=0
+        )
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report_id=report_compliance_summary.report_version.report_id
+        )
+
+        # Act
+        result = ComplianceReportVersionService.create_compliance_report_version(
+            compliance_report, report_compliance_summary.report_version.id
+        )
+
+        # Assert
+        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert result.report_compliance_summary_id == report_compliance_summary.id
+        assert result.compliance_report_id == compliance_report.id
+        mock_send_email.execute.assert_called_once_with(compliance_report.report)
+
     def test_get_compliance_report_versions_for_previously_owned_operations(self):
         # Arrange
         operator = baker.make_recipe('registration.tests.utils.operator')

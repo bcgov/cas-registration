@@ -1,3 +1,4 @@
+from unittest.mock import patch
 import uuid
 from common.models import EmailNotification
 from registration.models.app_role import AppRole
@@ -7,22 +8,27 @@ from service.email.email_service import EmailService
 import pytest
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 from model_bakery import baker
-from compliance.emails import send_notice_of_earned_credits_generated_email
+from compliance.emails import (
+    _send_email_to_operators_approved_users_or_raise,
+    send_notice_of_earned_credits_generated_email,
+    send_notice_of_no_obligation_no_credits_generated_email,
+)
 
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
+SEND_EMAIL_TO_OPERATORS_USERS_PATH = 'compliance.emails._send_email_to_operators_approved_users_or_raise'
 
 
-class TestSendEarnedCreditsNotification:
-    @staticmethod
-    def mock_email_service(mocker):
-        return mocker.patch.object(
-            email_service,
-            'send_email_by_template',
-            return_value={'txId': str(uuid.uuid4()), 'messages': [{'msgId': str(uuid.uuid4())}]},
-        )
+def mock_email_service(mocker):
+    return mocker.patch.object(
+        email_service,
+        'send_email_by_template',
+        return_value={'txId': str(uuid.uuid4()), 'messages': [{'msgId': str(uuid.uuid4())}]},
+    )
 
-    def test_send_earned_credits_email(self, mocker):
+
+class TestComplianceEmailHelpers:
+    def test_send_email_to_operators_approved_users_or_raise_success(self, mocker):
         # admin user - should receive email
         approved_user_operator = baker.make_recipe(
             'registration.tests.utils.approved_user_operator',
@@ -59,23 +65,13 @@ class TestSendEarnedCreditsNotification:
             'registration.tests.utils.user_operator', status=UserOperator.Statuses.APPROVED
         )
 
-        # Create a report with earned credits
-        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
-        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
-        compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
-        )
-        earned_credit = baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            compliance_report_version=compliance_report_version,
-            earned_credits_amount=100,
-        )
-
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
-        mocked_send_email = self.mock_email_service(mocker)
+        mocked_send_email = mock_email_service(mocker)
+        expected_context = {'context': 'context'}
 
-        # Call the function with the earned credit ID
-        send_notice_of_earned_credits_generated_email(earned_credit.id)
+        _send_email_to_operators_approved_users_or_raise(
+            approved_user_operator.operator, template_instance, expected_context
+        )
 
         # Assert that send_email_by_template is called once with all recipients
         expected_recipients = [
@@ -83,13 +79,6 @@ class TestSendEarnedCreditsNotification:
             users[0].email,
             users[1].email,
         ]
-
-        expected_context = {
-            "operator_legal_name": approved_user_operator.operator.legal_name,
-            "operation_name": report.operation.name,
-            "compliance_year": report.reporting_year.reporting_year,
-            "earned_credit_amount": 100,
-        }
 
         # Assert that send_email_by_template is called exactly once
         mocked_send_email.assert_called_once_with(
@@ -129,3 +118,83 @@ class TestSendEarnedCreditsNotification:
 
         # Assert that declined user does NOT receive email
         assert declined_user.email not in recipient_emails
+
+    def test_send_email_to_operators_approved_users_or_raise_fail(self, mocker):
+        # Arrange: create an approved user_operator
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        mocked_send_email = mock_email_service(mocker)
+
+        mocked_send_email.side_effect = Exception("Whoops")
+        with pytest.raises(Exception, match="Whoops"):
+            _send_email_to_operators_approved_users_or_raise(
+                approved_user_operator.operator, template_instance, {"foo": "bar"}
+            )
+
+
+class TestSendNotifications:
+    @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+    def test_send_earned_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # admin user
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        # Create a report with earned credits
+        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+        )
+        earned_credit = baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=compliance_report_version,
+            earned_credits_amount=100,
+        )
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        expected_context = {
+            "operator_legal_name": approved_user_operator.operator.legal_name,
+            "operation_name": report.operation.name,
+            "compliance_year": report.reporting_year.reporting_year,
+            "earned_credit_amount": 100,
+        }
+
+        # Call the function with the earned credit ID
+        send_notice_of_earned_credits_generated_email(earned_credit.id)
+        mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
+            approved_user_operator.operator,
+            template_instance,
+            expected_context,
+        )
+
+    @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+    def test_send_no_obligation_no_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # admin user
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        # Create a report with no obligation or earned credits
+        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name(
+            'No Obligation No Earned Credits Generated'
+        )
+
+        expected_context = {
+            "operator_legal_name": report.operator.legal_name,
+            "operation_name": report.operation.name,
+            "compliance_year": report.reporting_year.reporting_year,
+        }
+
+        # Call the function with the report
+        send_notice_of_no_obligation_no_credits_generated_email(report)
+        mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
+            approved_user_operator.operator,
+            template_instance,
+            expected_context,
+        )
