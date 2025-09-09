@@ -189,6 +189,23 @@
                                     </td>
                                     <td><p>The last date that the rate was in effect. Date is generated in BCIERS when a new interest rate record is pulled from elicensing. End date is one day before the start date of the new record.</p></td>
                                 </tr>
+                                <tr>
+                                    <td class='indexedColumn' title='Indexed'><i class='fa fa-sitemap fa-rotate-120' style='padding-right: 5px;'></i><span id="is_current_rate">is_current_rate</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Indicates whether this rate is the rate currently in use</p></td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -225,6 +242,18 @@
                                     <td><span title='Ascending'>Asc</span></td>
                                     <td>id</td>
                                 </tr>
+                                <tr>
+                                    <td title='Indexed'>exclude_overlapping_interest_rate_periods</td>
+                                    <td>Performance</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td class='uniqueKey' title='Unique Key'><i class='icon ion-key iconkey'></i> unique_current_rate</td>
+                                    <td>Must be unique</td>
+                                    <td><span title='Ascending'>Asc</span></td>
+                                    <td>is_current_rate</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div><!-- /.box-body -->
@@ -247,7 +276,7 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="elicensing_interest_rate.html" target="_top" title="elicensing_interest_rate" alt="" coords="5,5,345,192">
+<area shape="rect" id="node1" href="elicensing_interest_rate.html" target="_top" title="elicensing_interest_rate" alt="" coords="5,5,345,221">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/elicensing_interest_rate.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>

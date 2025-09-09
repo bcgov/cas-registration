@@ -44,6 +44,7 @@ digraph "twoDegreesRelationshipsDiagram" {
   "compliance_report_version":"archived_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_report_version":"compliance_report_id":w -> "compliance_report":"id":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_report_version":"created_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
+  "compliance_report_version":"previous_version_id":w -> "compliance_report_version":"id.type":e [arrowhead=none dir=back arrowtail=crowodot];
   "compliance_report_version":"report_compliance_summary_id":w -> "report_compliance_summary":"id":e [arrowhead=none dir=back arrowtail=teeodot];
   "compliance_report_version":"updated_by_id":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
   "contact":"elipses":w -> "user":"user_guid":e [arrowhead=none dir=back arrowtail=crowodot];
@@ -422,7 +423,8 @@ digraph "twoDegreesRelationshipsDiagram" {
       <TR><TD PORT="report_compliance_summary_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">report_compliance_summary_id</TD></TR></TABLE></TD><TD PORT="report_compliance_summary_id.type" ALIGN="LEFT">int8[19]</TD></TR>
       <TR><TD PORT="updated_by_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">updated_by_id</TD></TR></TABLE></TD><TD PORT="updated_by_id.type" ALIGN="LEFT">uuid[2147483647]</TD></TR>
       <TR><TD PORT="is_supplementary" COLSPAN="2" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">is_supplementary</TD></TR></TABLE></TD><TD PORT="is_supplementary.type" ALIGN="LEFT">bool[1]</TD></TR>
-      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 5</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">3 &gt;</TD></TR>
+      <TR><TD PORT="previous_version_id" COLSPAN="2" BGCOLOR="#ffffff" ALIGN="LEFT"><TABLE BORDER="0" CELLSPACING="0" ALIGN="LEFT"><TR ALIGN="LEFT"><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="15" HEIGHT="16"><IMG SRC="../../images/foreignKeys.png"/></TD><TD ALIGN="LEFT" FIXEDSIZE="TRUE" WIDTH="241" HEIGHT="16">previous_version_id</TD></TR></TABLE></TD><TD PORT="previous_version_id.type" ALIGN="LEFT">int8[19]</TD></TR>
+      <TR><TD ALIGN="LEFT" BGCOLOR="#ffffff">&lt; 6</TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">  </TD><TD ALIGN="RIGHT" BGCOLOR="#ffffff">4 &gt;</TD></TR>
     </TABLE>>
     URL="compliance_report_version.html"
     target="_top"

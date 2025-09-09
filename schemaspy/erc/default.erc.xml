@@ -559,17 +559,18 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="start_date" nullable="false" remarks="Start date of the compliance period, UTC-based" size="13" type="date" typeCode="91"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="end_date" nullable="false" remarks="End date of the compliance period, UTC-based" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="compliance_deadline" nullable="false" remarks="Deadline date for compliance submissions, UTC-based" size="13" type="date" typeCode="91"/>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="invoice_generation_date" nullable="false" remarks="Date on which invoices for this compliance period should be generated" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="compliance_deadline" nullable="false" remarks="Deadline date for compliance submissions, UTC-based" size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="archived_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_period_archived_by_id_631fa5a6_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="created_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_period_created_by_id_4214aedd_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="reporting_year_id" nullable="false" remarks="The associated reporting year for this compliance period" size="10" type="int4" typeCode="4">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="reporting_year_id" nullable="false" remarks="The associated reporting year for this compliance period" size="10" type="int4" typeCode="4">
             <parent column="reporting_year" foreignKey="compliance_period_reporting_year_id_b7122d1a_fk_reporting" implied="false" onDeleteCascade="false" schema="erc" table="reporting_year"/>
          </column>
-         <column autoUpdated="false" defaultValue="null" digits="0" id="10" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
+         <column autoUpdated="false" defaultValue="null" digits="0" id="11" name="updated_by_id" nullable="true" remarks="" size="2147483647" type="uuid" typeCode="1111">
             <parent column="user_guid" foreignKey="compliance_period_updated_by_id_970ca3fa_fk_user_user_guid" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
@@ -640,6 +641,7 @@
          <column autoUpdated="true" defaultValue="null" digits="0" id="0" name="id" nullable="false" remarks="" size="19" type="int8" typeCode="-5">
             <child column="compliance_report_version_id" foreignKey="compliance_earned_cr_compliance_report_ve_d9d2d8c3_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_earned_credit"/>
             <child column="compliance_report_version_id" foreignKey="compliance_obligatio_compliance_report_ve_4a01c295_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_obligation"/>
+            <child column="previous_version_id" foreignKey="compliance_report_ve_previous_version_id_d9236318_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_report_version"/>
             <child column="supplementary_compliance_report_version_id" foreignKey="elicensing_adjustmen_supplementary_compli_1faa2840_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="elicensing_adjustment"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="created_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
@@ -664,6 +666,9 @@
             <parent column="user_guid" foreignKey="compliance_report_ve_updated_by_id_6679f933_fk_user_user" implied="false" onDeleteCascade="false" schema="erc" table="user"/>
          </column>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="is_supplementary" nullable="false" remarks="Boolean value identifies whether this record is the result of a supplementary emissions report version" size="1" type="bool" typeCode="-7"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="previous_version_id" nullable="true" remarks="Reference to the previous version of this compliance report version." size="19" type="int8" typeCode="-5">
+            <parent column="id" foreignKey="compliance_report_ve_previous_version_id_d9236318_fk_complianc" implied="false" onDeleteCascade="false" schema="erc" table="compliance_report_version"/>
+         </column>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="compliance_report_version_pkey" unique="true">
             <column ascending="true" name="id"/>
@@ -676,6 +681,9 @@
          </index>
          <index name="compliance_report_version_created_by_id_1e0d82f0" unique="false">
             <column ascending="true" name="created_by_id"/>
+         </index>
+         <index name="compliance_report_version_previous_version_id_d9236318" unique="false">
+            <column ascending="true" name="previous_version_id"/>
          </index>
          <index name="compliance_report_version_report_compliance_summary_id_key" unique="true">
             <column ascending="true" name="report_compliance_summary_id"/>
@@ -962,7 +970,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="adjustment_object_id" nullable="false" remarks="The object id of the adjustment in elicensing (adjustmentObjectId)" size="10" type="int4" typeCode="4"/>
          <column autoUpdated="false" defaultValue="null" digits="2" id="5" name="amount" nullable="false" remarks="The amount of this adjustment in dollars from elicensing" size="20" type="numeric" typeCode="2"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="6" name="adjustment_date" nullable="true" remarks="date of the adjustment in elicensing" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="6" name="adjustment_date" nullable="true" remarks="date of the adjustment in elicensing" size="13" type="date" typeCode="91"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="7" name="reason" nullable="true" remarks="Reason for adjustment in elicesning" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="8" name="type" nullable="true" remarks="Type of adjustment in elicesning" size="2147483647" type="varchar" typeCode="12"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="9" name="comment" nullable="true" remarks="Comments on adjustment in elicesning" size="2147483647" type="varchar" typeCode="12"/>
@@ -1044,9 +1052,14 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="1" name="interest_rate" nullable="false" remarks="The interest rate from elicensing" size="6" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="start_date" nullable="false" remarks="The date that the rate took effect. Date is pulled from elicensing" size="13" type="date" typeCode="91"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="3" name="end_date" nullable="false" remarks="The last date that the rate was in effect. Date is generated in BCIERS when a new interest rate record is pulled from elicensing. End date is one day before the start date of the new record." size="13" type="date" typeCode="91"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="is_current_rate" nullable="false" remarks="Indicates whether this rate is the rate currently in use" size="1" type="bool" typeCode="-7"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="elicensing_interest_rate_pkey" unique="true">
             <column ascending="true" name="id"/>
+         </index>
+         <index name="exclude_overlapping_interest_rate_periods" unique="false"/>
+         <index name="unique_current_rate" unique="true">
+            <column ascending="true" name="is_current_rate"/>
          </index>
       </table>
       <table name="elicensing_invoice" remarks="Table contains invoice data from elicensing" schema="erc" type="TABLE">
@@ -1059,7 +1072,7 @@
          <column autoUpdated="false" defaultValue="null" digits="6" id="2" name="updated_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="6" id="3" name="archived_at" nullable="true" remarks="" size="35" type="timestamptz" typeCode="93"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="4" name="invoice_number" nullable="false" remarks="The invoice number from elicensing." size="2147483647" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="5" name="due_date" nullable="false" remarks="The due date of the invoice. invoicePaymentDueDate in elicensing" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="5" name="due_date" nullable="false" remarks="The due date of the invoice. invoicePaymentDueDate in elicensing" size="13" type="date" typeCode="91"/>
          <column autoUpdated="false" defaultValue="null" digits="2" id="6" name="outstanding_balance" nullable="false" remarks="The outstanding balance for this invoice. invoiceOutstandingBalance in elicensing" size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="2" id="7" name="invoice_fee_balance" nullable="true" remarks="The balance of fees for this invoice. invoiceFeeBalance in elicensing" size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="2" id="8" name="invoice_interest_balance" nullable="true" remarks="The balance of interest for this invoice. invoiceInterestBalance in elicensing" size="20" type="numeric" typeCode="2"/>
@@ -1119,7 +1132,7 @@
          </column>
          <column autoUpdated="false" defaultValue="null" digits="2" id="11" name="base_amount" nullable="false" remarks="The amount of this line item. baseAmount in elicensing" size="20" type="numeric" typeCode="2"/>
          <column autoUpdated="false" defaultValue="null" digits="0" id="12" name="description" nullable="true" remarks="Description of the line item (fee)." size="2147483647" type="varchar" typeCode="12"/>
-         <column autoUpdated="false" defaultValue="null" digits="6" id="13" name="fee_date" nullable="false" remarks="The date of the fee. feeDueDate in elicensing" size="35" type="timestamptz" typeCode="93"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="13" name="fee_date" nullable="false" remarks="The date of the fee. feeDueDate in elicensing" size="13" type="date" typeCode="91"/>
          <primaryKey column="id" sequenceNumberInPK="1"/>
          <index name="elicensing_line_item_pkey" unique="true">
             <column ascending="true" name="id"/>
