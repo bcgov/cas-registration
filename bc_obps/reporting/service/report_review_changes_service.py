@@ -190,6 +190,19 @@ class ReportReviewChangesService:
     def get_report_version_diff_changes(cls, previous: dict, current: dict) -> List[Dict[str, Any]]:
         changes: List[Dict[str, Any]] = []
 
+        # Registration purpose check
+        prev_purpose = previous.get("report_operation", {}).get("registration_purpose")
+        curr_purpose = current.get("report_operation", {}).get("registration_purpose")
+        if prev_purpose != curr_purpose:
+            return [
+                {
+                    "field": "root['report_operation']['registration_purpose']",
+                    "old_value": prev_purpose,
+                    "new_value": curr_purpose,
+                    "change_type": "modified",
+                }
+            ]
+
         # --- Facility name changes ---
         prev_facilities = previous.get("facility_reports", {})
         curr_facilities = current.get("facility_reports", {})

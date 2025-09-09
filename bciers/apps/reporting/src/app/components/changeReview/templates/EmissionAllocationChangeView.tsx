@@ -226,7 +226,21 @@ export const EmissionAllocationChangeView: React.FC<
           : "",
     };
   }
-
+  const generalFields = data
+    .filter(
+      (change) =>
+        change.field.includes("allocation_methodology") ||
+        change.field.includes("allocation_other_methodology_description"),
+    )
+    .map((change) => {
+      const displayLabel = change.field.includes("allocation_methodology")
+        ? "Methodology"
+        : "Details about the allocation methodology";
+      let changeType = change.change_type;
+      if (!change.oldValue) changeType = "added";
+      else if (!change.newValue) changeType = "deleted";
+      return { ...change, displayLabel, changeType } as DisplayChangeItem;
+    });
   const totalChanges = data.filter(isRelevantTotalChange).map(mapTotalChange);
 
   const categorizedChanges = processChanges();
@@ -263,6 +277,9 @@ export const EmissionAllocationChangeView: React.FC<
           <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
             Allocation of Emissions
           </Typography>
+          {generalFields.map((change) => (
+            <ChangeItemDisplay key={change.field} item={change} />
+          ))}
           <Divider sx={{ mb: 2 }} />
           {categorizedChanges
             .filter((c) => c.changes.length > 0)
