@@ -27,7 +27,7 @@ def create_earned_credit_notice_email_template(apps, schema_editor):
             </ol>
             <p><b>Please note:</b> To receive your credits, you need to have an Operator of
               Regulated Operation account in the B.C.
-              Carbon Registry. If you do not have an account of this type, please follow the steps outline here: <a
+              Carbon Registry. If you do not have an account of this type, please follow the steps outlined here: <a
                 href="https://www2.gov.bc.ca/gov/content/environment/climate-change/industry/offset-projects/bc-carbon-registry">Accessing
               the BC Carbon Registry - Province of British Columbia</a>.
             </p>
