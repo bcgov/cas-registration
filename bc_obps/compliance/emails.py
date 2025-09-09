@@ -7,6 +7,8 @@ from reporting.models.report import Report
 from service.email.email_service import EmailService
 from service.email.utils import Recipient
 import logging
+from django.conf import settings
+
 
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 
@@ -42,7 +44,10 @@ def _send_email_to_operators_approved_users_or_raise(
                 )
         except Exception as exc:
             logger.error(f'Exception sending {template} email to recipients - {str(exc)}')
-            raise  # raise exception because we want to use this function as a retryable task
+            # If we're in the local environment, we don't need to send emails, so we shouldn't raise an error if they fail
+            ENVIRONMENT = settings.ENVIRONMENT
+            if ENVIRONMENT != 'local':
+                raise  # raise exception because we want to use this function as a retryable task
 
 
 def send_notice_of_earned_credits_generated_email(compliance_earned_credit_id: int) -> None:
@@ -71,7 +76,7 @@ def send_notice_of_no_obligation_no_credits_generated_email(report: Report) -> N
     Sends an email to every operator's industry user when there is no obligation or credit, notifying that the obligation is met and no further action is required.
 
     Args:
-        compliance_earned_credit_id: The ID of the ComplianceEarnedCredit instance for which to send notification emails.
+        report: The report instance for which to send notification emails.
     """
     template = EmailNotificationTemplateService.get_template_by_name('No Obligation No Earned Credits Generated')
 

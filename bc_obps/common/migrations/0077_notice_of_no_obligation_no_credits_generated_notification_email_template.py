@@ -33,7 +33,7 @@ def create_no_obligation_no_credits_notice_email_template(apps, schema_editor):
 
 def reverse_no_obligation_no_credits_notice_email_template(apps, schema_editor):
     EmailNotificationTemplate = apps.get_model('common', 'EmailNotificationTemplate')
-    EmailNotificationTemplate.objects.filter(name='Notice of Earned Credits Generated').delete()
+    EmailNotificationTemplate.objects.filter(name='No Obligation No Earned Credits Generated').delete()
 
 
 class Migration(migrations.Migration):

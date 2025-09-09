@@ -19,7 +19,6 @@ email_service = EmailService()
 SEND_EMAIL_TO_OPERATORS_USERS_PATH = 'compliance.emails._send_email_to_operators_approved_users_or_raise'
 
 
-@staticmethod
 def mock_email_service(mocker):
     return mocker.patch.object(
         email_service,
