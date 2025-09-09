@@ -15,7 +15,7 @@
           {
             "title": "Compliance Administration",
             "icon": "File",
-            "content": "Track compliance obligations, approve or decline issuance requests of earned credits, issue imposed penalties, and track invoices here.",
+            "content": "Track compliance obligations, approve or decline issuance requests of earned credits, and track invoices here.",
             "links": [
               {
                 "title": "Compliance Summaries",
