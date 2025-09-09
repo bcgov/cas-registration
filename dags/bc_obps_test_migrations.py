@@ -20,7 +20,7 @@ default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 test_migrations_dag = DAG(
     TEST_MIGRATIONS_DAG_NAME,
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
     params={
         "destination_namespace": Param(
