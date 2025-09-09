@@ -32,6 +32,7 @@ interface NonAttributableEmission {
   newValue: string | Record<string, any> | null;
   oldValue?: string | Record<string, any> | null;
   change_type?: string;
+  field: string;
 }
 
 const nonAttributableEmissionLabels: Record<string, string> = {
@@ -242,12 +243,24 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                           typeof change.oldValue === "object" &&
                           change.oldValue !== null
                             ? change.oldValue
-                            : {};
+                            : {
+                                // extract field name from `change.field`
+                                [change.field
+                                  .split(/[\[\]']+/)
+                                  .filter(Boolean)
+                                  .pop() || "value"]: change.oldValue,
+                              };
                         const newObj =
                           typeof change.newValue === "object" &&
                           change.newValue !== null
                             ? change.newValue
-                            : {};
+                            : {
+                                [change.field
+                                  .split(/[\[\]']+/)
+                                  .filter(Boolean)
+                                  .pop() || "value"]: change.newValue,
+                              };
+
                         const keys = Array.from(
                           new Set([
                             ...Object.keys(oldObj),
