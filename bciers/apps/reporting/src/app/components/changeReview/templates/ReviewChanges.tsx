@@ -173,6 +173,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   };
 
   const reportOperationItems = sectioned["Report Operation"] || [];
+  console.log("reportOperationItems", reportOperationItems);
 
   return (
     <Box>
