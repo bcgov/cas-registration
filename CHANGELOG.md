@@ -1,3 +1,22 @@
+# [3.18.0](https://github.com/bcgov/cas-registration/compare/v3.17.1...v3.18.0) (2025-09-09)
+
+### Bug Fixes
+
+- add keycloak and next auth secrets ([0f57840](https://github.com/bcgov/cas-registration/commit/0f578407599a73a613e08939dae69ca9d2afc37b))
+- facility service restricts editing bcghgid to only director role ([e2c76ce](https://github.com/bcgov/cas-registration/commit/e2c76ce0fc7702f5c75dd0766ceb19c98d7cd662))
+- prevent double submission in review components by checking isSubmitting flag ([2257e18](https://github.com/bcgov/cas-registration/commit/2257e18447dc5cb25657b0ab35970435be9b299b))
+
+### Features
+
+- add `previous_version` field to ComplianceReportVersion model ([cbc82a8](https://github.com/bcgov/cas-registration/commit/cbc82a8672024b16c6658b18518bec1156e3fb8f))
+- add automatic overdue penalty flow for industry users ([bca1d9d](https://github.com/bcgov/cas-registration/commit/bca1d9d31a441127bef8f251eb608adb4be8767d))
+- add earned credits email ([f484f33](https://github.com/bcgov/cas-registration/commit/f484f33795b2272412385ec8338ce7084f88be15))
+- add invoice_generation_date field to compliance period models ([1aeb706](https://github.com/bcgov/cas-registration/commit/1aeb706408b69f0d7ffa845993363d9f75100b8c))
+- add is_current_rate field and constraints to ElicensingInterestRate model ([fb2c554](https://github.com/bcgov/cas-registration/commit/fb2c554d70d5b8c1cb2faeb02b1bae63ea3bfac1))
+- add tooltips and external link icons to penalties and interests links ([cf68a56](https://github.com/bcgov/cas-registration/commit/cf68a56383c57d1de3286ba1a8fbf80f869d4482))
+- internal current reports grid ([71cd16d](https://github.com/bcgov/cas-registration/commit/71cd16de85dd6acaaf77174772f740714f144c57))
+- send email to no oblig or credits operators ([b581e3a](https://github.com/bcgov/cas-registration/commit/b581e3aa6aef230b3920dcf559c593d50ecbb642))
+
 ## [3.17.1](https://github.com/bcgov/cas-registration/compare/v3.16.0...v3.17.1) (2025-08-27)
 
 ### Bug Fixes
