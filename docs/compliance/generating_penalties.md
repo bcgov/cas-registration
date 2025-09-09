@@ -34,7 +34,7 @@ PenaltyCalculationService.calculate_penalty(
 
 ## Generate Penalty (accurate)
 
-If you care about the data being sane, then use this method. It takes a little longer, but the payments will match the amount of the obligation & the last date of penalty calculation will match the date of the last payment.
+If you care about the data being accurate, then use this method. It takes a little longer, but the payments will match the amount of the obligation & the last date of penalty calculation will match the date of the last payment.
 
 ### Steps:
 
