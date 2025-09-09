@@ -2,15 +2,25 @@
 
 from django.db import migrations
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+import logging
+
+logger = logging.getLogger(__name__)
 
 
-def generate_compliance_reports_from_emission_reports(apps):
+def generate_compliance_reports_from_emission_reports(apps, schema_editor):
     ReportVersion = apps.get_model("reporting", "ReportVersion")
     ComplianceReport = apps.get_model("compliance", "ComplianceReport")
     CompliancePeriod = apps.get_model("compliance", "CompliancePeriod")
 
-    report_versions_to_process = ReportVersion.objects.filter(
-        report__reporting_year_id=2024, report__operation__is_regulated_operation=True, is_latest_submitted=True
+    # Only generate compliance reports for the latest submitted version of reports from the 2024 reporting year for regulated operations
+    report_versions_to_process = ReportVersion.objects.select_related('report', 'report__operation').filter(
+        report__reporting_year_id=2024,
+        report__operation__registration_purpose__in=[
+            'OBPS Regulated Operation',
+            'New Entrant Operation',
+            'Opted-in Operation',
+        ],
+        is_latest_submitted=True,
     )
     for rv in report_versions_to_process:
         if not (
@@ -23,9 +33,11 @@ def generate_compliance_reports_from_emission_reports(apps):
                 compliance_period=CompliancePeriod.objects.get(reporting_year=2024),
             )
             ComplianceReportVersionService.create_compliance_report_version(new_compliance_report, rv.id)
+        else:
+            logger.info(f"Compliance report already exists for report id {rv.report_id}")
 
 
-def revert_generate_compliance_reports_from_emission_reports(apps):
+def revert_generate_compliance_reports_from_emission_reports(apps, schema_editor):
     """
     Remove generated compliance reports
     """
