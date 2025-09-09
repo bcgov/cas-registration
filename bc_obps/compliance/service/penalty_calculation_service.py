@@ -48,7 +48,7 @@ class PenaltyCalculationService:
             obligation: The compliance obligation
 
         Returns:
-            Dictionary containing penalty details or empty penalty data if no penalty applies
+            Dictionary containing penalty details or CompliancePenalty.DoesNotExist if no penalty applies
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
