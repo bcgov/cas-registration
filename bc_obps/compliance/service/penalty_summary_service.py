@@ -30,7 +30,7 @@ class PenaltySummaryService:
         """
         obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
 
-        penalty_data = PenaltyCalculationService.get_penalty_data(obligation=obligation)
+        penalty_data = PenaltyCalculationService.get_automatic_overdue_penalty_data(obligation=obligation)
 
         payments_wrapper = ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id

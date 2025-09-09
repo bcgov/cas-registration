@@ -7,7 +7,11 @@ from .rls_configs.compliance_penalty import Rls as CompliancePenaltyRls
 class CompliancePenalty(TimeStampedModel):
     """Model to store compliance penalty data"""
 
-    compliance_obligation = models.OneToOneField(
+    class PenaltyType(models.TextChoices):
+        AUTOMATIC_OVERDUE = 'Automatic Overdue'
+        LATE_SUBMISSION = 'Late Submission'
+
+    compliance_obligation = models.ForeignKey(
         ComplianceObligation,
         on_delete=models.CASCADE,
         related_name="compliance_penalty",
@@ -34,6 +38,12 @@ class CompliancePenalty(TimeStampedModel):
         max_digits=20,
         default=0.00,
         db_comment="The total amount of the penalty to be paid",
+    )
+
+    penalty_type = models.CharField(
+        max_length=100,
+        choices=PenaltyType.choices,
+        db_comment="The type of penalty.",
     )
 
     class Meta(TimeStampedModel.Meta):

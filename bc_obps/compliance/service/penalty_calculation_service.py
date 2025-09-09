@@ -1,6 +1,5 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
-from enum import Enum
 from typing import Dict, Any
 from compliance.service.elicensing.elicensing_data_refresh_service import (
     ElicensingDataRefreshService,
@@ -40,13 +39,10 @@ class PenaltyCalculationService:
     TODAY = date.today()
     DAILY_PENALTY_RATE = Decimal('0.0038')
 
-    class PenaltyType(Enum):
-        AUTOMATIC_OVERDUE = "Automatic Overdue"
-
     @classmethod
-    def get_penalty_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
+    def get_automatic_overdue_penalty_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
         """
-        Get penalty data for a compliance obligation.
+        Get automatic overdue penalty data for a compliance obligation.
 
         Args:
             obligation: The compliance obligation
@@ -57,14 +53,16 @@ class PenaltyCalculationService:
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=obligation.compliance_report_version_id
         )
-        penalty = CompliancePenalty.objects.get(compliance_obligation=obligation)
+        penalty = CompliancePenalty.objects.get(
+            compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
+        )
         last_accrual_record = penalty.compliance_penalty_accruals.all().last()
         faa_interest = refresh_result.invoice.invoice_interest_balance if refresh_result.invoice else Decimal('0.00')
         total_amount = penalty.penalty_amount + faa_interest if faa_interest else penalty.penalty_amount
 
         return {
             "penalty_status": obligation.penalty_status,
-            "penalty_type": cls.PenaltyType.AUTOMATIC_OVERDUE.value,
+            "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": cls.DAILY_PENALTY_RATE * 100,
             "days_late": penalty.compliance_penalty_accruals.count(),
             "accumulated_penalty": last_accrual_record.accumulated_penalty,  # type: ignore [union-attr]
@@ -212,6 +210,7 @@ class PenaltyCalculationService:
                 compliance_obligation=obligation,
                 fee_date=date.today(),
                 accrual_start_date=accrual_start_date.strftime("%Y-%m-%d"),  # type: ignore[union-attr]
+                penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             )
 
         last_calculation_day = final_accrual_date if final_accrual_date else cls.TODAY
@@ -261,7 +260,7 @@ class PenaltyCalculationService:
 
         result = {
             "penalty_status": obligation.penalty_status,
-            "penalty_type": cls.PenaltyType.AUTOMATIC_OVERDUE.value,
+            "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
             "penalty_charge_rate": cls.DAILY_PENALTY_RATE * 100,
             "days_late": days_late,
             "accumulated_penalty": accumulated_penalty,
