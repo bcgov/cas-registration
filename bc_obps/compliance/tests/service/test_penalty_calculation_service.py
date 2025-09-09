@@ -141,6 +141,7 @@ class TestPenaltyCalculationService:
         assert penalty_record.penalty_amount == Decimal('38656.43')
         assert penalty_record.compliance_penalty_accruals.all().count() == 10
         assert penalty_record.fee_date == date.today()
+        assert penalty_record.penalty_type == CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
 
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
@@ -176,3 +177,40 @@ class TestPenaltyCalculationService:
             accrual_start_date=clean_invoice.due_date + timedelta(days=1),
             final_accrual_date=clean_payment.received_date,
         )
+
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    def test_get_automatic_overdue_penalty(self, mock_refresh_data):
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 11, 30),
+            outstanding_balance=Decimal("1000000.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        compliance_penalty = baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty",
+            compliance_obligation=self.obligation,
+            penalty_amount=Decimal("1000000.00"),
+        )
+        # accrual
+        baker.make_recipe(
+            "compliance.tests.utils.compliance_penalty_accrual",
+            compliance_penalty=compliance_penalty,
+            accumulated_penalty=5,
+            accumulated_compounded=5,
+        )
+        result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.obligation)
+        assert result == {
+            "penalty_status": self.obligation.penalty_status,
+            "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
+            "penalty_charge_rate": PenaltyCalculationService.DAILY_PENALTY_RATE * 100,
+            "days_late": 1,
+            "accumulated_penalty": Decimal('5'),
+            "accumulated_compounding": Decimal('5'),
+            "total_penalty": Decimal("1000000.00"),
+            "faa_interest": Decimal("0"),
+            "total_amount": Decimal("1000000.00"),
+            "data_is_fresh": True,
+        }

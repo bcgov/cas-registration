@@ -114,6 +114,7 @@ compliance_penalty = Recipe(
     elicensing_invoice=foreign_key(elicensing_invoice),
     accrual_start_date='2025-12-01',
     penalty_amount=1000000.00,
+    penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,
 )
 
 # CompliancePenaltyAccrual recipe

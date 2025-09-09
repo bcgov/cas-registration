@@ -17,8 +17,10 @@ class TestPenaltySummaryService(TestCase):
     @patch(
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id"
     )
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_penalty_data")
-    def test_get_summary_happy_path_with_payments(self, mock_get_penalty_data, mock_get_payments):
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_automatic_overdue_penalty_data"
+    )
+    def test_get_summary_happy_path_with_payments(self, mock_get_automatic_overdue_penalty_data, mock_get_payments):
         # Arrange
         obligation = make_recipe("compliance.tests.utils.compliance_obligation")
 
@@ -33,7 +35,7 @@ class TestPenaltySummaryService(TestCase):
         )
         payments = ElicensingPayment.objects.filter(pk__in=[payment_1.pk, payment_2.pk])
 
-        mock_get_penalty_data.return_value = {
+        mock_get_automatic_overdue_penalty_data.return_value = {
             "total_amount": Decimal("100.00"),
             "penalty_status": ComplianceObligation.PenaltyStatus.NOT_PAID,
             "data_is_fresh": True,
@@ -58,12 +60,14 @@ class TestPenaltySummaryService(TestCase):
     @patch(
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id"
     )
-    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.get_penalty_data")
-    def test_get_summary_handles_no_payments(self, mock_get_penalty_data, mock_get_payments):
+    @patch(
+        "compliance.service.penalty_calculation_service.PenaltyCalculationService.get_automatic_overdue_penalty_data"
+    )
+    def test_get_summary_handles_no_payments(self, mock_get_automatic_overdue_penalty_data, mock_get_payments):
         # Arrange
         obligation = make_recipe("compliance.tests.utils.compliance_obligation")
 
-        mock_get_penalty_data.return_value = {
+        mock_get_automatic_overdue_penalty_data.return_value = {
             "total_amount": Decimal("42.00"),
             "penalty_status": ComplianceObligation.PenaltyStatus.NOT_PAID,
             "data_is_fresh": True,
