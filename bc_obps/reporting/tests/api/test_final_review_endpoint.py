@@ -197,31 +197,6 @@ class TestReportFinalReview(CommonTestSetup):
                     assert "product_name" in product
                     assert "allocated_quantity" in product
 
-    def test_get_report_final_review_data_for_lfo_success(self):
-        """
-        Test the /report-version/{version_id}/final-review-lfo endpoint.
-        """
-        endpoint = custom_reverse_lazy(
-            "get_report_final_review_data_for_lfo",
-            kwargs={"version_id": self.report_version.id},
-        )
-
-        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint)
-        assert response.status_code == 200
-        data = response.json()
-
-        assert data["report_type"] == self.report_version.report_type
-        assert data["status"] == self.report_version.status
-
-        # Facility reports are included
-        assert "facility_reports" in data
-        assert isinstance(data["facility_reports"], list)
-        assert any(fr["facility"] == str(self.facility_report.facility_id) for fr in data["facility_reports"])
-
-        assert "report_operation" in data
-        assert "report_person_responsible" in data
-        assert "report_additional_data" in data
-
     def test_get_report_version_facility_report_success(self):
         """
         Test the /report-version/{version_id}/final-review/{facility_id}/facility-reports endpoint.

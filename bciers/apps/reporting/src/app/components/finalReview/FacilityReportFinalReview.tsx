@@ -4,7 +4,7 @@ import FacilityReportSection from "@reporting/src/app/components/shared/Facility
 import { getLfoFinalReviewData } from "@reporting/src/app/utils/getLfoFinalReviewData";
 import React, { useEffect, useState } from "react";
 import { ReportData } from "@reporting/src/app/components/finalReview/reportTypes";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
@@ -15,17 +15,22 @@ export default function FacilityReportFinalReview({
 }: {
   version_id: number;
 }) {
-  const [data, setData] = useState<ReportData | null>(null);
   const browserSearchParams = useSearchParams();
-  const facilityId = browserSearchParams.get("facility_id");
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+  const [data, setData] = useState<ReportData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const facilityId = browserSearchParams.get("facility_id");
+  const backUrl = pathname.includes("/submitted")
+    ? `/reporting/reports/${version_id}/submitted` // go back to submitted reports
+    : `/reporting/reports/${version_id}/final-review#facility-grid`; // go back to final review
+
   const taskListElements: TaskListElement[] = [
     {
       type: "Link",
-      text: "Back to final review",
-      link: `/reporting/reports/${version_id}/final-review#facility-grid`,
-      title: "Back to final review",
+      text: "Back to previous page",
+      link: `${backUrl}`,
+      title: "Back to previous page",
     },
   ];
 
@@ -59,7 +64,7 @@ export default function FacilityReportFinalReview({
           <Button
             variant="outlined"
             onClick={() => {
-              router.push("/reports/" + version_id + "/final-review");
+              router.push(backUrl);
             }}
           >
             Back

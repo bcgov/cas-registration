@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import {
   GridColDef,
@@ -29,6 +29,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const currentPath = usePathname();
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
   // Memoized Header Search Cell
@@ -61,9 +62,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
               cursor: "pointer",
             }}
             onClick={() =>
-              router.push(
-                `/reports/${version_id}/final-review/lfo?facility_id=${row.facility}`,
-              )
+              router.push(`${currentPath}/lfo?facility_id=${row.facility}`)
             }
             data-testid={`view-details-${row.facility}`}
           >
