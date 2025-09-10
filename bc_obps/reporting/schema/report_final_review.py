@@ -34,47 +34,6 @@ from reporting.service.report_emission_allocation_service import (
 from service.report_version_service import ReportVersionService
 
 
-class ReportVersionSchemaMixin:
-    """Mixin to provide shared resolvers for ReportVersion schemas."""
-
-    @staticmethod
-    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:
-        if (
-            obj.report_operation
-            and obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        ):
-            return None
-
-        data = ComplianceService.get_calculated_compliance_data(obj.id)
-        return ComplianceDataSchemaOut.model_validate(data) if data else None
-
-    @staticmethod
-    def resolve_operation_emission_summary(obj: ReportVersion) -> Optional[dict]:
-        if (
-            hasattr(obj, 'report_operation')
-            and obj.report_operation
-            and obj.report_operation.operation_type == Operation.Types.LFO
-        ):
-            return EmissionCategoryService.get_operation_emission_summary_form_data(obj.id)
-        return None
-
-    @staticmethod
-    def resolve_is_supplementary_report(obj: ReportVersion) -> bool:
-        return not ReportVersionService.is_initial_report_version(obj.id)
-
-    @staticmethod
-    def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
-        """
-        Returns facility reports as a dict for normal reports,
-        and as a list for LFO reports.
-        """
-        if obj.report_operation.operation_type == Operation.Types.EIO:
-            return {}  # always dict for EIO
-        if obj.report_operation.operation_type == Operation.Types.LFO:
-            return list(obj.facility_reports.all())  # list for LFO
-        return {facility.facility_name: facility for facility in obj.facility_reports.all()}
-
-
 class EmissionCategorySchema(ModelSchema):
     class Meta:
         model = EmissionCategory
@@ -401,19 +360,48 @@ class FacilityReportLFOSchema(ModelSchema):
         fields = ['facility', 'facility_name', 'id']
 
 
-class ReportVersionSchema(ReportVersionSchemaMixin, ModelSchema):
+class ReportVersionSchema(ModelSchema):
     report_operation: Optional[ReportOperationSchema] = None
     report_person_responsible: Optional[ReportPersonResponsibleOut] = None
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
     report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
-
-    # 👇 key change: Union of dict OR list
     facility_reports: Union[Dict[str, FacilityReportSchema], List[FacilityReportLFOSchema]] = {}
-
-    # report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
     operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
+
+    @staticmethod
+    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:
+        if (
+            obj.report_operation
+            and obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
+        ):
+            return None
+
+        data = ComplianceService.get_calculated_compliance_data(obj.id)
+        return ComplianceDataSchemaOut.model_validate(data) if data else None
+
+    @staticmethod
+    def resolve_operation_emission_summary(obj: ReportVersion) -> Optional[dict]:
+        if obj.report_operation.operation_type == Operation.Types.LFO:
+            return EmissionCategoryService.get_operation_emission_summary_form_data(obj.id)
+        return None
+
+    @staticmethod
+    def resolve_is_supplementary_report(obj: ReportVersion) -> bool:
+        return not ReportVersionService.is_initial_report_version(obj.id)
+
+    @staticmethod
+    def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
+        """
+        Returns facility reports as a dict for normal reports,
+        and as a list for LFO reports.
+        """
+        if obj.report_operation.operation_type == Operation.Types.EIO:
+            return {}  # always dict for EIO
+        if obj.report_operation.operation_type == Operation.Types.LFO:
+            return list(obj.facility_reports.all())  # list for LFO
+        return {facility.facility_name: facility for facility in obj.facility_reports.all()}
 
     class Meta:
         model = ReportVersion
