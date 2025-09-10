@@ -15,6 +15,10 @@ jobs:
   trufflehog:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -24,7 +28,8 @@ jobs:
       - name: Run TruffleHog on repository
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --only-verified --json --output trufflehog-repo-results.json
+          path: ./
+          extra_args: --only-verified --json --output trufflehog-repo-results.json --debug
         continue-on-error: true
 
       - name: Prepare content for scanning
@@ -101,8 +106,8 @@ jobs:
             curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
           fi
 
-          # Run TruffleHog on the content directory
-          trufflehog filesystem --path="$CONTENT_DIR" --only-verified --json --output trufflehog-content-results.json || true
+          # Run TruffleHog on the content directory (correct syntax for newer versions)
+          trufflehog filesystem "$CONTENT_DIR" --only-verified --json --debug > trufflehog-content-results.json || true
           echo "TruffleHog content scan completed"
 
           # Check if results file was created and show its contents
