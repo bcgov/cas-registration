@@ -1,4 +1,4 @@
-import { actionHandler } from "@bciers/actions";
+import { actionHandler, getToken } from "@bciers/actions";
 import {
   UserProfileFormData,
   UserProfilePartialFormData,
@@ -6,12 +6,17 @@ import {
 import { auth } from "@/dashboard/auth";
 import getUserFullName from "@bciers/utils/src/getUserFullName";
 import UserForm from "@/administration/app/components/profile/ProfileForm";
+import { IDP } from "@bciers/utils/src/enums";
 
 // 🚀 API call: GET user's data
 async function getUserFormData(): Promise<
   UserProfileFormData | { error: string }
 > {
   return actionHandler(`registration/user/user-profile`, "GET", "");
+}
+// 🚀 API call: GET user's Contact data
+async function getUserContactData(): Promise<number | { error: string }> {
+  return actionHandler(`registration/contact/`, "GET", "");
 }
 
 // 🏗️ Async server component: dashboard\profile
@@ -22,6 +27,21 @@ export default async function UserPage() {
   // get user's data
   let formData: UserProfilePartialFormData | { error: string } =
     await getUserFormData();
+  let contactId: number | null = null;
+  // need to get token to determine identity_provider
+  const token = await getToken();
+
+  if (token.identity_provider === IDP.BCEIDBUSINESS) {
+    const contactResponse = await getUserContactData();
+
+    if (typeof contactResponse === "object" && "error" in contactResponse) {
+      return (
+        <div>{`Server Error: failed to retrieve contact data. ${contactResponse.error}`}</div>
+      );
+    }
+    // if no error, this is a number
+    contactId = contactResponse;
+  }
 
   // Handle error case
   if ("error" in formData) {
@@ -47,5 +67,12 @@ export default async function UserPage() {
   }
 
   // Render the UserForm with the formData values
-  return <UserForm formData={formData} isCreate={isCreate} />;
+  return (
+    <UserForm
+      formData={formData}
+      isCreate={isCreate}
+      idp={token.identity_provider}
+      contactId={contactId}
+    />
+  );
 }

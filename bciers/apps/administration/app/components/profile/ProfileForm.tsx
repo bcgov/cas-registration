@@ -11,6 +11,7 @@ import {
   UserProfileFormData,
   UserProfilePartialFormData,
 } from "@bciers/types/form/formData";
+import { IDP } from "@bciers/utils/src/enums";
 
 export const userSchema: RJSFSchema = {
   type: "object",
@@ -32,21 +33,21 @@ export const userSchema: RJSFSchema = {
   },
 };
 
-export const userUiSchema = {
-  "ui:FieldTemplate": FieldTemplate,
-  phone_number: {
-    "ui:widget": "PhoneWidget",
-  },
-};
-
 // 📐 Interface: expected properties and their types for UserForm component
 
 interface Props {
   formData?: UserProfilePartialFormData;
   isCreate: boolean;
+  idp: string;
+  contactId?: number | null;
 }
 
-export default function ProfileForm({ formData, isCreate }: Props) {
+export default function ProfileForm({
+  formData,
+  isCreate,
+  idp,
+  contactId,
+}: Props) {
   // 🐜 To display errors
   const [errorList, setErrorList] = useState([] as any[]);
 
@@ -54,6 +55,34 @@ export default function ProfileForm({ formData, isCreate }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   // ✅ Success state for for the Submit button
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const emailHelpTextFirstClause = (
+    <div>
+      This email is used to log in. To change your login email, contact{" "}
+      <a href="mailto:ghgregulator@gov.bc.ca">ghgregulator@gov.bc.ca</a>
+    </div>
+  );
+
+  let emailHelpText: JSX.Element | null = null;
+
+  if (!isCreate && idp === IDP.BCEIDBUSINESS) {
+    if (contactId !== null && contactId !== undefined) {
+      emailHelpText = (
+        <>
+          {emailHelpTextFirstClause}
+          <div>
+            To change the email you are contacted with, edit the email in your{" "}
+            <a href={`administration/contacts/${contactId.toString()}`}>
+              contact details page
+            </a>
+            .
+          </div>
+        </>
+      );
+    } else {
+      emailHelpText = emailHelpTextFirstClause;
+    }
+  }
 
   // 👤 Use NextAuth.js hook to get information about the user's session
   //  Destructuring assignment from data property of the object returned by useSession()
@@ -76,10 +105,18 @@ export default function ProfileForm({ formData, isCreate }: Props) {
     }
   };
 
+  const userUiSchema = {
+    "ui:FieldTemplate": FieldTemplate,
+    phone_number: {
+      "ui:widget": "PhoneWidget",
+    },
+    email: {
+      "ui:help": emailHelpText,
+    },
+  };
+
   // 🛠️ Function to submit user form data to API
   const submitHandler = async (data: { formData?: UserProfileFormData }) => {
-    const session = await getSession();
-    const idp = session?.identity_provider || "";
     //Set states
     setErrorList([]);
     setIsLoading(true);
@@ -90,12 +127,7 @@ export default function ProfileForm({ formData, isCreate }: Props) {
       isCreate ? "POST" : "PUT",
       "/profile",
       {
-        body: JSON.stringify({
-          ...data.formData,
-          business_guid: session?.user?.bceid_business_guid,
-          bceid_business_name: session?.user?.bceid_business_name,
-          identity_provider: idp,
-        }),
+        body: JSON.stringify(data.formData),
       },
     );
     // 🛑 Set loading to false after the API call is completed
