@@ -132,15 +132,23 @@ export const reportNewEntrantFields = (
   productions: any[],
   reportNewEntrantEmission: any[],
 ) => {
-  const basicEmissions = reportNewEntrantEmission.filter(
+  const emissionsWithIndex = reportNewEntrantEmission.map(
+    (emission, index) => ({
+      ...emission,
+      originalIndex: index,
+    }),
+  );
+
+  const basicEmissionFields = emissionsWithIndex.filter(
     (emission) => emission.category_type === "basic",
   );
-  const fuelExcludedEmissionsFields = reportNewEntrantEmission.filter(
+  const fuelExcludedEmissionFields = emissionsWithIndex.filter(
     (emission) => emission.category_type === "fuel_excluded",
   );
-  const otherExcludedEmissionsFields = reportNewEntrantEmission.filter(
+  const otherExcludedEmissionFields = emissionsWithIndex.filter(
     (emission) => emission.category_type === "other_excluded",
   );
+
   return [
     {
       label: "Authorization Date",
@@ -158,6 +166,8 @@ export const reportNewEntrantFields = (
       isDate: true,
     },
     { label: "Assertion statement", key: "assertion_statement" },
+
+    // Production Data
     ...(productions.flatMap((product, index) => [
       { heading: `Product : ${product.product || `Product ${index + 1}`}` },
       {
@@ -169,35 +179,36 @@ export const reportNewEntrantFields = (
         key: `productions.${index}.production_amount`,
       },
     ]) || []),
-    ...(basicEmissions.length > 0
+
+    // Basic Emissions
+    ...(basicEmissionFields.length > 0
       ? [{ heading: "Emission categories after new entrant period began" }]
       : []),
-    ...(basicEmissions.flatMap((emission, index) => [
-      {
-        label: emission.emission_category,
-        key: `report_new_entrant_emission.${index}.emission`,
-      },
-    ]) || []),
-    ...(fuelExcludedEmissionsFields.length > 0
+    ...basicEmissionFields.map((emission) => ({
+      label: emission.emission_category,
+      key: `report_new_entrant_emission.${emission.originalIndex}.emission`,
+    })),
+
+    // Fuel Excluded Emissions
+    ...(fuelExcludedEmissionFields.length > 0
       ? [{ heading: "Emissions excluded by fuel type" }]
       : []),
-    ...(fuelExcludedEmissionsFields.flatMap((emission, index) => [
-      {
-        label: emission.emission_category,
-        key: `report_new_entrant_emission.${index}.emission`,
-      },
-    ]) || []),
-    ...(otherExcludedEmissionsFields.length > 0
+    ...fuelExcludedEmissionFields.map((emission) => ({
+      label: emission.emission_category,
+      key: `report_new_entrant_emission.${emission.originalIndex}.emission`,
+    })),
+
+    // Other Excluded Emissions
+    ...(otherExcludedEmissionFields.length > 0
       ? [{ heading: "Other emissions" }]
       : []),
-    ...(otherExcludedEmissionsFields.flatMap((emission, index) => [
-      {
-        label: emission.emission_category,
-        key: `report_new_entrant_emission.${index}.emission`,
-      },
-    ]) || []),
+    ...otherExcludedEmissionFields.map((emission) => ({
+      label: emission.emission_category,
+      key: `report_new_entrant_emission.${emission.originalIndex}.emission`,
+    })),
   ];
 };
+
 export const complianceSummaryFields = (products: any[] = []) => [
   {
     label: "Emissions attributable for reporting",
