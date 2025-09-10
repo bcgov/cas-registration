@@ -93,9 +93,27 @@ class DecreasedObligationHandler:
         previous_summary: ReportComplianceSummary,
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
-
+        """
+        Handle a supplementary decrease in obligation:
+        - Get previous `ComplianceReportVersion`
+        - Create a related supplementary `ComplianceReportVersion`
+        - Compute the monetary adjustment based on path:
+        - If 0 < new_excess < previous_excess:
+            adjustment_amount = (new_excess - previous_excess) × charge_rate
+        - If new_excess ≤ 0:
+            adjustment_amount = -(previous_excess × charge_rate)  # refund to zero
+        - Schedule the eLicensing adjustment for adjustment_amount on transaction commit
+        - If resulting obligation ≤ 0:
+           mark the previous version fully met
+           void any unpaid invoice
+        - If resulting obligation < 0:
+           create earned credits for the supplementary `ComplianceReportVersion`
+        """
         excess_emission_delta = new_summary.excess_emissions - previous_summary.excess_emissions
+
+        # Calculate the dollar amount difference for the adjustment
         charge_rate = ComplianceChargeRateService.get_rate_for_year(new_summary.report_version.report.reporting_year)
+        adjustment_amount = (excess_emission_delta * charge_rate).quantize(Decimal('0.01'))
 
         # Get the previous compliance report version to create adjustment for
         previous_compliance_version = (
@@ -104,7 +122,6 @@ class DecreasedObligationHandler:
             )
         )
 
-        # Create the supplementary compliance report version
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
@@ -116,13 +133,9 @@ class DecreasedObligationHandler:
             previous_version=previous_compliance_version,
         )
 
-
-        # Calculate the dollar amount difference for the adjustment
-        adjustment_amount = (excess_emission_delta * charge_rate).quantize(Decimal('0.01'))
-
-        # Override for the less-likely paths
+        # Overrides for the less-likely paths
         mark_previous_fully_met = False
-        create_earned_credits = False 
+        create_earned_credits = False
         if new_summary.excess_emissions == ZERO_DECIMAL:
             # Full refund to zero: previous * rate (negative)
             adjustment_amount = (-previous_summary.excess_emissions * charge_rate).quantize(Decimal('0.01'))
@@ -131,7 +144,7 @@ class DecreasedObligationHandler:
             # Refund only up to zero: previous * rate (negative)
             adjustment_amount = (-previous_summary.excess_emissions * charge_rate).quantize(Decimal('0.01'))
             mark_previous_fully_met = True
-            create_earned_credits = True 
+            create_earned_credits = True
 
         # Create adjustment in elicensing for the dollar amount difference
         # This is done outside the main transaction to prevent rollback if integration fails
@@ -157,16 +170,16 @@ class DecreasedObligationHandler:
                 ElicensingInvoice.objects.filter(
                     compliance_obligation__compliance_report_version_id=pv_id,
                     is_void=False,
-                ).exclude(
-                    compliance_obligation__penalty_status=ComplianceObligation.PenaltyStatus.PAID
-                ).update(is_void=True)
+                ).exclude(compliance_obligation__penalty_status=ComplianceObligation.PenaltyStatus.PAID).update(
+                    is_void=True
+                )
 
             # 3) If we’re below zero, create/update the CRV earned-credit record
             if do_credits:
                 ComplianceEarnedCreditsService.create_earned_credits_record(
                     compliance_report_version=compliance_report_version
                 )
-        
+
         transaction.on_commit(_after_commit)
 
         return compliance_report_version
