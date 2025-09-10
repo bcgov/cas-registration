@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { useRouter, useSessionRole } from "@bciers/testConfig/mocks";
-import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/no-obligation/review-summary/ComplianceSummaryReviewComponent";
+import ComplianceSummaryReviewComponent from "@/compliance/src/app/components/compliance-summary/no-obligation/review-compliance-no-obligation-report/ComplianceSummaryReviewComponent";
 
 // Mock the router
 const mockRouterPush = vi.fn();

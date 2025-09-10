@@ -6,7 +6,7 @@ import {
   tco2eUiConfig,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
-import { NoObligationOrCreditsAlertNote } from "@/compliance/src/app/components/compliance-summary/no-obligation/review-summary/NoObligationOrCreditsAlertNote";
+import { NoObligationOrCreditsAlertNote } from "@/compliance/src/app/components/compliance-summary/no-obligation/review-compliance-no-obligation-report/NoObligationOrCreditsAlertNote";
 
 export const complianceSummaryReviewSchema = (
   reportingYear: number,
