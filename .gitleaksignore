@@ -1,0 +1,70 @@
+# Gitleaks ignore file
+# Add paths or patterns to exclude from secret scanning
+
+# Dependencies
+node_modules/
+bciers/node_modules/
+bc_obps/__pycache__/
+**/__pycache__/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Test files that might contain test data
+**/test_*.py
+**/tests/
+**/*_test.py
+**/test_*.json
+**/test_*.yaml
+**/test_*.yml
+
+# Documentation
+docs/
+*.md
+README*
+
+# Configuration templates
+*.template
+*.example
+.env.example
+.env.template
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+
+# Helm charts (might contain example values)
+helm/**/values.yaml
+helm/**/values-*.yaml
+
+# Migration files (might contain test data)
+**/migrations/*.py
+
+# Fixtures (test data)
+**/fixtures/
+**/fixtures/*.json

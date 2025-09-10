@@ -121,5 +121,7 @@ jobs:
     secrets: inherit
   trivy:
     uses: ./.github/workflows/trivy.yaml
+  gitleaks:
+    uses: ./.github/workflows/gitleaks.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml

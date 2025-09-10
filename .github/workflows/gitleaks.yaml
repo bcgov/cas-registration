@@ -1,0 +1,87 @@
+name: Gitleaks Secret Detection
+
+on:
+  workflow_call:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited, synchronize]
+  pull_request_review_comment:
+    types: [created, edited]
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+      - name: Run Gitleaks on repository
+        run: |
+          gitleaks detect --source . --config .gitleaks.toml --verbose --redact
+        continue-on-error: true
+
+      - name: Run Gitleaks on issues and comments
+        run: |
+          # Get issue/PR content based on event type
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            echo "Scanning issue #${{ github.event.issue.number }}"
+            echo "${{ github.event.issue.title }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+            echo "${{ github.event.issue.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+          elif [ "${{ github.event_name }}" = "issue_comment" ]; then
+            echo "Scanning issue comment #${{ github.event.comment.id }}"
+            echo "${{ github.event.comment.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Scanning PR #${{ github.event.pull_request.number }}"
+            echo "${{ github.event.pull_request.title }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+            echo "${{ github.event.pull_request.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+          elif [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
+            echo "Scanning PR review comment #${{ github.event.comment.id }}"
+            echo "${{ github.event.comment.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+          fi
+        continue-on-error: true
+
+      - name: Comment on issue/PR if secrets found
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue?.number || context.payload.pull_request?.number
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('🚨 **Secret Detection Alert**')
+            );
+
+            if (botComment) {
+              console.log('Bot comment already exists, updating...');
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: `🚨 **Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\nPlease review and remove any sensitive information such as:\n- API keys\n- Passwords\n- Tokens\n- Database credentials\n- Private keys\n\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by Gitleaks.*`
+              });
+            } else {
+              console.log('Creating new bot comment...');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue?.number || context.payload.pull_request?.number,
+                body: `🚨 **Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\nPlease review and remove any sensitive information such as:\n- API keys\n- Passwords\n- Tokens\n- Database credentials\n- Private keys\n\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by Gitleaks.*`
+              });
+            }
