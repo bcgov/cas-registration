@@ -7,7 +7,7 @@ import path from "path";
 export default defineConfig({
   root: __dirname,
   cacheDir: "../../node_modules/.vite/apps/registration",
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react(), tsconfigPaths()] as any, // type: ignore - Vitest has incompatible types with Vite plugins
   test: {
     environment: "jsdom",
     globals: true,
