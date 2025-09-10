@@ -92,51 +92,6 @@ Define environment variables for the application.
     secretKeyRef:
       key: django-secret-key
       name: {{ include "cas-obps-backend-migration-test.fullname" . }}-backend
-- name: CHES_CLIENT_SECRET
-  valueFrom:
-    secretKeyRef:
-      key: clientSecret
-      name: ches-integration
-- name: CHES_CLIENT_ID
-  valueFrom:
-    secretKeyRef:
-      key: clientId
-      name: ches-integration
-- name: CHES_TOKEN_ENDPOINT
-  valueFrom:
-    secretKeyRef:
-      key: tokenEndpoint
-      name: ches-integration
-- name: CHES_API_URL
-  valueFrom:
-    secretKeyRef:
-      key: apiUrl
-      name: ches-integration
-- name: ELICENSING_API_URL
-  valueFrom:
-    secretKeyRef:
-      key: apiUrl
-      name: elicensing-integration
-- name: ELICENSING_AUTH_TOKEN
-  valueFrom:
-    secretKeyRef:
-      key: authToken
-      name: elicensing-integration
-- name: BCCR_API_URL
-  valueFrom:
-    secretKeyRef:
-      key: apiUrl
-      name: bccr-integration
-- name: BCCR_CLIENT_ID
-  valueFrom:
-    secretKeyRef:
-      key: clientId
-      name: bccr-integration
-- name: BCCR_CLIENT_SECRET
-  valueFrom:
-    secretKeyRef:
-      key: clientSecret
-      name: bccr-integration
 - name: DB_USER
   valueFrom:
     secretKeyRef:
