@@ -74,18 +74,72 @@ jobs:
 
       - name: Run TruffleHog on content
         if: env.CONTENT_DIR != ''
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --only-verified --json
+        run: |
+          echo "Running TruffleHog on prepared content..."
+          trufflehog filesystem --path="$CONTENT_DIR" --only-verified --json > trufflehog-content-results.json || true
+          echo "TruffleHog content scan completed"
         env:
-          TRUFFLEHOG_SOURCE: ${{ env.CONTENT_DIR }}
+          CONTENT_DIR: ${{ env.CONTENT_DIR }}
+        continue-on-error: true
+
+      - name: Check for secrets and comment
+        if: always()
+        run: |
+          echo "Checking for secrets in TruffleHog results..."
+
+          # Check if any results files exist and contain findings
+          SECRETS_FOUND=false
+
+          if [ -f "trufflehog-repo-results.json" ] && [ -s "trufflehog-repo-results.json" ]; then
+            echo "Checking repository scan results..."
+            if jq -e '. | length > 0' trufflehog-repo-results.json > /dev/null 2>&1; then
+              echo "Secrets found in repository scan"
+              SECRETS_FOUND=true
+            fi
+          fi
+
+          if [ -f "trufflehog-content-results.json" ] && [ -s "trufflehog-content-results.json" ]; then
+            echo "Checking content scan results..."
+            if jq -e '. | length > 0' trufflehog-content-results.json > /dev/null 2>&1; then
+              echo "Secrets found in content scan"
+              SECRETS_FOUND=true
+            fi
+          fi
+
+          if [ "$SECRETS_FOUND" = "true" ]; then
+            echo "SECRETS_FOUND=true" >> $GITHUB_ENV
+          else
+            echo "No secrets found"
+            echo "SECRETS_FOUND=false" >> $GITHUB_ENV
+          fi
         continue-on-error: true
 
       - name: Comment on issue/PR if secrets found
-        if: failure()
+        if: env.SECRETS_FOUND == 'true'
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
+
+            // Read TruffleHog results
+            let findings = [];
+            try {
+              if (fs.existsSync('trufflehog-repo-results.json')) {
+                const repoResults = JSON.parse(fs.readFileSync('trufflehog-repo-results.json', 'utf8'));
+                if (Array.isArray(repoResults)) {
+                  findings = findings.concat(repoResults);
+                }
+              }
+              if (fs.existsSync('trufflehog-content-results.json')) {
+                const contentResults = JSON.parse(fs.readFileSync('trufflehog-content-results.json', 'utf8'));
+                if (Array.isArray(contentResults)) {
+                  findings = findings.concat(contentResults);
+                }
+              }
+            } catch (error) {
+              console.log('Error reading TruffleHog results:', error);
+            }
+
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -97,13 +151,30 @@ jobs:
               comment.body.includes('🐷 **TruffleHog Secret Detection Alert**')
             );
 
+            let findingsText = '';
+            if (findings.length > 0) {
+              findingsText = '\n**Detected Secrets:**\n';
+              findings.slice(0, 5).forEach((finding, index) => {
+                const detector = finding.DetectorName || 'Unknown';
+                const file = finding.SourceMetadata?.Data?.Filesystem?.file || 'Unknown file';
+                findingsText += `${index + 1}. **${detector}** in \`${file}\`\n`;
+              });
+              if (findings.length > 5) {
+                findingsText += `\n... and ${findings.length - 5} more findings\n`;
+              }
+            } else {
+              findingsText = '\nTruffleHog detected potential secrets but could not parse detailed results.\n';
+            }
+
+            const commentBody = `🐷 **TruffleHog Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\n${findingsText}\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by TruffleHog.*`;
+
             if (botComment) {
               console.log('Bot comment already exists, updating...');
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: botComment.id,
-                body: `🐷 **TruffleHog Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\nTruffleHog found the following potential secrets:\n- High-entropy strings that may be API keys, tokens, or passwords\n- Patterns matching known secret formats\n- Suspicious data that could be sensitive information\n\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by TruffleHog.*`
+                body: commentBody
               });
             } else {
               console.log('Creating new bot comment...');
@@ -111,7 +182,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.issue?.number || context.payload.pull_request?.number,
-                body: `🐷 **TruffleHog Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\nTruffleHog found the following potential secrets:\n- High-entropy strings that may be API keys, tokens, or passwords\n- Patterns matching known secret formats\n- Suspicious data that could be sensitive information\n\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by TruffleHog.*`
+                body: commentBody
               });
             }
 
@@ -121,4 +192,5 @@ jobs:
           name: trufflehog-results
           path: |
             trufflehog-repo-results.json
+            trufflehog-content-results.json
           if-no-files-found: ignore
