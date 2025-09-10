@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union, Tuple, TypedDict
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union
 from deepdiff import DeepDiff
 import logging
 import re
@@ -155,7 +155,6 @@ class ReportReviewChangesService:
         idxs = [int(match.group(i)) for i in config['index_groups']]
         suffix = match.group(config['suffix_group'])
 
-        # --- Special case: facility_reports emission allocations ---
         if "facility_reports" in config['root']:
             facility_name = match.group(1)  # captured in regex
             allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation'][
@@ -174,8 +173,9 @@ class ReportReviewChangesService:
                 suffix=suffix,
             )
 
-        # --- Generic fallback for other configs ---
         item = ReportReviewChangesService._get_item_by_indexes(serialized_data, config['root'], config['subkeys'], idxs)
+        if item is None:
+            return path
         name = item[config['name_key']]
         return config['format'].format(
             entrant_idx=idxs[0],

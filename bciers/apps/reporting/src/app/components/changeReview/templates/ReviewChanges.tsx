@@ -29,6 +29,7 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   showChanges,
   isReportingOnly,
 }) => {
+  console.log("changes", changes);
   // Normalize keys for all changes at the root level
   const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
 

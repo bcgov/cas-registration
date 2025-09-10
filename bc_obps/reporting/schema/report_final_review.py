@@ -129,7 +129,10 @@ class ReportOperationSchema(ModelSchema):
 
     @staticmethod
     def resolve_representatives(obj: ReportOperation) -> str:
-        return "; ".join(rep.representative_name for rep in obj.report_version.report_operation_representatives.all())
+        return "; ".join(
+            rep.representative_name
+            for rep in obj.report_version.report_operation_representatives.filter(selected_for_report=True)
+        )
 
     @staticmethod
     def resolve_activities(obj: ReportOperation) -> str:
