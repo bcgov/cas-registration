@@ -24,7 +24,7 @@ jobs:
       - name: Run TruffleHog on repository
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --only-verified --format=json --output=trufflehog-repo-results.json
+          extra_args: --only-verified --json
         continue-on-error: true
 
       - name: Prepare content for scanning
@@ -76,7 +76,7 @@ jobs:
         if: env.CONTENT_DIR != ''
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --only-verified --format=json --output=trufflehog-content-results.json
+          extra_args: --only-verified --json
         env:
           TRUFFLEHOG_SOURCE: ${{ env.CONTENT_DIR }}
         continue-on-error: true
@@ -121,3 +121,4 @@ jobs:
           name: trufflehog-results
           path: |
             trufflehog-repo-results.json
+          if-no-files-found: ignore
