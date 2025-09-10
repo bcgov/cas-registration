@@ -71,10 +71,6 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
   modifiedFacilityData,
   isReportingOnly = false,
 }) => {
-  console.log(
-    "facilityData.nonAttributableEmissions",
-    facilityData.nonAttributableEmissions,
-  );
   // Detect added source types from activities
   const detectAddedSourceTypes = (): SourceTypeChange[] => {
     const addedSourceTypes: SourceTypeChange[] = [];

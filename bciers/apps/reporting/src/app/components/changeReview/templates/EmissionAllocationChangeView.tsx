@@ -13,8 +13,6 @@ import {
 export const EmissionAllocationChangeView: React.FC<
   EmissionAllocationChangeViewProps
 > = ({ data }) => {
-  console.log("EmissionAllocationChangeView data:", data);
-
   // Helper to extract category name
   const getCategoryName = (change: ChangeItem): string => {
     const newCategory = (change.newValue as EmissionCategoryData)
@@ -124,17 +122,22 @@ export const EmissionAllocationChangeView: React.FC<
   // Process field-based individual changes (legacy or new format)
   const processFieldBasedChange = (change: ChangeItem): DisplayChangeItem => {
     const productName = getDisplayLabel(change);
+    const getValueFromChange = (
+      value: string | Record<string, any> | any[] | null,
+    ) => {
+      if (!value) return value;
+      if (Array.isArray(value)) return value;
+      if (typeof value === "object" && "allocated_quantity" in value) {
+        return value.allocated_quantity;
+      }
+      return value;
+    };
+
     return {
       ...change,
       displayLabel: productName,
-      oldValue:
-        typeof change.oldValue === "object"
-          ? change.oldValue.allocated_quantity
-          : change.oldValue,
-      newValue:
-        typeof change.newValue === "object"
-          ? change.newValue.allocated_quantity
-          : change.newValue,
+      oldValue: getValueFromChange(change.oldValue),
+      newValue: getValueFromChange(change.newValue),
       change_type: change.change_type,
       isNewAddition: false,
     };

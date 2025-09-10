@@ -1,7 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { actionHandler } from "@bciers/actions";
-import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import {
+  NavigationInformation,
+  ReportingFlow,
+} from "@reporting/src/app/components/taskList/types";
 import MultiStepWrapperWithTaskList from "@bciers/components/form/MultiStepWrapperWithTaskList";
 import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
 import { useRouter } from "next/navigation";
@@ -12,8 +15,7 @@ interface ChangeReviewProps {
   initialFormData: any;
   navigationInformation: NavigationInformation;
   changes: ChangeItem[];
-  showChanges: boolean;
-  isReportingOnly?: boolean;
+  flow: ReportingFlow;
 }
 
 export default function ChangeReviewForm({
@@ -21,8 +23,7 @@ export default function ChangeReviewForm({
   initialFormData,
   navigationInformation,
   changes,
-  showChanges,
-  isReportingOnly = false,
+  flow,
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
@@ -74,11 +75,7 @@ export default function ChangeReviewForm({
       noFormSave={() => handleSubmit(false)}
       submitButtonDisabled={reasonForChange.trim() === ""}
     >
-      <ReviewChanges
-        changes={changes}
-        showChanges={showChanges}
-        isReportingOnly={isReportingOnly}
-      />
+      <ReviewChanges changes={changes} flow={flow} />
       <ReasonForChangeForm
         reasonForChange={reasonForChange}
         onReasonChange={(val) => {

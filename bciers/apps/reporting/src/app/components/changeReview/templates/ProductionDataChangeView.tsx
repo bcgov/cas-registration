@@ -50,7 +50,6 @@ const getChangeMeta = (
 export const ProductionDataChangeView: React.FC<
   ProductionDataChangeViewProps
 > = ({ data }) => {
-  console.log("ProductionDataChangeView data:", data);
   const fieldLabels: Record<string, string> = {
     product: "Product",
     unit: "Unit",

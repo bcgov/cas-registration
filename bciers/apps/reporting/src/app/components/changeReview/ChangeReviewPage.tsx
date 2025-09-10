@@ -9,8 +9,7 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import ChangeReviewForm from "./ChangeReviewForm";
 import { getChangeReviewData } from "@reporting/src/app/utils/getReviewChangesData";
-import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
 
 export default async function ChangeReviewPage({
   version_id,
@@ -25,8 +24,7 @@ export default async function ChangeReviewPage({
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
 
-  const registrationPurpose = (await getRegistrationPurpose(version_id))
-    .registration_purpose;
+  const flow = await getFlow(version_id);
 
   // Build task list
   const navInfo = await getNavigationInformation(
@@ -39,13 +37,6 @@ export default async function ChangeReviewPage({
       skipChangeReview: !isSupplementaryReport,
     },
   );
-  const showChanges = [
-    RegistrationPurposes.OBPS_REGULATED_OPERATION,
-    RegistrationPurposes.OPTED_IN_OPERATION,
-  ].includes(registrationPurpose);
-
-  const isReportingOnly =
-    registrationPurpose === RegistrationPurposes.REPORTING_OPERATION;
 
   return (
     <>
@@ -54,8 +45,7 @@ export default async function ChangeReviewPage({
         initialFormData={initialFormData}
         navigationInformation={navInfo}
         changes={changes.changed}
-        showChanges={showChanges}
-        isReportingOnly={isReportingOnly}
+        flow={flow}
       />
     </>
   );
