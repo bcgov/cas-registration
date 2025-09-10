@@ -34,22 +34,34 @@ jobs:
 
       - name: Run Gitleaks on issues and comments
         run: |
-          # Get issue/PR content based on event type
+          # Create temporary files for content to avoid shell injection
+          TEMP_DIR=$(mktemp -d)
+          CONTENT_FILE="$TEMP_DIR/content.txt"
+
+          # Get issue/PR content based on event type and write to file
           if [ "${{ github.event_name }}" = "issues" ]; then
             echo "Scanning issue #${{ github.event.issue.number }}"
-            echo "${{ github.event.issue.title }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
-            echo "${{ github.event.issue.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+            printf '%s\n' "${{ github.event.issue.title }}" > "$CONTENT_FILE"
+            printf '%s\n' "${{ github.event.issue.body }}" >> "$CONTENT_FILE"
           elif [ "${{ github.event_name }}" = "issue_comment" ]; then
             echo "Scanning issue comment #${{ github.event.comment.id }}"
-            echo "${{ github.event.comment.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+            printf '%s\n' "${{ github.event.comment.body }}" > "$CONTENT_FILE"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
             echo "Scanning PR #${{ github.event.pull_request.number }}"
-            echo "${{ github.event.pull_request.title }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
-            echo "${{ github.event.pull_request.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+            printf '%s\n' "${{ github.event.pull_request.title }}" > "$CONTENT_FILE"
+            printf '%s\n' "${{ github.event.pull_request.body }}" >> "$CONTENT_FILE"
           elif [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
             echo "Scanning PR review comment #${{ github.event.comment.id }}"
-            echo "${{ github.event.comment.body }}" | gitleaks detect --source . --config .gitleaks.toml --verbose --redact --stdin || true
+            printf '%s\n' "${{ github.event.comment.body }}" > "$CONTENT_FILE"
           fi
+
+          # Run gitleaks on the file if content exists
+          if [ -s "$CONTENT_FILE" ]; then
+            gitleaks detect --source "$CONTENT_FILE" --config .gitleaks.toml --verbose --redact || true
+          fi
+
+          # Clean up
+          rm -rf "$TEMP_DIR"
         continue-on-error: true
 
       - name: Comment on issue/PR if secrets found
