@@ -129,23 +129,60 @@ class TestComplianceDashboardService:
             'registration.tests.utils.operation', operator=user_operator.operator, status=Operation.Statuses.REGISTERED
         )
 
-        report = make_recipe('reporting.tests.utils.report', operator=user_operator.operator, operation=operation)
-        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
+        # Create reporting year first to ensure consistency
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
-        # Get the year instance and mock the service to use it
-        reporting_year = compliance_report.compliance_period.reporting_year
+        report = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation,
+            reporting_year=reporting_year,
+        )
+        compliance_report = make_recipe(
+            'compliance.tests.utils.compliance_report', report=report, compliance_period__reporting_year=reporting_year
+        )
+
+        # Mock the service to use the same reporting year
         mock_current_reporting_year.return_value = reporting_year
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for the first compliance report version
+        report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report)
+        report_compliance_summary_1 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_1
+        )
 
         compliance_report_version = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report,  # Ensure the same year
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary_1,
         )
+
+        # Create a separate operation, report and compliance report for the previous version
+        operation_2 = make_recipe(
+            'registration.tests.utils.operation', operator=user_operator.operator, status=Operation.Statuses.REGISTERED
+        )
+        report_2 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_2,
+            reporting_year=reporting_year,
+        )
+        compliance_report_2 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_2,
+            compliance_period__reporting_year=reporting_year,
+        )
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for the second compliance report version
+        report_version_2 = make_recipe('reporting.tests.utils.report_version', report=report_2)
+        report_compliance_summary_2 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_2
+        )
+
         previous_compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report,
-            # Ensure the same year
-            compliance_report__compliance_period__reporting_year=reporting_year,
-            compliance_report__report__reporting_year=reporting_year,
+            compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2,
         )
         mock_previously_owned.return_value = ComplianceReportVersion.objects.filter(
             id=previous_compliance_report_version.id
@@ -161,7 +198,9 @@ class TestComplianceDashboardService:
         assert result.last() == previous_compliance_report_version
 
     def test_get_compliance_report_versions_for_dashboard_unions_results(self, mock_current_reporting_year):
-        mock_current_reporting_year.return_value.reporting_year = 2026
+        # Use unique year to avoid conflicts with other tests
+        test_reporting_year = make_recipe('reporting.tests.utils.reporting_year', reporting_year=2126)
+        mock_current_reporting_year.return_value = test_reporting_year
 
         current_operator = make_recipe('registration.tests.utils.operator')
         previous_operator = make_recipe('registration.tests.utils.operator')
@@ -207,7 +246,7 @@ class TestComplianceDashboardService:
 
         xferred_emissions_report = make_recipe(
             'reporting.tests.utils.report',
-            reporting_year_id=2026,  # same year as active
+            reporting_year=test_reporting_year,  # same year as active
             operation=xferred_operation.operation,
             operator=previous_operator,
         )
@@ -218,9 +257,16 @@ class TestComplianceDashboardService:
             report=xferred_emissions_report,
         )
 
+        # Create properly linked ReportVersion and ReportComplianceSummary for transferred report
+        xferred_report_version = make_recipe('reporting.tests.utils.report_version', report=xferred_emissions_report)
+        xferred_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=xferred_report_version
+        )
+
         xferred_crv = make_recipe(
             'compliance.tests.utils.compliance_report_version',
             compliance_report=xferred_compliance_report,
+            report_compliance_summary=xferred_compliance_summary,
         )
 
         # ACTIVE DATA
@@ -234,7 +280,7 @@ class TestComplianceDashboardService:
 
         active_emissions_report = make_recipe(
             'reporting.tests.utils.report',
-            reporting_year_id=2026,
+            reporting_year=test_reporting_year,
             operation=active_operation.operation,
             operator=current_operator,
         )
@@ -245,9 +291,16 @@ class TestComplianceDashboardService:
             report=active_emissions_report,
         )
 
+        # Create properly linked ReportVersion and ReportComplianceSummary for active report
+        active_report_version = make_recipe('reporting.tests.utils.report_version', report=active_emissions_report)
+        active_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=active_report_version
+        )
+
         active_compliance_report_version = make_recipe(
             'compliance.tests.utils.compliance_report_version',
             compliance_report=active_compliance_report,
+            report_compliance_summary=active_compliance_summary,
         )
 
         active_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
@@ -270,24 +323,65 @@ class TestComplianceDashboardService:
             operator=user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
-        report_1 = make_recipe("reporting.tests.utils.report", operator=user_operator.operator, operation=operation_1)
-        compliance_report_1 = make_recipe("compliance.tests.utils.compliance_report", report=report_1)
+        # Create reporting year first to ensure consistency
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
-        # Get the year instance and mock the service to use it
-        reporting_year = compliance_report_1.compliance_period.reporting_year
+        report_1 = make_recipe(
+            "reporting.tests.utils.report",
+            operator=user_operator.operator,
+            operation=operation_1,
+            reporting_year=reporting_year,
+        )
+        compliance_report_1 = make_recipe(
+            "compliance.tests.utils.compliance_report",
+            report=report_1,
+            compliance_period__reporting_year=reporting_year,
+        )
+
+        # Mock the service to use the same reporting year
         mock_current_reporting_year.return_value = reporting_year
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_1
+        report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
+        report_compliance_summary_1 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_1
+        )
 
         # Include: earned credits (non-supplementary)
         compliance_report_version_1_1 = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report=compliance_report_1,
+            report_compliance_summary=report_compliance_summary_1,
             is_supplementary=False,
             status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
         )
+        # Create a separate report for the supplementary version to avoid immutability constraints
+        operation_1_supplementary = make_recipe(
+            "registration.tests.utils.operation", operator=user_operator.operator, status=Operation.Statuses.REGISTERED
+        )
+        report_1_supplementary = make_recipe(
+            'reporting.tests.utils.report',
+            operator=user_operator.operator,
+            operation=operation_1_supplementary,
+            reporting_year=reporting_year,
+        )
+        compliance_report_1_supplementary = make_recipe(
+            "compliance.tests.utils.compliance_report",
+            report=report_1_supplementary,
+            compliance_period__reporting_year=reporting_year,
+        )
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for the supplementary version
+        report_version_1_2 = make_recipe('reporting.tests.utils.report_version', report=report_1_supplementary)
+        report_compliance_summary_1_2 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_1_2
+        )
+
         # Exclude: create a supplementary compliance report version with no obligation and no earned credits
         make_recipe(
             "compliance.tests.utils.compliance_report_version",
-            compliance_report=compliance_report_1,
+            compliance_report=compliance_report_1_supplementary,
+            report_compliance_summary=report_compliance_summary_1_2,
             is_supplementary=True,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
         )
@@ -298,16 +392,28 @@ class TestComplianceDashboardService:
             operator=user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
-        report_2 = make_recipe("reporting.tests.utils.report", operator=user_operator.operator, operation=operation_2)
+        report_2 = make_recipe(
+            "reporting.tests.utils.report",
+            operator=user_operator.operator,
+            operation=operation_2,
+            reporting_year=reporting_year,
+        )
         compliance_report_2 = make_recipe(
             "compliance.tests.utils.compliance_report",
             report=report_2,
             compliance_period__reporting_year=reporting_year,  # <- pin year here
         )
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_2
+        report_version_2 = make_recipe('reporting.tests.utils.report_version', report=report_2)
+        report_compliance_summary_2 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_2
+        )
+
         # Include: original (non-supplementary) NO_OBL/credits
         compliance_report_version_2_1 = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2,
             is_supplementary=False,
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
         )
@@ -367,26 +473,50 @@ class TestComplianceDashboardService:
         operation_2 = make_recipe(
             'registration.tests.utils.operation', operator=operator_2, status=Operation.Statuses.REGISTERED
         )
-        report_1 = make_recipe('reporting.tests.utils.report', operator=operator_1, operation=operation_1)
-        report_2 = make_recipe('reporting.tests.utils.report', operator=operator_2, operation=operation_2)
-        compliance_report_1 = make_recipe('compliance.tests.utils.compliance_report', report=report_1)
+        # Create reporting year first to ensure consistency
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
-        # Get the year instance and mock the service to use it
-        reporting_year = compliance_report_1.compliance_period.reporting_year
+        report_1 = make_recipe(
+            'reporting.tests.utils.report', operator=operator_1, operation=operation_1, reporting_year=reporting_year
+        )
+        report_2 = make_recipe(
+            'reporting.tests.utils.report', operator=operator_2, operation=operation_2, reporting_year=reporting_year
+        )
+        compliance_report_1 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_1,
+            compliance_period__reporting_year=reporting_year,
+        )
+
+        # Mock the service to use the same reporting year
         mock_current_reporting_year.return_value = reporting_year
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_1
+        report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
+        report_compliance_summary_1 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_1
+        )
 
         compliance_report_version_1 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report_1,  # Ensures the same year
+            compliance_report=compliance_report_1,
+            report_compliance_summary=report_compliance_summary_1,
         )
         compliance_report_2 = make_recipe(
             'compliance.tests.utils.compliance_report',
             report=report_2,
             compliance_period__reporting_year=reporting_year,  # Ensures the same year
         )
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_2
+        report_version_2 = make_recipe('reporting.tests.utils.report_version', report=report_2)
+        report_compliance_summary_2 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_2
+        )
+
         compliance_report_version_2 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report_2,  # Ensures the same year
+            compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2,
         )
 
         make_recipe(
@@ -479,15 +609,28 @@ class TestComplianceDashboardService:
         user_guid = user_operator.user.user_guid
 
         # --- Report chain
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
         operation = make_recipe("registration.tests.utils.operation", operator=operator)
-        report = make_recipe("reporting.tests.utils.report", operator=operator, operation=operation)
-        compliance_report = make_recipe("compliance.tests.utils.compliance_report", report=report)
+        report = make_recipe(
+            "reporting.tests.utils.report", operator=operator, operation=operation, reporting_year=reporting_year
+        )
+        compliance_report = make_recipe(
+            "compliance.tests.utils.compliance_report", report=report, compliance_period__reporting_year=reporting_year
+        )
 
         # --- Compliance_report_version
+        # Create properly linked ReportVersion and ReportComplianceSummary
+        report_version = make_recipe('reporting.tests.utils.report_version', report=report)
+        report_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            report_version=report_version,
+            excess_emissions=Decimal("4.0"),
+        )
+
         compliance_report_version = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report=compliance_report,
-            report_compliance_summary__excess_emissions=Decimal("4.0"),
+            report_compliance_summary=report_compliance_summary,
         )
 
         # --- Invoice & obligation
@@ -541,22 +684,41 @@ class TestComplianceDashboardService:
             operator=approved_user_operator.operator,
             status=Operation.Statuses.REGISTERED,
         )
+        # Create reporting year first to ensure consistency
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
+
         report_1 = make_recipe(
-            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation_1
+            'reporting.tests.utils.report',
+            operator=approved_user_operator.operator,
+            operation=operation_1,
+            reporting_year=reporting_year,
         )
         report_2 = make_recipe(
-            'reporting.tests.utils.report', operator=approved_user_operator.operator, operation=operation_2
+            'reporting.tests.utils.report',
+            operator=approved_user_operator.operator,
+            operation=operation_2,
+            reporting_year=reporting_year,
         )
-        compliance_report_1 = make_recipe('compliance.tests.utils.compliance_report', report=report_1)
+        compliance_report_1 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_1,
+            compliance_period__reporting_year=reporting_year,
+        )
 
-        # Get the year instance and mock the service to use it
-        reporting_year = compliance_report_1.compliance_period.reporting_year
+        # Mock the service to use the same reporting year
         mock_current_reporting_year.return_value = reporting_year
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_1
+        report_version_1 = make_recipe('reporting.tests.utils.report_version', report=report_1)
+        report_compliance_summary_1 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_1
+        )
 
         # v1 report for report 1
         compliance_report_version_1 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report_1,  # Ensures the same year
+            compliance_report=compliance_report_1,
+            report_compliance_summary=report_compliance_summary_1,
             excess_emissions_delta_from_previous=Decimal("0.0"),
         )
         compliance_report_version_1.report_compliance_summary.excess_emissions = Decimal("10.0")
@@ -568,17 +730,49 @@ class TestComplianceDashboardService:
             report=report_2,
             compliance_period__reporting_year=reporting_year,  # Ensures the same year
         )
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_2 version 1
+        report_version_2_1 = make_recipe('reporting.tests.utils.report_version', report=report_2)
+        report_compliance_summary_2_1 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_2_1
+        )
+
         compliance_report_version_2_1 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report_2,  # Ensures the same year
+            compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2_1,
             excess_emissions_delta_from_previous=Decimal("0.0"),
         )
         compliance_report_version_2_1.report_compliance_summary.excess_emissions = Decimal("20.0")
         compliance_report_version_2_1.report_compliance_summary.save()
+        # Create a separate report for version 2 to avoid immutability constraints
+        operation_2_v2 = make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        report_2_v2 = make_recipe(
+            'reporting.tests.utils.report',
+            operator=approved_user_operator.operator,
+            operation=operation_2_v2,
+            reporting_year=reporting_year,
+        )
+        compliance_report_2_v2 = make_recipe(
+            'compliance.tests.utils.compliance_report',
+            report=report_2_v2,
+            compliance_period__reporting_year=reporting_year,
+        )
+
+        # Create properly linked ReportVersion and ReportComplianceSummary for report_2 version 2
+        report_version_2_2 = make_recipe('reporting.tests.utils.report_version', report=report_2_v2)
+        report_compliance_summary_2_2 = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_2_2
+        )
+
         # v2 report for report 2
         compliance_report_version_2_2 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report_2,  # Ensures the same year
+            compliance_report=compliance_report_2_v2,
+            report_compliance_summary=report_compliance_summary_2_2,
             excess_emissions_delta_from_previous=Decimal("5.0"),
             is_supplementary=True,
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
@@ -632,15 +826,23 @@ class TestComplianceDashboardService:
             "reporting.tests.utils.report",
             operator=user_operator.operator,
             operation=operation,
+            reporting_year=ry_current,  # Ensure Report's reporting_year matches
         )
         cr_current = make_recipe(
             "compliance.tests.utils.compliance_report",
             report=report_current,
             compliance_period=cp_current,
         )
+        # Create properly linked ReportVersion and ReportComplianceSummary for current
+        report_version_current = make_recipe('reporting.tests.utils.report_version', report=report_current)
+        report_compliance_summary_current = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_current
+        )
+
         v_current = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report=cr_current,
+            report_compliance_summary=report_compliance_summary_current,
         )
 
         # --- past-year version (EXCLUDED) ---
@@ -648,15 +850,23 @@ class TestComplianceDashboardService:
             "reporting.tests.utils.report",
             operator=user_operator.operator,
             operation=operation,
+            reporting_year=ry_past,  # Ensure Report's reporting_year matches
         )
         cr_past = make_recipe(
             "compliance.tests.utils.compliance_report",
             report=report_past,
             compliance_period=cp_past,
         )
+        # Create properly linked ReportVersion and ReportComplianceSummary for past
+        report_version_past = make_recipe('reporting.tests.utils.report_version', report=report_past)
+        report_compliance_summary_past = make_recipe(
+            'reporting.tests.utils.report_compliance_summary', report_version=report_version_past
+        )
+
         v_past = make_recipe(
             "compliance.tests.utils.compliance_report_version",
             compliance_report=cr_past,
+            report_compliance_summary=report_compliance_summary_past,
         )
 
         # --- previously-owned (past year) (EXCLUDED) ---

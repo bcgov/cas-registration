@@ -262,4 +262,8 @@ class ComplianceReportVersionService:
             'compliance_report__report__operation',
             'compliance_report__compliance_period',
             'compliance_earned_credit',
+            'report_compliance_summary__report_version__report__operator',
+            'report_compliance_summary__report_version__report__operation',
+            'report_compliance_summary__report_version__report__reporting_year',
+            'report_compliance_summary__report_version__report_operation',
         )
