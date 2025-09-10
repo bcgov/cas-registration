@@ -2,6 +2,7 @@ from decimal import Decimal
 from compliance.models import ComplianceReportVersion
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from reporting.models import ReportVersion
+from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.supplementary_version_service import (
     NoChangeHandler,
     SupplementaryVersionService,
@@ -17,6 +18,96 @@ import common.lib.pgtrigger as pgtrigger
 from registration.models import Operation
 
 pytestmark = pytest.mark.django_db(transaction=True)
+
+SUPPLEMENTARY_VERSION_SERVICE_PATH = "compliance.service.supplementary_version_service"
+
+LOGGER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.logger"
+INCREASED_CREDIT_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.IncreasedCreditHandler.handle"
+DECREASED_CREDIT_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.DecreasedCreditHandler.handle"
+INCREASED_OBLIGATION_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.IncreasedObligationHandler.handle"
+DECREASED_OBLIGATION_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.DecreasedObligationHandler.handle"
+NO_OBLIGATION_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.NoChangeHandler.handle"
+HANDLE_OBLIGATION_INTEGRATION_PATH = (
+    f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.ElicensingObligationService.handle_obligation_integration"
+)
+CREATE_COMPLIANCE_OBLIGATION_PATH = (
+    f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.ComplianceObligationService.create_compliance_obligation"
+)
+
+CREATE_EARNED_CREDIT_PATH = (
+    'compliance.service.earned_credits_service.ComplianceEarnedCreditsService.create_earned_credits_record'
+)
+
+CREATE_ADJUSTMENT_PATH = (
+    'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
+)
+GET_RATE_PATH = 'compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year'
+
+
+@pytest.fixture
+def mock_logger():
+    with patch(LOGGER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_increased_credit_handler():
+    with patch(INCREASED_CREDIT_HANDLER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_decreased_credit_handler():
+    with patch(DECREASED_CREDIT_HANDLER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_increased_handler():
+    with patch(INCREASED_OBLIGATION_HANDLER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_decreased_handler():
+    with patch(DECREASED_OBLIGATION_HANDLER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_no_change_handler():
+    with patch(NO_OBLIGATION_HANDLER_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_handle_integration():
+    with patch(HANDLE_OBLIGATION_INTEGRATION_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_create_obligation():
+    with patch(CREATE_COMPLIANCE_OBLIGATION_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_create_adjustment():
+    with patch(CREATE_ADJUSTMENT_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_get_rate():
+    with patch(GET_RATE_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_create_credits():
+    with patch(CREATE_EARNED_CREDIT_PATH) as mock:
+        yield mock
 
 
 class BaseSupplementaryVersionServiceTest:
@@ -41,11 +132,6 @@ class BaseSupplementaryVersionServiceTest:
 
 
 class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     def test_handle_increased_obligation_success(
         self,
         mock_increased_handler,
@@ -92,11 +178,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
 
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     def test_handle_decreased_obligation_success(
         self,
         mock_increased_handler,
@@ -143,12 +224,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
 
-    @patch('compliance.service.supplementary_version_service.logger')
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     def test_handle_supplementary_version_no_handler_found(
         self,
         mock_increased_handler,
@@ -206,12 +281,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
 
-    @patch('compliance.service.supplementary_version_service.logger')
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     def test_handle_supplementary_version_no_previous_version(
         self,
         mock_increased_handler,
@@ -249,11 +318,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_increased_credit_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
 
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     def test_handle_increased_credit_success(
         self,
         mock_increased_handler,
@@ -312,11 +376,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler.assert_not_called()
         mock_decreased_credit_handler.assert_not_called()
 
-    @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
-    @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
-    @patch('compliance.service.supplementary_version_service.DecreasedObligationHandler.handle')
-    @patch('compliance.service.supplementary_version_service.IncreasedObligationHandler.handle')
     def test_handle_decreased_credit_success(
         self,
         mock_increased_handler,
@@ -419,8 +478,6 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
-    @patch('compliance.service.supplementary_version_service.ElicensingObligationService.handle_obligation_integration')
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
     def test_handle_creates_compliance_report_version_and_obligation_integration_runs(
         self, mock_create_obligation, mock_handle_integration
     ):
@@ -473,8 +530,6 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_create_obligation.assert_called_once_with(result.id, Decimal('300'))
         mock_handle_integration.assert_called_once_with(mock_obligation.id, self.compliance_report.compliance_period)
 
-    @patch('compliance.service.supplementary_version_service.ElicensingObligationService.handle_obligation_integration')
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
     def test_handle_creates_compliance_report_version_and_obligation_integration_skipped(
         self, mock_create_obligation, mock_handle_integration
     ):
@@ -526,8 +581,6 @@ class TestIncreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         mock_create_obligation.assert_called_once_with(result.id, Decimal('300'))
         mock_handle_integration.assert_called_once_with(mock_obligation.id, self.compliance_report.compliance_period)
 
-    @patch('compliance.service.supplementary_version_service.ElicensingObligationService.handle_obligation_integration')
-    @patch('compliance.service.compliance_obligation_service.ComplianceObligationService.create_compliance_obligation')
     def test_handle_calculates_correct_excess_emission_delta(self, mock_create_obligation, mock_handle_integration):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
@@ -639,10 +692,6 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is False
 
-    @patch(
-        'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
-    )
-    @patch('compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year')
     def test_handle_creates_compliance_report_version_and_adjustment(self, mock_get_rate, mock_create_adjustment):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
@@ -802,6 +851,266 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
                     adjustment_total=expected_adjustment_amount,
                     supplementary_compliance_report_version_id=result.id,
                 )
+
+    def test_handle_to_zero_marks_previous_fully_met_and_voids_invoice(self, mock_get_rate, mock_create_adjustment):
+        """
+        When new excess == 0:
+          - refund = -previous_excess * rate
+          - previous CRV status -> OBLIGATION_FULLY_MET
+          - related invoice is_void becomes True (unless penalty PAID)
+        """
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('300'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_1,
+            )
+            new_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('0'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_2,
+            )
+
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev_sum,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+
+        # invoice + obligation linked to previous CRV (not paid; should be voided)
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', is_void=False)
+        _obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=prev_crv,
+            elicensing_invoice=invoice,
+            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
+        )
+
+        mock_get_rate.return_value = Decimal('50.00')
+
+        result = DecreasedObligationHandler.handle(
+            compliance_report=report,
+            new_summary=new_sum,
+            previous_summary=prev_sum,
+            version_count=2,
+        )
+
+        # Adjustment posted with full refund
+        expected_adjustment_amount = (Decimal('-300') * Decimal('50.00')).quantize(Decimal('0.01'))
+        mock_create_adjustment.assert_called_once_with(
+            target_compliance_report_version_id=prev_crv.id,
+            adjustment_total=expected_adjustment_amount,
+            supplementary_compliance_report_version_id=result.id,
+        )
+
+        # Previous CRV status updated
+        prev_crv.refresh_from_db()
+        assert prev_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+
+        # Invoice voided
+        invoice.refresh_from_db()
+        assert invoice.is_void is True
+
+    def test_handle_to_zero_does_not_void_invoice_if_penalty_paid(self, mock_get_rate, mock_create_adjustment):
+        """
+        When penalty_status == PAID, the invoice should not be voided by the flow.
+        """
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('150'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_1,
+            )
+            new_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('0'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_2,
+            )
+
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev_sum,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', is_void=False)
+        _obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=prev_crv,
+            elicensing_invoice=invoice,
+            penalty_status=ComplianceObligation.PenaltyStatus.PAID,  # <- should prevent voiding
+        )
+
+        mock_get_rate.return_value = Decimal('40.00')
+
+        _result = DecreasedObligationHandler.handle(
+            compliance_report=report,
+            new_summary=new_sum,
+            previous_summary=prev_sum,
+            version_count=2,
+        )
+
+        # Adjustment posted
+        mock_create_adjustment.assert_called_once()
+
+        # Previous CRV becomes fully met
+        prev_crv.refresh_from_db()
+        assert prev_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+
+        # Invoice NOT voided due to penalty PAID
+        invoice.refresh_from_db()
+        assert invoice.is_void is False
+
+    def test_handle_below_zero_creates_earned_credits_and_voids_invoice_and_marks_fully_met(
+        self, mock_get_rate, mock_create_adjustment, mock_create_credits
+    ):
+        """
+        When new excess < 0 (below limit):
+          - refund = -previous_excess * rate
+          - previous CRV status -> OBLIGATION_FULLY_MET
+          - invoice is_void=True
+          - earned credits record is created via service (service reads credited_emissions)
+        """
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('300'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_1,
+            )
+            # Below-limit: negative excess (if your RCS canonicalizes, you can set excess=0 and credited_emissions>0 instead)
+            new_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('-10'),
+                credited_emissions=Decimal('10'),
+                report_version=self.report_version_2,
+            )
+
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev_sum,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', is_void=False)
+        _obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=prev_crv,
+            elicensing_invoice=invoice,
+            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
+        )
+
+        mock_get_rate.return_value = Decimal('20.00')
+
+        result = DecreasedObligationHandler.handle(
+            compliance_report=report,
+            new_summary=new_sum,
+            previous_summary=prev_sum,
+            version_count=3,
+        )
+
+        # Refund only up to zero: -previous_excess * rate
+        expected_adjustment_amount = (Decimal('-300') * Decimal('20.00')).quantize(Decimal('0.01'))
+        mock_create_adjustment.assert_called_once_with(
+            target_compliance_report_version_id=prev_crv.id,
+            adjustment_total=expected_adjustment_amount,
+            supplementary_compliance_report_version_id=result.id,
+        )
+
+        # Previous CRV status updated and invoice voided
+        prev_crv.refresh_from_db()
+        assert prev_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        invoice.refresh_from_db()
+        assert invoice.is_void is True
+
+        # Earned credits created for the new supplementary CRV
+        mock_create_credits.assert_called_once_with(compliance_report_version=result)
+
+    def test_handle_partial_refund_does_not_void_or_mark_or_create_credits(
+        self, mock_get_rate, mock_create_adjustment, mock_create_credits
+    ):
+        """
+        When new excess > 0 (still above limit, but reduced):
+          - partial refund = (new - previous) * rate (negative)
+          - DO NOT mark previous CRV fully met
+          - DO NOT void invoice
+          - DO NOT create earned credits
+        """
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            prev_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('600'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_1,
+            )
+            new_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('400'),
+                credited_emissions=Decimal('0'),
+                report_version=self.report_version_2,
+            )
+
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        prev_crv = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev_sum,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', is_void=False)
+        _obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=prev_crv,
+            elicensing_invoice=invoice,
+            penalty_status=ComplianceObligation.PenaltyStatus.NONE,
+        )
+
+        mock_get_rate.return_value = Decimal('10.00')
+
+        result = DecreasedObligationHandler.handle(
+            compliance_report=report,
+            new_summary=new_sum,
+            previous_summary=prev_sum,
+            version_count=2,
+        )
+
+        # Partial refund amount = (400 - 600) * 10 = -2000.00
+        expected_adjustment_amount = (Decimal('-200') * Decimal('10.00')).quantize(Decimal('0.01'))
+        mock_create_adjustment.assert_called_once_with(
+            target_compliance_report_version_id=prev_crv.id,
+            adjustment_total=expected_adjustment_amount,
+            supplementary_compliance_report_version_id=result.id,
+        )
+
+        # No status flip to fully met
+        prev_crv.refresh_from_db()
+        assert prev_crv.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+
+        # Invoice remains not void
+        invoice.refresh_from_db()
+        assert invoice.is_void is False
+
+        # No earned credits created
+        mock_create_credits.assert_not_called()
 
 
 class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
