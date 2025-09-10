@@ -1,0 +1,123 @@
+name: TruffleHog Secret Detection
+
+on:
+  workflow_call:
+  issues:
+    types: [opened, edited]
+  issue_comment:
+    types: [created, edited]
+  pull_request:
+    types: [opened, edited, synchronize]
+  pull_request_review_comment:
+    types: [created, edited]
+
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog on repository
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified --format=json --output=trufflehog-repo-results.json
+        continue-on-error: true
+
+      - name: Prepare content for scanning
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          # Create temporary files for content to avoid shell injection
+          TEMP_DIR=$(mktemp -d)
+          CONTENT_FILE="$TEMP_DIR/content.txt"
+
+          echo "=== Preparing Content for Scanning ==="
+
+          # Get issue/PR content based on event type and write to file
+          if [ "$EVENT_NAME" = "issues" ]; then
+            echo "Preparing issue #$ISSUE_NUMBER content"
+            printf '%s\n' "$ISSUE_TITLE" > "$CONTENT_FILE"
+            printf '%s\n' "$ISSUE_BODY" >> "$CONTENT_FILE"
+          elif [ "$EVENT_NAME" = "issue_comment" ]; then
+            echo "Preparing issue comment #$COMMENT_ID content"
+            printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "Preparing PR #$PR_NUMBER content"
+            printf '%s\n' "$PR_TITLE" > "$CONTENT_FILE"
+            printf '%s\n' "$PR_BODY" >> "$CONTENT_FILE"
+          elif [ "$EVENT_NAME" = "pull_request_review_comment" ]; then
+            echo "Preparing PR review comment #$COMMENT_ID content"
+            printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+          fi
+
+          # Check if content exists and create a temporary directory for TruffleHog
+          if [ -s "$CONTENT_FILE" ]; then
+            echo "Content prepared for scanning"
+            echo "CONTENT_DIR=$TEMP_DIR" >> $GITHUB_ENV
+          else
+            echo "No content to scan"
+            echo "CONTENT_DIR=" >> $GITHUB_ENV
+          fi
+        continue-on-error: true
+
+      - name: Run TruffleHog on content
+        if: env.CONTENT_DIR != ''
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified --format=json --output=trufflehog-content-results.json
+        env:
+          TRUFFLEHOG_SOURCE: ${{ env.CONTENT_DIR }}
+        continue-on-error: true
+
+      - name: Comment on issue/PR if secrets found
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue?.number || context.payload.pull_request?.number
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('🐷 **TruffleHog Secret Detection Alert**')
+            );
+
+            if (botComment) {
+              console.log('Bot comment already exists, updating...');
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: `🐷 **TruffleHog Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\nTruffleHog found the following potential secrets:\n- High-entropy strings that may be API keys, tokens, or passwords\n- Patterns matching known secret formats\n- Suspicious data that could be sensitive information\n\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by TruffleHog.*`
+              });
+            } else {
+              console.log('Creating new bot comment...');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue?.number || context.payload.pull_request?.number,
+                body: `🐷 **TruffleHog Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\nTruffleHog found the following potential secrets:\n- High-entropy strings that may be API keys, tokens, or passwords\n- Patterns matching known secret formats\n- Suspicious data that could be sensitive information\n\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by TruffleHog.*`
+              });
+            }
+
+      - name: Upload TruffleHog results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: trufflehog-results
+          path: |
+            trufflehog-repo-results.json
