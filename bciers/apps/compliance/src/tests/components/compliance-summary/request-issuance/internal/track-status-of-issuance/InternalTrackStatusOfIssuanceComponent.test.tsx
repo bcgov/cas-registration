@@ -1,6 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import InternalTrackStatusOfIssuanceComponent from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalTrackStatusOfIssuanceComponent";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import {
+  IssuanceStatus,
+  AnalystSuggestion,
+  FrontEndRoles,
+} from "@bciers/utils/src/enums";
 import { RequestIssuanceComplianceSummaryData } from "@/compliance/src/app/types";
 
 // Mock the note components
@@ -25,6 +29,11 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
+let mockRole: FrontEndRoles = FrontEndRoles.CAS_DIRECTOR;
+vi.mock("@bciers/utils/src/sessionUtils", () => ({
+  useSessionRole: () => mockRole,
+}));
+
 describe("InternalTrackStatusOfIssuanceComponent", () => {
   const mockComplianceReportVersionId = 123;
   const mockData: RequestIssuanceComplianceSummaryData = {
@@ -45,6 +54,64 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  it("shows Analyst's Comment and hides Director's Comment for director route when auto-declined due to supplementary report", () => {
+    const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+      analyst_comment: "Analyst explains supplementary report requirement",
+      director_comment: "Director's comment should be hidden",
+    };
+
+    // Ensure role indicates CAS Director
+    mockRole = FrontEndRoles.CAS_DIRECTOR;
+
+    render(
+      <InternalTrackStatusOfIssuanceComponent
+        data={declinedDueToSupplementary}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    // Analyst's Comment should be shown
+    expect(screen.getByText("Analyst's Comment:")).toBeVisible();
+    expect(
+      screen.getByText("Analyst explains supplementary report requirement"),
+    ).toBeVisible();
+
+    // Director's Comment should be hidden
+    expect(screen.queryByText("Director's Comment:")).toBeNull();
+    expect(
+      screen.queryByText("Director's comment should be hidden"),
+    ).toBeNull();
+  });
+
+  it("does not show Analyst's Comment for analyst route when auto-declined due to supplementary report", () => {
+    const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+      analyst_comment: "Analyst explains supplementary report requirement",
+      director_comment: "",
+    } as any;
+
+    // Ensure role indicates CAS Analyst
+    mockRole = FrontEndRoles.CAS_ANALYST;
+
+    render(
+      <InternalTrackStatusOfIssuanceComponent
+        data={declinedDueToSupplementary}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    // Analyst's Comment should NOT be shown
+    expect(screen.queryByText("Analyst's Comment:")).toBeNull();
+    expect(
+      screen.queryByText("Analyst explains supplementary report requirement"),
+    ).toBeNull();
   });
 
   it("renders form fields and navigation buttons for approved status", () => {

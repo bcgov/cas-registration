@@ -7,7 +7,8 @@ import {
   internalTrackStatusOfIssuanceSchema,
   internalTrackStatusOfIssuanceUiSchema,
 } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/internalTrackStatusOfIssuanceSchema";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { FrontEndRoles, IssuanceStatus } from "@bciers/utils/src/enums";
+import { useSessionRole } from "@bciers/utils/src/sessionUtils";
 
 interface Props {
   data: RequestIssuanceComplianceSummaryData;
@@ -18,6 +19,9 @@ export default function InternalTrackStatusOfIssuanceComponent({
   data,
   complianceReportVersionId,
 }: Readonly<Props>) {
+  const role = useSessionRole();
+  const isDirector = role === FrontEndRoles.CAS_DIRECTOR;
+
   let backUrl = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
   if (
     [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
@@ -31,7 +35,7 @@ export default function InternalTrackStatusOfIssuanceComponent({
     <FormBase
       schema={internalTrackStatusOfIssuanceSchema}
       uiSchema={internalTrackStatusOfIssuanceUiSchema}
-      formData={data}
+      formData={{ ...data, is_director: isDirector }}
       className="w-full"
       formContext={{ analystSuggestion: data.analyst_suggestion }}
     >
