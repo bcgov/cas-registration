@@ -14,6 +14,7 @@ interface Props {
   version_id: any;
   navigationInformation: NavigationInformation;
   children?: React.ReactNode;
+  flow?: any;
 }
 
 export const FinalReviewForm: React.FC<Props> = ({
@@ -23,7 +24,6 @@ export const FinalReviewForm: React.FC<Props> = ({
 }) => {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     async function fetchData() {
       const finalReviewData = await getFinalReviewData(version_id);
