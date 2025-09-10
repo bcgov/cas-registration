@@ -117,6 +117,11 @@ export interface FacilityReport {
   emission_summary: EmissionSummary;
   report_emission_allocation: ReportEmissionAllocation;
 }
+
+export interface FacilityReportLFO {
+  facility: string;
+  facility_name: string;
+}
 export interface ReportProduct {
   report_product_id: number;
   product_name: string;
@@ -177,7 +182,7 @@ export interface ReportData {
   report_additional_data: ReportAdditionalData;
   report_compliance_summary: ReportComplianceSummary;
   operation_emission_summary: OperationEmissionSummary;
-  facility_reports: FacilityReport[];
+  facility_reports: FacilityReport[] | FacilityReportLFO[];
   is_supplementary_report: boolean;
   report_new_entrant: ReportNewEntrant[];
   report_electricity_import_data: ReportElectricityImportData[];

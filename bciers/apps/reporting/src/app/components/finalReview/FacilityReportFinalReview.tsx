@@ -22,7 +22,7 @@ export default function FacilityReportFinalReview({
   const [loading, setLoading] = useState(true);
   const facilityId = browserSearchParams.get("facility_id");
   const backUrl = pathname.includes("/submitted")
-    ? `/reporting/reports/${version_id}/submitted` // go back to submitted reports
+    ? `/reporting/reports/${version_id}/submitted#facility-grid` // go back to submitted reports
     : `/reporting/reports/${version_id}/final-review#facility-grid`; // go back to final review
 
   const taskListElements: TaskListElement[] = [
