@@ -11,6 +11,7 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 SENDER_EMAIL = 'no-reply.cas@gov.bc.ca'
+GHG_REGULATOR_EMAIL = 'GHGRegulator@gov.bc.ca'
 
 
 class Message(TypedDict):
@@ -144,6 +145,7 @@ class EmailService(object):
                     {
                         'context': dict,
                         'to': List[str],
+                        'cc': List[str],
                     }
                 ],
                 'from': str,
@@ -182,6 +184,7 @@ class EmailService(object):
                 {
                     'context': email_context,
                     'to': recipients_email,
+                    'cc': [GHG_REGULATOR_EMAIL],
                 }
             ],
             'from': SENDER_EMAIL,
