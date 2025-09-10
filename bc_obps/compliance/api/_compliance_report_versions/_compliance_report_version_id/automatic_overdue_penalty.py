@@ -24,4 +24,4 @@ def get_automatic_overdue_penalty(request: HttpRequest, compliance_report_versio
     # Get the compliance obligation for this compliance report version
     obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
 
-    return 200, PenaltyCalculationService.get_penalty_data(obligation)
+    return 200, PenaltyCalculationService.get_automatic_overdue_penalty_data(obligation)
