@@ -24,7 +24,7 @@ jobs:
       - name: Run TruffleHog on repository
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --only-verified --json
+          extra_args: --only-verified --json --output trufflehog-repo-results.json
         continue-on-error: true
 
       - name: Prepare content for scanning
@@ -44,28 +44,43 @@ jobs:
           CONTENT_FILE="$TEMP_DIR/content.txt"
 
           echo "=== Preparing Content for Scanning ==="
+          echo "Event: $EVENT_NAME"
 
           # Get issue/PR content based on event type and write to file
           if [ "$EVENT_NAME" = "issues" ]; then
             echo "Preparing issue #$ISSUE_NUMBER content"
-            printf '%s\n' "$ISSUE_TITLE" > "$CONTENT_FILE"
-            printf '%s\n' "$ISSUE_BODY" >> "$CONTENT_FILE"
+            if [ -n "$ISSUE_TITLE" ]; then
+              printf '%s\n' "$ISSUE_TITLE" > "$CONTENT_FILE"
+            fi
+            if [ -n "$ISSUE_BODY" ]; then
+              printf '%s\n' "$ISSUE_BODY" >> "$CONTENT_FILE"
+            fi
           elif [ "$EVENT_NAME" = "issue_comment" ]; then
             echo "Preparing issue comment #$COMMENT_ID content"
-            printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+            if [ -n "$COMMENT_BODY" ]; then
+              printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+            fi
           elif [ "$EVENT_NAME" = "pull_request" ]; then
             echo "Preparing PR #$PR_NUMBER content"
-            printf '%s\n' "$PR_TITLE" > "$CONTENT_FILE"
-            printf '%s\n' "$PR_BODY" >> "$CONTENT_FILE"
+            if [ -n "$PR_TITLE" ]; then
+              printf '%s\n' "$PR_TITLE" > "$CONTENT_FILE"
+            fi
+            if [ -n "$PR_BODY" ]; then
+              printf '%s\n' "$PR_BODY" >> "$CONTENT_FILE"
+            fi
           elif [ "$EVENT_NAME" = "pull_request_review_comment" ]; then
             echo "Preparing PR review comment #$COMMENT_ID content"
-            printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+            if [ -n "$COMMENT_BODY" ]; then
+              printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+            fi
           fi
 
           # Check if content exists and create a temporary directory for TruffleHog
           if [ -s "$CONTENT_FILE" ]; then
-            echo "Content prepared for scanning"
+            echo "Content prepared for scanning ($(wc -l < "$CONTENT_FILE") lines)"
             echo "CONTENT_DIR=$TEMP_DIR" >> $GITHUB_ENV
+            echo "Content preview (first 3 lines):"
+            head -3 "$CONTENT_FILE"
           else
             echo "No content to scan"
             echo "CONTENT_DIR=" >> $GITHUB_ENV
@@ -76,8 +91,27 @@ jobs:
         if: env.CONTENT_DIR != ''
         run: |
           echo "Running TruffleHog on prepared content..."
-          trufflehog filesystem --path="$CONTENT_DIR" --only-verified --json > trufflehog-content-results.json || true
+          echo "Content directory: $CONTENT_DIR"
+          echo "Files in content directory:"
+          ls -la "$CONTENT_DIR"
+
+          # Install TruffleHog if not available
+          if ! command -v trufflehog &> /dev/null; then
+            echo "Installing TruffleHog..."
+            curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+          fi
+
+          # Run TruffleHog on the content directory
+          trufflehog filesystem --path="$CONTENT_DIR" --only-verified --json --output trufflehog-content-results.json || true
           echo "TruffleHog content scan completed"
+
+          # Check if results file was created and show its contents
+          if [ -f "trufflehog-content-results.json" ]; then
+            echo "Content scan results:"
+            cat trufflehog-content-results.json
+          else
+            echo "No content scan results file created"
+          fi
         env:
           CONTENT_DIR: ${{ env.CONTENT_DIR }}
         continue-on-error: true
@@ -86,28 +120,53 @@ jobs:
         if: always()
         run: |
           echo "Checking for secrets in TruffleHog results..."
+          echo "Current directory contents:"
+          ls -la
 
           # Check if any results files exist and contain findings
           SECRETS_FOUND=false
 
-          if [ -f "trufflehog-repo-results.json" ] && [ -s "trufflehog-repo-results.json" ]; then
-            echo "Checking repository scan results..."
-            if jq -e '. | length > 0' trufflehog-repo-results.json > /dev/null 2>&1; then
-              echo "Secrets found in repository scan"
-              SECRETS_FOUND=true
+          if [ -f "trufflehog-repo-results.json" ]; then
+            echo "Repository scan results file exists ($(wc -c < trufflehog-repo-results.json) bytes)"
+            if [ -s "trufflehog-repo-results.json" ]; then
+              echo "Checking repository scan results..."
+              echo "Repository results content:"
+              cat trufflehog-repo-results.json
+              if jq -e '. | length > 0' trufflehog-repo-results.json > /dev/null 2>&1; then
+                echo "Secrets found in repository scan"
+                SECRETS_FOUND=true
+              else
+                echo "No secrets in repository scan results"
+              fi
+            else
+              echo "Repository scan results file is empty"
             fi
+          else
+            echo "Repository scan results file does not exist"
           fi
 
-          if [ -f "trufflehog-content-results.json" ] && [ -s "trufflehog-content-results.json" ]; then
-            echo "Checking content scan results..."
-            if jq -e '. | length > 0' trufflehog-content-results.json > /dev/null 2>&1; then
-              echo "Secrets found in content scan"
-              SECRETS_FOUND=true
+          if [ -f "trufflehog-content-results.json" ]; then
+            echo "Content scan results file exists ($(wc -c < trufflehog-content-results.json) bytes)"
+            if [ -s "trufflehog-content-results.json" ]; then
+              echo "Checking content scan results..."
+              echo "Content results content:"
+              cat trufflehog-content-results.json
+              if jq -e '. | length > 0' trufflehog-content-results.json > /dev/null 2>&1; then
+                echo "Secrets found in content scan"
+                SECRETS_FOUND=true
+              else
+                echo "No secrets in content scan results"
+              fi
+            else
+              echo "Content scan results file is empty"
             fi
+          else
+            echo "Content scan results file does not exist"
           fi
 
           if [ "$SECRETS_FOUND" = "true" ]; then
             echo "SECRETS_FOUND=true" >> $GITHUB_ENV
+            echo "Secrets detected - will create comment"
           else
             echo "No secrets found"
             echo "SECRETS_FOUND=false" >> $GITHUB_ENV
