@@ -101,34 +101,29 @@ class OperationDataAccessService:
         )
 
     @classmethod
-    def get_previously_owned_operations_for_operator(cls, user: User, operator_id: UUID, reporting_year: Optional[int] = None) -> QuerySet[Operation]:
+    def get_previously_owned_operations_for_operator(
+        cls, user: User, operator_id: UUID, reporting_year: Optional[int] = None
+    ) -> QuerySet[Operation]:
         """
         Returns all operations that were previously owned by the operator.
         If a param is specified for reporting_year, the results will additionally be filtered such that the ownership
         end data is greater than or equal to the reporting year.
         Otherwise, all past operations will be returned.
+        Assumes that only industry users will be calling this function.
         """
-        if user.is_irc_user():
-            #TODO to be implemented later
-            return
-        else:
-            operator = Operator.objects.get(id=operator_id)
-            # Check if the user has access to the specified operator
-            if not operator.user_has_access(user.user_guid):
-                # Raise an exception if access is denied
-                raise Exception(UNAUTHORIZED_MESSAGE)
-
-            filters = Q(designated_operators__operator_id=operator_id) & Q(designated_operators__end_date__isnull=False)
-            if reporting_year is not None:
-                filters &= Q(designated_operators__end_date__year__gte=reporting_year)
-
-            return (
-                Operation.objects.filter(
-                    filters,
-                )
-                .select_related("operator", "bc_obps_regulated_operation")
-                .exclude(status__in=[Operation.Statuses.NOT_STARTED, Operation.Statuses.DRAFT])
-                .only(
-                    "id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id"
-                )
+        operator = Operator.objects.get(id=operator_id)
+        # Check if the user has access to the specified operator
+        if not operator.user_has_access(user.user_guid):
+            # Raise an exception if access is denied
+            raise Exception(UNAUTHORIZED_MESSAGE)
+        filters = Q(designated_operators__operator_id=operator_id) & Q(designated_operators__end_date__isnull=False)
+        if reporting_year is not None:
+            filters &= Q(designated_operators__end_date__year__gte=reporting_year)
+        return (
+            Operation.objects.filter(
+                filters,
             )
+            .select_related("operator", "bc_obps_regulated_operation")
+            .exclude(status__in=[Operation.Statuses.NOT_STARTED, Operation.Statuses.DRAFT])
+            .only("id", "name", "submission_date", "status", "operator__legal_name", "bc_obps_regulated_operation__id")
+        )
