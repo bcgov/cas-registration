@@ -201,62 +201,20 @@ class TestComplianceObligationService:
 
         assert result == Decimal('0.00')
 
-    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_calculate_outstanding_balance_equivalent_success(self, mock_get_rate):
-        """Test _calculate_outstanding_balance_tco2e calculates correctly"""
-        # Setup
-        mock_get_rate.return_value = Decimal('40.00')
-
-        outstanding_balance_dollars = Decimal('1600.00')
-        reporting_year = baker.make_recipe('reporting.tests.utils.reporting_year')
-
-        result = ComplianceObligationService._calculate_outstanding_balance_tco2e(
-            outstanding_balance_dollars, reporting_year
-        )
-
-        # Verify: $1600 / $40 per tCO2e = 40 tCO2e
-        assert result == Decimal('40.00')
-        mock_get_rate.assert_called_once_with(reporting_year)
-
-    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_calculate_outstanding_balance_equivalent_zero_balance(self, mock_get_rate):
-        """Test _calculate_outstanding_balance_tco2e returns zero for zero balance"""
-        outstanding_balance_dollars = Decimal('0.00')
-        reporting_year = baker.make_recipe('reporting.tests.utils.reporting_year')
-
-        result = ComplianceObligationService._calculate_outstanding_balance_tco2e(
-            outstanding_balance_dollars, reporting_year
-        )
-
-        assert result == Decimal('0')
-        # Rate service should still be called even for zero balance
-        mock_get_rate.assert_called_once_with(reporting_year)
-
-    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_calculate_outstanding_balance_equivalent_zero_rate(self, mock_get_rate):
-        """Test _calculate_outstanding_balance_tco2e handles zero charge rate"""
-        mock_get_rate.return_value = Decimal('0.00')
-
-        outstanding_balance_dollars = Decimal('1600.00')
-        reporting_year = baker.make_recipe('reporting.tests.utils.reporting_year')
-
-        result = ComplianceObligationService._calculate_outstanding_balance_tco2e(
-            outstanding_balance_dollars, reporting_year
-        )
-
-        assert result == Decimal('0')
-        mock_get_rate.assert_called_once_with(reporting_year)
-
-    @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
+    @patch(
+        'compliance.service.compliance_dashboard_service.ComplianceReportVersionService.calculate_outstanding_balance_tco2e'
+    )
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
-    def test_get_obligation_data_by_report_version_success(self, mock_refresh_data, mock_get_rate):
+    def test_get_obligation_data_by_report_version_success(
+        self, mock_refresh_data, mock_calculate_outstanding_balance_tco2e
+    ):
         """Test successful retrieval of obligation data"""
         # Setup mocks
         from compliance.dataclass import RefreshWrapperReturn
 
-        mock_get_rate.return_value = Decimal('50.00')
+        mock_calculate_outstanding_balance_tco2e.return_value = Decimal('50.00')
 
         # Create test data
         report_compliance_summary = baker.make_recipe(
@@ -302,10 +260,8 @@ class TestComplianceObligationService:
         # Verify refresh was called
         mock_refresh_data.assert_called_once_with(compliance_report_version_id=compliance_report_version.id)
 
-        # Verify charge rate service was called
-        mock_get_rate.assert_called_once_with(
-            compliance_report_version.report_compliance_summary.report_version.report.reporting_year
-        )
+        # Verify calculate outstanding balance service was called
+        mock_calculate_outstanding_balance_tco2e.assert_called_once_with(compliance_report_version)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
     def test_create_compliance_obligation_calculates_correct_fee(self, mock_get_rate):
