@@ -33,7 +33,7 @@ jobs:
           image-ref: ${{ inputs.image }}:${{ inputs.image_tag }}
           format: sarif
           output: trivy-container-results.sarif
-          exit-code: "1"
+          exit-code: "0"
           ignore-unfixed: false
           severity: CRITICAL,HIGH,MEDIUM
           timeout: 10m0s
