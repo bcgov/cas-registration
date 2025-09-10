@@ -205,7 +205,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     fireEvent.click(backButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-review-summary`,
+      `/compliance-summaries/${mockComplianceReportVersionId}/review-compliance-earned-credits-report`,
     );
   });
 

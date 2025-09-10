@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewPage";
+import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-earned-credits-report/ComplianceSummaryReviewPage";
 import {
   ActivePage,
   generateRequestIssuanceTaskList,
@@ -33,7 +33,7 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 
 // Mock the review component
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-summary/ComplianceSummaryReviewComponent",
+  "@/compliance/src/app/components/compliance-summary/request-issuance/review-compliance-earned-credits-report/ComplianceSummaryReviewComponent",
   () => ({
     default: () => <div>Mock Review Component</div>,
   }),
