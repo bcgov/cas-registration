@@ -75,13 +75,16 @@ class ReportingDashboardService:
         operator_id: Optional[UUID] = user_operator.operator_id if user_operator else None
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
+        report_queryset = Report.objects.filter(
+            operation_id=OuterRef("id"),
+            reporting_year=reporting_year,
+        )
+
+        if operator_id is not None:
+            report_queryset = report_queryset.filter(operator_id=operator_id)
+
         report_subquery = (
-            Report.objects.filter(
-                operation_id=OuterRef("id"),
-                reporting_year=reporting_year,
-                operator_id=operator_id,
-            )
-            .annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
+            report_queryset.annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=cls.latest_report_version_subquery.values("status"))
             .annotate(latest_version_updated_at=cls.latest_report_version_subquery.values("updated_at"))
             .annotate(latest_version_updated_by=cls.latest_report_version_subquery.values("full_name"))
@@ -91,7 +94,7 @@ class ReportingDashboardService:
         current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
         # need to fetch previously owned operations in case reports were filed for them already or if they need to
         # create a new report version for an operation they once owned.
-        if user_operator:
+        if operator_id is not None:
             previous_operations = OperationDataAccessService.get_previously_owned_operations_for_operator(
                 user, operator_id, reporting_year
             )
