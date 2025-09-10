@@ -121,15 +121,24 @@ export default function ProfileForm({
     setErrorList([]);
     setIsLoading(true);
     setIsSuccess(false);
+
+    const session = await getSession();
+
     // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
       "/profile",
       {
-        body: JSON.stringify(data.formData),
+        body: JSON.stringify({
+          ...data.formData,
+          business_guid: session?.user?.bceid_business_guid,
+          bceid_business_name: session?.user?.bceid_business_name,
+          identity_provider: idp,
+        }),
       },
     );
+
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 
