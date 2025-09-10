@@ -176,8 +176,9 @@ def test_merge_template_and_send(email_service: EmailService, email_template, mo
     email_service._get_token.assert_called_once()
 
 
-def test_send_email_by_template_includes_cc(email_service: EmailService, mocker):
+def test_send_email_by_template_includes_cc_in_prod(email_service: EmailService, mocker, settings):
     # Arrange
+    settings.ENVIRONMENT = 'prod'
     mock_template = mocker.Mock(spec=EmailNotificationTemplate)
     mock_template.body = "Test email body"
     mock_template.subject = "Test Subject"
@@ -204,3 +205,57 @@ def test_send_email_by_template_includes_cc(email_service: EmailService, mocker)
     assert call_args['subject'] == mock_template.subject
     assert call_args['from'] == 'no-reply.cas@gov.bc.ca'
     assert call_args['bodyType'] == 'html'
+
+
+def test_send_email_by_template_excludes_cc_in_non_prod(email_service: EmailService, mocker, settings):
+    # Arrange
+    settings.ENVIRONMENT = 'dev'
+    mock_template = mocker.Mock(spec=EmailNotificationTemplate)
+    mock_template.body = "Test email body"
+    mock_template.subject = "Test Subject"
+    mock_template.pk = 1
+    mock_merge_template = mocker.patch.object(email_service, 'merge_template_and_send')
+    mock_merge_template.return_value = {'txId': 'test-tx-id', 'messages': [{'msgId': 'test-msg-id'}]}
+    email_context = {"test": "value"}
+    recipients = ["test@example.com"]
+
+    # Act
+    email_service.send_email_by_template(mock_template, email_context, recipients)
+
+    # Assert
+    mock_merge_template.assert_called_once()
+    call_args = mock_merge_template.call_args[0][0]  # Get the email_data argument
+    assert 'contexts' in call_args
+    assert len(call_args['contexts']) == 1
+    context = call_args['contexts'][0]
+    assert 'cc' in context
+    assert context['cc'] == []  # Should be empty in non-prod
+    assert context['to'] == recipients
+    assert context['context'] == email_context
+
+
+def test_send_email_by_template_excludes_cc_when_disabled_in_prod(email_service: EmailService, mocker, settings):
+    # Arrange
+    settings.ENVIRONMENT = 'prod'
+    mock_template = mocker.Mock(spec=EmailNotificationTemplate)
+    mock_template.body = "Test email body"
+    mock_template.subject = "Test Subject"
+    mock_template.pk = 1
+    mock_merge_template = mocker.patch.object(email_service, 'merge_template_and_send')
+    mock_merge_template.return_value = {'txId': 'test-tx-id', 'messages': [{'msgId': 'test-msg-id'}]}
+    email_context = {"test": "value"}
+    recipients = ["test@example.com"]
+
+    # Act
+    email_service.send_email_by_template(mock_template, email_context, recipients, cc_ghg_regulator=False)
+
+    # Assert
+    mock_merge_template.assert_called_once()
+    call_args = mock_merge_template.call_args[0][0]  # Get the email_data argument
+    assert 'contexts' in call_args
+    assert len(call_args['contexts']) == 1
+    context = call_args['contexts'][0]
+    assert 'cc' in context
+    assert context['cc'] == []  # Should be empty when cc_ghg_regulator=False
+    assert context['to'] == recipients
+    assert context['context'] == email_context

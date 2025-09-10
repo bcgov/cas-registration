@@ -164,7 +164,11 @@ class EmailService(object):
             raise
 
     def send_email_by_template(
-        self, template_instance: EmailNotificationTemplate, email_context: dict, recipients_email: List[str]
+        self,
+        template_instance: EmailNotificationTemplate,
+        email_context: dict,
+        recipients_email: List[str],
+        cc_ghg_regulator: bool = True,
     ) -> Optional[EmailResponseType]:
         """
         Sends an email using the provided email template, email context, and recipient email addresses.
@@ -173,10 +177,13 @@ class EmailService(object):
             template_instance: An instance of the EmailNotificationTemplate class representing the email template.
             email_context: A dictionary containing the context variables to be used in the email template.
             recipients_email: A list of recipient email addresses.
+            cc_ghg_regulator: Whether to CC the GHG regulator. Only applies in production environment.
 
         Returns:
             Optional[dict]: A dictionary containing the response from the email service provider, or None if the email sending fails.
         """
+        cc_emails = [GHG_REGULATOR_EMAIL] if cc_ghg_regulator and settings.ENVIRONMENT == 'prod' else []
+
         email_data = {
             'bodyType': 'html',
             'body': template_instance.body,
@@ -184,7 +191,7 @@ class EmailService(object):
                 {
                     'context': email_context,
                     'to': recipients_email,
-                    'cc': [GHG_REGULATOR_EMAIL],
+                    'cc': cc_emails,
                 }
             ],
             'from': SENDER_EMAIL,
