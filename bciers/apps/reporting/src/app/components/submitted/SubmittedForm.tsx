@@ -30,7 +30,7 @@ const SubmittedForm: React.FC<Props> = ({ version_id }) => {
     <div className="flex flex-col gap-6">
       {!loading && data ? (
         <>
-          <FinalReviewReportSections data={data} />
+          <FinalReviewReportSections version_id={version_id} data={data} />
           <Button
             variant="outlined"
             onClick={() => router.push(`/reporting/reports/current-reports`)}
