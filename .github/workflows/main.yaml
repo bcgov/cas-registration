@@ -121,5 +121,34 @@ jobs:
     secrets: inherit
   trivy:
     uses: ./.github/workflows/trivy.yaml
+  trivy-containers:
+    needs:
+      [
+        build-backend,
+        build-administration,
+        build-registration,
+        build-compliance,
+        build-reporting,
+        build-dashboard,
+      ]
+    strategy:
+      matrix:
+        include:
+          - image: ghcr.io/bcgov/cas-reg-backend
+            build-job: build-backend
+          - image: ghcr.io/bcgov/cas-admin-frontend
+            build-job: build-administration
+          - image: ghcr.io/bcgov/cas-reg-frontend
+            build-job: build-registration
+          - image: ghcr.io/bcgov/cas-compliance-frontend
+            build-job: build-compliance
+          - image: ghcr.io/bcgov/cas-rep-frontend
+            build-job: build-reporting
+          - image: ghcr.io/bcgov/cas-dash-frontend
+            build-job: build-dashboard
+    uses: ./.github/workflows/trivy-container.yaml
+    with:
+      image: ${{ matrix.image }}
+      image_tag: ${{ github.sha }}
   codeql:
     uses: ./.github/workflows/codeql.yaml

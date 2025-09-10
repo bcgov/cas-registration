@@ -17,15 +17,20 @@ jobs:
           key: callee-trivy-${{ github.workflow }}-${{ github.run_id }}
           restore-keys: trivy-
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.33.1
         with:
           scan-type: fs
+          scan-ref: "."
           format: sarif
           output: trivy-results.sarif
-          exit-code: "0"
+          exit-code: "1"
           ignore-unfixed: false
-          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          severity: CRITICAL,HIGH,MEDIUM
           timeout: 10m0s
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
       - name: Upload Trivy scan results as artifact
         uses: actions/upload-artifact@v4
         with:
