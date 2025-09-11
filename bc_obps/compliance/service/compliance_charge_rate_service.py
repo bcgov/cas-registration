@@ -1,13 +1,8 @@
 from decimal import Decimal
-
-from compliance.models.compliance_charge_rate import ComplianceChargeRate
 from reporting.models.reporting_year import ReportingYear
 
 
 class ComplianceChargeRateService:
-    """
-    Service for handling compliance charge rates.
-    """
 
     @classmethod
     def get_rate_for_year(cls, reporting_year: ReportingYear) -> Decimal:
@@ -19,9 +14,6 @@ class ComplianceChargeRateService:
 
         Returns:
             The compliance charge rate as a Decimal
-
-        Raises:
-            ComplianceChargeRate.DoesNotExist: If no rate exists for the reporting year
         """
-        charge_rate = ComplianceChargeRate.objects.get(reporting_year=reporting_year)
+        charge_rate = reporting_year.compliance_charge_rate
         return charge_rate.rate
