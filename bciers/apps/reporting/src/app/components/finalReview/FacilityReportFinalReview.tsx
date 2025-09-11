@@ -1,7 +1,6 @@
 "use client";
 
 import FacilityReportSection from "@reporting/src/app/components/shared/FacilityReportSection";
-import { getLfoFinalReviewData } from "@reporting/src/app/utils/getLfoFinalReviewData";
 import React, { useEffect, useState } from "react";
 import { ReportData } from "@reporting/src/app/components/finalReview/reportTypes";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -9,6 +8,7 @@ import Loading from "@bciers/components/loading/SkeletonGrid";
 import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
+import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 
 export default function FacilityReportFinalReview({
   version_id,
@@ -41,7 +41,7 @@ export default function FacilityReportFinalReview({
         setData(null);
         return;
       }
-      const finalReviewData = await getLfoFinalReviewData(
+      const finalReviewData = await getFacilityFinalReviewData(
         version_id,
         facilityId as string,
       );
