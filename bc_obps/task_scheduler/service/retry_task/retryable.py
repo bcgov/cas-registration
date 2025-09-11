@@ -66,10 +66,11 @@ class RetryableFunction:
     def execute(self, *args: Any, **kwargs: Any) -> Any:
         """
         Execute function directly from application code.
-        - Creates retry task on failure
+        - Creates retry task on failure (args and kwargs need to be serializable)
         - Returns None gracefully (doesn't raise exception)
         - Logs the failure for debugging
         """
+        serialized_params = extract_function_parameters(args, kwargs, self.func)
         try:
             logger.info(f"Executing {self.func.__name__} directly")
             result = self.func(*args, **kwargs)
@@ -77,7 +78,6 @@ class RetryableFunction:
             return result
         except Exception as e:
             logger.error(f"Direct execution of {self.func.__name__} failed: {e}")
-            serialized_params = extract_function_parameters(args, kwargs, self.func)
             function_path = get_function_path(self.func)
             create_retry_task(
                 function_path=function_path,

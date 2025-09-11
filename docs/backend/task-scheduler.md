@@ -332,9 +332,9 @@ retryable_email = create_retryable(
     retry_delay_minutes=10
 )
 
-# Use in your application
+# Use in your application. Note that args and kwargs need to be serializable (e.g. integers, not django objects). Otherwise, they will fail on extract_function_parameters.
 def notify_user(user_id, message):
-    retryable_email.execute(user_id=user_id, message=message)
+    retryable_email.execute(user_id=user_id)
 ```
 
 ### Example 3: Weekly Data Cleanup
