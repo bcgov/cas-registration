@@ -1,4 +1,5 @@
 import Note from "@bciers/components/layout/Note";
+import { Alert } from "@mui/material";
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <>
@@ -14,14 +15,27 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
 export { Layout as InternalUserOperationDataGridLayout };
 
 export const ExternalUserOperationDataGridLayout = ({
+  operationsWithoutContacts,
   children,
 }: {
+  operationsWithoutContacts: String[];
   children: React.ReactNode;
 }) => (
   <>
     <Note>
       <b>Note:</b> View the operations owned by your operator here.
     </Note>
+
+    <div className="min-h-[48px] box-border mt-4">
+      {operationsWithoutContacts && operationsWithoutContacts.length > 0 && (
+        <Alert severity="info" color="warning">
+          Missing Information: Please add an operation representative for{" "}
+          {operationsWithoutContacts.join(", ")} in{" "}
+          {operationsWithoutContacts.length > 1 ? "their" : "its"} operation
+          information page.
+        </Alert>
+      )}
+    </div>
     <h1>Operations</h1>
     <div className="w-full flex justify-end">
       <a
