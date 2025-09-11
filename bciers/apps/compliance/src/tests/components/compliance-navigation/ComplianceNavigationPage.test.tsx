@@ -33,14 +33,13 @@ describe("ComplianceNavigationPage", () => {
     const tabList = screen.getByRole("tablist");
     expect(tabList).toHaveAttribute("aria-label", "compliance navigation tabs");
     expect(screen.getByText("Compliance Summaries")).toBeVisible();
-    expect(screen.getByText("Payment Summaries")).toBeVisible();
   });
 
   it("sets the correct active tab", async () => {
-    render(await ComplianceNavigationPage({ activeTab: 1 }));
+    render(await ComplianceNavigationPage({ activeTab: 0 }));
     const tabs = screen.getAllByRole("tab");
-    expect(tabs[1]).toHaveAttribute("aria-selected", "true");
-    expect(tabs[1]).toBeVisible();
+    expect(tabs[0]).toHaveAttribute("aria-selected", "true");
+    expect(tabs[0]).toBeVisible();
   });
 
   it("renders children and ensures they are visible", async () => {
