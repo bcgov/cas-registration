@@ -2,20 +2,22 @@
 
 from django.db import migrations
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+from compliance.models import ComplianceReport, CompliancePeriod
+from reporting.models import ReportVersion
 import logging
 
 logger = logging.getLogger(__name__)
 
 
 def generate_compliance_reports_from_emission_reports(apps, schema_editor):
-    ReportVersion = apps.get_model("reporting", "ReportVersion")
-    ComplianceReport = apps.get_model("compliance", "ComplianceReport")
-    CompliancePeriod = apps.get_model("compliance", "CompliancePeriod")
+    # ReportVersion = apps.get_model("reporting", "ReportVersion")
+    # ComplianceReport = apps.get_model("compliance", "ComplianceReport")
+    # CompliancePeriod = apps.get_model("compliance", "CompliancePeriod")
 
     # Only generate compliance reports for the latest submitted version of reports from the 2024 reporting year for regulated operations
-    report_versions_to_process = ReportVersion.objects.select_related('report', 'report__operation').filter(
+    report_versions_to_process = ReportVersion.objects.select_related('report', 'report_operation').filter(
         report__reporting_year_id=2024,
-        report__operation__registration_purpose__in=[
+        report_operation__registration_purpose__in=[
             'OBPS Regulated Operation',
             'New Entrant Operation',
             'Opted-in Operation',
