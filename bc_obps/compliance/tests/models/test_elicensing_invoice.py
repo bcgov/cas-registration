@@ -1,7 +1,7 @@
 from decimal import Decimal
 import pytest
 from django.db import ProgrammingError
-from rls.tests.helpers import assert_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -40,7 +40,9 @@ class TestElicensingInvoiceRls(BaseTestCase):
             operator=approved_user_operator.operator,
             client_object_id="1147483647",
         )
-        make_recipe('compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator)
+        make_recipe(
+            'compliance.tests.utils.elicensing_invoice', id=88, elicensing_client_operator=approved_client_operator
+        )
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator', id=2)
@@ -87,10 +89,51 @@ class TestElicensingInvoiceRls(BaseTestCase):
             ElicensingInvoice.objects.update(invoice_fee_balance=Decimal('999'))
             assert ElicensingInvoice.objects.filter(invoice_fee_balance=Decimal('999')).count() == 1
 
+        def forbidden_delete_function(cursor):
+            ElicensingInvoice.objects.filter(id=88).delete()
+
         assert_policies_for_industry_user(
             ElicensingInvoice,
             approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
+        )
+
+    def test_elicensing_invoice_rls_cas_users(self):
+        operator = make_recipe('registration.tests.utils.operator', id=3)
+        client_operator = make_recipe(
+            'compliance.tests.utils.elicensing_client_operator', operator=operator, client_object_id="1147488888"
+        )
+        make_recipe('compliance.tests.utils.elicensing_invoice', id=888, elicensing_client_operator=client_operator)
+
+        def select_function(cursor):
+            assert ElicensingInvoice.objects.count() == 1
+
+        def forbidden_insert_function(cursor):
+            ElicensingInvoice.objects.create(
+                invoice_number="INV-0003",
+                outstanding_balance=Decimal('888'),
+                elicensing_client_operator=client_operator,
+                invoice_fee_balance=Decimal('100.01'),
+                invoice_interest_balance=Decimal('0.00'),
+                due_date='2024-11-30',
+                last_refreshed='2024-10-01 00:00:00',
+            )
+
+        def forbidden_update_function(cursor):
+            ElicensingInvoice.objects.filter(id=888).update(outstanding_balance=Decimal('555'))
+
+        def forbidden_delete_function(cursor):
+            ElicensingInvoice.objects.filter(id=888).delete()
+
+        assert_policies_for_cas_roles(
+            ElicensingInvoice,
+            select_function=select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
         )

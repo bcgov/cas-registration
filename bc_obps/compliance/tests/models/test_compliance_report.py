@@ -1,4 +1,4 @@
-from rls.tests.helpers import assert_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 import pytest
 from django.db import ProgrammingError
 from compliance.models.compliance_report import ComplianceReport
@@ -93,4 +93,40 @@ class TestComplianceReportRls(BaseTestCase):
             insert_function=insert_function,
             update_function=update_function,
             delete_function=delete_function,
+        )
+
+    def test_compliance_report_rls_cas_users(self):
+        compliance_period = make_recipe('compliance.tests.utils.compliance_period')
+        operator = make_recipe('registration.tests.utils.operator')
+        operation = make_recipe('registration.tests.utils.operation', operator=operator)
+        report = make_recipe('reporting.tests.utils.report', id=99, operation=operation)
+        make_recipe('compliance.tests.utils.compliance_report', id=88, report=report)
+
+        operator_2 = make_recipe('registration.tests.utils.operator')
+        operation_2 = make_recipe('registration.tests.utils.operation', operator=operator_2)
+        report_2 = make_recipe('reporting.tests.utils.report', id=2025, operation=operation_2)
+
+        def select_function(cursor):
+            assert ComplianceReport.objects.count() == 1
+
+        def forbidden_insert_function(cursor):
+            ComplianceReport.objects.create(
+                report=report_2,
+                bccr_subaccount_id="123456789099999",
+                compliance_period=compliance_period,
+            )
+
+        def forbidden_update_function(cursor):
+            ComplianceReport.objects.filter(id=88).update(bccr_subaccount_id="111111111199999")
+
+        def forbidden_delete_function(cursor):
+            ComplianceReport.objects.filter(id=88).delete()
+
+        assert_policies_for_cas_roles(
+            ComplianceReport,
+            select_function=select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
         )

@@ -1,7 +1,7 @@
 from decimal import Decimal
 import pytest
 from django.db import ProgrammingError
-from rls.tests.helpers import assert_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_payment import ElicensingPayment
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -43,7 +43,7 @@ class TestElicensingPaymentRls(BaseTestCase):
         approved_line_item = make_recipe(
             'compliance.tests.utils.elicensing_line_item', elicensing_invoice=approved_invoice
         )
-        make_recipe('compliance.tests.utils.elicensing_payment', elicensing_line_item=approved_line_item)
+        make_recipe('compliance.tests.utils.elicensing_payment', id=88, elicensing_line_item=approved_line_item)
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator', id=2)
@@ -87,10 +87,47 @@ class TestElicensingPaymentRls(BaseTestCase):
             ElicensingPayment.objects.update(amount=Decimal('999'))
             assert ElicensingPayment.objects.filter(amount=Decimal('999')).count() == 1
 
+        def forbidden_delete_function(cursor):
+            ElicensingPayment.objects.filter(id=88).delete()
+
         assert_policies_for_industry_user(
             ElicensingPayment,
             approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
+        )
+
+    def test_elicensing_payment_rls_cas_users(self):
+        operator = make_recipe('registration.tests.utils.operator', id=3)
+        client_operator = make_recipe(
+            'compliance.tests.utils.elicensing_client_operator', operator=operator, client_object_id="1147488888"
+        )
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice', elicensing_client_operator=client_operator)
+        line_item = make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=invoice)
+        make_recipe('compliance.tests.utils.elicensing_payment', id=888, elicensing_line_item=line_item)
+
+        def select_function(cursor):
+            assert ElicensingPayment.objects.count() == 1
+
+        def forbidden_insert_function(cursor):
+            ElicensingPayment.objects.create(
+                elicensing_line_item=line_item, payment_object_id=888888, amount=Decimal('888')
+            )
+
+        def forbidden_update_function(cursor):
+            ElicensingPayment.objects.filter(id=888).update(amount=Decimal('555'))
+
+        def forbidden_delete_function(cursor):
+            ElicensingPayment.objects.filter(id=888).delete()
+
+        assert_policies_for_cas_roles(
+            ElicensingPayment,
+            select_function=select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
         )
