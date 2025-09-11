@@ -76,7 +76,7 @@ def send_notice_of_no_obligation_no_credits_generated_email(report_id: int) -> N
     Sends an email to every operator's industry user when there is no obligation or credit, notifying that the obligation is met and no further action is required.
 
     Args:
-        report_id: The if of the report instance for which to send notification emails.
+        report_id: The id of the report instance for which to send notification emails.
     """
     report = Report.objects.get(id=report_id)
     template = EmailNotificationTemplateService.get_template_by_name('No Obligation No Earned Credits Generated')
@@ -95,7 +95,7 @@ def send_notice_of_obligation_generated_email(report_id: int) -> None:
     Sends an email to every operator's industry user when there is an obligation, notifying that the obligation is available to view.
 
      Args:
-        report_id: The if of the report instance for which to send notification emails.
+        report_id: The id of the report instance for which to send notification emails.
     """
     report = Report.objects.get(id=report_id)
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
