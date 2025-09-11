@@ -19,6 +19,9 @@ class OperationTimelineListOut(ModelSchema):
     operation__status: str = Field(..., alias="operation.status")
     operation__id: UUID = Field(..., alias="operation.id")
     operation__registration_purpose: Optional[str] = Field(None, alias="operation.registration_purpose")
+    operation__contact_ids: Optional[list[int | None]] = Field(
+        None, alias="operation__contact_ids"
+    )  # this is an annotated field in the query
 
     class Meta:
         model = OperationDesignatedOperatorTimeline
