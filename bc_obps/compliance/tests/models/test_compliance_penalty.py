@@ -95,6 +95,7 @@ class TestCompliancePenaltyRls(BaseTestCase):
                 penalty_amount=100.00,
                 fee_date="2025-01-31",
                 elicensing_invoice=extra_invoice,
+                penalty_type="Late Submission",
             )
 
         def forbidden_update_function(cursor):
@@ -147,6 +148,7 @@ class TestCompliancePenaltyRls(BaseTestCase):
                 accrual_start_date="2025-01-01",
                 penalty_amount=100.00,
                 fee_date="2025-01-31",
+                penalty_type="Automatic Overdue",
             )
 
         def forbidden_update_function(cursor):
