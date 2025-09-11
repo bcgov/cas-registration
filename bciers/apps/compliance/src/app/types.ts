@@ -217,3 +217,8 @@ export type ElicensingLastRefreshData = {
   last_refreshed_display: string;
   data_is_fresh: boolean;
 };
+
+export type ElicensingInvoice = {
+  // brianna not checking this
+  bee: string;
+};
