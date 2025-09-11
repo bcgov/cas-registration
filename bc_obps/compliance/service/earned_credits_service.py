@@ -39,19 +39,28 @@ class ComplianceEarnedCreditsService:
         return earned_credits_record
 
     @classmethod
-    def create_earned_credits_record(cls, compliance_report_version: ComplianceReportVersion) -> ComplianceEarnedCredit:
+    def create_earned_credits_record(
+        cls,
+        compliance_report_version: ComplianceReportVersion,
+        amount: Optional[int] = None,
+    ) -> ComplianceEarnedCredit:
         """
-        Creates an earned credits record for the specific compliance compliance_report_version
+        Create and persist an earned credits record for a compliance report version.
 
         Args:
-            compliance_report_version: The compliance report version to create an earned credits record for
+            compliance_report_version (ComplianceReportVersion):
+                The compliance report version to associate with the earned credits record.
+            amount (Optional[int]):
+                The number of earned credits. If not provided, the value will be taken
+                from the report version’s compliance summary (credited_emissions).
 
         Returns:
-            The created EarnedCredits object
+            ComplianceEarnedCredit: The newly created earned credits record.
         """
+        resolved_amount = amount or int(compliance_report_version.report_compliance_summary.credited_emissions)
         earned_credits_record = ComplianceEarnedCredit.objects.create(
             compliance_report_version=compliance_report_version,
-            earned_credits_amount=int(compliance_report_version.report_compliance_summary.credited_emissions),
+            earned_credits_amount=resolved_amount,
         )
         retryable_send_notice_of_earned_credits_email.execute(earned_credits_record.id)
         return earned_credits_record
