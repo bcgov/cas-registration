@@ -20,10 +20,7 @@ export default async function ComplianceNavigationPage({
         // TODO: Add Imposed Penalties tab in task #80
         // TODO: Add Invoices tab in task #46
       ]
-    : [
-        { label: "Compliance Summaries", href: "/compliance-summaries" },
-        { label: "Payment Summaries", href: "/payment-summaries" },
-      ];
+    : [{ label: "Compliance Summaries", href: "/compliance-summaries" }];
 
   const title = isCasStaff ? "Compliance Administration" : "My Compliance";
   return (
