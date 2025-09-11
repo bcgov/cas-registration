@@ -5,6 +5,7 @@ import { createAdministrationOperationInformationSchema } from "../../data/jsonS
 import { UUID } from "crypto";
 import { validate as isValidUUID } from "uuid";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { Alert } from "@mui/material";
 
 const OperationInformationPage = async ({
   operationId,
@@ -17,6 +18,12 @@ const OperationInformationPage = async ({
   } else throw new Error(`Invalid operation id: ${operationId}`);
 
   if (operation?.error) throw new Error("Error fetching operation information");
+
+  const isMissingRepresentative =
+    operation.status === "Registered" && (
+      !operation.operation_representatives ||
+      operation.operation_representatives.length === 0
+    );
 
   const formSchema = await createAdministrationOperationInformationSchema(
     operation.registration_purpose,
@@ -34,6 +41,11 @@ const OperationInformationPage = async ({
   return (
     <>
       <NewTabBanner />
+      {isMissingRepresentative && (
+        <Alert severity="info" color="warning" sx={{ ml: { xs: 0, sm: 35 } }}>
+          Please select an operation representative
+        </Alert>
+      )}
       <OperationInformationForm
         formData={{
           ...operation,
