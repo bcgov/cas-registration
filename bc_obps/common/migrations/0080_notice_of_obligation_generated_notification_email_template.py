@@ -38,7 +38,7 @@ def reverse_obligation_notice_email_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0077_notice_of_no_obligation_no_credits_generated_notification_email_template'),
+        ('common', '0079_update_internal_dashboard_data'),
     ]
 
     operations = [
