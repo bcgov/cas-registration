@@ -1,7 +1,7 @@
 from decimal import Decimal
 import pytest
 from django.db import ProgrammingError
-from rls.tests.helpers import assert_policies_for_industry_user
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.compliance_obligation import ComplianceObligation
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -44,7 +44,9 @@ class TestComplianceObligationRls(BaseTestCase):
             is_supplementary=False,
         )
         make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=approved_compliance_report_version
+            'compliance.tests.utils.compliance_obligation',
+            id=111,
+            compliance_report_version=approved_compliance_report_version,
         )
 
         # second object
@@ -56,7 +58,9 @@ class TestComplianceObligationRls(BaseTestCase):
             'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
         )
         make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=random_compliance_report_version
+            'compliance.tests.utils.compliance_obligation',
+            id=444,
+            compliance_report_version=random_compliance_report_version,
         )
 
         # extra object for insert
@@ -104,7 +108,11 @@ class TestComplianceObligationRls(BaseTestCase):
 
         def update_function(cursor):
             ComplianceObligation.objects.update(fee_amount_dollars=Decimal('8888'))
+            # should only update the approved object
             assert ComplianceObligation.objects.filter(fee_amount_dollars=Decimal('8888')).count() == 1
+
+        def forbidden_delete_function(cursor):
+            ComplianceObligation.objects.first().delete()
 
         assert_policies_for_industry_user(
             ComplianceObligation,
@@ -112,4 +120,53 @@ class TestComplianceObligationRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
+        )
+
+    def test_compliance_obligation_rls_cas_users(self):
+        operator = make_recipe('registration.tests.utils.operator')
+        operation = make_recipe('registration.tests.utils.operation', operator=operator)
+        report = make_recipe('reporting.tests.utils.report', operation=operation)
+        compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
+        compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+        )
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation', id=888, compliance_report_version=compliance_report_version
+        )
+
+        operator_2 = make_recipe('registration.tests.utils.operator')
+        operation_2 = make_recipe('registration.tests.utils.operation', operator=operator_2)
+        report_2 = make_recipe('reporting.tests.utils.report', operation=operation_2)
+        compliance_report_2 = make_recipe('compliance.tests.utils.compliance_report', report=report_2)
+        compliance_report_version_2 = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report_2
+        )
+
+        def select_function(cursor):
+            assert ComplianceObligation.objects.count() == 1
+
+        def forbidden_insert_function(cursor):
+            ComplianceObligation.objects.create(
+                id=876,
+                compliance_report_version=compliance_report_version_2,
+                obligation_id=777,
+                obligation_deadline="2025-11-30",
+                fee_amount_dollars=Decimal('123'),
+            )
+
+        def forbidden_update_function(cursor):
+            ComplianceObligation.objects.filter(id=888).update(fee_amount_dollars=Decimal('777'))
+
+        def forbidden_delete_function(cursor):
+            ComplianceObligation.objects.filter(id=888).delete()
+
+        assert_policies_for_cas_roles(
+            ComplianceObligation,
+            select_function=select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
+            test_forbidden_ops=True,
         )
