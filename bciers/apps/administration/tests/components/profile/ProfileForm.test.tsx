@@ -62,6 +62,8 @@ describe("ProfileForm", () => {
     await waitFor(() => {
       expect(screen.queryByText(/This email is used to log in/)).toBeNull();
     });
+    // assert that the profile page still loaded ok
+    expect(await screen.findByText(/Position Title/)).toBeInTheDocument();
   });
 
   it("shows extended email help text if contact record exists", async () => {
