@@ -1,4 +1,4 @@
-export default async function Page() {
-  // 🚩 TODO
-  return <p>TO DO</p>;
-}
+import defaultPageFactory from "@bciers/components/nextPageFactory/defaultPageFactory";
+import Page from "@/compliance/src/app/components/elicensing-invoices/ElicensingInvoicesPage";
+
+export default defaultPageFactory(Page);
