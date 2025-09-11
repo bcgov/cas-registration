@@ -2,7 +2,7 @@ import { IssuanceStatusDeclinedNote } from "@/compliance/src/app/components/comp
 import { vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { ghgRegulatorEmail } from "@bciers/utils/src/urls";
+import { bcCarbonRegistryLink, bceabLink } from "@bciers/utils/src/urls";
 
 vi.mock("@bciers/components/icons/AlertIcon", () => ({
   __esModule: true,
@@ -22,17 +22,26 @@ describe("IssuanceStatusDeclinedNote", () => {
       /the earned credits will not be issued/i,
       /to your holding account/i,
       /as identified below/i,
-      /in the b\.c\. carbon registry/i,
       /\(bccr\)/i,
-      /please contact us at/i,
-      /ghgregulator@gov\.bc\.ca/i,
-      /for further information or assistance/i,
-      /submitting a supplementary report/i,
+      /you may appeal the decision/i,
+      /\(bceab\)/i,
     ];
 
     for (const textPattern of declinedNoteTextPatterns) {
       expect(screen.getByText(textPattern)).toBeVisible();
     }
+    // Verify links and their hrefs
+    const bccrAnchor = screen.getByRole("link", {
+      name: /b\.c\. carbon registry/i,
+    });
+    expect(bccrAnchor).toBeVisible();
+    expect(bccrAnchor).toHaveAttribute("href", bcCarbonRegistryLink);
+
+    const bceabAnchor = screen.getByRole("link", {
+      name: /b\.c\. environmental appeal board/i,
+    });
+    expect(bceabAnchor).toBeVisible();
+    expect(bceabAnchor).toHaveAttribute("href", bceabLink);
   });
 
   it("displays the AlertIcon with correct props", () => {
@@ -42,13 +51,5 @@ describe("IssuanceStatusDeclinedNote", () => {
     expect(alertIcon).toBeVisible();
     expect(alertIcon).toHaveAttribute("width", "20");
     expect(alertIcon).toHaveAttribute("height", "20");
-  });
-
-  it("includes the correct email link", () => {
-    render(<IssuanceStatusDeclinedNote />);
-
-    const emailLink = screen.getByText("GHGRegulator@gov.bc.ca");
-    expect(emailLink).toBeVisible();
-    expect(emailLink).toHaveAttribute("href", ghgRegulatorEmail);
   });
 });

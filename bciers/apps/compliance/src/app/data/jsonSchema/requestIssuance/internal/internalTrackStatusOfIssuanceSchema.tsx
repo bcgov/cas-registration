@@ -8,7 +8,7 @@ import {
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { InternalIssuanceStatusApprovedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusApprovedNote";
 import { InternalIssuanceStatusDeclinedNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/internal/track-status-of-issuance/InternalIssuanceStatusDeclinedNote";
-import { IssuanceStatus } from "@bciers/utils/src/enums";
+import { IssuanceStatus, AnalystSuggestion } from "@bciers/utils/src/enums";
 import { IssuanceRequestStatusTextWidget } from "@/compliance/src/app/data/jsonSchema/IssuanceRequestStatusTextWidget";
 
 export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
@@ -20,7 +20,8 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
     issuance_status: readOnlyStringField("Status of Issuance:"),
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
     bccr_holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
-    director_comment: readOnlyStringField("Director's Comment:"),
+    analyst_suggestion: readOnlyStringField(""),
+    is_director: { type: "boolean", default: false },
   },
 
   dependencies: {
@@ -32,6 +33,7 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
               enum: [IssuanceStatus.APPROVED],
             },
             approved_note: readOnlyStringField(),
+            director_comment: readOnlyStringField("Director's Comment:"),
           },
         },
         {
@@ -41,6 +43,28 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
             },
             declined_note: readOnlyStringField(),
           },
+          allOf: [
+            {
+              if: {
+                properties: {
+                  analyst_suggestion: {
+                    const: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+                  },
+                  is_director: { const: true },
+                },
+              },
+              then: {
+                properties: {
+                  analyst_comment: readOnlyStringField("Analyst's Comment:"),
+                },
+              },
+              else: {
+                properties: {
+                  director_comment: readOnlyStringField("Director's Comment:"),
+                },
+              },
+            },
+          ],
         },
       ],
     },
@@ -59,6 +83,9 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
     "issuance_status",
     "bccr_trading_name",
     "bccr_holding_account_id",
+    "is_director",
+    "analyst_suggestion",
+    "analyst_comment",
     "director_comment",
   ],
   status_header: headerUiConfig,
@@ -77,5 +104,8 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
   },
   bccr_trading_name: commonReadOnlyOptions,
   bccr_holding_account_id: commonReadOnlyOptions,
+  analyst_suggestion: { "ui:widget": "hidden" },
+  is_director: { "ui:widget": "hidden" },
+  analyst_comment: commonReadOnlyOptions,
   director_comment: commonReadOnlyOptions,
 };
