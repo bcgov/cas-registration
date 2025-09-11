@@ -1,7 +1,7 @@
 ####################
 # Base Stage
 ####################
-FROM python:3.12.3-slim AS base
+FROM python:3.12.11-slim AS base
 
 # Prevent Python from writing .pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1 \
