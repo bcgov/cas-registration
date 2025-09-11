@@ -5,7 +5,7 @@ import {
   generateRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 // Mock the reporting year utility
 vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
@@ -62,7 +62,7 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getRequestIssuanceTrackStatusData as any).mockResolvedValue(mockData);
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(mockData);
   });
 
   it("renders with correct content and generates task list", async () => {
