@@ -29,8 +29,8 @@ interface FacilityReportChangesProps {
 }
 
 interface NonAttributableEmission {
-  newValue: string | Record<string, any> | null;
-  oldValue?: string | Record<string, any> | null;
+  newValue: string | number | Record<string, any> | null;
+  oldValue?: string | number | Record<string, any> | null;
   change_type?: string;
   field: string;
 }

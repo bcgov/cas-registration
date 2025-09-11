@@ -13,32 +13,13 @@ import {
 export const EmissionAllocationChangeView: React.FC<
   EmissionAllocationChangeViewProps
 > = ({ data }) => {
-  // Helper to extract category name
+  // Helper to extract category name (new format only)
   const getCategoryName = (change: ChangeItem): string => {
     const newCategory = (change.newValue as EmissionCategoryData)
       ?.emission_category_name;
     const oldCategory = (change.oldValue as EmissionCategoryData)
       ?.emission_category_name;
-    if (newCategory) return newCategory;
-    if (oldCategory) return oldCategory;
-
-    const newFormatMatch = change.field.match(
-      /report_product_emission_allocations'\]\['([^'\]]+)'/,
-    );
-    if (newFormatMatch) return newFormatMatch[1];
-
-    const legacyMatch = change.field.match(/emission_category:([^'\]]+)/);
-    if (legacyMatch) return legacyMatch[1];
-
-    return "Unknown Category";
-  };
-
-  // Helper to extract display label from field
-  const getDisplayLabel = (change: ChangeItem, productName?: string) => {
-    if (change.field.includes("emission_total")) return "Total Emissions";
-    if (productName) return productName;
-    const match = change.field.match(/products'\]\['([^'\]]+)'/);
-    return match ? match[1] : "";
+    return newCategory || oldCategory || "Unknown Category";
   };
 
   // Process structured category changes
@@ -49,8 +30,9 @@ export const EmissionAllocationChangeView: React.FC<
 
     if (!newData && !oldData) return changes;
 
-    const oldTotal = oldData?.emission_total ?? "0";
-    const newTotal = newData?.emission_total ?? "0";
+    const oldTotal = oldData?.emission_total ?? 0;
+    const newTotal = newData?.emission_total ?? 0;
+
     if (oldTotal !== newTotal) {
       changes.push({
         ...change,
@@ -59,28 +41,22 @@ export const EmissionAllocationChangeView: React.FC<
         oldValue: oldTotal,
         newValue: newTotal,
         change_type:
-          oldTotal === "0"
-            ? "added"
-            : newTotal === "0"
-            ? "deleted"
-            : "modified",
+          oldTotal === 0 ? "added" : newTotal === 0 ? "deleted" : "modified",
       });
     }
 
     const oldProducts = new Map(
       (oldData?.products || []).map((p) => [p.product_name, p]),
     );
-    const newProducts = new Map(
-      (newData?.products || []).map((p) => [p.product_name, p]),
-    );
 
     (newData?.products || []).forEach((p) => {
-      const oldQuantity =
-        oldProducts.get(p.product_name)?.allocated_quantity ?? "0";
-      const newQuantity = p.allocated_quantity ?? "0";
+      const oldQuantity = Number(
+        oldProducts.get(p.product_name)?.allocated_quantity ?? 0,
+      );
+      const newQuantity = Number(p.allocated_quantity ?? 0);
 
       // Skip newly added products with value 0
-      if (oldQuantity === "0" && Number(newQuantity) === 0) return;
+      if (oldQuantity === 0 && newQuantity === 0) return;
 
       if (oldQuantity !== newQuantity) {
         changes.push({
@@ -90,57 +66,17 @@ export const EmissionAllocationChangeView: React.FC<
           oldValue: oldQuantity,
           newValue: newQuantity,
           change_type:
-            oldQuantity === "0"
+            oldQuantity === 0
               ? "added"
-              : newQuantity === "0"
+              : newQuantity === 0
               ? "deleted"
               : "modified",
-          isNewAddition: oldQuantity === "0",
-        });
-      }
-    });
-
-    (oldData?.products || []).forEach((p) => {
-      if (
-        !newProducts.has(p.product_name) &&
-        Number(p.allocated_quantity) !== 0
-      ) {
-        changes.push({
-          ...change,
-          displayLabel: p.product_name,
-          field: `${change.field}['products'][${p.product_name}]['allocated_quantity']`,
-          oldValue: p.allocated_quantity,
-          newValue: "0",
-          change_type: "deleted",
+          isNewAddition: oldQuantity === 0,
         });
       }
     });
 
     return changes;
-  };
-
-  // Process field-based individual changes (legacy or new format)
-  const processFieldBasedChange = (change: ChangeItem): DisplayChangeItem => {
-    const productName = getDisplayLabel(change);
-    const getValueFromChange = (
-      value: string | Record<string, any> | any[] | null,
-    ) => {
-      if (!value) return value;
-      if (Array.isArray(value)) return value;
-      if (typeof value === "object" && "allocated_quantity" in value) {
-        return value.allocated_quantity;
-      }
-      return value;
-    };
-
-    return {
-      ...change,
-      displayLabel: productName,
-      oldValue: getValueFromChange(change.oldValue),
-      newValue: getValueFromChange(change.newValue),
-      change_type: change.change_type,
-      isNewAddition: false,
-    };
   };
 
   // Process all changes
@@ -153,29 +89,9 @@ export const EmissionAllocationChangeView: React.FC<
         categorized[categoryName] = { categoryName, changes: [] };
 
       if (change.field.includes("report_product_emission_allocations")) {
-        const hasCategoryData =
-          (change.newValue as EmissionCategoryData)?.emission_category_name ||
-          (change.oldValue as EmissionCategoryData)?.emission_category_name;
-        if (hasCategoryData) {
-          categorized[categoryName].changes.push(
-            ...processCategoryChange(change),
-          );
-        } else {
-          categorized[categoryName].changes.push(
-            processFieldBasedChange(change),
-          );
-        }
-      } else if (change.field.includes("emission_category:")) {
-        const displayLabel = getDisplayLabel(change);
-        if (
-          Number(change.newValue || 0) !== 0 ||
-          Number(change.oldValue || 0) !== 0
-        ) {
-          categorized[categoryName].changes.push({
-            ...change,
-            displayLabel,
-          } as DisplayChangeItem);
-        }
+        categorized[categoryName].changes.push(
+          ...processCategoryChange(change),
+        );
       }
     });
 
@@ -191,14 +107,14 @@ export const EmissionAllocationChangeView: React.FC<
       change.field.includes("Report Product Emission Allocation Totals")
     ) {
       return (
-        Number(newValue?.allocated_quantity || 0) !== 0 ||
-        Number(oldValue?.allocated_quantity || 0) !== 0
+        Number(newValue?.allocated_quantity ?? 0) !== 0 ||
+        Number(oldValue?.allocated_quantity ?? 0) !== 0
       );
     }
     return (
       (change.field.includes("facility_total_emissions") ||
         change.field.includes("emissions_attributable_for_reporting")) &&
-      (Number(change.newValue || 0) !== 0 || Number(change.oldValue || 0) !== 0)
+      (Number(change.newValue ?? 0) !== 0 || Number(change.oldValue ?? 0) !== 0)
     );
   };
 
@@ -220,8 +136,8 @@ export const EmissionAllocationChangeView: React.FC<
         ...change,
         displayLabel:
           newValue?.product_name ?? oldValue?.product_name ?? "Unknown Product",
-        oldValue: oldValue?.allocated_quantity ?? "0.0000",
-        newValue: newValue?.allocated_quantity ?? "0.0000",
+        oldValue: Number(oldValue?.allocated_quantity ?? 0),
+        newValue: Number(newValue?.allocated_quantity ?? 0),
         change_type: changeType,
         isNewAddition: !oldValue && !!newValue,
       };
@@ -236,25 +152,6 @@ export const EmissionAllocationChangeView: React.FC<
           : "",
     };
   };
-
-  // General methodology fields
-  const generalFields = data
-    .filter(
-      (change) =>
-        change.field.includes("allocation_methodology") ||
-        change.field.includes("allocation_other_methodology_description"),
-    )
-    .map((change) => ({
-      ...change,
-      displayLabel: change.field.includes("allocation_methodology")
-        ? "Methodology"
-        : "Details about the allocation methodology",
-      change_type: !change.oldValue
-        ? "added"
-        : !change.newValue
-        ? "deleted"
-        : change.change_type,
-    })) as DisplayChangeItem[];
 
   const categorizedChanges = processChanges();
   const totalChanges = data.filter(isRelevantTotalChange).map(mapTotalChange);
@@ -290,9 +187,6 @@ export const EmissionAllocationChangeView: React.FC<
           <Typography className="form-heading text-xl font-bold flex items-center text-bc-bg-blue">
             Allocation of Emissions
           </Typography>
-          {generalFields.map((change) => (
-            <ChangeItemDisplay key={change.field} item={change} />
-          ))}
           <Divider sx={{ mb: 2 }} />
           {categorizedChanges
             .filter((c) => c.changes.length > 0)

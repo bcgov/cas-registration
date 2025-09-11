@@ -6,8 +6,8 @@ export interface ChangeItem {
   facilityName?: any;
   deletedActivities?: any;
   field: string;
-  oldValue: string | Record<string, any> | any[] | null;
-  newValue: string | Record<string, any> | any[] | null;
+  oldValue: string | Record<string, any> | any[] | null | number;
+  newValue: string | Record<string, any> | any[] | null | number;
   change_type: string;
   displayLabel?: string;
   isNewAddition?: boolean;
