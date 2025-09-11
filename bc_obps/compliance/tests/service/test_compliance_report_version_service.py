@@ -135,7 +135,7 @@ class TestComplianceReportVersionService:
         assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
         assert result.report_compliance_summary_id == report_compliance_summary.id
         assert result.compliance_report_id == compliance_report.id
-        mock_send_email.execute.assert_called_once_with(compliance_report.report)
+        mock_send_email.execute.assert_called_once_with(compliance_report.report.id)
 
     def test_get_compliance_report_versions_for_previously_owned_operations(self):
         # Arrange
