@@ -171,6 +171,10 @@ export const emissionAllocationSchema: RJSFSchema = {
   title: "Allocation of Emissions",
   required: ["allocation_methodology"],
   properties: {
+    missing_product_alert : {
+      type:"object",
+      readOnly: true
+    },
     allocation_methodology: {
       type: "string",
       title: "Methodology",
@@ -301,6 +305,7 @@ export const emissionAllocationUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
   "ui:order": [
+    "missing_product_alert",
     "allocation_methodology",
     "allocation_other_methodology_description",
     "basic_emission_allocation_data_title",
@@ -309,6 +314,10 @@ export const emissionAllocationUiSchema: UiSchema = {
     "fuel_excluded_emission_allocation_data",
     "total_emission_allocations",
   ],
+  missing_product_alert: {
+    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:title": purposeNote(operationId, operationName || ""),
+  },
   allocation_methodology: {
     "ui:widget": "SelectWidget",
     "ui:placeholder": "Select the allocation methodology",
