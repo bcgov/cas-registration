@@ -2,7 +2,10 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import ChangeReviewForm from "@reporting/src/app/components/changeReview/ChangeReviewForm";
 import { actionHandler } from "@bciers/actions";
-import { HeaderStep } from "@reporting/src/app/components/taskList/types";
+import {
+  HeaderStep,
+  ReportingFlow,
+} from "@reporting/src/app/components/taskList/types";
 
 const mockRouterPush = vi.fn();
 
@@ -13,14 +16,14 @@ vi.mock("next/navigation", () => ({
 vi.mock("@bciers/actions", () => ({
   actionHandler: vi.fn(),
 }));
+
 vi.mock(
   "@reporting/src/app/components/changeReview/templates/ReviewChanges",
-  () => {
-    return {
-      ReviewChanges: vi.fn(() => <div>Mocked ReviewChanges</div>),
-    };
-  },
+  () => ({
+    ReviewChanges: vi.fn(() => <div>Mocked ReviewChanges</div>),
+  }),
 );
+
 vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
   default: ({
     children,
@@ -53,7 +56,6 @@ vi.mock("@bciers/components/form/MultiStepWrapperWithTaskList", () => ({
   ),
 }));
 
-// Mock ReasonForChangeForm to expose its props for testing
 vi.mock(
   "@reporting/src/app/components/changeReview/templates/ReasonForChange",
   () => ({
@@ -72,7 +74,7 @@ vi.mock(
   }),
 );
 
-describe("The ChangeReviewForm component", () => {
+describe("ChangeReviewForm", () => {
   const mockActionHandler = actionHandler as vi.MockedFunction<
     typeof actionHandler
   >;
@@ -119,6 +121,7 @@ describe("The ChangeReviewForm component", () => {
         change_type: "modified",
       },
     ],
+    flow: ReportingFlow.SFO, // <-- required prop
   };
 
   beforeEach(() => {
@@ -150,7 +153,7 @@ describe("The ChangeReviewForm component", () => {
   it("handles error submission", async () => {
     const errorMessage = "Submission failed";
     mockActionHandler.mockResolvedValue({ error: errorMessage });
-    render(<ChangeReviewForm showChanges={false} {...defaultProps} />);
+    render(<ChangeReviewForm {...defaultProps} />);
     fireEvent.click(screen.getByTestId("submit-button"));
     await waitFor(() => {
       expect(screen.getByTestId("errors")).toBeInTheDocument();

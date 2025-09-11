@@ -3,6 +3,7 @@ import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportV
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
+
 import {
   HeaderStep,
   ReportingPage,
