@@ -45,8 +45,8 @@ def _send_email_to_operators_approved_users_or_raise(
         except Exception as exc:
             logger.error(f'Exception sending {template} email to recipients - {str(exc)}')
             # If we're in the local environment, we don't need to send emails, so we shouldn't raise an error if they fail
-            ENVIRONMENT = settings.ENVIRONMENT
-            if ENVIRONMENT != 'local':
+            environment = settings.ENVIRONMENT
+            if environment != 'local':
                 raise  # raise exception because we want to use this function as a retryable task
 
 
