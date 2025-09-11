@@ -3,6 +3,7 @@ from compliance.models import ComplianceReport, ComplianceEarnedCredit
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.elicensing_invoice import ElicensingInvoice
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
@@ -132,19 +133,27 @@ class DecreasedObligationHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-
-        # Overrides for the less-likely paths
+        
+        # Normalize inputs
+        excess = new_summary.excess_emissions or ZERO_DECIMAL
+        credited = getattr(new_summary, "credited_emissions", ZERO_DECIMAL) or ZERO_DECIMAL
         mark_previous_fully_met = False
         create_earned_credits = False
-        if new_summary.excess_emissions == ZERO_DECIMAL:
-            # Full refund to zero: previous * rate (negative)
-            adjustment_amount = (-previous_summary.excess_emissions * charge_rate).quantize(Decimal('0.01'))
-            mark_previous_fully_met = True
-        elif new_summary.excess_emissions < ZERO_DECIMAL:
-            # Refund only up to zero: previous * rate (negative)
+
+        # Overrides for the less-likely paths
+        if excess < ZERO_DECIMAL:
+            # Below zero → refund only up to zero
             adjustment_amount = (-previous_summary.excess_emissions * charge_rate).quantize(Decimal('0.01'))
             mark_previous_fully_met = True
             create_earned_credits = True
+
+        elif excess == ZERO_DECIMAL:
+            # Exactly zero → full refund to zero
+            adjustment_amount = (-previous_summary.excess_emissions * charge_rate).quantize(Decimal('0.01'))
+            mark_previous_fully_met = True
+            # Treat zero-with-credits as earned credits
+            if credited > ZERO_DECIMAL:
+                create_earned_credits = True
 
         # Create adjustment in elicensing for the dollar amount difference
         # This is done outside the main transaction to prevent rollback if integration fails
@@ -156,28 +165,38 @@ class DecreasedObligationHandler:
             do_credits=create_earned_credits,
         ):
             # 1) Post the refund/credit adjustment
+            # Decide reason based on whether we void the invoice
+            reason = (
+                ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE
+                if mark
+                else ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
+            )
             ComplianceAdjustmentService.create_adjustment_for_target_version(
                 target_compliance_report_version_id=pv_id,
                 adjustment_total=amt,
                 supplementary_compliance_report_version_id=crv_id,
+                reason=reason,
             )
 
             # 2) If applicable, mark previous CRV fully met and void invoice
             if mark:
-                ComplianceReportVersion.objects.filter(id=pv_id).update(
-                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
-                )
                 ElicensingInvoice.objects.filter(
                     compliance_obligation__compliance_report_version_id=pv_id,
                     is_void=False,
                 ).exclude(compliance_obligation__penalty_status=ComplianceObligation.PenaltyStatus.PAID).update(
                     is_void=True
                 )
+                ComplianceReportVersion.objects.filter(id=pv_id).update(
+                    status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+                )
 
             # 3) If we’re below zero, create/update the CRV earned-credit record
             if do_credits:
                 ComplianceEarnedCreditsService.create_earned_credits_record(
                     compliance_report_version=compliance_report_version
+                )
+                ComplianceReportVersion.objects.filter(id=crv_id).update(
+                    status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
                 )
 
         transaction.on_commit(_after_commit)

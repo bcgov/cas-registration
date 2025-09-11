@@ -3,6 +3,7 @@ from compliance.models import ComplianceReportVersion
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from reporting.models import ReportVersion
 from compliance.models.compliance_obligation import ComplianceObligation
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.service.supplementary_version_service import (
     NoChangeHandler,
     SupplementaryVersionService,
@@ -751,9 +752,10 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
             target_compliance_report_version_id=self.previous_compliance_report_version.id,  # The previous version to adjust
             adjustment_total=expected_adjustment_amount,
             supplementary_compliance_report_version_id=result.id,  # The new supplementary version that triggered this
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
         )
 
-    def test_handle_calculates_correct_excess_emission_delta(self):
+    def test_handle_calculates_correct_excess_emission_delta(self, mock_get_rate, mock_create_adjustment):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -779,28 +781,31 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         )
         version_count = 3
 
-        with patch(
-            'compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year'
-        ) as mock_get_rate:
-            with patch(
-                'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
-            ):
-                # Mock the charge rate
-                mock_get_rate.return_value = Decimal('75.00')
+        # Mock the charge rate via fixture
+        mock_get_rate.return_value = Decimal('75.00')
 
-                # Act
-                result = DecreasedObligationHandler.handle(
-                    compliance_report=self.compliance_report,
-                    new_summary=self.new_summary,
-                    previous_summary=self.previous_summary,
-                    version_count=version_count,
-                )
+        # Act
+        result = DecreasedObligationHandler.handle(
+            compliance_report=self.compliance_report,
+            new_summary=self.new_summary,
+            previous_summary=self.previous_summary,
+            version_count=version_count,
+        )
 
-                # Assert
-                expected_delta = Decimal('-750')  # 250 - 1000
-                assert result.excess_emissions_delta_from_previous == expected_delta
+        # Assert (primary): delta is correct (250 - 1000 = -750)
+        expected_delta = Decimal('-750')
+        assert result.excess_emissions_delta_from_previous == expected_delta
 
-    def test_handle_calculates_correct_adjustment_amount(self):
+        # Optional: also assert the adjustment call & reason
+        expected_adjustment_amount = (expected_delta * Decimal('75.00')).quantize(Decimal('0.01'))  # -56250.00
+        mock_create_adjustment.assert_called_once_with(
+            target_compliance_report_version_id=self.previous_compliance_report_version.id,
+            adjustment_total=expected_adjustment_amount,
+            supplementary_compliance_report_version_id=result.id,
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
+        )
+
+    def test_handle_calculates_correct_adjustment_amount(self, mock_get_rate, mock_create_adjustment):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -816,7 +821,9 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
             report_version=self.report_version_2,
         )
         self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+            'compliance.tests.utils.compliance_report',
+            report=self.report,
+            compliance_period_id=1,
         )
         # Create the previous compliance report version that the adjustment will target
         self.previous_compliance_report_version = baker.make_recipe(
@@ -826,38 +833,34 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         )
         version_count = 2
 
-        with patch(
-            'compliance.service.compliance_charge_rate_service.ComplianceChargeRateService.get_rate_for_year'
-        ) as mock_get_rate:
-            with patch(
-                'compliance.service.compliance_adjustment_service.ComplianceAdjustmentService.create_adjustment_for_target_version'
-            ) as mock_create_adjustment:
-                # Mock the charge rate
-                mock_get_rate.return_value = Decimal('100.00')
+        # Mock the charge rate via fixture
+        mock_get_rate.return_value = Decimal('100.00')
 
-                # Act
-                result = DecreasedObligationHandler.handle(
-                    compliance_report=self.compliance_report,
-                    new_summary=self.new_summary,
-                    previous_summary=self.previous_summary,
-                    version_count=version_count,
-                )
+        # Act
+        result = DecreasedObligationHandler.handle(
+            compliance_report=self.compliance_report,
+            new_summary=self.new_summary,
+            previous_summary=self.previous_summary,
+            version_count=version_count,
+        )
 
-                # Assert
-                # Expected adjustment amount: -400 * 100.00 = -40000.00
-                expected_adjustment_amount = Decimal('-40000.00')
-                mock_create_adjustment.assert_called_once_with(
-                    target_compliance_report_version_id=self.previous_compliance_report_version.id,
-                    adjustment_total=expected_adjustment_amount,
-                    supplementary_compliance_report_version_id=result.id,
-                )
+        # Assert
+        # Expected adjustment amount: (200 - 600) * 100.00 = -400 * 100 = -40000.00
+        expected_adjustment_amount = Decimal('-40000.00')
+
+        mock_create_adjustment.assert_called_once_with(
+            target_compliance_report_version_id=self.previous_compliance_report_version.id,
+            adjustment_total=expected_adjustment_amount,
+            supplementary_compliance_report_version_id=result.id,
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
+        )
 
     def test_handle_to_zero_marks_previous_fully_met_and_voids_invoice(self, mock_get_rate, mock_create_adjustment):
         """
         When new excess == 0:
           - refund = -previous_excess * rate
           - previous CRV status -> OBLIGATION_FULLY_MET
-          - related invoice is_void becomes True (unless penalty PAID)
+          - related invoice is_void becomes True
         """
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             prev_sum = baker.make_recipe(
@@ -907,6 +910,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
             target_compliance_report_version_id=prev_crv.id,
             adjustment_total=expected_adjustment_amount,
             supplementary_compliance_report_version_id=result.id,
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE,
         )
 
         # Previous CRV status updated
@@ -1031,6 +1035,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
             target_compliance_report_version_id=prev_crv.id,
             adjustment_total=expected_adjustment_amount,
             supplementary_compliance_report_version_id=result.id,
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE,
         )
 
         # Previous CRV status updated and invoice voided
@@ -1041,6 +1046,10 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         # Earned credits created for the new supplementary CRV
         mock_create_credits.assert_called_once_with(compliance_report_version=result)
+        
+        # supplementary CRV status flips to EARNED_CREDITS
+        result.refresh_from_db()
+        assert result.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
 
     def test_handle_partial_refund_does_not_void_or_mark_or_create_credits(
         self, mock_get_rate, mock_create_adjustment, mock_create_credits
@@ -1099,6 +1108,7 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
             target_compliance_report_version_id=prev_crv.id,
             adjustment_total=expected_adjustment_amount,
             supplementary_compliance_report_version_id=result.id,
+            reason=ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT,
         )
 
         # No status flip to fully met
