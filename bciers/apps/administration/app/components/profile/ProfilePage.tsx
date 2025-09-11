@@ -15,7 +15,9 @@ async function getUserFormData(): Promise<
   return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 // 🚀 API call: GET user's Contact data
-async function getUserContactData(): Promise<number | { error: string }> {
+async function getUserContactData(): Promise<
+  number | null | { error: string }
+> {
   return actionHandler(`registration/contact/`, "GET", "");
 }
 
@@ -56,17 +58,19 @@ export default async function UserPage() {
   // need to get token to determine identity_provider
   const token = await getToken();
 
-  console.log(`identity provider ${token.identity_provider}`);
-
   if (token.identity_provider === IDP.BCEIDBUSINESS && !isCreate) {
     const contactResponse = await getUserContactData();
 
-    if (typeof contactResponse === "object" && "error" in contactResponse) {
+    if (
+      contactResponse &&
+      typeof contactResponse === "object" &&
+      "error" in contactResponse
+    ) {
       return (
         <div>{`Server Error: failed to retrieve contact data. ${contactResponse.error}`}</div>
       );
     }
-    // if no error, this is a number
+    // if no error, this is either a number or null
     contactId = contactResponse;
   }
 
