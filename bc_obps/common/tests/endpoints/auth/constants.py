@@ -35,11 +35,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_report_final_review_data_for_lfo",
-            "kwargs": {"version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_report_final_review_data",
             "kwargs": {"version_id": MOCK_INT},
         },

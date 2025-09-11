@@ -1,6 +1,6 @@
 import { actionHandler } from "@bciers/actions";
 
-export async function getLfoFinalReviewData(
+export async function getFacilityFinalReviewData(
   reportVersionId: number,
   facility_id: string,
 ) {
