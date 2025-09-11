@@ -72,7 +72,9 @@ export default function ProfileForm({
           {emailHelpTextFirstClause}
           <div>
             To change the email you are contacted with, edit the email in your{" "}
-            <a href={`administration/contacts/${contactId.toString()}`}>
+            <a
+              href={`/administration/contacts/${contactId.toString()}?contacts_title=${formData?.first_name} ${formData?.last_name}`}
+            >
               contact details page
             </a>
             .
