@@ -1,9 +1,9 @@
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
+
 from django.core.exceptions import ValidationError
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from reporting.models.report_version import ReportVersion
-from reporting.models.reporting_year import ReportingYear
 from django.db import transaction
 from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.models.compliance_report_version import ComplianceReportVersion
@@ -177,33 +177,6 @@ class ComplianceObligationService:
             return obligation.fee_amount_dollars
         return Decimal('0.00')
 
-    @staticmethod
-    def _calculate_outstanding_balance_tco2e(
-        outstanding_balance_dollars: Decimal, reporting_year: ReportingYear
-    ) -> Decimal:
-        """
-        Calculates the tCO2e equivalent of the outstanding balance in dollars.
-
-        Args:
-            outstanding_balance_dollars (Decimal): The outstanding balance amount in dollars
-            reporting_year (ReportingYear): The reporting year for getting the charge rate
-
-        Returns:
-            Decimal: The tCO2e equivalent of the outstanding balance
-        """
-        charge_rate = ComplianceChargeRateService.get_rate_for_year(reporting_year)
-
-        # Handle zero balance
-        if outstanding_balance_dollars == 0:
-            return Decimal('0')
-
-        # Handle zero charge rate
-        if charge_rate == 0:
-            return Decimal('0')
-
-        # Convert outstanding balance to tCO2e equivalent (dollars / rate = tCO2e)
-        return outstanding_balance_dollars / charge_rate
-
     @classmethod
     def get_obligation_data_by_report_version(cls, compliance_report_version_id: int) -> ObligationData:
         """
@@ -233,9 +206,10 @@ class ComplianceObligationService:
         reporting_year = (
             obligation.compliance_report_version.report_compliance_summary.report_version.report.reporting_year
         )
+        from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 
-        outstanding_balance_tco2e = ComplianceObligationService._calculate_outstanding_balance_tco2e(
-            outstanding_balance_dollars, reporting_year
+        outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(
+            obligation.compliance_report_version
         )
 
         return ObligationData(

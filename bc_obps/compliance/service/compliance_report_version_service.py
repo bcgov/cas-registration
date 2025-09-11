@@ -146,7 +146,7 @@ class ComplianceReportVersionService:
         Calculates the outstanding balance in tonnes of CO₂ equivalent (tCO₂e) for a given compliance report version.
 
         Converts the outstanding balance from the associated eLicensing invoice
-        into an emissions quantity by dividing it by the applicable compliance charge rate for the reporting year.
+        into an emissions quantity by dividing it by the applicable compliance charge rate for the reporting year. Or, if the invoice hasn't been created yet, returns the excess_emissions value (initial report) or excess_emissions_delta_from_previous (supplementary report).
 
         The calculation is performed as:
                 outstanding_balance_tCO₂e = outstanding_balance / charge_rate
@@ -157,8 +157,14 @@ class ComplianceReportVersionService:
             .first()
         )
 
-        if not obligation or not obligation.elicensing_invoice:
+        if not obligation:
             return Decimal("0")
+
+        if not obligation.elicensing_invoice:
+            if compliance_report_version.is_supplementary:
+                return compliance_report_version.excess_emissions_delta_from_previous
+            else:
+                return compliance_report_version.report_compliance_summary.excess_emissions
 
         outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))
 
