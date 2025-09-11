@@ -543,6 +543,31 @@ regex = '''(?is)((key|api|token|secret|password)[a-z0-9_ .\-,]{0,50})\s*(=|>|:=|
 entropy = 3.7
 secretGroup = 4
 
+[[rules]]
+id = "django-secret-key"
+description = "Django Secret Key"
+regex = '''(?i)secret[_-]?key[\s]*[:=][\s]*['"]?[a-zA-Z0-9]{50,}['"]?'''
+
+[[rules]]
+id = "postgres-connection-string"
+description = "PostgreSQL Connection String"
+regex = '''postgres(?:ql)?://[^:\s]+:[^@\s]+@[^/\s]+/[^?\s]+'''
+
+[[rules]]
+id = "bcgov-oidc-config"
+description = "BC Government OIDC Configuration"
+regex = '''(?i)(?:oidc[_-]?client[_-]?id|openid[_-]?client[_-]?id)[\s]*[:=][\s]*['"]?[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}['"]?'''
+
+[[rules]]
+id = "redis-url"
+description = "Redis Connection URL"
+regex = '''redis://[^:\s]+:[^@\s]+@[^/\s]+'''
+
+[[rules]]
+id = "docker-registry-auth"
+description = "Docker Registry Authentication"
+regex = '''(?i)(?:docker[_-]?registry[_-]?auth|registry[_-]?auth)[\s]*[:=][\s]*['"]?[a-zA-Z0-9+/=]{20,}['"]?'''
+
 [allowlist]
 description = "global allow lists"
 regexes = ['''(example_regex)''']
