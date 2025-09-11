@@ -42,7 +42,7 @@ class ComplianceReportVersionService:
     @classmethod
     def _handle_no_obligation_or_credits(cls, compliance_report: ComplianceReport) -> None:
 
-        retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(compliance_report.report)
+        retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(compliance_report.report.id)
 
     @classmethod
     @transaction.atomic
