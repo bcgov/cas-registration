@@ -125,6 +125,7 @@ describe("ProfileForm", () => {
             last_name: "Last",
             phone_number: "+1 250 123 5555",
             position_title: "CEO",
+            identity_provider: "bceidbusiness",
           }),
         },
       );
