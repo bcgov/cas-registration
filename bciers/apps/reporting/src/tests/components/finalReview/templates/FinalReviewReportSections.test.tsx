@@ -32,6 +32,13 @@ vi.mock(
     ),
   }),
 );
+vi.mock(
+  "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid",
+  () => ({
+    __esModule: true,
+    default: () => <div>Mock Facility Grid</div>,
+  }),
+);
 
 vi.mock(
   "@reporting/src/app/components/finalReview/templates/FieldDisplay",
@@ -56,7 +63,7 @@ describe("The ReportSections component", () => {
       operation_type: OperationTypes.SFO,
       operation_bcghgid: "123456",
       bc_obps_regulated_operation_id: "REG123",
-      registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
+      registration_purpose: RegistrationPurposes.OBPS_REGULATED_OPERATION,
     },
     report_person_responsible: {
       first_name: "John",
@@ -242,15 +249,7 @@ describe("The ReportSections component", () => {
           id: 55,
         },
       ],
-      report_production_data: {
-        production_data_type: "test",
-      },
-      report_emission_allocation: [
-        {
-          facility_name: "Test Facility",
-          allocated_emissions: "500",
-        },
-      ],
+      rowCount: 5,
     };
 
     render(<FinalReviewReportSections data={lfoData} version_id={1} />);
@@ -261,7 +260,6 @@ describe("The ReportSections component", () => {
     expect(
       screen.getByText("Person Responsible for Submitting Report"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Production Data")).toBeInTheDocument();
   });
 
   it("renders new entrant sections for new entrant operations", () => {
@@ -303,16 +301,7 @@ describe("The ReportSections component", () => {
   });
 
   it("renders compliance summary section", () => {
-    // Use LFO data since compliance summary doesn't render for SFO reporting only
-    const lfoData = {
-      ...mockBaseData,
-      report_operation: {
-        ...mockBaseData.report_operation,
-        operation_type: OperationTypes.LFO,
-      },
-    };
-
-    render(<FinalReviewReportSections data={lfoData} version_id={1} />);
+    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
 
     expect(screen.getByText("Compliance Summary")).toBeInTheDocument();
   });

@@ -1,15 +1,13 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
-import { getLfoFinalReviewData } from "@reporting/src/app/utils/getLfoFinalReviewData";
-import { useRouter, useSearchParams } from "next/navigation";
+import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import FacilityReportFinalReview from "@reporting/src/app/components/finalReview/FacilityReportFinalReview";
 
-// --- Mocks ---
-vi.mock("@reporting/src/app/utils/getLfoFinalReviewData", () => ({
-  getLfoFinalReviewData: vi.fn(),
+vi.mock("@reporting/src/app/utils/getFacilityFinalReviewData", () => ({
+  getFacilityFinalReviewData: vi.fn(),
 }));
 
-// Mock router
 const mockRouterPush = vi.fn();
 vi.mock("next/navigation", async () => {
   const actual: any = await vi.importActual("next/navigation");
@@ -17,10 +15,10 @@ vi.mock("next/navigation", async () => {
     ...actual,
     useRouter: vi.fn(),
     useSearchParams: vi.fn(),
+    usePathname: vi.fn(),
   };
 });
 
-// Mock child components
 vi.mock(
   "@bciers/components/navigation/reportingTaskList/ReportingTaskList",
   () => ({
@@ -50,27 +48,28 @@ describe("FacilityReportFinalReview", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (useRouter as any).mockReturnValue({ push: mockRouterPush });
+    (usePathname as any).mockReturnValue("/reporting/reports/123/final-review");
   });
 
   it("renders loading when data is being fetched", async () => {
     (useSearchParams as any).mockReturnValue({
       get: () => "facility-1",
     });
-    (getLfoFinalReviewData as any).mockImplementation(
+    (getFacilityFinalReviewData as any).mockImplementation(
       () => new Promise(() => {}), // never resolves
     );
 
     render(<FacilityReportFinalReview version_id={1} />);
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
-    expect(getLfoFinalReviewData).toHaveBeenCalledWith(1, "facility-1");
+    expect(getFacilityFinalReviewData).toHaveBeenCalledWith(1, "facility-1");
   });
 
   it("renders facility section and task list when data is loaded", async () => {
     (useSearchParams as any).mockReturnValue({
       get: () => "facility-1",
     });
-    (getLfoFinalReviewData as any).mockResolvedValue({
+    (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
 
@@ -81,7 +80,7 @@ describe("FacilityReportFinalReview", () => {
         "Test Facility",
       );
       expect(screen.getByTestId("reporting-task-list")).toHaveTextContent(
-        "Back to final review",
+        "Back to previous page",
       );
     });
   });
@@ -96,14 +95,14 @@ describe("FacilityReportFinalReview", () => {
     await waitFor(() => {
       expect(screen.getByTestId("loading")).toBeInTheDocument();
     });
-    expect(getLfoFinalReviewData).not.toHaveBeenCalled();
+    expect(getFacilityFinalReviewData).not.toHaveBeenCalled();
   });
 
   it("navigates back when Back button is clicked", async () => {
     (useSearchParams as any).mockReturnValue({
       get: () => "facility-1",
     });
-    (getLfoFinalReviewData as any).mockResolvedValue({
+    (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
 
@@ -112,6 +111,8 @@ describe("FacilityReportFinalReview", () => {
     const backButton = await screen.findByRole("button", { name: /back/i });
     backButton.click();
 
-    expect(mockRouterPush).toHaveBeenCalledWith("/reports/99/final-review");
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/reporting/reports/99/final-review#facility-grid",
+    );
   });
 });
