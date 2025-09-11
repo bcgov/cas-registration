@@ -1,8 +1,6 @@
 import { NextMiddleware, NextResponse } from "next/server";
 import { MiddlewareFactory } from "./types";
 
-console.log("stackMiddlewares");
-
 // 📚 Define a function for stacking middlewares
 export function stackMiddlewares(
   functions: MiddlewareFactory[] = [], // An array of middleware factory functions
