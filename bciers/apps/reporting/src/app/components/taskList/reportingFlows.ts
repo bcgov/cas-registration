@@ -1,6 +1,8 @@
 import {
   ELECTRICITY_IMPORT_OPERATION,
   NEW_ENTRANT_REGISTRATION_PURPOSE,
+  OPTED_IN_OPERATION,
+  POTENTIAL_REPORTING_OPERATION,
   REPORTING_OPERATION,
 } from "../../utils/constants";
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
@@ -42,6 +44,10 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
         return ReportingFlow.NewEntrantSFO;
       case REPORTING_OPERATION:
         return ReportingFlow.ReportingOnlySFO;
+      case POTENTIAL_REPORTING_OPERATION:
+        return ReportingFlow.PotentialReportingSFO;
+      case OPTED_IN_OPERATION:
+        return ReportingFlow.OptedInSFO;
       default:
         return ReportingFlow.SFO;
     }
@@ -53,6 +59,10 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
         return ReportingFlow.NewEntrantLFO;
       case REPORTING_OPERATION:
         return ReportingFlow.ReportingOnlyLFO;
+      case POTENTIAL_REPORTING_OPERATION:
+        return ReportingFlow.PotentialReportingLFO;
+      case OPTED_IN_OPERATION:
+        return ReportingFlow.OptedInLFO;
       default:
         return ReportingFlow.LFO;
     }

@@ -29,8 +29,8 @@ interface FacilityReportChangesProps {
 }
 
 interface NonAttributableEmission {
-  newValue: string | Record<string, any> | null;
-  oldValue?: string | Record<string, any> | null;
+  newValue: string | number | Record<string, any> | null;
+  oldValue?: string | number | Record<string, any> | null;
   change_type?: string;
   field: string;
 }
@@ -233,7 +233,11 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
                 <Box ml={2}>
                   <FieldDisplay
                     label="Did your non-attributable emissions exceed 100 tCO2e?"
-                    value={facilityData.nonAttributableEmissions.length > 0}
+                    value={facilityData.nonAttributableEmissions.some(
+                      (change: NonAttributableEmission) =>
+                        change.change_type !== "removed" &&
+                        change.change_type !== "deleted",
+                    )}
                   />
                   {facilityData.nonAttributableEmissions.map(
                     (change: NonAttributableEmission, index: number) => {

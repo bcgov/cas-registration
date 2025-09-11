@@ -23,14 +23,28 @@ import {
   complianceNote,
   reviewChangesNote,
 } from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   changes,
-  showChanges,
-  isReportingOnly,
+  flow,
 }) => {
   // Normalize keys for all changes at the root level
   const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
+  const showChangesFlows = [
+    ReportingFlow.SFO,
+    ReportingFlow.LFO,
+    ReportingFlow.OptedInSFO,
+    ReportingFlow.OptedInLFO,
+  ];
+
+  const reportingOnlyFlows = [
+    ReportingFlow.ReportingOnlySFO,
+    ReportingFlow.ReportingOnlyLFO,
+  ];
+
+  const showChanges = showChangesFlows.includes(flow);
+  const isReportingOnly = reportingOnlyFlows.includes(flow);
 
   // Helper to filter changes by field prefix or inclusion
   const filterByField = (prefixes: string[], includes: string[] = []) =>
@@ -173,7 +187,6 @@ export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   };
 
   const reportOperationItems = sectioned["Report Operation"] || [];
-
   return (
     <Box>
       <div className="form-heading text-xl font-bold flex items-cente">

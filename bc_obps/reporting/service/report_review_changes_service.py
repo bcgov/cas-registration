@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union, Tuple, TypedDict
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union
 from deepdiff import DeepDiff
 import logging
 import re
@@ -55,6 +55,21 @@ class ReportReviewChangesService:
             'name_key': 'emission_category',
             'format': "root['report_new_entrant'][{entrant_idx}]['report_new_entrant_emission']['{name}']{suffix}",
             'suffix_group': 3,
+        },
+        {
+            'regex': re.compile(
+                r"root\['facility_reports'\]\['([^']+)'\]\['report_emission_allocation'\]\['report_product_emission_allocations'\]\[(\d+)\]\['products'\]\[(\d+)\](.*)"
+            ),
+            'index_groups': [2, 3],  # allocation index, product index
+            'root': 'facility_reports',
+            'subkeys': ['report_emission_allocation', 'report_product_emission_allocations'],
+            'name_key': 'product_name',
+            'format': (
+                "root['facility_reports']['{facility}']"
+                "['report_emission_allocation']['report_product_emission_allocations']['{category_name}']"
+                "['products']['{product_name}']{suffix}"
+            ),
+            'suffix_group': 4,
         },
     ]
 
@@ -134,20 +149,39 @@ class ReportReviewChangesService:
     @staticmethod
     def _replace_index_with_name(path: str, serialized_data: dict, config: ReplaceIndexConfig) -> str:
         match = config['regex'].match(path)
-        if match and serialized_data:
-            idxs = [int(match.group(i)) for i in config['index_groups']]
-            item = ReportReviewChangesService._get_item_by_indexes(
-                serialized_data, config['root'], config['subkeys'], idxs
+        if not match or not serialized_data:
+            return path
+
+        idxs = [int(match.group(i)) for i in config['index_groups']]
+        suffix = match.group(config['suffix_group'])
+
+        if "facility_reports" in config['root']:
+            facility_name = match.group(1)  # captured in regex
+            allocations = serialized_data['facility_reports'][facility_name]['report_emission_allocation'][
+                'report_product_emission_allocations'
+            ]
+
+            alloc_idx, product_idx = idxs
+            allocation = allocations[alloc_idx]
+            category_name = allocation['emission_category_name'] or allocation['emission_category_id']
+            product_name = allocation['products'][product_idx]['product_name']
+
+            return config['format'].format(
+                facility=facility_name,
+                category_name=category_name,
+                product_name=product_name,
+                suffix=suffix,
             )
-            if item:
-                name = item.get(config['name_key'])
-                if isinstance(name, str):
-                    return config['format'].format(
-                        entrant_idx=idxs[0],
-                        name=name,
-                        suffix=match.group(config['suffix_group']),
-                    )
-        return path
+
+        item = ReportReviewChangesService._get_item_by_indexes(serialized_data, config['root'], config['subkeys'], idxs)
+        if item is None:
+            return path
+        name = item[config['name_key']]
+        return config['format'].format(
+            entrant_idx=idxs[0],
+            name=name,
+            suffix=suffix,
+        )
 
     @classmethod
     def _replace_compliance_product_index(cls, path: str, serialized_data: dict) -> str:
