@@ -5,9 +5,9 @@ from registration.models.operation import Operation
 from registration.models.facility_designated_operation_timeline import FacilityDesignatedOperationTimeline
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.models import User
-from django.db.models import QuerySet
-from django.db.models import Subquery, OuterRef, UUIDField, CharField
+from django.db.models import QuerySet, Subquery, OuterRef, UUIDField, CharField
 from service.user_operator_service import UserOperatorService
+from django.contrib.postgres.aggregates import ArrayAgg
 
 
 class OperationDesignatedOperatorTimelineDataAccessService:
@@ -67,11 +67,15 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         ]
         queryset = (
             OperationDesignatedOperatorTimeline.objects.select_related(
-                'operator', 'operation', 'operation__bcghg_id', 'operation__bc_obps_regulated_operation'
+                'operator',
+                'operation',
+                'operation__bcghg_id',
+                'operation__bc_obps_regulated_operation',
             )
             .annotate(
                 sfo_facility_id=Subquery(sfo_facility_id_subquery, output_field=UUIDField()),
                 sfo_facility_name=Subquery(sfo_facility_name_subquery, output_field=CharField()),
+                operation__contact_ids=ArrayAgg('operation__contacts__id', distinct=True),
             )
             .only(*only_fields)
         )
