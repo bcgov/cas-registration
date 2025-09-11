@@ -193,7 +193,7 @@ class TestSendNotifications:
         }
 
         # Call the function with the report
-        send_notice_of_no_obligation_no_credits_generated_email(report)
+        send_notice_of_no_obligation_no_credits_generated_email(report.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -218,8 +218,8 @@ class TestSendNotifications:
             "compliance_year": report.reporting_year.reporting_year,
         }
 
-        # Call the function with the report
-        send_notice_of_obligation_generated_email(report)
+        # Call the function with the report id
+        send_notice_of_obligation_generated_email(report.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,

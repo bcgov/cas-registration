@@ -107,7 +107,7 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(
             compliance_report_version.report_compliance_summary.report_version.report.reporting_year
         )
-        mock_send_email.execute.assert_called_once_with(compliance_report.report)
+        mock_send_email.execute.assert_called_once_with(compliance_report.report.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
