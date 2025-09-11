@@ -1,3 +1,4 @@
+from typing import Optional
 import uuid
 import logging
 from decimal import Decimal
@@ -46,6 +47,7 @@ class ComplianceAdjustmentService:
         target_compliance_report_version_id: int,
         adjustment_total: Decimal,
         supplementary_compliance_report_version_id: int,
+        reason: Optional[ElicensingAdjustment.Reason] = None,
     ) -> None:
         """
         Creates fee adjustment for a target compliance report version when triggered by a supplementary version.
@@ -59,6 +61,7 @@ class ComplianceAdjustmentService:
             compliance_report_version_id=target_compliance_report_version_id,
             adjustment_total=adjustment_total,
             supplementary_compliance_report_version_id=supplementary_compliance_report_version_id,
+            reason=reason,
         )
 
     @classmethod
@@ -67,6 +70,7 @@ class ComplianceAdjustmentService:
         compliance_report_version_id: int,
         adjustment_total: Decimal,
         supplementary_compliance_report_version_id: int | None = None,
+        reason: Optional[ElicensingAdjustment.Reason] = None,
     ) -> None:
         """
         Creates fee adjustment connecting with elicensing service.
@@ -95,12 +99,13 @@ class ComplianceAdjustmentService:
             line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
 
-        # Determine the reason based on whether this is a supplementary report adjustment
-        reason = (
-            ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
-            if supplementary_compliance_report_version_id
-            else ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED
-        )
+        # Determine the default reason based on whether this is a supplementary report adjustment
+        if reason is None:
+            reason = (
+                ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
+                if supplementary_compliance_report_version_id
+                else ElicensingAdjustment.Reason.COMPLIANCE_UNITS_APPLIED
+            )
 
         adjustment_data = [
             {
