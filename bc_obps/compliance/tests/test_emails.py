@@ -130,10 +130,11 @@ class TestComplianceEmailHelpers:
         mocked_send_email = mock_email_service(mocker)
 
         mocked_send_email.side_effect = Exception("Whoops")
-        with pytest.raises(Exception, match="Whoops"):
-            _send_email_to_operators_approved_users_or_raise(
-                approved_user_operator.operator, template_instance, {"foo": "bar"}
-            )
+        with patch('django.conf.settings.ENVIRONMENT', 'test'):
+            with pytest.raises(Exception, match="Whoops"):
+                _send_email_to_operators_approved_users_or_raise(
+                    approved_user_operator.operator, template_instance, {"foo": "bar"}
+                )
 
 
 class TestSendNotifications:

@@ -40,19 +40,20 @@ class PenaltyCalculationService:
     DAILY_PENALTY_RATE = Decimal('0.0038')
 
     @classmethod
-    def get_automatic_overdue_penalty_data(cls, obligation: ComplianceObligation) -> Dict[str, Any]:
+    def get_automatic_overdue_penalty_data(cls, compliance_report_version_id: int) -> Dict[str, Any]:
         """
         Get automatic overdue penalty data for a compliance obligation.
 
         Args:
-            obligation: The compliance obligation
+            compliance_report_version_id: The ID of the compliance report version
 
         Returns:
             Dictionary containing penalty details or CompliancePenalty.DoesNotExist if no penalty applies
         """
         refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
-            compliance_report_version_id=obligation.compliance_report_version_id
+            compliance_report_version_id=compliance_report_version_id
         )
+        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
         penalty = CompliancePenalty.objects.get(
             compliance_obligation=obligation, penalty_type=CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE
         )

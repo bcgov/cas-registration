@@ -1,7 +1,6 @@
 from decimal import Decimal
 from typing import Any, Dict
 from django.db.models import Sum
-from compliance.models.compliance_obligation import ComplianceObligation
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 
@@ -28,9 +27,7 @@ class PenaltySummaryService:
             - payments_is_fresh (bool): Whether the payment data is up to date.
             - payments (QuerySet[ElicensingPayment]): Payments associated with the penalty invoice.
         """
-        obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
-
-        penalty_data = PenaltyCalculationService.get_automatic_overdue_penalty_data(obligation=obligation)
+        penalty_data = PenaltyCalculationService.get_automatic_overdue_penalty_data(compliance_report_version_id)
 
         payments_wrapper = ComplianceDashboardService.get_penalty_payments_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id

@@ -3,7 +3,6 @@ from django.http import HttpRequest
 from compliance.api.router import router
 from compliance.constants import COMPLIANCE
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
-from compliance.models.compliance_obligation import ComplianceObligation
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from registration.schema.generic import Message
 from compliance.schema.automatic_overdue_penalty import AutomaticOverduePenaltyOut
@@ -21,7 +20,4 @@ def get_automatic_overdue_penalty(request: HttpRequest, compliance_report_versio
     """
     Get automatic overdue penalty data for a compliance report version.
     """
-    # Get the compliance obligation for this compliance report version
-    obligation = ComplianceObligation.objects.get(compliance_report_version_id=compliance_report_version_id)
-
-    return 200, PenaltyCalculationService.get_automatic_overdue_penalty_data(obligation)
+    return 200, PenaltyCalculationService.get_automatic_overdue_penalty_data(compliance_report_version_id)
