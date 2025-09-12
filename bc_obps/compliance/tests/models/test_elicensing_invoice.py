@@ -1,6 +1,4 @@
 from decimal import Decimal
-import pytest
-from django.db import ProgrammingError
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from common.tests.utils.helpers import BaseTestCase
@@ -40,7 +38,7 @@ class TestElicensingInvoiceRls(BaseTestCase):
             operator=approved_user_operator.operator,
             client_object_id="1147483647",
         )
-        make_recipe(
+        approved_elicensing_invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', id=88, elicensing_client_operator=approved_client_operator
         )
 
@@ -49,12 +47,17 @@ class TestElicensingInvoiceRls(BaseTestCase):
         random_client_operator = make_recipe(
             'compliance.tests.utils.elicensing_client_operator', operator=random_operator, client_object_id="1147483647"
         )
-        make_recipe('compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator)
+        random_elicensing_invoice = make_recipe(
+            'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
+        )
 
         assert ElicensingInvoice.objects.count() == 2
 
         def select_function(cursor):
-            assert ElicensingInvoice.objects.count() == 1
+            ElicensingInvoice.objects.get(id=approved_elicensing_invoice.id)
+
+        def forbidden_select_function(cursor):
+            ElicensingInvoice.objects.get(id=random_elicensing_invoice.id)
 
         def insert_function(cursor):
             ElicensingInvoice.objects.create(
@@ -68,29 +71,27 @@ class TestElicensingInvoiceRls(BaseTestCase):
                 is_void=False,
             )
 
-            assert ElicensingInvoice.objects.filter(outstanding_balance=Decimal('888')).exists()
-
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "elicensing_invoice"',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."elicensing_invoice" (
                         elicensing_client_operator_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_client_operator.id,),
-                )
+                (random_client_operator.id,),
+            )
 
         def update_function(cursor):
-            ElicensingInvoice.objects.update(invoice_fee_balance=Decimal('999'))
-            assert ElicensingInvoice.objects.filter(invoice_fee_balance=Decimal('999')).count() == 1
+            return ElicensingInvoice.objects.filter(id=approved_elicensing_invoice.id).update(
+                invoice_fee_balance=Decimal('999')
+            )
 
-        # def forbidden_delete_function(cursor):
-        #     ElicensingInvoice.objects.filter(id=88).delete()
+        def forbidden_update_function(cursor):
+            return ElicensingInvoice.objects.filter(id=random_elicensing_invoice.id).update(
+                invoice_fee_balance=Decimal('999')
+            )
 
         assert_policies_for_industry_user(
             ElicensingInvoice,
@@ -98,8 +99,9 @@ class TestElicensingInvoiceRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            # forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_elicensing_invoice_rls_cas_users(self):

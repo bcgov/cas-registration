@@ -1,6 +1,4 @@
-import pytest
 from model_bakery.baker import make_recipe
-from django.db import ProgrammingError
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
@@ -50,7 +48,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
         # Create approved compliance report
         approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
         # create a compliance report version for the approved compliance report version
-        make_recipe(
+        approved_compliance_report_version = make_recipe(
             'compliance.tests.utils.compliance_report_version',
             id=88,
             compliance_report=approved_compliance_report,
@@ -72,12 +70,17 @@ class TestComplianceReportVersionRls(BaseTestCase):
         # random compliance report
         random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
         # create a compliance report version for the random compliance report version
-        make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report)
+        random_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
+        )
 
         assert ComplianceReportVersion.objects.count() == 2
 
         def select_function(cursor):
-            assert ComplianceReportVersion.objects.count() == 1
+            ComplianceReportVersion.objects.get(id=approved_compliance_report_version.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceReportVersion.objects.get(id=random_compliance_report_version.id)
 
         def insert_function(cursor):
             ComplianceReportVersion.objects.create(
@@ -89,21 +92,9 @@ class TestComplianceReportVersionRls(BaseTestCase):
                 is_supplementary=False,
             )
 
-            assert ComplianceReportVersion.objects.filter(
-                compliance_report=approved_compliance_report,
-                report_compliance_summary=approved_report_compliance_summary,
-                excess_emissions_delta_from_previous=10,
-                credited_emissions_delta_from_previous=10,
-                is_supplementary=False,
-                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
-            ).exists()
-
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "compliance_report_version',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."compliance_report_version" (
                         compliance_report_id,
                         report_compliance_summary_id,
@@ -120,22 +111,25 @@ class TestComplianceReportVersionRls(BaseTestCase):
                         %s
                     )
                 """,
-                    (
-                        random_compliance_report.id,
-                        random_report_compliance_summary.id,
-                        "Obligation fully met",
-                        10,
-                        10,
-                        False,
-                    ),
-                )
+                (
+                    random_compliance_report.id,
+                    random_report_compliance_summary.id,
+                    "Obligation fully met",
+                    10,
+                    10,
+                    False,
+                ),
+            )
 
         def update_function(cursor):
-            ComplianceReportVersion.objects.update(status='No obligation or earned credits')
-            assert ComplianceReportVersion.objects.filter(status='No obligation or earned credits').count() == 1
+            return ComplianceReportVersion.objects.filter(id=approved_compliance_report_version.id).update(
+                status='No obligation or earned credits'
+            )
 
-        # def forbidden_delete_function(cursor):
-        #     ComplianceReportVersion.objects.filter(id=88).delete()
+        def forbidden_update_function(cursor):
+            return ComplianceReportVersion.objects.filter(id=random_compliance_report_version.id).update(
+                status='No obligation or earned credits'
+            )
 
         assert_policies_for_industry_user(
             ComplianceReportVersion,
@@ -143,8 +137,9 @@ class TestComplianceReportVersionRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            # forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_compliance_report_version_rls_cas_users(self):

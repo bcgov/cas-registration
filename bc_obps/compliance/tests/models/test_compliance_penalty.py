@@ -42,7 +42,9 @@ class TestCompliancePenaltyRls(BaseTestCase):
         approved_compliance_obligation = make_recipe(
             'compliance.tests.utils.compliance_obligation', compliance_report_version=approved_compliance_report_version
         )
-        make_recipe('compliance.tests.utils.compliance_penalty', compliance_obligation=approved_compliance_obligation)
+        approved_compliance_penalty = make_recipe(
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=approved_compliance_obligation
+        )
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator')
@@ -55,62 +57,23 @@ class TestCompliancePenaltyRls(BaseTestCase):
         random_compliance_obligation = make_recipe(
             'compliance.tests.utils.compliance_obligation', compliance_report_version=random_compliance_report_version
         )
-        make_recipe('compliance.tests.utils.compliance_penalty', compliance_obligation=random_compliance_obligation)
-
-        # extra object for insert
-        extra_approved_operation = make_recipe(
-            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
-        )
-        extra_approved_report = make_recipe(
-            'reporting.tests.utils.report', operation=extra_approved_operation, operator=approved_user_operator.operator
-        )
-        extra_approved_compliance_report = make_recipe(
-            'compliance.tests.utils.compliance_report', report=extra_approved_report
-        )
-        extra_approved_compliance_report_version = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=extra_approved_compliance_report,
-            is_supplementary=False,
-        )
-        extra_approved_compliance_obligation = make_recipe(
-            'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=extra_approved_compliance_report_version,
-        )
-        extra_invoice = make_recipe(
-            'compliance.tests.utils.elicensing_invoice',
-            elicensing_client_operator__operator=approved_user_operator.operator,
+        random_compliance_penalty = make_recipe(
+            'compliance.tests.utils.compliance_penalty', compliance_obligation=random_compliance_obligation
         )
 
         assert CompliancePenalty.objects.count() == 2
 
         def select_function(cursor):
-            assert CompliancePenalty.objects.count() == 1
+            CompliancePenalty.objects.get(id=approved_compliance_penalty.id)
 
-        def forbidden_insert_function(cursor):
-            CompliancePenalty.objects.create(
-                id=888,
-                compliance_obligation=extra_approved_compliance_obligation,
-                accrual_start_date="2025-01-01",
-                penalty_amount=100.00,
-                fee_date="2025-01-31",
-                elicensing_invoice=extra_invoice,
-                penalty_type="Late Submission",
-            )
-
-        def forbidden_update_function(cursor):
-            CompliancePenalty.objects.filter(id=888).update(penalty_amount=200.00)
-
-        def forbidden_delete_function(cursor):
-            CompliancePenalty.objects.all().delete()
+        def forbidden_select_function(cursor):
+            CompliancePenalty.objects.get(id=random_compliance_penalty.id)
 
         assert_policies_for_industry_user(
             CompliancePenalty,
             approved_user_operator.user,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
         )
 
     def test_compliance_penalty_rls_cas_users(self):
