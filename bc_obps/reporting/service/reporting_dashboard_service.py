@@ -10,7 +10,11 @@ from reporting.models.report_version import ReportVersion
 from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
-from reporting.schema.dashboard import ReportingDashboardOperationFilterSchema, ReportsPeriod
+from reporting.schema.dashboard import (
+    ReportingDashboardOperationFilterSchema,
+    ReportingDashboardReportFilterSchema,
+    ReportsPeriod,
+)
 from service.user_operator_service import UserOperatorService
 
 
@@ -113,7 +117,7 @@ class ReportingDashboardService:
         reports_period: ReportsPeriod = ReportsPeriod.ALL,
         sort_field: Optional[str] = "reporting_year",
         sort_order: Optional[str] = "asc",
-        filters: ReportingDashboardOperationFilterSchema = Query(...),
+        filters: ReportingDashboardReportFilterSchema = Query(...),
     ) -> QuerySet[Report]:
         """
         Fetches reports, and annotates it with the associated operation data required for the API call

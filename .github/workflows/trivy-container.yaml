@@ -41,6 +41,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-container-results.sarif
+          category: trivy-container-scan
       - name: Generate unique artifact name
         id: artifact-name
         run: |

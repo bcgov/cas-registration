@@ -10,7 +10,7 @@ class ComplianceChargeRate(TimeStampedModel):
     These rates are used to calculate fees for excess emissions.
     """
 
-    reporting_year = models.ForeignKey(
+    reporting_year = models.OneToOneField(
         ReportingYear,
         on_delete=models.PROTECT,
         related_name='compliance_charge_rate',

@@ -1,7 +1,7 @@
 ####################
 # Base Stage
 ####################
-FROM python:3.12.3-slim AS base
+FROM python:3.12.11-slim AS base
 
 # Prevent Python from writing .pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -54,9 +54,9 @@ SHELL ["/bin/bash", "-c"]
 # Filter .tool-versions for python and poetry
 RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
     # Add plugins for each tool listed in .tool-versions
-    cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
+    cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin add && \
     # Update all plugins to latest versions
-    asdf plugin-update --all && \
+    asdf plugin update --all && \
     # Install tools (Python, Poetry) from .tool-versions
     asdf install && \
     # Regenerate shims for installed tools
@@ -89,7 +89,7 @@ RUN apt-get update && \
     libcairo2 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-xlib-2.0-0 \
     libffi-dev \
     shared-mime-info \
     fonts-liberation && \
