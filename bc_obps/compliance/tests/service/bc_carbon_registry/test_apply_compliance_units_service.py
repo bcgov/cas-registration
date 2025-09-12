@@ -26,7 +26,7 @@ ELICENSING_DATA_REFRESH_SERVICE_PATH = f"{APPLY_UNITS_BASE_PATH}.ElicensingDataR
 # Specific method paths
 COMPUTE_COMPLIANCE_UNIT_CAPS_PATH = f"{APPLY_UNITS_SERVICE_PATH}._compute_compliance_unit_caps"
 VALIDATE_QUANTITY_LIMITS = f"{APPLY_UNITS_SERVICE_PATH}._validate_quantity_limits"
-CAN_APPLY_COMPLIANCE_UNITS_PATH = f"{APPLY_UNITS_SERVICE_PATH}._can_apply_compliance_units"
+CAN_APPLY_COMPLIANCE_UNITS_PATH = f"{APPLY_UNITS_SERVICE_PATH}.can_apply_compliance_units"
 COMPLIANCE_CREATE_ADJUSTMENT_PATH = f"{COMPLIANCE_ADJUSTMENT_SERVICE_PATH}.create_adjustment_for_current_version"
 GET_OBLIGATION_FOR_REPORT_VERSION_PATH = f"{COMPLIANCE_OBLIGATION_SERVICE_PATH}.get_obligation_for_report_version"
 GET_OBLIGATION_DATA_BY_REPORT_VERSION_PATH = (
@@ -306,7 +306,7 @@ class TestApplyComplianceUnitsService:
         mock_obligation.elicensing_invoice = Mock(outstanding_balance=Decimal("600.00"))
         mock_get_obligation_data.return_value = mock_obligation
 
-        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is True
+        assert ApplyComplianceUnitsService.can_apply_compliance_units(1) is True
 
     def test_can_apply_compliance_units_cap_exhausted(
         self,
@@ -322,7 +322,7 @@ class TestApplyComplianceUnitsService:
         mock_obligation.elicensing_invoice = Mock(outstanding_balance=Decimal("600.00"))
         mock_get_obligation_data.return_value = mock_obligation
 
-        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is False
+        assert ApplyComplianceUnitsService.can_apply_compliance_units(1) is False
 
     def test_can_apply_compliance_units_missing_obligation(
         self, mock_compute_compliance_unit_caps, mock_get_obligation_data
@@ -331,7 +331,7 @@ class TestApplyComplianceUnitsService:
         mock_compute_compliance_unit_caps.return_value = (Decimal("0.00"), Decimal("0.00"))
         mock_get_obligation_data.return_value = None
 
-        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is False
+        assert ApplyComplianceUnitsService.can_apply_compliance_units(1) is False
 
     def test_can_apply_compliance_units_zero_outstanding(
         self,
@@ -347,7 +347,7 @@ class TestApplyComplianceUnitsService:
         mock_obligation.elicensing_invoice = Mock(outstanding_balance=Decimal("0.00"))
         mock_get_obligation_data.return_value = mock_obligation
 
-        assert ApplyComplianceUnitsService._can_apply_compliance_units(1) is False
+        assert ApplyComplianceUnitsService.can_apply_compliance_units(1) is False
 
     def test_validate_quantity_limits_success(self, mock_compute_compliance_unit_caps, mock_get_obligation_data):
         # Arrange
