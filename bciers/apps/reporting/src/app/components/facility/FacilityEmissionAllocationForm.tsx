@@ -366,6 +366,10 @@ export default function FacilityEmissionAllocationForm({
           formData.fuel_excluded_emission_allocation_data,
         ),
         total_emission_allocations: formData.total_emission_allocations,
+        missing_product_alert: {
+          version_id,
+          facility_id,
+        },
       }}
     />
   );
