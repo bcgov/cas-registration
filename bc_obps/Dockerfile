@@ -54,9 +54,9 @@ SHELL ["/bin/bash", "-c"]
 # Filter .tool-versions for python and poetry
 RUN sed -i -nr '/python|poetry/p' ${HOME}/.tool-versions && \
     # Add plugins for each tool listed in .tool-versions
-    cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin-add && \
+    cat ${HOME}/.tool-versions | cut -f 1 -d ' ' | xargs -n 1 asdf plugin add && \
     # Update all plugins to latest versions
-    asdf plugin-update --all && \
+    asdf plugin update --all && \
     # Install tools (Python, Poetry) from .tool-versions
     asdf install && \
     # Regenerate shims for installed tools
