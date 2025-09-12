@@ -5,8 +5,6 @@ from .rls_configs.compliance_penalty import Rls as CompliancePenaltyRls
 
 
 class CompliancePenalty(TimeStampedModel):
-    """Model to store compliance penalty data"""
-
     class PenaltyType(models.TextChoices):
         AUTOMATIC_OVERDUE = 'Automatic Overdue'
         LATE_SUBMISSION = 'Late Submission'
@@ -14,7 +12,7 @@ class CompliancePenalty(TimeStampedModel):
     compliance_obligation = models.ForeignKey(
         ComplianceObligation,
         on_delete=models.CASCADE,
-        related_name="compliance_penalty",
+        related_name="compliance_penalties",
         db_comment="The compliance obligation not paid on time which triggered this penalty",
     )
 

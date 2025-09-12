@@ -84,7 +84,7 @@ class ApplyComplianceUnitsService:
         return compliance_unit_cap_limit, compliance_unit_cap_remaining
 
     @classmethod
-    def _can_apply_compliance_units(cls, compliance_report_version_id: int) -> bool:
+    def can_apply_compliance_units(cls, compliance_report_version_id: int) -> bool:
         """
         Returns True if:
         * There is a valid obligation with a fee > 0.
@@ -299,7 +299,7 @@ class ApplyComplianceUnitsService:
             raise UserError("Unable to proceed: E-Licensing data is not up to date. Please try again later.")
 
         # Check overall eligibility for applying compliance units.
-        if not cls._can_apply_compliance_units(compliance_report_version_id):
+        if not cls.can_apply_compliance_units(compliance_report_version_id):
             raise UserError("Quantity to be applied exceeds 50% of the original obligation fee.")
 
         # Validate the payload against global and per-unit limits.
