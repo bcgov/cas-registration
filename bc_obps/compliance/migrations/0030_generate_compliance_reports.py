@@ -5,15 +5,12 @@ from compliance.service.compliance_report_version_service import ComplianceRepor
 from compliance.models import ComplianceReport, CompliancePeriod
 from reporting.models import ReportVersion
 import logging
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
-def generate_compliance_reports_from_emission_reports(apps, schema_editor):
-    # ReportVersion = apps.get_model("reporting", "ReportVersion")
-    # ComplianceReport = apps.get_model("compliance", "ComplianceReport")
-    # CompliancePeriod = apps.get_model("compliance", "CompliancePeriod")
-
+def generate_compliance_reports_from_emission_reports():
     # Only generate compliance reports for the latest submitted version of reports from the 2024 reporting year for regulated operations
     report_versions_to_process = ReportVersion.objects.select_related('report', 'report_operation').filter(
         report__reporting_year_id=2024,
@@ -39,7 +36,15 @@ def generate_compliance_reports_from_emission_reports(apps, schema_editor):
             logger.info(f"Compliance report already exists for report id {rv.report_id}")
 
 
-def revert_generate_compliance_reports_from_emission_reports(apps, schema_editor):
+def perform_migration(apps, schema_editor):
+    # Only run this migration in production
+    if settings.ENVIRONMENT == "prod":
+        generate_compliance_reports_from_emission_reports()
+    else:
+        pass
+
+
+def revert_perform_migration(apps, schema_editor):
     """
     Remove generated compliance reports
     """
@@ -54,8 +59,4 @@ class Migration(migrations.Migration):
         ('compliance', '0029_alter_compliancechargerate_reporting_year'),
     ]
 
-    operations = [
-        migrations.RunPython(
-            generate_compliance_reports_from_emission_reports, revert_generate_compliance_reports_from_emission_reports
-        )
-    ]
+    operations = [migrations.RunPython(perform_migration, revert_perform_migration)]
