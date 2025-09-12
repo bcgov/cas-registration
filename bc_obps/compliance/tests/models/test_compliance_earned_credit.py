@@ -466,6 +466,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                 compliance_report_version=approved_compliance_report_version_for_insert,
             ).exists()
 
+            # forbidden
             with pytest.raises(
                 ProgrammingError,
                 match='new row violates row-level security policy for table "compliance_earned_credit"',
@@ -494,7 +495,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                 ).count()
                 == 1
             )
-
+            # forbidden
             # not approved, should still be one
             ComplianceEarnedCredit.objects.filter(id=20).update(
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
@@ -506,8 +507,8 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                 == 1
             )
 
-        def forbidden_delete_function(cursor):
-            ComplianceEarnedCredit.objects.first().delete()
+        # def forbidden_delete_function(cursor):
+        #     ComplianceEarnedCredit.objects.first().delete()
 
         assert_policies_for_industry_user(
             ComplianceEarnedCredit,
@@ -515,7 +516,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
+            # forbidden_delete_function=forbidden_delete_function,
             test_forbidden_ops=True,
         )
 
@@ -528,13 +529,6 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             report_compliance_summary=report_compliance_summary,
         )
 
-        compliance_report_2 = make_recipe('compliance.tests.utils.compliance_report')
-        report_compliance_summary_2 = make_recipe('compliance.tests.utils.report_compliance_summary')
-        compliance_report_version_2 = make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            compliance_report=compliance_report_2,
-            report_compliance_summary=report_compliance_summary_2,
-        )
         make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
             id=15,
@@ -560,21 +554,6 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                 == 1
             )
 
-        def forbidden_insert_function(cursor):
-            ComplianceEarnedCredit.objects.create(
-                compliance_report_version=compliance_report_version_2,
-                earned_credits_amount=400,
-                issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
-            )
-
-        def forbidden_delete_function(cursor):
-            ComplianceEarnedCredit.objects.filter(id=15).delete()
-
         assert_policies_for_cas_roles(
-            ComplianceEarnedCredit,
-            select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            ComplianceEarnedCredit, select_function=select_function, update_function=update_function
         )

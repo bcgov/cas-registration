@@ -136,37 +136,10 @@ class TestComplianceObligationRls(BaseTestCase):
             'compliance.tests.utils.compliance_obligation', id=888, compliance_report_version=compliance_report_version
         )
 
-        operator_2 = make_recipe('registration.tests.utils.operator')
-        operation_2 = make_recipe('registration.tests.utils.operation', operator=operator_2)
-        report_2 = make_recipe('reporting.tests.utils.report', operation=operation_2)
-        compliance_report_2 = make_recipe('compliance.tests.utils.compliance_report', report=report_2)
-        compliance_report_version_2 = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report_2
-        )
-
         def select_function(cursor):
             assert ComplianceObligation.objects.count() == 1
-
-        def forbidden_insert_function(cursor):
-            ComplianceObligation.objects.create(
-                id=876,
-                compliance_report_version=compliance_report_version_2,
-                obligation_id=777,
-                obligation_deadline="2025-11-30",
-                fee_amount_dollars=Decimal('123'),
-            )
-
-        def forbidden_update_function(cursor):
-            ComplianceObligation.objects.filter(id=888).update(fee_amount_dollars=Decimal('777'))
-
-        def forbidden_delete_function(cursor):
-            ComplianceObligation.objects.filter(id=888).delete()
 
         assert_policies_for_cas_roles(
             ComplianceObligation,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )

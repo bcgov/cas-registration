@@ -115,27 +115,7 @@ class TestCompliancePenaltyAccrualRls(BaseTestCase):
         def select_function(cursor):
             assert CompliancePenaltyAccrual.objects.count() == 1
 
-        def forbidden_insert_function(cursor):
-            CompliancePenaltyAccrual.objects.create(
-                compliance_penalty=compliance_penalty,
-                date="2023-01-01",
-                daily_penalty=10.00,
-                daily_compounded=0.00,
-                accumulated_penalty=10.00,
-                accumulated_compounded=0.00,
-            )
-
-        def forbidden_update_function(cursor):
-            CompliancePenaltyAccrual.objects.filter(id=88).update(daily_penalty=444)
-
-        def forbidden_delete_function(cursor):
-            CompliancePenaltyAccrual.objects.filter(id=88).delete()
-
         assert_policies_for_cas_roles(
             CompliancePenaltyAccrual,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )

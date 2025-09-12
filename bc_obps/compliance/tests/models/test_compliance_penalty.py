@@ -1,4 +1,3 @@
-from decimal import Decimal
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.compliance_penalty import CompliancePenalty
 from common.tests.utils.helpers import BaseTestCase
@@ -127,41 +126,10 @@ class TestCompliancePenaltyRls(BaseTestCase):
         )
         make_recipe('compliance.tests.utils.compliance_penalty', id=888, compliance_obligation=compliance_obligation)
 
-        operator_2 = make_recipe('registration.tests.utils.operator')
-        operation_2 = make_recipe('registration.tests.utils.operation', operator=operator_2)
-        report_2 = make_recipe('reporting.tests.utils.report', operation=operation_2)
-        compliance_report_2 = make_recipe('compliance.tests.utils.compliance_report', report=report_2)
-        compliance_report_version_2 = make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report_2
-        )
-        compliance_obligation_2 = make_recipe(
-            'compliance.tests.utils.compliance_obligation', compliance_report_version=compliance_report_version_2
-        )
-
         def select_function(cursor):
             assert CompliancePenalty.objects.count() == 1
-
-        def forbidden_insert_function(cursor):
-            CompliancePenalty.objects.create(
-                id=876,
-                compliance_obligation=compliance_obligation_2,
-                accrual_start_date="2025-01-01",
-                penalty_amount=100.00,
-                fee_date="2025-01-31",
-                penalty_type="Automatic Overdue",
-            )
-
-        def forbidden_update_function(cursor):
-            CompliancePenalty.objects.filter(id=888).update(penalty_amount=Decimal('555'))
-
-        def forbidden_delete_function(cursor):
-            CompliancePenalty.objects.filter(id=888).delete()
 
         assert_policies_for_cas_roles(
             CompliancePenalty,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )

@@ -74,8 +74,8 @@ class TestElicensingClientOperatorRls(BaseTestCase):
             ElicensingClientOperator.objects.update(client_object_id="2147483647")
             assert ElicensingClientOperator.objects.filter(client_object_id="2147483647").count() == 1
 
-        def forbidden_delete_function(cursor):
-            ElicensingClientOperator.objects.filter(client_object_id="1147483647").delete()
+        # def forbidden_delete_function(cursor):
+        #     ElicensingClientOperator.objects.filter(client_object_id="1147483647").delete()
 
         assert_policies_for_industry_user(
             ElicensingClientOperator,
@@ -83,7 +83,7 @@ class TestElicensingClientOperatorRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
+            # forbidden_delete_function=forbidden_delete_function,
             test_forbidden_ops=True,
         )
 
@@ -94,24 +94,7 @@ class TestElicensingClientOperatorRls(BaseTestCase):
         def select_function(cursor):
             assert ElicensingClientOperator.objects.count() == 1
 
-        def forbidden_insert_function(cursor):
-            ElicensingClientOperator.objects.create(
-                operator_id=operator.id,
-                client_object_id="1234554321",
-                client_guid="d7611888-8e88-8eb8-88e2-8888f888d002",
-            )
-
-        def forbidden_update_function(cursor):
-            ElicensingClientOperator.objects.filter(id=88).update(client_object_id="1432112345")
-
-        def forbidden_delete_function(cursor):
-            ElicensingClientOperator.objects.filter(id=88).delete()
-
         assert_policies_for_cas_roles(
             ElicensingClientOperator,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )

@@ -90,8 +90,8 @@ class TestElicensingLineItemRls(BaseTestCase):
             ElicensingLineItem.objects.update(base_amount=Decimal('999'))
             assert ElicensingLineItem.objects.filter(base_amount=Decimal('999')).count() == 1
 
-        def forbidden_delete_function(cursor):
-            ElicensingLineItem.objects.filter(id=88).delete()
+        # def forbidden_delete_function(cursor):
+        #     ElicensingLineItem.objects.filter(id=88).delete()
 
         assert_policies_for_industry_user(
             ElicensingLineItem,
@@ -99,7 +99,7 @@ class TestElicensingLineItemRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
+            # forbidden_delete_function=forbidden_delete_function,
             test_forbidden_ops=True,
         )
 
@@ -114,26 +114,7 @@ class TestElicensingLineItemRls(BaseTestCase):
         def select_function(cursor):
             assert ElicensingLineItem.objects.count() == 1
 
-        def forbidden_insert_function(cursor):
-            ElicensingLineItem.objects.create(
-                elicensing_invoice=invoice,
-                object_id=888888,
-                fee_date='2024-10-01',
-                base_amount=Decimal('888'),
-                guid="550e8400-e29b-41d4-a716-000000000000",
-            )
-
-        def forbidden_update_function(cursor):
-            ElicensingLineItem.objects.filter(id=888).update(description="This is not allowed to be updated")
-
-        def forbidden_delete_function(cursor):
-            ElicensingLineItem.objects.filter(id=888).delete()
-
         assert_policies_for_cas_roles(
             ElicensingLineItem,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )

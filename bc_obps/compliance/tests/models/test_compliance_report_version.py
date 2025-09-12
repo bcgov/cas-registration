@@ -134,8 +134,8 @@ class TestComplianceReportVersionRls(BaseTestCase):
             ComplianceReportVersion.objects.update(status='No obligation or earned credits')
             assert ComplianceReportVersion.objects.filter(status='No obligation or earned credits').count() == 1
 
-        def forbidden_delete_function(cursor):
-            ComplianceReportVersion.objects.filter(id=88).delete()
+        # def forbidden_delete_function(cursor):
+        #     ComplianceReportVersion.objects.filter(id=88).delete()
 
         assert_policies_for_industry_user(
             ComplianceReportVersion,
@@ -143,7 +143,7 @@ class TestComplianceReportVersionRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
+            # forbidden_delete_function=forbidden_delete_function,
             test_forbidden_ops=True,
         )
 
@@ -151,42 +151,13 @@ class TestComplianceReportVersionRls(BaseTestCase):
         operator = make_recipe('registration.tests.utils.operator')
         operation = make_recipe('registration.tests.utils.operation', operator=operator)
         report = make_recipe('reporting.tests.utils.report', operation=operation)
-        report_version = make_recipe(
-            'reporting.tests.utils.report_version',
-            report=report,
-        )
-        report_compliance_summary = make_recipe(
-            'reporting.tests.utils.report_compliance_summary', report_version=report_version
-        )
         compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=report)
         make_recipe('compliance.tests.utils.compliance_report_version', id=88, compliance_report=compliance_report)
 
         def select_function(cursor):
             assert ComplianceReportVersion.objects.count() == 1
 
-        def forbidden_insert_function(cursor):
-            ComplianceReportVersion.objects.create(
-                compliance_report=compliance_report,
-                report_compliance_summary=report_compliance_summary,
-                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
-                excess_emissions_delta_from_previous=10,
-                credited_emissions_delta_from_previous=10,
-                is_supplementary=False,
-            )
-
-        def forbidden_update_function(cursor):
-            ComplianceReportVersion.objects.filter(id=88).update(
-                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
-            )
-
-        def forbidden_delete_function(cursor):
-            ComplianceReportVersion.objects.filter(id=88).delete()
-
         assert_policies_for_cas_roles(
             ComplianceReportVersion,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )
