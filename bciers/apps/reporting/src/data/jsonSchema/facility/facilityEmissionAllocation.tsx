@@ -11,6 +11,7 @@ import {
   WidgetProps,
   FieldTemplateProps,
 } from "@rjsf/utils";
+import AlertFieldTemplateFactory from "@bciers/components/form/fields/AlertFieldTemplateFactory";
 
 /**
  * Widget to display the title of an emission allocation category
@@ -315,7 +316,9 @@ export const emissionAllocationUiSchema: UiSchema = {
     "total_emission_allocations",
   ],
   missing_product_alert: {
-    "ui:FieldTemplate": TitleOnlyFieldTemplate,
+    "ui:FieldTemplate": AlertFieldTemplateFactory("ALERT", () => (
+      <div>AlertFieldTemplate</div>
+    )),
   },
   allocation_methodology: {
     "ui:widget": "SelectWidget",

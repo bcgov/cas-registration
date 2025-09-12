@@ -1,6 +1,6 @@
 "use client";
 import { FieldTemplateProps } from "@rjsf/utils";
-import AlertNote, { AlertNoteProps } from "../components/AlertNote";
+import AlertNote, { AlertNoteProps, AlertType } from "../components/AlertNote";
 
 type AlertFieldTemplateProps = FieldTemplateProps & AlertNoteProps;
 
@@ -16,7 +16,10 @@ function AlertFieldTemplate({
   );
 }
 
-function AlertFieldTemplateFactory<T>(AlertContent: React.FC<T>) {
+function AlertFieldTemplateFactory<T>(
+  alertType: AlertType,
+  AlertContent: React.FC<T>,
+) {
   return (props: AlertFieldTemplateProps) => (
     <AlertFieldTemplate {...props}>
       <AlertContent {...props.formContext} />
