@@ -5,7 +5,7 @@ import {
   generateRequestIssuanceTaskList,
 } from "@/compliance/src/app/components/taskLists/requestIssuanceTaskList";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { getRequestIssuanceTrackStatusData } from "@/compliance/src/app/utils/getRequestIssuanceTrackStatusData";
+import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
 // Mock the reporting year utility
 vi.mock("@reporting/src/app/utils/getReportingYear", () => ({
@@ -44,9 +44,12 @@ vi.mock(
 );
 
 // Mock the request issuance data function
-vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
-  getRequestIssuanceTrackStatusData: vi.fn(),
-}));
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    getRequestIssuanceComplianceSummaryData: vi.fn(),
+  }),
+);
 
 describe("RequestIssuanceOfEarnedCreditsPage", () => {
   const mockComplianceReportVersionId = 123;
@@ -62,7 +65,9 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getRequestIssuanceTrackStatusData as any).mockResolvedValue(mockData);
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(
+      mockData,
+    );
   });
 
   it("renders with correct content and generates task list", async () => {
