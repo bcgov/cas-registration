@@ -12,6 +12,8 @@ import {
   FieldTemplateProps,
 } from "@rjsf/utils";
 import AlertFieldTemplateFactory from "@bciers/components/form/fields/AlertFieldTemplateFactory";
+import InfoIcon from "@mui/icons-material/Info";
+import { BC_GOV_TEXT } from "@bciers/styles";
 
 /**
  * Widget to display the title of an emission allocation category
@@ -316,9 +318,11 @@ export const emissionAllocationUiSchema: UiSchema = {
     "total_emission_allocations",
   ],
   missing_product_alert: {
-    "ui:FieldTemplate": AlertFieldTemplateFactory("ALERT", () => (
-      <div>AlertFieldTemplate</div>
-    )),
+    "ui:FieldTemplate": AlertFieldTemplateFactory(
+      "ALERT",
+      () => <div>AlertFieldTemplate</div>,
+      <InfoIcon fontSize="inherit" sx={{ color: BC_GOV_TEXT }} />,
+    ),
   },
   allocation_methodology: {
     "ui:widget": "SelectWidget",

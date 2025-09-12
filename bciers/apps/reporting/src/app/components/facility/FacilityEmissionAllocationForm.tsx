@@ -353,7 +353,7 @@ export default function FacilityEmissionAllocationForm({
       taskListElements={navigationInformation.taskList}
       schema={getFilteredSchema()}
       uiSchema={emissionAllocationUiSchema}
-      formData={{ ...formData, missing_product_alert: true }}
+      formData={formData}
       submitButtonDisabled={submitButtonDisabled}
       backUrl={navigationInformation.backUrl}
       saveButtonDisabled={submitButtonDisabled}
@@ -366,6 +366,7 @@ export default function FacilityEmissionAllocationForm({
           formData.fuel_excluded_emission_allocation_data,
         ),
         total_emission_allocations: formData.total_emission_allocations,
+        missing_product_alert: true,
       }}
     />
   );

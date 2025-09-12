@@ -13,7 +13,7 @@ export interface AlertNoteProps {
 
 const bgClassMap = {
   INFO: "bg-bc-light-blue",
-  ALERT: "bg-bc-yellow",
+  ALERT: "bg-bc-light-yellow",
   ERROR: "bg-bc-error-red",
 };
 
