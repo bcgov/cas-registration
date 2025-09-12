@@ -1,7 +1,7 @@
 ####################
 # Base Stage
 ####################
-FROM python:3.12.3-slim AS base
+FROM python:3.12.11-slim AS base
 
 # Prevent Python from writing .pyc files to disk
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -89,7 +89,7 @@ RUN apt-get update && \
     libcairo2 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-xlib-2.0-0 \
     libffi-dev \
     shared-mime-info \
     fonts-liberation && \

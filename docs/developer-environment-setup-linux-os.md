@@ -30,7 +30,7 @@ make install_dev_tools
 
 This command will:
 
-- Install Python 3.12.3 via asdf
+- Install Python 3.12.11 via asdf
 - Install Poetry 2.1.1
 - Install and configure PostgreSQL 16.2
 
@@ -112,7 +112,7 @@ You can verify your installation by checking the versions of installed component
 
 ```bash
 # Check Python version
-python --version  # Should show 3.12.3
+python --version  # Should show 3.12.11
 
 # Check Poetry version
 poetry --version  # Should show 2.1.1
