@@ -1,6 +1,4 @@
 from decimal import Decimal
-import pytest
-from django.db import ProgrammingError
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_line_item import ElicensingLineItem
 from common.tests.utils.helpers import BaseTestCase
@@ -43,7 +41,9 @@ class TestElicensingLineItemRls(BaseTestCase):
         approved_invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=approved_client_operator
         )
-        make_recipe('compliance.tests.utils.elicensing_line_item', id=88, elicensing_invoice=approved_invoice)
+        approved_elicensing_line_item = make_recipe(
+            'compliance.tests.utils.elicensing_line_item', id=88, elicensing_invoice=approved_invoice
+        )
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator', id=2)
@@ -53,12 +53,17 @@ class TestElicensingLineItemRls(BaseTestCase):
         random_invoice = make_recipe(
             'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
         )
-        make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice)
+        random_elicensing_line_item = make_recipe(
+            'compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice
+        )
 
         assert ElicensingLineItem.objects.count() == 2
 
         def select_function(cursor):
-            assert ElicensingLineItem.objects.count() == 1
+            ElicensingLineItem.objects.get(id=approved_elicensing_line_item.id)
+
+        def forbidden_select_function(cursor):
+            ElicensingLineItem.objects.get(id=random_elicensing_line_item.id)
 
         def insert_function(cursor):
             ElicensingLineItem.objects.create(
@@ -69,29 +74,27 @@ class TestElicensingLineItemRls(BaseTestCase):
                 base_amount=Decimal('888'),
             )
 
-            assert ElicensingLineItem.objects.filter(object_id=123456).exists()
-
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "elicensing_line_item"',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."elicensing_line_item" (
                         elicensing_invoice_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_invoice.id,),
-                )
+                (random_invoice.id,),
+            )
 
         def update_function(cursor):
-            ElicensingLineItem.objects.update(base_amount=Decimal('999'))
-            assert ElicensingLineItem.objects.filter(base_amount=Decimal('999')).count() == 1
+            return ElicensingLineItem.objects.filter(id=approved_elicensing_line_item.id).update(
+                base_amount=Decimal('999')
+            )
 
-        # def forbidden_delete_function(cursor):
-        #     ElicensingLineItem.objects.filter(id=88).delete()
+        def forbidden_update_function(cursor):
+            return ElicensingLineItem.objects.filter(id=random_elicensing_line_item.id).update(
+                base_amount=Decimal('999')
+            )
 
         assert_policies_for_industry_user(
             ElicensingLineItem,
@@ -99,8 +102,9 @@ class TestElicensingLineItemRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            # forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_elicensing_line_item_rls_cas_users(self):

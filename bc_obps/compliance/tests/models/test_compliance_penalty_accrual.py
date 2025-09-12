@@ -44,7 +44,9 @@ class TestCompliancePenaltyAccrualRls(BaseTestCase):
         approved_compliance_penalty = make_recipe(
             'compliance.tests.utils.compliance_penalty', compliance_obligation=approved_compliance_obligation
         )
-        make_recipe('compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=approved_compliance_penalty)
+        approved_compliance_penalty_accrual = make_recipe(
+            'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=approved_compliance_penalty
+        )
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator')
@@ -60,40 +62,23 @@ class TestCompliancePenaltyAccrualRls(BaseTestCase):
         random_compliance_penalty = make_recipe(
             'compliance.tests.utils.compliance_penalty', compliance_obligation=random_compliance_obligation
         )
-        make_recipe('compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=random_compliance_penalty)
+        random_compliance_penalty_accrual = make_recipe(
+            'compliance.tests.utils.compliance_penalty_accrual', compliance_penalty=random_compliance_penalty
+        )
 
         assert CompliancePenaltyAccrual.objects.count() == 2
 
         def select_function(cursor):
-            assert CompliancePenaltyAccrual.objects.count() == 1
+            CompliancePenaltyAccrual.objects.get(id=approved_compliance_penalty_accrual.id)
 
-        def forbidden_insert_function(cursor):
-            CompliancePenaltyAccrual.objects.create(
-                compliance_penalty=approved_compliance_penalty,
-                date="2023-01-01",
-                daily_penalty=10.00,
-                daily_compounded=0.00,
-                accumulated_penalty=10.00,
-                accumulated_compounded=0.00,
-            )
-
-        def forbidden_update_function(cursor):
-            obj = CompliancePenaltyAccrual.objects.first()
-            obj.daily_penalty = 20.00
-            obj.save()
-
-        def forbidden_delete_function(cursor):
-            obj = CompliancePenaltyAccrual.objects.first()
-            obj.delete()
+        def forbidden_select_function(cursor):
+            CompliancePenaltyAccrual.objects.get(id=random_compliance_penalty_accrual.id)
 
         assert_policies_for_industry_user(
             CompliancePenaltyAccrual,
             approved_user_operator.user,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
         )
 
     def test_compliance_penalty_accrual_rls_cas_users(self):

@@ -1,6 +1,4 @@
 from decimal import Decimal
-import pytest
-from django.db import ProgrammingError
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_payment import ElicensingPayment
 from common.tests.utils.helpers import BaseTestCase
@@ -43,7 +41,9 @@ class TestElicensingPaymentRls(BaseTestCase):
         approved_line_item = make_recipe(
             'compliance.tests.utils.elicensing_line_item', elicensing_invoice=approved_invoice
         )
-        make_recipe('compliance.tests.utils.elicensing_payment', id=88, elicensing_line_item=approved_line_item)
+        approved_elicensing_payment = make_recipe(
+            'compliance.tests.utils.elicensing_payment', id=88, elicensing_line_item=approved_line_item
+        )
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator', id=2)
@@ -54,41 +54,40 @@ class TestElicensingPaymentRls(BaseTestCase):
             'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
         )
         random_line_item = make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice)
-        make_recipe('compliance.tests.utils.elicensing_payment', elicensing_line_item=random_line_item)
+        random_elicensing_payment = make_recipe(
+            'compliance.tests.utils.elicensing_payment', elicensing_line_item=random_line_item
+        )
 
         assert ElicensingPayment.objects.count() == 2
 
         def select_function(cursor):
-            assert ElicensingPayment.objects.count() == 1
+            ElicensingPayment.objects.get(id=approved_elicensing_payment.id)
+
+        def forbidden_select_function(cursor):
+            ElicensingPayment.objects.get(id=random_elicensing_payment.id)
 
         def insert_function(cursor):
             ElicensingPayment.objects.create(
                 elicensing_line_item=approved_line_item, payment_object_id=888888, amount=888
             )
 
-            assert ElicensingPayment.objects.filter(payment_object_id=888888).exists()
-
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "elicensing_payment"',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."elicensing_payment" (
                         elicensing_line_item_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_line_item.id,),
-                )
+                (random_line_item.id,),
+            )
 
         def update_function(cursor):
-            ElicensingPayment.objects.update(amount=Decimal('999'))
-            assert ElicensingPayment.objects.filter(amount=Decimal('999')).count() == 1
+            return ElicensingPayment.objects.filter(id=approved_elicensing_payment.id).update(amount=Decimal('999'))
 
-        # def forbidden_delete_function(cursor):
-        #     ElicensingPayment.objects.filter(id=88).delete()
+        def forbidden_update_function(cursor):
+            return ElicensingPayment.objects.filter(id=random_elicensing_payment.id).update(amount=Decimal('999'))
 
         assert_policies_for_industry_user(
             ElicensingPayment,
@@ -96,8 +95,9 @@ class TestElicensingPaymentRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            # forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_elicensing_payment_rls_cas_users(self):

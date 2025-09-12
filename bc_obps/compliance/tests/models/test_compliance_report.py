@@ -1,6 +1,4 @@
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-import pytest
-from django.db import ProgrammingError
 from compliance.models.compliance_report import ComplianceReport
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -34,14 +32,14 @@ class TestComplianceReportRls(BaseTestCase):
         approved_report = make_recipe(
             'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
         )
-        make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
+        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator')
         # operation belonging to a random operator
         random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
         random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
-        make_recipe('compliance.tests.utils.compliance_report', report=random_report)
+        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
 
         # extra objects for insert function
         approved_report_2 = make_recipe(
@@ -52,7 +50,10 @@ class TestComplianceReportRls(BaseTestCase):
         assert ComplianceReport.objects.count() == 2
 
         def select_function(cursor):
-            assert ComplianceReport.objects.count() == 1
+            ComplianceReport.objects.get(id=approved_compliance_report.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceReport.objects.get(id=random_compliance_report.id)
 
         def insert_function(cursor):
             ComplianceReport.objects.create(
@@ -61,30 +62,34 @@ class TestComplianceReportRls(BaseTestCase):
                 compliance_period=compliance_period,
             )
 
-            assert ComplianceReport.objects.filter(bccr_subaccount_id="123456789099999").exists()
-
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "compliance_report',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."compliance_report" (
                         report_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_report_2.id,),
-                )
+                (random_report_2.id,),
+            )
 
         def update_function(cursor):
-            ComplianceReport.objects.update(bccr_subaccount_id="111111111199999")
-            assert ComplianceReport.objects.filter(bccr_subaccount_id="111111111199999").count() == 1
+            return ComplianceReport.objects.filter(id=approved_compliance_report.id).update(
+                bccr_subaccount_id="111111111199999"
+            )
+
+        def forbidden_update_function(cursor):
+            return ComplianceReport.objects.filter(id=random_compliance_report.id).update(
+                bccr_subaccount_id="111111111199999"
+            )
 
         def delete_function(cursor):
-            ComplianceReport.objects.filter(bccr_subaccount_id="111111111199999").delete()
+            return ComplianceReport.objects.filter(bccr_subaccount_id="111111111199999").delete()
             assert ComplianceReport.objects.filter(bccr_subaccount_id="111111111199999").count() == 0
+
+        def forbidden_delete_function(cursor):
+            ComplianceReport.objects.filter(id=random_compliance_report.id).delete()
 
         assert_policies_for_industry_user(
             ComplianceReport,
@@ -93,6 +98,10 @@ class TestComplianceReportRls(BaseTestCase):
             insert_function=insert_function,
             update_function=update_function,
             delete_function=delete_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_compliance_report_rls_cas_users(self):

@@ -1,6 +1,4 @@
 from decimal import Decimal
-import pytest
-from django.db import ProgrammingError
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.compliance_obligation import ComplianceObligation
 from common.tests.utils.helpers import BaseTestCase
@@ -43,7 +41,7 @@ class TestComplianceObligationRls(BaseTestCase):
             compliance_report=approved_compliance_report,
             is_supplementary=False,
         )
-        make_recipe(
+        approved_compliance_obligation = make_recipe(
             'compliance.tests.utils.compliance_obligation',
             id=111,
             compliance_report_version=approved_compliance_report_version,
@@ -57,7 +55,7 @@ class TestComplianceObligationRls(BaseTestCase):
         random_compliance_report_version = make_recipe(
             'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
         )
-        make_recipe(
+        random_compliance_obligation = make_recipe(
             'compliance.tests.utils.compliance_obligation',
             id=444,
             compliance_report_version=random_compliance_report_version,
@@ -77,7 +75,10 @@ class TestComplianceObligationRls(BaseTestCase):
         assert ComplianceObligation.objects.count() == 2
 
         def select_function(cursor):
-            assert ComplianceObligation.objects.count() == 1
+            ComplianceObligation.objects.get(id=approved_compliance_obligation.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceObligation.objects.get(id=random_compliance_obligation.id)
 
         def insert_function(cursor):
             ComplianceObligation.objects.create(
@@ -91,28 +92,27 @@ class TestComplianceObligationRls(BaseTestCase):
                 compliance_report_version=approved_compliance_report_version_for_insert
             ).exists()
 
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "compliance_obligation"',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."compliance_obligation" (
                         compliance_report_version_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_compliance_report_version.id,),
-                )
+                (random_compliance_report_version.id,),
+            )
 
         def update_function(cursor):
-            ComplianceObligation.objects.update(fee_amount_dollars=Decimal('8888'))
-            # should only update the approved object
-            assert ComplianceObligation.objects.filter(fee_amount_dollars=Decimal('8888')).count() == 1
+            return ComplianceObligation.objects.filter(id=approved_compliance_obligation.id).update(
+                fee_amount_dollars=Decimal('8888')
+            )
 
-        def forbidden_delete_function(cursor):
-            ComplianceObligation.objects.first().delete()
+        def forbidden_update_function(cursor):
+            return ComplianceObligation.objects.filter(id=random_compliance_obligation.id).update(
+                fee_amount_dollars=Decimal('8888')
+            )
 
         assert_policies_for_industry_user(
             ComplianceObligation,
@@ -120,8 +120,9 @@ class TestComplianceObligationRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_compliance_obligation_rls_cas_users(self):

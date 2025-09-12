@@ -1,4 +1,3 @@
-import pytest
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
 from compliance.models import ComplianceEarnedCredit
@@ -414,7 +413,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             compliance_report=approved_compliance_report,
             is_supplementary=False,
         )
-        make_recipe(
+        compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
             id=10,
             compliance_report_version=approved_compliance_report_version,
@@ -432,7 +431,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
         random_compliance_report_version = make_recipe(
             'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
         )
-        make_recipe(
+        random_compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
             id=20,
             compliance_report_version=random_compliance_report_version,
@@ -452,7 +451,10 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
         assert ComplianceEarnedCredit.objects.count() == 2
 
         def select_function(cursor):
-            assert ComplianceEarnedCredit.objects.count() == 1
+            ComplianceEarnedCredit.objects.get(id=compliance_earned_credit.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceEarnedCredit.objects.get(id=random_compliance_earned_credit.id)
 
         def insert_function(cursor):
             ComplianceEarnedCredit.objects.create(
@@ -462,17 +464,9 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
             )
 
-            assert ComplianceEarnedCredit.objects.filter(
-                compliance_report_version=approved_compliance_report_version_for_insert,
-            ).exists()
-
-            # forbidden
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "compliance_earned_credit"',
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."compliance_earned_credit" (
                         compliance_report_version_id,
                         bccr_trading_name
@@ -481,34 +475,18 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                         %s
                     )
                 """,
-                    (random_compliance_report_version.id, "macaroni"),
-                )
+                (random_compliance_report_version.id, "macaroni"),
+            )
 
         def update_function(cursor):
-            # approved
-            ComplianceEarnedCredit.objects.filter(id=10).update(
+            return ComplianceEarnedCredit.objects.filter(id=compliance_earned_credit.id).update(
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
-            )
-            assert (
-                ComplianceEarnedCredit.objects.filter(
-                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
-                ).count()
-                == 1
-            )
-            # forbidden
-            # not approved, should still be one
-            ComplianceEarnedCredit.objects.filter(id=20).update(
-                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
-            )
-            assert (
-                ComplianceEarnedCredit.objects.filter(
-                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
-                ).count()
-                == 1
             )
 
-        # def forbidden_delete_function(cursor):
-        #     ComplianceEarnedCredit.objects.first().delete()
+        def forbidden_update_function(cursor):
+            return ComplianceEarnedCredit.objects.filter(id=random_compliance_earned_credit.id).update(
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            )
 
         assert_policies_for_industry_user(
             ComplianceEarnedCredit,
@@ -516,8 +494,9 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            # forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_compliance_earned_credit_rls_cas_users(self):

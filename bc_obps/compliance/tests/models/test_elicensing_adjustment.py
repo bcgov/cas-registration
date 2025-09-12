@@ -1,6 +1,4 @@
 from decimal import Decimal
-import pytest
-from django.db import ProgrammingError
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from common.tests.utils.helpers import BaseTestCase
@@ -45,7 +43,9 @@ class TestElicensingAdjustmentRls(BaseTestCase):
         approved_line_item = make_recipe(
             'compliance.tests.utils.elicensing_line_item', elicensing_invoice=approved_invoice
         )
-        make_recipe('compliance.tests.utils.elicensing_adjustment', id=88, elicensing_line_item=approved_line_item)
+        approved_elicensing_adjustment = make_recipe(
+            'compliance.tests.utils.elicensing_adjustment', id=88, elicensing_line_item=approved_line_item
+        )
 
         # second object
         random_operator = make_recipe('registration.tests.utils.operator', id=2)
@@ -56,41 +56,43 @@ class TestElicensingAdjustmentRls(BaseTestCase):
             'compliance.tests.utils.elicensing_invoice', elicensing_client_operator=random_client_operator
         )
         random_line_item = make_recipe('compliance.tests.utils.elicensing_line_item', elicensing_invoice=random_invoice)
-        make_recipe('compliance.tests.utils.elicensing_adjustment', elicensing_line_item=random_line_item)
+        random_elicensing_adjustment = make_recipe(
+            'compliance.tests.utils.elicensing_adjustment', elicensing_line_item=random_line_item
+        )
 
         assert ElicensingAdjustment.objects.count() == 2
 
         def select_function(cursor):
-            assert ElicensingAdjustment.objects.count() == 1
+            ElicensingAdjustment.objects.get(id=approved_elicensing_adjustment.id)
+
+        def forbidden_select_function(cursor):
+            ElicensingAdjustment.objects.get(id=random_elicensing_adjustment.id)
 
         def insert_function(cursor):
             ElicensingAdjustment.objects.create(
                 elicensing_line_item=approved_line_item, adjustment_object_id=888888, amount=888
             )
 
-            assert ElicensingAdjustment.objects.filter(adjustment_object_id=888888).exists()
+        def forbidden_insert_function(cursor):
 
-            with pytest.raises(
-                ProgrammingError,
-                match='new row violates row-level security policy for table "elicensing_adjustment"',
-            ):
-                cursor.execute(
-                    """
+            cursor.execute(
+                """
                     INSERT INTO "erc"."elicensing_adjustment" (
                         elicensing_line_item_id
                     ) VALUES (
                         %s
                     )
                 """,
-                    (random_line_item.id,),
-                )
+                (random_line_item.id,),
+            )
 
         def update_function(cursor):
-            ElicensingAdjustment.objects.update(amount=Decimal('999'))
-            assert ElicensingAdjustment.objects.filter(amount=Decimal('999')).count() == 1
+            return ElicensingAdjustment.objects.filter(id=approved_elicensing_adjustment.id).update(
+                amount=Decimal('999')
+            )
 
-        # def forbidden_delete_function(cursor):
-        #     ElicensingAdjustment.objects.filter(id=88).delete()
+        def forbidden_update_function(cursor):
+            return ElicensingAdjustment.objects.filter(id=random_elicensing_adjustment.id).update(amount=Decimal('999'))
 
         assert_policies_for_industry_user(
             ElicensingAdjustment,
@@ -98,8 +100,9 @@ class TestElicensingAdjustmentRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            # forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_elicensing_adjustment_rls_cas_users(self):
