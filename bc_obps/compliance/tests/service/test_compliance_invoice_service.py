@@ -10,6 +10,7 @@ from model_bakery.baker import make_recipe
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
 from compliance.models import ComplianceChargeRate
 from compliance.models import ElicensingInvoice, ElicensingLineItem
+from service.reporting_year_service import ReportingYearService
 
 
 pytestmark = pytest.mark.django_db
@@ -30,6 +31,12 @@ class TestComplianceInvoiceService:
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-1",
         )
+        self.report = make_recipe(
+            "compliance.tests.utils.report", reporting_year=ReportingYearService.get_current_reporting_year())
+        
+        self.compliance_report = make_recipe(
+            "compliance.tests.utils.compliance_report", report=self.report)
+        
 
         self.address = make_recipe("registration.tests.utils.address")
         self.operator = make_recipe("registration.tests.utils.operator", physical_address=self.address)
@@ -304,3 +311,8 @@ class TestComplianceInvoiceService:
         assert response['Content-Type'] == 'application/pdf'
         assert response["Content-Disposition"] == 'attachment; filename="invoice_INV-001_20250601.pdf"'
         assert response["Content-Length"] == '2048'
+
+    def test_get_elicensing_invoice_for_dashboard(self):
+        cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
+        bri = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
+        breakpoint()
