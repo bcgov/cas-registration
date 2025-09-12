@@ -1,4 +1,4 @@
-import { ReactNode, FC } from "react";
+import { ReactNode, FC, PropsWithChildren } from "react";
 import { AlertIcon } from "@bciers/components/icons";
 import { Alert, SvgIconProps } from "@mui/material";
 import { BC_GOV_TEXT } from "@bciers/styles";
@@ -8,7 +8,6 @@ export type AlertType = "INFO" | "ALERT" | "ERROR" | "DEFAULT";
 
 export interface AlertNoteProps {
   id?: string;
-  children: ReactNode;
   icon?: ReactNode;
   alertType?: AlertType;
 }
@@ -31,7 +30,7 @@ const iconMap: { [key in AlertType]: ReactNode } = {
   DEFAULT: <AlertIcon width="25" height="25" />,
 };
 
-const AlertNote: FC<AlertNoteProps> = ({
+const AlertNote: FC<PropsWithChildren<AlertNoteProps>> = ({
   id,
   children,
   icon,
