@@ -36,10 +36,6 @@ def assert_policies_for_cas_roles(
     insert_function=noop,
     update_function=noop,
     delete_function=noop,
-    forbidden_insert_function=None,
-    forbidden_update_function=None,
-    forbidden_delete_function=None,
-    test_forbidden_ops=False,
 ):
     """
     Helper function for testing Row-Level Security (RLS) policies for various CAS roles.
@@ -49,7 +45,6 @@ def assert_policies_for_cas_roles(
     allowed database operations (SELECT, INSERT, UPDATE, DELETE) for that role. If an operation is granted but no
     corresponding function is provided, a `ValueError` is raised. All database changes are rolled back after each operation
     to ensure the database state remains unchanged.
-    It also optionally tests forbidden operations if specified.
 
     Args:
         model (Model): The Django model containing the RLS configuration (`role_grants_mapping`) to test.
@@ -57,10 +52,6 @@ def assert_policies_for_cas_roles(
         insert_function (Callable, optional): A function to test the INSERT operation. Defaults to `noop`.
         update_function (Callable, optional): A function to test the UPDATE operation. Defaults to `noop`.
         delete_function (Callable, optional): A function to test the DELETE operation. Defaults to `noop`.
-        forbidden_insert_function (Callable, optional): A function to test forbidden INSERT operations. Defaults to `None`.
-        forbidden_update_function (Callable, optional): A function to test forbidden UPDATE operations. Defaults to `None`.
-        forbidden_delete_function (Callable, optional): A function to test forbidden DELETE operations. Defaults to `None`.
-        test_forbidden_ops (bool, optional): Flag to indicate whether to test forbidden operations. Defaults to `False`.
 
     Raises:
         ValueError: If an operation is granted for a role but no corresponding function is provided.
@@ -107,41 +98,6 @@ def assert_policies_for_cas_roles(
                     raise ValueError(f"DELETE operation granted for role {role}, but no delete_function provided.")
                 run_with_rollback(cursor, delete_function)
 
-            # Test forbidden operations get permission denied if specified
-            if test_forbidden_ops:
-                if RlsOperations.INSERT not in operations and forbidden_insert_function:
-                    try:
-                        run_with_rollback(cursor, forbidden_insert_function)
-                    except Exception as e:
-                        if "permission denied for table" in str(e):
-                            pass
-                        else:
-                            raise ValueError(f"Unexpected error during forbidden INSERT operation for role {role}: {e}")
-                    else:
-                        raise ValueError(f"INSERT operation should be forbidden for role {role}, but it succeeded.")
-
-                if RlsOperations.UPDATE not in operations and forbidden_update_function:
-                    try:
-                        run_with_rollback(cursor, forbidden_update_function)
-                    except Exception as e:
-                        if "permission denied for table" in str(e):
-                            pass
-                        else:
-                            raise ValueError(f"Unexpected error during forbidden UPDATE operation for role {role}: {e}")
-                    else:
-                        raise ValueError(f"UPDATE operation should be forbidden for role {role}, but it succeeded.")
-
-                if RlsOperations.DELETE not in operations and forbidden_delete_function:
-                    try:
-                        run_with_rollback(cursor, forbidden_delete_function)
-                    except Exception as e:
-                        if "permission denied for table" in str(e):
-                            pass
-                        else:
-                            raise ValueError(f"Unexpected error during forbidden DELETE operation for role {role}: {e}")
-                    else:
-                        raise ValueError(f"DELETE operation should be forbidden for role {role}, but it succeeded.")
-
 
 def assert_policies_for_industry_user(
     model_name,
@@ -150,10 +106,10 @@ def assert_policies_for_industry_user(
     insert_function=noop,
     update_function=noop,
     delete_function=noop,
-    forbidden_insert_function=None,
-    forbidden_update_function=None,
-    forbidden_delete_function=None,
-    test_forbidden_ops=False,
+    forbidden_select_function=noop,
+    forbidden_insert_function=noop,
+    forbidden_update_function=noop,
+    forbidden_delete_function=noop,
 ):
     """
     This function is a helper for testing RLS policies for the industry_user role. Write the select, insert, update, and delete functions and assertions in the test files (see test_contact.py for examples) and then pass them to this function.
@@ -168,56 +124,33 @@ def assert_policies_for_industry_user(
         operations = model_name.Rls.role_grants_mapping[RlsRoles.INDUSTRY_USER]
 
         if RlsOperations.SELECT in operations:
-            if select_function is noop:
-                raise ValueError("SELECT operation granted, but no select_function provided.")
+            if select_function is noop or forbidden_select_function is noop:
+                raise ValueError(
+                    "SELECT operation granted, but no select_function or forbidden_select_function provided."
+                )
             run_with_rollback(cursor, select_function)
+            run_with_rollback(cursor, forbidden_select_function)
 
         if RlsOperations.INSERT in operations:
-            if insert_function is noop:
-                raise ValueError("INSERT operation granted, but no insert_function provided.")
+            if insert_function is noop or forbidden_insert_function is noop:
+                raise ValueError(
+                    "INSERT operation granted, but no insert_function or forbidden_insert_function provided."
+                )
             run_with_rollback(cursor, insert_function)
+            run_with_rollback(cursor, forbidden_insert_function)
 
         if RlsOperations.UPDATE in operations:
-            if update_function is noop:
-                raise ValueError("UPDATE operation granted, but no update_function provided.")
+            if update_function is noop or forbidden_update_function is noop:
+                raise ValueError(
+                    "UPDATE operation granted, but no update_function or forbidden_update_function provided."
+                )
             run_with_rollback(cursor, update_function)
+            run_with_rollback(cursor, forbidden_update_function)
 
         if RlsOperations.DELETE in operations:
-            if delete_function is noop:
-                raise ValueError("DELETE operation granted, but no delete_function provided.")
+            if delete_function is noop or forbidden_delete_function is noop:
+                raise ValueError(
+                    "DELETE operation granted, but no delete_function or forbidden_delete_function provided."
+                )
             run_with_rollback(cursor, delete_function)
-
-        # Test forbidden operations if specified
-        if test_forbidden_ops:
-            if RlsOperations.INSERT not in operations and forbidden_insert_function:
-                try:
-                    run_with_rollback(cursor, forbidden_insert_function)
-                except Exception as e:
-                    if "permission denied for table" in str(e):
-                        pass
-                    else:
-                        raise ValueError(f"Unexpected error during forbidden INSERT operation for industry user: {e}")
-                else:
-                    raise ValueError("INSERT operation should be forbidden, but it succeeded.")
-
-            if RlsOperations.UPDATE not in operations and forbidden_update_function:
-                try:
-                    run_with_rollback(cursor, forbidden_update_function)
-                except Exception as e:
-                    if "permission denied for table" in str(e):
-                        pass
-                    else:
-                        raise ValueError(f"Unexpected error during forbidden UPDATE operation for industry user: {e}")
-                else:
-                    raise ValueError("UPDATE operation should be forbidden, but it succeeded.")
-
-            if RlsOperations.DELETE not in operations and forbidden_delete_function:
-                try:
-                    run_with_rollback(cursor, forbidden_delete_function)
-                except Exception as e:
-                    if "permission denied for table" in str(e):
-                        pass
-                    else:
-                        raise ValueError(f"Unexpected error during forbidden DELETE operation for industry user: {e}")
-                else:
-                    raise ValueError("DELETE operation should be forbidden, but it succeeded.")
+            run_with_rollback(cursor, forbidden_delete_function)

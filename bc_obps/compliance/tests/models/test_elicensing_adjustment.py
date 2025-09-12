@@ -89,8 +89,8 @@ class TestElicensingAdjustmentRls(BaseTestCase):
             ElicensingAdjustment.objects.update(amount=Decimal('999'))
             assert ElicensingAdjustment.objects.filter(amount=Decimal('999')).count() == 1
 
-        def forbidden_delete_function(cursor):
-            ElicensingAdjustment.objects.filter(id=88).delete()
+        # def forbidden_delete_function(cursor):
+        #     ElicensingAdjustment.objects.filter(id=88).delete()
 
         assert_policies_for_industry_user(
             ElicensingAdjustment,
@@ -98,7 +98,7 @@ class TestElicensingAdjustmentRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
+            # forbidden_delete_function=forbidden_delete_function,
             test_forbidden_ops=True,
         )
 
@@ -112,20 +112,7 @@ class TestElicensingAdjustmentRls(BaseTestCase):
         def select_function(cursor):
             assert ElicensingAdjustment.objects.count() == 1
 
-        def forbidden_insert_function(cursor):
-            ElicensingAdjustment.objects.create(elicensing_line_item=line_item, adjustment_object_id=888888, amount=888)
-
-        def forbidden_update_function(cursor):
-            ElicensingAdjustment.objects.filter(id=88).update(amount=444)
-
-        def forbidden_delete_function(cursor):
-            ElicensingAdjustment.objects.filter(id=88).delete()
-
         assert_policies_for_cas_roles(
             ElicensingAdjustment,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )

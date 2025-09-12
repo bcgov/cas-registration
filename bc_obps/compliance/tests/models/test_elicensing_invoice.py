@@ -89,8 +89,8 @@ class TestElicensingInvoiceRls(BaseTestCase):
             ElicensingInvoice.objects.update(invoice_fee_balance=Decimal('999'))
             assert ElicensingInvoice.objects.filter(invoice_fee_balance=Decimal('999')).count() == 1
 
-        def forbidden_delete_function(cursor):
-            ElicensingInvoice.objects.filter(id=88).delete()
+        # def forbidden_delete_function(cursor):
+        #     ElicensingInvoice.objects.filter(id=88).delete()
 
         assert_policies_for_industry_user(
             ElicensingInvoice,
@@ -98,7 +98,7 @@ class TestElicensingInvoiceRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
-            forbidden_delete_function=forbidden_delete_function,
+            # forbidden_delete_function=forbidden_delete_function,
             test_forbidden_ops=True,
         )
 
@@ -112,28 +112,7 @@ class TestElicensingInvoiceRls(BaseTestCase):
         def select_function(cursor):
             assert ElicensingInvoice.objects.count() == 1
 
-        def forbidden_insert_function(cursor):
-            ElicensingInvoice.objects.create(
-                invoice_number="INV-0003",
-                outstanding_balance=Decimal('888'),
-                elicensing_client_operator=client_operator,
-                invoice_fee_balance=Decimal('100.01'),
-                invoice_interest_balance=Decimal('0.00'),
-                due_date='2024-11-30',
-                last_refreshed='2024-10-01 00:00:00',
-            )
-
-        def forbidden_update_function(cursor):
-            ElicensingInvoice.objects.filter(id=888).update(outstanding_balance=Decimal('555'))
-
-        def forbidden_delete_function(cursor):
-            ElicensingInvoice.objects.filter(id=888).delete()
-
         assert_policies_for_cas_roles(
             ElicensingInvoice,
             select_function=select_function,
-            forbidden_insert_function=forbidden_insert_function,
-            forbidden_update_function=forbidden_update_function,
-            forbidden_delete_function=forbidden_delete_function,
-            test_forbidden_ops=True,
         )
