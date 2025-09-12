@@ -1,143 +1,112 @@
 "use client";
-import React from "react";
-import { SectionReview } from "./SectionReview";
-import ActivityView from "@reporting/src/app/components/finalReview/templates/ActivityView";
-import { FieldDisplay } from "@reporting/src/app/components/finalReview/templates/FieldDisplay";
-import { FacilityReport, ReportData } from "../reportTypes";
-import { EmissionAllocationView } from "@reporting/src/app/components/finalReview/templates/EmissionAllocationView";
+import React, { useEffect } from "react";
+
+import { FacilityReport, FacilityReportLFO, ReportData } from "../reportTypes";
 import { OperationTypes } from "@bciers/utils/src/enums";
-import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import {
   additionalDataFields,
   complianceSummaryFields,
   eioFields,
-  emissionsSummaryFields,
   operationEmissionSummaryFields,
   operationFields,
   personResponsibleFields,
-  productionDataFields,
   reportNewEntrantFields,
 } from "@reporting/src/app/components/finalReview/finalReviewFields";
+import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { FacilityReportSection } from "@reporting/src/app/components/shared/FacilityReportSection";
+import FinalReviewFacilityGrid from "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid";
+import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
 
-interface ReportSectionsProps {
-  data: ReportData;
+interface Props {
+  data: ReportData | null;
+  version_id: any;
 }
 
-const fieldOrder = ["activity", "source_type", "emission_category", "gas_type"];
-const fieldLabels: Record<string, string> = {
-  activity: "Activity Name",
-  source_type: "Source Type",
-  emission_category: "Emission Category",
-  gas_type: "Gas Type",
-};
-
-export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
+export const FinalReviewReportSections: React.FC<Props> = ({
+  version_id,
   data,
 }) => {
-  const isEIO =
-    data?.report_operation.registration_purpose === OperationTypes.EIO;
-  const isLFO = data?.report_operation.operation_type === OperationTypes.LFO;
-  const isSFO = data?.report_operation.operation_type === OperationTypes.SFO;
+  useEffect(() => {
+    if (data) {
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+  }, [data]);
+
+  if (!data) return null;
+  const {
+    operation_type: operationType,
+    registration_purpose: registrationPurpose,
+  } = data.report_operation;
+  // Helper functions to determine flow type
+  const isEIO = operationType === OperationTypes.EIO;
+  const isLFO = operationType === OperationTypes.LFO;
+  const isSFO = operationType === OperationTypes.SFO;
   const isNewEntrant =
-    data?.report_operation.registration_purpose ===
-    RegistrationPurposes.NEW_ENTRANT_OPERATION;
+    registrationPurpose === RegistrationPurposes.NEW_ENTRANT_OPERATION;
   const isReportingOnly =
-    data?.report_operation.registration_purpose ===
-    RegistrationPurposes.REPORTING_OPERATION;
+    registrationPurpose === RegistrationPurposes.REPORTING_OPERATION;
 
   const isSFOReportingOnly = isSFO && isReportingOnly;
-  const facilityReportsArray: FacilityReport[] = Array.isArray(
-    data.facility_reports,
-  )
-    ? data.facility_reports
-    : (Object.values(data.facility_reports) as FacilityReport[]);
 
-  // Component for rendering facility report information
-  const renderFacilityReportInformation = () => (
-    <>
-      {facilityReportsArray.map((facilityReport: FacilityReport, index) => (
-        <SectionReview
-          key={facilityReport.facility || `facility-${index}`}
-          title={`Report Information - ${facilityReport.facility_name}`}
-          data={data.report_compliance_summary}
-          fields={[]}
-          expandable
-        >
-          <ActivityView activity_data={facilityReport.activity_data} />
+  const facilityReportsLFO: FacilityReportLFO[] = isLFO
+    ? (data.facility_reports as FacilityReportLFO[])
+    : [];
 
-          <SectionReview
-            title="Non-Attributable Emissions"
-            data={{}}
-            fields={[]}
-          >
-            <FieldDisplay
-              label="Did your non-attributable emissions exceed 100 tCO2e?"
-              value={
-                facilityReport.reportnonattributableemissions_records?.length >
-                0
-              }
-            />
-            {facilityReport.reportnonattributableemissions_records?.length >
-              0 &&
-              facilityReport.reportnonattributableemissions_records.map(
-                (record, i) => (
-                  <div key={i} className="mb-4">
-                    {fieldOrder.map((key) => (
-                      <FieldDisplay
-                        key={key}
-                        label={fieldLabels[key]}
-                        value={record[key as keyof typeof record]}
-                      />
-                    ))}
-                    {i <
-                      facilityReport.reportnonattributableemissions_records
-                        .length -
-                        1 && <hr className="my-4" />}
-                  </div>
-                ),
-              )}
-          </SectionReview>
+  const facilityReports: FacilityReport[] = !isLFO
+    ? (data.facility_reports as FacilityReport[])
+    : [];
 
-          <SectionReview
-            title="Emissions Summary (in tCO2e)"
-            data={facilityReport.emission_summary}
-            fields={emissionsSummaryFields}
+  const renderFacilityReportInformation = () => {
+    if (!data?.facility_reports) return null;
+    if (isLFO) {
+      // For LFO, render the grid
+      return (
+        <div id="facility-grid">
+          <FinalReviewFacilityGrid
+            data={facilityReportsLFO.map(
+              (facilityReport: FacilityReportLFO) => ({
+                facility: facilityReport.facility,
+                facility_name: facilityReport.facility_name,
+              }),
+            )}
+            rowCount={facilityReportsLFO.length}
+            version_id={version_id}
           />
+        </div>
+      );
+    }
 
-          {/* Production Data - only for LFO and SFO non-reporting flows */}
-          {!isReportingOnly && facilityReport.report_products?.length > 0 && (
-            <SectionReview
-              title="Production Data"
-              data={facilityReport.report_products}
-              fields={[]}
-            >
-              {facilityReport.report_products.map((product, productIndex) => (
-                <SectionReview
-                  key={product.report_product_id || `product-${productIndex}`}
-                  data={product}
-                  fields={productionDataFields(product)}
-                />
-              ))}
-            </SectionReview>
+    // For other flows, render individual FacilityReportSection
+    return (
+      <>
+        {facilityReports &&
+          Object.entries(facilityReports).map(
+            ([facilityKey, facilityReport]: [string, FacilityReport]) => (
+              <FacilityReportSection
+                key={facilityKey}
+                facilityName={facilityReport.facility_name}
+                facilityData={facilityReport}
+                showReportingOnlyConditions={!isReportingOnly}
+              />
+            ),
           )}
+      </>
+    );
+  };
 
-          {/* Allocation of Emissions - only for LFO and SFO non-reporting flows */}
-          {!isReportingOnly && (
-            <EmissionAllocationView
-              data={facilityReport.report_emission_allocation}
-            />
-          )}
-        </SectionReview>
-      ))}
-    </>
-  );
+  if (!data) return null;
 
   return (
-    <div data-testid="report-sections">
-      {/* Reason for Edits - for supplementary reports */}
+    <>
       {data.is_supplementary_report && (
         <SectionReview
-          title="Reason for Edits"
+          title="Reason for Change"
           data={data}
           fields={[
             {
@@ -172,7 +141,7 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
       )}
 
       {/* Non-EIO Flows - show facility report information */}
-      {!isEIO && renderFacilityReportInformation()}
+      {!isEIO && data.facility_reports && renderFacilityReportInformation()}
 
       {/* Additional Reporting Data - ALL NON-EIO FLOWS */}
       {!isEIO && data.report_additional_data && (
@@ -210,10 +179,10 @@ export const FinalReviewReportSections: React.FC<ReportSectionsProps> = ({
           title="Compliance Summary"
           data={data.report_compliance_summary}
           fields={complianceSummaryFields(
-            data.report_compliance_summary?.products,
+            data.report_compliance_summary.products,
           )}
         />
       )}
-    </div>
+    </>
   );
 };

@@ -32,6 +32,13 @@ vi.mock(
     ),
   }),
 );
+vi.mock(
+  "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid",
+  () => ({
+    __esModule: true,
+    default: () => <div>Mock Facility Grid</div>,
+  }),
+);
 
 vi.mock(
   "@reporting/src/app/components/finalReview/templates/FieldDisplay",
@@ -56,7 +63,7 @@ describe("The ReportSections component", () => {
       operation_type: OperationTypes.SFO,
       operation_bcghgid: "123456",
       bc_obps_regulated_operation_id: "REG123",
-      registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
+      registration_purpose: RegistrationPurposes.OBPS_REGULATED_OPERATION,
     },
     report_person_responsible: {
       first_name: "John",
@@ -165,7 +172,7 @@ describe("The ReportSections component", () => {
   };
 
   it("renders operation information section", () => {
-    render(<FinalReviewReportSections data={mockBaseData} />);
+    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -176,7 +183,7 @@ describe("The ReportSections component", () => {
   });
 
   it("renders facility report information for SFO reporting only", () => {
-    render(<FinalReviewReportSections data={mockBaseData} />);
+    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
 
     expect(
       screen.getByText("Report Information - Test Facility"),
@@ -197,7 +204,7 @@ describe("The ReportSections component", () => {
       },
     };
 
-    render(<FinalReviewReportSections data={eioData} />);
+    render(<FinalReviewReportSections data={eioData} version_id={1} />);
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -217,37 +224,35 @@ describe("The ReportSections component", () => {
       },
       facility_reports: [
         {
-          ...mockBaseData.facility_reports[0],
-          report_products: [
-            {
-              report_product_id: 1,
-              product_name: "Test Product",
-              product: "Test Product",
-              annual_production: 1000,
-              production_data_apr_dec: 800,
-              production_methodology: "Direct measurement",
-              production_methodology_description: "Test description",
-              storage_quantity_start_of_period: "100",
-              storage_quantity_end_of_period: "200",
-              quantity_sold_during_period: "900",
-              quantity_throughput_during_period: "950",
-              allocated_quantity: 500,
-            },
-          ],
+          facility: "f486f2fb-62ed-438d-bb3e-0819b51e3aeb",
+          facility_name: "Facility 1",
+          id: 51,
         },
-      ],
-      report_production_data: {
-        production_data_type: "test",
-      },
-      report_emission_allocation: [
         {
-          facility_name: "Test Facility",
-          allocated_emissions: "500",
+          facility: "f486f2fb-62ed-438d-bb3e-0819b51e3aec",
+          facility_name: "Facility 3",
+          id: 52,
+        },
+        {
+          facility: "f486f2fb-62ed-438d-bb3e-0819b51e3aed",
+          facility_name: "Facility 4",
+          id: 53,
+        },
+        {
+          facility: "f486f2fb-62ed-438d-bb3e-0819b51e3aee",
+          facility_name: "Facility 5",
+          id: 54,
+        },
+        {
+          facility: "f486f2fb-62ed-438d-bb3e-0819b51e3aef",
+          facility_name: "Facility 6",
+          id: 55,
         },
       ],
+      rowCount: 5,
     };
 
-    render(<FinalReviewReportSections data={lfoData} />);
+    render(<FinalReviewReportSections data={lfoData} version_id={1} />);
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -255,7 +260,6 @@ describe("The ReportSections component", () => {
     expect(
       screen.getByText("Person Responsible for Submitting Report"),
     ).toBeInTheDocument();
-    expect(screen.getByText("Production Data")).toBeInTheDocument();
   });
 
   it("renders new entrant sections for new entrant operations", () => {
@@ -277,7 +281,7 @@ describe("The ReportSections component", () => {
       ],
     };
 
-    render(<FinalReviewReportSections data={newEntrantData} />);
+    render(<FinalReviewReportSections data={newEntrantData} version_id={1} />);
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -291,22 +295,13 @@ describe("The ReportSections component", () => {
   });
 
   it("renders additional data section", () => {
-    render(<FinalReviewReportSections data={mockBaseData} />);
+    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
 
     expect(screen.getByText("Additional Reporting Data")).toBeInTheDocument();
   });
 
   it("renders compliance summary section", () => {
-    // Use LFO data since compliance summary doesn't render for SFO reporting only
-    const lfoData = {
-      ...mockBaseData,
-      report_operation: {
-        ...mockBaseData.report_operation,
-        operation_type: OperationTypes.LFO,
-      },
-    };
-
-    render(<FinalReviewReportSections data={lfoData} />);
+    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
 
     expect(screen.getByText("Compliance Summary")).toBeInTheDocument();
   });
@@ -329,7 +324,12 @@ describe("The ReportSections component", () => {
       ],
     };
 
-    render(<FinalReviewReportSections data={dataWithNonAttributable} />);
+    render(
+      <FinalReviewReportSections
+        data={dataWithNonAttributable}
+        version_id={1}
+      />,
+    );
 
     expect(
       screen.getByText("Activity Name: Test Activity"),
@@ -345,7 +345,9 @@ describe("The ReportSections component", () => {
       facility_reports: [],
     };
 
-    render(<FinalReviewReportSections data={dataWithoutFacilities} />);
+    render(
+      <FinalReviewReportSections data={dataWithoutFacilities} version_id={1} />,
+    );
 
     expect(
       screen.getByText("Review Operation Information"),

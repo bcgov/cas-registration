@@ -162,7 +162,14 @@ class ReportVersionService:
             "report_operation__activities",
             "report_operation__regulated_products",
         ]
-        if operation_type != Operation.Types.EIO:
+        if operation_type == Operation.Types.LFO:
+            prefetches.append(
+                Prefetch(
+                    "facility_reports",
+                    queryset=FacilityReport.objects.only("facility_id", "facility_name"),
+                )
+            )
+        elif operation_type != Operation.Types.EIO:
             prefetches.append(
                 Prefetch(
                     "facility_reports",
