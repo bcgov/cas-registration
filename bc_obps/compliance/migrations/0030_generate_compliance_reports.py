@@ -51,7 +51,7 @@ def revert_generate_compliance_reports_from_emission_reports(apps, schema_editor
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0027_alter_elicensingadjustment_adjustment_date_and_more'),
+        ('compliance', '0029_alter_compliancechargerate_reporting_year'),
     ]
 
     operations = [
