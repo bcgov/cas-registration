@@ -164,8 +164,8 @@ class Command(BaseCommand):
             with transaction.atomic():
                 for counter, user in enumerate(User.objects.all().order_by('user_guid'), start=1):
                     # Generate obfuscated data
-                    user.first_name = f"User{random.randint(1000, 9999)}"
-                    user.last_name = f"Test{random.randint(1000, 9999)}"
+                    user.first_name = f"User{random.randint(1000, 9999)}"  # NOSONAR
+                    user.last_name = f"Test{random.randint(1000, 9999)}"  # NOSONAR
                     user.email = f"user{counter:04d}@example.com"
                     user.phone_number = "+16044011234"
                     user.save(update_fields=['first_name', 'last_name', 'email', 'phone_number'])
