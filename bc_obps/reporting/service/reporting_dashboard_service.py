@@ -4,6 +4,7 @@ from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When,
 from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
+from registration.models.user_operator import UserOperator
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
@@ -61,45 +62,72 @@ class ReportingDashboardService:
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
-        Fetches all operations for the user, and annotates it with the associated report data required for the API call
+        Fetches all operations for the user, and annotates it with the associated report data required for the API call.
+        We need to also include operations that were owned by the user's operator at the end of the reporting year, even if
+        the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
+        user_operator: Optional[UserOperator] = user.user_operators.first()
+        operator_id: Optional[UUID] = user_operator.operator_id if user_operator else None
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
+        report_queryset = Report.objects.filter(
+            operation_id=OuterRef("id"),
+            reporting_year=reporting_year,
+        )
+
+        if operator_id is not None:
+            report_queryset = report_queryset.filter(operator_id=operator_id)
+
         report_subquery = (
-            Report.objects.filter(
-                operation_id=OuterRef("id"),
-                reporting_year=reporting_year,
-            )
-            .annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
+            report_queryset.annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=cls.latest_report_version_subquery.values("status"))
             .annotate(latest_version_updated_at=cls.latest_report_version_subquery.values("updated_at"))
             .annotate(latest_version_updated_by=cls.latest_report_version_subquery.values("full_name"))
             .annotate(first_version_id=cls.first_report_version_subquery.values("id"))
         )
-        report_operation_name_subquery = ReportOperation.objects.filter(
-            report_version__report__operation_id=OuterRef("id"),
-            report_version__report__reporting_year=reporting_year,
-        ).values("operation_name")[:1]
+
+        current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
+        # need to fetch previously owned operations in case reports were filed for them already or if they need to
+        # create a new report version for an operation they once owned.
+        if operator_id is not None:
+            previous_operations = OperationDataAccessService.get_previously_owned_operations_for_operator(
+                user, operator_id, reporting_year
+            )
+        else:
+            previous_operations = Operation.objects.none()
+
+        all_operations = current_operations | previous_operations
 
         queryset = (
-            OperationDataAccessService.get_all_current_operations_for_user(user)
-            .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
+            all_operations.filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
-                report_id=report_subquery.values("id"),
-                report_version_id=report_subquery.values("latest_version_id")[
-                    :1
-                ],  # the [:1] is necessary for the sorting and filters to work
-                first_report_version_id=report_subquery.values("first_version_id")[:1],
-                report_status=report_subquery.values("latest_version_status"),
-                report_updated_at=report_subquery.values("latest_version_updated_at"),
-                report_submitted_by=report_subquery.values("latest_version_updated_by"),
-                operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
+                # the [:1] is necessary for the sorting and filters to work
+                report_id=Subquery(report_subquery.values("id")[:1]),
+                report_version_id=Subquery(report_subquery.values("latest_version_id")[:1]),
+                first_report_version_id=Subquery(report_subquery.values("first_version_id")[:1]),
+                report_status=Subquery(report_subquery.values("latest_version_status")[:1]),
+                report_updated_at=Subquery(report_subquery.values("latest_version_updated_at")[:1]),
+                report_submitted_by=Subquery(report_subquery.values("latest_version_updated_by")[:1]),
+                operation_name=Coalesce(
+                    Subquery(
+                        ReportOperation.objects.filter(
+                            report_version__report__operation_id=OuterRef("id"),
+                            report_version__report__reporting_year=reporting_year,
+                        ).values("operation_name")[:1]
+                    ),
+                    F("name"),
+                ),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
+            .distinct()  # this prevents duplication in cases where the operation has had multiple owners
         )
+
+        # Filter results for operator if user is external - they should only see results for their own operator
+        if (op := user_operator) is not None:
+            queryset = queryset.filter(operator_id=op.operator_id)
 
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
 
