@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/no-obligation/review-summary/ComplianceSummaryReviewPage";
+import ComplianceSummaryReviewPage from "@/compliance/src/app/components/compliance-summary/no-obligation/review-compliance-no-obligation-report/ComplianceSummaryReviewPage";
 
 vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
   getComplianceSummary: vi.fn().mockResolvedValue({
@@ -20,7 +20,7 @@ vi.mock("@/compliance/src/app/components/layout/CompliancePageLayout", () => ({
 }));
 
 vi.mock(
-  "@/compliance/src/app/components/compliance-summary/no-obligation/review-summary/ComplianceSummaryReviewComponent",
+  "@/compliance/src/app/components/compliance-summary/no-obligation/review-compliance-no-obligation-report/ComplianceSummaryReviewComponent",
   () => ({
     default: () => <div>Mock No Obligation Review Component</div>,
   }),

@@ -238,10 +238,8 @@ const permissionRules: PermissionRule[] = [
   {
     name: "accessObligation",
     isApplicable: (request) =>
-      Boolean(
-        routesObligation.some((path) =>
-          request.nextUrl.pathname.includes(path),
-        ),
+      routesObligation.some(
+        (path) => request.nextUrl.pathname.split("/").pop() === path,
       ),
     validate: async (id, request, context) => {
       const statusOk = await checkAccess(context!, id, [
