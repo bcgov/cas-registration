@@ -10,6 +10,11 @@ vi.mock("@bciers/components/icons", () => ({
       Time Icon
     </div>
   ),
+  AlertIcon: (props: any) => (
+    <div data-testid="alert-icon" {...props}>
+      Alert Icon
+    </div>
+  ),
 }));
 
 describe("IssuanceStatusAwaitingNote", () => {

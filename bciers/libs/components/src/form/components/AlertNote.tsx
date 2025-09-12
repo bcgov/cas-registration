@@ -1,20 +1,48 @@
-import { ReactNode, FC } from "react";
+import { ReactNode, FC, PropsWithChildren } from "react";
 import { AlertIcon } from "@bciers/components/icons";
-import { Alert } from "@mui/material";
+import { Alert, SvgIconProps } from "@mui/material";
+import { BC_GOV_TEXT } from "@bciers/styles";
+import { ErrorRounded, InfoRounded, WarningRounded } from "@mui/icons-material";
 
-interface AlertNoteProps {
-  children: ReactNode;
+export type AlertType = "INFO" | "ALERT" | "ERROR" | "DEFAULT";
+
+export interface AlertNoteProps {
+  id?: string;
   icon?: ReactNode;
+  alertType?: AlertType;
 }
 
-const AlertNote: FC<AlertNoteProps> = ({
+const bgClassMap: { [key in AlertType]: string } = {
+  INFO: "bg-bc-light-blue",
+  ALERT: "bg-bc-light-yellow",
+  ERROR: "bg-bc-error-red",
+  DEFAULT: "bg-bc-light-blue",
+};
+
+const defaultIconProps: SvgIconProps = {
+  fontSize: "inherit",
+  sx: { color: BC_GOV_TEXT },
+};
+const iconMap: { [key in AlertType]: ReactNode } = {
+  INFO: <InfoRounded {...defaultIconProps} />,
+  ALERT: <WarningRounded {...defaultIconProps} />,
+  ERROR: <ErrorRounded {...defaultIconProps} />,
+  DEFAULT: <AlertIcon width="25" height="25" />,
+};
+
+const AlertNote: FC<PropsWithChildren<AlertNoteProps>> = ({
+  id,
   children,
-  icon = <AlertIcon width="25" height="25" />,
+  icon,
+  alertType = "DEFAULT",
 }) => {
+  const defaultedIcon = icon ?? iconMap[alertType];
+
   return (
     <Alert
-      className="bg-bc-light-blue text-bc-text mb-2 items-center"
-      icon={icon}
+      id={id}
+      className={`${bgClassMap[alertType]} text-bc-text mb-2 items-center`}
+      icon={defaultedIcon}
     >
       {children}
     </Alert>
