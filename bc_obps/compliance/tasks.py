@@ -4,6 +4,7 @@ from compliance.service.automated_process.automated_process_service import Autom
 from compliance.emails import (
     send_notice_of_earned_credits_generated_email,
     send_notice_of_no_obligation_no_credits_generated_email,
+    send_notice_of_obligation_generated_email,
 )
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
@@ -35,6 +36,12 @@ retryable_send_notice_of_earned_credits_email = create_retryable(
 retryable_send_notice_of_no_obligation_no_earned_credits_email = create_retryable(
     func=send_notice_of_no_obligation_no_credits_generated_email,
     tag="no_obligation_no_credits_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
+retryable_send_notice_of_obligation_email = create_retryable(
+    func=send_notice_of_obligation_generated_email,
+    tag="obligation_email_notifications",
     max_retries=5,
     retry_delay_minutes=10,
 )

@@ -70,11 +70,9 @@ class TestComplianceObligationService:
         assert "Cannot create a compliance obligation for an operation not regulated by BC OBPS" in error_msg
         assert "Operation ID:" in error_msg
 
+    @patch('compliance.tasks.retryable_send_notice_of_obligation_email')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
-    def test_create_compliance_obligation_success(
-        self,
-        mock_get_rate,
-    ):
+    def test_create_compliance_obligation_success(self, mock_get_rate, mock_send_email):
         """Test successful creation of a compliance obligation"""
         # Set up mocks
         report_compliance_summary = baker.make_recipe(
@@ -109,6 +107,7 @@ class TestComplianceObligationService:
         mock_get_rate.assert_called_once_with(
             compliance_report_version.report_compliance_summary.report_version.report.reporting_year
         )
+        mock_send_email.execute.assert_called_once_with(compliance_report.report.id)
 
     @patch('compliance.service.compliance_obligation_service.ComplianceObligation.objects.create')
     @patch('compliance.service.compliance_obligation_service.ComplianceChargeRateService.get_rate_for_year')
