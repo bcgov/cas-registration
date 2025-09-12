@@ -3,7 +3,6 @@ from reporting.models.reporting_year import ReportingYear
 
 
 class ComplianceChargeRateService:
-
     @classmethod
     def get_rate_for_year(cls, reporting_year: ReportingYear) -> Decimal:
         """

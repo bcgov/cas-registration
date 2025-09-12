@@ -44,9 +44,12 @@ vi.mock(
 );
 
 // Mock the request issuance data function
-vi.mock("@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData", () => ({
-  getRequestIssuanceComplianceSummaryData: vi.fn(),
-}));
+vi.mock(
+  "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData",
+  () => ({
+    getRequestIssuanceComplianceSummaryData: vi.fn(),
+  }),
+);
 
 describe("RequestIssuanceOfEarnedCreditsPage", () => {
   const mockComplianceReportVersionId = 123;
@@ -62,7 +65,9 @@ describe("RequestIssuanceOfEarnedCreditsPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(mockData);
+    (getRequestIssuanceComplianceSummaryData as any).mockResolvedValue(
+      mockData,
+    );
   });
 
   it("renders with correct content and generates task list", async () => {

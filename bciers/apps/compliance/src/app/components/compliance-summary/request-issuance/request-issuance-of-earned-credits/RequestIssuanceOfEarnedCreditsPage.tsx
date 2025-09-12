@@ -7,12 +7,11 @@ import RequestIssuanceOfEarnedCreditsComponent from "@/compliance/src/app/compon
 import { HasComplianceReportVersion } from "@/compliance/src/app/types";
 import { getRequestIssuanceComplianceSummaryData } from "@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData";
 
-
 export default async function RequestIssuanceOfEarnedCreditsPage({
   compliance_report_version_id: complianceReportVersionId,
 }: Readonly<HasComplianceReportVersion>) {
   const earnedCreditData = await getRequestIssuanceComplianceSummaryData(
-    complianceReportVersionId
+    complianceReportVersionId,
   );
   const taskListElements = generateRequestIssuanceTaskList(
     complianceReportVersionId,
