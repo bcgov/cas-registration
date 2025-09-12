@@ -23,10 +23,12 @@ function AlertFieldTemplate({
 }
 
 function AlertFieldTemplateFactory<T>(
-  alertType: AlertType,
   AlertContent: React.FC<T>,
+  alertType?: AlertType,
   alertIcon?: ReactNode,
 ) {
+  // TODO: log something if the formcontext doesn't have anything (it should find a false value)
+
   return (props: AlertFieldTemplateProps) => (
     <AlertFieldTemplate {...props} alertType={alertType} icon={alertIcon}>
       <AlertContent {...props.formContext[props.label]} />
