@@ -1,6 +1,5 @@
 from django.utils import timezone
 from common.tests.utils.helpers import BaseTestCase
-import pytest
 from registration.models import (
     BcObpsRegulatedOperation,
     Activity,
@@ -297,16 +296,21 @@ class TestOperationRls(BaseTestCase):
     def test_operation_rls_industry_user(self):
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         # operation belonging to the approved user operator
-        baker.make_recipe('registration.tests.utils.operation', operator=approved_user_operator.operator)
+        approved_operation = baker.make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator
+        )
 
         random_operator = baker.make_recipe('registration.tests.utils.operator')
         # operation belonging to a random operator
-        baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
+        random_operation = baker.make_recipe('registration.tests.utils.operation', operator=random_operator)
 
         assert Operation.objects.count() == 2  # Two operations created
 
         def select_function(cursor):
-            assert Operation.objects.count() == 1
+            Operation.objects.get(id=approved_operation.id)
+
+        def forbidden_select_function(cursor):
+            Operation.objects.get(id=random_operation.id)
 
         def insert_function(cursor):
             Operation.objects.create(
@@ -315,13 +319,10 @@ class TestOperationRls(BaseTestCase):
                 operator=approved_user_operator.operator,
                 status='Not Started',
             )
-            assert Operation.objects.filter(name='Sample Operation Name').exists()
 
-            with pytest.raises(
-                ProgrammingError, match='new row violates row-level security policy for table "operation'
-            ):
-                cursor.execute(
-                    """
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
                     INSERT INTO "erc"."operation" (
                         id,
                         name,
@@ -336,18 +337,20 @@ class TestOperationRls(BaseTestCase):
                         %s
                     )
                 """,
-                    (
-                        '7f83c2a1-56f4-4bc5-b4ce-bc1f18a72e03',
-                        'Sample Operation Name',
-                        'LFO',
-                        random_operator.id,
-                        'Not Started',
-                    ),
-                )
+                (
+                    '7f83c2a1-56f4-4bc5-b4ce-bc1f18a72e03',
+                    'Sample Operation Name',
+                    'LFO',
+                    random_operator.id,
+                    'Not Started',
+                ),
+            )
 
         def update_function(cursor):
-            Operation.objects.update(name='name updated')
-            assert Operation.objects.filter(name='name updated').count() == 1  # only affected 1
+            return Operation.objects.filter(id=approved_operation.id).update(name='name updated')
+
+        def forbidden_update_function(cursor):
+            return Operation.objects.filter(id=random_operation.id).update(name='name updated')
 
         assert_policies_for_industry_user(
             Operation,
@@ -355,6 +358,9 @@ class TestOperationRls(BaseTestCase):
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
         )
 
     def test_operation_rls_cas_users(self):
