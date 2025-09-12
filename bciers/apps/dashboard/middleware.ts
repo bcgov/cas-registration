@@ -1,6 +1,10 @@
 import { stackMiddlewares } from "@bciers/middlewares";
 import { withTokenRefreshMiddleware } from "./middlewares/withTokenRefresh";
 import { withAuthorizationDashboard } from "./middlewares/withAuthorizationDashboard";
+import {
+  isCIEnvironment,
+  isVitestEnvironment,
+} from "@bciers/utils/src/environmentDetection";
 
 /* 📌
 Middleware allows you to run code before a request is completed so you can modify the response by
@@ -31,6 +35,8 @@ export const config = {
 // ⛓️ Chaining middleware for maintainability, and scalability by apply a series of task specific functions to a request
 export default stackMiddlewares([
   withAuthorizationDashboard,
-  // Bypass if CI / e2e tests
-  ...(process.env.CI === "true" ? [] : [withTokenRefreshMiddleware]),
+  // Bypass if running in CI or Vitest environments
+  ...(isCIEnvironment() || isVitestEnvironment()
+    ? []
+    : [withTokenRefreshMiddleware]),
 ]);

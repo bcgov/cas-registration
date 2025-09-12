@@ -1,13 +1,10 @@
 import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
+import { shouldUseSecureCookies } from "@bciers/utils/src/environmentDetection";
 
-const isProduction = process.env.NODE_ENV === "production";
-const isCIBuild = process.env.CI === "true";
-
-const cookieName =
-  isProduction && !isCIBuild
-    ? "__Secure-authjs.session-token"
-    : "authjs.session-token";
+const cookieName = shouldUseSecureCookies()
+  ? "__Secure-authjs.session-token"
+  : "authjs.session-token";
 
 export async function POST(request: NextRequest) {
   const token = await getToken({
