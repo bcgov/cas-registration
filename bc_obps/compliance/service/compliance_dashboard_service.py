@@ -30,14 +30,23 @@ class ComplianceDashboardService:
 
         compliance_report_version_queryset = (
             ComplianceReportVersion.objects.select_related(
+                "compliance_report__report__operation",
                 "compliance_report__compliance_period",  # Still needed for charge rate calculation
+                "compliance_report__report",
+                "compliance_report__compliance_period__reporting_year",
+                "compliance_report__report__operator",
                 "obligation",
+                "obligation__elicensing_invoice",
                 "compliance_earned_credit",
                 "report_compliance_summary",
                 "report_compliance_summary__report_version__report__operator",
                 "report_compliance_summary__report_version__report__operation",
                 "report_compliance_summary__report_version__report__reporting_year",
-            ).exclude(
+            )
+            .prefetch_related(
+                "obligation__elicensing_invoice__elicensing_line_items",
+            )
+            .exclude(
                 # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
                 is_supplementary=True,
                 status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
@@ -52,6 +61,7 @@ class ComplianceDashboardService:
         else:
             operations = (
                 OperationDataAccessService.get_all_current_operations_for_user(user)
+                .select_related('operator')
                 .filter(status=Operation.Statuses.REGISTERED)
                 .values_list('id')
             )
@@ -97,12 +107,19 @@ class ComplianceDashboardService:
         """
         user = UserDataAccessService.get_by_guid(user_guid)
         compliance_report_version_queryset = ComplianceReportVersion.objects.select_related(
+            'compliance_report',
+            'compliance_report__report__operation',
             'compliance_report__compliance_period',
+            'compliance_report__compliance_period__reporting_year',
+            'compliance_report__report__operator',
             'obligation',
+            'obligation__elicensing_invoice',
             'report_compliance_summary',
             'report_compliance_summary__report_version__report__operator',
             'report_compliance_summary__report_version__report__operation',
             'report_compliance_summary__report_version__report__reporting_year',
+        ).prefetch_related(
+            'obligation__elicensing_invoice__elicensing_line_items',
         )
 
         if user.is_irc_user():
@@ -161,7 +178,9 @@ class ComplianceDashboardService:
         refreshed_data = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
             compliance_report_version_id=compliance_report_version_id
         )
-        payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
+        payments = ElicensingPayment.objects.select_related('elicensing_line_item').filter(
+            elicensing_line_item__elicensing_invoice=refreshed_data.invoice
+        )
 
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
 

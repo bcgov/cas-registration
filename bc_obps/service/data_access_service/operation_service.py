@@ -43,7 +43,9 @@ class OperationDataAccessService:
         """
         Returns True if the userOperator's operator has at least one operation with status 'Registered' and regulated registration purpose, False otherwise.
         """
-        registered_operations = Operation.objects.filter(operator_id=operator_id, status=Operation.Statuses.REGISTERED)
+        registered_operations = Operation.objects.filter(
+            operator_id=operator_id, status=Operation.Statuses.REGISTERED
+        ).only('registration_purpose')
         return any(op.is_regulated_operation for op in registered_operations)
 
     @classmethod
