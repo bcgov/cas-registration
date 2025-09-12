@@ -14,6 +14,7 @@ export interface OperationRow {
   id: number;
   operator__legal_name: string;
   status: string;
+  operation__contact_ids: number[];
 }
 
 export interface OperationsSearchParams {
