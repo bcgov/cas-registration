@@ -7,7 +7,7 @@ import { ErrorRounded, InfoRounded, WarningRounded } from "@mui/icons-material";
 export type AlertType = "INFO" | "ALERT" | "ERROR" | "DEFAULT";
 
 export interface AlertNoteProps {
-  id: string;
+  id?: string;
   children: ReactNode;
   icon?: ReactNode;
   alertType?: AlertType;
