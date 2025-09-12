@@ -118,7 +118,7 @@ def assert_policies_for_industry_user(
     """
     This function is a helper for testing RLS policies for the industry_user role. Write the select, insert, update, and delete functions and assertions in the test files (see test_contact.py for examples) and then pass them to this function.
     If we forget to test an operation that RLS applies to, this function will raise a ValueError. It rolls back the changes after each operation to ensure the database state remains unchanged for subsequent tests.
-    If forbidden operations are flagged to be tested, this function will attempt to run the functions specified, not in the role grants and expect them to fail. If they succeed, a ValueError is raised.
+
     """
     if not hasattr(model_name.Rls, 'enable_rls') or not model_name.Rls.enable_rls:
         return
@@ -170,6 +170,4 @@ def assert_policies_for_industry_user(
                     "DELETE operation granted, but no delete_function or forbidden_delete_function provided."
                 )
             run_with_rollback(cursor, delete_function)
-            # brianna this should fail
-            # with pytest.raises(ObjectDoesNotExist):
             run_with_rollback(cursor, forbidden_delete_function)
