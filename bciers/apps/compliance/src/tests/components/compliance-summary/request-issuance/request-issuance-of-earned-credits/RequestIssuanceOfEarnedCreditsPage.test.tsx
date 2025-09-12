@@ -44,8 +44,8 @@ vi.mock(
 );
 
 // Mock the request issuance data function
-vi.mock("@/compliance/src/app/utils/getRequestIssuanceTrackStatusData", () => ({
-  getRequestIssuanceTrackStatusData: vi.fn(),
+vi.mock("@/compliance/src/app/utils/getRequestIssuanceComplianceSummaryData", () => ({
+  getRequestIssuanceComplianceSummaryData: vi.fn(),
 }));
 
 describe("RequestIssuanceOfEarnedCreditsPage", () => {
