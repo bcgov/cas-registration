@@ -29,4 +29,5 @@ from compliance.constants import COMPLIANCE
 @paginate(PageNumberPagination)
 def get_elicensing_invoice_list(request: HttpRequest) -> QuerySet[ComplianceReportVersion]:
     user_guid = get_current_user_guid(request)
+    # breakpoint()
     return ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(user_guid)

@@ -17,6 +17,7 @@ const ElicensingInvoicesDataGrid = ({
     row_count: number;
   };
 }) => {
+  // brianna i don't have operation name in inital data but i do have it in the resolvers and endpoints
   console.log("initialData", initialData);
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 

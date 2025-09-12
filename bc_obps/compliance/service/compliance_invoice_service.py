@@ -399,22 +399,26 @@ class ComplianceInvoiceService:
     @classmethod
     def get_elicensing_invoice_for_dashboard(cls, user_guid: UUID) -> QuerySet[ComplianceReportVersion]:
         """
-        Fetches all compliance invoices for the user's operations
+        Fetches all compliance invoices for the user's operations for the current reporting year.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
         # Get current reporting
         reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
 
         compliance_invoice_queryset = (
-            ElicensingInvoice.objects.select_related("compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",'compliance_obligation__compliance_report_version__compliance_report__report__operator',
-            'compliance_obligation__compliance_report_version__compliance_report__report__operation'
+            ElicensingInvoice.objects.select_related(
+                "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",'compliance_obligation__compliance_report_version__compliance_report__report__operator',
+                'compliance_obligation__compliance_report_version__compliance_report__report__operation',
+                "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",'compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__operator',
+                'compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__operation'
+            
+            
                                               
                                                      )
             # filter for current reporting year
-            .filter(compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=reporting_year)
+            # .filter(compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=reporting_year)
         )
 
-        
 
         if user.is_irc_user():
             # Get all compliance invoices for Internal Users
