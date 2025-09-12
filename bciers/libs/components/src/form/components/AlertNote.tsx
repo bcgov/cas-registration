@@ -2,11 +2,13 @@ import { ReactNode, FC } from "react";
 import { AlertIcon } from "@bciers/components/icons";
 import { Alert } from "@mui/material";
 
+export type AlertType = "INFO" | "ALERT" | "ERROR";
+
 export interface AlertNoteProps {
   id: string;
   children: ReactNode;
   icon?: ReactNode;
-  alertType: "INFO" | "ALERT" | "ERROR";
+  alertType: AlertType;
 }
 
 const bgClassMap = {

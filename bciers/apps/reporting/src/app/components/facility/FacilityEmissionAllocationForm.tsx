@@ -353,7 +353,7 @@ export default function FacilityEmissionAllocationForm({
       taskListElements={navigationInformation.taskList}
       schema={getFilteredSchema()}
       uiSchema={emissionAllocationUiSchema}
-      formData={formData}
+      formData={{ ...formData, missing_product_alert: true }}
       submitButtonDisabled={submitButtonDisabled}
       backUrl={navigationInformation.backUrl}
       saveButtonDisabled={submitButtonDisabled}
