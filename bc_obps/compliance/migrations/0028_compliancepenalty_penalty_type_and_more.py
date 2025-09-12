@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(
                 db_comment='The compliance obligation not paid on time which triggered this penalty',
                 on_delete=django.db.models.deletion.CASCADE,
-                related_name='compliance_penalty',
+                related_name='compliance_penalties',
                 to='compliance.complianceobligation',
             ),
         ),
