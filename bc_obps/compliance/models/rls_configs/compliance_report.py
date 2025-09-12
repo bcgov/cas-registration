@@ -17,7 +17,6 @@ class Rls:
                 AND uo.status = 'Approved'
         )
     """
-    # using statement may need previously owned operations just like compliance_report_version... follow up
     role_grants_mapping = {
         RlsRoles.INDUSTRY_USER: [
             RlsOperations.SELECT,
