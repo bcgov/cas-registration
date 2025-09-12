@@ -20,7 +20,7 @@ class ComplianceObligationTest(BaseTestCase):
             ("fee_amount_dollars", "fee amount dollars", None, None),
             ("fee_date", "fee date", None, None),
             ("penalty_status", "penalty status", None, None),
-            ("compliance_penalty", "compliance penalty", None, None),
+            ("compliance_penalties", "compliance penalty", None, None),
         ]
 
 
