@@ -1,40 +1,86 @@
-name: Trivy Scan Code
+name: Trivy Scan
 
 on:
   workflow_call:
+    inputs:
+      images:
+        required: false
+        type: string
+        default: ""
+        description: "Comma-separated list of Docker images to scan"
 
 jobs:
-  analyze:
+  scan:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Cache Scan Dependencies
         uses: actions/cache@v4
         with:
           path: ~/.cache/trivy
-          key: callee-trivy-${{ github.workflow }}-${{ github.run_id }}
-          restore-keys: trivy-
+          key: callee-trivy-unified-${{ github.workflow }}-${{ github.run_id }}
+          restore-keys: trivy-unified-
+
+      # Code/File System Scan
       - name: Run Trivy vulnerability scanner in repo mode
         uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8
         with:
           scan-type: fs
           scan-ref: "."
           format: sarif
-          output: trivy-results.sarif
+          output: trivy-code-results.sarif
           exit-code: "0"
           ignore-unfixed: false
           severity: CRITICAL,HIGH,MEDIUM
           timeout: 10m0s
           scanners: vuln,secret,config
-      - name: Upload Trivy scan results to GitHub Security tab
+
+      # Container Scans (if images provided)
+      - name: Run Trivy container scans
+        if: inputs.images != ''
+        run: |
+          # Split images by comma and scan each one
+          IFS=',' read -ra IMAGES <<< "${{ inputs.images }}"
+          for image in "${IMAGES[@]}"; do
+            echo "Scanning image: $image"
+            trivy image --format sarif --output "trivy-container-$(echo $image | sed 's/.*\///' | sed 's/:.*//').sarif" --severity CRITICAL,HIGH,MEDIUM "$image"
+          done
+
+      # Combine SARIF files
+      - name: Combine SARIF files
+        run: |
+          # Create a combined SARIF file
+          echo '{"version": "2.1.0", "runs": []}' > trivy-combined-results.sarif
+
+          # Add code scan results if they exist
+          if [ -f "trivy-code-results.sarif" ]; then
+            jq '.runs += [{"tool": {"driver": {"name": "Trivy Code Scan", "version": "latest"}}, "results": (input.runs[0].results // [])}]' trivy-combined-results.sarif trivy-code-results.sarif > temp.sarif
+            mv temp.sarif trivy-combined-results.sarif
+          fi
+
+          # Add all container scan results
+          for container_file in trivy-container-*.sarif; do
+            if [ -f "$container_file" ]; then
+              image_name=$(echo "$container_file" | sed 's/trivy-container-//' | sed 's/\.sarif$//')
+              jq --arg img "$image_name" '.runs += [{"tool": {"driver": {"name": "Trivy Container Scan - " + $img, "version": "latest"}}, "results": (input.runs[0].results // [])}]' trivy-combined-results.sarif "$container_file" > temp.sarif
+              mv temp.sarif trivy-combined-results.sarif
+            fi
+          done
+
+      - name: Upload combined Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: trivy-results.sarif
-          category: trivy-code-scan
-      - name: Upload Trivy scan results as artifact
+          sarif_file: trivy-combined-results.sarif
+          category: trivy-scan
+
+      - name: Upload Trivy scan results as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: trivy-results
-          path: trivy-results.sarif
+          path: |
+            trivy-combined-results.sarif
+            trivy-code-results.sarif
+            trivy-container-*.sarif
