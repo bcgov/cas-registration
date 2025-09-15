@@ -521,7 +521,6 @@ class DecreasedCreditHandler:
 class SupplementaryVersionService:
     def __init__(self) -> None:
         self.handlers: list[SupplementaryScenarioHandler] = [
-            SupercedeVersionHandler(),
             IncreasedObligationHandler(),
             DecreasedObligationHandler(),
             NoChangeHandler(),
@@ -573,6 +572,18 @@ class SupplementaryVersionService:
 
         new_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version.id)
         previous_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=previous_version.id)
+
+        # If the previous version can be superceded, run the supercede handler & exit
+        if SupercedeVersionHandler.can_handle(
+            new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
+        ):
+            SupercedeVersionHandler.handle(
+                compliance_report=compliance_report,
+                new_summary=new_version_compliance_summary,
+                previous_summary=previous_version_compliance_summary,
+                version_count=version_count,
+            )
+            return None
         # Find the right handler and delegate
         for handler in self.handlers:
             if handler.can_handle(
