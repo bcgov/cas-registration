@@ -21,7 +21,7 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
     bccr_trading_name: readOnlyStringField("BCCR Trading Name:"),
     bccr_holding_account_id: readOnlyStringField("BCCR Holding Account ID:"),
     analyst_suggestion: readOnlyStringField(""),
-    is_director: { type: "boolean", default: false },
+    is_internal_reviewer: { type: "boolean", default: false },
   },
 
   dependencies: {
@@ -50,7 +50,7 @@ export const internalTrackStatusOfIssuanceSchema: RJSFSchema = {
                   analyst_suggestion: {
                     const: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
                   },
-                  is_director: { const: true },
+                  is_internal_reviewer: { const: true },
                 },
               },
               then: {
@@ -83,7 +83,7 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
     "issuance_status",
     "bccr_trading_name",
     "bccr_holding_account_id",
-    "is_director",
+    "is_internal_reviewer",
     "analyst_suggestion",
     "analyst_comment",
     "director_comment",
@@ -105,7 +105,7 @@ export const internalTrackStatusOfIssuanceUiSchema: UiSchema = {
   bccr_trading_name: commonReadOnlyOptions,
   bccr_holding_account_id: commonReadOnlyOptions,
   analyst_suggestion: { "ui:widget": "hidden" },
-  is_director: { "ui:widget": "hidden" },
+  is_internal_reviewer: { "ui:widget": "hidden" },
   analyst_comment: commonReadOnlyOptions,
   director_comment: commonReadOnlyOptions,
 };
