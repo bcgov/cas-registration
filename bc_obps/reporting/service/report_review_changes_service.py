@@ -224,7 +224,7 @@ class ReportReviewChangesService:
     def get_report_version_diff_changes(cls, previous: dict, current: dict) -> List[Dict[str, Any]]:
         changes: List[Dict[str, Any]] = []
 
-        # Registration purpose check
+        # --- Registration purpose check ---
         prev_purpose = previous.get("report_operation", {}).get("registration_purpose")
         curr_purpose = current.get("report_operation", {}).get("registration_purpose")
         if prev_purpose != curr_purpose:
@@ -272,9 +272,50 @@ class ReportReviewChangesService:
                     )
                 )
 
-        # --- Top-level diff ---
+        # --- Compliance products added/removed/modified ---
+        prev_products = {p['name']: p for p in previous.get('report_compliance_summary', {}).get('products', [])}
+        curr_products = {p['name']: p for p in current.get('report_compliance_summary', {}).get('products', [])}
+
+        # Removed products
+        for name in prev_products.keys() - curr_products.keys():
+            changes.append(
+                {
+                    "field": f"root['report_compliance_summary']['products']['{name}']",
+                    "old_value": prev_products[name],
+                    "new_value": None,
+                    "change_type": "removed",
+                }
+            )
+
+        # Added products
+        for name in curr_products.keys() - prev_products.keys():
+            changes.append(
+                {
+                    "field": f"root['report_compliance_summary']['products']['{name}']",
+                    "old_value": None,
+                    "new_value": curr_products[name],
+                    "change_type": "added",
+                }
+            )
+
+        # Modified products
+        for name in prev_products.keys() & curr_products.keys():
+            prev_p = prev_products[name]
+            curr_p = curr_products[name]
+            diff = DeepDiff(prev_p, curr_p, ignore_order=True)
+            for item in cls._parse_deepdiff_items(diff, prev_p, curr_p):
+                # Keep the product name as key in path
+                field = f"root['report_compliance_summary']['products']['{name}']{item.path[4:]}"
+                changes.append(
+                    cls.process_change(field, item.old_value, item.new_value, item.change_type, serialized_data=current)
+                )
+
+        # --- Top-level diff excluding facility_reports (products handled separately) ---
         diff = DeepDiff(previous, current, ignore_order=True, exclude_regex_paths=[r".*?facility_reports.*"])
         for item in cls._parse_deepdiff_items(diff, previous, current):
+            # Skip products, already handled
+            if item.path.startswith("root['report_compliance_summary']['products']"):
+                continue
             changes.append(
                 cls.process_change(item.path, item.old_value, item.new_value, item.change_type, serialized_data=current)
             )
