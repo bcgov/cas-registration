@@ -1,3 +1,25 @@
+# [3.19.0](https://github.com/bcgov/cas-registration/compare/v3.18.0...v3.19.0) (2025-09-15)
+
+### Bug Fixes
+
+- fix asdf plugin commands ([5288842](https://github.com/bcgov/cas-registration/commit/5288842a5eaeb3b0787452930f02c74f19405c8f))
+- helm fails due to non-writable directory ([f412609](https://github.com/bcgov/cas-registration/commit/f4126091665b681e1d74772414211f7052a42a13))
+- remove validation ownership check when requesting issuance ([cd57a4c](https://github.com/bcgov/cas-registration/commit/cd57a4c20bde4f58cade3cf13f5d12d0eff3521d))
+- update libgdk-pixbuf package name for Python 3.12.11 ([0ec0482](https://github.com/bcgov/cas-registration/commit/0ec0482d76855d836ec9c3bfd86afec01fd9a281))
+
+### Features
+
+- add cc field for ghg regulator in email service and update tests ([d3f0b11](https://github.com/bcgov/cas-registration/commit/d3f0b119a1ff53b6db745388c010e97a43c0aa0d))
+- added help text for email on external user Profile page, with link to redirect to their Contact page ([3eb6e72](https://github.com/bcgov/cas-registration/commit/3eb6e723a190c12afe643df82d5fa32550d8caf1))
+- common alert field template factory function ([bd1f1b7](https://github.com/bcgov/cas-registration/commit/bd1f1b7fde9181ce9c6c0d03141d4b64c2cc7f5f))
+- enhance trivy scanning workflow ([f30017b](https://github.com/bcgov/cas-registration/commit/f30017bd6b20fdff2ba7f840c9b8d4f8a461c9a1))
+- internal past reports grid ([d2a8e6c](https://github.com/bcgov/cas-registration/commit/d2a8e6cbd30aa1ebfde5214bb06c21ca47b7e887))
+- update issuance declined message with appeal info and show analyst comments for director view ([18b4a63](https://github.com/bcgov/cas-registration/commit/18b4a637baa056010267e53889e054ca419def1c))
+
+### Reverts
+
+- Revert "chore: trigger nx-affected to ensure e2e tests are working as expected" ([97c5d22](https://github.com/bcgov/cas-registration/commit/97c5d22c0caea3159fd915c15b890c79158c13ac))
+
 # [3.18.0](https://github.com/bcgov/cas-registration/compare/v3.17.1...v3.18.0) (2025-09-09)
 
 ### Bug Fixes
