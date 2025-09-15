@@ -37,7 +37,6 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
     [lastFocusedField],
   );
-
   // Memoized columns
   const columns: GridColDef[] = useMemo(
     () => [
@@ -87,7 +86,6 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
       version_id,
       searchParams: params,
     });
-
     // Map only the fields needed for the grid
     return {
       rows: rows.map((r: Facility) => ({

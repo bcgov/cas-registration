@@ -76,7 +76,7 @@ describe("annualReportsColumns function", () => {
     const button = screen.getByText("View Report");
     await user.click(button);
 
-    expect(mockPush).toHaveBeenCalledWith("123");
+    expect(mockPush).toHaveBeenCalledWith("123/annual-report");
   });
 
   it("navigates to the report history page when clicking the View Report History button", async () => {

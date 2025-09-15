@@ -19,6 +19,7 @@ from reporting.models import FacilityReport, ReportVersion, Report
 from ninja.pagination import paginate
 from ninja import Query
 from django.db.models import QuerySet
+from common.permissions import authorize
 
 from ..utils import ReportingCustomPagination
 from reporting.api.permissions import (
@@ -132,7 +133,7 @@ def update_facility_report(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their
     details.""",
-    auth=approved_industry_user_report_version_composite_auth,
+    auth=authorize("approved_authorized_roles"),
 )
 @paginate(ReportingCustomPagination, page_size=10)
 def get_facility_report_list(
