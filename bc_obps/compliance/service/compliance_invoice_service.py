@@ -6,14 +6,13 @@ from typing import Dict, Any, List, Optional, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
-from registration.models.operation import Operation
 from reporting.models.report import Report
-from service.data_access_service.operation_service import OperationDataAccessService
 from service.data_access_service.user_service import UserDataAccessService
 from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
 from compliance.service.exceptions import ComplianceInvoiceError
+from django.db.models import Q
 
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
@@ -82,7 +81,7 @@ class ComplianceInvoiceService:
 
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
-        amount_due, billing_items, _, _,_ = cls.calculate_invoice_amount_due(invoice)
+        amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
         total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
 
         return {
@@ -343,7 +342,13 @@ class ComplianceInvoiceService:
             total_adjustments += adjustments_total
 
         amount_due = (total_fee - total_payments + total_adjustments).quantize(Decimal("0.01"))
-        return amount_due, billing_items, total_fee.quantize(Decimal("0.01")), total_payments.quantize(Decimal("0.01")), total_adjustments.quantize(Decimal("0.01"))
+        return (
+            amount_due,
+            billing_items,
+            total_fee.quantize(Decimal("0.01")),
+            total_payments.quantize(Decimal("0.01")),
+            total_adjustments.quantize(Decimal("0.01")),
+        )
 
     @staticmethod
     def _build_line_item_entry(line_item: ElicensingLineItem) -> Tuple[Decimal, List[Dict[str, Any]]]:
@@ -399,29 +404,42 @@ class ComplianceInvoiceService:
     @classmethod
     def get_elicensing_invoice_for_dashboard(cls, user_guid: UUID) -> QuerySet[ComplianceReportVersion]:
         """
-        Fetches all compliance invoices for the user's operations
+        Fetches all compliance invoices for the user's operations for the current reporting year.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
         # Get current reporting
-        reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
+        current_reporting_year: int = ReportingYearService.get_current_reporting_year()
+        compliance_obligation_invoice_queryset = (
+            ElicensingInvoice.objects.select_related(
+                "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
+                
+            ).prefetch_related(
+    "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
+)
+        ).filter(
+    compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=current_reporting_year
+)
 
-        compliance_invoice_queryset = (
-            ElicensingInvoice.objects.select_related("compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",'compliance_obligation__compliance_report_version__compliance_report__report__operator',
-            'compliance_obligation__compliance_report_version__compliance_report__report__operation'
-                                              
-                                                     )
-            # filter for current reporting year
-            .filter(compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=reporting_year)
-        )
+        compliance_penalty_invoice_queryset = (
+            ElicensingInvoice.objects.select_related(
+                
+                "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
+                
+            ).prefetch_related(
+    "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation"
+).filter(
+    compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=current_reporting_year
+        ))
 
-        
+        compliance_invoice_queryset = compliance_obligation_invoice_queryset | compliance_penalty_invoice_queryset
 
         if user.is_irc_user():
+            
             # Get all compliance invoices for Internal Users
             compliance_invoices = compliance_invoice_queryset.all()
         else:
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            operations = Report.objects.filter(operator=user_operator.operator).values('operation') 
+            operations = Report.objects.filter(operator=user_operator.operator).values('operation')
 
             # Get all compliance report versions for the filtered operations
             compliance_invoices = compliance_invoice_queryset.filter(
@@ -433,12 +451,12 @@ class ComplianceInvoiceService:
                 invoice.invoice_type = "Compliance obligation"
             if hasattr(invoice, "compliance_penalty") and invoice.compliance_penalty is not None:
                 invoice.invoice_type = "Automatic overdue penalty"
-            
-            _,_,total_fee,total_payments,total_adjustments = ComplianceInvoiceService.calculate_invoice_amount_due(invoice)
+
+            _, _, total_fee, total_payments, total_adjustments = ComplianceInvoiceService.calculate_invoice_amount_due(
+                invoice
+            )
             invoice.invoice_total = total_fee
             invoice.total_payments = total_payments
             invoice.total_adjustments = total_adjustments
-       
+
         return compliance_invoices
-
-
