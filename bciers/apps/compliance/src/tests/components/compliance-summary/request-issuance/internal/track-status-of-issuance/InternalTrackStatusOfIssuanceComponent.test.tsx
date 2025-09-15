@@ -88,32 +88,6 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     ).toBeNull();
   });
 
-  it("does not show Analyst's Comment for analyst route when auto-declined due to supplementary report", () => {
-    const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
-      ...mockData,
-      issuance_status: IssuanceStatus.DECLINED,
-      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
-      analyst_comment: "Analyst explains supplementary report requirement",
-      director_comment: "",
-    } as any;
-
-    // Ensure role indicates CAS Analyst
-    mockRole = FrontEndRoles.CAS_ANALYST;
-
-    render(
-      <InternalTrackStatusOfIssuanceComponent
-        data={declinedDueToSupplementary}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    // Analyst's Comment should NOT be shown
-    expect(screen.queryByText("Analyst's Comment:")).toBeNull();
-    expect(
-      screen.queryByText("Analyst explains supplementary report requirement"),
-    ).toBeNull();
-  });
-
   it("renders form fields and navigation buttons for approved status", () => {
     render(
       <InternalTrackStatusOfIssuanceComponent

@@ -20,7 +20,8 @@ export default function InternalTrackStatusOfIssuanceComponent({
   complianceReportVersionId,
 }: Readonly<Props>) {
   const role = useSessionRole();
-  const isDirector = role === FrontEndRoles.CAS_DIRECTOR;
+  const isInternalReviewer =
+    role === FrontEndRoles.CAS_DIRECTOR || role === FrontEndRoles.CAS_ANALYST;
 
   let backUrl = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
   if (
@@ -35,7 +36,7 @@ export default function InternalTrackStatusOfIssuanceComponent({
     <FormBase
       schema={internalTrackStatusOfIssuanceSchema}
       uiSchema={internalTrackStatusOfIssuanceUiSchema}
-      formData={{ ...data, is_director: isDirector }}
+      formData={{ ...data, is_internal_reviewer: isInternalReviewer }}
       className="w-full"
       formContext={{ analystSuggestion: data.analyst_suggestion }}
     >
