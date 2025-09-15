@@ -65,21 +65,31 @@ class SupercedeVersionHandler:
                 compliance_report, previous_summary
             )
         )
+        # Update previous version status to SUPERCEDED
         previous_compliance_version.status = ComplianceReportVersion.ComplianceStatus.SUPERCEDED
         previous_compliance_version.save()
+
+        # Create new version
+        compliance_report_version = ComplianceReportVersion.objects.create(
+            compliance_report=compliance_report,
+            report_compliance_summary=new_summary,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            is_supplementary=True,
+            previous_version=previous_compliance_version,
+        )
 
         # Handle supercede obligation
         if previous_summary.excess_emissions > ZERO_DECIMAL:
             # Delete hanging superceded obligation record
             ComplianceObligation.objects.get(compliance_report_version=previous_compliance_version).delete()
-            # Create new version
-            compliance_report_version = ComplianceReportVersion.objects.create(
-                compliance_report=compliance_report,
-                report_compliance_summary=new_summary,
-                status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
-                is_supplementary=True,
-                previous_version=previous_compliance_version,
-            )
+
+        # Handle supercede earned credit
+        if previous_summary.credited_emissions > ZERO_DECIMAL:
+            # Delete hanging superceded earned credit record
+            ComplianceEarnedCredit.objects.get(compliance_report_version=previous_compliance_version).delete()
+
+        # Create new obligation record if new version has excess emissions
+        if new_summary.excess_emissions > ZERO_DECIMAL:
             # Create new obligation
             obligation = ComplianceObligationService.create_compliance_obligation(
                 compliance_report_version.id, new_summary.excess_emissions
@@ -87,20 +97,14 @@ class SupercedeVersionHandler:
             ElicensingObligationService.handle_obligation_integration(
                 obligation.id, compliance_report.compliance_period
             )
+            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+            compliance_report_version.save()
 
-        # Handle supercede earned credit
-        if previous_summary.credited_emissions > ZERO_DECIMAL:
-            # Delete hanging superceded earned credit record
-            ComplianceEarnedCredit.objects.get(compliance_report_version=previous_compliance_version).delete()
-            # Create new version
-            compliance_report_version = ComplianceReportVersion.objects.create(
-                compliance_report=compliance_report,
-                report_compliance_summary=new_summary,
-                status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
-                is_supplementary=True,
-                previous_version=previous_compliance_version,
-            )
+        # Create new earned credit record if new version has earned credits
+        if new_summary.credited_emissions > ZERO_DECIMAL:
             ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+            compliance_report_version.save()
 
         return compliance_report_version
 
@@ -517,6 +521,7 @@ class DecreasedCreditHandler:
 class SupplementaryVersionService:
     def __init__(self) -> None:
         self.handlers: list[SupplementaryScenarioHandler] = [
+            SupercedeVersionHandler(),
             IncreasedObligationHandler(),
             DecreasedObligationHandler(),
             NoChangeHandler(),
