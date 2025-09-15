@@ -8,6 +8,7 @@ from ninja.pagination import paginate
 from common.api.utils import get_current_user_guid
 from registration.models.contact import Contact
 from service.contact_service import ContactService
+from service.data_access_service.user_operator_service import UserDataAccessService
 from registration.api.router import router
 from service.error_service.custom_codes_4xx import custom_codes_4xx
 from ninja import Query
@@ -39,10 +40,13 @@ def list_contacts(
     response={200: int | None, custom_codes_4xx: Message},
     tags=CONTACT_TAGS,
     description="""Retrieves the contact ID for the corresponding external user.""",
-    auth=authorize("approved_industry_user"),
+    auth=authorize("industry_user"),
 )
 def get_contact_id_for_current_user(request: HttpRequest) -> int | None:
     user_guid = get_current_user_guid(request)
+    user = UserDataAccessService.get_by_guid(user_guid)
+    if not user.user_operators.exists():
+        return None
     contact_id = ContactService.get_contact_id_for_user(user_guid)
     return contact_id if contact_id else None
 

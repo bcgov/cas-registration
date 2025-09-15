@@ -72,7 +72,9 @@ export default function ProfileForm({
           {emailHelpTextFirstClause}
           <div>
             To change the email you are contacted with, edit the email in your{" "}
-            <a href={`administration/contacts/${contactId.toString()}`}>
+            <a
+              href={`/administration/contacts/${contactId.toString()}?contacts_title=${formData?.first_name} ${formData?.last_name}`}
+            >
               contact details page
             </a>
             .
@@ -121,15 +123,24 @@ export default function ProfileForm({
     setErrorList([]);
     setIsLoading(true);
     setIsSuccess(false);
+
+    const session = await getSession();
+
     // 🚀 API call: POST/PUT user form data
     const response = await actionHandler(
       isCreate ? `registration/users` : `registration/user/user-profile`,
       isCreate ? "POST" : "PUT",
       "/profile",
       {
-        body: JSON.stringify(data.formData),
+        body: JSON.stringify({
+          ...data.formData,
+          business_guid: session?.user?.bceid_business_guid,
+          bceid_business_name: session?.user?.bceid_business_name,
+          identity_provider: idp,
+        }),
       },
     );
+
     // 🛑 Set loading to false after the API call is completed
     setIsLoading(false);
 

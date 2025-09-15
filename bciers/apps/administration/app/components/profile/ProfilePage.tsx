@@ -15,7 +15,9 @@ async function getUserFormData(): Promise<
   return actionHandler(`registration/user/user-profile`, "GET", "");
 }
 // 🚀 API call: GET user's Contact data
-async function getUserContactData(): Promise<number | { error: string }> {
+async function getUserContactData(): Promise<
+  number | null | { error: string }
+> {
   return actionHandler(`registration/contact/`, "GET", "");
 }
 
@@ -27,21 +29,6 @@ export default async function UserPage() {
   // get user's data
   let formData: UserProfilePartialFormData | { error: string } =
     await getUserFormData();
-  let contactId: number | null = null;
-  // need to get token to determine identity_provider
-  const token = await getToken();
-
-  if (token.identity_provider === IDP.BCEIDBUSINESS) {
-    const contactResponse = await getUserContactData();
-
-    if (typeof contactResponse === "object" && "error" in contactResponse) {
-      return (
-        <div>{`Server Error: failed to retrieve contact data. ${contactResponse.error}`}</div>
-      );
-    }
-    // if no error, this is a number
-    contactId = contactResponse;
-  }
 
   // Handle error case
   if ("error" in formData) {
@@ -64,6 +51,27 @@ export default async function UserPage() {
       last_name: names?.[1],
       email: session?.user?.email ?? undefined,
     };
+  }
+
+  // if applicable, retrieve the user's contact data
+  let contactId: number | null = null;
+  // need to get token to determine identity_provider
+  const token = await getToken();
+
+  if (token.identity_provider === IDP.BCEIDBUSINESS && !isCreate) {
+    const contactResponse = await getUserContactData();
+
+    if (
+      contactResponse &&
+      typeof contactResponse === "object" &&
+      "error" in contactResponse
+    ) {
+      return (
+        <div>{`Server Error: failed to retrieve contact data. ${contactResponse.error}`}</div>
+      );
+    }
+    // if no error, this is either a number or null
+    contactId = contactResponse;
   }
 
   // Render the UserForm with the formData values
