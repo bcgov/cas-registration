@@ -12,7 +12,6 @@ from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
 from compliance.service.exceptions import ComplianceInvoiceError
-from django.db.models import Q
 
 from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
