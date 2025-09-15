@@ -14,6 +14,7 @@ class ComplianceReportVersion(TimeStampedModel):
         OBLIGATION_PENDING_INVOICE_CREATION = "Obligation pending invoice creation"
         EARNED_CREDITS = "Earned credits"
         NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits"
+        SUPERCEDED = "Superceded"
 
     compliance_report = models.ForeignKey(
         ComplianceReport,
