@@ -332,6 +332,7 @@ class TestComplianceInvoiceService:
     @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
     def test_get_elicensing_invoice_for_dashboard_for_irc_user(self, mock_calculate_invoice,mock_get_year):
         mock_calculate_invoice.return_value = (None, None, 100, 50, 10)
+        mock_get_year.return_value = ReportingYear.objects.get(reporting_year=date.today().year -1)
         # additional report for current year
         report_2 = make_recipe(
             "compliance.tests.utils.report", reporting_year=ReportingYear.objects.get(reporting_year=date.today().year -1 ))
@@ -404,21 +405,19 @@ class TestComplianceInvoiceService:
 
         cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
 
-        breakpoint()
         result = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
         mock_get_year.assert_called_once()
-        mock_calculate_invoice.assert_called_once()
+        assert mock_calculate_invoice.call_count == 3 # once for each invoice
         assert result.count() == 3
-        breakpoint()
-        assert result[0].invoice_type == "Compliance obligation"
+        
+        assert result[0].invoice_type == "Automatic overdue penalty"
         result[0].invoice_total = 100
         result[0].total_payments = 50
         result[0].total_adjustments = 10
         result[0].report_operation = self.report_operation
-        breakpoint()
         result[0].reporting_year = ReportingYear.objects.get(reporting_year=date.today().year -1 )
 
-        assert result[1].invoice_type == "Automatic overdue penalty"
+        assert result[1].invoice_type == "Compliance obligation"
         result[1].invoice_total = 100
         result[1].total_payments = 50
         result[1].total_adjustments = 10
