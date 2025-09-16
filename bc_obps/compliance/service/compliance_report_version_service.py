@@ -171,7 +171,7 @@ class ComplianceReportVersionService:
             else:
                 return compliance_report_version.report_compliance_summary.excess_emissions
 
-        outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))  # type: ignore[union-attr]
+        outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))
 
         charge_rate = ComplianceChargeRateService.get_rate_for_year(
             compliance_report_version.compliance_report.compliance_period.reporting_year
