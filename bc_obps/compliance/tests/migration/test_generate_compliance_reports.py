@@ -1,6 +1,6 @@
 import importlib
 import pytest
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from model_bakery.baker import make_recipe
 from decimal import Decimal
 from registration.models import Operation
@@ -10,10 +10,10 @@ from compliance.models import ComplianceReportVersion, ComplianceObligation, Com
 pytestmark = pytest.mark.django_db
 
 migration_module = importlib.import_module('compliance.migrations.0030_generate_compliance_reports')
-generate_reports = migration_module.generate_compliance_reports_from_emission_reports
+perform_migration = migration_module.perform_migration
 
 
-def generate_emission_report_data(year: int, excess: Decimal, credited: Decimal, purpose: str):
+def generate_emission_report_data(excess: Decimal, credited: Decimal, purpose: str):
     rep_year = ReportingYear.objects.get(reporting_year=2024)
     op = make_recipe(
         "registration.tests.utils.operation",
@@ -34,24 +34,25 @@ def generate_emission_report_data(year: int, excess: Decimal, credited: Decimal,
     return rcs
 
 
-class TestMigration0028(TestCase):
-    """Test migration 0028 - generate compliance reports"""
-
+class TestGenerateComplianceReportsMigration(TestCase):
+    @override_settings(ENVIRONMENT="prod")
     def test_generates_expected_data(self):
         """Test the handle_emissions function with various scenarios."""
         # DATA SETUP
         regulated_with_emissions = generate_emission_report_data(
-            2024, Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
+            Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
         )
         regulated_with_credits = generate_emission_report_data(
-            2024, Decimal('0'), Decimal('5000'), Operation.Purposes.OPTED_IN_OPERATION
+            Decimal('0'), Decimal('5000'), Operation.Purposes.OPTED_IN_OPERATION
         )
         regulated_neither = generate_emission_report_data(
-            2024, Decimal('0'), Decimal('0'), Operation.Purposes.NEW_ENTRANT_OPERATION
+            Decimal('0'), Decimal('0'), Operation.Purposes.NEW_ENTRANT_OPERATION
         )
 
         # CALL MIGRATION
-        generate_reports()
+        from django.apps import apps
+
+        perform_migration(apps, None)
 
         # ASSERTIONS
         assert ComplianceReportVersion.objects.all().count() == 3
@@ -75,10 +76,11 @@ class TestMigration0028(TestCase):
             regulated_with_credits.credited_emissions
         )
 
+    @override_settings(ENVIRONMENT="prod")
     def test_only_considers_latest_submitted_reports(self):
         # DATA SETUP
         latest_regulated_with_emissions = generate_emission_report_data(
-            2024, Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
+            Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
         )
         first_rv = make_recipe(
             "reporting.tests.utils.report_version",
@@ -96,7 +98,9 @@ class TestMigration0028(TestCase):
         first_rv.save()
 
         # CALL MIGRATION
-        generate_reports()
+        from django.apps import apps
+
+        perform_migration(apps, None)
 
         # ASSERTIONS
         assert ComplianceReportVersion.objects.all().count() == 1
@@ -108,17 +112,20 @@ class TestMigration0028(TestCase):
         )
         assert ComplianceReportVersion.objects.filter(report_compliance_summary_id=first_rcs.id).count() == 0
 
+    @override_settings(ENVIRONMENT="prod")
     def test_skips_unregulated_reports(self):
         # DATA SETUP
         regulated_with_emissions = generate_emission_report_data(
-            2024, Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
+            Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION
         )
         unregulated_with_emissions = generate_emission_report_data(
-            2024, Decimal('10000'), Decimal('0'), Operation.Purposes.REPORTING_OPERATION
+            Decimal('10000'), Decimal('0'), Operation.Purposes.REPORTING_OPERATION
         )
 
         # CALL MIGRATION
-        generate_reports()
+        from django.apps import apps
+
+        perform_migration(apps, None)
 
         # ASSERTIONS
         assert ComplianceReportVersion.objects.all().count() == 1
@@ -130,3 +137,15 @@ class TestMigration0028(TestCase):
             ComplianceReportVersion.objects.filter(report_compliance_summary_id=unregulated_with_emissions.id).count()
             == 0
         )
+
+    def test_skips_migration_in_non_prod_environment(self):
+        # DATA SETUP
+        generate_emission_report_data(Decimal('10000'), Decimal('0'), Operation.Purposes.OBPS_REGULATED_OPERATION)
+
+        # CALL MIGRATION (should be skipped in non-prod)
+        from django.apps import apps
+
+        perform_migration(apps, None)
+
+        # ASSERTIONS - no compliance reports should be created
+        assert ComplianceReportVersion.objects.all().count() == 0
