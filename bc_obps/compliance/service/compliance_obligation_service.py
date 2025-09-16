@@ -72,6 +72,9 @@ class ComplianceObligationService:
         )
 
         logger.info(f"Created compliance obligation {obligation.id} for report version {compliance_report_version_id}")
+        from compliance.tasks import retryable_send_notice_of_obligation_email
+
+        retryable_send_notice_of_obligation_email.execute(compliance_report_version.compliance_report.report.id)
 
         return obligation
 

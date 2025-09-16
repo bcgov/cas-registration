@@ -12,6 +12,7 @@ from compliance.emails import (
     _send_email_to_operators_approved_users_or_raise,
     send_notice_of_earned_credits_generated_email,
     send_notice_of_no_obligation_no_credits_generated_email,
+    send_notice_of_obligation_generated_email,
 )
 
 pytestmark = pytest.mark.django_db
@@ -192,7 +193,33 @@ class TestSendNotifications:
         }
 
         # Call the function with the report
-        send_notice_of_no_obligation_no_credits_generated_email(report)
+        send_notice_of_no_obligation_no_credits_generated_email(report.id)
+        mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
+            approved_user_operator.operator,
+            template_instance,
+            expected_context,
+        )
+
+    @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+    def test_obligation_email(self, mock_send_email_to_operators_approved_users_or_raise):
+        # admin user
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        # Create a report with no obligation or earned credits
+        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
+
+        expected_context = {
+            "operator_legal_name": report.operator.legal_name,
+            "operation_name": report.operation.name,
+            "compliance_year": report.reporting_year.reporting_year,
+        }
+
+        # Call the function with the report id
+        send_notice_of_obligation_generated_email(report.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
