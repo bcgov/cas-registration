@@ -46,8 +46,6 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
         return ReportingFlow.ReportingOnlySFO;
       case POTENTIAL_REPORTING_OPERATION:
         return ReportingFlow.PotentialReportingSFO;
-      case OPTED_IN_OPERATION:
-        return ReportingFlow.OptedInSFO;
       default:
         return ReportingFlow.SFO;
     }

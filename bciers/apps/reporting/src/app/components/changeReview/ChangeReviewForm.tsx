@@ -16,6 +16,7 @@ interface ChangeReviewProps {
   navigationInformation: NavigationInformation;
   changes: ChangeItem[];
   flow: ReportingFlow;
+  registrationPurpose: string;
 }
 
 export default function ChangeReviewForm({
@@ -24,6 +25,7 @@ export default function ChangeReviewForm({
   navigationInformation,
   changes,
   flow,
+  registrationPurpose,
 }: ChangeReviewProps) {
   const router = useRouter();
   const [formData, setFormData] = useState(initialFormData);
@@ -75,7 +77,11 @@ export default function ChangeReviewForm({
       noFormSave={() => handleSubmit(false)}
       submitButtonDisabled={reasonForChange.trim() === ""}
     >
-      <ReviewChanges changes={changes} flow={flow} />
+      <ReviewChanges
+        changes={changes}
+        flow={flow}
+        registrationPurpose={registrationPurpose}
+      />
       <ReasonForChangeForm
         reasonForChange={reasonForChange}
         onReasonChange={(val) => {

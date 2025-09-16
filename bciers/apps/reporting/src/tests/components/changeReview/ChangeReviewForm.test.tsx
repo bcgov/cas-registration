@@ -121,7 +121,7 @@ describe("ChangeReviewForm", () => {
         change_type: "modified",
       },
     ],
-    flow: ReportingFlow.SFO, // <-- required prop
+    flow: ReportingFlow.SFO,
   };
 
   beforeEach(() => {

@@ -17,6 +17,7 @@ export interface ChangeItem {
 export interface ReviewChangesProps {
   changes: ChangeItem[];
   flow: ReportingFlow;
+  registrationPurpose: string;
 }
 
 export interface FacilityReportStructure {
