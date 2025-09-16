@@ -55,6 +55,7 @@ class TestOperationsEndpoint(CommonTestSetup):
                 'operator__legal_name',
                 'operation__id',
                 'operation__status',
+                'operation__contact_ids',
             ]
         )
 

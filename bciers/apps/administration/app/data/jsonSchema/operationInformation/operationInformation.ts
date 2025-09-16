@@ -3,12 +3,17 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { getNaicsCodes } from "@bciers/actions/api";
 import { Apps, OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import MissingRepresentativeAlertFieldTemplate from "./MissingRepresentativeAlertFieldTemplate";
 
 export const eioOperationInformationSchema: RJSFSchema = {
   title: "Operation Information",
   type: "object",
   required: ["name", "type"],
   properties: {
+    missing_representative_alert: {
+      type: "object",
+      readOnly: true,
+    },
     name: { type: "string", title: "Operation Name" },
     type: {
       type: "string",
@@ -115,6 +120,9 @@ export const createOperationInformationSchema = async (
 
 export const operationInformationUISchema: UiSchema = {
   "ui:FieldTemplate": SectionFieldTemplate,
+  missing_representative_alert: {
+    "ui:FieldTemplate": MissingRepresentativeAlertFieldTemplate,
+  },
   type: {
     "ui:widget": "SelectWidget",
     "ui:placeholder": "Select Operation Type",

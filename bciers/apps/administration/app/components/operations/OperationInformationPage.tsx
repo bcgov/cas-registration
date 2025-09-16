@@ -37,15 +37,16 @@ const OperationInformationPage = async ({
     undefined,
     operation.status,
   );
+  console.log("***** Page formData ******:", operation);
 
   return (
     <>
       <NewTabBanner />
-      {isMissingRepresentative && (
+      {/* {isMissingRepresentative && (
         <Alert severity="info" color="warning" sx={{ ml: { xs: 0, sm: 35 } }}>
           Please select an operation representative
         </Alert>
-      )}
+      )} */}
       <OperationInformationForm
         formData={{
           ...operation,
