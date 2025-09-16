@@ -17,7 +17,7 @@ const ElicensingInvoicesDataGrid = ({
   };
 }) => {
   const columns = elicensingInvoiceColumns();
-
+  console.log("initialData", initialData);
   return (
     <DataGrid
       columns={columns}
