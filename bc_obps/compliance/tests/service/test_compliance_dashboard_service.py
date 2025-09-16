@@ -6,6 +6,7 @@ from compliance.dataclass import RefreshWrapperReturn
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from compliance.models import ComplianceReportVersion
 from registration.models import Operation
+from reporting.models import ReportingYear
 from django.core.exceptions import ObjectDoesNotExist
 from reporting.tests.utils.bakers import reporting_year_baker
 
@@ -474,7 +475,7 @@ class TestComplianceDashboardService:
             'registration.tests.utils.operation', operator=operator_2, status=Operation.Statuses.REGISTERED
         )
         # Create reporting year first to ensure consistency
-        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
+        reporting_year = ReportingYear.objects.get()
 
         report_1 = make_recipe(
             'reporting.tests.utils.report', operator=operator_1, operation=operation_1, reporting_year=reporting_year
@@ -687,6 +688,11 @@ class TestComplianceDashboardService:
         # Create reporting year first to ensure consistency
         reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
+        make_recipe(
+            'compliance.tests.utils.compliance_charge_rate',
+            reporting_year=reporting_year,
+        )
+
         report_1 = make_recipe(
             'reporting.tests.utils.report',
             operator=approved_user_operator.operator,
@@ -739,8 +745,17 @@ class TestComplianceDashboardService:
         compliance_report_version_2_1 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
             compliance_report=compliance_report_2,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
             report_compliance_summary=report_compliance_summary_2_1,
             excess_emissions_delta_from_previous=Decimal("0.0"),
+        )
+
+        # Initial version needs an invoice or else it will be superceded, voiding this test
+        invoice = make_recipe('compliance.tests.utils.elicensing_invoice')
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=compliance_report_version_2_1,
+            elicensing_invoice=invoice,
         )
         compliance_report_version_2_1.report_compliance_summary.excess_emissions = Decimal("20.0")
         compliance_report_version_2_1.report_compliance_summary.save()
@@ -775,10 +790,15 @@ class TestComplianceDashboardService:
             report_compliance_summary=report_compliance_summary_2_2,
             excess_emissions_delta_from_previous=Decimal("5.0"),
             is_supplementary=True,
+            previous_version_id=compliance_report_version_2_1.id,
             status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
         compliance_report_version_2_2.report_compliance_summary.excess_emissions = Decimal("25.0")
         compliance_report_version_2_2.report_compliance_summary.save()
+        set = ComplianceReportVersion.objects.all()
+        for x in set:
+            print("ID STATUS OF VERSIONS:", x.id, x.status)
+
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
             user_guid=approved_user_operator.user_id
         )
