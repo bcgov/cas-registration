@@ -1,5 +1,6 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
+import InvoiceCell from "../../../elicensing-invoices/InvoiceNumberCell";
 
 const elicensingInvoiceColumns = (): GridColDef[] => {
   return [
@@ -26,6 +27,7 @@ const elicensingInvoiceColumns = (): GridColDef[] => {
     {
       field: "invoice_number",
       headerName: "Invoice Number",
+      renderCell: InvoiceCell,
       flex: 1,
     },
     {

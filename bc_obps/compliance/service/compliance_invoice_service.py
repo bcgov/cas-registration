@@ -421,7 +421,6 @@ class ComplianceInvoiceService:
 
         compliance_penalty_invoice_queryset = (
             ElicensingInvoice.objects.select_related(
-                
                 "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
                 
             ).prefetch_related(

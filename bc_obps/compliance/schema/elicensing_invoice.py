@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Optional
 from compliance.models.elicensing_invoice import ElicensingInvoice
-from ninja import ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema
 
 
 class ElicensingInvoiceOut(ModelSchema):
@@ -38,7 +38,22 @@ class ElicensingInvoiceListOut(ModelSchema):
     total_adjustments: Optional[Decimal] = None
     total_payments: Optional[Decimal] = None
     invoice_type: Optional[str] = None
+    compliance_report_version_id: int 
 
+    @staticmethod
+    def resolve_compliance_report_version_id(obj: ElicensingInvoice) -> Optional[int]:
+        obligation = getattr(obj, "compliance_obligation", None)
+        if obligation:
+            return (
+                obj.compliance_obligation.compliance_report_version.id
+            )
+        penalty = getattr(obj, "compliance_penalty", None)
+        if penalty:
+            return (
+                obj.compliance_penalty.compliance_obligation.compliance_report_version.id
+            )
+        return None
+    
     @staticmethod
     def resolve_compliance_period(obj: ElicensingInvoice) -> Optional[int]:
         obligation = getattr(obj, "compliance_obligation", None)
