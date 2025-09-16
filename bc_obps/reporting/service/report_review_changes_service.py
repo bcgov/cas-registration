@@ -224,6 +224,9 @@ class ReportReviewChangesService:
     def get_report_version_diff_changes(cls, previous: dict, current: dict) -> List[Dict[str, Any]]:
         changes: List[Dict[str, Any]] = []
 
+        previous = previous or {}
+        current = current or {}
+
         # --- Registration purpose check ---
         prev_purpose = previous.get("report_operation", {}).get("registration_purpose")
         curr_purpose = current.get("report_operation", {}).get("registration_purpose")
@@ -273,8 +276,16 @@ class ReportReviewChangesService:
                 )
 
         # --- Compliance products added/removed/modified ---
-        prev_products = {p['name']: p for p in previous.get('report_compliance_summary', {}).get('products', [])}
-        curr_products = {p['name']: p for p in current.get('report_compliance_summary', {}).get('products', [])}
+        prev_products = {
+            p.get('name'): p
+            for p in (previous.get('report_compliance_summary') or {}).get('products', [])
+            if p.get('name')
+        }
+        curr_products = {
+            p.get('name'): p
+            for p in (current.get('report_compliance_summary') or {}).get('products', [])
+            if p.get('name')
+        }
 
         # Removed products
         for name in prev_products.keys() - curr_products.keys():

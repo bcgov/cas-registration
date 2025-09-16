@@ -7,8 +7,6 @@ import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSuppleme
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
-import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 // Mock all the async utility functions
 vi.mock("@reporting/src/app/utils/getReportVersionDetails", () => ({
@@ -33,9 +31,6 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 
 vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
   getRegistrationPurpose: vi.fn(),
-}));
-vi.mock("@reporting/src/app/components/taskList/reportingFlows", () => ({
-  getFlow: vi.fn(),
 }));
 
 vi.mock("@reporting/src/app/components/changeReview/ChangeReviewForm", () => ({
@@ -80,8 +75,6 @@ describe("The ChangeReviewPage component", () => {
     >;
   const mockGetRegistrationPurpose =
     getRegistrationPurpose as vi.MockedFunction<typeof getRegistrationPurpose>;
-
-  const mockGetFlow = getFlow as vi.MockedFunction<typeof getFlow>;
 
   const mockFormData = { reportId: 123, status: "draft", operatorId: 1 };
   const mockChanges = [
@@ -131,7 +124,6 @@ describe("The ChangeReviewPage component", () => {
     mockGetRegistrationPurpose.mockResolvedValue({
       registration_purpose: "New Registration",
     });
-    mockGetFlow.mockResolvedValue(ReportingFlow.SFO);
   });
 
   it("renders ChangeReviewForm with correct props for supplementary report with verification", async () => {

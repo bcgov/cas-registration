@@ -23,28 +23,25 @@ import {
   complianceNote,
   reviewChangesNote,
 } from "@reporting/src/data/jsonSchema/changeReview/complianceNote";
-import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
+import {
+  OPTED_IN_OPERATION,
+  REGULATED_OPERATION_REGISTRATION_PURPOSE,
+  REPORTING_OPERATION,
+} from "@reporting/src/app/utils/constants";
 
 export const ReviewChanges: React.FC<ReviewChangesProps> = ({
   changes,
-  flow,
+  registrationPurpose,
 }) => {
   // Normalize keys for all changes at the root level
   const normalizedChanges = normalizeChangeKeys(filterExcludedFields(changes));
-  const showChangesFlows = [
-    ReportingFlow.SFO,
-    ReportingFlow.LFO,
-    ReportingFlow.OptedInSFO,
-    ReportingFlow.OptedInLFO,
+  const showChangesPurposes = [
+    REGULATED_OPERATION_REGISTRATION_PURPOSE,
+    OPTED_IN_OPERATION,
   ];
+  const showChanges = showChangesPurposes.includes(registrationPurpose);
 
-  const reportingOnlyFlows = [
-    ReportingFlow.ReportingOnlySFO,
-    ReportingFlow.ReportingOnlyLFO,
-  ];
-
-  const showChanges = showChangesFlows.includes(flow);
-  const isReportingOnly = reportingOnlyFlows.includes(flow);
+  const isReportingOnly = registrationPurpose === REPORTING_OPERATION;
 
   // Helper to filter changes by field prefix or inclusion
   const filterByField = (prefixes: string[], includes: string[] = []) =>

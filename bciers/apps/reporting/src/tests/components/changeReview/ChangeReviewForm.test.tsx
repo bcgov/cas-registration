@@ -2,10 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
 import ChangeReviewForm from "@reporting/src/app/components/changeReview/ChangeReviewForm";
 import { actionHandler } from "@bciers/actions";
-import {
-  HeaderStep,
-  ReportingFlow,
-} from "@reporting/src/app/components/taskList/types";
+import { HeaderStep } from "@reporting/src/app/components/taskList/types";
 
 const mockRouterPush = vi.fn();
 
@@ -121,7 +118,6 @@ describe("ChangeReviewForm", () => {
         change_type: "modified",
       },
     ],
-    flow: ReportingFlow.SFO, // <-- required prop
   };
 
   beforeEach(() => {

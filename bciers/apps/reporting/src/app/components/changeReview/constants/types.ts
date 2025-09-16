@@ -1,6 +1,5 @@
 // Types for change review components
 import { Activity } from "@reporting/src/app/components/finalReview/templates/types";
-import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 export interface ChangeItem {
   facilityName?: any;
@@ -16,7 +15,7 @@ export interface ChangeItem {
 
 export interface ReviewChangesProps {
   changes: ChangeItem[];
-  flow: ReportingFlow;
+  registrationPurpose: string;
 }
 
 export interface FacilityReportStructure {

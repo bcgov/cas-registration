@@ -10,7 +10,7 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import ChangeReviewForm from "./ChangeReviewForm";
 import { getChangeReviewData } from "@reporting/src/app/utils/getReviewChangesData";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
+import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
 
 export default async function ChangeReviewPage({
   version_id,
@@ -25,7 +25,8 @@ export default async function ChangeReviewPage({
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
 
-  const flow = await getFlow(version_id);
+  const registrationPurpose = (await getRegistrationPurpose(version_id))
+    .registration_purpose;
 
   // Build task list
   const navInfo = await getNavigationInformation(
@@ -46,7 +47,7 @@ export default async function ChangeReviewPage({
         initialFormData={initialFormData}
         navigationInformation={navInfo}
         changes={changes.changed}
-        flow={flow}
+        registrationPurpose={registrationPurpose}
       />
     </>
   );

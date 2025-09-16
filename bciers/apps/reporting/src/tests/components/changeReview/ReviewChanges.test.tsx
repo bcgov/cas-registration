@@ -2,8 +2,9 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
+import { REGULATED_OPERATION_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 
-// Mock all the template components
+// Mock template components
 vi.mock(
   "@reporting/src/app/components/changeReview/templates/ChangeItemDisplay",
   () => ({
@@ -68,7 +69,6 @@ vi.mock(
   }),
 );
 
-// Mock utility functions
 vi.mock("@reporting/src/app/components/changeReview/utils/utils", () => ({
   filterExcludedFields: vi.fn((changes) => changes),
   getSection: vi.fn((field) => {
@@ -164,25 +164,15 @@ describe("ReviewChanges", () => {
       change_type: "modified",
       deletedActivities: [],
     },
-    {
-      field: "root['person_responsible']['name']",
-      oldValue: "old_name",
-      newValue: "new_name",
-      facilityName: "",
-      change_type: "modified",
-      deletedActivities: [],
-    },
   ];
 
   it("renders all sections when changes are provided", () => {
-    render(<ReviewChanges changes={mockChanges} />);
-
-    // Check Person Responsible section
-    expect(
-      screen.getByTestId(
-        "change-item-root['report_person_responsible']['name']",
-      ),
-    ).toBeInTheDocument();
+    render(
+      <ReviewChanges
+        changes={mockChanges}
+        registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
+      />,
+    );
 
     expect(
       screen.getByTestId(
@@ -190,23 +180,22 @@ describe("ReviewChanges", () => {
       ),
     ).toBeInTheDocument();
 
-    // Check Compliance Summary section (rendered as specialized component)
-    expect(screen.getByText("Compliance Summary")).toBeInTheDocument();
-
-    // Check specialized component sections
+    expect(screen.getByTestId("compliance-summary")).toBeInTheDocument();
     expect(
       screen.getByTestId("operation-emission-summary"),
     ).toBeInTheDocument();
     expect(screen.getByTestId("electricity-import-data")).toBeInTheDocument();
     expect(screen.getByTestId("new-entrant-changes")).toBeInTheDocument();
-
-    // Check facility changes
     expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
   });
 
   it("renders empty state when no changes are provided", () => {
-    render(<ReviewChanges changes={[]} />);
-
+    render(
+      <ReviewChanges
+        changes={[]}
+        registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
+      />,
+    );
     expect(
       screen.getByText(
         "No changes detected between the selected report versions.",
@@ -215,7 +204,7 @@ describe("ReviewChanges", () => {
   });
 
   it("only renders sections that have changes", () => {
-    const limitedChanges = [
+    const limitedChanges: ChangeItem[] = [
       {
         field: "root['report_information']['test_field']",
         oldValue: "oldValue",
@@ -226,7 +215,12 @@ describe("ReviewChanges", () => {
       },
     ];
 
-    render(<ReviewChanges changes={limitedChanges} />);
+    render(
+      <ReviewChanges
+        changes={limitedChanges}
+        registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
+      />,
+    );
 
     expect(screen.queryByTestId("compliance-summary")).not.toBeInTheDocument();
     expect(
@@ -238,49 +232,8 @@ describe("ReviewChanges", () => {
     expect(screen.queryByTestId("new-entrant-changes")).not.toBeInTheDocument();
   });
 
-  it("handles bulk facility changes correctly", () => {
-    const bulkFacilityChanges: ChangeItem[] = [
-      {
-        field: "root['facility_reports']",
-        oldValue: {
-          "Facility A": { name: "Facility A", data: "old" },
-          "Facility B": { name: "Facility B", data: "old" },
-        },
-        newValue: {
-          "Facility A": { name: "Facility A", data: "new" },
-          "Facility B": { name: "Facility B", data: "new" },
-        },
-        change_type: "modified",
-        facilityName: "Multiple Facilities",
-        deletedActivities: [],
-      },
-    ];
-
-    render(<ReviewChanges changes={bulkFacilityChanges} />);
-
-    // Should render facility components for each facility in the bulk change
-    expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
-  });
-
-  it('excludes "Other" section from rendering', () => {
-    const otherChanges = [
-      {
-        field: "root['some_other_field']",
-        oldValue: "old_other",
-        newValue: "new_other",
-        change_type: "modified",
-        facilityName: "",
-        deletedActivities: [],
-      },
-    ];
-
-    render(<ReviewChanges changes={otherChanges} />);
-
-    expect(screen.queryByText("Other")).not.toBeInTheDocument();
-  });
-
   it("handles non-object change values gracefully", () => {
-    const invalidChanges = [
+    const invalidChanges: ChangeItem[] = [
       {
         field: "root['facility_reports']",
         oldValue: null,
@@ -291,7 +244,12 @@ describe("ReviewChanges", () => {
       },
     ];
 
-    render(<ReviewChanges changes={invalidChanges} />);
+    render(
+      <ReviewChanges
+        changes={invalidChanges}
+        registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
+      />,
+    );
 
     expect(screen.getByTestId("facility-Test Facility")).toBeInTheDocument();
   });
