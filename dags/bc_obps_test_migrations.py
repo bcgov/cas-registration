@@ -1,7 +1,7 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
-from airflow.operators.python_operator import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from airflow.models.param import Param
 from datetime import datetime, timedelta
 from airflow import DAG
@@ -20,7 +20,7 @@ default_args = {**default_dag_args, "start_date": TWO_DAYS_AGO}
 test_migrations_dag = DAG(
     TEST_MIGRATIONS_DAG_NAME,
     default_args=default_args,
-    schedule_interval=None,
+    schedule=None,
     catchup=False,
     params={
         "destination_namespace": Param(

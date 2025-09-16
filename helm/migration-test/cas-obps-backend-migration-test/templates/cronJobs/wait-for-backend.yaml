@@ -4,6 +4,8 @@ metadata:
   name: {{ template "cas-obps-backend-migration-test.fullname" . }}-wait-for-backend-job
   labels: {{- include "cas-obps-backend-migration-test.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
 spec:
   suspend: true # This cron job is intended to be triggered manually by Airflow
   schedule: "0 * * * *"

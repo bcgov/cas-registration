@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
-from airflow.operators.python_operator import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 from datetime import timedelta, datetime, timezone
 from airflow import DAG
 import os
@@ -25,7 +25,7 @@ default_args = {**default_dag_args, 'start_date': TWO_DAYS_AGO}
 
 process_transfer_event_dag = DAG(
     PROCESS_DUE_TRANSFERS_DAG_NAME,
-    schedule_interval='0 8 * * *',
+    schedule='0 8 * * *',
     default_args=default_args,
     is_paused_upon_creation=False,
 )
