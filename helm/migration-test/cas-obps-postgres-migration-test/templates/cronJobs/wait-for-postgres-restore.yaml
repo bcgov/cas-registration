@@ -4,6 +4,8 @@ metadata:
   name: {{ template "cas-obps-postgres-migration-test.fullname" . }}-wait-for-postgres-restore-job
   labels: {{- include "cas-obps-postgres-migration-test.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
 spec:
   suspend: true # This cron job is intended to be triggered manually by Airflow
   schedule: "0 * * * *"
