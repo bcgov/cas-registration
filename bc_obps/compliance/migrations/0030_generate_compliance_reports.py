@@ -37,7 +37,7 @@ def generate_compliance_reports_from_emission_reports(apps, schema_editor):
                 report=rv.report,
                 compliance_period=CompliancePeriod.objects.get(reporting_year=TARGET_REPORTING_YEAR),
             )
-            ComplianceReportVersionService.create_compliance_report_version(new_compliance_report, rv.id)
+            ComplianceReportVersionService.create_compliance_report_version(new_compliance_report.id, rv.id)
 
         logger.info(f"Created compliance report for report id {rv.report_id}")
 

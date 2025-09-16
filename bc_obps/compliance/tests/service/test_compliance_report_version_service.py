@@ -34,7 +34,7 @@ class TestComplianceReportVersionService:
 
         # Act
         result = ComplianceReportVersionService.create_compliance_report_version(
-            compliance_report, report_compliance_summary.report_version.id
+            compliance_report.id, report_compliance_summary.report_version.id
         )
 
         # Assert
@@ -67,7 +67,7 @@ class TestComplianceReportVersionService:
 
         # Act
         result = ComplianceReportVersionService.create_compliance_report_version(
-            compliance_report, report_compliance_summary.report_version.id
+            compliance_report.id, report_compliance_summary.report_version.id
         )
 
         # Assert
@@ -104,7 +104,7 @@ class TestComplianceReportVersionService:
 
         # Act
         result = ComplianceReportVersionService.create_compliance_report_version(
-            compliance_report, report_compliance_summary.report_version.id
+            compliance_report.id, report_compliance_summary.report_version.id
         )
         earned_credits_record = ComplianceEarnedCredit.objects.get(compliance_report_version_id=result.id)
 
@@ -128,7 +128,7 @@ class TestComplianceReportVersionService:
 
         # Act
         result = ComplianceReportVersionService.create_compliance_report_version(
-            compliance_report, report_compliance_summary.report_version.id
+            compliance_report.id, report_compliance_summary.report_version.id
         )
 
         # Assert

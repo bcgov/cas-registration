@@ -47,14 +47,14 @@ class ComplianceReportVersionService:
     @classmethod
     @transaction.atomic
     def create_compliance_report_version(
-        cls, compliance_report: ComplianceReport, report_version_id: int
+        cls, compliance_report_id: int, report_version_id: int
     ) -> ComplianceReportVersion:
         """
         Creates a compliance report version for a submitted report version
 
         Args:
             report_version_id (int): The ID of the report version
-            compliance_report (ComplianceReport): The compliance report to associate with the version
+            compliance_report_id (int): The ID of the compliance report to associate with the version
 
         Returns:
             ComplianceReportVersion: The created compliance report version
@@ -70,12 +70,13 @@ class ComplianceReportVersionService:
 
         # Create compliance report version
         compliance_report_version = ComplianceReportVersion.objects.create(
-            compliance_report=compliance_report,
+            compliance_report_id=compliance_report_id,
             report_compliance_summary=report_compliance_summary,
             status=status,
         )
 
         # Handle post-creation actions based on status
+        compliance_report = ComplianceReport.objects.get(id=compliance_report_id)
         status_handlers = {
             ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET: lambda: cls._handle_obligation_not_met(
                 compliance_report_version, excess_emissions, compliance_report
