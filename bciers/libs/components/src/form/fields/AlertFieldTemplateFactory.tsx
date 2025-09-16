@@ -30,6 +30,7 @@ function AlertFieldTemplateFactory<T>(
   alertIconColor?: string,
 ) {
   // TODO: log something if the formcontext doesn't have anything (it should find a false value)
+  console.log("******** AlertFieldTemplateFactory: AlertContent", AlertContent);
 
   return (props: AlertFieldTemplateProps) => (
     <AlertFieldTemplate
