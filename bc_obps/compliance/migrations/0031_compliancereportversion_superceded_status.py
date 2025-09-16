@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0029_alter_compliancechargerate_reporting_year'),
+        ('compliance', '0030_generate_compliance_reports'),
     ]
 
     operations = [
