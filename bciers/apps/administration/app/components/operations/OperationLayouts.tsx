@@ -1,5 +1,7 @@
+import AlertNote from "@bciers/components/form/components/AlertNote";
 import Note from "@bciers/components/layout/Note";
-import { Alert } from "@mui/material";
+import { BC_GOV_TEXT } from "@bciers/styles";
+import { InfoRounded } from "@mui/icons-material";
 
 const Layout = ({ children }: { children: React.ReactNode }) => (
   <>
@@ -28,12 +30,15 @@ export const ExternalUserOperationDataGridLayout = ({
 
     <div className="min-h-[48px] box-border mt-4">
       {operationsWithoutContacts && operationsWithoutContacts.length > 0 && (
-        <Alert severity="info" color="warning">
+        <AlertNote
+          alertType="ALERT"
+          icon={<InfoRounded fontSize="inherit" sx={{ color: BC_GOV_TEXT }} />}
+        >
           Missing Information: Please add an operation representative for{" "}
           {operationsWithoutContacts.join(", ")} in{" "}
           {operationsWithoutContacts.length > 1 ? "their" : "its"} operation
           information page.
-        </Alert>
+        </AlertNote>
       )}
     </div>
     <h1>Operations</h1>
