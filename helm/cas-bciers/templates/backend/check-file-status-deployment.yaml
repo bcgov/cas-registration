@@ -45,7 +45,7 @@ spec:
             "containerToSidecar" "check-document-file-status"
             "logName" "cas-bciers-dev-logs"
             "host" (index .Values "cas-logging-sidecar" "host")
-            "appName" "CheckDocumentFileStatus") | nindent 8 }}
+            "appName" "check-document-file-status") | nindent 8 }}
       volumes:
         {{- include "cas-logging-sidecar.volumes" . | nindent 8 }}
         - name: gcs-attachment-credentials
