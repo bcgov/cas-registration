@@ -1,15 +1,13 @@
 import { DataGridSearchParams } from "@/compliance/src/app/types";
-import PaymentSummariesDataGrid from "@/compliance/src/app/components/payment-summaries/PaymentSummariesDataGrid";
-import { getElicensingInvoices } from "../../utils/getElicensingInvoices";
+import { getElicensingInvoices } from "@/compliance/src/app/utils/getElicensingInvoices";
 import ElicensingInvoicesDataGrid from "./ElicensingInvoicesDataGrid";
 
-export default async function PaymentSummariesPage({
+export default async function ElicensingInvoicesPage({
   searchParams,
 }: Readonly<{
   searchParams: DataGridSearchParams;
 }>) {
   const initialData = await getElicensingInvoices(searchParams);
-
   return (
     <div className="flex flex-col">
       <div className="mb-5">

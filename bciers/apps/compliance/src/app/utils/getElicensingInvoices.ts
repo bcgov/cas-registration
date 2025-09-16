@@ -20,7 +20,7 @@ export const getElicensingInvoices = async (params: {
   );
 
   if (!data || data.error) {
-    throw new Error(`Failed to fetch invoices: ${data.error}`);
+    throw new Error(`Failed to fetch invoices`);
   }
 
   return {
