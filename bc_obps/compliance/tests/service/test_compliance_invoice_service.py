@@ -368,38 +368,38 @@ class TestComplianceInvoiceService:
 )
         # additional report for different year - should not be included
         
-        report_2 = make_recipe(
+        report_3 = make_recipe(
             "compliance.tests.utils.report", reporting_year=ReportingYear.objects.get(reporting_year=2023))
         
-        report_version_2=make_recipe(
-            "reporting.tests.utils.report_version", report=report_2)
+        report_version_3=make_recipe(
+            "reporting.tests.utils.report_version", report=report_3)
         
-        report_operation_2 = make_recipe(
-            "reporting.tests.utils.report_operation",report_version=report_version_2
+        report_operation_3 = make_recipe(
+            "reporting.tests.utils.report_operation",report_version=report_version_3
         )
-        compliance_report_2 = make_recipe(
-            "compliance.tests.utils.compliance_report", report=report_2)
+        compliance_report_3 = make_recipe(
+            "compliance.tests.utils.compliance_report", report=report_3)
         
-        report_compliance_summary_2 = make_recipe(
-            "compliance.tests.utils.report_compliance_summary",report_version=report_version_2)
+        report_compliance_summary_3 = make_recipe(
+            "compliance.tests.utils.report_compliance_summary",report_version=report_version_3)
         
 
-        compliance_report_version_2 = make_recipe(
+        compliance_report_version_3 = make_recipe(
             "compliance.tests.utils.compliance_report_version",
-           compliance_report=compliance_report_2, report_compliance_summary=report_compliance_summary_2
+           compliance_report=compliance_report_3, report_compliance_summary=report_compliance_summary_3
         )
-        invoice_2 = make_recipe(
+        invoice_3 = make_recipe(
     "compliance.tests.utils.elicensing_invoice",
     due_date=date(2025, 7, 1),
 )
         # obligation
         make_recipe(
     "compliance.tests.utils.compliance_obligation",
-    compliance_report_version=compliance_report_version_2,
+    compliance_report_version=compliance_report_version_3,
     fee_amount_dollars=Decimal("300.00"),
     fee_date=date(2025, 6, 1),
     obligation_id="25-0001-2",
-    elicensing_invoice=invoice_2,
+    elicensing_invoice=invoice_3,
 )
         
 
