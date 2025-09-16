@@ -129,10 +129,6 @@ class ReportingDashboardService:
             .distinct()  # this prevents duplication in cases where the operation has had multiple owners
         )
 
-        # Filter results for operator if user is external - they should only see results for their own operator
-        if (op := user_operator) is not None:
-            queryset = queryset.filter(operator_id=op.operator_id)
-
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
 
         return filters.filter(queryset).order_by(*sort_fields)
