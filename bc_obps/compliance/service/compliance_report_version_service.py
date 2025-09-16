@@ -165,16 +165,13 @@ class ComplianceReportVersionService:
             return Decimal("0")
 
         if not obligation.elicensing_invoice:
-            if (
-                compliance_report_version.is_supplementary
-                and ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status  # type: ignore[misc]
-                != ComplianceReportVersion.ComplianceStatus.SUPERCEDED
-            ):
-                return compliance_report_version.excess_emissions_delta_from_previous
+            if compliance_report_version.is_supplementary:
+                if ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status != ComplianceReportVersion.ComplianceStatus.SUPERCEDED:  # type: ignore[misc]
+                    return compliance_report_version.excess_emissions_delta_from_previous
             else:
                 return compliance_report_version.report_compliance_summary.excess_emissions
 
-        outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))
+        outstanding_balance = max(obligation.elicensing_invoice.outstanding_balance or Decimal("0"), Decimal("0"))  # type: ignore[union-attr]
 
         charge_rate = ComplianceChargeRateService.get_rate_for_year(
             compliance_report_version.compliance_report.compliance_period.reporting_year
@@ -225,11 +222,10 @@ class ComplianceReportVersionService:
             Decimal: The display value of excess emissions
         """
 
-        if (
-            not compliance_report_version.is_supplementary
-            or ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status  # type: ignore[misc]
-            == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
-        ):
+        if not compliance_report_version.is_supplementary:
+            return compliance_report_version.report_compliance_summary.excess_emissions
+
+        if ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED:  # type: ignore[misc]
             return compliance_report_version.report_compliance_summary.excess_emissions
 
         return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))
