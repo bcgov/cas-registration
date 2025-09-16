@@ -7,6 +7,7 @@ import {
 import Operations from "@/administration/app/components/operations/OperationDataGridPage";
 import { getSessionRole } from "@bciers/testConfig/mocks";
 import { OperationTypes } from "@bciers/utils/src/enums";
+import { OperationRow } from "@/administration/app/components/operations/types";
 
 useRouter.mockReturnValue({
   query: {},
@@ -18,25 +19,25 @@ useSearchParams.mockReturnValue({
 });
 
 const mockResponse = {
-  data: [
+  rows: [
     {
       id: 1,
-      operator: "FakeOperator",
-      name: "Operation 1",
-      bcghg_id: "12111130001",
-      type: OperationTypes.SFO,
+      operator__legal_name: "FakeOperator",
+      operation__name: "Operation 1",
+      operation__bcghg_id: "12111130001",
+      operation__type: OperationTypes.SFO,
       status: "Draft",
-      bc_obps_regulated_operation: "N/A",
-    },
+      operation__bc_obps_regulated_operation: "N/A",
+    } as OperationRow,
     {
       id: 2,
-      operator: "FakeOperator",
-      name: "Operation 2",
-      bcghg_id: "12111130002",
-      type: OperationTypes.LFO,
+      operator__legal_name: "FakeOperator",
+      operation__name: "Operation 2",
+      operation__bcghg_id: "12111130002",
+      operation__type: OperationTypes.LFO,
       status: "Registered",
-      bc_obps_regulated_operation: "24-0001",
-    },
+      operation__bc_obps_regulated_operation: "24-0001",
+    } as OperationRow,
   ],
   row_count: 2,
 };
@@ -54,19 +55,16 @@ describe("Operations component", () => {
     });
   });
 
-  it("throws an error when there's a problem fetching data", async () => {
-    getSessionRole.mockReturnValue("cas_director");
-    fetchOperationsPageData.mockReturnValueOnce(undefined);
-    await expect(async () => {
-      render(await Operations({ searchParams: {} }));
-    }).rejects.toThrow("Failed to retrieve operations");
-    expect(screen.queryByRole("grid")).not.toBeInTheDocument();
-  });
-
   it("renders the OperationDataGrid component  when there are operations in the database", async () => {
     getSessionRole.mockReturnValue("industry_user");
     fetchOperationsPageData.mockReturnValueOnce(mockResponse);
-    render(await Operations({ searchParams: {} }));
+    render(
+      await Operations({
+        isInternalUser: true,
+        initialData: { rows: [], row_count: 0 },
+        filteredSearchParams: {},
+      }),
+    );
     expect(screen.getByRole("grid")).toBeVisible();
     expect(
       screen.queryByText(/No operations data in database./i),
