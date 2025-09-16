@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import React from "react";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -45,16 +46,16 @@ vi.mock("@bciers/components/loading/SkeletonGrid", () => ({
 }));
 
 describe("FacilityReportFinalReview", () => {
+  const pathname = "/reporting/reports/123/final-review";
+
   beforeEach(() => {
     vi.clearAllMocks();
     (useRouter as any).mockReturnValue({ push: mockRouterPush });
-    (usePathname as any).mockReturnValue("/reporting/reports/123/final-review");
+    (usePathname as any).mockReturnValue(pathname);
   });
 
   it("renders loading when data is being fetched", async () => {
-    (useSearchParams as any).mockReturnValue({
-      get: () => "facility-1",
-    });
+    (useSearchParams as any).mockReturnValue({ get: () => "facility-1" });
     (getFacilityFinalReviewData as any).mockImplementation(
       () => new Promise(() => {}), // never resolves
     );
@@ -66,9 +67,7 @@ describe("FacilityReportFinalReview", () => {
   });
 
   it("renders facility section and task list when data is loaded", async () => {
-    (useSearchParams as any).mockReturnValue({
-      get: () => "facility-1",
-    });
+    (useSearchParams as any).mockReturnValue({ get: () => "facility-1" });
     (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
@@ -86,9 +85,7 @@ describe("FacilityReportFinalReview", () => {
   });
 
   it("shows loading and does not fetch when facility_id is missing", async () => {
-    (useSearchParams as any).mockReturnValue({
-      get: () => null,
-    });
+    (useSearchParams as any).mockReturnValue({ get: () => null });
 
     render(<FacilityReportFinalReview version_id={42} />);
 
@@ -99,9 +96,7 @@ describe("FacilityReportFinalReview", () => {
   });
 
   it("navigates back when Back button is clicked", async () => {
-    (useSearchParams as any).mockReturnValue({
-      get: () => "facility-1",
-    });
+    (useSearchParams as any).mockReturnValue({ get: () => "facility-1" });
     (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
@@ -109,10 +104,9 @@ describe("FacilityReportFinalReview", () => {
     render(<FacilityReportFinalReview version_id={99} />);
 
     const backButton = await screen.findByRole("button", { name: /back/i });
-    backButton.click();
+    await userEvent.click(backButton);
 
-    expect(mockRouterPush).toHaveBeenCalledWith(
-      "/reporting/reports/99/final-review#facility-grid",
-    );
+    const expectedBackUrl = "/reporting" + pathname + "#facility-grid";
+    expect(mockRouterPush).toHaveBeenCalledWith(expectedBackUrl);
   });
 });
