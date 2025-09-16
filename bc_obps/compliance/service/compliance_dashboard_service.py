@@ -12,6 +12,7 @@ from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.enums import ComplianceInvoiceTypes
 from service.reporting_year_service import ReportingYearService
+from django.db.models import Q
 
 
 class ComplianceDashboardService:
@@ -48,8 +49,12 @@ class ComplianceDashboardService:
             )
             .exclude(
                 # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
-                is_supplementary=True,
-                status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                # Exclude superceded compliance report versions
+                Q(
+                    is_supplementary=True,
+                    status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+                )
+                | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
             # filter for current reporting year
             .filter(report_compliance_summary__report_version__report__reporting_year=reporting_year)
@@ -72,14 +77,16 @@ class ComplianceDashboardService:
                     user
                 ).operator,
             )
-            compliance_report_versions = (
-                compliance_report_versions
-                | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
-                    user_guid=user_guid
-                ).exclude(
+            compliance_report_versions = compliance_report_versions | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
+                user_guid=user_guid
+            ).exclude(
+                # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
+                # Exclude superceded compliance report versions
+                Q(
                     is_supplementary=True,
                     status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
                 )
+                | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
 
         for version in compliance_report_versions:
