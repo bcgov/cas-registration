@@ -53,8 +53,6 @@ def load_production_data(request: HttpRequest, version_id: int, facility_id: UUI
         .order_by("product_id")
         .all()
     )
-    allowed_products = ReportOperation.objects.get(report_version_id=version_id).regulated_products.exclude(
-        is_regulated=False
-    )
+    allowed_products = ReportProductService.get_allowed_products(version_id)
 
     return 200, {"report_products": report_products, "allowed_products": allowed_products}

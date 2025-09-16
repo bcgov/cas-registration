@@ -218,3 +218,13 @@ class TestReportProductService:
         assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
 
         assert ReportProduct.objects.filter(facility_report=self.facility_report, product_id=fog_product_id).exists()
+
+    def test_get_allowed_products_returns_all_listed_regulated_products(self):
+        regulated_products = make_recipe("registration.tests.utils.regulated_product", is_regulated=True, _quantity=2)
+        unregulated_products = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=False, _quantity=2
+        )
+
+        self.report_operation.regulated_products.set([*regulated_products, *unregulated_products])
+
+        assert ReportProductService.get_allowed_products(self.report_version_id) == regulated_products

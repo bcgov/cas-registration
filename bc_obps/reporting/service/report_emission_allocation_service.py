@@ -13,6 +13,7 @@ from reporting.models.report_product import ReportProduct
 from reporting.models import FacilityReport
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
 from reporting.service.emission_category_service import EmissionCategoryService
+from reporting.service.report_product_service import ReportProductService
 
 
 @dataclass
@@ -52,6 +53,9 @@ class ReportEmissionAllocationData:
     report_product_emission_allocation_totals: List[ReportProductEmissionAllocationData]
     allocation_methodology: str
     allocation_other_methodology_description: str
+
+    # Flag whether there are products missing from the ones available for reporting
+    has_missing_products: bool
 
 
 class ReportEmissionAllocationService:
@@ -126,6 +130,13 @@ class ReportEmissionAllocationService:
             )
             report_product_emission_allocations_data.append(emissions_total)
 
+        # Step 6: Assess whether we're missing some products
+        allowed_product_ids = set(
+            ReportProductService.get_allowed_products(report_version_id).values_list("id", flat=True)
+        )
+        reported_product_ids = set(report_products.values_list("product_id", flat=True))
+        has_missing_products = allowed_product_ids != reported_product_ids
+
         return ReportEmissionAllocationData(
             report_product_emission_allocations=report_product_emission_allocations_data,
             facility_total_emissions=total_reportable_emissions,
@@ -134,6 +145,7 @@ class ReportEmissionAllocationService:
             ),
             allocation_methodology=allocation_methodology,
             allocation_other_methodology_description=allocation_other_methodology_description,
+            has_missing_products=has_missing_products,
         )
 
     @classmethod
