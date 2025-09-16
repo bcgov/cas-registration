@@ -1,6 +1,9 @@
 import dataclasses
 from decimal import Decimal
+from unittest.mock import patch, MagicMock
+from django.db.models import QuerySet
 from django.test import TestCase
+from registration.models import regulated_product
 from reporting.schema.report_emission_allocation import ReportEmissionAllocationsSchemaIn
 from reporting.models.emission_category import EmissionCategory
 from reporting.tests.service.test_report_activity_save_service.infrastructure import TestInfrastructure
@@ -140,6 +143,12 @@ class TestReportEmissionAllocationService(TestCase):
             report_version=self.test_infrastructure.report_version,
             facility_report=self.test_infrastructure.facility_report,
             product_id=29,  # "Sugar: solid"
+        )
+
+        report_operation = make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=self.test_infrastructure.report_version,
+            regulated_products=[report_product_1.product, report_product_2.product],
         )
 
         self.mock_get_response = {
@@ -393,4 +402,26 @@ class TestReportEmissionAllocationService(TestCase):
         self.assertIsNotNone(allocation2)
         self.assertEqual(
             allocation2.allocated_quantity, self.ALLOCATING_AMOUNT_3, "Expected this allocation to be updated"
+        )
+
+    def test_has_missing_products(self):
+
+        retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
+            self.test_infrastructure.report_version, self.test_infrastructure.facility_report.facility_id
+        )
+
+        # No missing products in our setup
+        assert not retrieved_emission_allocations_data.has_missing_products
+
+        report_product_3 = make_recipe(
+            "reporting.tests.utils.report_product",
+            report_version=self.test_infrastructure.report_version,
+            facility_report=self.test_infrastructure.facility_report,
+            product=make_recipe("registration.tests.utils.regulated_"),
+        )
+
+        report_operation = make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=self.test_infrastructure.report_version,
+            regulated_products=[report_product_1.product, report_product_2.product],
         )
