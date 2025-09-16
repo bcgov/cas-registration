@@ -366,7 +366,7 @@ class TestComplianceInvoiceService:
     elicensing_invoice=invoice_2,
 )
         # additional report for different year - should not be included
-        breakpoint()
+        
         report_2 = make_recipe(
             "compliance.tests.utils.report", reporting_year=ReportingYear.objects.get(reporting_year=2023))
         
@@ -404,12 +404,12 @@ class TestComplianceInvoiceService:
 
         cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
 
-        
+        breakpoint()
         result = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
         mock_get_year.assert_called_once()
         mock_calculate_invoice.assert_called_once()
         assert result.count() == 3
-
+        breakpoint()
         assert result[0].invoice_type == "Compliance obligation"
         result[0].invoice_total = 100
         result[0].total_payments = 50
