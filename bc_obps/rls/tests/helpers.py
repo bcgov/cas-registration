@@ -1,12 +1,15 @@
 from django.apps import apps
 from django.conf import settings
 from django.db import connection
+import pytest
 from registration.models.app_role import AppRole
 from registration.models.user import User
 from rls.enums import RlsOperations, RlsRoles
 from rls.middleware.rls import RlsMiddleware
 from django.db import transaction
 from model_bakery import baker
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.utils import ProgrammingError
 
 
 def get_models_for_rls(app_name=None):
@@ -26,12 +29,17 @@ def noop(*args, **kwargs):
 
 def run_with_rollback(cursor, fn):
     with transaction.atomic():
-        fn(cursor)
+        result = fn(cursor)
         transaction.set_rollback(True)
+    return result
 
 
 def assert_policies_for_cas_roles(
-    model, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
+    model,
+    select_function=noop,
+    insert_function=noop,
+    update_function=noop,
+    delete_function=noop,
 ):
     """
     Helper function for testing Row-Level Security (RLS) policies for various CAS roles.
@@ -96,11 +104,21 @@ def assert_policies_for_cas_roles(
 
 
 def assert_policies_for_industry_user(
-    model_name, user: User, select_function=noop, insert_function=noop, update_function=noop, delete_function=noop
+    model_name,
+    user: User,
+    select_function=noop,
+    insert_function=noop,
+    update_function=noop,
+    delete_function=noop,
+    forbidden_select_function=noop,
+    forbidden_insert_function=noop,
+    forbidden_update_function=noop,
+    forbidden_delete_function=noop,
 ):
     """
     This function is a helper for testing RLS policies for the industry_user role. Write the select, insert, update, and delete functions and assertions in the test files (see test_contact.py for examples) and then pass them to this function.
     If we forget to test an operation that RLS applies to, this function will raise a ValueError. It rolls back the changes after each operation to ensure the database state remains unchanged for subsequent tests.
+
     """
     if not hasattr(model_name.Rls, 'enable_rls') or not model_name.Rls.enable_rls:
         return
@@ -110,21 +128,46 @@ def assert_policies_for_industry_user(
         operations = model_name.Rls.role_grants_mapping[RlsRoles.INDUSTRY_USER]
 
         if RlsOperations.SELECT in operations:
-            if select_function is noop:
-                raise ValueError("SELECT operation granted, but no select_function provided.")
+            if select_function is noop or forbidden_select_function is noop:
+                raise ValueError(
+                    "SELECT operation granted, but no select_function or forbidden_select_function provided."
+                )
             run_with_rollback(cursor, select_function)
+            with pytest.raises(ObjectDoesNotExist):
+                run_with_rollback(cursor, forbidden_select_function)
 
         if RlsOperations.INSERT in operations:
-            if insert_function is noop:
-                raise ValueError("INSERT operation granted, but no insert_function provided.")
+            if insert_function is noop or forbidden_insert_function is noop:
+                raise ValueError(
+                    "INSERT operation granted, but no insert_function or forbidden_insert_function provided."
+                )
             run_with_rollback(cursor, insert_function)
+            with pytest.raises(
+                ProgrammingError,
+                match=r"new row violates row-level security policy for ",
+            ):
+                run_with_rollback(cursor, forbidden_insert_function)
 
         if RlsOperations.UPDATE in operations:
-            if update_function is noop:
-                raise ValueError("UPDATE operation granted, but no update_function provided.")
-            run_with_rollback(cursor, update_function)
+            if update_function is noop or forbidden_update_function is noop:
+                raise ValueError(
+                    "UPDATE operation granted, but no update_function or forbidden_update_function provided."
+                )
+
+            permitted_updated_records_count = run_with_rollback(cursor, update_function)
+            assert (
+                permitted_updated_records_count == 1
+            ), f"Expected 1 updated record, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
+
+            forbidden_updated_records_count = run_with_rollback(cursor, forbidden_update_function)
+            assert (
+                forbidden_updated_records_count == 0
+            ), f"Expected 0 updated records, but got {permitted_updated_records_count} (did you remember to return in the update function?)"
 
         if RlsOperations.DELETE in operations:
-            if delete_function is noop:
-                raise ValueError("DELETE operation granted, but no delete_function provided.")
+            if delete_function is noop or forbidden_delete_function is noop:
+                raise ValueError(
+                    "DELETE operation granted, but no delete_function or forbidden_delete_function provided."
+                )
             run_with_rollback(cursor, delete_function)
+            run_with_rollback(cursor, forbidden_delete_function)

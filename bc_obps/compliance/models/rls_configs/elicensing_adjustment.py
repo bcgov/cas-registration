@@ -1,11 +1,27 @@
 from compliance.enums import ComplianceTableNames
 from rls.enums import RlsRoles, RlsOperations
-from rls.utils.helpers import generate_rls_grants
+from rls.utils.helpers import generate_report_policy_mapping_from_grants, generate_rls_grants, generate_rls_policies
 
 
 class Rls:
     """
     RLS configuration for the ElicensingAdjustment model
+    """
+
+    enable_rls = True
+    schema = "erc"
+    table = ComplianceTableNames.ELICENSING_ADJUSTMENT
+    using_statement = """
+        elicensing_line_item_id IN (
+            SELECT eli.id
+            FROM erc.elicensing_line_item eli
+            JOIN erc.elicensing_invoice ei ON ei.id = eli.elicensing_invoice_id
+            JOIN erc.elicensing_client_operator eco ON eco.id = ei.elicensing_client_operator_id
+            JOIN erc.operator o ON o.id = eco.operator_id
+            JOIN erc.user_operator uo ON uo.operator_id = o.id
+            WHERE uo.user_id = current_setting('my.guid', true)::uuid
+            AND uo.status = 'Approved'
+        )
     """
 
     role_grants_mapping = {
@@ -17,3 +33,7 @@ class Rls:
     }
 
     grants = generate_rls_grants(role_grants_mapping, ComplianceTableNames.ELICENSING_ADJUSTMENT)
+    role_policy_mapping = generate_report_policy_mapping_from_grants(
+        role_grants_mapping, using_statement, using_statement
+    )
+    policies = generate_rls_policies(role_policy_mapping, table)

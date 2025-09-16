@@ -1,3 +1,4 @@
+from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
 from compliance.models import ComplianceEarnedCredit
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
@@ -393,3 +394,145 @@ class ComplianceEarnedCreditIssuanceRequestedDateTriggerTest(BaseTestCase):
                 earned_credit.refresh_from_db()
                 self.assertEqual(earned_credit.issuance_status, status)
                 self.assertIsNone(earned_credit.issuance_requested_date)
+
+
+#  RLS tests
+class TestComplianceEarnedCreditRls(BaseTestCase):
+    def test_compliance_earned_credit_rls_industry_user(self):
+        # approved object
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        approved_operation = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+        )
+        approved_report = make_recipe(
+            'reporting.tests.utils.report', operation=approved_operation, operator=approved_user_operator.operator
+        )
+        approved_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=approved_report)
+        approved_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=approved_compliance_report,
+            is_supplementary=False,
+        )
+        compliance_earned_credit = make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            id=10,
+            compliance_report_version=approved_compliance_report_version,
+            earned_credits_amount=100,
+            bccr_trading_name="cheese",
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            bccr_holding_account_id="123456789099999",
+        )
+
+        # second object
+        random_operator = make_recipe('registration.tests.utils.operator')
+        random_operation = make_recipe('registration.tests.utils.operation', operator=random_operator)
+        random_report = make_recipe('reporting.tests.utils.report', operation=random_operation)
+        random_compliance_report = make_recipe('compliance.tests.utils.compliance_report', report=random_report)
+        random_compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=random_compliance_report
+        )
+        random_compliance_earned_credit = make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            id=20,
+            compliance_report_version=random_compliance_report_version,
+            earned_credits_amount=200,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            bccr_trading_name="bacon",
+            bccr_holding_account_id="123456789012345",
+        )
+
+        # extra object for insert
+        approved_compliance_report_version_for_insert = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report__report__operation=approved_operation,
+            is_supplementary=False,
+        )
+
+        assert ComplianceEarnedCredit.objects.count() == 2
+
+        def select_function(cursor):
+            ComplianceEarnedCredit.objects.get(id=compliance_earned_credit.id)
+
+        def forbidden_select_function(cursor):
+            ComplianceEarnedCredit.objects.get(id=random_compliance_earned_credit.id)
+
+        def insert_function(cursor):
+            ComplianceEarnedCredit.objects.create(
+                id=30,
+                compliance_report_version=approved_compliance_report_version_for_insert,
+                earned_credits_amount=150,
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            )
+
+        def forbidden_insert_function(cursor):
+            cursor.execute(
+                """
+                    INSERT INTO "erc"."compliance_earned_credit" (
+                        compliance_report_version_id,
+                        bccr_trading_name
+                    ) VALUES (
+                        %s,
+                        %s
+                    )
+                """,
+                (random_compliance_report_version.id, "macaroni"),
+            )
+
+        def update_function(cursor):
+            return ComplianceEarnedCredit.objects.filter(id=compliance_earned_credit.id).update(
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            )
+
+        def forbidden_update_function(cursor):
+            return ComplianceEarnedCredit.objects.filter(id=random_compliance_earned_credit.id).update(
+                issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            )
+
+        assert_policies_for_industry_user(
+            ComplianceEarnedCredit,
+            approved_user_operator.user,
+            select_function=select_function,
+            insert_function=insert_function,
+            update_function=update_function,
+            forbidden_select_function=forbidden_select_function,
+            forbidden_insert_function=forbidden_insert_function,
+            forbidden_update_function=forbidden_update_function,
+        )
+
+    def test_compliance_earned_credit_rls_cas_users(self):
+        compliance_report = make_recipe('compliance.tests.utils.compliance_report')
+        report_compliance_summary = make_recipe('compliance.tests.utils.report_compliance_summary')
+        compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
+
+        make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            id=15,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+            compliance_report_version=compliance_report_version,
+            earned_credits_amount=300,
+            bccr_trading_name="ketchup",
+            bccr_holding_account_id="111111111012345",
+        )
+
+        def select_function(cursor):
+            assert ComplianceEarnedCredit.objects.count() == 1
+
+        def update_function(cursor):
+            updated_ComplianceEarnedCredit = ComplianceEarnedCredit.objects.first()
+            updated_ComplianceEarnedCredit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.APPROVED
+            updated_ComplianceEarnedCredit.save()
+
+            assert (
+                ComplianceEarnedCredit.objects.filter(
+                    issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
+                ).count()
+                == 1
+            )
+
+        assert_policies_for_cas_roles(
+            ComplianceEarnedCredit, select_function=select_function, update_function=update_function
+        )
