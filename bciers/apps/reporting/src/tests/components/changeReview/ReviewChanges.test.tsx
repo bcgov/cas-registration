@@ -2,7 +2,6 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { ReviewChanges } from "@reporting/src/app/components/changeReview/templates/ReviewChanges";
 import { ChangeItem } from "@reporting/src/app/components/changeReview/constants/types";
-import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 import { REGULATED_OPERATION_REGISTRATION_PURPOSE } from "@reporting/src/app/utils/constants";
 
 // Mock template components
@@ -171,7 +170,6 @@ describe("ReviewChanges", () => {
     render(
       <ReviewChanges
         changes={mockChanges}
-        flow={ReportingFlow.SFO}
         registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
       />,
     );
@@ -195,7 +193,6 @@ describe("ReviewChanges", () => {
     render(
       <ReviewChanges
         changes={[]}
-        flow={ReportingFlow.SFO}
         registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
       />,
     );
@@ -221,7 +218,6 @@ describe("ReviewChanges", () => {
     render(
       <ReviewChanges
         changes={limitedChanges}
-        flow={ReportingFlow.SFO}
         registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
       />,
     );
@@ -251,7 +247,6 @@ describe("ReviewChanges", () => {
     render(
       <ReviewChanges
         changes={invalidChanges}
-        flow={ReportingFlow.SFO}
         registrationPurpose={REGULATED_OPERATION_REGISTRATION_PURPOSE}
       />,
     );
