@@ -8,7 +8,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('compliance', '0028_compliancepenalty_penalty_type_and_more'),
-        ('reporting', '0129_V3_18_0'),
     ]
 
     operations = [

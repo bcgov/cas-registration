@@ -50,4 +50,4 @@ def handle_report_submission(sender: Type[Any], **kwargs: Any) -> None:
                 version_count=version_count,
             )
         else:
-            ComplianceReportVersionService.create_compliance_report_version(compliance_report, version_id)
+            ComplianceReportVersionService.create_compliance_report_version(compliance_report.id, version_id)
