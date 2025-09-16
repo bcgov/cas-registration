@@ -28,7 +28,7 @@ jobs:
       # Always scan repo/commits when PR events happen
       - name: Run TruffleHog on repo code
         if: github.event_name == 'pull_request'
-        uses: trufflesecurity/trufflehog@v3
+        uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           base: ${{ github.event.pull_request.base.sha }}
