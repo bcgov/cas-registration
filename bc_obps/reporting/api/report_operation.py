@@ -20,6 +20,10 @@ from ..schema.report_operation import (
 )
 from ..service.report_operation_service import ReportOperationService
 
+"""
+GET methods
+"""
+
 
 @router.get(
     "/report-version/{version_id}/report-operation-data",
@@ -30,6 +34,22 @@ from ..service.report_operation_service import ReportOperationService
 )
 def get_report_operation_data(request: HttpRequest, version_id: int) -> dict:
     return ReportOperationService.get_report_operation_data_by_version_id(version_id)
+
+
+@router.get(
+    "/report-version/{version_id}/report-operation",
+    response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
+    tags=EMISSIONS_REPORT_TAGS,
+    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
+    auth=approved_authorized_roles_report_version_composite_auth,
+)
+def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
+    return ReportOperationService.get_report_operation_by_version_id(version_id)
+
+
+"""
+PATCH methods
+"""
 
 
 @router.patch(
@@ -44,15 +64,9 @@ def get_update_report(request: HttpRequest, version_id: int) -> tuple[Literal[20
     return 200, report_operation
 
 
-@router.get(
-    "/report-version/{version_id}/report-operation",
-    response={200: ReportOperationSchemaOut, custom_codes_4xx: Message},
-    tags=EMISSIONS_REPORT_TAGS,
-    description="""Takes version_id (primary key of Report_Version model) and returns its report_operation object.""",
-    auth=approved_authorized_roles_report_version_composite_auth,
-)
-def get_report_operation_by_version_id(request: HttpRequest, version_id: int) -> dict:
-    return ReportOperationService.get_report_operation_by_version_id(version_id)
+"""
+POST methods
+"""
 
 
 @router.post(
