@@ -46,4 +46,18 @@ describe("OperationLayouts component", () => {
     ).toBeVisible();
     expect(screen.getByText(/Im a little moka pot/i)).toBeVisible();
   });
+  it("renders the missing representative alert when operationsWithoutContacts is provided", async () => {
+    const operationsWithoutContacts = ["Operation 1", "Operation 2"];
+    render(
+      ExternalUserOperationDataGridLayout({
+        operationsWithoutContacts,
+        children: <div>Im a little teapot</div>,
+      }),
+    );
+    expect(
+      screen.getByText(
+        /Missing Information: Please add an operation representative for Operation 1, Operation 2 in their operation information page./i,
+      ),
+    ).toBeVisible();
+  });
 });
