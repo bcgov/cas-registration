@@ -23,11 +23,6 @@ import Note from "@bciers/components/layout/Note";
 import Link from "next/link";
 import ConfirmChangeOfFieldModal from "@/registration/app/components/operations/registration/ConfirmChangeOfFieldModal";
 
-// const isMissingRepresentative = (formData: OperationInformationPartialFormData) =>
-//   formData.status === "Registered" &&
-//   (!formData.operation_representatives ||
-//     formData.operation_representatives.length === 0);
-
 const OperationInformationForm = ({
   formData,
   operationId,
@@ -52,14 +47,15 @@ const OperationInformationForm = ({
   ] = useState("");
   const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
     useState<boolean>(false);
-  // const [isMissingRepresentative, setIsMissingRepresentative] = useState(
-  //   isMissingRepresentative(formData),
-  // );
   const router = useRouter();
   // To get the user's role from the session
   const role = useSessionRole();
   const searchParams = useSearchParams();
   const isRedirectedFromContacts = searchParams.get("from_contacts") as string;
+  const isMissingRepresentative =
+    formData.status === "Registered" &&
+    (!formData.operation_representatives ||
+      formData.operation_representatives.length === 0);
 
   useEffect(() => {
     if (selectedPurpose) {
@@ -192,7 +188,7 @@ const OperationInformationForm = ({
             RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
           ),
           status: formData.status,
-          missing_representative_alert: {display: true},
+          missing_representative_alert: isMissingRepresentative,
         }}
       />
     </>
