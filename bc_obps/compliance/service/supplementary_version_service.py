@@ -97,7 +97,9 @@ class SupercedeVersionHandler:
             ElicensingObligationService.handle_obligation_integration(
                 obligation.id, compliance_report.compliance_period
             )
-            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
+            compliance_report_version.status = (
+                ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+            )
             compliance_report_version.save()
 
         # Create new earned credit record if new version has earned credits
