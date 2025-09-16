@@ -165,7 +165,11 @@ class ComplianceReportVersionService:
             return Decimal("0")
 
         if not obligation.elicensing_invoice:
-            if compliance_report_version.is_supplementary:
+            if (
+                compliance_report_version.is_supplementary
+                and ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status  # type: ignore[misc]
+                != ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+            ):
                 return compliance_report_version.excess_emissions_delta_from_previous
             else:
                 return compliance_report_version.report_compliance_summary.excess_emissions
@@ -221,7 +225,11 @@ class ComplianceReportVersionService:
             Decimal: The display value of excess emissions
         """
 
-        if not compliance_report_version.is_supplementary:
+        if (
+            not compliance_report_version.is_supplementary
+            or ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status  # type: ignore[misc]
+            == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        ):
             return compliance_report_version.report_compliance_summary.excess_emissions
 
         return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))
