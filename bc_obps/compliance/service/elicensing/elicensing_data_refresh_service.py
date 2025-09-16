@@ -59,14 +59,16 @@ class ElicensingDataRefreshService:
             ValidationError: If no related invoice is found for the given report version ID.
         """
         data_is_fresh = True
-        compliance_obligation: ComplianceObligation = ComplianceObligation.objects.get(
-            compliance_report_version_id=compliance_report_version_id
-        )
+        compliance_obligation: ComplianceObligation = ComplianceObligation.objects.select_related(
+            'elicensing_invoice'
+        ).get(compliance_report_version_id=compliance_report_version_id)
 
         invoice = (
             compliance_obligation.elicensing_invoice
             if invoice_type == ComplianceInvoiceTypes.OBLIGATION
-            else CompliancePenalty.objects.get(compliance_obligation=compliance_obligation).elicensing_invoice
+            else CompliancePenalty.objects.select_related('elicensing_invoice')
+            .get(compliance_obligation=compliance_obligation)
+            .elicensing_invoice
         )
 
         if not invoice:
@@ -178,7 +180,6 @@ class ElicensingDataRefreshService:
         *,
         default_fresh: bool = False,
     ) -> LastRefreshMetaData:
-
         """
         Extract last-refresh metadata from a RefreshWrapperReturn.
 

@@ -58,7 +58,7 @@ def apply_compliance_units(
     )
 
     # Determine if the user can still apply more units
-    can_apply_compliance_units = ApplyComplianceUnitsService._can_apply_compliance_units(compliance_report_version_id)
+    can_apply_compliance_units = ApplyComplianceUnitsService.can_apply_compliance_units(compliance_report_version_id)
 
     # Get the data_is_fresh flag
     refresh_result = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(

@@ -12,8 +12,6 @@ pytestmark = pytest.mark.django_db
 
 
 class TestPenaltyCalculationService:
-    """Tests for the PenaltyCalculationService class"""
-
     def setup_method(self):
         # Create test data
         self.compliance_report_version = baker.make_recipe("compliance.tests.utils.compliance_report_version")
@@ -201,7 +199,7 @@ class TestPenaltyCalculationService:
             accumulated_penalty=5,
             accumulated_compounded=5,
         )
-        result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.obligation)
+        result = PenaltyCalculationService.get_automatic_overdue_penalty_data(self.compliance_report_version.id)
         assert result == {
             "penalty_status": self.obligation.penalty_status,
             "penalty_type": CompliancePenalty.PenaltyType.AUTOMATIC_OVERDUE,

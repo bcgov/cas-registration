@@ -108,7 +108,15 @@ class ComplianceReportVersionService:
         Raises:
             ComplianceReportVersion.DoesNotExist: If the compliance report version doesn't exist
         """
-        return ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+        return ComplianceReportVersion.objects.select_related(
+            'compliance_report',
+            'report_compliance_summary',
+            'obligation',
+            'compliance_report__compliance_period',
+            'compliance_report__report__operator',
+            'compliance_report__report__operation',
+            'compliance_report__report__operation__bc_obps_regulated_operation',
+        ).get(id=compliance_report_version_id)
 
     @staticmethod
     def _determine_compliance_status(
@@ -151,12 +159,7 @@ class ComplianceReportVersionService:
         The calculation is performed as:
                 outstanding_balance_tCO₂e = outstanding_balance / charge_rate
         """
-        obligation = (
-            ComplianceObligation.objects.filter(compliance_report_version__id=compliance_report_version.id)
-            .select_related('elicensing_invoice')
-            .first()
-        )
-
+        obligation = getattr(compliance_report_version, "obligation", None)
         if not obligation:
             return Decimal("0")
 
