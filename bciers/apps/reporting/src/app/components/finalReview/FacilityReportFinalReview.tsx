@@ -3,7 +3,7 @@
 import FacilityReportSection from "@reporting/src/app/components/shared/FacilityReportSection";
 import React, { useEffect, useState } from "react";
 import { ReportData } from "@reporting/src/app/components/finalReview/reportTypes";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
@@ -12,18 +12,19 @@ import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacility
 
 export default function FacilityReportFinalReview({
   version_id,
+  facility_id,
 }: {
   version_id: number;
+  facility_id: string;
 }) {
-  const browserSearchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
-  const facilityId = browserSearchParams.get("facility_id");
+
   const backUrl =
     "/reporting" +
-    (pathname.endsWith("/lfo") ? pathname.slice(0, -"/lfo".length) : pathname) +
+    pathname.replace(/\/facility\/[^/]+$/, "") +
     "#facility-grid";
 
   const taskListElements: TaskListElement[] = [
@@ -37,20 +38,20 @@ export default function FacilityReportFinalReview({
 
   useEffect(() => {
     async function fetchData() {
-      if (!facilityId) {
+      if (!facility_id) {
         setLoading(false);
         setData(null);
         return;
       }
       const finalReviewData = await getFacilityFinalReviewData(
         version_id,
-        facilityId as string,
+        facility_id,
       );
       setData(finalReviewData);
       setLoading(false);
     }
     fetchData();
-  }, [version_id, facilityId]);
+  }, [version_id, facility_id]);
 
   if (loading || !data) return <Loading />;
 

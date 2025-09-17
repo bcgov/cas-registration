@@ -13,18 +13,15 @@ import { fetchFacilitiesPageData } from "@reporting/src/app/components/reportInf
 interface Facility {
   facility: string;
   facility_name: string;
-  row_count?: number;
 }
 
 interface FinalReviewFacilityGridProps {
   data: Facility[];
-  rowCount?: number;
   version_id: number;
 }
 
 const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   data,
-  rowCount,
   version_id,
 }) => {
   const router = useRouter();
@@ -62,7 +59,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
               cursor: "pointer",
             }}
             onClick={() =>
-              router.push(`${currentPath}/lfo?facility_id=${row.facility}`)
+              router.push(`${currentPath}/facility/${row.facility}`)
             }
             data-testid={`view-details-${row.facility}`}
           >
@@ -108,8 +105,8 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         columns={columns}
         columnGroupModel={columnGroup}
         fetchPageData={fetchPageData}
-        paginationMode="server"
-        initialData={{ rows: data, row_count: rowCount }}
+        paginationMode="client"
+        initialData={{ rows: data }}
         getRowId={(row) => row.facility}
         pageSize={10}
         rowSelection={false}

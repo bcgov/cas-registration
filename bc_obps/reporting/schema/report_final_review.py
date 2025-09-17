@@ -372,10 +372,7 @@ class ReportVersionSchema(ModelSchema):
 
     @staticmethod
     def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:
-        if (
-            obj.report_operation
-            and obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        ):
+        if obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             return None
 
         data = ComplianceService.get_calculated_compliance_data(obj.id)
@@ -393,15 +390,14 @@ class ReportVersionSchema(ModelSchema):
 
     @staticmethod
     def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
-        """
-        Returns facility reports as a dict for normal reports,
-        and as a list for LFO reports.
-        """
         if obj.report_operation.operation_type == Operation.Types.EIO:
             return {}  # always dict for EIO
         if obj.report_operation.operation_type == Operation.Types.LFO:
             return list(obj.facility_reports.all())  # list for LFO
-        return {facility.facility_name: facility for facility in obj.facility_reports.all()}
+
+        # For non-LFO, only one facility is expected
+        facility = obj.facility_reports.first()
+        return {facility.facility_name: facility} if facility else {}
 
     class Meta:
         model = ReportVersion
