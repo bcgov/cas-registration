@@ -1,10 +1,14 @@
 from reporting.models import ReportVersion, ReportComplianceSummary
 from compliance.models import ComplianceReport, ComplianceEarnedCredit
 from compliance.models.compliance_report_version import ComplianceReportVersion
+from compliance.models.elicensing_invoice import ElicensingInvoice
+from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
+from compliance.service.earned_credits_service import ComplianceEarnedCreditsService
+from compliance.service.elicensing.elicensing_data_refresh_service import ElicensingDataRefreshService
 
 from django.db import transaction
 from decimal import Decimal
@@ -15,6 +19,8 @@ logger = logging.getLogger(__name__)
 
 # Constants
 ZERO_DECIMAL = Decimal('0')
+MONEY = Decimal("0.01")
+EMISS = Decimal("0.0000")
 
 
 # Define the strategy interface
@@ -90,14 +96,21 @@ class DecreasedObligationHandler:
         previous_summary: ReportComplianceSummary,
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
+        """
+        Create a supplementary ComplianceReportVersion,
+        compute an invoice-aware adjustment strategy,
+        and schedule the posting/crediting work on transaction commit.
 
+        The strategy is invoice-aware: it determines, in one pass, how much of any refund
+        should be applied to the outstanding invoice vs. kept as surplus (how many
+        earned credits should be created).
+
+        Returns:
+            The created supplementary ComplianceReportVersion.
+        """
         excess_emission_delta = new_summary.excess_emissions - previous_summary.excess_emissions
-
-        # Calculate the dollar amount difference for the adjustment
         charge_rate = ComplianceChargeRateService.get_rate_for_year(new_summary.report_version.report.reporting_year)
-        adjustment_amount = (excess_emission_delta * charge_rate).quantize(Decimal('0.01'))
 
-        # Get the previous compliance report version to create adjustment for
         previous_compliance_version = (
             SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
                 compliance_report, previous_summary
@@ -107,25 +120,173 @@ class DecreasedObligationHandler:
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
-            # using NO_OBLIGATION_OR_EARNED_CREDITS status because this report version is supplementary
-            # and does not have an obligation
             status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
             excess_emissions_delta_from_previous=excess_emission_delta,
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
 
-        # Create adjustment in elicensing for the dollar amount difference
-        # This is done outside the main transaction to prevent rollback if integration fails
+        invoice = ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id(
+            previous_compliance_version.id,
+        ).invoice
+
+        outstanding = invoice.outstanding_balance
+
+        adjustment_strategy = DecreasedObligationHandler._determine_adjustment_strategy(
+            new_summary.excess_emissions,
+            previous_summary.excess_emissions,
+            charge_rate,
+            outstanding,
+            credited_emissions=new_summary.credited_emissions,
+        )
+
         transaction.on_commit(
-            lambda: ComplianceAdjustmentService.create_adjustment_for_target_version(
-                target_compliance_report_version_id=previous_compliance_version.id,
-                adjustment_total=adjustment_amount,
-                supplementary_compliance_report_version_id=compliance_report_version.id,
+            lambda: DecreasedObligationHandler._process_adjustment_after_commit(
+                previous_compliance_version.id,
+                compliance_report_version.id,
+                adjustment_strategy,
             )
         )
 
         return compliance_report_version
+
+    @staticmethod
+    def _process_adjustment_after_commit(
+        previous_version_id: int, compliance_report_version_id: int, strategy: dict
+    ) -> None:
+
+        applied = strategy.get("applied_to_invoice", ZERO_DECIMAL)
+        if applied != ZERO_DECIMAL:
+            reason = (
+                ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT_TO_VOID_INVOICE
+                if strategy["should_void_invoice"]
+                else ElicensingAdjustment.Reason.SUPPLEMENTARY_REPORT_ADJUSTMENT
+            )
+            ComplianceAdjustmentService.create_adjustment_for_target_version(
+                target_compliance_report_version_id=previous_version_id,
+                adjustment_total=applied,  # signed (negative reduces outstanding)
+                supplementary_compliance_report_version_id=compliance_report_version_id,
+                reason=reason,
+            )
+
+        if strategy["create_earned_credits"]:
+            tonnes = strategy.get("credits_tonnes", ZERO_DECIMAL)
+            if tonnes > ZERO_DECIMAL:
+                DecreasedObligationHandler._create_earned_credits(
+                    compliance_report_version_id,
+                    tonnes,
+                )
+
+        if strategy["mark_previous_fully_met"]:
+            DecreasedObligationHandler._mark_previous_version_fully_met(previous_version_id)
+
+        if strategy.get("should_void_invoice"):
+            DecreasedObligationHandler._void_unpaid_invoices(previous_version_id)
+
+    @staticmethod
+    def _determine_adjustment_strategy(
+        new_excess_emissions: Decimal,
+        previous_excess_emissions: Decimal,
+        charge_rate: Decimal,
+        invoice_outstanding_balance: Decimal,
+        credited_emissions: Optional[Decimal] = None,
+    ) -> dict:
+        """
+        Compute an **invoice-aware** adjustment strategy.
+
+        This method normalizes and quantizes inputs, calculates the signed money delta
+        (negative = refund, positive = additional fee) from the change in excess emissions,
+        allocates any refund against the current invoice outstanding first, and determines the
+        credits to create.
+
+        Invoice-aware in one pass means:
+        1) Calculate monetary delta from emissions change (delta * rate).
+        2) If refund, apply up to the outstanding balance (reducing the invoice).
+        3) Track any surplus refund (informational).
+        4) Compute credits using the provided credited_emissions (if any),
+            over-compliance tonnes (when new excess ≤ 0), and any conversion of surplus
+            refund dollars into tonnes at the charge rate (if applicable in your policy).
+        5) Determine `should_void_invoice` — if there have been **previous payments** on the
+            invoice (i.e., prev*rate > outstanding), do **not** void even when fully met.
+        """
+        # Normalize & quantize
+        excess = (new_excess_emissions or ZERO_DECIMAL).quantize(EMISS)
+        prev = (previous_excess_emissions or ZERO_DECIMAL).quantize(EMISS)
+        rate = (charge_rate or ZERO_DECIMAL).quantize(Decimal("0.00"))
+        credited_in = (credited_emissions or ZERO_DECIMAL).quantize(EMISS)
+
+        outstanding = max(invoice_outstanding_balance or ZERO_DECIMAL, ZERO_DECIMAL).quantize(MONEY)
+
+        # Emissions delta (negative for decrease)
+        delta_emiss = (excess - prev).quantize(EMISS)
+
+        # Money delta before allocation (signed: negative = refund)
+        adjustment_amount = (delta_emiss * rate).quantize(MONEY)
+
+        # Apply refund toward the invoice first
+        refund_abs = max(-adjustment_amount, ZERO_DECIMAL).quantize(MONEY)  # positive $
+        apply_abs = min(refund_abs, outstanding).quantize(MONEY)  # $ used to zero/down invoice
+        remainder = (refund_abs - apply_abs).quantize(MONEY)  # $ left after invoice
+
+        # Over-compliance tonnes (from emissions crossing ≤ 0)
+        over_compliance_tonnes = max(-excess, ZERO_DECIMAL).quantize(EMISS)
+
+        # Convert any leftover refund dollars into tonnes at the charge rate
+        remainder_tonnes = (remainder / rate).quantize(EMISS) if rate > ZERO_DECIMAL else ZERO_DECIMAL
+
+        # Final credits in TONNES:
+        #   provided credited tonnes (from new summary)
+        # + over-compliance tonnes
+        # + tonnes converted from surplus refund money
+        credits_tonnes = (credited_in + over_compliance_tonnes + remainder_tonnes).quantize(EMISS)
+
+        # --- previous-payments awareness for void decision ---
+        previous_billed_dollars = (prev * rate).quantize(MONEY)
+        previous_payments_dollars = max(previous_billed_dollars - outstanding, ZERO_DECIMAL).quantize(MONEY)
+        net_outstanding_after = (outstanding - apply_abs).quantize(MONEY)
+
+        mark_previous_fully_met = net_outstanding_after == ZERO_DECIMAL
+        # Void only if fully met AND there were no previous payments.
+        should_void_invoice = mark_previous_fully_met and (previous_payments_dollars == ZERO_DECIMAL)
+
+        return {
+            # Money fields
+            "adjustment_amount": adjustment_amount,  # signed; neg = refund
+            "applied_to_invoice": -apply_abs,  # neg reduces outstanding
+            "refund_surplus_money": remainder,  # informational
+            # Credits (TONNES)
+            "credits_tonnes": credits_tonnes,
+            "create_earned_credits": (credits_tonnes > ZERO_DECIMAL),
+            # Status / invoice handling
+            "mark_previous_fully_met": mark_previous_fully_met,
+            "should_void_invoice": should_void_invoice,
+            "net_invoice_outstanding_after": net_outstanding_after,
+        }
+
+    @staticmethod
+    def _void_unpaid_invoices(previous_version_id: int) -> None:
+        ElicensingInvoice.objects.filter(
+            compliance_obligation__compliance_report_version_id=previous_version_id,
+            is_void=False,
+        ).update(is_void=True)
+
+    @staticmethod
+    def _mark_previous_version_fully_met(previous_version_id: int) -> None:
+        ComplianceReportVersion.objects.filter(id=previous_version_id).update(
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
+        )
+
+    @staticmethod
+    def _create_earned_credits(compliance_report_version_id: int, tonnes: Decimal) -> None:
+        crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
+
+        ComplianceEarnedCreditsService.create_earned_credits_record(
+            compliance_report_version=crv,
+            amount=int(tonnes),
+        )
+        ComplianceReportVersion.objects.filter(id=compliance_report_version_id).update(
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        )
 
 
 # Concrete strategy for no significant change
