@@ -50,8 +50,6 @@ class SupercedeVersionHandler:
             return SupplementaryVersionService._obligation_has_no_invoice(previous_compliance_report_version)
         if previous_summary.credited_emissions > ZERO_DECIMAL:
             return SupplementaryVersionService._earned_credits_not_issued(previous_compliance_report_version)
-        if previous_summary.excess_emissions == ZERO_DECIMAL and previous_summary.credited_emissions == ZERO_DECIMAL:
-            return True
         return False
 
     @staticmethod
