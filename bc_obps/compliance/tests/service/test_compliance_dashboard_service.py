@@ -6,7 +6,6 @@ from compliance.dataclass import RefreshWrapperReturn
 from compliance.service.compliance_dashboard_service import ComplianceDashboardService
 from compliance.models import ComplianceReportVersion
 from registration.models import Operation
-from reporting.models import ReportingYear
 from django.core.exceptions import ObjectDoesNotExist
 from reporting.tests.utils.bakers import reporting_year_baker
 
@@ -475,7 +474,7 @@ class TestComplianceDashboardService:
             'registration.tests.utils.operation', operator=operator_2, status=Operation.Statuses.REGISTERED
         )
         # Create reporting year first to ensure consistency
-        reporting_year = ReportingYear.objects.get()
+        reporting_year = make_recipe('reporting.tests.utils.reporting_year')
 
         report_1 = make_recipe(
             'reporting.tests.utils.report', operator=operator_1, operation=operation_1, reporting_year=reporting_year
