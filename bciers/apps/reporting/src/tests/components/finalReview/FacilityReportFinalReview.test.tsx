@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import FacilityReportFinalReview from "@reporting/src/app/components/finalReview/FacilityReportFinalReview";
 
 vi.mock("@reporting/src/app/utils/getFacilityFinalReviewData", () => ({
@@ -15,7 +15,6 @@ vi.mock("next/navigation", async () => {
   return {
     ...actual,
     useRouter: vi.fn(),
-    useSearchParams: vi.fn(),
     usePathname: vi.fn(),
   };
 });
@@ -55,24 +54,22 @@ describe("FacilityReportFinalReview", () => {
   });
 
   it("renders loading when data is being fetched", async () => {
-    (useSearchParams as any).mockReturnValue({ get: () => "facility-1" });
     (getFacilityFinalReviewData as any).mockImplementation(
       () => new Promise(() => {}), // never resolves
     );
 
-    render(<FacilityReportFinalReview version_id={1} />);
+    render(<FacilityReportFinalReview version_id={1} facility_id={"123"} />);
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
-    expect(getFacilityFinalReviewData).toHaveBeenCalledWith(1, "facility-1");
+    expect(getFacilityFinalReviewData).toHaveBeenCalledWith(1, "123");
   });
 
   it("renders facility section and task list when data is loaded", async () => {
-    (useSearchParams as any).mockReturnValue({ get: () => "facility-1" });
     (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
 
-    render(<FacilityReportFinalReview version_id={123} />);
+    render(<FacilityReportFinalReview version_id={123} facility_id={"123"} />);
 
     await waitFor(() => {
       expect(screen.getByTestId("facility-report-section")).toHaveTextContent(
@@ -84,10 +81,8 @@ describe("FacilityReportFinalReview", () => {
     });
   });
 
-  it("shows loading and does not fetch when facility_id is missing", async () => {
-    (useSearchParams as any).mockReturnValue({ get: () => null });
-
-    render(<FacilityReportFinalReview version_id={42} />);
+  it("does not fetch when facility_id is missing", async () => {
+    render(<FacilityReportFinalReview version_id={42} facility_id={""} />);
 
     await waitFor(() => {
       expect(screen.getByTestId("loading")).toBeInTheDocument();
@@ -96,17 +91,20 @@ describe("FacilityReportFinalReview", () => {
   });
 
   it("navigates back when Back button is clicked", async () => {
-    (useSearchParams as any).mockReturnValue({ get: () => "facility-1" });
     (getFacilityFinalReviewData as any).mockResolvedValue({
       facility_name: "Test Facility",
     });
 
-    render(<FacilityReportFinalReview version_id={99} />);
+    render(<FacilityReportFinalReview version_id={99} facility_id={"123"} />);
 
     const backButton = await screen.findByRole("button", { name: /back/i });
     await userEvent.click(backButton);
 
-    const expectedBackUrl = "/reporting" + pathname + "#facility-grid";
+    // backUrl is built as "/reporting" + pathSegments.slice(0, -1).join("/") + "#facility-grid"
+    const pathSegments = pathname.split("/");
+    const expectedBackUrl =
+      "/reporting" + pathSegments.slice(0, -1).join("/") + "#facility-grid";
+
     expect(mockRouterPush).toHaveBeenCalledWith(expectedBackUrl);
   });
 });

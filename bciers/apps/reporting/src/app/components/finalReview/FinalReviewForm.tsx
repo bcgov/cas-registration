@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { Box } from "@mui/material";
 import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import Loading from "@bciers/components/loading/SkeletonForm";
@@ -34,28 +33,29 @@ export const FinalReviewForm: React.FC<Props> = ({
   }, [version_id]);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <div className="p-6">
       <div className="container mx-auto p-4" data-testid="facility-review">
         <MultiStepHeader
           stepIndex={navigationInformation.headerStepIndex}
           steps={navigationInformation.headerSteps}
         />
       </div>
-      <div className="w-full flex">
+
+      <div className="w-full flex gap-4">
         <div className="hidden md:block">
           <ReportingTaskList elements={navigationInformation.taskList} />
         </div>
+
         <div className="w-full">
           {loading ? (
             <Loading />
           ) : data ? (
             <>
-              {children}
               <FinalReviewReportSections version_id={version_id} data={data} />
               <ReportingStepButtons
                 backUrl={navigationInformation.backUrl}
                 continueUrl={navigationInformation.continueUrl}
-                buttonText={"Continue"}
+                buttonText="Continue"
                 noSaveButton={true}
               />
             </>
@@ -64,6 +64,6 @@ export const FinalReviewForm: React.FC<Props> = ({
           )}
         </div>
       </div>
-    </Box>
+    </div>
   );
 };
