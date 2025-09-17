@@ -131,7 +131,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Review Credits Issuance Request",
-          "/compliance-summaries/123/request-issuance-review-summary",
+          "/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -149,7 +149,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-summaries/123/request-issuance-review-summary",
+          "/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -167,7 +167,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-summaries/123/request-issuance-review-summary",
+          "/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -223,7 +223,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "Request Issuance of Credits",
-          "/compliance-summaries/123/request-issuance-review-summary",
+          "/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -241,7 +241,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-summaries/123/request-issuance-review-summary",
+          "/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -259,7 +259,7 @@ describe("ActionCell", () => {
         );
         expectLink(
           "View Details",
-          "/compliance-summaries/123/request-issuance-review-summary",
+          "/compliance-summaries/123/review-compliance-earned-credits-report",
         );
       });
 
@@ -314,7 +314,10 @@ describe("ActionCell", () => {
           ),
         ),
       );
-      expectLink("View Details", "/compliance-summaries/123/review-summary");
+      expectLink(
+        "View Details",
+        "/compliance-summaries/123/review-compliance-no-obligation-report",
+      );
     });
 
     it("displays 'View Details' for internal user when status is not earned credits", () => {
@@ -329,7 +332,10 @@ describe("ActionCell", () => {
           ),
         ),
       );
-      expectLink("View Details", "/compliance-summaries/123/review-summary");
+      expectLink(
+        "View Details",
+        "/compliance-summaries/123/review-compliance-no-obligation-report",
+      );
     });
   });
 });
