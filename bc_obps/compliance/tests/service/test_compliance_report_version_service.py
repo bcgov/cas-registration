@@ -329,28 +329,35 @@ class TestComplianceReportVersionService:
         # Assert
         assert result == Decimal("888.0000")
 
-    def test_calculate_outstanding_balance_tco2e_no_existing_invoice_supplementary_report(self):
+    def test_calculate_outstanding_balance_tco2e_superceded(self):
         # Arrange
         # create compliance report summary
         report_compliance_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary', excess_emissions=888
         )
+        report_compliance_summary_2 = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary', excess_emissions=999
+        )
         # Create compliance report version with a linked compliance period and reporting year
-        compliance_report_version = baker.make_recipe(
+        compliance_report_version_1 = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
-            excess_emissions_delta_from_previous=999,
             report_compliance_summary=report_compliance_summary,
-            is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED,
         )
 
-        # Create a ComplianceObligation linked to the compliance_report_version
+        compliance_report_version_2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=report_compliance_summary_2,
+            previous_version=compliance_report_version_1,
+            is_supplementary=True,
+        )
         baker.make_recipe(
             'compliance.tests.utils.compliance_obligation',
-            compliance_report_version=compliance_report_version,
+            compliance_report_version=compliance_report_version_2,
         )
 
         # Act
-        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version)
+        result = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(compliance_report_version_2)
 
         # Assert
         assert result == Decimal("999.0000")
@@ -359,16 +366,34 @@ class TestComplianceReportVersionService:
         version_1 = baker.make_recipe('compliance.tests.utils.compliance_report_version')
         version_1.report_compliance_summary.excess_emissions = Decimal("100.00")
         version_1.report_compliance_summary.save()
+        invoice_1 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=version_1,
+            elicensing_invoice=invoice_1,
+        )
 
         version_2 = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
             is_supplementary=True,
             excess_emissions_delta_from_previous=Decimal("2.0"),
+            previous_version=version_1,
+        )
+        invoice_2 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=version_2,
+            elicensing_invoice=invoice_2,
         )
         version_3 = baker.make_recipe(
             'compliance.tests.utils.compliance_report_version',
             is_supplementary=True,
             excess_emissions_delta_from_previous=Decimal("-2.0"),
+            previous_version=version_2,
         )
 
         # Act
