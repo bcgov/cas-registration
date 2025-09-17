@@ -4,6 +4,7 @@ from registration.models.operation import Operation
 from model_bakery.baker import make_recipe
 from reporting.models.report_operation import ReportOperation
 from registration.models.user import User
+from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
 from registration.models.app_role import AppRole
 from registration.models.user_operator import UserOperator
 from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker
@@ -11,6 +12,7 @@ from reporting.service.reporting_dashboard_service import ReportingDashboardServ
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
 from service.report_service import ReportService
 from reporting.models.report_version import ReportVersion
+from reporting.models.reporting_year import ReportingYear
 from typing import Optional
 from reporting.schema.dashboard import (
     ReportingDashboardOperationFilterSchema,
@@ -501,6 +503,93 @@ class TestReportingDashboardService:
             (testing_version[1], operation2.name, last_year),
             (testing_version[2], operation2.name, current_year),
         ]
+
     def test_report_retrieval_after_transfer(self):
-        # TODO
-        pass
+        ## ARRANGE
+        reporting_year_2024 = ReportingYear.objects.get(reporting_year=2024)
+        reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
+
+        # Create original user & operator, grant them access
+        original_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        # Create new user & operator, grant them access
+        new_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=original_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+        )
+        timeline1 = OperationDesignatedOperatorTimeline.objects.create(
+            operation=operation,
+            operator=original_user_operator.operator,
+            start_date="2011-09-01T13:20:30+03:00",
+            end_date=None,
+        )
+
+        # make a bunch of other random operations for other operators, so that we can later check that the user doesn't have access to these random operations
+        operation_baker(_quantity=20)
+
+        # create report for operation, filed by original_operator
+        report_r1v1_id = ReportService.create_report(operation.id, reporting_year_2024.reporting_year)
+        report_version1 = ReportVersion.objects.get(id=report_r1v1_id)
+        report_version1.status = "Submitted"
+        report_version1.save()
+
+        # transfer ownership of operation to new_operator
+        timeline1.end_date = "2025-07-01T00:00:00Z"
+        timeline1.save()
+        OperationDesignatedOperatorTimeline.objects.create(
+            operation=operation, operator=new_user_operator.operator, start_date="2025-07-01T00:00:00Z", end_date=None
+        )
+        operation.operator = new_user_operator.operator
+        operation.save()
+
+        ## ACT
+        # original user makes calls to get_operations_for_reporting_dashboard
+        queryset_2024 = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            original_user_operator.user.user_guid,
+            reporting_year_2024.reporting_year,
+            filters=ReportingDashboardOperationFilterSchema(),
+        )
+        queryset_2025 = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            original_user_operator.user.user_guid,
+            reporting_year_2025.reporting_year,
+            filters=ReportingDashboardOperationFilterSchema(),
+        )
+        queryset_2026 = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            original_user_operator.user.user_guid, 2026, filters=ReportingDashboardOperationFilterSchema()
+        )
+
+        # new user makes calls to get_operations_for_reporting_dashboard
+        queryset_2024_new_user = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            new_user_operator.user.user_guid,
+            reporting_year_2024.reporting_year,
+            filters=ReportingDashboardOperationFilterSchema(),
+        )
+        queryset_2025_new_user = ReportingDashboardService.get_operations_for_reporting_dashboard(
+            new_user_operator.user.user_guid,
+            reporting_year_2025.reporting_year,
+            filters=ReportingDashboardOperationFilterSchema(),
+        )
+
+        ## ASSERT
+        # assert original_user can see transferred operation in their reporting dashboard for reporting year 2024
+        assert operation.id in list(queryset_2024.values_list("id", flat=True))
+        # assert the created report appears in the queryset
+        assert report_r1v1_id in list(queryset_2024.values_list("report_id", flat=True))
+        # assert original_user doesn't get results for operations from other operators
+        assert queryset_2024.count() == 1
+        assert queryset_2025.count() == 1
+        assert queryset_2026.count() == 0
+        # assert original_user sees the transferred operation in their dashboard for 2025, since they transferred it part way through the year
+        assert operation.id in list(queryset_2025.values_list("id", flat=True))
+        # assert original_user doesn't see the transferred operation in their dashboard for 2026
+        assert operation.id not in list(queryset_2026.values_list("id", flat=True))
+
+        # assert new_user doesn't see the report in their dashboard for 2024 (they didn't own it then)
+        assert report_r1v1_id not in list(queryset_2024_new_user.values_list("report_id", flat=True))
+        # assert new_user does see the operation in their dashboard for 2025
+        assert operation.id in list(queryset_2025_new_user.values_list("id", flat=True))
+        # assert new_user doesn't get results for operations from other operators
+        assert queryset_2025_new_user.count() == 1
