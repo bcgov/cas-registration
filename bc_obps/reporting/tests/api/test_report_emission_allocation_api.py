@@ -334,6 +334,7 @@ class TestReportEmissionAllocationApi(CommonTestSetup):
                 ],
                 'allocation_methodology': 'Calculator',
                 'allocation_other_methodology_description': '',
+                'has_missing_products': True,
             }
         )
         self.mock_post_payload = {
