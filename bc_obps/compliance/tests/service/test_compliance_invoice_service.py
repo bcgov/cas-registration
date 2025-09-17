@@ -10,17 +10,47 @@ from model_bakery.baker import make_recipe
 from compliance.service.compliance_invoice_service import ComplianceInvoiceService
 from compliance.models import ComplianceChargeRate
 from compliance.models import ElicensingInvoice, ElicensingLineItem
+from reporting.models.reporting_year import ReportingYear
+from service.reporting_year_service import ReportingYearService
 
 
 pytestmark = pytest.mark.django_db
+MOCK_REPORTING_YEAR = date.today().year - 1
 
 
 class TestComplianceInvoiceService:
     def setup_method(self):
+        self.report = make_recipe(
+            "compliance.tests.utils.report", reporting_year=ReportingYearService.get_current_reporting_year()
+        )
+
+        self.report_version = make_recipe("reporting.tests.utils.report_version", report=self.report)
+
+        self.report_operation = make_recipe(
+            "reporting.tests.utils.report_operation", report_version=self.report_version
+        )
+
+        self.compliance_report = make_recipe("compliance.tests.utils.compliance_report", report=self.report)
+
+        self.report_compliance_summary = make_recipe(
+            "compliance.tests.utils.report_compliance_summary", report_version=self.report_version
+        )
 
         self.compliance_report_version = make_recipe(
-            "compliance.tests.utils.compliance_report_version",
-            report_compliance_summary__report_version__report_operation__operation_name="test",
+            "compliance.tests.utils.compliance_report_version", compliance_report=self.compliance_report
+        )
+
+        self.address = make_recipe("registration.tests.utils.address")
+        self.operator = make_recipe("registration.tests.utils.operator", physical_address=self.address)
+
+        # Set up invoice and line items
+        self.invoice = make_recipe("compliance.tests.utils.elicensing_invoice", due_date=date(2025, 7, 1))
+        self.line_item = make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=self.invoice,
+            fee_date=date(2025, 6, 1),
+            base_amount=Decimal("300.00"),
+            description="Compliance Fee",
         )
 
         self.obligation = make_recipe(
@@ -29,26 +59,7 @@ class TestComplianceInvoiceService:
             fee_amount_dollars=Decimal("300.00"),
             fee_date=date(2025, 6, 1),
             obligation_id="25-0001-1",
-        )
-
-        self.address = make_recipe("registration.tests.utils.address")
-        self.operator = make_recipe("registration.tests.utils.operator", physical_address=self.address)
-
-        self.report_operation = make_recipe(
-            "reporting.tests.utils.report_operation",
-        )
-
-        # Set up invoice and line items
-        self.invoice = make_recipe(
-            "compliance.tests.utils.elicensing_invoice",
-            due_date=date(2025, 7, 1),
-        )
-        self.line_item = make_recipe(
-            "compliance.tests.utils.elicensing_line_item",
             elicensing_invoice=self.invoice,
-            fee_date=date(2025, 6, 1),
-            base_amount=Decimal("300.00"),
-            description="Compliance Fee",
         )
         # Add payment and adjustment
         make_recipe("compliance.tests.utils.elicensing_payment", elicensing_line_item=self.line_item)
@@ -159,7 +170,7 @@ class TestComplianceInvoiceService:
                 )
 
         # Act
-        amount_due, billing_items = ComplianceInvoiceService.calculate_invoice_amount_due(invoice)
+        amount_due, billing_items, _, _, _ = ComplianceInvoiceService.calculate_invoice_amount_due(invoice)
 
         # Assert
         assert amount_due == expected_due
@@ -182,14 +193,20 @@ class TestComplianceInvoiceService:
     ):
         # Arrange
         mock_format_operator_address.return_value = ("123 Main St", "City, BC  V1A 2B3")
-        mock_calculate_invoice_amount_due.return_value = Decimal('263512.40'), [
-            {
-                'date': 'Aug 8, 2025',
-                'description': '2024 GGIRCA Automatic Penalty for Obligation ID 1',
-                'amount': '$1,263,512.40',
-            },
-            {'date': 'Aug 8, 2025', 'description': 'Payment 185262395', 'amount': '($1,000,000.00)'},
-        ]
+        mock_calculate_invoice_amount_due.return_value = (
+            Decimal('263512.40'),
+            [
+                {
+                    'date': 'Aug 8, 2025',
+                    'description': '2024 GGIRCA Automatic Penalty for Obligation ID 1',
+                    'amount': '$1,263,512.40',
+                },
+                {'date': 'Aug 8, 2025', 'description': 'Payment 185262395', 'amount': '($1,000,000.00)'},
+            ],
+            None,
+            None,
+            None,
+        )
         mock_get_report_operation.return_value = self.report_operation
 
         mock_get_operator.return_value = self.operator
@@ -304,3 +321,102 @@ class TestComplianceInvoiceService:
         assert response['Content-Type'] == 'application/pdf'
         assert response["Content-Disposition"] == 'attachment; filename="invoice_INV-001_20250601.pdf"'
         assert response["Content-Length"] == '2048'
+
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
+    def test_get_elicensing_invoice_for_dashboard_for_irc_user(self, mock_calculate_invoice, mock_get_year):
+        mock_calculate_invoice.return_value = (None, None, 100, 50, 10)
+        mock_get_year.return_value = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
+        # additional report for current year
+        report_2 = make_recipe(
+            "compliance.tests.utils.report",
+            reporting_year=ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR),
+        )
+
+        report_version_2 = make_recipe("reporting.tests.utils.report_version", report=report_2)
+        report_operation_2 = make_recipe("reporting.tests.utils.report_operation", report_version=report_version_2)
+
+        compliance_report_2 = make_recipe("compliance.tests.utils.compliance_report", report=report_2)
+
+        report_compliance_summary_2 = make_recipe(
+            "compliance.tests.utils.report_compliance_summary", report_version=report_version_2
+        )
+
+        compliance_report_version_2 = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2,
+        )
+        invoice_2 = make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 7, 1),
+        )
+        # obligation
+        make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=compliance_report_version_2,
+            fee_amount_dollars=Decimal("300.00"),
+            fee_date=date(2025, 6, 1),
+            obligation_id="25-0001-2",
+            elicensing_invoice=invoice_2,
+        )
+        # additional report for different year - should not be included
+
+        report_3 = make_recipe(
+            "compliance.tests.utils.report", reporting_year=ReportingYear.objects.get(reporting_year=2023)
+        )
+
+        report_version_3 = make_recipe("reporting.tests.utils.report_version", report=report_3)
+
+        compliance_report_3 = make_recipe("compliance.tests.utils.compliance_report", report=report_3)
+
+        report_compliance_summary_3 = make_recipe(
+            "compliance.tests.utils.report_compliance_summary", report_version=report_version_3
+        )
+
+        compliance_report_version_3 = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report_3,
+            report_compliance_summary=report_compliance_summary_3,
+        )
+        invoice_3 = make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 7, 1),
+        )
+        # obligation
+        make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=compliance_report_version_3,
+            fee_amount_dollars=Decimal("300.00"),
+            fee_date=date(2025, 6, 1),
+            obligation_id="25-0001-2",
+            elicensing_invoice=invoice_3,
+        )
+
+        cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
+
+        result = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
+        mock_get_year.assert_called_once()
+        assert mock_calculate_invoice.call_count == 3  # once for each invoice
+        assert result.count() == 3
+
+        assert result[0].invoice_type == "Automatic overdue penalty"
+        result[0].invoice_total = 100
+        result[0].total_payments = 50
+        result[0].total_adjustments = 10
+        result[0].report_operation = self.report_operation
+        result[0].reporting_year = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
+
+        assert result[1].invoice_type == "Compliance obligation"
+        result[1].invoice_total = 100
+        result[1].total_payments = 50
+        result[1].total_adjustments = 10
+        result[1].report_operation = self.report_operation
+        result[1].reporting_year = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
+
+        assert result[2].invoice_type == "Compliance obligation"
+        result[2].invoice_total = 100
+        result[2].total_payments = 50
+        result[2].total_adjustments = 10
+        result[2].report_operation = report_operation_2
+        result[2].reporting_year = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
