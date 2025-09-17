@@ -221,7 +221,7 @@ export type ElicensingInvoice = {
   compliance_period: number;
   operator_legal_name: string;
   operation_name: string;
-  invoice_total: number;
+  invoice_total: string;
   total_adjustments: number;
   total_payments: number;
   invoice_type: string;
