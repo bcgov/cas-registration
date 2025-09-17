@@ -33,7 +33,7 @@ const SubmittedForm: React.FC<Props> = ({ version_id }) => {
           <FinalReviewReportSections
             version_id={version_id}
             data={data}
-            context={"submitted"}
+            origin={"submitted"}
           />
           <Button
             variant="outlined"
