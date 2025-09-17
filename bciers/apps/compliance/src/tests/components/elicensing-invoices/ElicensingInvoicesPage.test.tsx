@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import ElicensingInvoicesPage from "@/compliance/src/app/components/elicensing-invoices/ElicensingInvoicesPage";
-import { useSearchParams, useSessionRole } from "@bciers/testConfig/mocks";
+import { getSessionRole, useSearchParams } from "@bciers/testConfig/mocks";
 import { getElicensingInvoices } from "@bciers/testConfig/mocks";
+import { FrontEndRoles } from "@bciers/utils/src/enums";
 
 const mockResponse = {
   rows: [
@@ -18,7 +19,7 @@ const mockResponse = {
 describe("ElicensingInvoicesPage", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    useSessionRole.mockReturnValue("cas_admin");
+    getSessionRole.mockReturnValue(FrontEndRoles.CAS_ADMIN);
     useSearchParams.mockReturnValue({
       get: vi.fn(),
     });
