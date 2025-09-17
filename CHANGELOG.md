@@ -1,3 +1,14 @@
+# [3.20.0](https://github.com/bcgov/cas-registration/compare/v3.19.0...v3.20.0) (2025-09-17)
+
+### Bug Fixes
+
+- dag trigger chart should use APIv1 until update ([753b4bc](https://github.com/bcgov/cas-registration/commit/753b4bc9ae4137d39aa54092a3407029272f6cbd))
+
+### Features
+
+- automated email notification for obligations ([1356233](https://github.com/bcgov/cas-registration/commit/13562338836e4f0452a2d95a02a51cc8a36d3722))
+- Industry user can no longer delete obligation/earned credits + add RLS policy for complianceReportVersion + update related tests ([9955fb2](https://github.com/bcgov/cas-registration/commit/9955fb2d84a12a0ae8ba44156e2bbe9db7a5b6a0))
+
 # [3.19.0](https://github.com/bcgov/cas-registration/compare/v3.18.0...v3.19.0) (2025-09-15)
 
 ### Bug Fixes
