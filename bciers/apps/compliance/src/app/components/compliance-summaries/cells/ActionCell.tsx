@@ -43,7 +43,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
       }
       return {
         cellText: "View Details",
-        basePath: `${basePath}/review-summary`,
+        basePath: `${basePath}/review-compliance-no-obligation-report`,
       };
     }
     if (
@@ -64,7 +64,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
   // Earned Credits logic
   if (status === ComplianceSummaryStatus.EARNED_CREDITS) {
     let cellText = "View Details";
-    let pathSuffix = "/request-issuance-review-summary";
+    let pathSuffix = "/review-compliance-earned-credits-report";
 
     if (isAllowedCas && issuanceStatus === IssuanceStatus.ISSUANCE_REQUESTED) {
       cellText = "Review Credits Issuance Request";
@@ -91,7 +91,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
   // Default
   return {
     cellText: "View Details",
-    basePath: `${basePath}/review-summary`,
+    basePath: `${basePath}/review-compliance-no-obligation-report`,
   };
 }
 

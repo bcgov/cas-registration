@@ -13,7 +13,7 @@ export const generateNoObligationNoCreditsTaskList: (
         {
           type: "Page" as const,
           title: `Review ${reportingYear} Compliance Report`,
-          link: `/compliance-summaries/${complianceReportVersionId}/review-summary`,
+          link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-no-obligation-report`,
           isActive: true,
         },
       ],
