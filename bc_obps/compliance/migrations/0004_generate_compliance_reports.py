@@ -62,7 +62,7 @@ def revert_perform_migration(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('compliance', '0029_alter_compliancechargerate_reporting_year'),
+        ('compliance', '0003_seed_compliance_charge_rates'),
     ]
 
     operations = [migrations.RunPython(perform_migration, revert_perform_migration)]
