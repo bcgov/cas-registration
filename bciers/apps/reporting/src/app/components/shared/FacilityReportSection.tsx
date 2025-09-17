@@ -25,7 +25,7 @@ interface FacilityReportSectionProps {
   facilityData: any;
   isAdded?: boolean;
   isRemoved?: boolean;
-  showReportingOnlyConditions?: boolean;
+  showWhenNotReportingOnly?: boolean;
 }
 
 interface NonAttributableEmissionRecord {
@@ -43,7 +43,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
   facilityData,
   isAdded = false,
   isRemoved = false,
-  showReportingOnlyConditions = true,
+  showWhenNotReportingOnly = true,
 }) => {
   // Process non-attributable emissions to include change type
   const processedEmissions = React.useMemo(() => {
@@ -139,7 +139,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
         />
 
         {/* Production Data - conditionally shown */}
-        {showReportingOnlyConditions &&
+        {showWhenNotReportingOnly &&
           facilityData.report_products &&
           Object.keys(facilityData.report_products).length > 0 && (
             <SectionReview
@@ -162,7 +162,7 @@ export const FacilityReportSection: React.FC<FacilityReportSectionProps> = ({
           )}
 
         {/* Allocation of Emissions - conditionally shown */}
-        {showReportingOnlyConditions &&
+        {showWhenNotReportingOnly &&
           facilityData.report_emission_allocation &&
           Object.keys(facilityData.report_emission_allocation).length > 0 && (
             <EmissionAllocationView
