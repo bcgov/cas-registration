@@ -135,7 +135,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
         facilityName={facilityName}
         facilityData={facilityData.facilityData}
         isAdded={true}
-        showReportingOnlyConditions={true}
+        showWhenNotReportingOnly={!isReportingOnly}
       />
     );
   }
@@ -146,7 +146,7 @@ export const FacilityReportChanges: React.FC<FacilityReportChangesProps> = ({
         facilityName={facilityName}
         facilityData={facilityData.facilityData}
         isRemoved={true}
-        showReportingOnlyConditions={true}
+        showWhenNotReportingOnly={!isReportingOnly}
       />
     );
   }

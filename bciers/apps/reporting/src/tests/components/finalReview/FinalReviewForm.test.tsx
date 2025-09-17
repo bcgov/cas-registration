@@ -3,7 +3,10 @@ import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
-import { HeaderStep } from "@reporting/src/app/components/taskList/types";
+import {
+  HeaderStep,
+  ReportingFlow,
+} from "@reporting/src/app/components/taskList/types";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -73,6 +76,7 @@ describe("The FinalReviewForm component", () => {
       <FinalReviewForm
         navigationInformation={mockNavigationInformation}
         version_id={1}
+        flow={ReportingFlow.SFO}
       />,
     );
 
@@ -145,6 +149,7 @@ describe("The FinalReviewForm component", () => {
       <FinalReviewForm
         navigationInformation={mockNavigationInformation}
         version_id={1}
+        flow={ReportingFlow.SFO}
       />,
     );
 
