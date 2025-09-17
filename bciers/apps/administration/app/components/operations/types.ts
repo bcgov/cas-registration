@@ -67,7 +67,7 @@ export interface OperationInformationPartialFormData {
     mo_province?: string;
     mo_postal_code?: string;
   }[];
-  operation_representatives?: string[];
+  operation_representatives?: number[];
   registration_purpose?: string;
   regulated_operation?: string;
   new_entrant_operation?: string;
