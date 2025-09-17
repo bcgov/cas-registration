@@ -3,7 +3,6 @@ from uuid import UUID
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.schema.report_product import ProductionDataOut, ReportProductSchemaIn
 from reporting.service.report_product_service import ReportProductService
