@@ -100,10 +100,10 @@ describe("FacilityReportFinalReview", () => {
     const backButton = await screen.findByRole("button", { name: /back/i });
     await userEvent.click(backButton);
 
-    // backUrl is built as "/reporting" + pathSegments.slice(0, -1).join("/") + "#facility-grid"
-    const pathSegments = pathname.split("/");
     const expectedBackUrl =
-      "/reporting" + pathSegments.slice(0, -1).join("/") + "#facility-grid";
+      "/reporting" +
+      pathname.replace(/\/facility\/[^/]+$/, "") +
+      "#facility-grid";
 
     expect(mockRouterPush).toHaveBeenCalledWith(expectedBackUrl);
   });
