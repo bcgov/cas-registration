@@ -54,7 +54,7 @@ export const FinalReviewForm: React.FC<Props> = ({
               <FinalReviewReportSections
                 version_id={version_id}
                 data={data}
-                context={`final-review`}
+                origin={`final-review`}
               />
               <ReportingStepButtons
                 backUrl={navigationInformation.backUrl}

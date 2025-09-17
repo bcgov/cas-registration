@@ -13,17 +13,17 @@ import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacility
 export default function FacilityReportFinalReview({
   version_id,
   facility_id,
-  context,
+  origin,
 }: {
   version_id: number;
   facility_id: string;
-  context?: string;
+  origin?: "final-review" | "submitted";
 }) {
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const backUrl = `/reporting/reports/${version_id}/${context}#facility-grid`;
+  const backUrl = `/reporting/reports/${version_id}/${origin}#facility-grid`;
 
   const taskListElements: TaskListElement[] = [
     {

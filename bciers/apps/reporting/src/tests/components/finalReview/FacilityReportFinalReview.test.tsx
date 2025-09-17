@@ -99,7 +99,7 @@ describe("FacilityReportFinalReview", () => {
       <FacilityReportFinalReview
         version_id={99}
         facility_id={"123"}
-        context={"final-review"}
+        origin={"final-review"}
       />,
     );
 

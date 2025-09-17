@@ -18,15 +18,14 @@ interface Facility {
 interface FinalReviewFacilityGridProps {
   data: Facility[];
   version_id: number;
-  context?: string;
+  origin?: "final-review" | "submitted";
 }
-
 const PAGE_SIZE = 10;
 
 const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   data,
   version_id,
-  context,
+  origin,
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -76,7 +75,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
             }}
             onClick={() =>
               router.push(
-                `${currentPath}/facility/${row.facility}?context=${context}`,
+                `${currentPath}/facility/${row.facility}?origin=${origin}`,
               )
             }
             data-testid={`view-details-${row.facility}`}
