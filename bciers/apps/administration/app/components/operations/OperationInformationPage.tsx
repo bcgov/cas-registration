@@ -30,7 +30,6 @@ const OperationInformationPage = async ({
     undefined,
     operation.status,
   );
-  console.log("***** Page formData ******:", operation);
 
   return (
     <>
