@@ -1,3 +1,4 @@
+from uuid import UUID
 from compliance.enums import ComplianceInvoiceTypes
 from compliance.models.compliance_penalty import CompliancePenalty
 from django.db.models import Prefetch, QuerySet
@@ -5,6 +6,7 @@ from typing import Dict, Any, List, Optional, Tuple, Generator
 from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
+from service.data_access_service.user_service import UserDataAccessService
 from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 from compliance.models import ComplianceChargeRate
@@ -31,6 +33,7 @@ from compliance.dataclass import (
 )
 import json
 from django.http import StreamingHttpResponse
+from service.reporting_year_service import ReportingYearService
 
 
 class ComplianceInvoiceService:
@@ -75,7 +78,7 @@ class ComplianceInvoiceService:
 
         invoice_number = invoice.invoice_number
         invoice_due_date = invoice.due_date.strftime("%b %-d, %Y") if invoice.due_date else "—"
-        amount_due, billing_items = cls.calculate_invoice_amount_due(invoice)
+        amount_due, billing_items, _, _, _ = cls.calculate_invoice_amount_due(invoice)
         total_amount_due = f"${amount_due.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):,}"
 
         return {
@@ -309,7 +312,9 @@ class ComplianceInvoiceService:
         return line1, line2
 
     @staticmethod
-    def calculate_invoice_amount_due(invoice: ElicensingInvoice) -> Tuple[Decimal, List[Dict[str, Any]]]:
+    def calculate_invoice_amount_due(
+        invoice: ElicensingInvoice,
+    ) -> Tuple[Decimal, List[Dict[str, Any]], Decimal, Decimal, Decimal]:
         billing_items: List[Dict[str, Any]] = []
         total_fee = Decimal("0.00")
         total_payments = Decimal("0.00")
@@ -336,7 +341,13 @@ class ComplianceInvoiceService:
             total_adjustments += adjustments_total
 
         amount_due = (total_fee - total_payments + total_adjustments).quantize(Decimal("0.01"))
-        return amount_due, billing_items
+        return (
+            amount_due,
+            billing_items,
+            total_fee.quantize(Decimal("0.01")),
+            total_payments.quantize(Decimal("0.01")),
+            total_adjustments.quantize(Decimal("0.01")),
+        )
 
     @staticmethod
     def _build_line_item_entry(line_item: ElicensingLineItem) -> Tuple[Decimal, List[Dict[str, Any]]]:
@@ -388,3 +399,58 @@ class ComplianceInvoiceService:
             total += amount
 
         return total, billing_items
+
+    @classmethod
+    def get_elicensing_invoice_for_dashboard(cls, user_guid: UUID) -> QuerySet[ElicensingInvoice]:
+        """
+        Fetches all compliance invoices for the user's operations for the current reporting year.
+        """
+        user = UserDataAccessService.get_by_guid(user_guid)
+        # Get current reporting
+        current_reporting_year = ReportingYearService.get_current_reporting_year()
+        compliance_obligation_invoice_queryset = (
+            ElicensingInvoice.objects.select_related(
+                "compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
+            ).prefetch_related(
+                "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
+            )
+        ).filter(
+            compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=current_reporting_year
+        )
+
+        compliance_penalty_invoice_queryset = (
+            ElicensingInvoice.objects.select_related(
+                "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
+            )
+            .prefetch_related(
+                "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation"
+            )
+            .filter(
+                compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year=current_reporting_year
+            )
+        )
+
+        compliance_invoice_queryset = compliance_obligation_invoice_queryset | compliance_penalty_invoice_queryset
+
+        if user.is_irc_user():
+            # Get all compliance invoices for Internal Users
+            compliance_invoices = compliance_invoice_queryset.all()
+        else:
+            pass
+            # TODO in https://github.com/bcgov/cas-compliance/issues/201
+
+        # augment the data to return
+        for invoice in compliance_invoices:
+            if hasattr(invoice, "compliance_obligation") and invoice.compliance_obligation is not None:
+                invoice.invoice_type = "Compliance obligation"  # type: ignore[attr-defined]
+            if hasattr(invoice, "compliance_penalty") and invoice.compliance_penalty is not None:
+                invoice.invoice_type = "Automatic overdue penalty"  # type: ignore[attr-defined]
+
+            _, _, total_fee, total_payments, total_adjustments = ComplianceInvoiceService.calculate_invoice_amount_due(
+                invoice
+            )
+            invoice.invoice_total = total_fee  # type: ignore[attr-defined]
+            invoice.total_payments = total_payments  # type: ignore[attr-defined]
+            invoice.total_adjustments = total_adjustments  # type: ignore[attr-defined]
+
+        return compliance_invoices
