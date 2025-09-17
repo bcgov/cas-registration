@@ -3,7 +3,10 @@ import {
   OperationsSearchParams,
 } from "@/administration/app/components/operations/types";
 import OperationDataGridPage from "@/administration/app/components/operations/OperationDataGridPage";
-import { ExternalUserOperationDataGridLayout } from "@/administration/app/components/operations/OperationLayouts";
+import {
+  InternalUserOperationDataGridLayout,
+  ExternalUserOperationDataGridLayout,
+} from "@/administration/app/components/operations/OperationLayouts";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { Suspense } from "react";
 import { getSessionRole } from "@bciers/utils/src/sessionUtils";
@@ -40,8 +43,12 @@ export default async function OperationPage({
     )
     .map((operation) => operation.operation__name);
 
+  const OperationLayoutComponent = isInternalUser
+    ? InternalUserOperationDataGridLayout
+    : ExternalUserOperationDataGridLayout;
+
   return (
-    <ExternalUserOperationDataGridLayout
+    <OperationLayoutComponent
       operationsWithoutContacts={operationsWithoutContacts}
     >
       <Suspense fallback={<Loading />}>
@@ -51,6 +58,6 @@ export default async function OperationPage({
           initialData={operations}
         />
       </Suspense>
-    </ExternalUserOperationDataGridLayout>
+    </OperationLayoutComponent>
   );
 }
