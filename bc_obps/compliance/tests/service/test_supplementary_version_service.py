@@ -1,6 +1,8 @@
 from decimal import Decimal
-from compliance.models import ComplianceReportVersion
-from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
+from compliance.models import (
+    ComplianceReportVersion,
+    ComplianceEarnedCredit,
+)
 from reporting.models import ReportVersion
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.service.supplementary_version_service import (
@@ -10,6 +12,7 @@ from compliance.service.supplementary_version_service import (
     DecreasedObligationHandler,
     IncreasedCreditHandler,
     DecreasedCreditHandler,
+    SupercedeVersionHandler,
 )
 import pytest
 from unittest.mock import patch, MagicMock
@@ -1814,3 +1817,239 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         assert new_compliance_version.previous_version == self.original_report_version
         assert credit_record.earned_credits_amount == Decimal('500')
         assert credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+
+
+class TestSupercededHandler(BaseSupplementaryVersionServiceTest):
+    def test_can_handle_superceded_credits(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('600'),
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('500'),
+                report_version=self.report_version_2,
+            )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.original_report_version,
+            earned_credits_amount=500,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+        )
+
+        # Act
+        result = SupercedeVersionHandler.can_handle(self.new_summary, self.previous_summary)
+
+        # Assert
+        assert result is True
+
+    def test_does_not_handle_issued_requested_credits(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('600'),
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('500'),
+                report_version=self.report_version_2,
+            )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.original_report_version,
+            earned_credits_amount=500,
+            bccr_trading_name='test',
+            bccr_holding_account_id='1234',
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+        )
+
+        # Act
+        result = SupercedeVersionHandler.can_handle(self.new_summary, self.previous_summary)
+
+        # Assert
+        assert result is False
+
+    def test_can_handle_superceded_obligation(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('600'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_2,
+            )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=self.original_report_version,
+        )
+
+        # Act
+        result = SupercedeVersionHandler.can_handle(self.new_summary, self.previous_summary)
+
+        # Assert
+        assert result is True
+
+    def test_does_not_handle_obligations_with_invoices(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('600'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_2,
+            )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        inv = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=self.original_report_version,
+            elicensing_invoice=inv,
+        )
+
+        # Act
+        result = SupercedeVersionHandler.can_handle(self.new_summary, self.previous_summary)
+
+        # Assert
+        assert result is False
+
+    def test_handle_supercede_credits_success(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('800'),
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('500'),
+                report_version=self.report_version_2,
+            )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.original_report_version,
+            earned_credits_amount=800,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
+        )
+        # Act
+        new_compliance_version = SupercedeVersionHandler.handle(
+            self.original_report_version.compliance_report, self.new_summary, self.previous_summary, 2
+        )
+        credit_record = ComplianceEarnedCredit.objects.get(compliance_report_version=new_compliance_version)
+        self.original_report_version.refresh_from_db()
+
+        # Assert
+        assert new_compliance_version.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        assert self.original_report_version.status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        assert new_compliance_version.report_compliance_summary_id == self.new_summary.id
+        assert new_compliance_version.is_supplementary is True
+        assert new_compliance_version.previous_version == self.original_report_version
+        assert credit_record.earned_credits_amount == Decimal('500')
+        assert credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+
+    def test_handle_supercede_obligation_success(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('800'),
+                credited_emissions=0,
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=self.report_version_2,
+            )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=self.original_report_version,
+        )
+        # Act
+        new_compliance_version = SupercedeVersionHandler.handle(
+            self.original_report_version.compliance_report, self.new_summary, self.previous_summary, 2
+        )
+        self.original_report_version.refresh_from_db()
+
+        # Assert
+        assert (
+            new_compliance_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+        )
+        assert self.original_report_version.status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        assert new_compliance_version.report_compliance_summary_id == self.new_summary.id
+        assert new_compliance_version.is_supplementary is True
+        assert new_compliance_version.previous_version == self.original_report_version
