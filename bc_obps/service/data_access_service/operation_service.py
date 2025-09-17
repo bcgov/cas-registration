@@ -4,7 +4,6 @@ from registration.models import Operation, User, RegulatedProduct, Activity, Ope
 from ninja.types import DictStrAny
 from django.db.models import QuerySet, Q
 from service.user_operator_service import UserOperatorService
-from registration.constants import UNAUTHORIZED_MESSAGE
 
 
 class OperationDataAccessService:
@@ -114,8 +113,8 @@ class OperationDataAccessService:
         operator = Operator.objects.get(id=operator_id)
         # Check if the user has access to the specified operator
         if not operator.user_has_access(user.user_guid):
-            # Raise an exception if access is denied
-            raise Exception(UNAUTHORIZED_MESSAGE)
+            print("user doesn't have access to operator")
+            return Operation.objects.none()
         filters = Q(designated_operators__operator_id=operator_id) & Q(designated_operators__end_date__isnull=False)
         if reporting_year is not None:
             filters &= Q(designated_operators__end_date__year__gte=reporting_year)
