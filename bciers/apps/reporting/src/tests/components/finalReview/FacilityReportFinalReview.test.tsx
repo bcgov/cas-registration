@@ -95,15 +95,18 @@ describe("FacilityReportFinalReview", () => {
       facility_name: "Test Facility",
     });
 
-    render(<FacilityReportFinalReview version_id={99} facility_id={"123"} />);
+    render(
+      <FacilityReportFinalReview
+        version_id={99}
+        facility_id={"123"}
+        context={"final-review"}
+      />,
+    );
 
     const backButton = await screen.findByRole("button", { name: /back/i });
     await userEvent.click(backButton);
 
-    const expectedBackUrl =
-      "/reporting" +
-      pathname.replace(/\/facility\/[^/]+$/, "") +
-      "#facility-grid";
+    const expectedBackUrl = "/reporting/reports/99/final-review#facility-grid";
 
     expect(mockRouterPush).toHaveBeenCalledWith(expectedBackUrl);
   });
