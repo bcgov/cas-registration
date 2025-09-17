@@ -32,6 +32,7 @@ import {
   captureException,
   signIn,
   archiveContact,
+  getElicensingInvoices,
 } from "./mocks";
 import createFetchMock from "vitest-fetch-mock";
 
@@ -143,6 +144,10 @@ vi.mock("libs/actions/src/api/getCurrentUsersOperations", () => ({
 
 vi.mock("libs/actions/src/api/handleInternalAccessRequest", () => ({
   default: handleInternalAccessRequest,
+}));
+
+vi.mock("apps/compliance/src/app/utils/getElicensingInvoices.ts", () => ({
+  getElicensingInvoices,
 }));
 
 // mock fetch
