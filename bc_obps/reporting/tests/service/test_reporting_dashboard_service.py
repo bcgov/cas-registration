@@ -577,7 +577,7 @@ class TestReportingDashboardService:
         # assert original_user can see transferred operation in their reporting dashboard for reporting year 2024
         assert operation.id in list(queryset_2024.values_list("id", flat=True))
         # assert the created report appears in the queryset
-        assert report_r1v1_id in list(queryset_2024.values_list("report_id", flat=True))
+        assert report_version1.report.id in list(queryset_2024.values_list("report_id", flat=True))
         # assert original_user doesn't get results for operations from other operators
         assert queryset_2024.count() == 1
         assert queryset_2025.count() == 1
@@ -588,7 +588,7 @@ class TestReportingDashboardService:
         assert operation.id not in list(queryset_2026.values_list("id", flat=True))
 
         # assert new_user doesn't see the report in their dashboard for 2024 (they didn't own it then)
-        assert report_r1v1_id not in list(queryset_2024_new_user.values_list("report_id", flat=True))
+        assert report_version1.report.id not in list(queryset_2024_new_user.values_list("report_id", flat=True))
         # assert new_user does see the operation in their dashboard for 2025
         assert operation.id in list(queryset_2025_new_user.values_list("id", flat=True))
         # assert new_user doesn't get results for operations from other operators
