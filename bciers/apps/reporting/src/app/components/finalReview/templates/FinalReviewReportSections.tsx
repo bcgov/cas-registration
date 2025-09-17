@@ -20,11 +20,13 @@ import { SectionReview } from "@reporting/src/app/components/finalReview/templat
 interface Props {
   data: ReportData | null;
   version_id: any;
+  context?: string;
 }
 
 export const FinalReviewReportSections: React.FC<Props> = ({
   version_id,
   data,
+  context,
 }) => {
   useEffect(() => {
     if (data) {
@@ -76,6 +78,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
               }),
             )}
             version_id={version_id}
+            context={context}
           />
         </div>
       );
