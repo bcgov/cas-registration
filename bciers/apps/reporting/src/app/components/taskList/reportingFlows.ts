@@ -1,6 +1,8 @@
 import {
   ELECTRICITY_IMPORT_OPERATION,
   NEW_ENTRANT_REGISTRATION_PURPOSE,
+  OPTED_IN_OPERATION,
+  POTENTIAL_REPORTING_OPERATION,
   REPORTING_OPERATION,
 } from "../../utils/constants";
 import { getRegistrationPurpose } from "../../utils/getRegistrationPurpose";
@@ -26,17 +28,32 @@ export const reportingFlows: {
   [ReportingFlow.ReportingOnlyLFO]: lfoReportingOnlyFlow,
 };
 
-export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
-  const reportOperationData = await getReportingOperation(reportVersionId);
-  const registrationPurpose = (await getRegistrationPurpose(reportVersionId))
-    .registration_purpose;
-
-  const operationType = reportOperationData.operation_type;
-
+/**
+ * Resolves the appropriate ReportingFlow based on operation type and registration purpose.
+ * Optionally includes new cases like POTENTIAL_REPORTING_OPERATION and OPTED_IN_OPERATION.
+ *
+ * @param operationType - The type of operation ("Single Facility Operation" or "Linear Facilities Operation").
+ * @param registrationPurpose - The registration purpose of the report.
+ * @param includeNewCases - Whether to include the new flows for POTENTIAL_REPORTING_OPERATION and OPTED_IN_OPERATION.
+ * @returns The corresponding ReportingFlow enum value.
+ * @throws Error if the operation type or registration purpose cannot be resolved.
+ */
+function resolveFlow(
+  operationType: string,
+  registrationPurpose: string,
+  includeNewCases = false,
+): ReportingFlow {
   if (registrationPurpose === ELECTRICITY_IMPORT_OPERATION)
     return ReportingFlow.EIO;
 
+  // Single Facility Operation
   if (operationType === "Single Facility Operation") {
+    if (includeNewCases) {
+      if (registrationPurpose === POTENTIAL_REPORTING_OPERATION)
+        return ReportingFlow.PotentialReportingSFO;
+      if (registrationPurpose === OPTED_IN_OPERATION)
+        return ReportingFlow.OptedInSFO;
+    }
     switch (registrationPurpose) {
       case NEW_ENTRANT_REGISTRATION_PURPOSE:
         return ReportingFlow.NewEntrantSFO;
@@ -47,7 +64,14 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
     }
   }
 
+  // Linear Facilities Operation
   if (operationType === "Linear Facilities Operation") {
+    if (includeNewCases) {
+      if (registrationPurpose === POTENTIAL_REPORTING_OPERATION)
+        return ReportingFlow.PotentialReportingLFO;
+      if (registrationPurpose === OPTED_IN_OPERATION)
+        return ReportingFlow.OptedInLFO;
+    }
     switch (registrationPurpose) {
       case NEW_ENTRANT_REGISTRATION_PURPOSE:
         return ReportingFlow.NewEntrantLFO;
@@ -59,7 +83,45 @@ export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
   }
 
   throw new Error(
-    `Unable to resolve reporting flow for registration purpose ${registrationPurpose.registration_purpose} and operation type ${operationType}`,
+    `Unable to resolve reporting flow for registration purpose ${registrationPurpose} and operation type ${operationType}`,
+  );
+}
+
+/**
+ * Retrieves the ReportingFlow for a given report version.
+ * This function only returns the original flows (does not include new cases like POTENTIAL_REPORTING_OPERATION or OPTED_IN_OPERATION).
+ *
+ * @param reportVersionId - The ID of the report version.
+ * @returns A Promise that resolves to a ReportingFlow value.
+ */
+export async function getFlow(reportVersionId: number): Promise<ReportingFlow> {
+  const reportOperationData = await getReportingOperation(reportVersionId);
+  const registrationPurpose = (await getRegistrationPurpose(reportVersionId))
+    .registration_purpose;
+
+  // No new cases included
+  return resolveFlow(reportOperationData.operation_type, registrationPurpose);
+}
+
+/**
+ * Retrieves the ReportingFlow for a given report version, including new flows
+ * such as POTENTIAL_REPORTING_OPERATION and OPTED_IN_OPERATION.
+ *
+ * @param reportVersionId - The ID of the report version.
+ * @returns A Promise that resolves to a ReportingFlow value, including new cases.
+ */
+export async function getFlowWithNewCases(
+  reportVersionId: number,
+): Promise<ReportingFlow> {
+  const reportOperationData = await getReportingOperation(reportVersionId);
+  const registrationPurpose = (await getRegistrationPurpose(reportVersionId))
+    .registration_purpose;
+
+  // New cases handled via includeNewCases = true
+  return resolveFlow(
+    reportOperationData.operation_type,
+    registrationPurpose,
+    true,
   );
 }
 
