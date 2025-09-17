@@ -3,7 +3,7 @@
 import FacilityReportSection from "@reporting/src/app/components/shared/FacilityReportSection";
 import React, { useEffect, useState } from "react";
 import { ReportData } from "@reporting/src/app/components/finalReview/reportTypes";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Loading from "@bciers/components/loading/SkeletonGrid";
 import { Box, Button } from "@mui/material";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
@@ -13,19 +13,17 @@ import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacility
 export default function FacilityReportFinalReview({
   version_id,
   facility_id,
+  context,
 }: {
   version_id: number;
   facility_id: string;
+  context?: string;
 }) {
   const router = useRouter();
-  const pathname = usePathname();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const backUrl =
-    "/reporting" +
-    pathname.replace(/\/facility\/[^/]+$/, "") +
-    "#facility-grid";
+  const backUrl = `/reporting/reports/${version_id}/${context}#facility-grid`;
 
   const taskListElements: TaskListElement[] = [
     {
