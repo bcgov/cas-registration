@@ -20,6 +20,8 @@ interface FinalReviewFacilityGridProps {
   version_id: number;
 }
 
+const PAGE_SIZE = 10;
+
 const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   data,
   version_id,
@@ -29,13 +31,25 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   const currentPath = usePathname();
   const [lastFocusedField, setLastFocusedField] = useState<string | null>(null);
 
+  // Determine current page from URL query
+  const currentPage = Number(searchParams.get("page") ?? 1);
+
+  // Compute initial slice immediately
+  const initialRows = useMemo(() => {
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+    return data.slice(startIndex, endIndex);
+  }, [data, currentPage]);
+
+  const totalRows = data.length;
+
   // Memoized Header Search Cell
   const SearchCell = useMemo(
     () => HeaderSearchCell({ lastFocusedField, setLastFocusedField }),
     [lastFocusedField],
   );
 
-  // Memoized columns
+  // Columns
   const columns: GridColDef[] = useMemo(
     () => [
       {
@@ -68,7 +82,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         ),
       },
     ],
-    [router, version_id],
+    [router, currentPath],
   );
 
   // Column group for search
@@ -78,22 +92,23 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
   );
 
   // Server-side fetch for grid
-  const fetchPageData = useCallback(async () => {
-    const params = Object.fromEntries(searchParams.entries());
-    const { rows, row_count: totalRowCount } = await fetchFacilitiesPageData({
-      version_id,
-      searchParams: params,
-    });
+  const fetchPageData = useCallback(
+    async (params: { [key: string]: any }) => {
+      const response = await fetchFacilitiesPageData({
+        version_id,
+        searchParams: params,
+      });
 
-    // Map only the fields needed for the grid
-    return {
-      rows: rows.map((r: Facility) => ({
-        facility: r.facility,
-        facility_name: r.facility_name,
-      })),
-      row_count: totalRowCount,
-    };
-  }, [version_id, searchParams]);
+      return {
+        rows: response.rows.map((r: Facility) => ({
+          facility: r.facility,
+          facility_name: r.facility_name,
+        })),
+        row_count: response.row_count,
+      };
+    },
+    [version_id],
+  );
 
   return (
     <div className="w-full mb-5">
@@ -105,10 +120,10 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
         columns={columns}
         columnGroupModel={columnGroup}
         fetchPageData={fetchPageData}
-        paginationMode="client"
-        initialData={{ rows: data }}
+        paginationMode="server"
+        initialData={{ rows: initialRows, row_count: totalRows }}
         getRowId={(row) => row.facility}
-        pageSize={10}
+        pageSize={PAGE_SIZE}
         rowSelection={false}
         sx={{ minHeight: 200 }}
       />
