@@ -123,6 +123,7 @@ user_operator = Recipe(
 approved_user_operator = Recipe(
     UserOperator,
     status=UserOperator.Statuses.APPROVED,
+    role=UserOperator.Roles.ADMIN,
     operator=foreign_key(operator_for_approved_user_operator),
     user=foreign_key(industry_operator_user),
 )
