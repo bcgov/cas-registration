@@ -14,16 +14,9 @@ export default async function ComplianceNavigationPage({
   const userRole = await getSessionRole();
   const isCasStaff = userRole.startsWith("cas_");
 
-  const tabs = isCasStaff
-    ? [
-        { label: "Compliance Summaries", href: "/compliance-summaries" },
-        // TODO: Add Imposed Penalties tab in task #80
-        // TODO: Add Invoices tab in task #46
-      ]
-    : [
-        { label: "Compliance Summaries", href: "/compliance-summaries" },
-        { label: "Payment Summaries", href: "/payment-summaries" },
-      ];
+  const tabs = [
+    { label: "Compliance Summaries", href: "/compliance-summaries" },
+  ];
 
   const title = isCasStaff ? "Compliance Administration" : "My Compliance";
   return (
