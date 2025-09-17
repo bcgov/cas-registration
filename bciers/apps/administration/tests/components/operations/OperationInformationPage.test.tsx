@@ -103,17 +103,4 @@ describe("the OperationInformationPage component", () => {
       screen.getByText(/The purpose of this registration+/i),
     ).toBeVisible();
   });
-  it("should show the missing representative alert when operation is Registered and has no representatives", async () => {
-    fetchFormEnums(Apps.ADMINISTRATION);
-    getOperationWithDocuments.mockResolvedValueOnce({
-      ...formData,
-      status: OperationStatus.REGISTERED,
-    });
-
-    render(await OperationInformationPage({ operationId }));
-
-    expect(
-      screen.getByText(/Please select an operation representative/i),
-    ).toBeVisible();
-  });
 });

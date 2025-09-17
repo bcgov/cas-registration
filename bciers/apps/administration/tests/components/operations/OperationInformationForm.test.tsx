@@ -137,6 +137,7 @@ const formData = {
       mo_postal_code: "V1V1V1",
     },
   ],
+  operation_representatives: [],
   registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
   regulated_products: [2],
 };
@@ -989,6 +990,44 @@ describe("the OperationInformationForm component", () => {
       screen.getByText(
         /To remove the current operation representative, please select a new contact to replace them./i,
       ),
+    ).toBeVisible();
+  });
+  it("should show an alert if there are no operation representatives set for the operation", async () => {
+    const testFormData = {
+      name: "Test Operation",
+      type: "Single Facility Operation",
+      naics_code_id: 1,
+      secondary_naics_code_id: 2,
+      activities: [1, 2],
+      registration_purpose: RegistrationPurposes.REPORTING_OPERATION,
+      regulated_products: [1],
+      operation_representatives: [],
+      boundary_map: mockDataUri,
+      process_flow_diagram: mockDataUri,
+      status: OperationStatus.REGISTERED,
+    };
+    useSessionRole.mockReturnValue(FrontEndRoles.INDUSTRY_USER_ADMIN);
+    fetchFormEnums(Apps.ADMINISTRATION);
+    const createdFormSchema =
+      await createAdministrationOperationInformationSchema(
+        testFormData.registration_purpose,
+        OperationStatus.REGISTERED,
+      );
+
+    render(
+      <OperationInformationForm
+        eioSchema={testSchema}
+        generalSchema={createdFormSchema}
+        formData={{
+          ...formData,
+          status: OperationStatus.REGISTERED,
+        }}
+        schema={createdFormSchema}
+        operationId={operationId}
+      />,
+    );
+    expect(
+      screen.getByText(/Please select an operation representative/i),
     ).toBeVisible();
   });
 });
