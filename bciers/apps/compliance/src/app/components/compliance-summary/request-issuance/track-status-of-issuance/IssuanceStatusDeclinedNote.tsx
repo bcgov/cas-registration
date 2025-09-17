@@ -11,7 +11,7 @@ export const IssuanceStatusDeclinedNote = () => {
       holding account as identified below in the B.C. Carbon Registry (BCCR).
       Please contact us at{" "}
       <Link href={ghgRegulatorEmail}>GHGRegulator@gov.bc.ca</Link> for further
-      information or assistance in submitting a supplementary report
+      information or assistance in submitting a supplementary report.
     </AlertNote>
   );
 };
