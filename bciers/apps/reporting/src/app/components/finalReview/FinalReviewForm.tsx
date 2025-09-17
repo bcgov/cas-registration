@@ -58,7 +58,7 @@ export const FinalReviewForm: React.FC<Props> = ({
               key={facilityKey}
               facilityName={facilityReport.facility_name}
               facilityData={facilityReport}
-              showReportingOnlyConditions={!isReportingOnly}
+              showWhenNotReportingOnly={!isReportingOnly}
             />
           ),
         )}
