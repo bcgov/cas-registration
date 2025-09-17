@@ -75,7 +75,6 @@ export const FinalReviewReportSections: React.FC<Props> = ({
                 facility_name: facilityReport.facility_name,
               }),
             )}
-            rowCount={facilityReportsLFO.length}
             version_id={version_id}
           />
         </div>
