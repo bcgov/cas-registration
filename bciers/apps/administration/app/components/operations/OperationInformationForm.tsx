@@ -53,6 +53,7 @@ const OperationInformationForm = ({
   const searchParams = useSearchParams();
   const isRedirectedFromContacts = searchParams.get("from_contacts") as string;
   const isMissingRepresentative =
+    !role.includes("cas_") &&
     formData.status === "Registered" &&
     (!formData.operation_representatives ||
       formData.operation_representatives.length === 0);
