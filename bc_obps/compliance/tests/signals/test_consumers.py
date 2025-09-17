@@ -157,4 +157,4 @@ class TestComplianceSignalConsumer:
         assert compliance_report.compliance_period.reporting_year == reporting_year
 
         # ComplianceReportVersionService.create_compliance_report_version should be called
-        mock_create_version.assert_called_once_with(compliance_report, report_version.id)
+        mock_create_version.assert_called_once_with(compliance_report.id, report_version.id)
