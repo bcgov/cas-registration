@@ -9,7 +9,7 @@ from compliance.models import ComplianceReportVersion, ComplianceObligation, Com
 
 pytestmark = pytest.mark.django_db
 
-migration_module = importlib.import_module('compliance.migrations.0030_generate_compliance_reports')
+migration_module = importlib.import_module('compliance.migrations.0004_generate_compliance_reports')
 perform_migration = migration_module.perform_migration
 
 
