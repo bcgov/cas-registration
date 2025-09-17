@@ -8,7 +8,7 @@ import {
 
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { FinalReviewForm } from "@reporting/src/app/components/finalReview/FinalReviewForm";
-import { getFlow } from "@reporting/src/app/components/taskList/reportingFlows";
+import { getFlowWithNewCases } from "@reporting/src/app/components/taskList/reportingFlows";
 
 export default async function FinalReviewPage({
   version_id,
@@ -20,7 +20,7 @@ export default async function FinalReviewPage({
   const { show_verification_page: showVerificationPage } =
     await getReportVerificationStatus(version_id);
 
-  const flow = await getFlow(version_id);
+  const flow = await getFlowWithNewCases(version_id);
 
   const navInfo = await getNavigationInformation(
     HeaderStep.SignOffSubmit,
