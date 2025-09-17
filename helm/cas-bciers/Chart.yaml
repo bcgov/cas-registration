@@ -21,4 +21,4 @@ dependencies:
     condition: download-migration-test-dags.enabled
   - name: cas-logging-sidecar
     repository: https://bcgov.github.io/cas-pipeline/
-    version: 0.4.5
+    version: 0.4.7
