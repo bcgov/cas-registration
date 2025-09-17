@@ -420,3 +420,57 @@ class TestElicensingInvoiceService:
         result[2].total_adjustments = 10
         result[2].report_operation = report_operation_2
         result[2].reporting_year = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
+
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
+    def test_get_elicensing_invoice_for_dashboard_for_industry_user(self, mock_calculate_invoice, mock_get_year):
+        mock_calculate_invoice.return_value = (None, None, 1, 2, 3)
+        mock_get_year.return_value = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
+        # invoice belonging to operator
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        report_2 = make_recipe(
+            "compliance.tests.utils.report",
+            reporting_year=ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR),
+            operator=approved_user_operator.operator,
+        )
+        report_version_2 = make_recipe("reporting.tests.utils.report_version", report=report_2)
+        report_operation_2 = make_recipe("reporting.tests.utils.report_operation", report_version=report_version_2)
+
+        compliance_report_2 = make_recipe("compliance.tests.utils.compliance_report", report=report_2)
+
+        report_compliance_summary_2 = make_recipe(
+            "compliance.tests.utils.report_compliance_summary", report_version=report_version_2
+        )
+
+        compliance_report_version_2 = make_recipe(
+            "compliance.tests.utils.compliance_report_version",
+            compliance_report=compliance_report_2,
+            report_compliance_summary=report_compliance_summary_2,
+        )
+        invoice_2 = make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 7, 1),
+        )
+        # obligation
+        make_recipe(
+            "compliance.tests.utils.compliance_obligation",
+            compliance_report_version=compliance_report_version_2,
+            fee_amount_dollars=Decimal("300.00"),
+            fee_date=date(2025, 6, 1),
+            obligation_id="25-0001-2",
+            elicensing_invoice=invoice_2,
+        )
+
+        assert ElicensingInvoice.objects.count() == 3  # 2 from @setup belonging to a random operator +
+
+        result = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(approved_user_operator.user.user_guid)
+        mock_get_year.assert_called_once()
+        assert mock_calculate_invoice.call_count == 1
+        assert result.count() == 1
+
+        assert result[0].invoice_type == "Compliance obligation"
+        result[0].invoice_total = 1
+        result[0].total_payments = 2
+        result[0].total_adjustments = 3
+        result[0].report_operation = report_operation_2
+        result[0].reporting_year = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
