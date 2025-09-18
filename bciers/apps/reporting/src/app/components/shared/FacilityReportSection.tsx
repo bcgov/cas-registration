@@ -21,7 +21,7 @@ const fieldLabels: Record<string, string> = {
 const fieldOrder = ["activity", "source_type", "emission_category", "gas_type"];
 
 interface FacilityReportSectionProps {
-  facilityName: string;
+  facilityName?: string;
   facilityData: any;
   isAdded?: boolean;
   isRemoved?: boolean;

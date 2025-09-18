@@ -51,6 +51,11 @@ ENDPOINTS = {
             "endpoint_name": "get_initial_activity_data",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_version_facility_report",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
         {"method": "get", "endpoint_name": "validate_user_reporting_access"},
         {
             "method": "get",

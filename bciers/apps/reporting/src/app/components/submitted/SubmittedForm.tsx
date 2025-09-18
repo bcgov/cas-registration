@@ -7,12 +7,14 @@ import { ReportData } from "../finalReview/reportTypes";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 interface Props {
   version_id: number;
+  flow: ReportingFlow;
 }
 
-const SubmittedForm: React.FC<Props> = ({ version_id }) => {
+const SubmittedForm: React.FC<Props> = ({ version_id, flow }) => {
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +32,12 @@ const SubmittedForm: React.FC<Props> = ({ version_id }) => {
     <div className="flex flex-col gap-6">
       {!loading && data ? (
         <>
-          <FinalReviewReportSections data={data} />
+          <FinalReviewReportSections
+            version_id={version_id}
+            data={data}
+            origin={"submitted"}
+            flow={flow}
+          />
           <Button
             variant="outlined"
             onClick={() => router.push(`/reporting/reports/current-reports`)}

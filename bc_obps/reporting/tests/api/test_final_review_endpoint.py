@@ -196,3 +196,61 @@ class TestReportFinalReview(CommonTestSetup):
                     assert "report_product_id" in product
                     assert "product_name" in product
                     assert "allocated_quantity" in product
+
+    def test_get_report_version_facility_report_success(self):
+        """
+        Test the /report-version/{version_id}/final-review/{facility_id}/facility-reports endpoint.
+        """
+        endpoint = custom_reverse_lazy(
+            "get_report_version_facility_report",
+            kwargs={
+                "version_id": self.report_version.id,
+                "facility_id": str(self.facility_report.facility_id),
+            },
+        )
+
+        response = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint)
+        assert response.status_code == 200
+        data = response.json()
+
+        # Basic facility info
+        assert data["facility"] == str(self.facility_report.facility_id)
+        assert data["facility_name"] == self.facility_report.facility_name
+
+        expected_activity_data = {}
+        for raw_activity in self.report_version.facility_reports.first().reportrawactivitydata_records.all():
+            activity_name = raw_activity.activity.name
+            expected_activity_data[activity_name] = {
+                "activity": activity_name,
+                "source_types": raw_activity.json_data.get("sourceTypes", {}),
+            }
+
+        assert data["activity_data"] == expected_activity_data
+
+        expected_report_products = {}
+        for report_product in self.report_version.facility_reports.first().report_products.all():
+            product_name = report_product.product.name
+            expected_report_products[product_name] = {
+                "product": product_name,
+                "unit": report_product.unit,
+                "annual_production": float(report_product.annual_production),
+            }
+
+        assert data["report_products"] == expected_report_products
+
+        # Emission summary
+        assert "emission_summary" in data
+
+        # Report emission allocations
+        assert "report_emission_allocation" in data
+        allocation = data["report_emission_allocation"]
+        assert allocation["allocation_methodology"] == self.report_emission_allocation.allocation_methodology
+
+        product_allocations = allocation["report_product_emission_allocations"]
+        for emission_allocation in product_allocations:
+            assert "emission_category_name" in emission_allocation
+            assert "products" in emission_allocation
+            for product in emission_allocation["products"]:
+                assert "report_product_id" in product
+                assert "product_name" in product
+                assert "allocated_quantity" in product

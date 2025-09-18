@@ -1,4 +1,4 @@
-from typing import List, Optional, Any, Dict
+from typing import List, Optional, Any, Dict, Union
 from ninja import ModelSchema
 
 from registration.models import Operation
@@ -25,7 +25,7 @@ from reporting.models import (
 )
 from reporting.schema.compliance_data import ComplianceDataSchemaOut
 from reporting.schema.emission_category import EmissionSummarySchemaOut
-from reporting.service.compliance_service import ComplianceService, ComplianceData
+from reporting.service.compliance_service import ComplianceService
 from reporting.service.emission_category_service import EmissionCategoryService
 from reporting.service.report_emission_allocation_service import (
     ReportEmissionAllocationService,
@@ -354,45 +354,33 @@ class ReportElectricityImportDataSchema(ModelSchema):
         ]
 
 
+class FacilityReportLFOSchema(ModelSchema):
+    class Meta:
+        model = FacilityReport
+        fields = ['facility', 'facility_name', 'id']
+
+
 class ReportVersionSchema(ModelSchema):
     report_operation: Optional[ReportOperationSchema] = None
     report_person_responsible: Optional[ReportPersonResponsibleOut] = None
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
     report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
-    facility_reports: Dict[str, FacilityReportSchema] = {}
-    report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
+    facility_reports: Union[Dict[str, FacilityReportSchema], List[FacilityReportLFOSchema]] = {}
     operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
 
     @staticmethod
-    def resolve_facility_reports(obj: ReportVersion) -> Dict[str, FacilityReport]:
-        if (
-            hasattr(obj, 'report_operation')
-            and obj.report_operation
-            and obj.report_operation.operation_type == Operation.Types.EIO
-        ):
-            return {}
-        facility_reports = obj.facility_reports.all()
-        return {facility.facility_name or f"facility_{facility.id}": facility for facility in facility_reports}
-
-    @staticmethod
-    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceData]:
-        if (
-            hasattr(obj, 'report_operation')
-            and obj.report_operation
-            and obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION
-        ):
+    def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:
+        if obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             return None
-        return ComplianceService.get_calculated_compliance_data(obj.id)
+
+        data = ComplianceService.get_calculated_compliance_data(obj.id)
+        return ComplianceDataSchemaOut.model_validate(data) if data else None
 
     @staticmethod
     def resolve_operation_emission_summary(obj: ReportVersion) -> Optional[dict]:
-        if (
-            hasattr(obj, 'report_operation')
-            and obj.report_operation
-            and obj.report_operation.operation_type == Operation.Types.LFO
-        ):
+        if obj.report_operation.operation_type == Operation.Types.LFO:
             return EmissionCategoryService.get_operation_emission_summary_form_data(obj.id)
         return None
 
@@ -400,6 +388,22 @@ class ReportVersionSchema(ModelSchema):
     def resolve_is_supplementary_report(obj: ReportVersion) -> bool:
         return not ReportVersionService.is_initial_report_version(obj.id)
 
+    @staticmethod
+    def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
+        if obj.report_operation.operation_type == Operation.Types.EIO:
+            return {}  # always dict for EIO
+        if obj.report_operation.operation_type == Operation.Types.LFO:
+            return list(obj.facility_reports.all())  # list for LFO
+
+        # For non-LFO, only one facility is expected
+        facility = obj.facility_reports.first()
+        return {facility.facility_name: facility} if facility else {}
+
     class Meta:
         model = ReportVersion
-        fields = ['report_type', 'is_latest_submitted', 'reason_for_change', 'status']
+        fields = [
+            "report_type",
+            "is_latest_submitted",
+            "reason_for_change",
+            "status",
+        ]
