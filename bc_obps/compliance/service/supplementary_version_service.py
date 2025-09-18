@@ -42,13 +42,25 @@ class SupplementaryScenarioHandler(Protocol):
 class SupercedeVersionHandler:
     @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-        # Return True if excess emissions increased from previous version
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary
         )
+        # Return False if any previous version ancestors have a status other than superceded
+        all_ancestor_version_statuses = (
+            ComplianceReportVersion.objects.filter(
+                compliance_report_id=previous_compliance_report_version.compliance_report_id
+            )
+            .exclude(id=previous_compliance_report_version.id)
+            .values_list("status")
+        )
+        for status in all_ancestor_version_statuses:
+            if status != ComplianceReportVersion.ComplianceStatus.SUPERCEDED:
+                return False
         if previous_summary.excess_emissions > ZERO_DECIMAL:
+            # Return True if the previous version has an obligation with no invoice
             return SupplementaryVersionService._obligation_has_no_invoice(previous_compliance_report_version)
         if previous_summary.credited_emissions > ZERO_DECIMAL:
+            # Return True if the previous version has earned credits that have not been requested
             return SupplementaryVersionService._earned_credits_not_issued(previous_compliance_report_version)
         return False
 
