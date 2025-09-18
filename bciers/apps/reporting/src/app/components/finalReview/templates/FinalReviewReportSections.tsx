@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 
 import { FacilityReport, FacilityReportLFO, ReportData } from "../reportTypes";
-import { OperationTypes } from "@bciers/utils/src/enums";
 import {
   additionalDataFields,
   complianceSummaryFields,
@@ -12,21 +11,24 @@ import {
   personResponsibleFields,
   reportNewEntrantFields,
 } from "@reporting/src/app/components/finalReview/finalReviewFields";
-import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
 import { FacilityReportSection } from "@reporting/src/app/components/shared/FacilityReportSection";
 import FinalReviewFacilityGrid from "@reporting/src/app/components/finalReview/FinalReviewFacilityGrid";
 import { SectionReview } from "@reporting/src/app/components/finalReview/templates/SectionReview";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
+import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers";
 
 interface Props {
   data: ReportData | null;
   version_id: any;
   origin?: "final-review" | "submitted";
+  flow: ReportingFlow;
 }
 
 export const FinalReviewReportSections: React.FC<Props> = ({
   version_id,
   data,
   origin,
+  flow,
 }) => {
   useEffect(() => {
     if (data) {
@@ -41,20 +43,9 @@ export const FinalReviewReportSections: React.FC<Props> = ({
   }, [data]);
 
   if (!data) return null;
-  const {
-    operation_type: operationType,
-    registration_purpose: registrationPurpose,
-  } = data.report_operation;
-  // Helper functions to determine flow type
-  const isEIO = operationType === OperationTypes.EIO;
-  const isLFO = operationType === OperationTypes.LFO;
-  const isSFO = operationType === OperationTypes.SFO;
-  const isNewEntrant =
-    registrationPurpose === RegistrationPurposes.NEW_ENTRANT_OPERATION;
-  const isReportingOnly =
-    registrationPurpose === RegistrationPurposes.REPORTING_OPERATION;
 
-  const isSFOReportingOnly = isSFO && isReportingOnly;
+  const { isEIO, isLFO, isReportingOnly, isNewEntrant, isSFOReportingOnly } =
+    flowHelpers(flow);
 
   const facilityReportsLFO: FacilityReportLFO[] = isLFO
     ? (data.facility_reports as FacilityReportLFO[])
@@ -94,7 +85,7 @@ export const FinalReviewReportSections: React.FC<Props> = ({
                 key={facilityKey}
                 facilityName={facilityReport.facility_name}
                 facilityData={facilityReport}
-                showReportingOnlyConditions={!isReportingOnly}
+                showWhenNotReportingOnly={!isReportingOnly}
               />
             ),
           )}
@@ -102,89 +93,105 @@ export const FinalReviewReportSections: React.FC<Props> = ({
     );
   };
 
-  if (!data) return null;
-
+  const sectionConfigs = [
+    {
+      title: "Reason for Change",
+      condition: (reportData: ReportData) => reportData.is_supplementary_report,
+      getData: (reportData: ReportData) => reportData,
+      fields: [
+        {
+          label: "Reason for submitting supplementary report",
+          key: "reason_for_change",
+        },
+      ],
+    },
+    {
+      title: "Review Operation Information",
+      condition: () => true,
+      getData: (reportData: ReportData) => reportData.report_operation,
+      fields: () => operationFields(isEIO),
+    },
+    {
+      title: "Person Responsible for Submitting Report",
+      condition: () => true,
+      getData: (reportData: ReportData) => reportData.report_person_responsible,
+      fields: () => personResponsibleFields,
+    },
+    {
+      title: "Electricity Import Data",
+      condition: (reportData: ReportData) =>
+        isEIO && !!reportData.report_electricity_import_data,
+      getData: (reportData: ReportData) =>
+        reportData.report_electricity_import_data[0],
+      fields: () => eioFields,
+    },
+    {
+      title: "Facility Reports",
+      condition: (reportData: ReportData) =>
+        !isEIO && !!reportData.facility_reports,
+      render: renderFacilityReportInformation,
+    },
+    {
+      title: "Additional Reporting Data",
+      condition: (reportData: ReportData) =>
+        !isEIO && !!reportData.report_additional_data,
+      getData: (reportData: ReportData) => reportData.report_additional_data,
+      fields: () => additionalDataFields,
+    },
+    {
+      title: "Report New Entrant Information",
+      condition: (reportData: ReportData) =>
+        isNewEntrant && reportData.report_new_entrant.length > 0,
+      getData: (reportData: ReportData) => reportData.report_new_entrant[0],
+      fields: (reportData: ReportData) =>
+        reportNewEntrantFields(
+          reportData.report_new_entrant[0].productions,
+          reportData.report_new_entrant[0].report_new_entrant_emission,
+        ),
+    },
+    {
+      title: "Operation Emission Summary",
+      condition: (reportData: ReportData) =>
+        isLFO && !!reportData.operation_emission_summary,
+      getData: (reportData: ReportData) =>
+        reportData.operation_emission_summary,
+      fields: () => operationEmissionSummaryFields,
+    },
+    {
+      title: "Compliance Summary",
+      condition: (reportData: ReportData) =>
+        !isEIO && !isSFOReportingOnly && !!reportData.report_compliance_summary,
+      getData: (reportData: ReportData) => reportData.report_compliance_summary,
+      fields: (reportData: ReportData) =>
+        complianceSummaryFields(reportData.report_compliance_summary?.products),
+    },
+  ];
   return (
     <>
-      {data.is_supplementary_report && (
-        <SectionReview
-          title="Reason for Change"
-          data={data}
-          fields={[
-            {
-              label: "Reason for submitting supplementary report",
-              key: "reason_for_change",
-            },
-          ]}
-        />
-      )}
+      {sectionConfigs.map((section) => {
+        if (!section.condition(data)) return null;
+        if (section.render)
+          return (
+            <React.Fragment key={section.title}>
+              {section.render()}
+            </React.Fragment>
+          );
 
-      {/* Review Operation Information - ALL FLOWS */}
-      <SectionReview
-        title="Review Operation Information"
-        data={data.report_operation}
-        fields={operationFields(isEIO)}
-      />
+        const sectionData = section.getData!(data);
+        const sectionFields =
+          typeof section.fields === "function"
+            ? section.fields(data)
+            : section.fields;
 
-      {/* Person Responsible for Submitting Report - ALL FLOWS */}
-      <SectionReview
-        title="Person Responsible for Submitting Report"
-        data={data.report_person_responsible}
-        fields={personResponsibleFields}
-      />
-
-      {/* EIO Flow - only show Electricity Import Data */}
-      {isEIO && data.report_electricity_import_data && (
-        <SectionReview
-          title="Electricity Import Data"
-          data={data.report_electricity_import_data[0]}
-          fields={eioFields}
-        />
-      )}
-
-      {/* Non-EIO Flows - show facility report information */}
-      {!isEIO && data.facility_reports && renderFacilityReportInformation()}
-
-      {/* Additional Reporting Data - ALL NON-EIO FLOWS */}
-      {!isEIO && data.report_additional_data && (
-        <SectionReview
-          title="Additional Reporting Data"
-          data={data.report_additional_data}
-          fields={additionalDataFields}
-        />
-      )}
-
-      {/* New Entrant Information - only for New Entrant flows */}
-      {isNewEntrant && data.report_new_entrant.length > 0 && (
-        <SectionReview
-          title="Report New Entrant Information"
-          data={data.report_new_entrant[0]}
-          fields={reportNewEntrantFields(
-            data.report_new_entrant[0].productions,
-            data.report_new_entrant[0].report_new_entrant_emission,
-          )}
-        />
-      )}
-
-      {/* Operation Emission Summary - LFO flows only */}
-      {isLFO && data.operation_emission_summary && (
-        <SectionReview
-          title="Operation Emission Summary"
-          data={data.operation_emission_summary}
-          fields={operationEmissionSummaryFields}
-        />
-      )}
-
-      {/* Compliance Summary - ALL NON-EIO FLOWS */}
-      {!isEIO && !isSFOReportingOnly && data.report_compliance_summary && (
-        <SectionReview
-          title="Compliance Summary"
-          data={data.report_compliance_summary}
-          fields={complianceSummaryFields(
-            data.report_compliance_summary.products,
-          )}
-        />
-      )}
+        return (
+          <SectionReview
+            key={section.title}
+            title={section.title}
+            data={sectionData}
+            fields={sectionFields}
+          />
+        );
+      })}
     </>
   );
 };

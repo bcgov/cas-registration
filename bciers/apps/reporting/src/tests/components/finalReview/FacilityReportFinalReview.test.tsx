@@ -3,7 +3,9 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 import { useRouter, usePathname } from "next/navigation";
-import FacilityReportFinalReview from "@reporting/src/app/components/finalReview/FacilityReportFinalReview";
+import FacilityReportFinalReview, {
+  OriginSearchParams,
+} from "@reporting/src/app/components/finalReview/FacilityReportFinalReview";
 
 vi.mock("@reporting/src/app/utils/getFacilityFinalReviewData", () => ({
   getFacilityFinalReviewData: vi.fn(),
@@ -99,15 +101,18 @@ describe("FacilityReportFinalReview", () => {
       <FacilityReportFinalReview
         version_id={99}
         facility_id={"123"}
-        origin={"final-review"}
+        searchParams={{ origin: "final-review" } as OriginSearchParams}
       />,
     );
 
+    // Wait for Back button to appear
     const backButton = await screen.findByRole("button", { name: /back/i });
+
+    // Click the Back button
     await userEvent.click(backButton);
 
+    // Check the URL passed to router.push
     const expectedBackUrl = "/reporting/reports/99/final-review#facility-grid";
-
     expect(mockRouterPush).toHaveBeenCalledWith(expectedBackUrl);
   });
 });
