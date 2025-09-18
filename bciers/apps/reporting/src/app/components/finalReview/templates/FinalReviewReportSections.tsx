@@ -20,7 +20,7 @@ import { flowHelpers } from "@reporting/src/app/components/taskList/flowHelpers"
 interface Props {
   data: ReportData | null;
   version_id: any;
-  origin?: "final-review" | "submitted";
+  origin?: "final-review" | "submitted" | "annual-report";
   flow: ReportingFlow;
 }
 

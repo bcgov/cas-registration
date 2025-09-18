@@ -9,7 +9,7 @@ const ViewReportCell = (params: GridRenderCellParams) => {
 
   const router = useRouter();
   const handleClick = async () => {
-    router.push(`${reportVersionId}`);
+    router.push(`${reportVersionId}/annual-report`);
   };
 
   return (
