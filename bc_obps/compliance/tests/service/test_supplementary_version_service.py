@@ -1907,6 +1907,85 @@ class TestSupercededHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is False
 
+    def test_does_not_handle_unclean_history(self):
+        # Arrange
+        operator = baker.make_recipe('registration.tests.utils.operator')
+
+        operation = baker.make_recipe(
+            'registration.tests.utils.operation',
+            bc_obps_regulated_operation=baker.make_recipe("registration.tests.utils.boro_id"),
+            status=Operation.Statuses.REGISTERED,
+            operator=operator,
+        )
+        report = baker.make_recipe(
+            'reporting.tests.utils.report', reporting_year_id=2025, operation=operation, operator=operator
+        )
+        report_version_1 = baker.make_recipe(
+            'reporting.tests.utils.report_version',
+            report=report,
+            status=ReportVersion.ReportVersionStatus.Submitted,
+        )
+        report_version_2 = baker.make_recipe(
+            'reporting.tests.utils.report_version', report=report, status=ReportVersion.ReportVersionStatus.Submitted
+        )
+        report_version_3 = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            initial_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('600'),
+                credited_emissions=0,
+                report_version=report_version_1,
+            )
+            second_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('500'),
+                credited_emissions=0,
+                report_version=report_version_2,
+            )
+            third_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=Decimal('400'),
+                credited_emissions=0,
+                report_version=report_version_3,
+            )
+        compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=report, compliance_period_id=1
+        )
+        initial_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=initial_summary,
+            compliance_report=compliance_report,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET,
+        )
+        second_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=second_summary,
+            compliance_report=compliance_report,
+            is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION,
+        )
+        inv = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=initial_compliance_report_version,
+            elicensing_invoice=inv,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=second_compliance_report_version,
+        )
+
+        # Act
+        result = SupercedeVersionHandler.can_handle(third_summary, second_summary)
+
+        # Assert
+        # Should return false because the first compliance_report_version was not superceded & the history is therefore not clean
+        assert result is False
+
     def test_handle_supercede_credits_success(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
