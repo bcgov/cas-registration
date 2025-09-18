@@ -1,7 +1,7 @@
 from typing import List
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.schema.elicensing_invoice import ElicensingInvoiceListOut
-from compliance.service.compliance_invoice_service import ComplianceInvoiceService
+from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
 from django.http import HttpRequest
 from django.db.models import QuerySet
 from common.permissions import authorize
@@ -23,4 +23,4 @@ from compliance.constants import COMPLIANCE
 @paginate(PageNumberPagination)
 def get_elicensing_invoice_list(request: HttpRequest) -> QuerySet[ElicensingInvoice]:
     user_guid = get_current_user_guid(request)
-    return ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(user_guid)
+    return ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(user_guid)
