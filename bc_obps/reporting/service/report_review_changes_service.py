@@ -211,8 +211,23 @@ class ReportReviewChangesService:
         # Then compliance mapping
         field = cls._replace_compliance_product_index(field, serialized_data)
 
+        # replace top-level facility UUID with name if available
+        if field.startswith("root['facility_reports']"):
+            # Normalize facilities first
+            facilities = serialized_data.get('facility_reports', {})
+            if isinstance(facilities, list):
+                facilities = {str(f.get("facility") or f.get("facility_name")): f for f in facilities}
+
+            match = re.match(r"root\['facility_reports'\]\['([^']+)'\]", field)
+            if match:
+                fac_uuid = match.group(1)
+                fac_data = facilities.get(fac_uuid)
+                if fac_data and 'facility_name' in fac_data:
+                    field = field.replace(f"['{fac_uuid}']", f"['{fac_data['facility_name']}']")
+
         old_val = cls._replace_emission_category(old_val)
         new_val = cls._replace_emission_category(new_val)
+
         return {
             "field": field,
             "old_value": old_val,
@@ -231,49 +246,67 @@ class ReportReviewChangesService:
         prev_purpose = previous.get("report_operation", {}).get("registration_purpose")
         curr_purpose = current.get("report_operation", {}).get("registration_purpose")
         if prev_purpose != curr_purpose:
-            return [
+            changes.append(
                 {
                     "field": "root['report_operation']['registration_purpose']",
                     "old_value": prev_purpose,
                     "new_value": curr_purpose,
                     "change_type": "modified",
                 }
-            ]
+            )
 
-        # --- Facility name changes ---
-        prev_facilities = previous.get("facility_reports", {})
-        curr_facilities = current.get("facility_reports", {})
-        facility_name_map: Dict[str, str] = {}
+        # --- Facility name changes / added / removed ---
+        prev_facilities_raw = previous.get("facility_reports", [])
+        curr_facilities_raw = current.get("facility_reports", [])
 
-        for old_fac_name, old_fac in prev_facilities.items():
-            for new_fac_name, new_fac in curr_facilities.items():
-                if old_fac.get('facility') == new_fac.get('facility') and old_fac.get('facility_name') != new_fac.get(
-                    'facility_name'
-                ):
-                    facility_name_map[old_fac_name] = new_fac_name
-                    changes.append(
-                        {
-                            "field": f"root['facility_reports']['{new_fac_name}']['facility_name']",
-                            "old_value": old_fac.get("facility_name"),
-                            "new_value": new_fac.get("facility_name"),
-                            "change_type": "modified",
-                        }
-                    )
+        # Normalize to dict keyed by facility id or name
+        def normalize_facilities(data: Union[List[dict], Dict[str, dict]]) -> Dict[str, dict]:
+            if isinstance(data, dict):
+                return data
+            if isinstance(data, list):
+                return {str(f.get("facility") or f.get("facility_name")): f for f in data}
+            return {}
 
-        # --- Nested facility reports ---
-        for fac_name, curr_fac in curr_facilities.items():
-            prev_fac_name = next((old for old, new in facility_name_map.items() if new == fac_name), fac_name)
-            prev_fac = prev_facilities.get(prev_fac_name, {})
+        prev_facilities = normalize_facilities(prev_facilities_raw)
+        curr_facilities = normalize_facilities(curr_facilities_raw)
 
-            diff = DeepDiff(prev_fac, curr_fac, ignore_order=True, exclude_regex_paths=[r".*?id'\]$"])
-            for item in cls._parse_deepdiff_items(diff, prev_fac, curr_fac):
-                normalized_path = item.path[4:] if item.path.startswith('root') else item.path
-                full_path = f"root['facility_reports']['{fac_name}']{normalized_path}"
+        # Detect removed facilities
+        for fac_name, prev_fac in prev_facilities.items():
+            if fac_name not in curr_facilities:
                 changes.append(
-                    cls.process_change(
-                        full_path, item.old_value, item.new_value, item.change_type, serialized_data=current
-                    )
+                    {
+                        "field": f"root['facility_reports']['{fac_name}']",
+                        "old_value": prev_fac,
+                        "new_value": None,
+                        "change_type": "removed",
+                    }
                 )
+
+        # Detect added facilities
+        for fac_name, curr_fac in curr_facilities.items():
+            if fac_name not in prev_facilities:
+                changes.append(
+                    {
+                        "field": f"root['facility_reports']['{fac_name}']",
+                        "old_value": None,
+                        "new_value": curr_fac,
+                        "change_type": "added",
+                    }
+                )
+
+        # Detect modified facilities
+        for fac_name, curr_fac in curr_facilities.items():
+            if fac_name in prev_facilities:
+                prev_fac = prev_facilities[fac_name]
+                diff = DeepDiff(prev_fac, curr_fac, ignore_order=True, exclude_regex_paths=[r".*?id'\]$"])
+                for item in cls._parse_deepdiff_items(diff, prev_fac, curr_fac):
+                    normalized_path = item.path[4:] if item.path.startswith('root') else item.path
+                    full_path = f"root['facility_reports']['{fac_name}']{normalized_path}"
+                    changes.append(
+                        cls.process_change(
+                            full_path, item.old_value, item.new_value, item.change_type, serialized_data=current
+                        )
+                    )
 
         # --- Compliance products added/removed/modified ---
         prev_products = {

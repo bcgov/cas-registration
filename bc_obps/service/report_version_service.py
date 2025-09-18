@@ -136,9 +136,18 @@ class ReportVersionService:
         return is_initial_report_version
 
     @staticmethod
-    def fetch_full_report_version(version_id: int) -> ReportVersion:
+    def fetch_full_report_version(version_id: int, prefetch_full_facility_report: bool) -> ReportVersion:
         """
-        Fetch a ReportVersion object with all related data for serialization (shared by final review and diff endpoints).
+        Fetch a ReportVersion with related data for serialization.
+
+        Args:
+            version_id (int): ID of the ReportVersion to fetch.
+            prefetch_full_facility_report (bool):
+                - True: Fetch full facility_reports data, including activity records.
+                - False: Fetch minimal facility_reports data (only facility ID and name).
+
+        Returns:
+            ReportVersion: The ReportVersion with selected related objects prefetched.
         """
         # Get operation_type in a single lightweight query
         operation_type = (
@@ -162,7 +171,7 @@ class ReportVersionService:
             "report_operation__activities",
             "report_operation__regulated_products",
         ]
-        if operation_type == Operation.Types.LFO:
+        if operation_type == Operation.Types.LFO and not prefetch_full_facility_report:
             prefetches.append(
                 Prefetch(
                     "facility_reports",

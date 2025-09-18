@@ -11,20 +11,20 @@ from ..models import (
     ReportVersion,
     FacilityReport,
 )
-from ..schema.report_final_review import ReportVersionSchema, FacilityReportSchema
+from ..schema.report_final_review import FacilityReportSchema, FinalReviewVersionSchema
 from .router import router
 
 
 @router.get(
     "/report-version/{version_id}/final-review",
-    response={200: ReportVersionSchema, custom_codes_4xx: Message},
+    response={200: FinalReviewVersionSchema, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="Fetch final review data for a given report version ID.",
     auth=authorize("approved_authorized_roles"),
 )
 def get_report_final_review_data(request: HttpRequest, version_id: int) -> tuple[Literal[200], ReportVersion]:
     # Fetch the report version data
-    report_version = ReportVersionService.fetch_full_report_version(version_id)
+    report_version = ReportVersionService.fetch_full_report_version(version_id, prefetch_full_facility_report=False)
     return 200, report_version
 
 
