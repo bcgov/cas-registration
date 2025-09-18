@@ -2,7 +2,7 @@ import { useRouter } from "@bciers/testConfig/mocks";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
-import SubmittedForm from "@reporting/src/app/components/submitted/SubmittedForm";
+import ReportForm from "@reporting/src/app/components/submitted/ReportForm";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import { vi } from "vitest";
 import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
@@ -39,7 +39,13 @@ describe("The SubmittedForm component", () => {
       () => new Promise(() => {}), // Never resolves to keep loading state
     );
 
-    render(<SubmittedForm version_id={1} flow={ReportingFlow.SFO} />);
+    render(
+      <ReportForm
+        version_id={1}
+        flow={ReportingFlow.SFO}
+        origin={"submitted"}
+      />,
+    );
 
     expect(screen.getByTestId("loading")).toBeInTheDocument();
     expect(getFinalReviewData).toHaveBeenCalledWith(1);
@@ -114,7 +120,13 @@ describe("The SubmittedForm component", () => {
 
     (getFinalReviewData as vi.Mock).mockResolvedValue(mockData);
 
-    render(<SubmittedForm version_id={1} flow={ReportingFlow.SFO} />);
+    render(
+      <ReportForm
+        version_id={1}
+        flow={ReportingFlow.SFO}
+        origin={"submitted"}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByTestId("report-sections")).toBeInTheDocument();
@@ -150,7 +162,13 @@ describe("The SubmittedForm component", () => {
     (getFinalReviewData as vi.Mock).mockResolvedValue(mockData);
 
     const user = userEvent.setup();
-    render(<SubmittedForm version_id={1} flow={ReportingFlow.SFO} />);
+    render(
+      <ReportForm
+        version_id={1}
+        flow={ReportingFlow.SFO}
+        origin={"submitted"}
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByText("Back to All Reports")).toBeInTheDocument();
@@ -165,7 +183,13 @@ describe("The SubmittedForm component", () => {
   it("fetches data with correct version_id", () => {
     (getFinalReviewData as vi.Mock).mockResolvedValue({});
 
-    render(<SubmittedForm version_id={42} flow={ReportingFlow.SFO} />);
+    render(
+      <ReportForm
+        version_id={42}
+        flow={ReportingFlow.SFO}
+        origin={"submitted"}
+      />,
+    );
 
     expect(getFinalReviewData).toHaveBeenCalledWith(42);
   });

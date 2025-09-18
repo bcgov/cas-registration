@@ -33,11 +33,6 @@ ENDPOINTS = {
             "endpoint_name": "get_report_operation_data",
             "kwargs": {"version_id": MOCK_INT},
         },
-        {
-            "method": "get",
-            "endpoint_name": "get_report_final_review_data",
-            "kwargs": {"version_id": MOCK_INT},
-        },
         {"method": "get", "endpoint_name": "is_current_user_approved_admin"},
         {"method": "get", "endpoint_name": "get_operator_users"},
         {
@@ -49,11 +44,6 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_initial_activity_data",
-            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_report_version_facility_report",
             "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
         },
         {"method": "get", "endpoint_name": "validate_user_reporting_access"},
@@ -99,11 +89,6 @@ ENDPOINTS = {
         },
         {
             "method": "get",
-            "endpoint_name": "get_registration_purpose_by_version_id",
-            "kwargs": {"version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
             "endpoint_name": "get_report_facility_list_by_version_id",
             "kwargs": {"version_id": MOCK_INT},
         },
@@ -141,11 +126,6 @@ ENDPOINTS = {
         {
             "method": "get",
             "endpoint_name": "get_new_entrant_data",
-            "kwargs": {"version_id": MOCK_INT},
-        },
-        {
-            "method": "get",
-            "endpoint_name": "get_facility_report_list",
             "kwargs": {"version_id": MOCK_INT},
         },
         {
@@ -465,6 +445,26 @@ ENDPOINTS = {
         {"method": "get", "endpoint_name": "get_user_compliance_access_status"},
         {"method": "get", "endpoint_name": "get_compliance_report_versions_list"},
         {"method": "get", "endpoint_name": "get_elicensing_invoice_list"},
+        {
+            "method": "get",
+            "endpoint_name": "get_facility_report_list",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_registration_purpose_by_version_id",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_final_review_data",
+            "kwargs": {"version_id": MOCK_INT},
+        },
+        {
+            "method": "get",
+            "endpoint_name": "get_report_version_facility_report",
+            "kwargs": {"version_id": MOCK_INT, "facility_id": MOCK_UUID},
+        },
         {
             "method": "get",
             "endpoint_name": "get_operator",

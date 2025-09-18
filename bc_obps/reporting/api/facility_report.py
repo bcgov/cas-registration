@@ -1,6 +1,8 @@
 from typing import Literal, Tuple, List, Optional
 from uuid import UUID
 from django.http import HttpRequest
+
+from common.permissions import authorize
 from reporting.constants import EMISSIONS_REPORT_TAGS
 from reporting.schema.generic import Message
 from service.facility_report_service import FacilityReportService
@@ -132,7 +134,7 @@ def update_facility_report(
     tags=EMISSIONS_REPORT_TAGS,
     description="""Takes version_id (primary key of Report_Version model) and returns a list of facilities with their
     details.""",
-    auth=approved_industry_user_report_version_composite_auth,
+    auth=authorize("approved_authorized_roles"),
 )
 @paginate(ReportingCustomPagination, page_size=10)
 def get_facility_report_list(
