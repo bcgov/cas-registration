@@ -13,13 +13,14 @@ import { EmissionAllocationData, Product } from "./types";
 import { calculateEmissionData } from "./calculateEmissionsData";
 import { NavigationInformation } from "../taskList/types";
 import transformToNumberOrUndefined from "@bciers/utils/src/transformToNumberOrUndefined";
+import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
 
 // 📊 Interface for props passed to the component
 interface Props {
   version_id: number;
   facility_id: string;
   orderedActivities: any;
-  initialData: any;
+  initialData: EmissionAllocationResponse;
   navigationInformation: NavigationInformation;
   isPulpAndPaper: boolean;
   overlappingIndustrialProcessEmissions: number;
@@ -366,7 +367,7 @@ export default function FacilityEmissionAllocationForm({
           formData.fuel_excluded_emission_allocation_data,
         ),
         total_emission_allocations: formData.total_emission_allocations,
-        missing_product_alert: {
+        missing_product_alert: initialData.has_missing_products && {
           version_id,
           facility_id,
         },
