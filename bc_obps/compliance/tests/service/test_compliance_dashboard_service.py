@@ -794,9 +794,6 @@ class TestComplianceDashboardService:
         )
         compliance_report_version_2_2.report_compliance_summary.excess_emissions = Decimal("25.0")
         compliance_report_version_2_2.report_compliance_summary.save()
-        set = ComplianceReportVersion.objects.all()
-        for x in set:
-            print("ID STATUS OF VERSIONS:", x.id, x.status)
 
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
             user_guid=approved_user_operator.user_id
