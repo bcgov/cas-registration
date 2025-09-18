@@ -3,7 +3,10 @@ import React, { useEffect, useState } from "react";
 import MultiStepHeader from "@bciers/components/form/components/MultiStepHeader";
 import ReportingStepButtons from "@bciers/components/form/components/ReportingStepButtons";
 import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/ReportingTaskList";
-import { NavigationInformation } from "@reporting/src/app/components/taskList/types";
+import {
+  NavigationInformation,
+  ReportingFlow,
+} from "@reporting/src/app/components/taskList/types";
 import { getFinalReviewData } from "@reporting/src/app/utils/getFinalReviewData";
 import Loading from "@bciers/components/loading/SkeletonForm";
 import { ReportData } from "./reportTypes";
@@ -47,14 +50,15 @@ export const FinalReviewForm: React.FC<Props> = ({
         </div>
 
         <div className="w-full">
-          {loading ? (
+          {loading || !data ? (
             <Loading />
-          ) : data ? (
+          ) : (
             <>
               <FinalReviewReportSections
                 version_id={version_id}
                 data={data}
-                origin={`final-review`}
+                origin="final-review"
+                flow={flow}
               />
               <ReportingStepButtons
                 backUrl={navigationInformation.backUrl}
@@ -63,8 +67,6 @@ export const FinalReviewForm: React.FC<Props> = ({
                 noSaveButton={true}
               />
             </>
-          ) : (
-            <Loading />
           )}
         </div>
       </div>

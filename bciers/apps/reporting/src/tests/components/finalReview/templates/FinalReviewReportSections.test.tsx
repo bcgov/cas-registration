@@ -3,6 +3,7 @@ import React from "react";
 import { FinalReviewReportSections } from "@reporting/src/app/components/finalReview/templates/FinalReviewReportSections";
 import { OperationTypes } from "@bciers/utils/src/enums";
 import { RegistrationPurposes } from "@/registration/app/components/operations/registration/enums";
+import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 
 vi.mock(
   "@reporting/src/app/components/finalReview/templates/SectionReview",
@@ -172,7 +173,13 @@ describe("The ReportSections component", () => {
   };
 
   it("renders operation information section", () => {
-    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={mockBaseData}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -183,7 +190,13 @@ describe("The ReportSections component", () => {
   });
 
   it("renders facility report information for SFO reporting only", () => {
-    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={mockBaseData}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
 
     expect(
       screen.getByText("Report Information - Test Facility"),
@@ -204,7 +217,13 @@ describe("The ReportSections component", () => {
       },
     };
 
-    render(<FinalReviewReportSections data={eioData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={eioData}
+        version_id={1}
+        flow={ReportingFlow.EIO}
+      />,
+    );
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -252,7 +271,13 @@ describe("The ReportSections component", () => {
       rowCount: 5,
     };
 
-    render(<FinalReviewReportSections data={lfoData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={lfoData}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -281,7 +306,13 @@ describe("The ReportSections component", () => {
       ],
     };
 
-    render(<FinalReviewReportSections data={newEntrantData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={newEntrantData}
+        version_id={1}
+        flow={ReportingFlow.NewEntrantLFO}
+      />,
+    );
 
     expect(
       screen.getByText("Review Operation Information"),
@@ -295,13 +326,25 @@ describe("The ReportSections component", () => {
   });
 
   it("renders additional data section", () => {
-    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={mockBaseData}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
 
     expect(screen.getByText("Additional Reporting Data")).toBeInTheDocument();
   });
 
   it("renders compliance summary section", () => {
-    render(<FinalReviewReportSections data={mockBaseData} version_id={1} />);
+    render(
+      <FinalReviewReportSections
+        data={mockBaseData}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
+    );
 
     expect(screen.getByText("Compliance Summary")).toBeInTheDocument();
   });
@@ -328,6 +371,7 @@ describe("The ReportSections component", () => {
       <FinalReviewReportSections
         data={dataWithNonAttributable}
         version_id={1}
+        flow={ReportingFlow.SFO}
       />,
     );
 
@@ -346,7 +390,11 @@ describe("The ReportSections component", () => {
     };
 
     render(
-      <FinalReviewReportSections data={dataWithoutFacilities} version_id={1} />,
+      <FinalReviewReportSections
+        data={dataWithoutFacilities}
+        version_id={1}
+        flow={ReportingFlow.SFO}
+      />,
     );
 
     expect(

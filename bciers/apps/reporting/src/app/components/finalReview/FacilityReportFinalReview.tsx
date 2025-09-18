@@ -10,15 +10,20 @@ import ReportingTaskList from "@bciers/components/navigation/reportingTaskList/R
 import { TaskListElement } from "@bciers/components/navigation/reportingTaskList/types";
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 
+export interface OriginSearchParams {
+  origin?: "final-review" | "submitted";
+}
 export default function FacilityReportFinalReview({
   version_id,
   facility_id,
-  origin,
+  searchParams,
 }: {
   version_id: number;
   facility_id: string;
-  origin?: "final-review" | "submitted";
+  searchParams?: OriginSearchParams;
 }) {
+  const origin = searchParams?.origin;
+
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,7 +64,7 @@ export default function FacilityReportFinalReview({
         <ReportingTaskList elements={taskListElements} />
       </div>
       <div className="w-full">
-        <FacilityReportSection facilityData={data} expandable={false} />
+        <FacilityReportSection facilityData={data} />
         <Box display="flex" justifyContent="flex-start" mt={3}>
           <Button
             variant="outlined"
