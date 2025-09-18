@@ -224,10 +224,14 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 25000000
 FILE_UPLOAD_MAX_MEMORY_SIZE = 20000000
 
 
-# Only enable sentry in production
+# Only enable sentry in production and test environments
 SENTRY_ENVIRONMENT = os.environ.get('SENTRY_ENVIRONMENT')
 SENTRY_TRACE_SAMPLE_RATE = os.environ.get('SENTRY_TRACE_SAMPLE_RATE')
-if SENTRY_ENVIRONMENT == 'prod':
+if SENTRY_ENVIRONMENT in ['prod', 'test']:
+    # Map environment values to maintain backward compatibility with existing Sentry issues
+    environment_mapping = {'prod': 'production', 'test': 'test'}
+    sentry_environment = environment_mapping.get(SENTRY_ENVIRONMENT, SENTRY_ENVIRONMENT)
+
     sentry_sdk.init(
         dsn="https://cf402cd8318aab5c911728a16cbf8fcc@o646776.ingest.sentry.io/4506624068026368",
         integrations=[DjangoIntegration()],
@@ -235,8 +239,8 @@ if SENTRY_ENVIRONMENT == 'prod':
         # of transactions for performance monitoring.
         # We recommend adjusting this value in production.
         traces_sample_rate=float(SENTRY_TRACE_SAMPLE_RATE) if SENTRY_TRACE_SAMPLE_RATE is not None else 0,
-        # Specify environment (usually production or staging)
-        environment='production',
+        # Specify environment (production, test, etc.)
+        environment=sentry_environment,
     )
 
 
