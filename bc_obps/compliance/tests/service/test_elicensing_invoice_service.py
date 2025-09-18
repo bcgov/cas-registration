@@ -422,7 +422,7 @@ class TestElicensingInvoiceService:
         result[2].reporting_year = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
 
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.calculate_invoice_amount_due")
     def test_get_elicensing_invoice_for_dashboard_for_industry_user(self, mock_calculate_invoice, mock_get_year):
         mock_calculate_invoice.return_value = (None, None, 1, 2, 3)
         mock_get_year.return_value = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
@@ -461,9 +461,9 @@ class TestElicensingInvoiceService:
             elicensing_invoice=invoice_2,
         )
 
-        assert ElicensingInvoice.objects.count() == 3  # 2 from @setup belonging to a random operator +
+        assert ElicensingInvoice.objects.count() == 3  # 2 from @setup belonging to a random operator + 1 from this test
 
-        result = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(approved_user_operator.user.user_guid)
+        result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(approved_user_operator.user.user_guid)
         mock_get_year.assert_called_once()
         assert mock_calculate_invoice.call_count == 1
         assert result.count() == 1
