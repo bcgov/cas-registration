@@ -11,7 +11,7 @@ import { TaskListElement } from "@bciers/components/navigation/reportingTaskList
 import { getFacilityFinalReviewData } from "@reporting/src/app/utils/getFacilityFinalReviewData";
 
 export interface OriginSearchParams {
-  origin?: "final-review" | "submitted";
+  origin?: "final-review" | "submitted" | "annual-report";
 }
 export default function FacilityReportFinalReview({
   version_id,
@@ -23,7 +23,6 @@ export default function FacilityReportFinalReview({
   searchParams?: OriginSearchParams;
 }) {
   const origin = searchParams?.origin;
-
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);

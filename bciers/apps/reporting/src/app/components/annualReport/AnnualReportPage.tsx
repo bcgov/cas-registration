@@ -2,7 +2,11 @@ import { HasReportVersion } from "@reporting/src/app/utils/defaultPageFactoryTyp
 import { getFlowWithNewCases } from "@reporting/src/app/components/taskList/reportingFlows";
 import ReportForm from "@reporting/src/app/components/submitted/ReportForm";
 
-export default async function SubmittedPage({ version_id }: HasReportVersion) {
+export default async function AnnualReportPage({
+  version_id,
+}: HasReportVersion) {
   const flow = await getFlowWithNewCases(version_id);
-  return <ReportForm version_id={version_id} flow={flow} origin="submitted" />;
+  return (
+    <ReportForm version_id={version_id} flow={flow} origin="annual-report" />
+  );
 }
