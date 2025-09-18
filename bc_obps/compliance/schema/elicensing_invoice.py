@@ -1,7 +1,7 @@
 from decimal import Decimal
-from typing import Optional
+from typing import Literal, Optional
 from compliance.models.elicensing_invoice import ElicensingInvoice
-from ninja import ModelSchema, Schema
+from ninja import Field, ModelSchema, Schema
 
 
 class ElicensingInvoiceOut(ModelSchema):
@@ -27,55 +27,46 @@ class ElicensingLastRefreshOut(Schema):
 
 
 class ElicensingInvoiceListOut(ModelSchema):
-    compliance_period: Optional[int] = None
-    operator_legal_name: Optional[str] = None
-    operation_name: Optional[str] = None
-    invoice_total: Optional[Decimal] = None
-    total_adjustments: Optional[Decimal] = None
-    total_payments: Optional[Decimal] = None
-    invoice_type: Optional[str] = None
-
-    @staticmethod
-    def resolve_compliance_period(obj: ElicensingInvoice) -> Optional[int]:
-        obligation = getattr(obj, "compliance_obligation", None)
-        if obligation:
-            return (
-                obj.compliance_obligation.compliance_report_version.compliance_report.report.reporting_year.reporting_year
-            )
-        penalty = getattr(obj, "compliance_penalty", None)
-        if penalty:
-            return (
-                obj.compliance_penalty.compliance_obligation.compliance_report_version.compliance_report.report.reporting_year.reporting_year
-            )
-        return None
-
-    @staticmethod
-    def resolve_operator_legal_name(obj: ElicensingInvoice) -> Optional[str]:
-        obligation = getattr(obj, "compliance_obligation", None)
-        if obligation:
-            return obj.compliance_obligation.compliance_report_version.compliance_report.report.operator.legal_name
-        penalty = getattr(obj, "compliance_penalty", None)
-        if penalty:
-            return (
-                obj.compliance_penalty.compliance_obligation.compliance_report_version.report_compliance_summary.report_version.report_operation.operator_legal_name
-            )
-        return None
-
-    @staticmethod
-    def resolve_operation_name(obj: ElicensingInvoice) -> Optional[str]:
-        obligation = getattr(obj, "compliance_obligation", None)
-        if obligation:
-            return (
-                obj.compliance_obligation.compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
-            )
-        penalty = getattr(obj, "compliance_penalty", None)
-        if penalty:
-            return (
-                obj.compliance_penalty.compliance_obligation.compliance_report_version.report_compliance_summary.report_version.report_operation.operation_name
-            )
-
-        return None
+    compliance_period: Optional[int] = Field(
+        None,
+        description=(
+            "Reporting year derived from the associated record: "
+            "uses the Compliance Obligation’s reporting year if present, "
+            "otherwise the Penalty’s reporting year."
+        ),
+    )
+    operation_name: Optional[str] = Field(
+        None,
+        description=(
+            "Operation name derived from the associated record: "
+            "uses the Compliance Obligation path if present, otherwise the Penalty path."
+        ),
+    )
+    operator_legal_name: Optional[str] = Field(
+        None,
+        description="Operator legal name via the linked eLicensing client operator.",
+    )
+    invoice_type: Optional[Literal["Compliance obligation", "Automatic overdue penalty"]] = Field(
+        None,
+        description=(
+            "Classified by association: "
+            "‘Automatic overdue penalty’ when a penalty link exists; "
+            "otherwise ‘Compliance obligation’."
+        ),
+    )
+    invoice_total: Optional[Decimal] = Field(
+        None,
+        description="Computed invoice total (e.g., fees + interest). Calculated server-side.",
+    )
+    total_adjustments: Optional[Decimal] = Field(
+        None,
+        description="Sum of adjustments applied to the invoice. Calculated server-side.",
+    )
+    total_payments: Optional[Decimal] = Field(
+        None,
+        description="Sum of payments applied to the invoice. Calculated server-side.",
+    )
 
     class Meta:
         model = ElicensingInvoice
-        fields = ["id", "invoice_number", "outstanding_balance"]
+        fields = ["id", "invoice_number", "outstanding_balance", "due_date", "is_void", "last_refreshed"]
