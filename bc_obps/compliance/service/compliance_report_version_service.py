@@ -226,7 +226,10 @@ class ComplianceReportVersionService:
         if not compliance_report_version.is_supplementary:
             return compliance_report_version.report_compliance_summary.excess_emissions
 
-        if ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED:  # type: ignore[misc]
+        if (
+            compliance_report_version.previous_version.status  # type:ignore [union-attr]
+            == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        ):
             return compliance_report_version.report_compliance_summary.excess_emissions
 
         return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))
