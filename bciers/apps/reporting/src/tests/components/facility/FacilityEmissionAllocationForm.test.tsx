@@ -4,6 +4,7 @@ import FacilityEmissionAllocationForm from "@reporting/src/app/components/facili
 import { actionHandler, useRouter } from "@bciers/testConfig/mocks";
 import { dummyNavigationInformation } from "../taskList/utils";
 import userEvent from "@testing-library/user-event";
+import { EmissionAllocationResponse } from "@reporting/src/app/utils/getEmissionAllocations";
 
 // ✨ Mocks
 const mockRouterPush = vi.fn();
@@ -24,7 +25,7 @@ const config = {
   mockFacilityId: "abc",
   mockRouteSubmit: `additional-reporting-data`,
 };
-const mockInitialData = {
+const mockInitialData: EmissionAllocationResponse = {
   allocation_methodology: "Other",
   allocation_other_methodology_description: "description",
   report_product_emission_allocations: [
@@ -61,7 +62,7 @@ const mockInitialData = {
       ],
     },
   ],
-  facility_total_emissions: "150.0000",
+  facility_total_emissions: 150.0,
   report_product_emission_allocation_totals: [
     {
       report_product_id: 1,
@@ -74,6 +75,7 @@ const mockInitialData = {
       allocated_quantity: "85.0000",
     },
   ],
+  has_missing_products: false,
 };
 
 // ⛏️ Helper function to simulate form POST submission and assert the result
@@ -283,5 +285,36 @@ describe("FacilityEmissionAllocationForm component", () => {
     );
     const methodology = screen.queryAllByText(/Not Applicable/i)[0];
     expect(methodology).toBeUndefined();
+  });
+
+  it("renders a warning if there are missing products", async () => {
+    const initialData = {
+      ...mockInitialData,
+      has_missing_products: true,
+    };
+
+    render(
+      <FacilityEmissionAllocationForm
+        version_id={config.mockVersionId}
+        facility_id={config.mockFacilityId}
+        orderedActivities={[]}
+        initialData={initialData}
+        facilityType=""
+        navigationInformation={{
+          taskList: [],
+          continueUrl: "",
+          backUrl: "",
+          headerSteps: [],
+          headerStepIndex: 0,
+        }}
+        isPulpAndPaper={false}
+        overlappingIndustrialProcessEmissions={0}
+        operationType="Single Facility Operation"
+      />,
+    );
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      /Only products selected on the production data page appear here. To allocate emissions to a product that isn't shown below, return to the production data page and select it first./i,
+    );
   });
 });
