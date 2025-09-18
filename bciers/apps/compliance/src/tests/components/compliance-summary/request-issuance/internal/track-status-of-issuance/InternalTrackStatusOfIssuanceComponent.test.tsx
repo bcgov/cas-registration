@@ -56,6 +56,63 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     vi.clearAllMocks();
   });
 
+  it("shows Analyst's Comment for CAS_ANALYST role when auto-declined due to supplementary report", () => {
+    const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+      analyst_comment: "Analyst explains supplementary report requirement",
+      director_comment: "Director's comment should be hidden",
+    };
+
+    // Set role to CAS Analyst
+    mockRole = FrontEndRoles.CAS_ANALYST;
+
+    render(
+      <InternalTrackStatusOfIssuanceComponent
+        data={declinedDueToSupplementary}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    // Analyst's Comment should be shown for internal analyst
+    expect(screen.getByText("Analyst's Comment:")).toBeVisible();
+    expect(
+      screen.getByText("Analyst explains supplementary report requirement"),
+    ).toBeVisible();
+
+    // Director's Comment should be hidden in this context
+    expect(screen.queryByText("Director's Comment:")).toBeNull();
+    expect(
+      screen.queryByText("Director's comment should be hidden"),
+    ).toBeNull();
+  });
+
+  it("hides Analyst's Comment for non-internal reviewer role even when supplementary report required", () => {
+    const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
+      ...mockData,
+      issuance_status: IssuanceStatus.DECLINED,
+      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+      analyst_comment: "Analyst explains supplementary report requirement",
+    };
+
+    // Set role to a non-internal role (industry user)
+    mockRole = FrontEndRoles.INDUSTRY_USER;
+
+    render(
+      <InternalTrackStatusOfIssuanceComponent
+        data={declinedDueToSupplementary}
+        complianceReportVersionId={mockComplianceReportVersionId}
+      />,
+    );
+
+    // Analyst's Comment should be hidden for non-internal role
+    expect(screen.queryByText("Analyst's Comment:")).toBeNull();
+    expect(
+      screen.queryByText("Analyst explains supplementary report requirement"),
+    ).toBeNull();
+  });
+
   it("shows Analyst's Comment and hides Director's Comment for director route when auto-declined due to supplementary report", () => {
     const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
       ...mockData,
@@ -85,32 +142,6 @@ describe("InternalTrackStatusOfIssuanceComponent", () => {
     expect(screen.queryByText("Director's Comment:")).toBeNull();
     expect(
       screen.queryByText("Director's comment should be hidden"),
-    ).toBeNull();
-  });
-
-  it("does not show Analyst's Comment for analyst route when auto-declined due to supplementary report", () => {
-    const declinedDueToSupplementary: RequestIssuanceComplianceSummaryData = {
-      ...mockData,
-      issuance_status: IssuanceStatus.DECLINED,
-      analyst_suggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
-      analyst_comment: "Analyst explains supplementary report requirement",
-      director_comment: "",
-    } as any;
-
-    // Ensure role indicates CAS Analyst
-    mockRole = FrontEndRoles.CAS_ANALYST;
-
-    render(
-      <InternalTrackStatusOfIssuanceComponent
-        data={declinedDueToSupplementary}
-        complianceReportVersionId={mockComplianceReportVersionId}
-      />,
-    );
-
-    // Analyst's Comment should NOT be shown
-    expect(screen.queryByText("Analyst's Comment:")).toBeNull();
-    expect(
-      screen.queryByText("Analyst explains supplementary report requirement"),
     ).toBeNull();
   });
 
