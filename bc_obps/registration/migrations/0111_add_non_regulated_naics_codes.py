@@ -7,6 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('registration', '0110_historicalnaicscode_is_regulated_and_more'),
+        ('reporting', '0037_naics_regulatory_value_with_data'),
     ]
 
     def unregulated_naics_code_data(apps, schema_monitor):

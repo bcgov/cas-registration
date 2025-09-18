@@ -41,7 +41,7 @@ def init_product_emission_intensity_data(apps, schema_monitor):
                 valid_to='9999-12-31',
             ),
             ProductEmissionIntensity(
-                product_id=(Product.objects.get(name='Compression, positve displacement - consumed energy').id),
+                product_id=(Product.objects.get(name='Compression, positive displacement - consumed energy').id),
                 product_weighted_average_emission_intensity='0.5547',
                 valid_from='2023-01-01',
                 valid_to='9999-12-31',
@@ -245,7 +245,7 @@ def init_product_emission_intensity_data(apps, schema_monitor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registration', '0061_remove_naics_code'),
+        ('registration', '0115_fix_typo_in_regulated_product_name'),
         ('reporting', '0037_naics_regulatory_value_with_data'),
     ]
 
