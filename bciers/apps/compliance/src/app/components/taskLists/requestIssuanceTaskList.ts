@@ -37,7 +37,7 @@ export const generateRequestIssuanceTaskList: (
       {
         type: "Page" as const,
         title: `Review ${reportingYear} Compliance Report`,
-        link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
+        link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`,
         isActive: activePage === ActivePage.ReviewComplianceSummary,
       },
       {
