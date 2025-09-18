@@ -576,6 +576,7 @@ class SupplementaryVersionService:
         )
         return previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
 
+    @transaction.atomic
     def handle_supplementary_version(
         self, compliance_report: ComplianceReport, report_version: ReportVersion, version_count: int
     ) -> Optional[ComplianceReportVersion]:
