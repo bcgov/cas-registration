@@ -12,9 +12,10 @@ import { ReportingFlow } from "@reporting/src/app/components/taskList/types";
 interface Props {
   version_id: number;
   flow: ReportingFlow;
+  origin: "annual-report" | "submitted"; // restrict origin
 }
 
-const SubmittedForm: React.FC<Props> = ({ version_id, flow }) => {
+const ReportForm: React.FC<Props> = ({ version_id, flow, origin }) => {
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +36,7 @@ const SubmittedForm: React.FC<Props> = ({ version_id, flow }) => {
           <FinalReviewReportSections
             version_id={version_id}
             data={data}
-            origin={"submitted"}
+            origin={origin}
             flow={flow}
           />
           <Button
@@ -53,4 +54,4 @@ const SubmittedForm: React.FC<Props> = ({ version_id, flow }) => {
   );
 };
 
-export default SubmittedForm;
+export default ReportForm;

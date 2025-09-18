@@ -18,7 +18,7 @@ interface Facility {
 interface FinalReviewFacilityGridProps {
   data: Facility[];
   version_id: number;
-  origin?: "final-review" | "submitted";
+  origin?: "final-review" | "submitted" | "annual-report";
 }
 const PAGE_SIZE = 10;
 
@@ -99,7 +99,7 @@ const FinalReviewFacilityGrid: React.FC<FinalReviewFacilityGridProps> = ({
     async (params: { [key: string]: any }) => {
       const response = await fetchFacilitiesPageData({
         version_id,
-        searchParams: params,
+        searchParams: params, // page, search, sort are inside params
       });
 
       return {

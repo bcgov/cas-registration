@@ -112,7 +112,7 @@ def save_report_version(
     response={200: dict, custom_codes_4xx: Message},
     tags=EMISSIONS_REPORT_TAGS,
     description="""Fetches the registration purpose for the operation associated with the given report version ID.""",
-    auth=approved_industry_user_report_version_composite_auth,
+    auth=authorize("approved_authorized_roles"),
 )
 def get_registration_purpose_by_version_id(request: HttpRequest, version_id: int) -> Tuple[Literal[200], dict]:
     response_data = ReportService.get_registration_purpose_by_version_id(version_id)
