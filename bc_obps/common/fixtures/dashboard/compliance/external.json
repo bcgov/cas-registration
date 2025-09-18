@@ -20,10 +20,6 @@
               {
                 "title": "Invoices",
                 "href": "/compliance/invoices"
-              },
-              {
-                "title": "Transactions",
-                "href": "/compliance/transactions"
               }
             ]
           },
