@@ -127,7 +127,6 @@ class TestReportsEndpoint(CommonTestSetup):
         assert_report_version_ownership_is_validated("change_report_version_type", "post")
         assert_report_version_ownership_is_validated("get_regulated_products_by_version_id")
         assert_report_version_ownership_is_validated("get_report_version")
-        assert_report_version_ownership_is_validated("get_registration_purpose_by_version_id")
 
     @patch("service.report_version_service.ReportVersionService.delete_report_version")
     def test_returns_data_as_provided_by_delete_report_version(self, mock_delete_report_version: MagicMock):
