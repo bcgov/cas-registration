@@ -51,13 +51,19 @@ class SupercedeVersionHandler:
                 compliance_report_id=previous_compliance_report_version.compliance_report_id
             )
             .exclude(id=previous_compliance_report_version.id)
-            .values_list("status")
+            .values_list("status", flat=True)
         )
+        print('before ancestor status')
+        print(all_ancestor_version_statuses)
         for status in all_ancestor_version_statuses:
+            print('status: ', status)
+            print(status != ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             if status != ComplianceReportVersion.ComplianceStatus.SUPERCEDED:
                 return False
+        print('before previous summary check')
         if previous_summary.excess_emissions > ZERO_DECIMAL:
             # Return True if the previous version has an obligation with no invoice
+            print('before no invoice check')
             return SupplementaryVersionService._obligation_has_no_invoice(previous_compliance_report_version)
         if previous_summary.credited_emissions > ZERO_DECIMAL:
             # Return True if the previous version has earned credits that have not been requested
@@ -89,11 +95,12 @@ class SupercedeVersionHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-
+        print('before delete')
         # Handle supercede obligation
         if previous_summary.excess_emissions > ZERO_DECIMAL:
             # Delete hanging superceded obligation record
             ComplianceObligation.objects.get(compliance_report_version=previous_compliance_version).delete()
+            print('after delete')
 
         # Handle supercede earned credit
         if previous_summary.credited_emissions > ZERO_DECIMAL:
