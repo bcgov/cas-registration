@@ -6,7 +6,7 @@ from model_bakery.baker import make_recipe
 
 
 class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_obligation_invoice_pdf")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.generate_obligation_invoice_pdf")
     def test_get_invoice_success(self, mock_generate_obligation_invoice_pdf):
         # Arrange
         pdf_bytes = b"%PDF content"
@@ -39,7 +39,7 @@ class TestGenerateComplianceReportVersionInvoice(CommonTestSetup):
 
         mock_generate_obligation_invoice_pdf.assert_called_once_with(compliance_report_version.id)
 
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_obligation_invoice_pdf")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.generate_obligation_invoice_pdf")
     def test_get_invoice_error_from_service(self, mock_generate_obligation_invoice_pdf):
         # Arrange: simulate an error result from the service
         mock_generate_obligation_invoice_pdf.return_value = {

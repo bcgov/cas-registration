@@ -36,7 +36,7 @@ from django.http import StreamingHttpResponse
 from service.reporting_year_service import ReportingYearService
 
 
-class ComplianceInvoiceService:
+class ElicensingInvoiceService:
     @classmethod
     def create_pdf_response(
         cls, pdf: Tuple[Generator[bytes, None, None], str, int] | Dict[str, Any]
@@ -72,7 +72,7 @@ class ComplianceInvoiceService:
         )
         # Operator → Address
 
-        operator_address_line1, operator_address_line2 = ComplianceInvoiceService.format_operator_address(
+        operator_address_line1, operator_address_line2 = ElicensingInvoiceService.format_operator_address(
             operator.mailing_address
         )
 
@@ -328,15 +328,15 @@ class ComplianceInvoiceService:
         )
 
         for line_item in fee_line_items:
-            line_total, line_billing_items = ComplianceInvoiceService._build_line_item_entry(line_item)
+            line_total, line_billing_items = ElicensingInvoiceService._build_line_item_entry(line_item)
             billing_items.extend(line_billing_items)
             total_fee += line_total
 
-            payments_total, payments_billing_items = ComplianceInvoiceService._build_payment_entries(line_item)
+            payments_total, payments_billing_items = ElicensingInvoiceService._build_payment_entries(line_item)
             billing_items.extend(payments_billing_items)
             total_payments += payments_total
 
-            adjustments_total, adjustments_billing_items = ComplianceInvoiceService._build_adjustment_entries(line_item)
+            adjustments_total, adjustments_billing_items = ElicensingInvoiceService._build_adjustment_entries(line_item)
             billing_items.extend(adjustments_billing_items)
             total_adjustments += adjustments_total
 
@@ -446,7 +446,7 @@ class ComplianceInvoiceService:
             if hasattr(invoice, "compliance_penalty") and invoice.compliance_penalty is not None:
                 invoice.invoice_type = "Automatic overdue penalty"  # type: ignore[attr-defined]
 
-            _, _, total_fee, total_payments, total_adjustments = ComplianceInvoiceService.calculate_invoice_amount_due(
+            _, _, total_fee, total_payments, total_adjustments = ElicensingInvoiceService.calculate_invoice_amount_due(
                 invoice
             )
             invoice.invoice_total = total_fee  # type: ignore[attr-defined]

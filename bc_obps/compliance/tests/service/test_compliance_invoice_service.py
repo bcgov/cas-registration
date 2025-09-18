@@ -7,7 +7,7 @@ from decimal import Decimal
 from unittest.mock import patch
 from model_bakery.baker import make_recipe
 
-from compliance.service.compliance_invoice_service import ComplianceInvoiceService
+from compliance.service.elicensing_invoice_service import ElicensingInvoiceService
 from compliance.models import ComplianceChargeRate
 from compliance.models import ElicensingInvoice, ElicensingLineItem
 from reporting.models.reporting_year import ReportingYear
@@ -18,7 +18,7 @@ pytestmark = pytest.mark.django_db
 MOCK_REPORTING_YEAR = date.today().year - 1
 
 
-class TestComplianceInvoiceService:
+class TestElicensingInvoiceService:
     def setup_method(self):
         self.report = make_recipe(
             "compliance.tests.utils.report", reporting_year=ReportingYearService.get_current_reporting_year()
@@ -68,16 +68,16 @@ class TestComplianceInvoiceService:
         # Add penalty
         make_recipe("compliance.tests.utils.compliance_penalty", compliance_obligation=self.obligation)
 
-    @patch("compliance.service.compliance_invoice_service.PDFGeneratorService.generate_pdf")
+    @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
+        "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
     )
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
+        "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
     )
-    @patch("compliance.service.compliance_invoice_service.ComplianceChargeRate.objects.get")
+    @patch("compliance.service.elicensing_invoice_service.ComplianceChargeRate.objects.get")
     @patch(
-        "compliance.service.compliance_invoice_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+        "compliance.service.elicensing_invoice_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
     )
     def test_generate_obligation_invoice_pdf_success(
         self,
@@ -99,7 +99,7 @@ class TestComplianceInvoiceService:
         mock_get_report_operation.return_value = self.report_operation
         mock_generate_pdf.return_value = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
 
-        result = ComplianceInvoiceService.generate_obligation_invoice_pdf(self.compliance_report_version.id)
+        result = ElicensingInvoiceService.generate_obligation_invoice_pdf(self.compliance_report_version.id)
 
         assert isinstance(result, tuple)
         content, filename, size = result
@@ -170,20 +170,20 @@ class TestComplianceInvoiceService:
                 )
 
         # Act
-        amount_due, billing_items, _, _, _ = ComplianceInvoiceService.calculate_invoice_amount_due(invoice)
+        amount_due, billing_items, _, _, _ = ElicensingInvoiceService.calculate_invoice_amount_due(invoice)
 
         # Assert
         assert amount_due == expected_due
         assert len(billing_items) == expected_billing_count
 
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_operator_by_compliance_report_version"
+        "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_operator_by_compliance_report_version"
     )
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
+        "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_report_operation_by_compliance_report_version"
     )
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.format_operator_address")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.calculate_invoice_amount_due")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.format_operator_address")
     def test_prepare_partial_invoice_context(
         self,
         mock_format_operator_address,
@@ -214,7 +214,7 @@ class TestComplianceInvoiceService:
         obligation_id = self.obligation.obligation_id
 
         # Act
-        context = ComplianceInvoiceService._prepare_partial_invoice_context(
+        context = ElicensingInvoiceService._prepare_partial_invoice_context(
             self.compliance_report_version.id,
             self.invoice,
             obligation_id,
@@ -241,13 +241,13 @@ class TestComplianceInvoiceService:
         assert context["total_amount_due"] == '$263,512.40'
         assert context["compliance_obligation_id"] == obligation_id
 
-    @patch("compliance.service.compliance_invoice_service.PDFGeneratorService.generate_pdf")
+    @patch("compliance.service.elicensing_invoice_service.PDFGeneratorService.generate_pdf")
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
+        "compliance.service.elicensing_invoice_service.ComplianceReportVersionService.get_obligation_by_compliance_report_version"
     )
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService._prepare_partial_invoice_context")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService._prepare_partial_invoice_context")
     @patch(
-        "compliance.service.compliance_invoice_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
+        "compliance.service.elicensing_invoice_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id"
     )
     def test_generate_automatic_overdue_penalty_invoice_pdf_success(
         self,
@@ -288,7 +288,7 @@ class TestComplianceInvoiceService:
             "compliance_obligation_id": self.obligation.obligation_id,
         }
 
-        result = ComplianceInvoiceService.generate_automatic_overdue_penalty_invoice_pdf(
+        result = ElicensingInvoiceService.generate_automatic_overdue_penalty_invoice_pdf(
             self.compliance_report_version.id
         )
 
@@ -301,7 +301,7 @@ class TestComplianceInvoiceService:
 
     def test_create_pdf_response_returns_error(self):
         error_payload = {"errors": {"unexpected_error": "Mocked: PDF generation failed"}}
-        response = ComplianceInvoiceService.create_pdf_response(error_payload)
+        response = ElicensingInvoiceService.create_pdf_response(error_payload)
         # Assert
         assert response.status_code == 400
         assert response["Content-Type"] == "application/json"
@@ -315,7 +315,7 @@ class TestComplianceInvoiceService:
 
         mock_pdf = (b"%PDF mock", "invoice_INV-001_20250601.pdf", 2048)
 
-        response = ComplianceInvoiceService.create_pdf_response(mock_pdf)
+        response = ElicensingInvoiceService.create_pdf_response(mock_pdf)
 
         assert response.status_code == 200
         assert response['Content-Type'] == 'application/pdf'
@@ -323,7 +323,7 @@ class TestComplianceInvoiceService:
         assert response["Content-Length"] == '2048'
 
     @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.calculate_invoice_amount_due")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.calculate_invoice_amount_due")
     def test_get_elicensing_invoice_for_dashboard_for_irc_user(self, mock_calculate_invoice, mock_get_year):
         mock_calculate_invoice.return_value = (None, None, 100, 50, 10)
         mock_get_year.return_value = ReportingYear.objects.get(reporting_year=MOCK_REPORTING_YEAR)
@@ -395,7 +395,7 @@ class TestComplianceInvoiceService:
 
         cas_analyst = make_recipe("registration.tests.utils.cas_analyst")
 
-        result = ComplianceInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
+        result = ElicensingInvoiceService.get_elicensing_invoice_for_dashboard(cas_analyst.user_guid)
         mock_get_year.assert_called_once()
         assert mock_calculate_invoice.call_count == 3  # once for each invoice
         assert result.count() == 3

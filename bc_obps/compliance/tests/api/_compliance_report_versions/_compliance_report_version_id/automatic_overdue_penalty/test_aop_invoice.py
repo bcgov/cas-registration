@@ -7,9 +7,9 @@ from model_bakery.baker import make_recipe
 
 class TestGenerateComplianceReportVersionPenaltyInvoice(CommonTestSetup):
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_automatic_overdue_penalty_invoice_pdf"
+        "compliance.service.elicensing_invoice_service.ElicensingInvoiceService.generate_automatic_overdue_penalty_invoice_pdf"
     )
-    @patch("compliance.service.compliance_invoice_service.ComplianceInvoiceService.create_pdf_response")
+    @patch("compliance.service.elicensing_invoice_service.ElicensingInvoiceService.create_pdf_response")
     def test_get_invoice_success(self, mock_create_pdf_response, mock_generate_automatic_overdue_penalty_invoice_pdf):
         # Arrange
         pdf_bytes = b"%PDF content"
@@ -49,7 +49,7 @@ class TestGenerateComplianceReportVersionPenaltyInvoice(CommonTestSetup):
         mock_create_pdf_response.assert_called_once_with((ANY, 'invoice.pdf', 12))
 
     @patch(
-        "compliance.service.compliance_invoice_service.ComplianceInvoiceService.generate_automatic_overdue_penalty_invoice_pdf"
+        "compliance.service.elicensing_invoice_service.ElicensingInvoiceService.generate_automatic_overdue_penalty_invoice_pdf"
     )
     def test_get_invoice_error_from_service(self, mock_generate_automatic_overdue_penalty_invoice_pdf):
         # Arrange: simulate an error result from the service
