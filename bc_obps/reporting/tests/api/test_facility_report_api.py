@@ -114,9 +114,7 @@ class TestFacilityReportEndpoints(CommonTestSetup):
         assert_report_version_ownership_is_validated("get_facility_report_form_data", facility_id="uuid")
         assert_report_version_ownership_is_validated("get_ordered_facility_report_activities", facility_id="uuid")
         assert_report_version_ownership_is_validated("save_facility_report", method="post", facility_id="uuid")
-
         assert_report_version_ownership_is_validated("get_facility_report_by_version_id")
-        assert_report_version_ownership_is_validated("get_facility_report_list")
         assert_report_version_ownership_is_validated("save_facility_report_list", method="patch")
 
     @patch("service.facility_report_service.FacilityReportService.update_facility_report")

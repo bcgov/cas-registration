@@ -23,11 +23,6 @@ export default function FacilityReportFinalReview({
   searchParams?: OriginSearchParams;
 }) {
   const origin = searchParams?.origin;
-  console.log("FacilityReportFinalReview rendered with:", {
-    version_id,
-    facility_id,
-    origin,
-  });
   const router = useRouter();
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
