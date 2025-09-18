@@ -26,7 +26,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
 }: Readonly<Props>) => {
   const userRole = useSessionRole();
   const router = useRouter();
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`;
+  const backUrl = `/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
   const continueUrl = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
 
   const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;

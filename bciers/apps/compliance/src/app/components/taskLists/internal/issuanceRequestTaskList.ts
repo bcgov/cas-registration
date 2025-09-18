@@ -23,7 +23,7 @@ export const generateIssuanceRequestTaskList: (
   const reviewSummary = {
     type: "Page" as const,
     title: `Review ${reporting_year} Compliance Summary`,
-    link: `/compliance-summaries/${complianceReportVersionId}/request-issuance-review-summary`,
+    link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`,
     isActive: activePage === ActivePage.ReviewComplianceSummary,
   };
   if (

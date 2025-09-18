@@ -179,7 +179,10 @@ describe("ComplianceSummariesDataGrid component", () => {
     ).toBeVisible();
     expect(
       within(secondRow!).getByRole("link", { name: "View Details" }),
-    ).toHaveAttribute("href", "/compliance-summaries/2/review-summary");
+    ).toHaveAttribute(
+      "href",
+      "/compliance-summaries/2/review-compliance-no-obligation-report",
+    );
 
     // Check third row - Earned credits (Operation 3)
     const thirdRow = summaryRows.find((row) =>
@@ -209,7 +212,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/3/request-issuance-review-summary",
+      "/compliance-summaries/3/review-compliance-earned-credits-report",
     );
 
     // Check fourth row - Earned credits, not requested (Operation 4)
@@ -234,7 +237,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/4/request-issuance-review-summary",
+      "/compliance-summaries/4/review-compliance-earned-credits-report",
     );
 
     // Check fifth row - Earned credits, issuance requested (Operation 5)
@@ -259,7 +262,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/5/request-issuance-review-summary",
+      "/compliance-summaries/5/review-compliance-earned-credits-report",
     );
 
     // Check sixth row - Earned credits, approved (Operation 6)
@@ -319,7 +322,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/4/request-issuance-review-summary",
+      "/compliance-summaries/4/review-compliance-earned-credits-report",
     );
   });
 
@@ -346,7 +349,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/5/request-issuance-review-summary",
+      "/compliance-summaries/5/review-compliance-earned-credits-report",
     );
   });
 
@@ -396,7 +399,7 @@ describe("ComplianceSummariesDataGrid component", () => {
       }),
     ).toHaveAttribute(
       "href",
-      "/compliance-summaries/5/request-issuance-review-summary",
+      "/compliance-summaries/5/review-compliance-earned-credits-report",
     );
   });
 
