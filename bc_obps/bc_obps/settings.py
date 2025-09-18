@@ -80,22 +80,13 @@ BCCR_API_URL = os.getenv("BCCR_API_URL")
 BCCR_CLIENT_ID = os.getenv("BCCR_CLIENT_ID")
 BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
 
-LOCAL_APPS = [
-    "registration",
-    "reporting",
-    "common",
-    "rls",
-]
+LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
 
-NON_PROD_APPS = ["compliance", "task_scheduler"]
+NON_PROD_APPS = []
 
-RLS_GRANT_APPS = [
-    "registration",
-    "reporting",
-]
+RLS_GRANT_APPS = ["registration", "reporting", "compliance"]
 
 if ENVIRONMENT in ["CI", "local", "dev", "test"] or CI == "true":
-    RLS_GRANT_APPS += ["compliance"]
     LOCAL_APPS += NON_PROD_APPS
 
 # Apps that should not be included in production migrations
