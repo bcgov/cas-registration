@@ -14,8 +14,10 @@ def create_credits_requested_email_template(apps, schema_editor):
             <br>
             <p>Hi there,</p>
             <br>
-            <p><b>{{operator_name}}</b> has requested issuance of earned credits on behalf of <b>{{operation_name}}</b>. Please log-in to <a href="https://industrialemissions.gov.bc.ca/onboarding">BCIERS</a> to see the details of this request.
+            <p><b>{{operator_legal_name}}</b> has requested issuance of earned credits on behalf of <b>{{operation_name}}</b>. Please log-in to <a href="https://industrialemissions.gov.bc.ca/onboarding">BCIERS</a> to see the details of this request.
+            <br>
             </p>
+            <p><em>Please do not reply to this email. This email is auto-generated and sent from an unmonitored address.</em></p>
             <br>
             <p>Best Regards,</p>
             <p>Ministry of Energy and Climate Solutions</p>
