@@ -24,7 +24,7 @@ export const buildProductionDataSchema = (
     title: "Production Data",
     properties: {
       product_selection_title: {
-        title: "Products that apply to this facility",
+        title: "Select the products that apply to this facility:",
         type: "string",
       },
       product_selection: {
