@@ -463,14 +463,11 @@ class ElicensingInvoiceService:
         else:
             operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator
             compliance_invoices = qs.filter(
-                Q(
-                    compliance_obligation__compliance_report_version__compliance_report__report__operator=operator
-                )
+                Q(compliance_obligation__compliance_report_version__compliance_report__report__operator=operator)
                 | Q(
                     compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__operator=operator
                 )
             )
-            
 
         for invoice in compliance_invoices:
             _, _, total_fee, total_payments, total_adjustments = ElicensingInvoiceService.calculate_invoice_amount_due(
