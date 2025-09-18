@@ -42,7 +42,7 @@ spec:
                   key: password
                   name: django-superuser
             {{- end }}
-            {{- if hasSuffix "-prod" .Release.Namespace }}
+            {{- if or (hasSuffix "-prod" .Release.Namespace) (hasSuffix "-test" .Release.Namespace) }}
             - name: SENTRY_ENVIRONMENT
               value: {{ include "cas-bciers.namespaceSuffix" . }}
             - name: SENTRY_RELEASE
