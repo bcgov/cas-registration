@@ -222,10 +222,13 @@ export type ElicensingInvoice = {
   operator_legal_name: string;
   operation_name: string;
   invoice_total: string;
-  total_adjustments: number;
-  total_payments: number;
+  total_adjustments: string;
+  total_payments: string;
   invoice_type: string;
   id: number;
   invoice_number: string;
-  outstanding_balance: number;
+  outstanding_balance: string;
+  due_date: string;
+  is_void: false;
+  last_refreshed: string;
 };
