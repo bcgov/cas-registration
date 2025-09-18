@@ -82,7 +82,7 @@ BCCR_CLIENT_SECRET = os.getenv("BCCR_CLIENT_SECRET")
 
 LOCAL_APPS = ["registration", "reporting", "common", "rls", "task_scheduler", "compliance"]
 
-NON_PROD_APPS = []
+NON_PROD_APPS: list[str] = []
 
 RLS_GRANT_APPS = ["registration", "reporting", "compliance"]
 
