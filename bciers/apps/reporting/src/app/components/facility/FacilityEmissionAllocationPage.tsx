@@ -18,11 +18,9 @@ export default async function FacilityEmissionAllocationPage({
   );
   const orderedActivities = await getOrderedActivities(version_id, facility_id);
   const initialData = await getEmissionAllocations(version_id, facility_id);
-
-  const facData = await getFacilityReportDetails(version_id, facility_id);
-
   // Get facility type for not applicable methodology in LFO small and medium facilities
-  const facilityType = facData.facility_type;
+  const facilityType = (await getFacilityReportDetails(version_id, facility_id))
+    .facility_type;
 
   // These values are used when reporting the pulp & paper activity
   let isPulpAndPaper = false;
