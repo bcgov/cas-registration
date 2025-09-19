@@ -1,6 +1,6 @@
 from decimal import Decimal
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
-from compliance.models.compliance_obligation import ComplianceObligation
+from compliance.models.compliance_obligation import ComplianceObligation, ComplianceReportVersion
 from common.tests.utils.helpers import BaseTestCase
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
@@ -40,6 +40,7 @@ class TestComplianceObligationRls(BaseTestCase):
             'compliance.tests.utils.compliance_report_version',
             compliance_report=approved_compliance_report,
             is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
         )
         approved_compliance_obligation = make_recipe(
             'compliance.tests.utils.compliance_obligation',
@@ -72,7 +73,24 @@ class TestComplianceObligationRls(BaseTestCase):
             is_supplementary=False,
         )
 
-        assert ComplianceObligation.objects.count() == 2
+        # extra object for delete
+        operation3 = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+        )
+        # extra object for delete
+        compliance_report_version_for_delete = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report__report__operation=operation3,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED,
+        )
+        compliance_obligation_for_delete = make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            id=555,
+            compliance_report_version=compliance_report_version_for_delete,
+        )
+
+        assert ComplianceObligation.objects.count() == 3
 
         def select_function(cursor):
             ComplianceObligation.objects.get(id=approved_compliance_obligation.id)
@@ -114,15 +132,23 @@ class TestComplianceObligationRls(BaseTestCase):
                 fee_amount_dollars=Decimal('8888')
             )
 
+        def delete_function(cursor):
+            return ComplianceObligation.objects.get(id=compliance_obligation_for_delete.id).delete()
+
+        def forbidden_delete_function(cursor):
+            return ComplianceObligation.objects.get(id=approved_compliance_obligation.id).delete()
+
         assert_policies_for_industry_user(
             ComplianceObligation,
             approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            delete_function=delete_function,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_compliance_obligation_rls_cas_users(self):

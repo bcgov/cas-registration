@@ -1,6 +1,6 @@
 from rls.tests.helpers import assert_policies_for_cas_roles, assert_policies_for_industry_user
 from common.tests.utils.helpers import BaseTestCase
-from compliance.models import ComplianceEarnedCredit
+from compliance.models import ComplianceEarnedCredit, ComplianceReportVersion
 from registration.tests.constants import TIMESTAMP_COMMON_FIELDS
 from model_bakery.baker import make_recipe
 from django.db import transaction
@@ -412,6 +412,7 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             'compliance.tests.utils.compliance_report_version',
             compliance_report=approved_compliance_report,
             is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
         )
         compliance_earned_credit = make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
@@ -448,7 +449,24 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
             is_supplementary=False,
         )
 
-        assert ComplianceEarnedCredit.objects.count() == 2
+        # extra object for delete
+        operation3 = make_recipe(
+            'registration.tests.utils.operation', operator=approved_user_operator.operator, status="Registered"
+        )
+        # extra object for delete
+        compliance_report_version_for_delete = make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report__report__operation=operation3,
+            is_supplementary=False,
+            status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED,
+        )
+        compliance_earned_credit_for_delete = make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            id=555,
+            compliance_report_version=compliance_report_version_for_delete,
+        )
+
+        assert ComplianceEarnedCredit.objects.count() == 3
 
         def select_function(cursor):
             ComplianceEarnedCredit.objects.get(id=compliance_earned_credit.id)
@@ -488,15 +506,23 @@ class TestComplianceEarnedCreditRls(BaseTestCase):
                 issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED
             )
 
+        def delete_function(cursor):
+            return ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_for_delete.id).delete()
+
+        def forbidden_delete_function(cursor):
+            return ComplianceEarnedCredit.objects.get(id=compliance_earned_credit.id).delete()
+
         assert_policies_for_industry_user(
             ComplianceEarnedCredit,
             approved_user_operator.user,
             select_function=select_function,
             insert_function=insert_function,
             update_function=update_function,
+            delete_function=delete_function,
             forbidden_select_function=forbidden_select_function,
             forbidden_insert_function=forbidden_insert_function,
             forbidden_update_function=forbidden_update_function,
+            forbidden_delete_function=forbidden_delete_function,
         )
 
     def test_compliance_earned_credit_rls_cas_users(self):

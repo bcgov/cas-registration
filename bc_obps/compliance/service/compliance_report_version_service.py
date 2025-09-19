@@ -163,10 +163,12 @@ class ComplianceReportVersionService:
         obligation = getattr(compliance_report_version, "obligation", None)
         if not obligation:
             return Decimal("0")
-
         if not obligation.elicensing_invoice:
             if compliance_report_version.is_supplementary:
-                return compliance_report_version.excess_emissions_delta_from_previous
+                if ComplianceReportVersion.objects.get(id=compliance_report_version.previous_version_id).status == ComplianceReportVersion.ComplianceStatus.SUPERCEDED:  # type: ignore[misc]
+                    return compliance_report_version.report_compliance_summary.excess_emissions
+                else:
+                    return compliance_report_version.excess_emissions_delta_from_previous
             else:
                 return compliance_report_version.report_compliance_summary.excess_emissions
 
@@ -222,6 +224,12 @@ class ComplianceReportVersionService:
         """
 
         if not compliance_report_version.is_supplementary:
+            return compliance_report_version.report_compliance_summary.excess_emissions
+
+        if (
+            compliance_report_version.previous_version.status  # type:ignore [union-attr]
+            == ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        ):
             return compliance_report_version.report_compliance_summary.excess_emissions
 
         return Decimal(max(compliance_report_version.excess_emissions_delta_from_previous or 0, 0))

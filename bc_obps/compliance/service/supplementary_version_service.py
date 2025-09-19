@@ -1,8 +1,7 @@
 from reporting.models import ReportVersion, ReportComplianceSummary
-from compliance.models import ComplianceReport, ComplianceEarnedCredit
-from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.models.elicensing_invoice import ElicensingInvoice
 from compliance.models.elicensing_adjustment import ElicensingAdjustment
+from compliance.models import ComplianceReport, ComplianceEarnedCredit, ComplianceReportVersion, ComplianceObligation
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 from compliance.service.compliance_adjustment_service import ComplianceAdjustmentService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
@@ -37,6 +36,91 @@ class SupplementaryScenarioHandler(Protocol):
         version_count: int,
     ) -> Optional[ComplianceReportVersion]:
         ...
+
+
+# Concrete strategy for superceding compliance report versions when no binding action has occurred (invoice generated / earned credits requested or issued)
+class SupercedeVersionHandler:
+    @staticmethod
+    def _all_ancestor_versions_are_superceded(compliance_report_version: ComplianceReportVersion) -> bool:
+        """Check if all ancestor versions have a status of SUPERCEDED."""
+        return (
+            not ComplianceReportVersion.objects.filter(
+                compliance_report_id=compliance_report_version.compliance_report_id
+            )
+            .exclude(id=compliance_report_version.id)
+            .exclude(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
+            .exists()
+        )
+
+    @staticmethod
+    def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+            report_compliance_summary=previous_summary
+        )
+        # Return False if any previous version ancestors have a status other than superceded
+        if not SupercedeVersionHandler._all_ancestor_versions_are_superceded(previous_compliance_report_version):
+            return False
+        if previous_summary.excess_emissions > ZERO_DECIMAL:
+            # Return True if the previous version has an obligation with no invoice
+            return SupplementaryVersionService._obligation_has_no_invoice(previous_compliance_report_version)
+        if previous_summary.credited_emissions > ZERO_DECIMAL:
+            # Return True if the previous version has earned credits that have not been requested
+            return SupplementaryVersionService._earned_credits_not_issued(previous_compliance_report_version)
+        return False
+
+    @staticmethod
+    def handle(
+        compliance_report: ComplianceReport,
+        new_summary: ReportComplianceSummary,
+        previous_summary: ReportComplianceSummary,
+        version_count: int,
+    ) -> Optional[ComplianceReportVersion]:
+
+        previous_compliance_version = (
+            SupplementaryVersionService._get_previous_compliance_version_by_report_and_summary(
+                compliance_report, previous_summary
+            )
+        )
+        # Update previous version status to SUPERCEDED
+        previous_compliance_version.status = ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+        previous_compliance_version.save(update_fields=['status'])
+
+        # Create new version
+        compliance_report_version = ComplianceReportVersion.objects.create(
+            compliance_report=compliance_report,
+            report_compliance_summary=new_summary,
+            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            is_supplementary=True,
+            previous_version=previous_compliance_version,
+        )
+
+        # Handle supercede obligation
+        if previous_summary.excess_emissions > ZERO_DECIMAL:
+            # Delete hanging superceded obligation record
+            ComplianceObligation.objects.get(compliance_report_version=previous_compliance_version).delete()
+
+        # Handle supercede earned credit
+        if previous_summary.credited_emissions > ZERO_DECIMAL:
+            # Delete hanging superceded earned credit record
+            ComplianceEarnedCredit.objects.get(compliance_report_version=previous_compliance_version).delete()
+
+        # Create new obligation record if new version has excess emissions
+        if new_summary.excess_emissions > ZERO_DECIMAL:
+            # Create new obligation
+            obligation = ComplianceObligationService.create_compliance_obligation(
+                compliance_report_version.id, new_summary.excess_emissions
+            )
+            ElicensingObligationService.handle_obligation_integration(
+                obligation.id, compliance_report.compliance_period
+            )
+
+        # Create new earned credit record if new version has earned credits
+        if new_summary.credited_emissions > ZERO_DECIMAL:
+            ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+            compliance_report_version.save()
+
+        return compliance_report_version
 
 
 # Concrete strategy for increased obligations
@@ -467,6 +551,25 @@ class SupplementaryVersionService:
             report_compliance_summary=previous_summary,
         )
 
+    @staticmethod
+    def _obligation_has_no_invoice(previous_compliance_report_version: ComplianceReportVersion) -> bool:
+        previous_obligation = ComplianceObligation.objects.get(
+            compliance_report_version=previous_compliance_report_version
+        )
+        return (
+            previous_compliance_report_version.status
+            == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
+            and previous_obligation.elicensing_invoice is None
+        )
+
+    @staticmethod
+    def _earned_credits_not_issued(previous_compliance_report_version: ComplianceReportVersion) -> bool:
+        previous_earned_credit = ComplianceEarnedCredit.objects.get(
+            compliance_report_version=previous_compliance_report_version
+        )
+        return previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+
+    @transaction.atomic
     def handle_supplementary_version(
         self, compliance_report: ComplianceReport, report_version: ReportVersion, version_count: int
     ) -> Optional[ComplianceReportVersion]:
@@ -484,6 +587,18 @@ class SupplementaryVersionService:
 
         new_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=report_version.id)
         previous_version_compliance_summary = ReportComplianceSummary.objects.get(report_version_id=previous_version.id)
+
+        # If the previous version can be superceded, run the supercede handler & exit
+        if SupercedeVersionHandler.can_handle(
+            new_summary=new_version_compliance_summary, previous_summary=previous_version_compliance_summary
+        ):
+            SupercedeVersionHandler.handle(
+                compliance_report=compliance_report,
+                new_summary=new_version_compliance_summary,
+                previous_summary=previous_version_compliance_summary,
+                version_count=version_count,
+            )
+            return None
         # Find the right handler and delegate
         for handler in self.handlers:
             if handler.can_handle(
