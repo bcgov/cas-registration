@@ -199,7 +199,7 @@ jobs:
             echo "✅ No secrets detected - Workflow will pass"
           fi
 
-      - name: Handle comment resolution and CI rerun
+      - name: Handle comment cleanup and CI rerun
         if: always()
         uses: actions/github-script@v7
         with:
@@ -258,25 +258,22 @@ jobs:
 
             console.log(`Found ${securityComments.length} existing security comments`);
 
-            // If no secrets found and we have security comments, resolve them
+            // If no secrets found and we have security comments, delete them
             if ('${{ env.SECRETS_FOUND }}' === 'false' && securityComments.length > 0) {
-              console.log('No secrets detected - resolving existing security comments');
+              console.log('No secrets detected - deleting existing security comments');
 
               for (const comment of securityComments) {
                 try {
-                  // Update the comment to show it's resolved
-                  const resolvedBody = comment.body + '\n\n---\n✅ **RESOLVED**: No secrets detected in latest scan. This issue has been automatically resolved.';
-
-                  await github.rest.issues.updateComment({
+                  // Delete the security comment
+                  await github.rest.issues.deleteComment({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
-                    comment_id: comment.id,
-                    body: resolvedBody
+                    comment_id: comment.id
                   });
 
-                  console.log(`Resolved security comment ${comment.id}`);
+                  console.log(`Deleted security comment ${comment.id}`);
                 } catch (error) {
-                  console.log(`Error resolving comment ${comment.id}:`, error.message);
+                  console.log(`Error deleting comment ${comment.id}:`, error.message);
                 }
               }
             }
