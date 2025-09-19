@@ -4,7 +4,7 @@ from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from registration.models.operator import Operator
 from registration.models.user_operator import UserOperator
 from reporting.models.report import Report
-from service.email.email_service import EmailService
+from service.email.email_service import GHG_REGULATOR_EMAIL, EmailService
 from service.email.utils import Recipient
 import logging
 from django.conf import settings
@@ -15,6 +15,28 @@ from service.data_access_service.email_template_service import EmailNotification
 logger = logging.getLogger(__name__)
 
 email_service = EmailService()
+
+
+def _send_email_or_raise(
+    template: EmailNotificationTemplate, email_context: Dict[str, object], recipient_emails: List[str]
+) -> None:
+    try:
+
+        response_json = email_service.send_email_by_template(template, email_context, recipient_emails)
+        # Create an email notification record to store transaction and message IDs
+        if response_json:
+            email_service.create_email_notification_record(
+                response_json['txId'],
+                response_json['messages'][0]['msgId'],
+                recipient_emails,
+                template.pk,
+            )
+    except Exception as exc:
+        logger.error(f'Exception sending {template} email to recipients - {str(exc)}')
+        # If we're in the local environment, we don't need to send emails, so we shouldn't raise an error if they fail
+        environment = settings.ENVIRONMENT
+        if environment != 'local':
+            raise  # raise exception because we want to use this function as a retryable task
 
 
 def _send_email_to_operators_approved_users_or_raise(
@@ -30,24 +52,8 @@ def _send_email_to_operators_approved_users_or_raise(
         )
 
     if recipients:
-        try:
-            recipient_emails = [recipient.email_address for recipient in recipients]
-
-            response_json = email_service.send_email_by_template(template, email_context, recipient_emails)
-            # Create an email notification record to store transaction and message IDs
-            if response_json:
-                email_service.create_email_notification_record(
-                    response_json['txId'],
-                    response_json['messages'][0]['msgId'],
-                    recipient_emails,
-                    template.pk,
-                )
-        except Exception as exc:
-            logger.error(f'Exception sending {template} email to recipients - {str(exc)}')
-            # If we're in the local environment, we don't need to send emails, so we shouldn't raise an error if they fail
-            environment = settings.ENVIRONMENT
-            if environment != 'local':
-                raise  # raise exception because we want to use this function as a retryable task
+        recipient_emails = [recipient.email_address for recipient in recipients]
+        _send_email_or_raise(template, email_context, recipient_emails)
 
 
 def send_notice_of_earned_credits_generated_email(compliance_earned_credit_id: int) -> None:
@@ -107,3 +113,24 @@ def send_notice_of_obligation_generated_email(report_id: int) -> None:
     }
 
     _send_email_to_operators_approved_users_or_raise(report.operator, template, email_context)
+
+
+def send_notice_of_credits_requested_generated_email(compliance_earned_credit_id: int) -> None:
+    """
+    Sends an email to ghg regulator, notifying that an operation has requested earned credits.
+
+     Args:
+        compliance_earned_credit_id: The ID of the ComplianceEarnedCredit instance for which to send notification emails.
+    """
+    earned_credit = ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_id)
+    report = earned_credit.compliance_report_version.compliance_report.report
+    template = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
+
+    email_context: Dict[str, object] = {
+        "operator_legal_name": report.operator.legal_name,
+        "operation_name": report.operation.name,
+    }
+
+    recipient_emails = [GHG_REGULATOR_EMAIL] if settings.ENVIRONMENT == 'prod' else []
+
+    _send_email_or_raise(template, email_context, recipient_emails)

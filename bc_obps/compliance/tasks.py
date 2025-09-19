@@ -2,6 +2,7 @@ from compliance.service.elicensing.elicensing_interest_rate_service import Elice
 from compliance.service.elicensing.elicensing_obligation_service import ElicensingObligationService
 from compliance.service.automated_process.automated_process_service import AutomatedProcessService
 from compliance.emails import (
+    send_notice_of_credits_requested_generated_email,
     send_notice_of_earned_credits_generated_email,
     send_notice_of_no_obligation_no_credits_generated_email,
     send_notice_of_obligation_generated_email,
@@ -42,6 +43,12 @@ retryable_send_notice_of_no_obligation_no_earned_credits_email = create_retryabl
 retryable_send_notice_of_obligation_email = create_retryable(
     func=send_notice_of_obligation_generated_email,
     tag="obligation_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
+retryable_send_notice_of_credits_requested_email = create_retryable(
+    func=send_notice_of_credits_requested_generated_email,
+    tag="credits_requested_email_notifications",
     max_retries=5,
     retry_delay_minutes=10,
 )
