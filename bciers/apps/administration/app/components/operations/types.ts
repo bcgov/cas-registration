@@ -14,6 +14,7 @@ export interface OperationRow {
   id: number;
   operator__legal_name: string;
   status: string;
+  operation__contact_ids: number[];
 }
 
 export interface OperationsSearchParams {
@@ -66,6 +67,7 @@ export interface OperationInformationPartialFormData {
     mo_province?: string;
     mo_postal_code?: string;
   }[];
+  operation_representatives?: number[];
   registration_purpose?: string;
   regulated_operation?: string;
   new_entrant_operation?: string;

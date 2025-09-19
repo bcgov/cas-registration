@@ -29,6 +29,7 @@ const formData = {
       mo_postal_code: "V1V1V1",
     },
   ],
+  operation_representatives: [],
   registration_purpose: "Reporting Operation",
   regulated_products: [6],
 };

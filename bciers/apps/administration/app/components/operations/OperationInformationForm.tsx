@@ -47,11 +47,24 @@ const OperationInformationForm = ({
   ] = useState("");
   const [isConfirmPurposeChangeModalOpen, setIsConfirmPurposeChangeModalOpen] =
     useState<boolean>(false);
+
   const router = useRouter();
   // To get the user's role from the session
   const role = useSessionRole();
   const searchParams = useSearchParams();
   const isRedirectedFromContacts = searchParams.get("from_contacts") as string;
+  function checkMissingRepresentative(data: any) {
+    if (data && data.status && data.registration_purpose) {
+      return (
+        data.status === "Registered" &&
+        (!data.operation_representatives ||
+          data.operation_representatives.length === 0)
+      );
+    } else return false;
+  }
+  const [isMissingRepresentative, setIsMissingRepresentative] = useState(
+    checkMissingRepresentative(formData),
+  );
 
   useEffect(() => {
     if (selectedPurpose) {
@@ -62,7 +75,7 @@ const OperationInformationForm = ({
     } else {
       setSchema(generalSchema);
     }
-  }, [selectedPurpose, eioSchema, generalSchema]);
+  }, [selectedPurpose, eioSchema, generalSchema, formData]);
 
   const handleSubmit = async (data: {
     formData?: OperationInformationFormData;
@@ -172,6 +185,7 @@ const OperationInformationForm = ({
           if (newSelectedPurpose !== selectedPurpose) {
             handleSelectedPurposeChange(newSelectedPurpose);
           }
+          setIsMissingRepresentative(checkMissingRepresentative(e.formData));
         }}
         onCancel={() => router.push("/operations")}
         formContext={{
@@ -184,6 +198,7 @@ const OperationInformationForm = ({
             RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION.valueOf(),
           ),
           status: formData.status,
+          missing_representative_alert: isMissingRepresentative,
         }}
       />
     </>
