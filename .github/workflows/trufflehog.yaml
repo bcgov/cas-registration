@@ -128,24 +128,24 @@ jobs:
 
           if [ -f "${{ env.CONTENT_DIR }}/content.txt" ]; then
             SECRETS_DETECTED=false
-            
+
             # Check for common secret patterns
             if grep -iE "(api.*key|github.*token|access.*token|secret.*key|password|pwd).*[a-zA-Z0-9+/=@:.-]{10,}" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
               SECRETS_DETECTED=true
             fi
-            
+
             if grep -E "ghp_[a-zA-Z0-9]{36}" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
               SECRETS_DETECTED=true
             fi
-            
+
             if grep -E "(postgresql|mysql|mongodb)://[^:]+:[^@]+@" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
               SECRETS_DETECTED=true
             fi
-            
+
             if grep -iE "(secret|key|token|password|pwd|credential|auth).*[a-zA-Z0-9+/=@:.-]{10,}" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
               SECRETS_DETECTED=true
             fi
-            
+
             if [ "$SECRETS_DETECTED" = "true" ]; then
               echo '[{"DetectorName": "Fallback Pattern Detection", "Raw": "Potential secrets detected by pattern matching", "SourceMetadata": {"Data": {"Filesystem": {"file": "content.txt"}}}}]' > trufflehog-fallback-results.json
             fi
@@ -207,7 +207,7 @@ jobs:
                   SourceMetadata: { Data: { Filesystem: { file: 'repository' } } }
                 });
               }
-              
+
               // Read content results
               if (fs.existsSync('trufflehog-content-results.json')) {
                 const contentFile = fs.readFileSync('trufflehog-content-results.json', 'utf8').trim();
@@ -231,7 +231,7 @@ jobs:
                   }
                 }
               }
-              
+
               // Read fallback results
               if (fs.existsSync('trufflehog-fallback-results.json')) {
                 const fallbackFile = fs.readFileSync('trufflehog-fallback-results.json', 'utf8').trim();
