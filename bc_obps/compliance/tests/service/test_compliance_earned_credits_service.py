@@ -57,7 +57,8 @@ class TestComplianceEarnedCreditsService:
         assert result.earned_credits_amount == 100
         mock_send_email.execute.assert_called_once_with(result.pk)
 
-    def test_update_earned_credit_industry_user_success(self):
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
+    def test_update_earned_credit_industry_user_success(self, mock_send_email):
         # Arrange
         earned_credit = self.earned_credit_no_bccr_fields
         earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
@@ -76,6 +77,7 @@ class TestComplianceEarnedCreditsService:
         assert earned_credit.bccr_holding_account_id == self.bccr_holding_account_id
         assert earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED
         assert result == earned_credit
+        mock_send_email.execute.assert_called_once_with(result.pk)
 
     def test_update_earned_credit_industry_user_invalid_status(self):
         # Arrange
