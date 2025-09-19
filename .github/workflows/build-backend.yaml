@@ -8,6 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            bc_obps/
+            .github/
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
