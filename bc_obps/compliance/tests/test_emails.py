@@ -273,7 +273,12 @@ class TestSendNotifications:
         )
 
     @patch(SEND_EMAIL_OR_RAISE_PATH)
-    def test_credits_requested_email(self, mock_send_email_or_raise):
+    def test_credits_requested_email(
+        self,
+        mock_send_email_or_raise,
+        settings,
+    ):
+        settings.ENVIRONMENT = 'prod'
         # Create a report with earned credits
         report = baker.make_recipe('reporting.tests.utils.report')
         compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
@@ -286,7 +291,7 @@ class TestSendNotifications:
             earned_credits_amount=100,
         )
 
-        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
         expected_context = {
             "operator_legal_name": report.operator.legal_name,
             "operation_name": report.operation.name,
@@ -295,5 +300,5 @@ class TestSendNotifications:
         # Call the function with the earned credit id
         send_notice_of_credits_requested_generated_email(earned_credit.id)
         mock_send_email_or_raise.assert_called_once_with(
-            template_instance, expected_context, ['"ghgregulator@gov.bc.ca"']
+            template_instance, expected_context, ['GHGRegulator@gov.bc.ca']
         )
