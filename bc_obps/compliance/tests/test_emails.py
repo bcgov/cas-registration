@@ -9,7 +9,9 @@ import pytest
 from service.data_access_service.email_template_service import EmailNotificationTemplateService
 from model_bakery import baker
 from compliance.emails import (
+    _send_email_or_raise,
     _send_email_to_operators_approved_users_or_raise,
+    send_notice_of_credits_requested_generated_email,
     send_notice_of_earned_credits_generated_email,
     send_notice_of_no_obligation_no_credits_generated_email,
     send_notice_of_obligation_generated_email,
@@ -18,6 +20,7 @@ from compliance.emails import (
 pytestmark = pytest.mark.django_db
 email_service = EmailService()
 SEND_EMAIL_TO_OPERATORS_USERS_PATH = 'compliance.emails._send_email_to_operators_approved_users_or_raise'
+SEND_EMAIL_OR_RAISE_PATH = 'compliance.emails._send_email_or_raise'
 
 
 def mock_email_service(mocker):
@@ -29,6 +32,48 @@ def mock_email_service(mocker):
 
 
 class TestComplianceEmailHelpers:
+    def test_send_email_or_raise_success(self, mocker):
+        mocked_send_email = mock_email_service(mocker)
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        recipients = ['email@email.com', 'email2@email.com']
+        context = {"foo": "bar"}
+        _send_email_or_raise(template_instance, context, recipients)
+        # Assert that send_email_by_template is called exactly once
+        mocked_send_email.assert_called_once_with(
+            template_instance,
+            context,
+            recipients,
+        )
+
+        # Assert that only one email notification record is created
+        assert EmailNotification.objects.filter(template=template_instance).count() == 1
+
+        # Get the created email notification record
+        email_notification = EmailNotification.objects.get(template=template_instance)
+
+        # Assert the notification record has the correct recipients
+        assert set(email_notification.recipients_email) == set(recipients)
+
+        # Assert the notification record has the correct template
+        assert email_notification.template == template_instance
+
+        # Assert that the notification record has transaction and message IDs
+        assert email_notification.transaction_id is not None
+        assert email_notification.message_id is not None
+
+        # Assert that all expected recipients are included in the single email
+        assert len(email_notification.recipients_email) == 2
+
+    def test_send_email_or_raise_fail(self, mocker):
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        mocked_send_email = mock_email_service(mocker)
+
+        mocked_send_email.side_effect = Exception("Whoops")
+        with patch('django.conf.settings.ENVIRONMENT', 'test'):
+            with pytest.raises(Exception, match="Whoops"):
+                _send_email_or_raise(template_instance, {"foo": "bar"}, ['email@email.com'])
+
     def test_send_email_to_operators_approved_users_or_raise_success(self, mocker):
         # admin user - should receive email
         approved_user_operator = baker.make_recipe(
@@ -225,4 +270,30 @@ class TestSendNotifications:
             approved_user_operator.operator,
             template_instance,
             expected_context,
+        )
+
+    @patch(SEND_EMAIL_OR_RAISE_PATH)
+    def test_credits_requested_email(self, mock_send_email_or_raise):
+        # Create a report with earned credits
+        report = baker.make_recipe('reporting.tests.utils.report')
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+        )
+        earned_credit = baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=compliance_report_version,
+            earned_credits_amount=100,
+        )
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
+        expected_context = {
+            "operator_legal_name": report.operator.legal_name,
+            "operation_name": report.operation.name,
+        }
+
+        # Call the function with the earned credit id
+        send_notice_of_credits_requested_generated_email(earned_credit.id)
+        mock_send_email_or_raise.assert_called_once_with(
+            template_instance, expected_context, ['"ghgregulator@gov.bc.ca"']
         )
