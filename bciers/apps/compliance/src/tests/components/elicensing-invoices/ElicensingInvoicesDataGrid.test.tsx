@@ -37,8 +37,13 @@ const mockResponse = {
 };
 
 describe("ElicensingInvoicesDataGrid component", () => {
-  it("renders the ElicensingInvoicesDataGrid with initial data", async () => {
-    render(<ElicensingInvoicesDataGrid initialData={mockResponse} />);
+  it("renders the ElicensingInvoicesDataGrid with initial data for an internal user", async () => {
+    render(
+      <ElicensingInvoicesDataGrid
+        initialData={mockResponse}
+        isInternalUser={true}
+      />,
+    );
 
     // Verify headers are present
     expect(
@@ -86,5 +91,46 @@ describe("ElicensingInvoicesDataGrid component", () => {
     expect(within(firstRow!).getAllByText("$421,170.80")).toHaveLength(2);
     expect(within(firstRow!).getByText("$5.00")).toBeVisible();
     expect(within(firstRow!).getByText("$0.00")).toBeVisible();
+  });
+  it("renders the ElicensingInvoicesDataGrid with initial data for an external user", async () => {
+    render(
+      <ElicensingInvoicesDataGrid
+        initialData={mockResponse}
+        isInternalUser={false}
+      />,
+    );
+
+    // Verify headers are present
+    expect(
+      screen.getByRole("columnheader", { name: "Compliance Period" }),
+    ).toBeVisible();
+    expect(
+      screen.queryByRole("columnheader", { name: "Operator Name" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: "Operation Name" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Invoice Type" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Invoice Number" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Invoice Total" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Total Adjustments" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Total Payments" }),
+    ).toBeVisible();
+    expect(
+      screen.getByRole("columnheader", { name: "Outstanding Balance" }),
+    ).toBeVisible();
+
+    // Verify data displays
+    const summaryRows = screen.getAllByRole("row");
+    expect(summaryRows.length).toBe(3); // header + 2 data rows
   });
 });

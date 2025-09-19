@@ -1,18 +1,23 @@
 import { GridColDef } from "@mui/x-data-grid";
 import { formatMonetaryValue } from "@/compliance/src/app/utils/formatting";
 
-const elicensingInvoiceColumns = (): GridColDef[] => {
+const elicensingInvoiceColumns = (isInternalUser: boolean): GridColDef[] => {
   return [
     {
       field: "compliance_period",
       headerName: "Compliance Period",
       flex: 1,
     },
-    {
-      field: "operator_legal_name",
-      headerName: "Operator Name",
-      flex: 1,
-    },
+    ...(isInternalUser
+      ? [
+          {
+            field: "operator_legal_name",
+            headerName: "Operator Name",
+            flex: 1,
+          },
+        ]
+      : []),
+
     {
       field: "operation_name",
       headerName: "Operation Name",
