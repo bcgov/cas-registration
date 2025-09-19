@@ -5,7 +5,10 @@ from typing import Dict, Optional
 from common.exceptions import UserError
 from compliance.service.bc_carbon_registry.project_service import BCCarbonRegistryProjectService
 from compliance.service.bc_carbon_registry.credit_issuance_service import BCCarbonRegistryCreditIssuanceService
-from compliance.tasks import retryable_send_notice_of_earned_credits_email
+from compliance.tasks import (
+    retryable_send_notice_of_earned_credits_email,
+    retryable_send_notice_of_credits_requested_email,
+)
 from registration.models.user import User
 
 
@@ -216,6 +219,6 @@ class ComplianceEarnedCreditsService:
             cls._handle_cas_director_update(earned_credit, update_payload)
         else:
             raise UserError("This user is not authorized to update earned credit")
-
         earned_credit.refresh_from_db()
+        retryable_send_notice_of_credits_requested_email.execute(earned_credit.id)
         return earned_credit
