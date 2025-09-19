@@ -36,7 +36,7 @@ def reverse_credits_requested_email_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0082_V3_20_0'),
+        ('common', '0083_update_dashboard_data'),
     ]
 
     operations = [
