@@ -4,13 +4,13 @@ on:
   workflow_call:
   workflow_dispatch:
   issues:
-    types: [opened, edited]
+    types: [opened, edited, closed]
   issue_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
   pull_request:
-    types: [opened, edited, synchronize, reopened]
+    types: [opened, edited, synchronize, reopened, closed]
   pull_request_review_comment:
-    types: [created, edited]
+    types: [created, edited, deleted]
 
 jobs:
   trufflehog:
@@ -25,6 +25,16 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Install GitHub CLI
+        run: |
+          if ! command -v gh &> /dev/null; then
+            echo "Installing GitHub CLI..."
+            curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+            sudo apt update
+            sudo apt install gh -y
+          fi
 
       - name: Run TruffleHog on repository
         id: trufflehog-repo
@@ -152,7 +162,7 @@ jobs:
           fi
         continue-on-error: true
 
-      - name: Check for secrets and fail if found
+      - name: Check for secrets and handle comment resolution
         if: always()
         run: |
           echo "Checking for secrets in TruffleHog results..."
@@ -188,6 +198,88 @@ jobs:
             echo "SECRETS_FOUND=false" >> $GITHUB_ENV
             echo "✅ No secrets detected - Workflow will pass"
           fi
+
+      - name: Handle comment resolution and CI rerun
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            // Check if this is a comment deletion event
+            const isCommentDeleted = context.eventName === 'issue_comment' && context.payload.action === 'deleted';
+            const isPRClosed = context.eventName === 'pull_request' && context.payload.action === 'closed';
+            const isIssueClosed = context.eventName === 'issues' && context.payload.action === 'closed';
+
+            console.log('Event details:', {
+              eventName: context.eventName,
+              action: context.payload.action,
+              isCommentDeleted,
+              isPRClosed,
+              isIssueClosed
+            });
+
+            // If comment was deleted or PR/issue was closed, trigger a rerun
+            if (isCommentDeleted || isPRClosed || isIssueClosed) {
+              console.log('Comment deleted or PR/issue closed - triggering rerun...');
+
+              // Trigger a new workflow run
+              try {
+                await github.rest.actions.createWorkflowDispatch({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  workflow_id: 'trufflehog.yaml',
+                  ref: context.payload.pull_request?.head?.ref || context.payload.issue?.number ? 'main' : context.ref
+                });
+                console.log('Workflow rerun triggered successfully');
+              } catch (error) {
+                console.log('Error triggering workflow rerun:', error.message);
+              }
+            }
+
+            // Check if we have existing security comments
+            let comments = [];
+            try {
+              const { data: commentsData } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue?.number || context.payload.pull_request?.number
+              });
+              comments = commentsData || [];
+            } catch (error) {
+              console.log('Error fetching comments:', error.message);
+              comments = [];
+            }
+
+            const securityComments = comments.filter(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('🐷 **TruffleHog Secret Detection Alert**')
+            );
+
+            console.log(`Found ${securityComments.length} existing security comments`);
+
+            // If no secrets found and we have security comments, resolve them
+            if ('${{ env.SECRETS_FOUND }}' === 'false' && securityComments.length > 0) {
+              console.log('No secrets detected - resolving existing security comments');
+
+              for (const comment of securityComments) {
+                try {
+                  // Update the comment to show it's resolved
+                  const resolvedBody = comment.body + '\n\n---\n✅ **RESOLVED**: No secrets detected in latest scan. This issue has been automatically resolved.';
+
+                  await github.rest.issues.updateComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    comment_id: comment.id,
+                    body: resolvedBody
+                  });
+
+                  console.log(`Resolved security comment ${comment.id}`);
+                } catch (error) {
+                  console.log(`Error resolving comment ${comment.id}:`, error.message);
+                }
+              }
+            }
 
       - name: Comment on issue/PR if secrets found
         if: env.SECRETS_FOUND == 'true'
@@ -321,6 +413,26 @@ jobs:
               }
               throw error;
             }
+
+      - name: Handle automatic CI rerun on comment deletion
+        if: always() && (github.event_name == 'issue_comment' && github.event.action == 'deleted')
+        run: |
+          echo "Security comment was deleted - checking if we should trigger CI rerun..."
+
+          # Check if the deleted comment was a security alert
+          if echo "${{ github.event.comment.body }}" | grep -q "🐷 \*\*TruffleHog Secret Detection Alert\*\*"; then
+            echo "Security comment was deleted - triggering CI rerun..."
+
+            # Trigger a new workflow run using GitHub CLI or API
+            if command -v gh &> /dev/null; then
+              gh workflow run trufflehog.yaml --ref "${{ github.ref }}"
+              echo "CI rerun triggered via GitHub CLI"
+            else
+              echo "GitHub CLI not available - manual rerun may be needed"
+            fi
+          else
+            echo "Deleted comment was not a security alert - no action needed"
+          fi
 
       - name: Fail workflow if secrets detected
         if: env.SECRETS_FOUND == 'true'
