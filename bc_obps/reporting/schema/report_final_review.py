@@ -360,13 +360,12 @@ class FacilityReportLFOSchema(ModelSchema):
         fields = ['facility', 'facility_name', 'id']
 
 
-class ReportVersionSchema(ModelSchema):
+class BaseReportVersionSchema(ModelSchema):
     report_operation: Optional[ReportOperationSchema] = None
     report_person_responsible: Optional[ReportPersonResponsibleOut] = None
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
     report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
-    facility_reports: Union[Dict[str, FacilityReportSchema], List[FacilityReportLFOSchema]] = {}
     operation_emission_summary: Optional[EmissionSummarySchemaOut] = None
     is_supplementary_report: Optional[bool] = None
 
@@ -374,7 +373,6 @@ class ReportVersionSchema(ModelSchema):
     def resolve_report_compliance_summary(obj: ReportVersion) -> Optional[ComplianceDataSchemaOut]:
         if obj.report_operation.registration_purpose == Operation.Purposes.ELECTRICITY_IMPORT_OPERATION:
             return None
-
         data = ComplianceService.get_calculated_compliance_data(obj.id)
         return ComplianceDataSchemaOut.model_validate(data) if data else None
 
@@ -388,17 +386,6 @@ class ReportVersionSchema(ModelSchema):
     def resolve_is_supplementary_report(obj: ReportVersion) -> bool:
         return not ReportVersionService.is_initial_report_version(obj.id)
 
-    @staticmethod
-    def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
-        if obj.report_operation.operation_type == Operation.Types.EIO:
-            return {}  # always dict for EIO
-        if obj.report_operation.operation_type == Operation.Types.LFO:
-            return list(obj.facility_reports.all())  # list for LFO
-
-        # For non-LFO, only one facility is expected
-        facility = obj.facility_reports.first()
-        return {facility.facility_name: facility} if facility else {}
-
     class Meta:
         model = ReportVersion
         fields = [
@@ -407,3 +394,21 @@ class ReportVersionSchema(ModelSchema):
             "reason_for_change",
             "status",
         ]
+
+
+class FinalReviewVersionSchema(BaseReportVersionSchema):
+    facility_reports: Union[Dict[str, FacilityReportSchema], List[FacilityReportLFOSchema]] = {}
+
+    @staticmethod
+    def resolve_facility_reports(obj: ReportVersion) -> Union[Dict[str, FacilityReport], List[FacilityReport]]:
+        if obj.report_operation.operation_type == Operation.Types.EIO:
+            return {}  # always dict for EIO
+        if obj.report_operation.operation_type == Operation.Types.LFO:
+            return list(obj.facility_reports.all())  # list for LFO
+
+        facility = obj.facility_reports.first()
+        return {facility.facility_name: facility} if facility else {}
+
+
+class ReviewChangesVersionSchema(BaseReportVersionSchema):
+    facility_reports: List[FacilityReportSchema] = []
