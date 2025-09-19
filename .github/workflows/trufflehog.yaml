@@ -17,8 +17,8 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -110,12 +110,43 @@ jobs:
           # Run TruffleHog on the content directory with proper flags
           # Use --no-verification to catch unverified secrets too, and --json for structured output
           # Also try scanning individual files to ensure detection
-          trufflehog filesystem "$CONTENT_DIR" --no-verification --json --debug > trufflehog-content-results.json || true
+          echo "[]" > trufflehog-content-results.json  # Initialize with empty JSON array
+          trufflehog filesystem "$CONTENT_DIR" --no-verification --json --debug > temp-content-results.json 2>&1 || true
+
+          # Check if temp file has valid content and append to main results
+          if [ -s temp-content-results.json ]; then
+            # Try to parse as JSON to validate
+            if jq empty temp-content-results.json 2>/dev/null; then
+              # Valid JSON, append to results
+              jq -s '.[0] + .[1]' trufflehog-content-results.json temp-content-results.json > merged-results.json
+              mv merged-results.json trufflehog-content-results.json
+            else
+              echo "TruffleHog output is not valid JSON, treating as text output"
+              # If not valid JSON, create a structured result
+              echo "[{\"DetectorName\": \"TruffleHog Content Scan\", \"Raw\": \"$(cat temp-content-results.json | head -c 200)\", \"SourceMetadata\": {\"Data\": {\"Filesystem\": {\"file\": \"content\"}}}}]" > trufflehog-content-results.json
+            fi
+          fi
+          rm -f temp-content-results.json
 
           # Also try scanning the content file directly as a fallback
           if [ -f "$CONTENT_DIR/content.txt" ]; then
             echo "Also scanning content file directly..."
-            trufflehog filesystem "$CONTENT_DIR/content.txt" --no-verification --json --debug >> trufflehog-content-results.json || true
+            trufflehog filesystem "$CONTENT_DIR/content.txt" --no-verification --json --debug > temp-file-results.json 2>&1 || true
+
+            if [ -s temp-file-results.json ]; then
+              if jq empty temp-file-results.json 2>/dev/null; then
+                # Valid JSON, append to results
+                jq -s '.[0] + .[1]' trufflehog-content-results.json temp-file-results.json > merged-results.json
+                mv merged-results.json trufflehog-content-results.json
+              else
+                echo "File scan output is not valid JSON, treating as text output"
+                # If not valid JSON, create a structured result
+                echo "[{\"DetectorName\": \"TruffleHog File Scan\", \"Raw\": \"$(cat temp-file-results.json | head -c 200)\", \"SourceMetadata\": {\"Data\": {\"Filesystem\": {\"file\": \"content.txt\"}}}}]" > temp-file-results.json
+                jq -s '.[0] + .[1]' trufflehog-content-results.json temp-file-results.json > merged-results.json
+                mv merged-results.json trufflehog-content-results.json
+              fi
+            fi
+            rm -f temp-file-results.json
           fi
           echo "TruffleHog content scan completed"
 
@@ -123,18 +154,21 @@ jobs:
           if [ -f "trufflehog-content-results.json" ]; then
             echo "Content scan results:"
             cat trufflehog-content-results.json
+            echo ""
+            echo "Content scan results file size: $(wc -c < trufflehog-content-results.json) bytes"
           else
             echo "No content scan results file created"
           fi
 
           # Fallback: Simple pattern-based detection for obvious secrets
           echo "Running fallback pattern detection..."
+          echo "[]" > trufflehog-fallback-results.json  # Initialize with empty JSON array
           if [ -f "$CONTENT_DIR/content.txt" ]; then
             # Check for common secret patterns
             if grep -E "(API key|GitHub token|Database URL|password|secret|key):\s*[a-zA-Z0-9+/=@:.-]{10,}|ghp_[a-zA-Z0-9]{36}|postgresql://[^:]+:[^@]+@|mongodb://[^:]+:[^@]+@" "$CONTENT_DIR/content.txt" > /dev/null; then
               echo "Fallback detection found potential secrets in content"
               # Create a simple JSON result for fallback detection
-              echo '{"DetectorName": "Fallback Pattern Detection", "Raw": "Potential secrets detected by pattern matching", "SourceMetadata": {"Data": {"Filesystem": {"file": "content.txt"}}}}' > trufflehog-fallback-results.json
+              echo '[{"DetectorName": "Fallback Pattern Detection", "Raw": "Potential secrets detected by pattern matching", "SourceMetadata": {"Data": {"Filesystem": {"file": "content.txt"}}}}]' > trufflehog-fallback-results.json
             fi
           fi
         env:
@@ -228,29 +262,72 @@ jobs:
                   SourceMetadata: { Data: { Filesystem: { file: 'repository' } } }
                 });
               }
+
+              // Read content results with proper error handling
               if (fs.existsSync('trufflehog-content-results.json')) {
-                const contentResults = JSON.parse(fs.readFileSync('trufflehog-content-results.json', 'utf8'));
-                if (Array.isArray(contentResults)) {
-                  findings = findings.concat(contentResults);
+                const contentFile = fs.readFileSync('trufflehog-content-results.json', 'utf8').trim();
+                if (contentFile) {
+                  try {
+                    const contentResults = JSON.parse(contentFile);
+                    if (Array.isArray(contentResults)) {
+                      findings = findings.concat(contentResults);
+                    } else if (contentResults && typeof contentResults === 'object') {
+                      findings.push(contentResults);
+                    }
+                  } catch (parseError) {
+                    console.log('Error parsing content results JSON:', parseError.message);
+                    // If JSON parsing fails, check if it contains any text that might indicate secrets
+                    if (contentFile.includes('DetectorName') || contentFile.includes('Raw')) {
+                      findings.push({
+                        DetectorName: 'TruffleHog Content Scan (Parse Error)',
+                        Raw: 'Secrets detected but results could not be parsed',
+                        SourceMetadata: { Data: { Filesystem: { file: 'content' } } }
+                      });
+                    }
+                  }
                 }
               }
+
+              // Read fallback results with proper error handling
               if (fs.existsSync('trufflehog-fallback-results.json')) {
-                const fallbackResults = JSON.parse(fs.readFileSync('trufflehog-fallback-results.json', 'utf8'));
-                if (Array.isArray(fallbackResults)) {
-                  findings = findings.concat(fallbackResults);
-                } else if (fallbackResults && typeof fallbackResults === 'object') {
-                  findings.push(fallbackResults);
+                const fallbackFile = fs.readFileSync('trufflehog-fallback-results.json', 'utf8').trim();
+                if (fallbackFile) {
+                  try {
+                    const fallbackResults = JSON.parse(fallbackFile);
+                    if (Array.isArray(fallbackResults)) {
+                      findings = findings.concat(fallbackResults);
+                    } else if (fallbackResults && typeof fallbackResults === 'object') {
+                      findings.push(fallbackResults);
+                    }
+                  } catch (parseError) {
+                    console.log('Error parsing fallback results JSON:', parseError.message);
+                    // If JSON parsing fails, check if it contains any text that might indicate secrets
+                    if (fallbackFile.includes('DetectorName') || fallbackFile.includes('Raw')) {
+                      findings.push({
+                        DetectorName: 'TruffleHog Fallback Detection (Parse Error)',
+                        Raw: 'Secrets detected but results could not be parsed',
+                        SourceMetadata: { Data: { Filesystem: { file: 'fallback' } } }
+                      });
+                    }
+                  }
                 }
               }
             } catch (error) {
               console.log('Error reading TruffleHog results:', error);
             }
 
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue?.number || context.payload.pull_request?.number
-            });
+            let comments = [];
+            try {
+              const { data: commentsData } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue?.number || context.payload.pull_request?.number
+              });
+              comments = commentsData || [];
+            } catch (error) {
+              console.log('Error fetching comments:', error.message);
+              comments = [];
+            }
 
             const botComment = comments.find(comment =>
               comment.user.type === 'Bot' &&
@@ -274,22 +351,32 @@ jobs:
 
             const commentBody = `🐷 **TruffleHog Secret Detection Alert**\n\n⚠️ **WARNING**: Potential secrets detected in this ${context.eventName.includes('pull_request') ? 'pull request' : 'issue'}!\n\n${findingsText}\n**Action Required**: Edit your ${context.eventName.includes('pull_request') ? 'PR' : 'issue'} to remove sensitive data before proceeding.\n\n---\n*This is an automated security check by TruffleHog.*`;
 
-            if (botComment) {
-              console.log('Bot comment already exists, updating...');
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: botComment.id,
-                body: commentBody
-              });
-            } else {
-              console.log('Creating new bot comment...');
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue?.number || context.payload.pull_request?.number,
-                body: commentBody
-              });
+            try {
+              if (botComment) {
+                console.log('Bot comment already exists, updating...');
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: botComment.id,
+                  body: commentBody
+                });
+                console.log('Comment updated successfully');
+              } else {
+                console.log('Creating new bot comment...');
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue?.number || context.payload.pull_request?.number,
+                  body: commentBody
+                });
+                console.log('Comment created successfully');
+              }
+            } catch (error) {
+              console.log('Error creating/updating comment:', error.message);
+              if (error.status === 403) {
+                console.log('Permission denied - check if the workflow has proper permissions to write comments');
+              }
+              throw error; // Re-throw to fail the step if comment creation fails
             }
 
       - name: Upload TruffleHog results as artifact
