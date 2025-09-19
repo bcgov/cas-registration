@@ -117,11 +117,13 @@ def send_notice_of_obligation_generated_email(report_id: int) -> None:
 
 def send_notice_of_credits_requested_generated_email(compliance_earned_credit_id: int) -> None:
     """
-    Sends an email to ghg regulator, notifying that an operation has requested earned credits.
+    Sends an email to ghg regulator, notifying that an operation has requested earned credits. We only send this email when in prod so we don't confuse internal users.
 
      Args:
         compliance_earned_credit_id: The ID of the ComplianceEarnedCredit instance for which to send notification emails.
     """
+    if settings.ENVIRONMENT != 'prod':
+        return
     earned_credit = ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_id)
     report = earned_credit.compliance_report_version.compliance_report.report
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
@@ -131,6 +133,6 @@ def send_notice_of_credits_requested_generated_email(compliance_earned_credit_id
         "operation_name": report.operation.name,
     }
 
-    recipient_emails = [GHG_REGULATOR_EMAIL] if settings.ENVIRONMENT == 'prod' else []
+    recipient_emails = [GHG_REGULATOR_EMAIL]
 
     _send_email_or_raise(template, email_context, recipient_emails)
