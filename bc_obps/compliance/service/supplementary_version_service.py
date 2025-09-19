@@ -41,21 +41,25 @@ class SupplementaryScenarioHandler(Protocol):
 # Concrete strategy for superceding compliance report versions when no binding action has occurred (invoice generated / earned credits requested or issued)
 class SupercedeVersionHandler:
     @staticmethod
+    def _all_ancestor_versions_are_superceded(compliance_report_version: ComplianceReportVersion) -> bool:
+        """Check if all ancestor versions have a status of SUPERCEDED."""
+        return (
+            not ComplianceReportVersion.objects.filter(
+                compliance_report_id=compliance_report_version.compliance_report_id
+            )
+            .exclude(id=compliance_report_version.id)
+            .exclude(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
+            .exists()
+        )
+
+    @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
         previous_compliance_report_version = ComplianceReportVersion.objects.get(
             report_compliance_summary=previous_summary
         )
         # Return False if any previous version ancestors have a status other than superceded
-        all_ancestor_version_statuses = (
-            ComplianceReportVersion.objects.filter(
-                compliance_report_id=previous_compliance_report_version.compliance_report_id
-            )
-            .exclude(id=previous_compliance_report_version.id)
-            .values_list("status", flat=True)
-        )
-        for status in all_ancestor_version_statuses:
-            if status != ComplianceReportVersion.ComplianceStatus.SUPERCEDED:
-                return False
+        if not SupercedeVersionHandler._all_ancestor_versions_are_superceded(previous_compliance_report_version):
+            return False
         if previous_summary.excess_emissions > ZERO_DECIMAL:
             # Return True if the previous version has an obligation with no invoice
             return SupplementaryVersionService._obligation_has_no_invoice(previous_compliance_report_version)
