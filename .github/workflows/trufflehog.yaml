@@ -2,12 +2,13 @@ name: TruffleHog Secret Detection
 
 on:
   workflow_call:
+  workflow_dispatch:
   issues:
     types: [opened, edited]
   issue_comment:
     types: [created, edited]
   pull_request:
-    types: [opened, edited, synchronize]
+    types: [opened, edited, synchronize, reopened]
   pull_request_review_comment:
     types: [created, edited]
 
@@ -51,33 +52,48 @@ jobs:
 
           echo "=== Preparing Content for Scanning ==="
           echo "Event: $EVENT_NAME"
+          echo "Debug - Environment variables:"
+          echo "ISSUE_NUMBER: $ISSUE_NUMBER"
+          echo "ISSUE_TITLE: $ISSUE_TITLE"
+          echo "ISSUE_BODY: $ISSUE_BODY"
+          echo "COMMENT_ID: $COMMENT_ID"
+          echo "COMMENT_BODY: $COMMENT_BODY"
+          echo "PR_NUMBER: $PR_NUMBER"
+          echo "PR_TITLE: $PR_TITLE"
+          echo "PR_BODY: $PR_BODY"
 
           # Get issue/PR content based on event type and write to file
           if [ "$EVENT_NAME" = "issues" ]; then
             echo "Preparing issue #$ISSUE_NUMBER content"
             if [ -n "$ISSUE_TITLE" ]; then
               printf '%s\n' "$ISSUE_TITLE" > "$CONTENT_FILE"
+              echo "Added issue title to content file"
             fi
             if [ -n "$ISSUE_BODY" ]; then
               printf '%s\n' "$ISSUE_BODY" >> "$CONTENT_FILE"
+              echo "Added issue body to content file"
             fi
           elif [ "$EVENT_NAME" = "issue_comment" ]; then
             echo "Preparing issue comment #$COMMENT_ID content"
             if [ -n "$COMMENT_BODY" ]; then
               printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+              echo "Added comment body to content file"
             fi
           elif [ "$EVENT_NAME" = "pull_request" ]; then
             echo "Preparing PR #$PR_NUMBER content"
             if [ -n "$PR_TITLE" ]; then
               printf '%s\n' "$PR_TITLE" > "$CONTENT_FILE"
+              echo "Added PR title to content file"
             fi
             if [ -n "$PR_BODY" ]; then
               printf '%s\n' "$PR_BODY" >> "$CONTENT_FILE"
+              echo "Added PR body to content file"
             fi
           elif [ "$EVENT_NAME" = "pull_request_review_comment" ]; then
             echo "Preparing PR review comment #$COMMENT_ID content"
             if [ -n "$COMMENT_BODY" ]; then
               printf '%s\n' "$COMMENT_BODY" > "$CONTENT_FILE"
+              echo "Added review comment body to content file"
             fi
           fi
 
@@ -164,15 +180,106 @@ jobs:
           echo "Running fallback pattern detection..."
           echo "[]" > trufflehog-fallback-results.json  # Initialize with empty JSON array
           if [ -f "$CONTENT_DIR/content.txt" ]; then
-            # Check for common secret patterns
-            if grep -E "(API key|GitHub token|Database URL|password|secret|key):\s*[a-zA-Z0-9+/=@:.-]{10,}|ghp_[a-zA-Z0-9]{36}|postgresql://[^:]+:[^@]+@|mongodb://[^:]+:[^@]+@" "$CONTENT_DIR/content.txt" > /dev/null; then
-              echo "Fallback detection found potential secrets in content"
-              # Create a simple JSON result for fallback detection
-              echo '[{"DetectorName": "Fallback Pattern Detection", "Raw": "Potential secrets detected by pattern matching", "SourceMetadata": {"Data": {"Filesystem": {"file": "content.txt"}}}}]' > trufflehog-fallback-results.json
+            echo "Content file exists, checking for secrets..."
+            echo "Content file size: $(wc -c < "$CONTENT_DIR/content.txt") bytes"
+            echo "Content preview:"
+            head -5 "$CONTENT_DIR/content.txt"
+            echo "---"
+            
+            # Check for common secret patterns with more comprehensive regex
+            SECRETS_DETECTED=false
+            FALLBACK_FINDINGS="[]"
+            
+            # Check for API keys, tokens, passwords
+            if grep -iE "(api.*key|github.*token|access.*token|secret.*key|password|pwd).*[a-zA-Z0-9+/=@:.-]{10,}" "$CONTENT_DIR/content.txt" > /dev/null; then
+              echo "Found API key/token patterns"
+              SECRETS_DETECTED=true
             fi
+            
+            # Check for GitHub tokens specifically
+            if grep -E "ghp_[a-zA-Z0-9]{36}" "$CONTENT_DIR/content.txt" > /dev/null; then
+              echo "Found GitHub token pattern"
+              SECRETS_DETECTED=true
+            fi
+            
+            # Check for database URLs
+            if grep -E "(postgresql|mysql|mongodb)://[^:]+:[^@]+@" "$CONTENT_DIR/content.txt" > /dev/null; then
+              echo "Found database URL pattern"
+              SECRETS_DETECTED=true
+            fi
+            
+            # Check for other common secret patterns
+            if grep -iE "(secret|key|token|password|pwd|credential|auth).*[a-zA-Z0-9+/=@:.-]{10,}" "$CONTENT_DIR/content.txt" > /dev/null; then
+              echo "Found general secret patterns"
+              SECRETS_DETECTED=true
+            fi
+            
+            if [ "$SECRETS_DETECTED" = "true" ]; then
+              echo "Fallback detection found potential secrets in content"
+              # Create a more detailed JSON result for fallback detection
+              echo '[{"DetectorName": "Fallback Pattern Detection", "Raw": "Potential secrets detected by pattern matching in PR/issue content", "SourceMetadata": {"Data": {"Filesystem": {"file": "content.txt"}}}}]' > trufflehog-fallback-results.json
+            else
+              echo "No secrets detected by fallback pattern matching"
+            fi
+          else
+            echo "Content file does not exist for fallback detection"
           fi
         env:
           CONTENT_DIR: ${{ env.CONTENT_DIR }}
+        continue-on-error: true
+
+      - name: Run fallback secret detection
+        if: always()
+        run: |
+          echo "Running fallback secret detection..."
+          echo "Current directory contents:"
+          ls -la
+
+          # Check if we have content to scan
+          if [ -n "${{ env.CONTENT_DIR }}" ] && [ -f "${{ env.CONTENT_DIR }}/content.txt" ]; then
+            echo "Content directory: ${{ env.CONTENT_DIR }}"
+            echo "Content file exists, running fallback detection..."
+            
+            # Initialize fallback results
+            echo "[]" > trufflehog-fallback-results.json
+            
+            # Check for secrets using comprehensive patterns
+            SECRETS_DETECTED=false
+            
+            # Check for API keys, tokens, passwords
+            if grep -iE "(api.*key|github.*token|access.*token|secret.*key|password|pwd).*[a-zA-Z0-9+/=@:.-]{10,}" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
+              echo "Found API key/token patterns"
+              SECRETS_DETECTED=true
+            fi
+            
+            # Check for GitHub tokens specifically
+            if grep -E "ghp_[a-zA-Z0-9]{36}" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
+              echo "Found GitHub token pattern"
+              SECRETS_DETECTED=true
+            fi
+            
+            # Check for database URLs
+            if grep -E "(postgresql|mysql|mongodb)://[^:]+:[^@]+@" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
+              echo "Found database URL pattern"
+              SECRETS_DETECTED=true
+            fi
+            
+            # Check for other common secret patterns
+            if grep -iE "(secret|key|token|password|pwd|credential|auth).*[a-zA-Z0-9+/=@:.-]{10,}" "${{ env.CONTENT_DIR }}/content.txt" > /dev/null; then
+              echo "Found general secret patterns"
+              SECRETS_DETECTED=true
+            fi
+            
+            if [ "$SECRETS_DETECTED" = "true" ]; then
+              echo "Fallback detection found potential secrets in content"
+              echo '[{"DetectorName": "Fallback Pattern Detection", "Raw": "Potential secrets detected by pattern matching in PR/issue content", "SourceMetadata": {"Data": {"Filesystem": {"file": "content.txt"}}}}]' > trufflehog-fallback-results.json
+            else
+              echo "No secrets detected by fallback pattern matching"
+            fi
+          else
+            echo "No content directory or content file found for fallback detection"
+            echo "CONTENT_DIR: ${{ env.CONTENT_DIR }}"
+          fi
         continue-on-error: true
 
       - name: Check for secrets and comment
