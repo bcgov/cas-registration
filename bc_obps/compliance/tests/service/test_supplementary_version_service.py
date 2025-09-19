@@ -2059,6 +2059,7 @@ class TestSupercededHandler(BaseSupplementaryVersionServiceTest):
             self.original_report_version.compliance_report, self.new_summary, self.previous_summary, 2
         )
         self.original_report_version.refresh_from_db()
+        new_compliance_version.refresh_from_db()
 
         # Assert
         assert (
