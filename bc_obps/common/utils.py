@@ -1,9 +1,7 @@
-import os
 from typing import Optional, List
 from django.apps import apps
 from django.core.management import call_command
 from decimal import Decimal
-
 from datetime import datetime, timezone as dt_timezone
 from zoneinfo import ZoneInfo
 from django.utils import timezone as dj_timezone
@@ -59,26 +57,10 @@ def get_fixture_files() -> List[str]:
         "registration/external.json",
         "reporting/external.json",
         "reporting/internal.json",
+        "bciers/external.json",
+        "bciers/internal.json",
     )
-
-    is_prod = os.environ.get("ENVIRONMENT") == "prod"
-    env_fixtures = fixtures(
-        *(
-            [
-                "bciers/prod/external.json",
-                "bciers/prod/internal.json",
-            ]
-            if is_prod
-            else [
-                "bciers/dev/external.json",
-                "bciers/dev/internal.json",
-                "compliance/external.json",
-                "compliance/internal.json",
-            ]
-        )
-    )
-
-    return base_fixtures + env_fixtures
+    return base_fixtures
 
 
 def reset_dashboard_data() -> None:
