@@ -150,5 +150,7 @@ jobs:
     with:
       image: ${{ matrix.image }}
       image_tag: ${{ github.sha }}
+  trufflehog:
+    uses: ./.github/workflows/trufflehog.yaml
   codeql:
     uses: ./.github/workflows/codeql.yaml
