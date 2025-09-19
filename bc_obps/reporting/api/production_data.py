@@ -3,7 +3,6 @@ from uuid import UUID
 from django.http import HttpRequest
 from common.api.utils import get_current_user_guid
 from reporting.constants import EMISSIONS_REPORT_TAGS
-from reporting.models.report_operation import ReportOperation
 from reporting.models.report_product import ReportProduct
 from reporting.schema.report_product import ProductionDataOut, ReportProductSchemaIn
 from reporting.service.report_product_service import ReportProductService
@@ -53,8 +52,6 @@ def load_production_data(request: HttpRequest, version_id: int, facility_id: UUI
         .order_by("product_id")
         .all()
     )
-    allowed_products = ReportOperation.objects.get(report_version_id=version_id).regulated_products.exclude(
-        is_regulated=False
-    )
+    allowed_products = ReportProductService.get_allowed_products(version_id)
 
     return 200, {"report_products": report_products, "allowed_products": allowed_products}

@@ -71,7 +71,7 @@ describe("The Production Data component", () => {
 
     expect(screen.getAllByText(/production data/i)).toHaveLength(1);
     expect(
-      screen.getByText("Products that apply to this facility"),
+      screen.getByText("Select the products that apply to this facility:"),
     ).toBeInTheDocument();
     expect(screen.getAllByRole("checkbox")).toHaveLength(2);
     expect(screen.getByText(/testProduct/)).toBeInTheDocument();

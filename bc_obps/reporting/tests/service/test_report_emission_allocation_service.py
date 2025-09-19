@@ -142,6 +142,12 @@ class TestReportEmissionAllocationService(TestCase):
             product_id=29,  # "Sugar: solid"
         )
 
+        make_recipe(
+            "reporting.tests.utils.report_operation",
+            report_version=self.test_infrastructure.report_version,
+            regulated_products=[report_product_1.product, report_product_2.product],
+        )
+
         self.mock_get_response = {
             "report_product_emission_allocations": self.create_mock_allocation_array(
                 report_product1=report_product_1, report_product2=report_product_2, test_stage=1
@@ -394,3 +400,35 @@ class TestReportEmissionAllocationService(TestCase):
         self.assertEqual(
             allocation2.allocated_quantity, self.ALLOCATING_AMOUNT_3, "Expected this allocation to be updated"
         )
+
+    def test_has_missing_products_no_missing_products(self):
+
+        retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
+            self.test_infrastructure.report_version, self.test_infrastructure.facility_report.facility_id
+        )
+
+        # No missing products in our setup
+        assert not retrieved_emission_allocations_data.has_missing_products
+
+    # Only regulated products are checked for missing products
+    def test_has_missing_products_missing_regulated_products(self):
+
+        product = make_recipe("registration.tests.utils.regulated_product", is_regulated=True)
+        self.test_infrastructure.report_version.report_operation.regulated_products.add(product)
+
+        retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
+            self.test_infrastructure.report_version, self.test_infrastructure.facility_report.facility_id
+        )
+
+        assert retrieved_emission_allocations_data.has_missing_products
+
+    def test_has_missing_products_missing_non_regulated_products(self):
+
+        product = make_recipe("registration.tests.utils.regulated_product", is_regulated=False)
+        self.test_infrastructure.report_version.report_operation.regulated_products.add(product)
+
+        retrieved_emission_allocations_data = ReportEmissionAllocationService.get_emission_allocation_data(
+            self.test_infrastructure.report_version, self.test_infrastructure.facility_report.facility_id
+        )
+
+        assert not retrieved_emission_allocations_data.has_missing_products

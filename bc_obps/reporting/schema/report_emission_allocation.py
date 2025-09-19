@@ -46,3 +46,4 @@ class ReportEmissionAllocationSchemaOut(Schema):
     report_product_emission_allocation_totals: List[ReportProductEmissionAllocationSchemaOut]
     allocation_methodology: str
     allocation_other_methodology_description: str
+    has_missing_products: bool

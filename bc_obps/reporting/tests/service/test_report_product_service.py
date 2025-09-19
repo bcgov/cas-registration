@@ -1,14 +1,13 @@
+from django.test import TestCase
 import pytest
 from registration.models.regulated_product import RegulatedProduct
 from reporting.models.report_product import ReportProduct
 from reporting.service.report_product_service import ReportProductService
 from model_bakery.baker import make_recipe
 
-pytestmark = pytest.mark.django_db
 
-
-class TestReportProductService:
-    def setup_method(self):
+class TestReportProductService(TestCase):
+    def setUp(self):
         self.test_user_guid = make_recipe('registration.tests.utils.industry_operator_user').user_guid
 
         report_version = make_recipe("reporting.tests.utils.report_version")
@@ -218,3 +217,17 @@ class TestReportProductService:
         assert ReportProduct.objects.filter(facility_report=self.facility_report).count() == 3
 
         assert ReportProduct.objects.filter(facility_report=self.facility_report, product_id=fog_product_id).exists()
+
+    def test_get_allowed_products_returns_all_listed_regulated_products(self):
+        regulated_products = make_recipe("registration.tests.utils.regulated_product", is_regulated=True, _quantity=2)
+        unregulated_products = make_recipe(
+            "registration.tests.utils.regulated_product", is_regulated=False, _quantity=2
+        )
+
+        self.report_operation.regulated_products.set([*regulated_products, *unregulated_products])
+
+        self.assertQuerySetEqual(
+            ReportProductService.get_allowed_products(self.report_version_id),
+            regulated_products,
+            ordered=False,
+        )

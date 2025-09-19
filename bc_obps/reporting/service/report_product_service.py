@@ -85,3 +85,9 @@ class ReportProductService:
             .order_by("product__id")
             .filter(report_version_id=report_version_id, facility_report__facility_id=facility_id)
         )
+
+    @classmethod
+    def get_allowed_products(cls, report_version_id: int) -> QuerySet[RegulatedProduct]:
+        return ReportOperation.objects.get(report_version_id=report_version_id).regulated_products.exclude(
+            is_regulated=False
+        )
