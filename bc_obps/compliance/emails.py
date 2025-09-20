@@ -59,13 +59,18 @@ def _send_email_to_operators_approved_users_or_raise(
 def send_notice_of_earned_credits_generated_email(compliance_earned_credit_id: int) -> None:
     """
     Sends an email to every operator's industry user for the specific earned credit, notifying of the credits' availability.
+    Only sends the email if the earned credits amount is at least 1.
 
     Args:
         compliance_earned_credit_id: The ID of the ComplianceEarnedCredit instance for which to send notification emails.
     """
-    template = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
-
     earned_credit = ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_id)
+
+    # Only send email if the earned credits amount is at least 1
+    if earned_credit.earned_credits_amount < 1:
+        return
+
+    template = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
     report = earned_credit.compliance_report_version.compliance_report.report
     email_context = {
         "operator_legal_name": report.operator.legal_name,

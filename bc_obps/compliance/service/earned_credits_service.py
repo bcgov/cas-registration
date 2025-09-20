@@ -55,7 +55,7 @@ class ComplianceEarnedCreditsService:
                 The compliance report version to associate with the earned credits record.
             amount (Optional[int]):
                 The number of earned credits. If not provided, the value will be taken
-                from the report version’s compliance summary (credited_emissions).
+                from the report version's compliance summary (credited_emissions).
 
         Returns:
             ComplianceEarnedCredit: The newly created earned credits record.
@@ -65,7 +65,9 @@ class ComplianceEarnedCreditsService:
             compliance_report_version=compliance_report_version,
             earned_credits_amount=resolved_amount,
         )
-        retryable_send_notice_of_earned_credits_email.execute(earned_credits_record.id)
+        # Only send email if the earned credits amount is at least 1
+        if resolved_amount >= 1:
+            retryable_send_notice_of_earned_credits_email.execute(earned_credits_record.id)
         return earned_credits_record
 
     @classmethod
