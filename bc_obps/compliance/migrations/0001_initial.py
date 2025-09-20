@@ -17,6 +17,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('registration', '0138_V3_20_0'),
         ('reporting', '0131_V3_20_0'),
+        ('task_scheduler', '0001_initial'),
     ]
 
     operations = [

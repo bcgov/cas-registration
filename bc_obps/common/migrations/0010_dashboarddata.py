@@ -7,10 +7,6 @@ def load_dashboard_fixtures(apps, schema_editor):
     from django.core.management import call_command
 
     fixture_files = [
-        'common/fixtures/dashboard/bciers/dev/external.json',
-        'common/fixtures/dashboard/bciers/dev/internal.json',
-        # Below file does not exist in the repository but I'm keeping it here for reference
-        # 'common/fixtures/dashboard/registration/operation/external.json',
         'common/fixtures/dashboard/registration/external.json',
         'common/fixtures/dashboard/reporting/external.json',
         'common/fixtures/dashboard/reporting/internal.json',
