@@ -132,7 +132,7 @@ describe("ComplianceSummariesDataGrid component", () => {
 
     // Verify data displays
     const summaryRows = screen.getAllByRole("row");
-    expect(summaryRows.length).toBe(9); // header + 8 data rows
+    expect(summaryRows.length).toBe(10); // header + 8 data rows
 
     // Check first row - Obligation not met (Operation 1)
     const firstRow = summaryRows.find((row) =>

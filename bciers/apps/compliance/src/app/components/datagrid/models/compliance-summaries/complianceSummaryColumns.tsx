@@ -55,6 +55,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       field: "reporting_year",
       headerName: "Compliance Period",
       width: getColumnWidth(150, 130),
+      sortable: false,
     },
     {
       field: "operation_name",
@@ -72,6 +73,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       headerName: "Outstanding Balance",
       width: getColumnWidth(200, 170),
       valueFormatter: (params) => `${params.value} tCO2e`,
+      sortable: false,
     },
     {
       field: "status",
@@ -96,6 +98,7 @@ const complianceSummaryColumns = (isAllowedCas: boolean): GridColDef[] => {
       headerName: "Actions",
       width: getColumnWidth(120, 100),
       flex: 1,
+      sortable: false,
       renderCell: (params) => {
         return <ActionCell {...params} isAllowedCas={isAllowedCas} />;
       },
