@@ -3,7 +3,9 @@ import AlertNote from "./AlertNote";
 
 // Mock the AlertIcon component
 vi.mock("@bciers/components/icons", () => ({
-  AlertIcon: () => <svg role="img" aria-label="alert" />,
+  AlertIcon: (props: any) => (
+    <svg role="img" aria-label="alert" data-testid="alert-icon" {...props} />
+  ),
 }));
 
 describe("AlertNote", () => {
@@ -43,5 +45,13 @@ describe("AlertNote", () => {
       "mb-2",
       "items-center",
     );
+  });
+
+  it("applies iconColor to the default icon when provided", () => {
+    render(<AlertNote iconColor="#123456">Test message</AlertNote>);
+
+    const icon = screen.getByTestId("alert-icon");
+    expect(icon).toBeVisible();
+    expect(icon).toHaveAttribute("fill", "#123456");
   });
 });

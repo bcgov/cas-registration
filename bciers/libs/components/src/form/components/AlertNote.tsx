@@ -10,6 +10,7 @@ export interface AlertNoteProps {
   id?: string;
   icon?: ReactNode;
   alertType?: AlertType;
+  iconColor?: string;
 }
 
 const bgClassMap: { [key in AlertType]: string } = {
@@ -35,8 +36,25 @@ const AlertNote: FC<PropsWithChildren<AlertNoteProps>> = ({
   children,
   icon,
   alertType = "DEFAULT",
+  iconColor,
 }) => {
-  const defaultedIcon = icon ?? iconMap[alertType];
+  const defaultedIcon =
+    icon ??
+    (iconColor
+      ? (() => {
+          const color = iconColor;
+          switch (alertType) {
+            case "INFO":
+              return <InfoRounded fontSize="inherit" sx={{ color }} />;
+            case "ALERT":
+              return <WarningRounded fontSize="inherit" sx={{ color }} />;
+            case "ERROR":
+              return <ErrorRounded fontSize="inherit" sx={{ color }} />;
+            default:
+              return <AlertIcon width="25" height="25" fill={color} />;
+          }
+        })()
+      : iconMap[alertType]);
 
   return (
     <Alert

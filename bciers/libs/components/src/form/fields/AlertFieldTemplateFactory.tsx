@@ -9,6 +9,7 @@ function AlertFieldTemplate({
   id,
   alertType,
   icon,
+  iconColor,
   children,
   label,
   formContext,
@@ -16,7 +17,7 @@ function AlertFieldTemplate({
   if (!formContext[label]) return null;
 
   return (
-    <AlertNote id={id} alertType={alertType} icon={icon}>
+    <AlertNote id={id} alertType={alertType} icon={icon} iconColor={iconColor}>
       {children}
     </AlertNote>
   );
@@ -26,11 +27,17 @@ function AlertFieldTemplateFactory<T>(
   AlertContent: React.FC<T>,
   alertType?: AlertType,
   alertIcon?: ReactNode,
+  alertIconColor?: string,
 ) {
   // TODO: log something if the formcontext doesn't have anything (it should find a false value)
 
   return (props: AlertFieldTemplateProps) => (
-    <AlertFieldTemplate {...props} alertType={alertType} icon={alertIcon}>
+    <AlertFieldTemplate
+      {...props}
+      alertType={alertType}
+      icon={alertIcon}
+      iconColor={alertIconColor}
+    >
       <AlertContent {...props.formContext[props.label]} />
     </AlertFieldTemplate>
   );
