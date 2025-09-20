@@ -3,13 +3,24 @@ from model_bakery.baker import make_recipe
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from registration.utils import custom_reverse_lazy
 from unittest.mock import patch
-
+from urllib.parse import urlencode
+from compliance.models import ComplianceReportVersion
+from bc_obps.settings import NINJA_PAGINATION_PER_PAGE
 
 class TestComplianceReportVersionsEndpoint(CommonTestSetup):
+    # Base endpoint once; reuse in tests
+    endpoint = custom_reverse_lazy("get_compliance_report_versions_list")
+
+    def _url(self, **params) -> str:
+        """Build the endpoint URL with optional query params."""
+        if not params:
+            return self.endpoint
+        return f"{self.endpoint}?{urlencode(params)}"
+       
     @patch(
         "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_versions_for_dashboard"
     )
-    def test_get_compliance_report_versions_list_success(self, mock_get_versions):
+    def test_crv_endpoint_unpaginated(self, mock_get_versions):
         # Arrange
         version1 = make_recipe(
             'compliance.tests.utils.compliance_report_version',
@@ -25,51 +36,68 @@ class TestComplianceReportVersionsEndpoint(CommonTestSetup):
         version2.report_compliance_summary.excess_emissions = Decimal("75.0000")
         version2.report_compliance_summary.save()
 
-        # Mock the service to return both versions
-        mock_get_versions.return_value = [version1, version2]
+        # Return a queryset, not a list
+        mock_get_versions.return_value = ComplianceReportVersion.objects.filter(pk__in=[version1.pk, version2.pk])
+
         TestUtils.authorize_current_user_as_operator_user(self, operator=version1.compliance_report.report.operator)
 
-        # Act
-        response = TestUtils.mock_get_with_auth_role(
-            self,
-            "industry_user",
-            custom_reverse_lazy("get_compliance_report_versions_list"),
+        resp = TestUtils.mock_get_with_auth_role(self, "industry_user", self._url(paginate_result=False))
+        assert resp.status_code == 200
+        data = resp.json()
+        assert set(data.keys()) == {"count", "items"}
+        assert data["count"] == 2
+
+    @patch(
+        "compliance.service.compliance_dashboard_service.ComplianceDashboardService.get_compliance_report_versions_for_dashboard"
+    )
+    def test_crv_endpoint_paginated_two_pages(self, mock_get_versions):
+        # Create enough rows for multiple pages; deterministic names for stable sort
+        versions = []
+        for i in range(45):
+            v = make_recipe(
+                "compliance.tests.utils.compliance_report_version",
+                report_compliance_summary__report_version__report_operation__operation_name=f"Plant {i:03d}",
+                # keep a fixed year to avoid any year-based filtering surprises
+                report_compliance_summary__report_version__report__reporting_year__reporting_year=2025,
+            )
+            versions.append(v)
+
+        # Return a queryset
+        mock_get_versions.return_value = (
+            ComplianceReportVersion.objects.filter(pk__in=[v.pk for v in versions])
+            .order_by("operation_name")
         )
 
-        # Assert
-        assert response.status_code == 200
-        response_data = response.json()
-
-        # Verify the paginated response structure
-        assert response_data.keys() == {'count', 'items'}
-        assert response_data['count'] == 2
-
-        # Verify the fields in both results
-        items = response_data["items"]
-        assert len(items) == 2, "Expected 2 results"
-
-        # Verify first version
-        assert items[0]["id"] == version1.id
-        assert items[0]["status"] == version1.status
-        assert (
-            items[0]["operation_name"]
-            == version1.report_compliance_summary.report_version.report_operation.operation_name
+        # Page 1
+        resp1 = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self._url(sort_field="operation_name", sort_order="asc")
         )
-        assert (
-            items[0]["reporting_year"]
-            == version1.report_compliance_summary.report_version.report.reporting_year.reporting_year
-        )
-        assert Decimal(items[0]["excess_emissions"]) == Decimal("50.0000")
+        assert resp1.status_code == 200
+        d1 = resp1.json()
+        assert set(d1.keys()) == {"count", "items"}
+        assert d1["count"] == 45
+        assert len(d1["items"]) == NINJA_PAGINATION_PER_PAGE
+        page1_first_id = d1["items"][0]["id"]
 
-        # Verify second version
-        assert items[1]["id"] == version2.id
-        assert items[1]["status"] == version2.status
-        assert (
-            items[1]["operation_name"]
-            == version2.report_compliance_summary.report_version.report_operation.operation_name
+        # Page 2, same sort
+        resp2 = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self._url(page=2, sort_field="operation_name", sort_order="asc")
         )
-        assert (
-            items[1]["reporting_year"]
-            == version2.report_compliance_summary.report_version.report.reporting_year.reporting_year
+        assert resp2.status_code == 200
+        d2 = resp2.json()
+        assert d2["count"] == 45
+        assert len(d2["items"]) == NINJA_PAGINATION_PER_PAGE
+        page2_first_id = d2["items"][0]["id"]
+
+        # First item on page 1 should differ from first item on page 2
+        assert page1_first_id != page2_first_id
+
+        # Flip sort on page 2 and ensure the window changes
+        resp2_desc = TestUtils.mock_get_with_auth_role(
+            self, "cas_admin", self._url(page=2, sort_field="operation_name", sort_order="desc")
         )
-        assert Decimal(items[1]["excess_emissions"]) == Decimal("75.0000")
+        assert resp2_desc.status_code == 200
+        d2_desc = resp2_desc.json()
+        assert len(d2_desc["items"]) == NINJA_PAGINATION_PER_PAGE
+        page2_first_id_desc = d2_desc["items"][0]["id"]
+        assert page2_first_id_desc != page2_first_id

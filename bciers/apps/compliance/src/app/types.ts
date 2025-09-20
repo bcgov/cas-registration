@@ -11,6 +11,14 @@ export interface DataGridSearchParams {
   sortOrder?: "asc" | "desc";
 }
 
+export interface ComplianceReportVersionGridSearchParams
+  extends DataGridSearchParams {
+  operator_name?: string;
+  operation_name?: string;
+  status?: string;
+  penalty_status?: string;
+  obligation_id?: string;
+}
 export interface BccrAccountDetailsResponse {
   bccr_trading_name?: string | null;
   error?: string;

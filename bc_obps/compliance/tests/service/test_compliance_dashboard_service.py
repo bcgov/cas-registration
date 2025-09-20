@@ -64,6 +64,12 @@ def mock_current_reporting_year():
     with patch(GET_CURRENT_REPORTING_YEAR_PATH) as mock:
         yield mock
 
+# --- No-op filters stub used by the service in tests ---
+class _NoopFilters:
+    """Minimal stub that satisfies the service's filters argument."""
+    def filter(self, qs):
+        return qs
+
 
 class TestComplianceDashboardService:
     """Tests for the ComplianceDashboardService class"""
@@ -189,7 +195,10 @@ class TestComplianceDashboardService:
         )
 
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user.user_guid
+            user_guid=user_operator.user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
 
         # Returns the union of reports for currently owned operations & reports for previously owned operations
@@ -304,7 +313,10 @@ class TestComplianceDashboardService:
         )
 
         active_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=current_user_operator.user.user_guid
+            user_guid=current_user_operator.user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
 
         # Does not return the report associated to the previous owning operator
@@ -437,7 +449,10 @@ class TestComplianceDashboardService:
         )
 
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user.user_guid
+            user_guid=user_operator.user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
 
         # Expect union of:
@@ -457,9 +472,10 @@ class TestComplianceDashboardService:
             ]
         )
         assert ids == expected_ids
-
+   
     def test_user_access_control_for_compliance_report_versions(self, mock_current_reporting_year):
         """Test that CAS director can see all compliance report versions while industry users can only see their own"""
+
         cas_director = make_recipe('registration.tests.utils.cas_director')
         approved_user_operator_1 = make_recipe('registration.tests.utils.approved_user_operator')
         approved_user_operator_2 = make_recipe('registration.tests.utils.approved_user_operator')
@@ -527,7 +543,10 @@ class TestComplianceDashboardService:
 
         # Test CAS director can see all compliance report versions
         cas_director_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=cas_director.user_guid
+            user_guid=cas_director.user_guid,
+            sort_field=None,
+            sort_order=None,
+            filters=_NoopFilters(),
         )
 
         assert cas_director_result.count() == 2
@@ -536,7 +555,10 @@ class TestComplianceDashboardService:
 
         # Test industry user 1 can only see their own compliance report versions
         industry_user_1_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=approved_user_operator_1.user.user_guid
+            user_guid=approved_user_operator_1.user.user_guid,
+            sort_field=None,
+            sort_order=None,
+            filters=_NoopFilters(),
         )
 
         assert industry_user_1_result.count() == 1
@@ -545,7 +567,10 @@ class TestComplianceDashboardService:
 
         # Test industry user 2 can only see their own compliance report versions
         industry_user_2_result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=approved_user_operator_2.user.user_guid
+            user_guid=approved_user_operator_2.user.user_guid,
+            sort_field=None,
+            sort_order=None,
+            filters=_NoopFilters(),
         )
 
         assert industry_user_2_result.count() == 1
@@ -796,7 +821,10 @@ class TestComplianceDashboardService:
         compliance_report_version_2_2.report_compliance_summary.save()
 
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=approved_user_operator.user_id
+            user_guid=approved_user_operator.user_id,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
 
         assert result[0].id == compliance_report_version_1.id
@@ -894,7 +922,10 @@ class TestComplianceDashboardService:
 
         # Call
         result = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
-            user_guid=user_operator.user.user_guid
+            user_guid=user_operator.user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
         )
 
         # Asserts

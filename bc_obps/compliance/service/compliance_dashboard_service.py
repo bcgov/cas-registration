@@ -12,7 +12,9 @@ from service.user_operator_service import UserOperatorService
 from compliance.service.compliance_charge_rate_service import ComplianceChargeRateService
 from compliance.enums import ComplianceInvoiceTypes
 from service.reporting_year_service import ReportingYearService
-from django.db.models import Q
+from django.db.models import Q, F
+from ninja import Query
+from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
 
 
 class ComplianceDashboardService:
@@ -21,7 +23,13 @@ class ComplianceDashboardService:
     """
 
     @classmethod
-    def get_compliance_report_versions_for_dashboard(cls, user_guid: UUID) -> QuerySet[ComplianceReportVersion]:
+    def get_compliance_report_versions_for_dashboard(
+        cls,
+        user_guid: UUID,
+        sort_field: Optional[str],
+        sort_order: Optional[str],
+        filters: ComplianceReportVersionFilterSchema = Query(...),
+    ) -> QuerySet[ComplianceReportVersion]:    
         """
         Fetches all compliance summaries for the user's operations
         """
@@ -60,34 +68,56 @@ class ComplianceDashboardService:
             .filter(report_compliance_summary__report_version__report__reporting_year=reporting_year)
         )
 
+        # Annotate DB-side aliases
+        compliance_report_version_queryset = cls._annotate_for_schema(compliance_report_version_queryset)
+        # Build a Django order_by key from the requested sort inputs.
+        order = (sort_order or "asc").lower()
+        sort_direction = "-" if order == "desc" else ""
+        sort_by = f"{sort_direction}{sort_field}" if sort_field else None
+
         if user.is_irc_user():
-            # Get all compliance report versions for Internal Users
-            compliance_report_versions = compliance_report_version_queryset.all()
+            # Internal users: filter
+            qs = filters.filter(compliance_report_version_queryset)
+            if sort_by:
+                qs = qs.order_by(sort_by)                   
+            compliance_report_versions = qs
         else:
             operations = (
                 OperationDataAccessService.get_all_current_operations_for_user(user)
                 .select_related('operator')
                 .filter(status=Operation.Statuses.REGISTERED)
-                .values_list('id')
+                .values_list('id')  # keep as-is
             )
-            # Get all compliance report versions for the filtered operations
-            compliance_report_versions = compliance_report_version_queryset.filter(
+
+            # Current operations → apply filters BEFORE union
+            current_ops_qs = compliance_report_version_queryset.filter(
                 report_compliance_summary__report_version__report__operation_id__in=operations,
                 report_compliance_summary__report_version__report__operator=UserOperatorService.get_current_user_approved_user_operator_or_raise(
                     user
                 ).operator,
             )
-            compliance_report_versions = compliance_report_versions | ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
+            current_ops_qs = filters.filter(current_ops_qs)
+
+            # Previously owned → apply filters BEFORE union
+            previously_owned_qs = ComplianceReportVersionService.get_compliance_report_versions_for_previously_owned_operations(
                 user_guid=user_guid
             ).exclude(
-                # Exclude compliance report versions that are supplementary and have no obligation or earned credits. We don't need to show users these versions because there are no actions to take
-                # Exclude superceded compliance report versions
                 Q(
                     is_supplementary=True,
                     status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
                 )
                 | Q(status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED)
             )
+            previously_owned_qs = cls._annotate_for_schema(previously_owned_qs)
+            previously_owned_qs = filters.filter(previously_owned_qs)
+
+            # Union AFTER filtering both sides
+            compliance_report_versions = current_ops_qs | previously_owned_qs
+
+            # Optional sort (only if sort_by was built earlier)
+            if sort_by:
+                compliance_report_versions = compliance_report_versions.order_by(sort_by)
+
 
         for version in compliance_report_versions:
             version.outstanding_balance_tco2e = ComplianceReportVersionService.calculate_outstanding_balance_tco2e(version)  # type: ignore[attr-defined]
@@ -212,3 +242,15 @@ class ComplianceDashboardService:
         payments = ElicensingPayment.objects.filter(elicensing_line_item__elicensing_invoice=refreshed_data.invoice)
 
         return PaymentDataWithFreshnessFlag(data_is_fresh=refreshed_data.data_is_fresh, data=payments)
+
+    @staticmethod
+    def _annotate_for_schema(qs: QuerySet) -> QuerySet:
+        return qs.annotate(
+            operator_name=F("report_compliance_summary__report_version__report__operator__legal_name"),
+            operation_name=F("report_compliance_summary__report_version__report__operation__name"),
+            reporting_year=F("report_compliance_summary__report_version__report__reporting_year__reporting_year"),
+            excess_emissions=F("report_compliance_summary__excess_emissions"),
+            issuance_status=F("compliance_earned_credit__issuance_status"),
+            penalty_status=F("obligation__penalty_status"),
+            obligation_id=F("obligation__obligation_id"),
+        )
