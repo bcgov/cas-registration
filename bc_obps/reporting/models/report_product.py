@@ -43,7 +43,9 @@ class ReportProduct(TimeStampedModel):
         db_comment="The total annual production for the product, expressed in the unit of this same model."
     )
     production_data_apr_dec = models.FloatField(
-        db_comment="The total production amount for April to December period, expressed in the unit of this same model."
+        db_comment="The total production amount for April to December period, expressed in the unit of this same model. This field is only mandatory for reporting year 2024.",
+        blank=True,
+        null=True,
     )
     production_methodology = models.CharField(
         max_length=10000,
@@ -91,11 +93,16 @@ class ReportProduct(TimeStampedModel):
             ),
             models.CheckConstraint(
                 name="other_methodology_must_have_description",
-                check=~Q(
+                condition=~Q(
                     production_methodology="other",
                     production_methodology_description__isnull=True,
                 ),
                 violation_error_message="A value for production_methodology_description should be provided if the production_methodology is 'other'",
+            ),
+            models.CheckConstraint(
+                name="production_data_apr_dec_only_mandatory_for_2024",
+                condition=~Q(production_data_apr_dec__isnull=True, report_version__report__reporting_year_id=2024),
+                violation_error_message="A value for production_data_apr_dec must be provided if reporting year is 2024",
             ),
         ]
         triggers = [
