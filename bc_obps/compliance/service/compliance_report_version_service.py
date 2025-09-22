@@ -137,7 +137,7 @@ class ComplianceReportVersionService:
         """
         if excess_emissions > ZERO_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        elif credited_emissions > ZERO_DECIMAL:
+        elif int(credited_emissions) > ZERO_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
