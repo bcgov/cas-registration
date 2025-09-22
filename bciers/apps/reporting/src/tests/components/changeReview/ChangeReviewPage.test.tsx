@@ -2,19 +2,15 @@ import { render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import ChangeReviewPage from "@reporting/src/app/components/changeReview/ChangeReviewPage";
 import { getReportVersionDetails } from "@reporting/src/app/utils/getReportVersionDetails";
-import { getChangeReviewData } from "@reporting/src/app/utils/getReviewChangesData";
 import { getIsSupplementaryReport } from "@reporting/src/app/utils/getIsSupplementaryReport";
 import { getReportVerificationStatus } from "@reporting/src/app/utils/getReportVerificationStatus";
 import { getNavigationInformation } from "@reporting/src/app/components/taskList/navigationInformation";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
+import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 
 // Mock all the async utility functions
 vi.mock("@reporting/src/app/utils/getReportVersionDetails", () => ({
   getReportVersionDetails: vi.fn(),
-}));
-
-vi.mock("@reporting/src/app/utils/getReviewChangesData", () => ({
-  getChangeReviewData: vi.fn(),
 }));
 
 vi.mock("@reporting/src/app/utils/getIsSupplementaryReport", () => ({
@@ -31,6 +27,10 @@ vi.mock("@reporting/src/app/components/taskList/navigationInformation", () => ({
 
 vi.mock("@reporting/src/app/utils/getRegistrationPurpose", () => ({
   getRegistrationPurpose: vi.fn(),
+}));
+
+vi.mock("@reporting/src/app/utils/getReportFacilityList", () => ({
+  getReportFacilityList: vi.fn(),
 }));
 
 vi.mock("@reporting/src/app/components/changeReview/ChangeReviewForm", () => ({
@@ -58,9 +58,6 @@ describe("The ChangeReviewPage component", () => {
     getReportVersionDetails as vi.MockedFunction<
       typeof getReportVersionDetails
     >;
-  const mockGetChangeReviewData = getChangeReviewData as vi.MockedFunction<
-    typeof getChangeReviewData
-  >;
   const mockGetIsSupplementaryReport =
     getIsSupplementaryReport as vi.MockedFunction<
       typeof getIsSupplementaryReport
@@ -76,21 +73,12 @@ describe("The ChangeReviewPage component", () => {
   const mockGetRegistrationPurpose =
     getRegistrationPurpose as vi.MockedFunction<typeof getRegistrationPurpose>;
 
+  const mockGetReportFacilityList = getReportFacilityList as vi.MockedFunction<
+    typeof getReportFacilityList
+  >;
+
   const mockFormData = { reportId: 123, status: "draft", operatorId: 1 };
-  const mockChanges = [
-    {
-      field: "test_field",
-      old_value: "old",
-      new_value: "new",
-      change_type: "modified",
-    },
-    {
-      field: "another_field",
-      old_value: "value1",
-      new_value: "value2",
-      change_type: "modified",
-    },
-  ];
+
   const mockNavigationInfo = {
     headerStepIndex: 4,
     headerSteps: [
@@ -115,7 +103,6 @@ describe("The ChangeReviewPage component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetReportVersionDetails.mockResolvedValue(mockFormData);
-    mockGetChangeReviewData.mockResolvedValue({ changed: mockChanges });
     mockGetIsSupplementaryReport.mockResolvedValue(true);
     mockGetReportVerificationStatus.mockResolvedValue({
       show_verification_page: true,
@@ -123,6 +110,9 @@ describe("The ChangeReviewPage component", () => {
     mockGetNavigationInformation.mockResolvedValue(mockNavigationInfo);
     mockGetRegistrationPurpose.mockResolvedValue({
       registration_purpose: "New Registration",
+    });
+    mockGetReportFacilityList.mockResolvedValue({
+      facilities: ["test facility"],
     });
   });
 
@@ -134,7 +124,7 @@ describe("The ChangeReviewPage component", () => {
 
     expect(screen.getByTestId("change-review-form")).toBeInTheDocument();
     expect(screen.getByTestId("version-id")).toHaveTextContent("123");
-    expect(screen.getByTestId("changes-count")).toHaveTextContent("2");
+    expect(screen.getByTestId("changes-count")).toHaveTextContent("0");
     expect(screen.getByTestId("initial-form-data")).toHaveTextContent(
       JSON.stringify(mockFormData),
     );
@@ -150,7 +140,6 @@ describe("The ChangeReviewPage component", () => {
 
     await waitFor(() => {
       expect(mockGetReportVersionDetails).toHaveBeenCalledWith(123);
-      expect(mockGetChangeReviewData).toHaveBeenCalledWith(123);
       expect(mockGetIsSupplementaryReport).toHaveBeenCalledWith(123);
       expect(mockGetReportVerificationStatus).toHaveBeenCalledWith(123);
       expect(mockGetNavigationInformation).toHaveBeenCalledWith(
@@ -202,16 +191,12 @@ describe("The ChangeReviewPage component", () => {
   });
 
   it("handles empty changes data", async () => {
-    mockGetChangeReviewData.mockResolvedValue({ changed: [] });
     const ChangeReviewPageComponent = await ChangeReviewPage({
       version_id: 999,
     });
     render(ChangeReviewPageComponent);
 
     expect(screen.getByTestId("changes-count")).toHaveTextContent("0");
-    await waitFor(() => {
-      expect(mockGetChangeReviewData).toHaveBeenCalledWith(999);
-    });
   });
 
   it("handles error in data fetching gracefully", async () => {
@@ -279,7 +264,6 @@ describe("The ChangeReviewPage component", () => {
     render(ChangeReviewPageComponent);
 
     expect(mockGetReportVersionDetails).toHaveBeenCalledTimes(1);
-    expect(mockGetChangeReviewData).toHaveBeenCalledTimes(1);
     expect(mockGetIsSupplementaryReport).toHaveBeenCalledTimes(1);
     expect(mockGetReportVerificationStatus).toHaveBeenCalledTimes(1);
     expect(mockGetNavigationInformation).toHaveBeenCalledTimes(1);

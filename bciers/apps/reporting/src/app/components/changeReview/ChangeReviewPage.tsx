@@ -10,7 +10,7 @@ import {
 } from "@reporting/src/app/components/taskList/types";
 import ChangeReviewForm from "./ChangeReviewForm";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
-import { getReportFacilityList } from "../../utils/getReportFacilityList";
+import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 
 export default async function ChangeReviewPage({
   version_id,
