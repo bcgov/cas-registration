@@ -19,6 +19,8 @@ from compliance.tasks import retryable_send_notice_of_no_obligation_no_earned_cr
 
 logger = logging.getLogger(__name__)
 
+ZERO_DECIMAL = Decimal('0')
+
 
 class ComplianceReportVersionService:
     @classmethod
@@ -133,9 +135,9 @@ class ComplianceReportVersionService:
         Returns:
             ComplianceReportVersion.ComplianceStatus: The compliance status
         """
-        if excess_emissions > Decimal('0'):
+        if excess_emissions > ZERO_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
-        elif credited_emissions > Decimal('0'):
+        elif credited_emissions > ZERO_DECIMAL:
             return ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         else:
             return ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
@@ -197,7 +199,7 @@ class ComplianceReportVersionService:
         """
 
         # Start with the base outstanding balance (excess emissions if positive, otherwise 0)
-        outstanding_balance = max(compliance_report_version.report_compliance_summary.excess_emissions, Decimal('0'))
+        outstanding_balance = max(compliance_report_version.report_compliance_summary.excess_emissions, ZERO_DECIMAL)
 
         # Future extension points:
         # 1. Incorporate monetary payments into the calculation

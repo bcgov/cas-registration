@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest.mock import patch
 import uuid
 from common.models import EmailNotification
@@ -217,6 +218,31 @@ class TestSendNotifications:
             template_instance,
             expected_context,
         )
+
+    @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+    def test_send_earned_credits_email_does_not_send_when_amount_less_than_one(
+        self, mock_send_email_to_operators_approved_users_or_raise
+    ):
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+        )
+        earned_credit = baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=compliance_report_version,
+            earned_credits_amount=Decimal('0.5'),  # Amount greater than 0 but less than 1
+        )
+
+        # Call the function with the earned credit ID
+        send_notice_of_earned_credits_generated_email(earned_credit.id)
+
+        # Verify that the email function was not called
+        mock_send_email_to_operators_approved_users_or_raise.assert_not_called()
 
     @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
     def test_send_no_obligation_no_credits_email(self, mock_send_email_to_operators_approved_users_or_raise):

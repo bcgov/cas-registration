@@ -57,6 +57,22 @@ class TestComplianceEarnedCreditsService:
         assert result.earned_credits_amount == 100
         mock_send_email.execute.assert_called_once_with(result.pk)
 
+    @patch('compliance.service.earned_credits_service.retryable_send_notice_of_earned_credits_email')
+    def test_create_earned_credits_record_does_not_send_email_when_amount_less_than_one(self, mock_send_email):
+        report_compliance_summary = make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            credited_emissions=Decimal('0.5'),  # Amount greater than 0 but less than 1
+            excess_emissions=0,
+        )
+        compliance_report_version = make_recipe(
+            'compliance.tests.utils.compliance_report_version', report_compliance_summary=report_compliance_summary
+        )
+        result = ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+
+        assert result.earned_credits_amount == 0  # Should be rounded down to 0
+        # Email should not be sent because the amount is less than 1
+        mock_send_email.execute.assert_not_called()
+
     @patch('compliance.service.earned_credits_service.retryable_send_notice_of_credits_requested_email')
     def test_update_earned_credit_industry_user_success(self, mock_send_email):
         # Arrange
