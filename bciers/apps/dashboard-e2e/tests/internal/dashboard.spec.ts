@@ -60,6 +60,7 @@ userRoles.forEach((role) => {
             break;
           case DashboardTiles.COMPLIANCE:
             tileTexts = Object.values(InternalComplianceTileText);
+            skipUrlCheck = true;
             break;
           case DashboardTiles.ACCESS_REQUEST:
             tileTexts = Object.values(AccessRequestText);
