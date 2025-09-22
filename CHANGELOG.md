@@ -1,3 +1,21 @@
+# [4.0.0](https://github.com/bcgov/cas-registration/compare/v3.20.0...v4.0.0) (2025-09-22)
+
+### Bug Fixes
+
+- limit review changes to 20 facilities ([a5307f0](https://github.com/bcgov/cas-registration/commit/a5307f043ccfd1f32f9f13c3b87dd377c50e6299))
+- update alert icon color to use BC_GOV_YELLOW constant ([e4b70f4](https://github.com/bcgov/cas-registration/commit/e4b70f49c81e322c8571c6d158e0f0e72682ad62))
+- update issuance status permissions to include CAS_ANALYST role and modify declined message ([f5ec860](https://github.com/bcgov/cas-registration/commit/f5ec860b40d6a3730c802b7d6429050bf11314de))
+
+### Features
+
+- add iconColor prop to AlertNote component for direct color control ([cc6612b](https://github.com/bcgov/cas-registration/commit/cc6612b6243ea8ef6684082495b43db2e66f874d))
+- elicensing invoices grid ([0e11bef](https://github.com/bcgov/cas-registration/commit/0e11befacd83320ce61af56eb2ad8278c75855ca))
+- Emission Allocation form: alert note for missing product ([7faaa28](https://github.com/bcgov/cas-registration/commit/7faaa280c2b11bbd120d5163211ed10c360545e2))
+- remove transactions link from compliance dashboard menu ([e9bc2db](https://github.com/bcgov/cas-registration/commit/e9bc2db9ca7f1a99dfea7176ae64e1f0754d8e95))
+- services to send emails when earned credits are requested ([44ad04c](https://github.com/bcgov/cas-registration/commit/44ad04ce5647af080a60898a553d0fe8f9f7be5a))
+- supercede compliance versions with no binding actions ([2b3b3de](https://github.com/bcgov/cas-registration/commit/2b3b3de0b06bd404c17e3b35c07fef28a6287a61))
+- use compliance report version id for signal consumer ([5a982b7](https://github.com/bcgov/cas-registration/commit/5a982b728c2c5d45b6a7f6ef923e55fd25330302))
+
 # [3.20.0](https://github.com/bcgov/cas-registration/compare/v3.19.0...v3.20.0) (2025-09-17)
 
 ### Bug Fixes
