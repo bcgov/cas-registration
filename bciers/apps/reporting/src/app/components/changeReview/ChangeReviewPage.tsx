@@ -49,7 +49,7 @@ export default async function ChangeReviewPage({
         initialFormData={initialFormData}
         navigationInformation={navInfo}
         registrationPurpose={registrationPurpose}
-        displayChanges={facilityCount > 20}
+        displayChanges={facilityCount < 20}
       />
     </>
   );
