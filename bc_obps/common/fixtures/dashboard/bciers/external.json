@@ -184,6 +184,31 @@
             ]
           },
           {
+            "title": "Compliance",
+            "icon": "File",
+            "content": "Manage compliance obligations, apply compliance units (earned credits, offset units) towards compliance obligations, pay penalties, request issuance of earned credits, track invoices and transactions here.",
+            "conditions": [
+              {
+                "api": "registration/user-operators/current/has_registered_regulated_operation",
+                "field": "has_registered_regulated_operation",
+                "operator": "equals",
+                "value": true
+              }
+            ],
+            "links": [
+              {
+                "title": "My Compliance",
+                "href": "/compliance/compliance-summaries"
+              },
+              {
+                "title": "B.C. Carbon Registry",
+                "href": "https://carbonregistry.gov.bc.ca/br-reg/public/bc/home.jsp#/login",
+                "target": "_blank",
+                "rel": "noopener noreferrer"
+              }
+            ]
+          },
+          {
             "title": "Report a Problem",
             "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Wrench",

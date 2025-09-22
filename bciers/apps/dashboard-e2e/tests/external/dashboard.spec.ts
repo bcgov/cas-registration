@@ -92,6 +92,7 @@ userRoles.forEach((role) => {
               break;
             case DashboardTiles.COMPLIANCE:
               tileTexts = Object.values(ComplianceTileText);
+              skipUrlCheck = true;
               break;
             case DashboardTiles.REPORT_A_PROBLEM:
               // Report a Problem is a link to an email address, check visibility and href but do not click
