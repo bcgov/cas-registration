@@ -9,15 +9,17 @@ import {
   ReportingPage,
 } from "@reporting/src/app/components/taskList/types";
 import ChangeReviewForm from "./ChangeReviewForm";
-import { getChangeReviewData } from "@reporting/src/app/utils/getReviewChangesData";
 import { getRegistrationPurpose } from "@reporting/src/app/utils/getRegistrationPurpose";
+import { getReportFacilityList } from "@reporting/src/app/utils/getReportFacilityList";
 
 export default async function ChangeReviewPage({
   version_id,
 }: HasReportVersion) {
   // 🚀 Get form data
   const initialFormData = await getReportVersionDetails(version_id);
-  const changes = await getChangeReviewData(version_id);
+
+  const facilityList = await getReportFacilityList(version_id);
+  const facilityCount = facilityList.facilities.length;
 
   // 🔍 Check if is a supplementary report
   const isSupplementaryReport = await getIsSupplementaryReport(version_id);
@@ -46,8 +48,8 @@ export default async function ChangeReviewPage({
         versionId={version_id}
         initialFormData={initialFormData}
         navigationInformation={navInfo}
-        changes={changes.changed}
         registrationPurpose={registrationPurpose}
+        displayChanges={facilityCount < 20}
       />
     </>
   );
