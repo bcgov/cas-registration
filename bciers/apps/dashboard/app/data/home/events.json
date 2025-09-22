@@ -9,15 +9,18 @@
   },
   {
     "date": "May 31, 2025",
-    "event": "Annual Reports are due\n• Final due date to submit annual report(s) for the 2024 year."
+    "event": "Annual Reports are due\n• Final due date to submit annual report(s) for the 2024 year"
   },
   {
-    "date": "Fall 2025",
-    "event": "Compliance module opens \n• Request Earned Credits \n• Meet compliance obligation"
+    "date": "September 2025",
+    "event": "Compliance module opens \n• Request Earned Credits \n• View compliance obligation"
   },
-
   {
-    "date": "November 30, \n2025",
-    "event": "Compliance obligations are due "
+    "date": "November 1, 2025",
+    "event": "2024 compliance invoice(s) are issued"
+  },
+  {
+    "date": "November 30, 2025",
+    "event": "Compliance obligations are due"
   }
 ]
