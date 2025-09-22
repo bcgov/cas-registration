@@ -363,6 +363,7 @@ class FacilityReportLFOSchema(ModelSchema):
 class BaseReportVersionSchema(ModelSchema):
     report_operation: Optional[ReportOperationSchema] = None
     report_person_responsible: Optional[ReportPersonResponsibleOut] = None
+    report_compliance_summary: Optional[ComplianceDataSchemaOut] = None
     report_additional_data: Optional[ReportAdditionalDataSchema] = None
     report_electricity_import_data: List[ReportElectricityImportDataSchema] = []
     report_new_entrant: List[ReportNewEntrantSchema] = []
@@ -388,12 +389,7 @@ class BaseReportVersionSchema(ModelSchema):
 
     class Meta:
         model = ReportVersion
-        fields = [
-            "report_type",
-            "is_latest_submitted",
-            "reason_for_change",
-            "status",
-        ]
+        fields = ["report_type", "is_latest_submitted", "reason_for_change", "status"]
 
 
 class FinalReviewVersionSchema(BaseReportVersionSchema):
