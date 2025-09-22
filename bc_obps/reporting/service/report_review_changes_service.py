@@ -256,19 +256,8 @@ class ReportReviewChangesService:
             )
 
         # --- Facility name changes / added / removed ---
-        prev_facilities_raw = previous.get("facility_reports", [])
-        curr_facilities_raw = current.get("facility_reports", [])
-
-        # Normalize to dict keyed by facility id or name
-        def normalize_facilities(data: Union[List[dict], Dict[str, dict]]) -> Dict[str, dict]:
-            if isinstance(data, dict):
-                return data
-            if isinstance(data, list):
-                return {str(f.get("facility") or f.get("facility_name")): f for f in data}
-            return {}
-
-        prev_facilities = normalize_facilities(prev_facilities_raw)
-        curr_facilities = normalize_facilities(curr_facilities_raw)
+        prev_facilities = previous.get("facility_reports", [])
+        curr_facilities = current.get("facility_reports", [])
 
         # Detect removed facilities
         for fac_name, prev_fac in prev_facilities.items():

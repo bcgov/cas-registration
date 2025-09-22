@@ -407,4 +407,8 @@ class FinalReviewVersionSchema(BaseReportVersionSchema):
 
 
 class ReviewChangesVersionSchema(BaseReportVersionSchema):
-    facility_reports: List[FacilityReportSchema] = []
+    facility_reports: Dict[str, FacilityReportSchema] = {}
+
+    @staticmethod
+    def resolve_facility_reports(obj: ReportVersion) -> Dict[str, FacilityReport]:
+        return {facility.facility_name: facility for facility in obj.facility_reports.all()}
