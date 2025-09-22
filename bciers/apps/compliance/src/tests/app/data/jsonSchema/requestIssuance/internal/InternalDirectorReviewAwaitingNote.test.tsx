@@ -1,5 +1,6 @@
 import { InternalDirectorReviewAwaitingNote } from "@/compliance/src/app/data/jsonSchema/requestIssuance/internal/InternalDirectorReviewAwaitingNote";
 import { render, screen } from "@testing-library/react";
+import { BC_GOV_YELLOW } from "@bciers/styles";
 
 vi.mock("@bciers/components/icons/AlertIcon", () => ({
   __esModule: true,
@@ -31,5 +32,6 @@ describe("InternalDirectorReviewAwaitingNote", () => {
 
     const alertIcon = screen.getByTestId("alert-icon");
     expect(alertIcon).toBeVisible();
+    expect(alertIcon).toHaveAttribute("fill", BC_GOV_YELLOW);
   });
 });

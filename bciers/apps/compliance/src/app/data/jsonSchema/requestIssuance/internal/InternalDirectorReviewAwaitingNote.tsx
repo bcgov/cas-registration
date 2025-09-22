@@ -1,9 +1,10 @@
 import React from "react";
 import AlertNote from "@bciers/components/form/components/AlertNote";
+import { BC_GOV_YELLOW } from "@bciers/styles";
 
 export const InternalDirectorReviewAwaitingNote = () => {
   return (
-    <AlertNote iconColor="#635231">
+    <AlertNote iconColor={BC_GOV_YELLOW}>
       Once the issuance request is approved, the earned credits will be issued
       to the holding account as identified above in B.C. Carbon Registry.
     </AlertNote>
