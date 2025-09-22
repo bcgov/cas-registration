@@ -26,8 +26,6 @@ export default async function ProductionDataPage({
     .facility_type;
 
   const schema: any = buildProductionDataSchema(
-    "Jan 1",
-    "Dec 31",
     allowedProductNames,
     facilityType,
   );

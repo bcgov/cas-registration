@@ -8,8 +8,6 @@ import { RJSFSchema, UiSchema } from "@rjsf/utils";
 import { ProductionDataTitleWidget } from "@reporting/src/data/jsonSchema/commonSchema/productionDataTitleWidget";
 
 export const buildProductionDataSchema = (
-  compliance_period_start: string,
-  compliance_period_end: string,
   product_selection: string[],
   facility_type: string,
 ) => {
@@ -83,22 +81,22 @@ export const buildProductionDataSchema = (
             default: "OBPS Calculator",
           },
           storage_quantity_start_of_period: {
-            title: `Quantity in storage at the beginning of the compliance period [${compliance_period_start}], if applicable`,
+            title: `Quantity in storage at the beginning of the compliance period [Jan 1], if applicable`,
             type: "number",
             minimum: 0,
           },
           storage_quantity_end_of_period: {
-            title: `Quantity in storage at the end of the compliance period [${compliance_period_end}], if applicable`,
+            title: `Quantity in storage at the end of the compliance period [Dec 31], if applicable`,
             type: "number",
             minimum: 0,
           },
           quantity_sold_during_period: {
-            title: `Quantity sold during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
+            title: `Quantity sold during compliance period [Jan 1 - Dec 31], if applicable`,
             type: "number",
             minimum: 0,
           },
           quantity_throughput_during_period: {
-            title: `Quantity of throughput at point of sale during compliance period [${compliance_period_start} - ${compliance_period_end}], if applicable`,
+            title: `Quantity of throughput at point of sale during compliance period [Jan 1 - Dec 31], if applicable`,
             type: "number",
             minimum: 0,
           },
