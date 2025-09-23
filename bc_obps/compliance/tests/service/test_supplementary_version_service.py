@@ -342,63 +342,6 @@ class TestSupplementaryVersionService(BaseSupplementaryVersionServiceTest):
         mock_decreased_credit_handler.assert_not_called()
 
     # THE FOLLOWING TWO TESTS WILL NEED REWRITING AFTER HANDLING SCENARIOS WHERE CREDITS HAVE BEEN ISSUED/REQUESTED
-    # def test_handle_increased_credit_success(
-    #     self,
-    #     mock_increased_handler,
-    #     mock_decreased_handler,
-    #     mock_no_change_handler,
-    #     mock_increased_credit_handler,
-    #     mock_decreased_credit_handler,
-    # ):
-    #     # Arrange
-    #     with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-    #         self.previous_summary = baker.make_recipe(
-    #             'reporting.tests.utils.report_compliance_summary',
-    #             excess_emissions=0,
-    #             credited_emissions=Decimal('500'),
-    #             report_version=self.report_version_1,
-    #         )
-    #     self.new_summary = baker.make_recipe(
-    #         'reporting.tests.utils.report_compliance_summary',
-    #         excess_emissions=0,
-    #         credited_emissions=Decimal('600'),
-    #         report_version=self.report_version_2,
-    #     )
-    #     self.compliance_report = baker.make_recipe(
-    #         'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
-    #     )
-    #     self.previous_compliance_report_version = baker.make_recipe(
-    #         'compliance.tests.utils.compliance_report_version',
-    #         compliance_report=self.compliance_report,
-    #         report_compliance_summary=self.previous_summary,
-    #         is_supplementary=False,
-    #     )
-    #     baker.make_recipe(
-    #         'compliance.tests.utils.compliance_earned_credit',
-    #         compliance_report_version=self.previous_compliance_report_version,
-    #         earned_credits_amount=500,
-    #         issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
-    #     )
-    #     mock_result = MagicMock(spec=ComplianceReportVersion)
-    #     mock_increased_credit_handler.return_value = mock_result
-
-    #     # Act
-    #     result = SupplementaryVersionService().handle_supplementary_version(
-    #         self.compliance_report, self.report_version_2, 2
-    #     )
-
-    #     # Assert
-    #     mock_increased_credit_handler.assert_called_once_with(
-    #         compliance_report=self.compliance_report,
-    #         new_summary=self.new_summary,
-    #         previous_summary=self.previous_summary,
-    #         version_count=2,
-    #     )
-    #     assert result == mock_result
-    #     mock_increased_handler.assert_not_called()
-    #     mock_decreased_handler.assert_not_called()
-    #     mock_no_change_handler.assert_not_called()
-    #     mock_decreased_credit_handler.assert_not_called()
 
     # def test_handle_decreased_credit_success(
     #     self,
@@ -1560,42 +1503,6 @@ class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
 
 
 class TestIncreasedCreditHandler(BaseSupplementaryVersionServiceTest):
-    def test_can_handle_increased_credits(self):
-        # Arrange
-        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
-            self.previous_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=0,
-                credited_emissions=Decimal('500'),
-                report_version=self.report_version_1,
-            )
-            self.new_summary = baker.make_recipe(
-                'reporting.tests.utils.report_compliance_summary',
-                excess_emissions=0,
-                credited_emissions=Decimal('600'),
-                report_version=self.report_version_2,
-            )
-        self.compliance_report = baker.make_recipe(
-            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
-        )
-        self.original_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version',
-            report_compliance_summary=self.previous_summary,
-            is_supplementary=False,
-        )
-        baker.make_recipe(
-            'compliance.tests.utils.compliance_earned_credit',
-            compliance_report_version=self.original_report_version,
-            earned_credits_amount=500,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED,
-        )
-
-        # Act
-        result = IncreasedCreditHandler.can_handle(self.new_summary, self.previous_summary)
-
-        # Assert
-        assert result is True
-
     def test_can_handle_credits_already_applied(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
@@ -1630,21 +1537,117 @@ class TestIncreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         result = IncreasedCreditHandler.can_handle(self.new_summary, self.previous_summary)
 
         # Assert
-        assert result is False
+        assert result is True
 
-    def test_handle_increased_credits_success(self):
+    def test_can_handle_credits_already_declined(self):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
                 'reporting.tests.utils.report_compliance_summary',
                 excess_emissions=0,
-                credited_emissions=Decimal('100'),
+                credited_emissions=Decimal('500'),
                 report_version=self.report_version_1,
             )
         self.new_summary = baker.make_recipe(
             'reporting.tests.utils.report_compliance_summary',
             excess_emissions=0,
-            credited_emissions=Decimal('250'),
+            credited_emissions=Decimal('600'),
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version', report_compliance_summary=self.previous_summary
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.original_report_version,
+            earned_credits_amount=500,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            bccr_trading_name='Test Trading Name',
+            bccr_holding_account_id='123',
+        )
+
+        # Act
+        result = IncreasedCreditHandler.can_handle(self.new_summary, self.previous_summary)
+
+        # Assert
+        assert result is True
+
+    def test_calls_correct_handler(
+        self,
+        mock_increased_handler,
+        mock_decreased_handler,
+        mock_no_change_handler,
+        mock_increased_credit_handler,
+        mock_decreased_credit_handler,
+    ):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('500'),
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=0,
+            credited_emissions=Decimal('600'),
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=self.compliance_report,
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.previous_compliance_report_version,
+            earned_credits_amount=500,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+            bccr_trading_name='Test Trading Name',
+            bccr_holding_account_id='1234',
+        )
+        mock_result = MagicMock(spec=ComplianceReportVersion)
+        mock_increased_credit_handler.return_value = mock_result
+
+        # Act
+        result = SupplementaryVersionService().handle_supplementary_version(
+            self.compliance_report, self.report_version_2, 2
+        )
+
+        # Assert
+        mock_increased_credit_handler.assert_called_once_with(
+            compliance_report=self.compliance_report,
+            new_summary=self.new_summary,
+            previous_summary=self.previous_summary,
+            version_count=2,
+        )
+        assert result == mock_result
+        mock_increased_handler.assert_not_called()
+        mock_decreased_handler.assert_not_called()
+        mock_no_change_handler.assert_not_called()
+        mock_decreased_credit_handler.assert_not_called()
+
+    def test_handle_increased_credits_success_when_credits_previously_approved(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('600'),
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=0,
+            credited_emissions=Decimal('800'),
             report_version=self.report_version_2,
         )
         self.compliance_report = baker.make_recipe(
@@ -1660,21 +1663,73 @@ class TestIncreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.previous_compliance_report_version,
             compliance_report_version__compliance_report=self.compliance_report,
-            earned_credits_amount=Decimal('100'),
+            earned_credits_amount=Decimal('600'),
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+            bccr_trading_name='Test Trading Name',
+            bccr_holding_account_id='1234',
         )
         # Act
         result = IncreasedCreditHandler.handle(self.compliance_report, self.new_summary, self.previous_summary, 2)
 
         # Assert result
-        assert result.status == ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+        assert result.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
         assert result.report_compliance_summary_id == self.new_summary.id
         assert result.compliance_report_id == self.compliance_report.id
-        assert result.credited_emissions_delta_from_previous == Decimal('150')
+        assert result.credited_emissions_delta_from_previous == Decimal('200')
         assert result.is_supplementary is True
         assert result.previous_version == self.previous_compliance_report_version
-        # Assert the earned credits were updated correctly
+        # Assert the original earned credits report is untouched and we have a new one
         earned_credit.refresh_from_db()
-        assert earned_credit.earned_credits_amount == Decimal('250')
+        assert earned_credit.earned_credits_amount == Decimal('600')
+        assert ComplianceEarnedCredit.objects.last().earned_credits_amount == Decimal('200')
+
+    def test_handle_increased_credits_success_when_credits_previously_declined(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('600'),
+                report_version=self.report_version_1,
+            )
+        self.new_summary = baker.make_recipe(
+            'reporting.tests.utils.report_compliance_summary',
+            excess_emissions=0,
+            credited_emissions=Decimal('800'),
+            report_version=self.report_version_2,
+        )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.previous_compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+            compliance_report=self.compliance_report,
+        )
+        earned_credit = baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.previous_compliance_report_version,
+            compliance_report_version__compliance_report=self.compliance_report,
+            earned_credits_amount=Decimal('600'),
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            bccr_trading_name='Test Trading Name',
+            bccr_holding_account_id='1234',
+        )
+        # Act
+        result = IncreasedCreditHandler.handle(self.compliance_report, self.new_summary, self.previous_summary, 2)
+
+        # Assert result
+        assert result.status == ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS
+        assert result.report_compliance_summary_id == self.new_summary.id
+        assert result.compliance_report_id == self.compliance_report.id
+        assert result.credited_emissions_delta_from_previous == Decimal('200')
+        assert result.is_supplementary is True
+        assert result.previous_version == self.previous_compliance_report_version
+        # Assert the original earned credits report is untouched and we have a new one
+        earned_credit.refresh_from_db()
+        assert earned_credit.earned_credits_amount == Decimal('600')
+        assert ComplianceEarnedCredit.objects.last().earned_credits_amount == Decimal('800')
 
 
 class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
