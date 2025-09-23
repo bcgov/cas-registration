@@ -28,7 +28,7 @@ def validate(report_version: ReportVersion) -> dict[str, ReportValidationError]:
 
     for fr in facility_reports:
         emission_data = ReportEmissionAllocationService.get_emission_allocation_data(report_version.id, fr.facility_id)
-        if emission_data.allocation_methodology != "Not applicable":
+        if emission_data.allocation_methodology != "Not Applicable":
             for category in emission_data.report_product_emission_allocations:
                 total_allocated = sum(product.allocated_quantity for product in category.products)
                 if total_allocated != category.emission_total:
