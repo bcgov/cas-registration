@@ -3,6 +3,8 @@ import uuid
 from typing import Dict, Any
 from zoneinfo import ZoneInfo
 
+from django.db.models import QuerySet
+
 from compliance.service.elicensing.elicensing_operator_service import ElicensingOperatorService
 from compliance.service.elicensing.elicensing_api_client import (
     ELicensingAPIClient,
@@ -29,6 +31,20 @@ class ElicensingObligationService:
     """
 
     @classmethod
+    def _is_invoice_generation_date_reached(cls, compliance_period: CompliancePeriod) -> bool:
+        # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
+        vancouver_timezone = ZoneInfo("America/Vancouver")
+        current_date = timezone.now().astimezone(vancouver_timezone).date()
+        return current_date >= compliance_period.invoice_generation_date
+
+    @classmethod
+    def _is_invoice_generation_date_today(cls, compliance_period: CompliancePeriod) -> bool:
+        # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
+        vancouver_timezone = ZoneInfo("America/Vancouver")
+        current_date = timezone.now().astimezone(vancouver_timezone).date()
+        return current_date == compliance_period.invoice_generation_date
+
+    @classmethod
     def handle_obligation_integration(cls, obligation_id: int, compliance_period: CompliancePeriod) -> None:
         """
         Handle the obligation integration with eLicensing if the invoice generation date has passed.
@@ -38,12 +54,9 @@ class ElicensingObligationService:
             obligation_id: The ID of the compliance obligation
             compliance_period: The compliance period associated with the report
         """
+
         # Check if we should run the eLicensing integration based on the invoice generation date
-        # Convert current UTC time to Vancouver timezone before extracting date to ensure proper comparison
-        vancouver_timezone = ZoneInfo("America/Vancouver")
-        current_date = timezone.now().astimezone(vancouver_timezone).date()
-        if current_date >= compliance_period.invoice_generation_date:
-            # Import here to avoid circular import
+        if cls._is_invoice_generation_date_reached(compliance_period):
             from compliance.tasks import retryable_process_obligation_integration
 
             # This is done outside the main transaction to prevent rollback if integration fails
@@ -151,3 +164,69 @@ class ElicensingObligationService:
             "businessAreaCode": "OBPS",
             "fees": [fee_id],
         }
+
+    @classmethod
+    def generate_invoices_for_current_period(cls) -> None:
+        """
+        Generates invoices for all obligations in the current compliance period
+        that are due for invoice generation on the current date.
+
+        This method:
+        1. Gets the current reporting year
+        2. Finds the corresponding compliance period
+        3. Checks if today is the invoice generation date
+        4. Processes all obligations for that period that don't have invoices yet
+        5. Excludes superseded obligations
+        """
+        from service.reporting_year_service import ReportingYearService
+
+        current_reporting_year = ReportingYearService.get_current_reporting_year()
+
+        try:
+            compliance_period = CompliancePeriod.objects.get(reporting_year=current_reporting_year)
+        except CompliancePeriod.DoesNotExist:
+            logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
+            return
+
+        # Check if today is the invoice generation date
+        if not cls._is_invoice_generation_date_today(compliance_period):
+            return
+
+        obligations = cls._get_obligations_for_invoice_generation(compliance_period)
+
+        if not obligations.exists():
+            logger.info("No obligations found that need invoice generation")
+            return
+
+        for obligation in obligations:
+            try:
+                cls.handle_obligation_integration(obligation.id, compliance_period)
+            except Exception as e:
+                logger.error(f"Failed to process obligation {obligation.obligation_id}: {e}")
+                # Continue processing other obligations even if one fails
+                continue
+
+    @classmethod
+    def _get_obligations_for_invoice_generation(
+        cls, compliance_period: CompliancePeriod
+    ) -> QuerySet[ComplianceObligation]:
+        """
+        Get obligations that need invoice generation for the given compliance period.
+
+        Returns obligations that:
+        1. Belong to the specified compliance period
+        2. Don't already have an invoice (elicensing_invoice is None)
+        3. Are not superseded (compliance_report_version status is not SUPERCEDED)
+        """
+        return (
+            ComplianceObligation.objects.filter(
+                compliance_report_version__compliance_report__compliance_period=compliance_period,
+                elicensing_invoice__isnull=True,  # No invoice yet
+            )
+            .exclude(
+                compliance_report_version__status=ComplianceReportVersion.ComplianceStatus.SUPERCEDED
+            )  # Not superseded
+            .select_related(
+                'compliance_report_version__compliance_report__compliance_period', 'compliance_report_version'
+            )
+        )
