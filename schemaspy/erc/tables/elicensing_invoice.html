@@ -307,6 +307,23 @@
                                     <td><p>Boolean field indicates whether this invoice has been voided</p></td>
                                 </tr>
                                 <tr>
+                                    <td><span id="last_refreshed">last_refreshed</span></td>
+                                    <td>timestamptz</td>
+                                    <td>35,6</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The last time (UTC) that the invoice and its child data was successfully refreshed via the elicensing api</p></td>
+                                </tr>
+                                <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="archived_by_id">archived_by_id</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
@@ -394,23 +411,6 @@
                                     </td>
                                     <td></td>
                                 </tr>
-                                <tr>
-                                    <td><span id="last_refreshed">last_refreshed</span></td>
-                                    <td>timestamptz</td>
-                                    <td>35,6</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The last time (UTC) that the invoice and its child data was successfully refreshed via the elicensing api</p></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -496,12 +496,12 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1077,75,1363,339">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,498,224,850">
-<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="600,289,1033,798">
-<area shape="rect" id="node5" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="268,527,556,762">
-<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="1407,229,1656,493">
-<area shape="rect" id="node6" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1101,789,1339,1023">
+<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1077,98,1363,362">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,518,224,870">
+<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="600,452,1033,961">
+<area shape="rect" id="node5" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="268,653,556,888">
+<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="1407,252,1656,516">
+<area shape="rect" id="node6" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1101,905,1339,1140">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/elicensing_invoice.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -561,7 +561,7 @@
 <area shape="rect" id="node51" href="report_operation_representative.html" target="_top" title="report_operation_representative" alt="" coords="1955,3889,2295,3977">
 <area shape="rect" id="node52" href="report_person_responsible.html" target="_top" title="report_person_responsible" alt="" coords="1979,4062,2270,4150">
 <area shape="rect" id="node53" href="report_product.html" target="_top" title="report_product" alt="" coords="2430,2657,2630,2745">
-<area shape="rect" id="node54" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2764,2901,3128,2989">
+<area shape="rect" id="node54" href="report_product_emission_allocation.html" target="_top" title="report_product_emission_allocation" alt="" coords="2764,2902,3128,2990">
 <area shape="rect" id="node55" href="report_raw_activity_data.html" target="_top" title="report_raw_activity_data" alt="" coords="2391,4195,2669,4283">
 <area shape="rect" id="node56" href="report_sign_off.html" target="_top" title="report_sign_off" alt="" coords="2025,4371,2224,4459">
 <area shape="rect" id="node57" href="report_verification.html" target="_top" title="report_verification" alt="" coords="2010,4827,2239,4915">
@@ -576,12 +576,12 @@
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1077,75,1363,339">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,498,224,850">
-<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="600,289,1033,798">
-<area shape="rect" id="node5" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="268,527,556,762">
-<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="1407,229,1656,493">
-<area shape="rect" id="node6" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1101,789,1339,1023">
+<area shape="rect" id="node1" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1077,98,1363,362">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,518,224,870">
+<area shape="rect" id="node3" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="600,452,1033,961">
+<area shape="rect" id="node5" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="268,653,556,888">
+<area shape="rect" id="node4" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="1407,252,1656,516">
+<area shape="rect" id="node6" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1101,905,1339,1140">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/elicensing_invoice.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>

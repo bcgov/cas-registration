@@ -241,6 +241,40 @@
                                     <td><p>receivedDate of the payment in elicensing. The date when payment is received in the OBPS bank account. Receive Date can be backdated. This is the date that impacts interest calculation.</p></td>
                                 </tr>
                                 <tr>
+                                    <td><span id="method">method</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The method used to make the payment (e.g. wire transfer) from elicensing.</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="receipt_number">receipt_number</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Receipt number of the payment in elicensing.</p></td>
+                                </tr>
+                                <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="archived_by_id">archived_by_id</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
@@ -328,40 +362,6 @@
                                     </td>
                                     <td></td>
                                 </tr>
-                                <tr>
-                                    <td><span id="method">method</span></td>
-                                    <td>varchar</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The method used to make the payment (e.g. wire transfer) from elicensing.</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="receipt_number">receipt_number</span></td>
-                                    <td>varchar</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Receipt number of the payment in elicensing.</p></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -447,8 +447,8 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="268,295,507,529">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,280,224,632">
+<area shape="rect" id="node1" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="268,353,507,588">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,339,224,691">
 <area shape="rect" id="node3" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="551,5,935,456">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/elicensing_payment.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
@@ -524,8 +524,8 @@
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="268,295,507,529">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,280,224,632">
+<area shape="rect" id="node1" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="268,353,507,588">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,339,224,691">
 <area shape="rect" id="node3" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="551,5,935,456">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/elicensing_payment.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
@@ -567,7 +567,7 @@
 <area shape="rect" id="node32" href="operation_designated_operator_timeline.html" target="_top" title="operation_designated_operator_timeline" alt="" coords="1127,4281,1529,4369">
 <area shape="rect" id="node33" href="parent_operator.html" target="_top" title="parent_operator" alt="" coords="833,4716,1044,4804">
 <area shape="rect" id="node34" href="partner_operator.html" target="_top" title="partner_operator" alt="" coords="830,4611,1047,4699">
-<area shape="rect" id="node35" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2525,1347,2721,1435">
+<area shape="rect" id="node35" href="report_activity.html" target="_top" title="report_activity" alt="" coords="2525,1421,2721,1509">
 <area shape="rect" id="node36" href="report_additional_data.html" target="_top" title="report_additional_data" alt="" coords="2067,1852,2328,1940">
 <area shape="rect" id="node37" href="report_attachment.html" target="_top" title="report_attachment" alt="" coords="2081,1957,2313,2045">
 <area shape="rect" id="node38" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2026,2063,2369,2151">
@@ -575,7 +575,7 @@
 <area shape="rect" id="node40" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2037,3559,2358,3647">
 <area shape="rect" id="node41" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3895,2968,4103,3056">
 <area shape="rect" id="node42" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3615,3005,3783,3093">
-<area shape="rect" id="node43" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2923,1447,3155,1535">
+<area shape="rect" id="node43" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2923,1471,3155,1559">
 <area shape="rect" id="node44" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3300,1631,3469,1719">
 <area shape="rect" id="node45" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2476,2161,2771,2249">
 <area shape="rect" id="node46" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4147,89,4389,177">

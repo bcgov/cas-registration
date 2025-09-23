@@ -195,6 +195,23 @@
                                     <td></td>
                                 </tr>
                                 <tr>
+                                    <td><span id="bccr_subaccount_id">bccr_subaccount_id</span></td>
+                                    <td>varchar</td>
+                                    <td>15</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The BCCR subaccount ID associated with this compliance report. This is nullable because not all compliance reports will have a BCCR subaccount to deal with the compliance units.</p></td>
+                                </tr>
+                                <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="archived_by_id">archived_by_id</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
@@ -304,23 +321,6 @@
                                     </td>
                                     <td></td>
                                 </tr>
-                                <tr>
-                                    <td><span id="bccr_subaccount_id">bccr_subaccount_id</span></td>
-                                    <td>varchar</td>
-                                    <td>15</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The BCCR subaccount ID associated with this compliance report. This is nullable because not all compliance reports will have a BCCR subaccount to deal with the compliance units.</p></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -418,11 +418,11 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="268,84,511,319">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,291,224,643">
-<area shape="rect" id="node3" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="555,140,913,503">
-<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="295,372,483,666">
-<area shape="rect" id="node5" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="957,327,1328,620">
+<area shape="rect" id="node1" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="268,91,511,325">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,297,224,649">
+<area shape="rect" id="node3" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="555,117,913,480">
+<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="295,379,483,672">
+<area shape="rect" id="node5" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="957,304,1328,597">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/compliance_report.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -498,11 +498,11 @@
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="268,84,511,319">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,291,224,643">
-<area shape="rect" id="node3" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="555,140,913,503">
-<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="295,372,483,666">
-<area shape="rect" id="node5" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="957,327,1328,620">
+<area shape="rect" id="node1" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="268,91,511,325">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,297,224,649">
+<area shape="rect" id="node3" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="555,117,913,480">
+<area shape="rect" id="node4" href="report.html" target="_top" title="report" alt="" coords="295,379,483,672">
+<area shape="rect" id="node5" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="957,304,1328,597">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/compliance_report.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -514,7 +514,7 @@
 <area shape="rect" id="node64" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2381,195,2469">
 <area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="521,3430,833,3518">
 <area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1316,2718,1505,2806">
-<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="943,3364,1100,3452">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="943,3365,1100,3453">
 <area shape="rect" id="node21" href="operator.html" target="_top" title="operator" alt="" coords="603,4912,752,5000">
 <area shape="rect" id="node32" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="535,3325,820,3413">
 <area shape="rect" id="node6" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="541,4698,813,4786">
@@ -571,7 +571,7 @@
 <area shape="rect" id="node60" href="report_verification_visit.html" target="_top" title="report_verification_visit" alt="" coords="543,2742,812,2830">
 <area shape="rect" id="node61" href="restart_event.html" target="_top" title="restart_event" alt="" coords="1317,2440,1504,2528">
 <area shape="rect" id="node62" href="temporary_shutdown_event.html" target="_top" title="temporary_shutdown_event" alt="" coords="1259,2545,1563,2633">
-<area shape="rect" id="node63" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1313,3364,1509,3452">
+<area shape="rect" id="node63" href="transfer_event.html" target="_top" title="transfer_event" alt="" coords="1313,3365,1509,3453">
 <area shape="rect" id="node65" href="user_operator.html" target="_top" title="user_operator" alt="" coords="925,2910,1117,2998">
 <area shape="rect" id="node66" href="well_authorization_number.html" target="_top" title="well_authorization_number" alt="" coords="528,3016,827,3104">
 </map>

@@ -6667,6 +6667,11 @@
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <td><a href='tables/elicensing_adjustment.html'>elicensing_adjustment</a></td>
+                                        <td>supp_reasons_require_supp_version</td>
+                                        <td>(((reason IS NULL) OR (NOT (((reason)::text &#61; ANY ((ARRAY[&#39;Supplementary Report Adjustment&#39;::character varying, &#39;Supplementary Report Adjustment to Void Invoice&#39;::character varying])::text[])) AND (reason IS NOT NULL))) OR (supplementary_compliance_report_version_id IS NOT NULL)))</td>
+                                    </tr>
+                                    <tr>
                                         <td><a href='tables/compliance_earned_credit.html'>compliance_earned_credit</a></td>
                                         <td>compliance_earned_credit_earned_credits_amount_check</td>
                                         <td>((earned_credits_amount &gt;&#61; 0))</td>

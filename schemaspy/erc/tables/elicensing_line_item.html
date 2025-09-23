@@ -234,6 +234,57 @@
                                     <td><p>The guid of the line item from elicensing</p></td>
                                 </tr>
                                 <tr>
+                                    <td><span id="fee_date">fee_date</span></td>
+                                    <td>date</td>
+                                    <td>13</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The date of the fee. feeDueDate in elicensing</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="description">description</span></td>
+                                    <td>varchar</td>
+                                    <td>2147483647</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Description of the line item (fee).</p></td>
+                                </tr>
+                                <tr>
+                                    <td><span id="base_amount">base_amount</span></td>
+                                    <td>numeric</td>
+                                    <td>20,2</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>The amount of this line item. baseAmount in elicensing</p></td>
+                                </tr>
+                                <tr>
                                     <td><span id="line_item_type">line_item_type</span></td>
                                     <td>varchar</td>
                                     <td>2147483647</td>
@@ -338,57 +389,6 @@
                                     </td>
                                     <td></td>
                                 </tr>
-                                <tr>
-                                    <td><span id="base_amount">base_amount</span></td>
-                                    <td>numeric</td>
-                                    <td>20,2</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The amount of this line item. baseAmount in elicensing</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="description">description</span></td>
-                                    <td>varchar</td>
-                                    <td>2147483647</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Description of the line item (fee).</p></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="fee_date">fee_date</span></td>
-                                    <td>date</td>
-                                    <td>13</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>The date of the fee. feeDueDate in elicensing</p></td>
-                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -474,11 +474,11 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1003,15,1416,279">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,377,224,729">
-<area shape="rect" id="node3" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="591,182,959,662">
-<area shape="rect" id="node4" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,391,547,626">
-<area shape="rect" id="node5" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="1091,606,1328,841">
+<area shape="rect" id="node1" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1003,11,1416,275">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,379,224,731">
+<area shape="rect" id="node3" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="591,184,959,664">
+<area shape="rect" id="node4" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,394,547,628">
+<area shape="rect" id="node5" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="1091,608,1328,843">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/elicensing_line_item.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -500,7 +500,7 @@
 <area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2786,2160,3045,2248">
 <area shape="rect" id="node10" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1134,2333,1357,2421">
 <area shape="rect" id="node23" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="712,2283,1000,2371">
-<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3141,2201,3380,2289">
+<area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3141,2203,3380,2291">
 <area shape="rect" id="node12" href="compliance_penalty_accrual.html" target="_top" title="compliance_penalty_accrual" alt="" coords="3424,1531,3727,1619">
 <area shape="rect" id="node13" href="compliance_penalty_rate.html" target="_top" title="compliance_penalty_rate" alt="" coords="717,828,995,916">
 <area shape="rect" id="node14" href="compliance_period.html" target="_top" title="compliance_period" alt="" coords="397,769,627,857">
@@ -553,11 +553,11 @@
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1003,15,1416,279">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,377,224,729">
-<area shape="rect" id="node3" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="591,182,959,662">
-<area shape="rect" id="node4" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,391,547,626">
-<area shape="rect" id="node5" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="1091,606,1328,841">
+<area shape="rect" id="node1" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1003,11,1416,275">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,379,224,731">
+<area shape="rect" id="node3" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="591,184,959,664">
+<area shape="rect" id="node4" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="268,394,547,628">
+<area shape="rect" id="node5" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="1091,608,1328,843">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/elicensing_line_item.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -604,9 +604,9 @@
 <area shape="rect" id="node38" href="report_attachment_confirmation.html" target="_top" title="report_attachment_confirmation" alt="" coords="2005,1234,2348,1322">
 <area shape="rect" id="node39" href="report_compliance_summary_product.html" target="_top" title="report_compliance_summary_product" alt="" coords="2392,4219,2772,4307">
 <area shape="rect" id="node40" href="report_electricity_import_data.html" target="_top" title="report_electricity_import_data" alt="" coords="2016,1864,2337,1952">
-<area shape="rect" id="node41" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3853,602,4061,690">
+<area shape="rect" id="node41" href="report_emission.html" target="_top" title="report_emission" alt="" coords="3853,600,4061,688">
 <area shape="rect" id="node42" href="report_fuel.html" target="_top" title="report_fuel" alt="" coords="3574,1095,3742,1183">
-<area shape="rect" id="node43" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2882,3754,3114,3842">
+<area shape="rect" id="node43" href="report_source_type.html" target="_top" title="report_source_type" alt="" coords="2882,3770,3114,3858">
 <area shape="rect" id="node44" href="report_unit.html" target="_top" title="report_unit" alt="" coords="3259,2368,3428,2456">
 <area shape="rect" id="node45" href="report_emission_allocation.html" target="_top" title="report_emission_allocation" alt="" coords="2435,2159,2729,2247">
 <area shape="rect" id="node46" href="report_methodology.html" target="_top" title="report_methodology" alt="" coords="4105,18,4348,106">

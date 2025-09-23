@@ -261,6 +261,23 @@
                                     <td><p>The status of this compliance report version. Options: <a href="./../null">Obligation not met, Obligation fully met, Earned credits, No obligation or earned credits</a></p></td>
                                 </tr>
                                 <tr>
+                                    <td><span id="is_supplementary">is_supplementary</span></td>
+                                    <td>bool</td>
+                                    <td>1</td>
+                                    <td title=''></td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td><p>Boolean value identifies whether this record is the result of a supplementary emissions report version</p></td>
+                                </tr>
+                                <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="archived_by_id">archived_by_id</span></td>
                                     <td>uuid</td>
                                     <td>2147483647</td>
@@ -327,6 +344,28 @@
                                     <td></td>
                                 </tr>
                                 <tr>
+                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="previous_version_id">previous_version_id</span></td>
+                                    <td>int8</td>
+                                    <td>19</td>
+                                    <td title='nullable'>√</td>
+                                    <td title=''></td>
+                                    <td>null</td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                        </table>
+                                    </td>
+                                    <td>
+                                        <table border='0' cellspacing='0' cellpadding='0'>
+                                            <tr>
+                                                <td title="compliance_report_version.previous_version_id references compliance_report_version.id via compliance_report_ve_previous_version_id_d9236318_fk_complianc"><a href='compliance_report_version.html'>compliance_report_version</a><span class='relatedKey'>.id</span></td>
+                                                <td class="constraint detail">compliance_report_ve_previous_version_id_d9236318_fk_complianc</td>
+                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><p>Reference to the previous version of this compliance report version.</p></td>
+                                </tr>
+                                <tr>
                                     <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="report_compliance_summary_id">report_compliance_summary_id</span></td>
                                     <td>int8</td>
                                     <td>19</td>
@@ -369,45 +408,6 @@
                                         </table>
                                     </td>
                                     <td></td>
-                                </tr>
-                                <tr>
-                                    <td><span id="is_supplementary">is_supplementary</span></td>
-                                    <td>bool</td>
-                                    <td>1</td>
-                                    <td title=''></td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td><p>Boolean value identifies whether this record is the result of a supplementary emissions report version</p></td>
-                                </tr>
-                                <tr>
-                                    <td class='foreignKey' title='Foreign Key'><i class='icon ion-key iconkey' style='padding-left: 5px;'></i><span id="previous_version_id">previous_version_id</span></td>
-                                    <td>int8</td>
-                                    <td>19</td>
-                                    <td title='nullable'>√</td>
-                                    <td title=''></td>
-                                    <td>null</td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                        </table>
-                                    </td>
-                                    <td>
-                                        <table border='0' cellspacing='0' cellpadding='0'>
-                                            <tr>
-                                                <td title="compliance_report_version.previous_version_id references compliance_report_version.id via compliance_report_ve_previous_version_id_d9236318_fk_complianc"><a href='compliance_report_version.html'>compliance_report_version</a><span class='relatedKey'>.id</span></td>
-                                                <td class="constraint detail">compliance_report_ve_previous_version_id_d9236318_fk_complianc</td>
-                                                <td class="constraint detail"><span title='Restrict delete:&#10;Parent cannot be deleted if children exist'>R</span></td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                    <td><p>Reference to the previous version of this compliance report version.</p></td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -506,13 +506,13 @@
                                 <div class="tab-content no-padding">
                                     <div class="chart tab-pane active" id="oneDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagram" name="oneDegreeRelationshipsDiagram">
-<area shape="rect" id="node1" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="1288,34,1576,327">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,446,224,798">
-<area shape="rect" id="node3" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="672,447,1181,927">
-<area shape="rect" id="node5" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="334,446,562,710">
-<area shape="rect" id="node6" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="268,763,628,998">
-<area shape="rect" id="node4" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1289,345,1575,609">
-<area shape="rect" id="node7" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1225,985,1639,1249">
+<area shape="rect" id="node1" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="1288,49,1576,342">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,438,224,790">
+<area shape="rect" id="node3" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="672,426,1181,906">
+<area shape="rect" id="node5" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="334,438,562,702">
+<area shape="rect" id="node6" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="268,755,628,990">
+<area shape="rect" id="node4" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1289,359,1575,623">
+<area shape="rect" id="node7" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1225,970,1639,1234">
 </map>
                                         <a name='diagram'><img id="oneDegreeImg" src="../diagrams/tables/compliance_report_version.1degree.png" usemap="#oneDegreeRelationshipsDiagram" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -530,7 +530,7 @@
 <area shape="rect" id="node7" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="2901,292,3189,380">
 <area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2309,484,2819,964">
 <area shape="rect" id="node15" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1571,600,1799,688">
-<area shape="rect" id="node17" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1939,781,2249,869">
+<area shape="rect" id="node17" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="1939,811,2249,899">
 <area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2915,3339,3174,3427">
 <area shape="rect" id="node10" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1134,3067,1357,3155">
 <area shape="rect" id="node23" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="712,2523,1000,2611">
@@ -587,13 +587,13 @@
                                     </div>
                                     <div class="chart tab-pane " id="oneimpliedDegreeImg-chart" style="position: relative; overflow-x:auto;">
                                         <map id="oneDegreeRelationshipsDiagramImplied" name="oneDegreeRelationshipsDiagramImplied">
-<area shape="rect" id="node1" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="1288,34,1576,327">
-<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,446,224,798">
-<area shape="rect" id="node3" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="672,447,1181,927">
-<area shape="rect" id="node5" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="334,446,562,710">
-<area shape="rect" id="node6" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="268,763,628,998">
-<area shape="rect" id="node4" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1289,345,1575,609">
-<area shape="rect" id="node7" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1225,985,1639,1249">
+<area shape="rect" id="node1" href="compliance_earned_credit.html" target="_top" title="compliance_earned_credit" alt="" coords="1288,49,1576,342">
+<area shape="rect" id="node2" href="user.html" target="_top" title="user" alt="" coords="5,438,224,790">
+<area shape="rect" id="node3" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="672,426,1181,906">
+<area shape="rect" id="node5" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="334,438,562,702">
+<area shape="rect" id="node6" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="268,755,628,990">
+<area shape="rect" id="node4" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="1289,359,1575,623">
+<area shape="rect" id="node7" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="1225,970,1639,1234">
 </map>
                                         <a name='diagram'><img id="oneimpliedDegreeImg" src="../diagrams/tables/compliance_report_version.implied1degrees.png" usemap="#oneDegreeRelationshipsDiagramImplied" class="diagram" border="0" align="left"></a>
                                     </div>
@@ -605,7 +605,7 @@
 <area shape="rect" id="node63" href="app_role.html" target="_top" title="app_role" alt="" coords="47,2663,195,2751">
 <area shape="rect" id="node3" href="bc_obps_regulated_operation.html" target="_top" title="bc_obps_regulated_operation" alt="" coords="439,1027,751,1115">
 <area shape="rect" id="node4" href="closure_event.html" target="_top" title="closure_event" alt="" coords="1233,593,1423,681">
-<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="860,1038,1017,1126">
+<area shape="rect" id="node5" href="operation.html" target="_top" title="operation" alt="" coords="860,1039,1017,1127">
 <area shape="rect" id="node20" href="operator.html" target="_top" title="operator" alt="" coords="520,4253,669,4341">
 <area shape="rect" id="node31" href="opted_in_operation_detail.html" target="_top" title="opted_in_operation_detail" alt="" coords="452,1133,737,1221">
 <area shape="rect" id="node6" href="compliance_charge_rate.html" target="_top" title="compliance_charge_rate" alt="" coords="459,1719,731,1807">
@@ -613,7 +613,7 @@
 <area shape="rect" id="node8" href="compliance_report_version.html" target="_top" title="compliance_report_version" alt="" coords="2392,3283,2901,3763">
 <area shape="rect" id="node15" href="compliance_report.html" target="_top" title="compliance_report" alt="" coords="1653,3506,1881,3594">
 <area shape="rect" id="node17" href="report_compliance_summary.html" target="_top" title="report_compliance_summary" alt="" coords="2021,3229,2332,3317">
-<area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2998,3242,3257,3330">
+<area shape="rect" id="node9" href="compliance_obligation.html" target="_top" title="compliance_obligation" alt="" coords="2998,3241,3257,3329">
 <area shape="rect" id="node10" href="elicensing_invoice.html" target="_top" title="elicensing_invoice" alt="" coords="1217,3646,1439,3734">
 <area shape="rect" id="node24" href="elicensing_client_operator.html" target="_top" title="elicensing_client_operator" alt="" coords="795,3677,1083,3765">
 <area shape="rect" id="node11" href="compliance_penalty.html" target="_top" title="compliance_penalty" alt="" coords="3353,4426,3592,4514">
@@ -627,7 +627,7 @@
 <area shape="rect" id="node22" href="elicensing_adjustment.html" target="_top" title="elicensing_adjustment" alt="" coords="2998,107,3257,195">
 <area shape="rect" id="node23" href="elicensing_line_item.html" target="_top" title="elicensing_line_item" alt="" coords="1648,243,1887,331">
 <area shape="rect" id="node25" href="elicensing_payment.html" target="_top" title="elicensing_payment" alt="" coords="2058,417,2295,505">
-<area shape="rect" id="node26" href="facility.html" target="_top" title="facility" alt="" coords="1261,1618,1395,1706">
+<area shape="rect" id="node26" href="facility.html" target="_top" title="facility" alt="" coords="1261,1725,1395,1813">
 <area shape="rect" id="node27" href="facility_designated_operation_timeline.html" target="_top" title="facility_designated_operation_timeline" alt="" coords="1573,553,1961,641">
 <area shape="rect" id="node28" href="facility_report.html" target="_top" title="facility_report" alt="" coords="2081,2146,2273,2234">
 <area shape="rect" id="node30" href="multiple_operator.html" target="_top" title="multiple_operator" alt="" coords="1216,1050,1440,1138">
