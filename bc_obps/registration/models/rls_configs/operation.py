@@ -31,6 +31,7 @@ class Rls:
         RlsRoles.CAS_VIEW_ONLY: [RlsOperations.SELECT],
     }
     grants = generate_rls_grants(role_grants_mapping, RegistrationTableNames.OPERATION)
+
     # M2M relationships
     m2m_models_grants_mapping = {
         RegistrationTableNames.OPERATION_CONTACTS: {
