@@ -3,7 +3,6 @@
 import DataGrid from "@bciers/components/datagrid/DataGrid";
 import { ComplianceSummary } from "@/compliance/src/app/types";
 import complianceSummaryColumns from "../datagrid/models/compliance-summaries/complianceSummaryColumns";
-import { fetchComplianceSummariesPageData } from "@/compliance/src/app/utils/fetchComplianceSummariesPageData";
 
 const ComplianceSummariesDataGrid = ({
   initialData,
@@ -20,8 +19,8 @@ const ComplianceSummariesDataGrid = ({
   return (
     <DataGrid
       columns={columns}
-      fetchPageData={fetchComplianceSummariesPageData}
       initialData={initialData}
+      paginationMode="client"
     />
   );
 };
