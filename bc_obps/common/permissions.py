@@ -119,7 +119,7 @@ def get_permission_configs(
         },
         "cas_director_analyst_and_approved_industry_user": {
             "authorized_app_roles": ["cas_director", "cas_analyst", "industry_user"],
-            "authorized_user_operator_roles": ["admin"],
+            "authorized_user_operator_roles": all_industry_user_operator_roles,
         },
         "cas_analyst": {
             "authorized_app_roles": list(
