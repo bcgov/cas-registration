@@ -2,7 +2,12 @@ import { IssuanceStatusDeclinedNote } from "@/compliance/src/app/components/comp
 import { vi } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { bcCarbonRegistryLink, bceabLink } from "@bciers/utils/src/urls";
+import {
+  bcCarbonRegistryLink,
+  bceabLink,
+  ghgRegulatorEmail,
+} from "@bciers/utils/src/urls";
+import { AnalystSuggestion } from "@bciers/utils/src/enums";
 
 vi.mock("@bciers/components/icons/AlertIcon", () => ({
   __esModule: true,
@@ -42,5 +47,36 @@ describe("IssuanceStatusDeclinedNote", () => {
     });
     expect(bceabAnchor).toBeVisible();
     expect(bceabAnchor).toHaveAttribute("href", bceabLink);
+  });
+
+  it("shows GHGRegulator email and supplementary instructions when analyst suggests supplementary report", () => {
+    render(
+      <IssuanceStatusDeclinedNote
+        formContext={{
+          analystSuggestion: AnalystSuggestion.REQUIRING_SUPPLEMENTARY_REPORT,
+        }}
+      />,
+    );
+
+    // Common preamble should be visible and B.C. Carbon Registry should NOT be a link
+    expect(screen.getByText(/your request is declined/i)).toBeVisible();
+    expect(screen.getByText(/B\.C\. Carbon Registry/i)).toBeVisible();
+    expect(
+      screen.queryByRole("link", { name: /B\.C\. Carbon Registry/i }),
+    ).toBeNull();
+
+    // Email link should be present with correct href
+    const emailAnchor = screen.getByRole("link", {
+      name: /GHGRegulator@gov\.bc\.ca/i,
+    });
+    expect(emailAnchor).toBeVisible();
+    expect(emailAnchor).toHaveAttribute("href", ghgRegulatorEmail);
+
+    // Supplementary instructions text
+    expect(
+      screen.getByText(
+        /for further information or assistance in submitting a supplementary report\./i,
+      ),
+    ).toBeVisible();
   });
 });
