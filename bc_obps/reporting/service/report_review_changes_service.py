@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union
+from typing import Any, Dict, List, Optional, Tuple, TypedDict
 from deepdiff import DeepDiff
 import logging
 import re
@@ -96,15 +96,35 @@ class ReportReviewChangesService:
         return obj
 
     @staticmethod
-    def _get_item_by_indexes(
-        serialized_data: dict, root: str, subkeys: List[str], idxs: List[int]
-    ) -> Optional[Union[dict, Any]]:
-        data = serialized_data.get(root, [])
+    def _get_item_by_indexes(serialized_data: dict, root: str, subkeys: List[str], idxs: List[int]) -> Optional[dict]:
+        """
+        Safely get nested dict item by indexes.
+        Returns None if any index or key is missing or final item is not a dict.
+        """
+        data = serialized_data.get(root)
+        if data is None:
+            return None
+
         for i, key in enumerate(subkeys):
-            if idxs[i] >= len(data):
+            idx = idxs[i]
+            if not isinstance(data, list) or idx >= len(data):
                 return None
-            data = data[idxs[i]].get(key, [])
-        return data[idxs[-1]] if isinstance(data, list) else data
+            data = data[idx].get(key)
+            if data is None:
+                return None
+
+        # At this point, data should be a list, get the final index safely
+        final_idx = idxs[-1]
+        if isinstance(data, list):
+            if final_idx < len(data):
+                data = data[final_idx]
+            else:
+                return None
+
+        # Only return dicts
+        if isinstance(data, dict):
+            return data
+        return None
 
     @classmethod
     def _parse_deepdiff_items(cls, diff: DeepDiff, prev: dict, curr: dict) -> List[ChangeItem]:
