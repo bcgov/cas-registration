@@ -188,7 +188,6 @@ class ElicensingObligationService:
             logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
             return
 
-        # Check if today is the invoice generation date
         if not cls._is_invoice_generation_date_today(compliance_period):
             return
 
@@ -199,12 +198,7 @@ class ElicensingObligationService:
             return
 
         for obligation in obligations:
-            try:
-                cls.handle_obligation_integration(obligation.id, compliance_period)
-            except Exception as e:
-                logger.error(f"Failed to process obligation {obligation.obligation_id}: {e}")
-                # Continue processing other obligations even if one fails
-                continue
+            cls.handle_obligation_integration(obligation.id, compliance_period)
 
     @classmethod
     def _get_obligations_for_invoice_generation(
