@@ -25,7 +25,7 @@ from ninja import Query
 @paginate(CustomPagination)
 def get_compliance_report_versions_list(
     request: HttpRequest,
-    paginate_result: bool = Query(True, description="Whether to paginate the results"),
+    paginate_result: bool = Query(False, description="Whether to paginate the results"),
 ) -> QuerySet[ComplianceReportVersion]:
     user_guid = get_current_user_guid(request)
     # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
