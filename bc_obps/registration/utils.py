@@ -149,6 +149,7 @@ class CustomPagination(PageNumberPagination):
         paginate_result = params.get('paginate_result')
         page_size = self.page_size if paginate_result else queryset.count()
         offset = (pagination.page - 1) * page_size
+        breakpoint()
         return {
             "items": queryset[offset : offset + page_size],
             "count": self._items_count(queryset),

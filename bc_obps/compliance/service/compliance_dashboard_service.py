@@ -33,6 +33,7 @@ class ComplianceDashboardService:
         """
         Fetches all compliance summaries for the user's operations
         """
+        breakpoint()
         user = UserDataAccessService.get_by_guid(user_guid)
         # Get current reporting
         reporting_year: int = ReportingYearService.get_current_reporting_year().reporting_year
@@ -74,6 +75,7 @@ class ComplianceDashboardService:
         order = (sort_order or "asc").lower()
         sort_direction = "-" if order == "desc" else ""
         sort_by = f"{sort_direction}{sort_field}" if sort_field else None
+        breakpoint()
 
         if user.is_irc_user():
             # Internal users: filter

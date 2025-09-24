@@ -73,6 +73,7 @@ class ExceptionHandler:
 
     @classmethod
     def handle(cls, request: HttpRequest, exc: Union[BaseException, type[BaseException]]) -> Response:
+        breakpoint()
         """Handle exceptions and return appropriate API response."""
         cls.debug_log_exception()
 

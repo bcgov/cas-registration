@@ -49,6 +49,7 @@ class TestUtils:
         )
 
     def authorize_current_user_as_operator_user(self, operator):
+        breakpoint()
         return baker.make(
             UserOperator,
             user_id=self.user.user_guid,
