@@ -5,7 +5,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from reporting.models.report_operation import ReportOperation
 
 # report aliases
-OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report.operator.legal_name"
+OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operator_legal_name"
 OPERATION_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operation_name"
 OPERATION_BCGHG_ID_ALIAS = "report_compliance_summary.report_version.report.operation.bcghg_id.id"
 
