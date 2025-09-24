@@ -12,6 +12,7 @@ from registration.schema.generic import Message
 from .router import router
 from compliance.constants import COMPLIANCE
 from registration.utils import CustomPagination
+from ninja import Query
 
 
 @router.get(
@@ -22,6 +23,10 @@ from registration.utils import CustomPagination
     auth=authorize("approved_authorized_roles"),
 )
 @paginate(CustomPagination)
-def get_compliance_report_versions_list(request: HttpRequest) -> QuerySet[ComplianceReportVersion]:
+def get_compliance_report_versions_list(
+    request: HttpRequest,
+    paginate_result: bool = Query(True, description="Whether to paginate the results"),
+) -> QuerySet[ComplianceReportVersion]:
     user_guid = get_current_user_guid(request)
+    # NOTE: PageNumberPagination raises an error if we pass the response as a tuple (like 200, ...)
     return ComplianceDashboardService.get_compliance_report_versions_for_dashboard(user_guid)
