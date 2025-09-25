@@ -1,3 +1,9 @@
+## [4.0.1](https://github.com/bcgov/cas-registration/compare/v4.0.0...v4.0.1) (2025-09-25)
+
+### Bug Fixes
+
+- allow reporters to request issuance of earned credits ([094a4b2](https://github.com/bcgov/cas-registration/commit/094a4b2f820e4f4d5eacc4ff1b78d2ea52a00243))
+
 # [4.0.0](https://github.com/bcgov/cas-registration/compare/v3.20.0...v4.0.0) (2025-09-23)
 
 ### Bug Fixes
