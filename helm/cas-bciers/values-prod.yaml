@@ -97,7 +97,7 @@ reportingFrontend:
     targetCPUUtilizationPercentage: 80
 
 complianceFrontend:
-  replicaCount: 0
+  replicaCount: 2
 
   image:
     tag: "latest"
