@@ -1,11 +1,11 @@
 from decimal import Decimal
 from typing import Optional
-from ninja import ModelSchema, Field
+from ninja import ModelSchema, Field, FilterSchema
 from compliance.models.compliance_report_version import ComplianceReportVersion
 from reporting.models.report_operation import ReportOperation
 
 # report aliases
-OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report.operator.legal_name"
+OPERATOR_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operator_legal_name"
 OPERATION_NAME_ALIAS = "report_compliance_summary.report_version.report_operation.operation_name"
 OPERATION_BCGHG_ID_ALIAS = "report_compliance_summary.report_version.report.operation.bcghg_id.id"
 
@@ -64,3 +64,11 @@ class OperationByComplianceSummaryOut(ModelSchema):
     class Meta:
         model = ReportOperation
         fields = ['operation_name']
+
+
+class ComplianceReportVersionFilterSchema(FilterSchema):
+    operator_name: Optional[str] = Field(None, json_schema_extra={'q': 'operator_name__icontains'})
+    operation_name: Optional[str] = Field(None, json_schema_extra={'q': 'operation_name__icontains'})
+    status: Optional[str] = Field(None, json_schema_extra={'q': 'status__icontains'})
+    penalty_status: Optional[str] = Field(None, json_schema_extra={'q': 'penalty_status__icontains'})
+    obligation_id: Optional[str] = Field(None, json_schema_extra={'q': 'obligation_id__icontains'})
