@@ -12,7 +12,7 @@ yarn release-it 1.0.0-rc.1
 
 To make this process easy, we use [`release-it`](https://github.com/release-it/release-it).
 
-When you're ready to make a release, apply the following steps:
+When you're ready to make a release to test and/or prod, apply the following steps:
 
 1. post in the Teams developers channel that you're doing a release and there's a merge halt on
 1. go into the github settings and turn off merging to develop so no one can merge by accident if they miss the merge halt post. (Optional, but this ensures no other changes are made to the `develop` branch while the release is in progress. Release PRs can't be rebased (see note below), so if someone does merge something in, you have to restart the release.)
@@ -35,7 +35,7 @@ When you're ready to make a release, apply the following steps:
    - generate a change log
 1. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, common, RLS, and task-scheduler)
 1. once the pull request is approved, if you disabled merging to `develop`, temporarily re-enable merging so you can merge the release PR, and then disable merging again
-1. wait for the required checks on the merge commit to pass (note: check-migrations will fail until https://github.com/bcgov/cas-registration/issues/3590 is completed)
+1. go to the shipit dev environment and keep an eye on the required checks on the merge commit (note: check-migrations will fail until https://github.com/bcgov/cas-registration/issues/3590 is completed). Once the checks pass, shipit will automatically deploy the release commit to the dev environment once CI passes.
 1. update your local develop branch and fast-forward the `main` branch using:
 
 ```bash
@@ -44,7 +44,11 @@ When you're ready to make a release, apply the following steps:
 - git push
 ```
 
+This will put the release commit onto the main branch, which is connected to the test environment.
+
+1. go to the shipit test environment and keep an eye on the required checks. Once they pass, you can click the `Deploy` button.
+1. once the deploy is complete, let the team know the release is available in test. Optionally end the merge halt and unlock the develop branch at this point.
+1. once a PO is ready to release to prod, they will typically click the `Deploy` button themselves.
 1. tag github tickets with the release version if applicable (see the team_release_process.md for more details)
-1. once the release has been deployed to the desired environment, post in the Teams Developers channel that the merge halt is over
 
 **Do not rebase release PRs**. If a release PR falls behind the develop branch, a new PR will need to be created. `release-it` relies on tags to make comparisons from one release to another. Rebasing makes the tag created during the release process unreachable by [git describe](https://git-scm.com/docs/git-describe), which is what `release-it` uses to determine the parent tag.
