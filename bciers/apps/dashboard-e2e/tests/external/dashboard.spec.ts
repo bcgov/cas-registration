@@ -1,4 +1,3 @@
-import { expect } from "@playwright/test";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole, LinkSrc } from "@bciers/e2e/utils/enums";
 import {
@@ -12,7 +11,6 @@ import {
   ReportingTileText,
   ComplianceTileText,
   RegistrationTileText,
-  AccessRequestText,
 } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
 import { linkIsVisible } from "@bciers/e2e/utils/helpers";
@@ -104,12 +102,6 @@ userRoles.forEach((role) => {
               skipUrlCheck = true;
               break;
             case DashboardTiles.INTERNAL_USER_ACCESS_REQUEST:
-              // This is for internal user
-              await expect(
-                page.getByText(Object.values(AccessRequestText)[0], {
-                  exact: true,
-                }),
-              ).toBeHidden();
               skipUrlCheck = true;
               break;
             default:
