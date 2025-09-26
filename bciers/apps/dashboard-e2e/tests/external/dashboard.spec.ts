@@ -15,6 +15,7 @@ import {
   AccessRequestText,
 } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
+import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
 
@@ -75,7 +76,7 @@ userRoles.forEach((role) => {
               skipUrlCheck = true;
               break;
             default:
-              await dashboardPage.linkIsVisible(tile, false);
+              await linkIsVisible(page, tile, false);
               skipUrlCheck = true;
           }
         } else {
@@ -135,13 +136,14 @@ userRoles.forEach((role) => {
         for (const text of tileTexts) {
           // Special case for select operator (only visible for pending)
           if (text === AdministrationTileText.SELECT_OPERATOR) {
-            dashboardPage.assertSelectOperatorIsVisible(text, pendingUser);
+            if (pendingUser) await linkIsVisible(page, text, true);
+            else await linkIsVisible(page, text, false);
+          } else if (text === AdministrationTileText.ACCESS_REQUEST) {
+            if (reporter || pendingUser)
+              await linkIsVisible(page, text, false, true);
+            else await linkIsVisible(page, text, true, true);
           } else {
-            if (reporter && text === AdministrationTileText.ACCESS_REQUEST) {
-              await dashboardPage.linkIsVisible(text, false);
-            } else {
-              await dashboardPage.linkIsVisible(text, true);
-            }
+            await linkIsVisible(page, text, true, true);
           }
         }
       }
