@@ -6,6 +6,7 @@ import {
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
+import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
 

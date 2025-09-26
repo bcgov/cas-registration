@@ -6,6 +6,7 @@ import {
 } from "@bciers/e2e/utils/helpers";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
+import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
 
