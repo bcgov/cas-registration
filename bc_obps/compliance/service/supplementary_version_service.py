@@ -424,13 +424,15 @@ class IncreasedCreditHandler:
         ).first()
         if not original_earned_credit_record:
             return False
-        if (
-            ZERO_DECIMAL < previous_summary.credited_emissions < new_summary.credited_emissions
-            and original_earned_credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED
-            or original_earned_credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED
-        ):
-            return True
-        return False
+
+        increased = ZERO_DECIMAL < previous_summary.credited_emissions < new_summary.credited_emissions
+        status = original_earned_credit_record.issuance_status
+
+        return increased and status in (
+            ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+        )
 
     @staticmethod
     @transaction.atomic()
@@ -467,9 +469,17 @@ class IncreasedCreditHandler:
             ComplianceEarnedCreditsService.create_earned_credits_record(
                 compliance_report_version, credited_emission_delta
             )
-        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED:
+        if previous_earned_credit.issuance_status in (
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+        ):
             # since no amount arg is provided, it will be taken from the report version's credited emissions
             ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+
+            # If previously requested, mark it as declined
+            if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED:
+                previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
+                previous_earned_credit.save()
 
         return compliance_report_version
 
