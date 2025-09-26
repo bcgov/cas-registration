@@ -36,6 +36,7 @@ from compliance.dataclass import (
 import json
 from django.http import StreamingHttpResponse
 from service.reporting_year_service import ReportingYearService
+from service.user_operator_service import UserOperatorService
 
 
 class ElicensingInvoiceService:
@@ -416,7 +417,6 @@ class ElicensingInvoiceService:
                 "compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
                 "compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__reporting_year",
                 "compliance_penalty__compliance_obligation__compliance_report_version__report_compliance_summary__report_version__report_operation",
-                # "elicensing_client_operator__operator",
             )
             .filter(
                 Q(
@@ -461,8 +461,13 @@ class ElicensingInvoiceService:
         if user.is_irc_user():
             compliance_invoices = qs.all()
         else:
-            # TODO in https://github.com/bcgov/cas-compliance/issues/201
-            pass
+            operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user).operator
+            compliance_invoices = qs.filter(
+                Q(compliance_obligation__compliance_report_version__compliance_report__report__operator=operator)
+                | Q(
+                    compliance_penalty__compliance_obligation__compliance_report_version__compliance_report__report__operator=operator
+                )
+            )
 
         for invoice in compliance_invoices:
             _, _, total_fee, total_payments, total_adjustments = ElicensingInvoiceService.calculate_invoice_amount_due(
