@@ -4,7 +4,7 @@ export enum DashboardTiles {
   REPORTING = "Reporting",
   COMPLIANCE = "Compliance",
   REPORT_A_PROBLEM = "Report a Problem",
-  ACCESS_REQUEST = "Clean Growth User Access Management",
+  INTERNAL_USER_ACCESS_REQUEST = "Clean Growth User Access Management",
   TRANSFERS = "Transfers",
 }
 
@@ -23,6 +23,7 @@ export enum RegistrationTileText {
 
 export enum ReportingTileText {
   SUBMIT_REPORT = "View Annual Reports",
+  PAST_REPORTS = "View Past Reports",
 }
 
 export enum ComplianceTileText {

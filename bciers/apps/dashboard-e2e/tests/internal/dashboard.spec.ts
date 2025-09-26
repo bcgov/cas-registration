@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import { UserRole, LinkSrc } from "@bciers/e2e/utils/enums";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import {
@@ -14,6 +14,7 @@ import {
   takeStabilizedScreenshot,
 } from "@bciers/e2e/utils/helpers";
 import { setupBeforeEachTest } from "@bciers/e2e/setupBeforeEach";
+import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
 
@@ -52,22 +53,18 @@ userRoles.forEach((role) => {
             break;
           case DashboardTiles.TRANSFERS:
             tileTexts = Object.values(InternalTransfersTileText);
-            skipUrlCheck = true;
+            skipUrlCheck = true; //Does not have a sub-dashboard
             break;
           case DashboardTiles.REPORTING:
             tileTexts = Object.values(InternalReportingTileText);
-            skipUrlCheck = true;
             break;
           case DashboardTiles.COMPLIANCE:
             tileTexts = Object.values(InternalComplianceTileText);
             skipUrlCheck = true;
             break;
-          case DashboardTiles.ACCESS_REQUEST:
+          case DashboardTiles.INTERNAL_USER_ACCESS_REQUEST:
             tileTexts = Object.values(AccessRequestText);
-            await expect(
-              page.getByRole("link", { name: tileTexts[0], exact: true }),
-            ).toBeVisible();
-            skipUrlCheck = true;
+            skipUrlCheck = true; //Does not have a sub-dashboard
             break;
           case DashboardTiles.REPORT_A_PROBLEM:
             await dashboardPage.assertMailToLinkIsVisible(
@@ -81,29 +78,27 @@ userRoles.forEach((role) => {
             break;
         }
 
+        // Verify that sub-dashboard exists
         if (!skipUrlCheck) {
           await page.getByRole("link", { name: tile }).first().click();
           await dashboardPage.urlIsCorrect(tile.toLocaleLowerCase(), true);
-        }
-
-        for (const text of tileTexts) {
-          if (
-            role !== UserRole.CAS_ANALYST &&
-            text === InternalTransfersTileText.TRANSFER_OPERATION_OR_FACILITY
-          ) {
-            await dashboardPage.linkIsVisible(text, false);
-          } else {
-            await dashboardPage.linkIsVisible(text, true);
-          }
-        }
-
-        if (!skipUrlCheck) {
           component = `Internal user ${tile} Dashboard for role: ${role}`;
           await takeStabilizedScreenshot(happoPlaywright, page, {
             component: component,
             variant: "default",
           });
           await dashboardPage.route();
+        }
+
+        // Assert visibility of each tile text on the dashboard page
+        for (const text of tileTexts) {
+          if (text === InternalTransfersTileText.TRANSFER_OPERATION_OR_FACILITY)
+            if (role !== UserRole.CAS_ANALYST)
+              await linkIsVisible(page, text, false, true);
+            else await linkIsVisible(page, text, true, true);
+          else {
+            await linkIsVisible(page, text, true, true);
+          }
         }
       }
     });

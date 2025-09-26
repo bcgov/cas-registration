@@ -1,4 +1,3 @@
-import { expect } from "@playwright/test";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole, LinkSrc } from "@bciers/e2e/utils/enums";
 import {
@@ -12,9 +11,9 @@ import {
   ReportingTileText,
   ComplianceTileText,
   RegistrationTileText,
-  AccessRequestText,
 } from "@/dashboard-e2e/utils/enums";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
+import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
 
@@ -75,7 +74,7 @@ userRoles.forEach((role) => {
               skipUrlCheck = true;
               break;
             default:
-              await dashboardPage.linkIsVisible(tile, false);
+              await linkIsVisible(page, tile, false);
               skipUrlCheck = true;
           }
         } else {
@@ -92,7 +91,7 @@ userRoles.forEach((role) => {
               break;
             case DashboardTiles.COMPLIANCE:
               tileTexts = Object.values(ComplianceTileText);
-              skipUrlCheck = true;
+              skipUrlCheck = true; //Does not have a sub-dashboard
               break;
             case DashboardTiles.REPORT_A_PROBLEM:
               // Report a Problem is a link to an email address, check visibility and href but do not click
@@ -102,12 +101,7 @@ userRoles.forEach((role) => {
               );
               skipUrlCheck = true;
               break;
-            case DashboardTiles.ACCESS_REQUEST:
-              // This is for internal user
-              tileTexts = Object.values(AccessRequestText);
-              await expect(
-                page.getByText(tileTexts[0], { exact: true }),
-              ).toBeHidden();
+            case DashboardTiles.INTERNAL_USER_ACCESS_REQUEST:
               skipUrlCheck = true;
               break;
             default:
@@ -116,23 +110,9 @@ userRoles.forEach((role) => {
         }
 
         if (!skipUrlCheck) {
-          // Go to dashboard page of each route
+          // Verify that sub-dashboard exists
           await page.getByRole("link", { name: tile }).first().click();
           await dashboardPage.urlIsCorrect(tile.toLocaleLowerCase(), true);
-
-          // Assert visibility of each tile text on the dashboard page
-          for (const text of tileTexts) {
-            // Special case for select operator (only visible for pending)
-            if (text === AdministrationTileText.SELECT_OPERATOR) {
-              dashboardPage.assertSelectOperatorIsVisible(text, pendingUser);
-            } else {
-              if (reporter && text === AdministrationTileText.ACCESS_REQUEST) {
-                await dashboardPage.linkIsVisible(text, false);
-              } else {
-                await dashboardPage.linkIsVisible(text, true);
-              }
-            }
-          }
 
           // Say cheese!
           component = `External user ${tile} Dashboard for role: ${role}`;
@@ -142,6 +122,21 @@ userRoles.forEach((role) => {
           });
           // Go back to dashboard
           await dashboardPage.route();
+        }
+
+        // Assert visibility of each tile text on the dashboard page
+        for (const text of tileTexts) {
+          // Special case for select operator (only visible for pending)
+          if (text === AdministrationTileText.SELECT_OPERATOR) {
+            if (pendingUser) await linkIsVisible(page, text, true);
+            else await linkIsVisible(page, text, false);
+          } else if (text === AdministrationTileText.ACCESS_REQUEST) {
+            if (reporter || pendingUser)
+              await linkIsVisible(page, text, false, true);
+            else await linkIsVisible(page, text, true, true);
+          } else {
+            await linkIsVisible(page, text, true, true);
+          }
         }
       }
     });

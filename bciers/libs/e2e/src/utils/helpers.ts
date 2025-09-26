@@ -635,8 +635,10 @@ export async function linkIsVisible(
   page: Page,
   text: string,
   visible: boolean,
+  exact?: boolean,
 ) {
-  const link = await page.getByRole("link", { name: text });
+  if (exact === undefined) exact = false;
+  const link = await page.getByRole("link", { name: text, exact: exact });
   await expect(link).toBeVisible({ visible: visible });
   return link;
 }
