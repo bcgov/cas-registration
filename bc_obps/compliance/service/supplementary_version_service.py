@@ -425,13 +425,10 @@ class IncreasedCreditHandler:
         if not original_earned_credit_record:
             return False
 
-        increased = ZERO_DECIMAL < previous_summary.credited_emissions < new_summary.credited_emissions
-        status = original_earned_credit_record.issuance_status
-
-        return increased and status in (
-            ComplianceEarnedCredit.IssuanceStatus.APPROVED,
-            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
-            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+        # Return True if excess emissions increased from previous version
+        return (
+            new_summary.excess_emissions > ZERO_DECIMAL
+            and previous_summary.excess_emissions < new_summary.excess_emissions
         )
 
     @staticmethod
@@ -472,12 +469,16 @@ class IncreasedCreditHandler:
         if previous_earned_credit.issuance_status in (
             ComplianceEarnedCredit.IssuanceStatus.DECLINED,
             ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
         ):
             # since no amount arg is provided, it will be taken from the report version's credited emissions
             ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
             # If previously requested, mark it as declined
-            if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED:
+            if previous_earned_credit.issuance_status in (
+                ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+                ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+            ):
                 previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
                 previous_earned_credit.save()
 
