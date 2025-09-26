@@ -500,8 +500,7 @@ class DecreasedCreditHandler:
         return (
             previous_summary.credited_emissions > ZERO_DECIMAL
             and new_summary.credited_emissions < previous_summary.credited_emissions
-            and original_earned_credit_record.issuance_status
-            == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+            and original_earned_credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED
         )
 
     @staticmethod
@@ -521,24 +520,13 @@ class DecreasedCreditHandler:
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
-            # using NO_OBLIGATION_OR_EARNED_CREDITS status because this report version is supplementary
-            # and does not have an obligation
-            status=ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS,
+            status=ComplianceReportVersion.ComplianceStatus.EARNED_CREDITS,
             credited_emissions_delta_from_previous=credited_emission_delta,
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-        # Get the original compliance report version
-        original_compliance_report_version = ComplianceReportVersion.objects.get(
-            compliance_report=compliance_report, is_supplementary=False
-        )
-        # Get the original earned credit record
-        original_earned_credit_record = original_compliance_report_version.compliance_earned_credit
-        # Adjust original credits record by the delta
-        original_earned_credit_record.earned_credits_amount = (
-            original_earned_credit_record.earned_credits_amount + credited_emission_delta
-        )
-        original_earned_credit_record.save(update_fields=['earned_credits_amount'])
+        # Create new credits record
+        ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
         return compliance_report_version
 
