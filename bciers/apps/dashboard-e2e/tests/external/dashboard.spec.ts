@@ -137,7 +137,6 @@ userRoles.forEach((role) => {
           if (text === AdministrationTileText.SELECT_OPERATOR) {
             dashboardPage.assertSelectOperatorIsVisible(text, pendingUser);
           } else {
-            console.log("text", text);
             if (reporter && text === AdministrationTileText.ACCESS_REQUEST) {
               await dashboardPage.linkIsVisible(text, false);
             } else {
