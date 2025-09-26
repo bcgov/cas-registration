@@ -74,4 +74,11 @@ SCHEDULED_TASKS = [
         schedule_minute=0,
         tag="elicensing",
     ),
+    ScheduledTaskConfig(
+        func=ElicensingObligationService.generate_invoices_for_current_period,
+        schedule_type="daily",
+        schedule_hour=3,
+        schedule_minute=0,
+        tag="invoice_generation",
+    ),
 ]
