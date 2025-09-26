@@ -52,22 +52,21 @@ userRoles.forEach((role) => {
             break;
           case DashboardTiles.TRANSFERS:
             tileTexts = Object.values(InternalTransfersTileText);
-            skipUrlCheck = true;
+            skipUrlCheck = true; //Does not have a sub-dashboard
             break;
           case DashboardTiles.REPORTING:
             tileTexts = Object.values(InternalReportingTileText);
-            skipUrlCheck = true;
             break;
           case DashboardTiles.COMPLIANCE:
             tileTexts = Object.values(InternalComplianceTileText);
             skipUrlCheck = true;
             break;
-          case DashboardTiles.ACCESS_REQUEST:
+          case DashboardTiles.INTERNAL_USER_ACCESS_REQUEST:
             tileTexts = Object.values(AccessRequestText);
             await expect(
               page.getByRole("link", { name: tileTexts[0], exact: true }),
             ).toBeVisible();
-            skipUrlCheck = true;
+            skipUrlCheck = true; //Does not have a sub-dashboard
             break;
           case DashboardTiles.REPORT_A_PROBLEM:
             await dashboardPage.assertMailToLinkIsVisible(
@@ -81,11 +80,19 @@ userRoles.forEach((role) => {
             break;
         }
 
+        // Verify that sub-dashboard exists
         if (!skipUrlCheck) {
           await page.getByRole("link", { name: tile }).first().click();
           await dashboardPage.urlIsCorrect(tile.toLocaleLowerCase(), true);
+          component = `Internal user ${tile} Dashboard for role: ${role}`;
+          await takeStabilizedScreenshot(happoPlaywright, page, {
+            component: component,
+            variant: "default",
+          });
+          await dashboardPage.route();
         }
 
+        // Assert visibility of each tile text on the dashboard page
         for (const text of tileTexts) {
           if (
             role !== UserRole.CAS_ANALYST &&
@@ -95,15 +102,6 @@ userRoles.forEach((role) => {
           } else {
             await dashboardPage.linkIsVisible(text, true);
           }
-        }
-
-        if (!skipUrlCheck) {
-          component = `Internal user ${tile} Dashboard for role: ${role}`;
-          await takeStabilizedScreenshot(happoPlaywright, page, {
-            component: component,
-            variant: "default",
-          });
-          await dashboardPage.route();
         }
       }
     });

@@ -4,7 +4,7 @@ export enum DashboardTiles {
   REPORTING = "Reporting",
   COMPLIANCE = "Compliance",
   REPORT_A_PROBLEM = "Report a Problem",
-  ACCESS_REQUEST = "Clean Growth User Access Management",
+  INTERNAL_USER_ACCESS_REQUEST = "Clean Growth User Access Management",
   TRANSFERS = "Transfers",
 }
 
