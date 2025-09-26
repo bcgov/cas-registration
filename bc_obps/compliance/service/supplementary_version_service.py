@@ -424,12 +424,8 @@ class IncreasedCreditHandler:
         ).first()
         if not original_earned_credit_record:
             return False
-
         # Return True if excess emissions increased from previous version
-        return (
-            new_summary.excess_emissions > ZERO_DECIMAL
-            and previous_summary.excess_emissions < new_summary.excess_emissions
-        )
+        return ZERO_DECIMAL < previous_summary.credited_emissions < new_summary.credited_emissions
 
     @staticmethod
     @transaction.atomic()
@@ -461,7 +457,6 @@ class IncreasedCreditHandler:
         previous_earned_credit = ComplianceEarnedCredit.objects.get(
             compliance_report_version=previous_compliance_version
         )
-
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             ComplianceEarnedCreditsService.create_earned_credits_record(
                 compliance_report_version, credited_emission_delta
