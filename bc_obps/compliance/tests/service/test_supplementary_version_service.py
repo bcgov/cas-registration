@@ -1297,6 +1297,251 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
         invoice.refresh_from_db()
         assert invoice.is_void is False
 
+    def test_multi_invoice_newest_first_applies_in_order_and_creates_credits(
+        self, mock_get_rate, mock_create_adjustment, mock_create_credits
+    ):
+        """
+        Two unpaid invoices on prior supplementary versions (newest & older).
+        Large decrease → refund > sum of outstandings.
+        Expect:
+          - adjustments applied newest-first across both invoices
+          - remaining surplus converted to credits (plus over-compliance tonnes)
+        """
+        rate = Decimal('25.00')
+        mock_get_rate.return_value = rate
+
+        # Build an older and a newer supplementary CRV with unpaid invoices
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            # Older supplementary version (v1)
+            rv_old1 = baker.make_recipe(
+                'reporting.tests.utils.report_version',
+                report=self.report,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+            )
+            sum_old1 = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                report_version=rv_old1,
+                excess_emissions=Decimal('700'),
+                credited_emissions=Decimal('0'),
+            )
+
+            # Newer supplementary version (v2) -> this will be `previous_summary` for our call
+            rv_old2 = baker.make_recipe(
+                'reporting.tests.utils.report_version',
+                report=self.report,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+            )
+            prev_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                report_version=rv_old2,
+                excess_emissions=Decimal('600'),
+                credited_emissions=Decimal('0'),
+            )
+
+            # Incoming "new" summary that reduces below zero (over-compliance 100t)
+            new_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                report_version=self.report_version_2,
+                excess_emissions=Decimal('-100'),
+                credited_emissions=Decimal('0'),
+            )
+
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+
+        # Chain CRVs: older <- newer(previous) ; both have unpaid invoices
+        crv_old1 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=sum_old1,
+            is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        inv_old1 = baker.make_recipe(  # older invoice outstanding 3,000
+            'compliance.tests.utils.elicensing_invoice',
+            is_void=False,
+            outstanding_balance=Decimal('3000.00'),
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=crv_old1,
+            elicensing_invoice=inv_old1,
+        )
+
+        crv_old2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev_sum,
+            is_supplementary=True,
+            previous_version=crv_old1,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        inv_old2 = baker.make_recipe(  # NEWEST invoice outstanding 2,000
+            'compliance.tests.utils.elicensing_invoice',
+            is_void=False,
+            outstanding_balance=Decimal('2000.00'),
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=crv_old2,
+            elicensing_invoice=inv_old2,
+        )
+
+        # Refund from decrease: (-100 - 600) * 25 = -700 * 25 = -17500
+        # Apply newest-first: 2,000 to newest, then 3,000 to older → applied total 5,000
+        # Surplus = 17,500 - 5,000 = 12,500 → credits dollars/25 = 500 t
+        # Over-compliance tonnes = max(-(-100), 0) = 100 t → total credits = 600 t
+        result = DecreasedObligationHandler.handle(
+            compliance_report=report,
+            new_summary=new_sum,
+            previous_summary=prev_sum,
+            version_count=3,
+        )
+
+        # Two adjustments, newest invoice first (-2000), then older (-3000)
+        assert mock_create_adjustment.call_count == 2
+        first_call = mock_create_adjustment.call_args_list[0].kwargs
+        second_call = mock_create_adjustment.call_args_list[1].kwargs
+
+        # First applies to newest CRV (crv_old2)
+        assert first_call["target_compliance_report_version_id"] == crv_old2.id
+        assert first_call["adjustment_total"] == Decimal('-2000.00')
+        assert first_call["supplementary_compliance_report_version_id"] == result.id
+
+        # Second applies to older CRV (crv_old1)
+        assert second_call["target_compliance_report_version_id"] == crv_old1.id
+        assert second_call["adjustment_total"] == Decimal('-3000.00')
+        assert second_call["supplementary_compliance_report_version_id"] == result.id
+
+        # Credits created for surplus + over-compliance (12,500/25=500 + 100 = 600)
+        mock_create_credits.assert_called_once()
+        _, k = mock_create_credits.call_args
+        assert k["amount"] == 600
+        assert k["compliance_report_version"].id == result.id
+
+        # Invoices should remain not voided here because prior payments may exist; we only
+        # assert ordering & amounts + credits for this test.
+        inv_old2.refresh_from_db()
+        inv_old1.refresh_from_db()
+        assert inv_old2.is_void is False
+        assert inv_old1.is_void is False
+
+    def test_multi_invoice_newest_first_partial_on_second_no_credits(
+        self, mock_get_rate, mock_create_adjustment, mock_create_credits
+    ):
+        """
+        Two unpaid invoices (newest then older).
+        Small decrease → refund < sum of outstandings.
+        Expect:
+          - adjustments applied newest-first, second gets remainder
+          - NO credits created (no surplus after covering partial outstanding)
+        """
+        rate = Decimal('25.00')
+        mock_get_rate.return_value = rate
+
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            # Older supplementary version (v1)
+            rv_old1 = baker.make_recipe(
+                'reporting.tests.utils.report_version',
+                report=self.report,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+            )
+            sum_old1 = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                report_version=rv_old1,
+                excess_emissions=Decimal('600'),
+                credited_emissions=Decimal('0'),
+            )
+
+            # Newer supplementary version (v2) -> previous_summary
+            rv_old2 = baker.make_recipe(
+                'reporting.tests.utils.report_version',
+                report=self.report,
+                status=ReportVersion.ReportVersionStatus.Submitted,
+            )
+            prev_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                report_version=rv_old2,
+                excess_emissions=Decimal('550'),
+                credited_emissions=Decimal('0'),
+            )
+
+            # New summary decreases slightly (refund = (520-550)*25 = -30*25 = -750)
+            new_sum = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                report_version=self.report_version_2,
+                excess_emissions=Decimal('520'),
+                credited_emissions=Decimal('0'),
+            )
+
+        report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+
+        # Chain CRVs with invoices: newest outstanding 1000; older outstanding 2000
+        crv_old1 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=sum_old1,
+            is_supplementary=True,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        inv_old1 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            is_void=False,
+            outstanding_balance=Decimal('2000.00'),
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=crv_old1,
+            elicensing_invoice=inv_old1,
+        )
+
+        crv_old2 = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=report,
+            report_compliance_summary=prev_sum,
+            is_supplementary=True,
+            previous_version=crv_old1,
+            status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+        )
+        inv_old2 = baker.make_recipe(
+            'compliance.tests.utils.elicensing_invoice',
+            is_void=False,
+            outstanding_balance=Decimal('1000.00'),
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=crv_old2,
+            elicensing_invoice=inv_old2,
+        )
+
+        # Refund total 750:
+        #   apply 750 to NEWEST (cap at 1000) → -750 on crv_old2
+        #   nothing left for older; NO credits
+        result = DecreasedObligationHandler.handle(
+            compliance_report=report,
+            new_summary=new_sum,
+            previous_summary=prev_sum,
+            version_count=3,
+        )
+
+        # One adjustment call only to the NEWEST invoice
+        mock_create_adjustment.assert_called_once()
+        kwargs = mock_create_adjustment.call_args.kwargs
+        assert kwargs["target_compliance_report_version_id"] == crv_old2.id
+        assert kwargs["adjustment_total"] == Decimal('-750.00')
+        assert kwargs["supplementary_compliance_report_version_id"] == result.id
+
+        # No credits (no surplus)
+        mock_create_credits.assert_not_called()
+
+        inv_old2.refresh_from_db()
+        inv_old1.refresh_from_db()
+        assert inv_old2.is_void is False
+        assert inv_old1.is_void is False
+
 
 class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
     def test_handle_no_change_success(self):
