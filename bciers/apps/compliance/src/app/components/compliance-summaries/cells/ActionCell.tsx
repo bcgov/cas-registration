@@ -18,7 +18,7 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
     id,
   } = row;
 
-  const basePath = `/compliance-summaries/${id}`;
+  const basePath = `/compliance-administration/compliance-summaries/${id}`;
 
   // Obligation logic
   if (obligationId) {

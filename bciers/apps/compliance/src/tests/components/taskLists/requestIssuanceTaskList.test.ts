@@ -32,7 +32,7 @@ describe("generateRequestIssuanceTaskList", () => {
       expect(taskItems?.[0]).toEqual({
         type: "Page",
         title: "Review 2024 Compliance Report",
-        link: "/compliance-summaries/123/review-compliance-earned-credits-report",
+        link: "/compliance-administration/compliance-summaries/123/review-compliance-earned-credits-report",
         isActive: true, // Default active page is ReviewComplianceSummary
       });
 
@@ -40,7 +40,7 @@ describe("generateRequestIssuanceTaskList", () => {
       expect(taskItems?.[1]).toEqual({
         type: "Page",
         title: "Request Issuance of Earned Credits",
-        link: "/compliance-summaries/123/request-issuance-of-earned-credits",
+        link: "/compliance-administration/compliance-summaries/123/request-issuance-of-earned-credits",
         isActive: false,
       });
     },
@@ -73,7 +73,7 @@ describe("generateRequestIssuanceTaskList", () => {
       expect(taskItems?.[0]).toEqual({
         type: "Page",
         title: "Track Status of Issuance",
-        link: "/compliance-summaries/123/track-status-of-issuance",
+        link: "/compliance-administration/compliance-summaries/123/track-status-of-issuance",
         isActive: true,
       });
     },

@@ -92,11 +92,11 @@ describe("ObligationTrackPaymentsComponent", () => {
 
     expect(screen.getByTestId("back-button")).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/download-payment-instructions",
+      "/compliance-administration/compliance-summaries/123/download-payment-instructions",
     );
     expect(screen.getByTestId("continue-button")).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/review-penalty-summary",
+      "/compliance-administration/compliance-summaries/123/review-penalty-summary",
     );
   });
 
@@ -117,7 +117,7 @@ describe("ObligationTrackPaymentsComponent", () => {
     expect(backButton).toBeVisible();
     expect(backButton).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/download-payment-instructions",
+      "/compliance-administration/compliance-summaries/123/download-payment-instructions",
     );
 
     const continueButton = screen.getByTestId("continue-button");

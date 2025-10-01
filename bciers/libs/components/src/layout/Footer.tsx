@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@mui/material/Link";
 
 import footerLinks from "@bciers/data/footer.json";
 

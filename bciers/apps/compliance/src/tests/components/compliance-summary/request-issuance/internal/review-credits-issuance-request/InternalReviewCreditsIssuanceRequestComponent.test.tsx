@@ -121,7 +121,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         "compliance/compliance-report-versions/123/earned-credits",
         "PUT",
-        "/compliance-summaries/123/review-by-director",
+        "/compliance-administration/compliance-summaries/123/review-by-director",
         {
           body: JSON.stringify({
             analyst_suggestion: AnalystSuggestion.READY_TO_APPROVE,
@@ -132,7 +132,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
   });
 
@@ -150,7 +150,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     fireEvent.click(submitButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-by-director`,
     );
     expect(actionHandler).not.toHaveBeenCalled();
   });
@@ -205,7 +205,7 @@ describe("InternalReviewCreditsIssuanceRequestComponent", () => {
     fireEvent.click(backButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-compliance-earned-credits-report`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-compliance-earned-credits-report`,
     );
   });
 

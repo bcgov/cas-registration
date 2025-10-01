@@ -147,7 +147,7 @@ describe("InternalReviewByDirectorComponent", () => {
     fireEvent.click(backButton);
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-credits-issuance-request`,
     );
   });
 
@@ -167,7 +167,9 @@ describe("InternalReviewByDirectorComponent", () => {
     const backButton = screen.getByText("Back");
     fireEvent.click(backButton);
 
-    expect(mockPush).toHaveBeenCalledWith("/compliance-summaries");
+    expect(mockPush).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries",
+    );
   });
 
   it("handles approve submission successfully", async () => {
@@ -185,7 +187,7 @@ describe("InternalReviewByDirectorComponent", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
-        `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
         {
           body: JSON.stringify({
             director_comment: "",
@@ -196,7 +198,7 @@ describe("InternalReviewByDirectorComponent", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -215,7 +217,7 @@ describe("InternalReviewByDirectorComponent", () => {
       expect(actionHandler).toHaveBeenCalledWith(
         `compliance/compliance-report-versions/${mockComplianceReportVersionId}/earned-credits`,
         "PUT",
-        `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+        `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
         {
           body: JSON.stringify({
             director_comment: "",
@@ -226,7 +228,7 @@ describe("InternalReviewByDirectorComponent", () => {
     });
 
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
   });
 
@@ -249,7 +251,7 @@ describe("InternalReviewByDirectorComponent", () => {
 
     // Should not navigate on error
     expect(mockPush).not.toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/track-status-of-issuance`,
     );
 
     expect(screen.getByText("Submission failed")).toBeVisible();

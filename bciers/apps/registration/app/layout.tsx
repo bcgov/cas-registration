@@ -11,10 +11,7 @@ import RootLayout, {
 
 const title = "Registration";
 
-const defaultLinks = [
-  { label: "Dashboard", href: "/" },
-  { label: title, href: "/registration" },
-];
+const defaultLinks = [{ label: "Dashboard", href: "/" }, { label: title }];
 
 export const metadata = generateMetadata(title);
 

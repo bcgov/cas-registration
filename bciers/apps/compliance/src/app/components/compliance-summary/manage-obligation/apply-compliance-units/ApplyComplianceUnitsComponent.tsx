@@ -329,7 +329,7 @@ export default function ApplyComplianceUnitsComponent({
           backButtonText={status === "applied" ? "Back" : "Cancel"}
           onBackClick={() =>
             router.push(
-              `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
+              `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`,
             )
           }
           className="mt-8"

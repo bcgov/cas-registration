@@ -51,12 +51,7 @@ def get_fixture_files() -> List[str]:
         return [f"{fixture_base}/{path}" for path in paths]
 
     base_fixtures = fixtures(
-        "administration/external.json",
-        "administration/internal.json",
         "operators/internal.json",
-        "registration/external.json",
-        "reporting/external.json",
-        "reporting/internal.json",
         "bciers/external.json",
         "bciers/internal.json",
     )

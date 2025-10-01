@@ -22,7 +22,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
     expect(taskItems?.[0]).toEqual({
       type: "Page",
       title: "Review Penalty Summary",
-      link: "/compliance-summaries/123/review-penalty-summary",
+      link: "/compliance-administration/compliance-summaries/123/review-penalty-summary",
       isActive: false,
     });
 
@@ -30,7 +30,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
     expect(taskItems?.[1]).toEqual({
       type: "Page",
       title: "Download Payment Instructions",
-      link: `/compliance-summaries/123/download-payment-penalty-instructions`,
+      link: `/compliance-administration/compliance-summaries/123/download-payment-penalty-instructions`,
       isActive: false,
     });
 
@@ -38,7 +38,7 @@ describe("generateAutomaticOverduePenaltyTaskList", () => {
     expect(taskItems?.[2]).toEqual({
       type: "Page",
       title: "Pay Penalty and Track Payment(s)",
-      link: `/compliance-summaries/123/pay-penalty-track-payments`,
+      link: `/compliance-administration/compliance-summaries/123/pay-penalty-track-payments`,
       isActive: false,
     });
   });
