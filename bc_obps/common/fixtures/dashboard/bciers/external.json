@@ -9,7 +9,6 @@
         "tiles": [
           {
             "title": "Administration",
-            "href": "/administration",
             "icon": "Layers",
             "content": "View or update information of your operator, operations, facilities.",
             "links": [
@@ -115,7 +114,6 @@
           },
           {
             "title": "Registration",
-            "href": "/registration",
             "icon": "Entrance",
             "content": "Register your Operation(s).",
             "conditions": [
@@ -161,7 +159,6 @@
           },
           {
             "title": "Reporting",
-            "href": "/reporting",
             "icon": "File",
             "content": "Submit, view and edit your annual reports or previous years’ reports.",
             "conditions": [
@@ -198,7 +195,7 @@
             "links": [
               {
                 "title": "My Compliance",
-                "href": "/compliance/compliance-summaries"
+                "href": "/compliance/compliance-administration/compliance-summaries"
               },
               {
                 "title": "B.C. Carbon Registry",
@@ -210,7 +207,6 @@
           },
           {
             "title": "Report a Problem",
-            "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Wrench",
             "content": "Something wrong?",
             "links": [

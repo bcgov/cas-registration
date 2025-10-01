@@ -7,9 +7,9 @@ def load_dashboard_fixtures(apps, schema_editor):
     from django.core.management import call_command
 
     fixture_files = [
-        'common/fixtures/dashboard/registration/external.json',
-        'common/fixtures/dashboard/reporting/external.json',
-        'common/fixtures/dashboard/reporting/internal.json',
+        "common/fixtures/dashboard/bciers/external.json",
+        "common/fixtures/dashboard/bciers/internal.json",
+        "common/fixtures/dashboard/operators/internal.json",
     ]
 
     for fixture in fixture_files:

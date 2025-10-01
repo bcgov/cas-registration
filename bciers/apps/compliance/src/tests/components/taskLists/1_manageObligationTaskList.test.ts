@@ -47,7 +47,7 @@ describe("generateManageObligationTaskList", () => {
     expect(taskItems?.[0]).toEqual({
       type: "Page",
       title: "Review 2024 Compliance Obligation Report",
-      link: "/compliance-summaries/123/review-compliance-obligation-report",
+      link: "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
       isActive: true, // Default activeIndex is 0
     });
 
@@ -55,7 +55,7 @@ describe("generateManageObligationTaskList", () => {
     expect(taskItems?.[1]).toEqual({
       type: "Page",
       title: "Download Payment Instructions",
-      link: "/compliance-summaries/123/download-payment-instructions",
+      link: "/compliance-administration/compliance-summaries/123/download-payment-instructions",
       isActive: false,
     });
 
@@ -63,7 +63,7 @@ describe("generateManageObligationTaskList", () => {
     expect(taskItems?.[2]).toEqual({
       type: "Page",
       title: "Pay Obligation and Track Payment(s)",
-      link: "/compliance-summaries/123/pay-obligation-track-payments",
+      link: "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
       isActive: false,
     });
   });
@@ -82,13 +82,13 @@ describe("generateManageObligationTaskList", () => {
     expect(taskItems?.[0]).toEqual({
       type: "Subsection",
       title: "Review 2024 Compliance Obligation Report",
-      link: "/compliance-summaries/123/review-compliance-obligation-report",
+      link: "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
       isExpanded: true,
       elements: [
         {
           type: "Page",
           title: "Apply Compliance Units",
-          link: "/compliance-summaries/123/apply-compliance-units",
+          link: "/compliance-administration/compliance-summaries/123/apply-compliance-units",
           isActive: true,
         },
       ],

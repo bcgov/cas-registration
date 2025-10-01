@@ -209,6 +209,29 @@ describe("The Breadcrumb component", () => {
     expect(screen.getByText("Administration")).toBeVisible();
     expect(screen.getByText("Contacts")).toBeVisible();
   });
+  it("should render defaultLinks without href as plain text instead of a link", () => {
+    setupMocks("http://localhost:3000/administration/contacts");
+
+    render(
+      <Bread
+        separator=">"
+        capitalizeLinks={true}
+        defaultLinks={[
+          { label: "Dashboard", href: "/" }, // normal link
+          { label: "NoLink" }, // no href provided
+        ]}
+      />,
+    );
+
+    // "Dashboard" should be inside a link
+    const dashboardCrumb = screen.getByText("Dashboard");
+    expect(dashboardCrumb.closest("a")).not.toBeNull();
+
+    // "NoLink" should be plain text (span), not wrapped in a link
+    const noLinkCrumb = screen.getByText("NoLink");
+    expect(noLinkCrumb.closest("a")).toBeNull();
+    expect(noLinkCrumb.tagName.toLowerCase()).toBe("span");
+  });
   it("should include aria-label for accessibility", () => {
     setupMocks("http://localhost:3000/administration/contacts");
     render(

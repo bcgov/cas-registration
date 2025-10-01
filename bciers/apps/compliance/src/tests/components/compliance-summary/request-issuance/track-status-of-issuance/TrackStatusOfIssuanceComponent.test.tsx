@@ -103,7 +103,9 @@ describe("TrackStatusOfIssuanceComponent", () => {
     expect(backButton).toBeVisible();
 
     fireEvent.click(backButton);
-    expect(mockPush).toHaveBeenCalledWith("/compliance-summaries");
+    expect(mockPush).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries",
+    );
   });
 
   it("handles back button navigation for declined status", () => {
@@ -121,7 +123,9 @@ describe("TrackStatusOfIssuanceComponent", () => {
 
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
-    expect(mockPush).toHaveBeenCalledWith("/compliance-summaries");
+    expect(mockPush).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries",
+    );
   });
 
   it("handles back button navigation for issuance requested status", () => {
@@ -139,7 +143,9 @@ describe("TrackStatusOfIssuanceComponent", () => {
 
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
-    expect(mockPush).toHaveBeenCalledWith("/compliance-summaries");
+    expect(mockPush).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries",
+    );
   });
 
   it("handles back button navigation for other statuses", () => {
@@ -158,7 +164,7 @@ describe("TrackStatusOfIssuanceComponent", () => {
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
     expect(mockPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 

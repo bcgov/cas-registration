@@ -28,10 +28,10 @@ export default function PaymentInstructionsDownloadComponent({
 }: Props) {
   const backUrl =
     customBackUrl ??
-    `/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
+    `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-obligation-report`;
   const saveAndContinueUrl =
     customContinueUrl ??
-    `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+    `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingDownload, setIsGeneratingDownload] = useState(false);
   const instructionFormData = {

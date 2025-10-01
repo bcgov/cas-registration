@@ -18,6 +18,40 @@ const baseConfig = {
       transform: "@mui/material/{{member}}",
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/administration",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/compliance",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/compliance-administration",
+        destination: "/compliance-administration/compliance-summaries",
+        permanent: true,
+      },
+      {
+        source: "/registration",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/reporting",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/reports",
+        destination: "/reports/current-reports",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 // Shared Sentry options for all apps

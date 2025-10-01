@@ -47,7 +47,7 @@ export const viewport: Viewport = {
 // 📐 type for root layout props
 type RootLayoutProps = {
   children: React.ReactNode;
-  defaultLinks?: { label: string; href: string }[]; // for breadcrumbs
+  defaultLinks?: { label: string; href?: string }[]; // for breadcrumbs
   zone?: string; // for breadcrumbs
 };
 

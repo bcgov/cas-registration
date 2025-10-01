@@ -20,12 +20,12 @@ const ComplianceSummaryReviewComponent = ({
   complianceReportVersionId,
 }: Readonly<Props>) => {
   const isCasStaff = useSessionRole().includes("cas_");
-  const backUrl = "/compliance-summaries";
+  const backUrl = "/compliance-administration/compliance-summaries";
 
-  let saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
+  let saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
 
   if (isCasStaff) {
-    saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
+    saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
     // Don't show the continue button to internal users if the issuance status is CREDITS_NOT_ISSUED
     if (data.issuance_status === IssuanceStatus.CREDITS_NOT_ISSUED) {
       saveAndContinueUrl = "";

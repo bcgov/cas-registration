@@ -31,13 +31,13 @@ const InternalReviewByDirectorComponent = ({
 }: Props) => {
   const router = useRouter();
   const userRole = useSessionRole();
-  const continueUrl = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
+  const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
 
-  let backUrl = `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
+  let backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`;
   if (
     [IssuanceStatus.DECLINED].includes(data.issuance_status as IssuanceStatus)
   ) {
-    backUrl = "/compliance-summaries";
+    backUrl = "/compliance-administration/compliance-summaries";
   }
 
   const [formData, setFormState] = useState(data);
@@ -76,7 +76,7 @@ const InternalReviewByDirectorComponent = ({
       director_decision: decision,
     };
     const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
-    const pathToRevalidate = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
+    const pathToRevalidate = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });

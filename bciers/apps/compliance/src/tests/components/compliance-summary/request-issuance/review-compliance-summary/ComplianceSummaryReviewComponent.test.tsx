@@ -106,11 +106,13 @@ describe("ComplianceSummaryReviewComponent", () => {
     expect(continueButton).not.toBeDisabled();
 
     fireEvent.click(backButton);
-    expect(mockRouterPush).toHaveBeenCalledWith("/compliance-summaries");
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries",
+    );
 
     fireEvent.click(continueButton);
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 
@@ -142,7 +144,7 @@ describe("ComplianceSummaryReviewComponent", () => {
     fireEvent.click(continueButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
+      `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/request-issuance-of-earned-credits`,
     );
   });
 

@@ -18,7 +18,7 @@ export default function TrackStatusOfIssuanceComponent({
   data,
   complianceReportVersionId,
 }: Readonly<Props>) {
-  let backUrl = `/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
+  let backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/request-issuance-of-earned-credits`;
   if (
     [
       IssuanceStatus.ISSUANCE_REQUESTED,
@@ -26,7 +26,7 @@ export default function TrackStatusOfIssuanceComponent({
       IssuanceStatus.DECLINED,
     ].includes(data.issuance_status as IssuanceStatus)
   ) {
-    backUrl = "/compliance-summaries";
+    backUrl = "/compliance-administration/compliance-summaries";
   }
 
   return (

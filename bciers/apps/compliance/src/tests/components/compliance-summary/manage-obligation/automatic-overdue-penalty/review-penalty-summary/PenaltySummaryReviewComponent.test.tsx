@@ -120,7 +120,7 @@ describe("PenaltySummaryReviewComponent", () => {
     expect(backButton).toBeVisible();
     expect(backButton).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/pay-obligation-track-payments",
+      "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
     );
 
     const generatePenaltyInvoiceButton = getGeneratePenaltyInvoiceButton();
@@ -130,7 +130,7 @@ describe("PenaltySummaryReviewComponent", () => {
     expect(continueButton).toBeVisible();
     expect(continueButton).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/123/download-payment-penalty-instructions",
+      "/compliance-administration/compliance-summaries/123/download-payment-penalty-instructions",
     );
   });
 

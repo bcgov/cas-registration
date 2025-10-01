@@ -26,8 +26,8 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
 }: Readonly<Props>) => {
   const userRole = useSessionRole();
   const router = useRouter();
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
-  const continueUrl = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
+  const continueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`;
 
   const isCasAnalyst = userRole === FrontEndRoles.CAS_ANALYST;
   const [errors, setErrors] = useState<string[] | undefined>();
@@ -59,7 +59,7 @@ const InternalReviewCreditsIssuanceRequestComponent = ({
       analyst_comment: formData?.analyst_comment,
     };
     const endpoint = `compliance/compliance-report-versions/${complianceReportVersionId}/earned-credits`;
-    const pathToRevalidate = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
+    const pathToRevalidate = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`;
     const response = await actionHandler(endpoint, "PUT", pathToRevalidate, {
       body: JSON.stringify(payload),
     });

@@ -12,10 +12,7 @@ import RootLayout, {
 
 const title = "Administration";
 
-const defaultLinks = [
-  { label: "Dashboard", href: "/" },
-  { label: title, href: "/administration" },
-];
+const defaultLinks = [{ label: "Dashboard", href: "/" }, { label: title }];
 
 export const metadata = generateMetadata(title);
 

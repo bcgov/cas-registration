@@ -40,7 +40,9 @@ describe("withAuthorizationCompliance middleware", () => {
 
   it("builds the correct URL for authenticated users", async () => {
     getToken.mockResolvedValue(mockCasUserToken);
-    const nextUrl = new NextURL(`${domain}/compliance`);
+    const nextUrl = new NextURL(
+      `${domain}/compliance/compliance-administration/compliance-summaries`,
+    );
 
     when(mockedRequest.nextUrl).thenReturn(nextUrl);
     when(mockedRequest.url).thenReturn(domain);
@@ -50,7 +52,7 @@ describe("withAuthorizationCompliance middleware", () => {
       mockNextFetchEvent,
     );
     const responseUrl = new NextURL(
-      `${domain}/${mockCasUserToken.identity_provider}/${mockCasUserToken.app_role}/compliance`,
+      `${domain}/${mockCasUserToken.identity_provider}/${mockCasUserToken.app_role}/compliance-administration/compliance-summaries`,
     );
     expect(NextResponse.rewrite).toHaveBeenCalledOnce();
     expect(NextResponse.rewrite).toHaveBeenCalledWith(responseUrl);

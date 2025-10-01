@@ -24,8 +24,8 @@ export function ComplianceSummaryReviewComponent({
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
-  const backUrl = "/compliance-summaries";
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
+  const backUrl = "/compliance-administration/compliance-summaries";
+  const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-instructions`;
 
   /**
    * Attempts to fetch and open a compliance invoice PDF in a new window.
