@@ -49,12 +49,12 @@ test_migrations_dag = DAG(
 # Postgres operator chart
 POSTGRES_CHART_INSTANCE = os.getenv("POSTGRES_CHART_INSTANCE", "postgres-migration-test")
 POSTGRES_CHART_SHORTNAME = os.getenv("POSTGRES_CHART_SHORTNAME", "pg-migration-test")
-POSTGRES_CHART = "cas-registration/migration-test/cas-obps-postgres-migration-test"
+POSTGRES_CHART = "cas-registration/cas-obps-postgres-migration-test"
 
 # Backend chart
 BACKEND_CHART_INSTANCE = os.getenv("BACKEND_CHART_INSTANCE", "backend-migration-test")
 BACKEND_CHART_SHORTNAME = os.getenv("BACKEND_CHART_SHORTNAME", "be-migration-test")
-BACKEND_CHART = "cas-registration/migration-test/cas-obps-backend-migration-test"
+BACKEND_CHART = "cas-registration/cas-obps-backend-migration-test"
 BACKEND_CHART_TAG = os.getenv("BACKEND_CHART_TAG")
 
 
@@ -73,7 +73,7 @@ postgres_helm_install = KubernetesJobOperator(
         "--namespace {{ params.destination_namespace }} "
         "--set sourceNamespace={{ params.source_namespace }} "
         "{{ params.postgres_chart_instance | default('postgres-migration-test') }} "
-        "cas-registration/migration-test/cas-obps-postgres-migration-test"
+        "cas-registration/cas-obps-postgres-migration-test"
     ],
     get_logs=True,
     is_delete_operator_pod=True,
@@ -116,7 +116,7 @@ backend_helm_install = KubernetesJobOperator(
         "--namespace {{ params.destination_namespace }} "
         "--set sourceNamespace={{ params.source_namespace }} "
         "{{ params.backend_chart_instance | default('backend-migration-test') }} "
-        "cas-registration/migration-test/cas-obps-backend-migration-test "
+        "cas-registration/cas-obps-backend-migration-test "
         "--set defaultImageTag={{ params.backend_chart_tag }}"
     ],
     get_logs=True,
