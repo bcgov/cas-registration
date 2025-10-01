@@ -47,7 +47,7 @@ When you're ready to make a release to test and/or prod, apply the following ste
 This will put the release commit onto the main branch, which is connected to the test environment.
 
 1. go to the shipit test environment and keep an eye on the required checks. Once they pass, you can click the `Deploy` button.
-1. once the deploy is complete, let the team know the release is available in test. Optionally end the merge halt and unlock the develop branch at this point.
+1. once the deploy is complete (the logs will show `Completed Successfully`, usually takes up to 8 minutes), let the team know the release is available in test. Optionally end the merge halt and unlock the develop branch at this point.
 1. once a PO is ready to release to prod, they will typically click the `Deploy` button themselves.
 1. tag github tickets with the release version if applicable (see the team_release_process.md for more details)
 
