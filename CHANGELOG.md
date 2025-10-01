@@ -1,3 +1,15 @@
+# [4.1.0](https://github.com/bcgov/cas-registration/compare/v4.0.1...v4.1.0) (2025-10-01)
+
+### Bug Fixes
+
+- update declined issuance note to include appeal information and registry links ([7c18e44](https://github.com/bcgov/cas-registration/commit/7c18e4428234014c6374576eb98fbd249f56db6d))
+
+### Features
+
+- add conditional messaging for declined issuance with supplementary report ([66ef3de](https://github.com/bcgov/cas-registration/commit/66ef3debe5bca105369381447959385407824432))
+- automated task to generate invoices on a specific-date ([b997a99](https://github.com/bcgov/cas-registration/commit/b997a996636150074230aabd0b222617eaab146d))
+- user warning when operations are missing contact ([c13ff25](https://github.com/bcgov/cas-registration/commit/c13ff25f97817d5e0b189116306256716dc1ec7c))
+
 ## [4.0.1](https://github.com/bcgov/cas-registration/compare/v4.0.0...v4.0.1) (2025-09-25)
 
 ### Bug Fixes
