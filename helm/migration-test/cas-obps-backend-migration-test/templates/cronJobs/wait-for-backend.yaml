@@ -20,7 +20,7 @@ spec:
         spec:
           activeDeadlineSeconds: 600
           restartPolicy: Never
-          serviceAccountName: deployer
+          serviceAccountName: airflow-deployer
           containers:
           - name: wait-for-backend
             image: alpine/k8s:1.29.15
