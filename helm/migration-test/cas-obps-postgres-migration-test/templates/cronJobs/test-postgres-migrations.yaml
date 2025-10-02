@@ -18,7 +18,7 @@ spec:
         spec:
           activeDeadlineSeconds: 600
           restartPolicy: Never
-          serviceAccountName: deployer
+          serviceAccountName: airflow-deployer
           containers:
           - name: postgres-migration-test
             image: postgres:16
