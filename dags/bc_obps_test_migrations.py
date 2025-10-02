@@ -1,12 +1,19 @@
 from dag_configuration import default_dag_args
 from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
-from airflow.providers.standard.operators.python import PythonOperator
-from airflow.sdk import Param
 from datetime import datetime, timedelta
 from airflow import DAG
 import os
 import sys
+
+try:
+    # Airflow 3
+    from airflow.providers.standard.operators.python import PythonOperator
+    from airflow.sdk import Param
+except ImportError:
+    # Airflow 2
+    from airflow.operators.python import PythonOperator
+    from airflow.models.param import Param
 
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 TWO_DAYS_AGO = datetime.now() - timedelta(days=2)
