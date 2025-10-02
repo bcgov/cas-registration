@@ -19,7 +19,7 @@ spec:
         spec:
           activeDeadlineSeconds: 600
           restartPolicy: Never
-          serviceAccountName: deployer
+          serviceAccountName: airflow-deployer
           containers:
           - name: django-migration-test
             image: "{{ .Values.backend.image.repository }}:{{ .Values.defaultImageTag | default .Values.backend.image.tag }}"
