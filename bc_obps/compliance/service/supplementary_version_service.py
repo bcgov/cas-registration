@@ -500,7 +500,7 @@ class DecreasedCreditHandler:
         return (
             previous_summary.credited_emissions > ZERO_DECIMAL
             and new_summary.credited_emissions < previous_summary.credited_emissions
-            and original_earned_credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED
+            and original_earned_credit_record.issuance_status != ComplianceEarnedCredit.IssuanceStatus.APPROVED
         )
 
     @staticmethod
@@ -525,8 +525,20 @@ class DecreasedCreditHandler:
             is_supplementary=True,
             previous_version=previous_compliance_version,
         )
-        # Create new credits record
+        # Get the previous earned_credit record
+        previous_earned_credit = ComplianceEarnedCredit.objects.get(
+            compliance_report_version=previous_compliance_version
+        )
+
         ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
+
+        # If previously requested, mark it as declined
+        if previous_earned_credit.issuance_status in (
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+        ):
+            previous_earned_credit.issuance_status = ComplianceEarnedCredit.IssuanceStatus.DECLINED
+            previous_earned_credit.save()
 
         return compliance_report_version
 

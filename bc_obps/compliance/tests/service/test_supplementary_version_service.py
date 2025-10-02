@@ -1640,7 +1640,15 @@ class TestIncreasedCreditHandler(BaseSupplementaryVersionServiceTest):
 
 
 class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
-    def test_can_handle_decreased_credits(self):
+    @pytest.mark.parametrize(
+        "issuance_status",
+        [
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+        ],
+    )
+    def test_can_handle_decreased_credits_no_previous_approval(self, issuance_status):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -1667,7 +1675,7 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.original_report_version,
             earned_credits_amount=500,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            issuance_status=issuance_status,
             bccr_trading_name='Test Trading Name',
             bccr_holding_account_id='123',
         )
@@ -1678,6 +1686,52 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         # Assert
         assert result is True
 
+    def test_cannot_handle_decreased_credits_already_approved(self):
+        # Arrange
+        with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
+            self.previous_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('600'),
+                report_version=self.report_version_1,
+            )
+            self.new_summary = baker.make_recipe(
+                'reporting.tests.utils.report_compliance_summary',
+                excess_emissions=0,
+                credited_emissions=Decimal('500'),
+                report_version=self.report_version_2,
+            )
+        self.compliance_report = baker.make_recipe(
+            'compliance.tests.utils.compliance_report', report=self.report, compliance_period_id=1
+        )
+        self.original_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            report_compliance_summary=self.previous_summary,
+            is_supplementary=False,
+        )
+        baker.make_recipe(
+            'compliance.tests.utils.compliance_earned_credit',
+            compliance_report_version=self.original_report_version,
+            earned_credits_amount=500,
+            issuance_status=ComplianceEarnedCredit.IssuanceStatus.APPROVED,
+            bccr_trading_name='Test Trading Name',
+            bccr_holding_account_id='123',
+        )
+
+        # Act
+        result = DecreasedCreditHandler.can_handle(self.new_summary, self.previous_summary)
+
+        # Assert
+        assert result is False
+
+    @pytest.mark.parametrize(
+        "issuance_status",
+        [
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+        ],
+    )
     @patch('compliance.service.supplementary_version_service.DecreasedCreditHandler.handle')
     @patch('compliance.service.supplementary_version_service.IncreasedCreditHandler.handle')
     @patch('compliance.service.supplementary_version_service.NoChangeHandler.handle')
@@ -1690,6 +1744,7 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler,
         mock_increased_credit_handler,
         mock_decreased_credit_handler,
+        issuance_status,
     ):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
@@ -1718,7 +1773,7 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.previous_compliance_report_version,
             earned_credits_amount=800,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            issuance_status=issuance_status,
             bccr_trading_name='Test Trading Name',
             bccr_holding_account_id='123',
         )
@@ -1743,7 +1798,15 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         mock_no_change_handler.assert_not_called()
         mock_increased_credit_handler.assert_not_called()
 
-    def test_handle_decreased_credits_success(self):
+    @pytest.mark.parametrize(
+        "issuance_status",
+        [
+            ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            ComplianceEarnedCredit.IssuanceStatus.ISSUANCE_REQUESTED,
+            ComplianceEarnedCredit.IssuanceStatus.CHANGES_REQUIRED,
+        ],
+    )
+    def test_handle_decreased_credits_success(self, issuance_status):
         # Arrange
         with pgtrigger.ignore('reporting.ReportComplianceSummary:immutable_report_version'):
             self.previous_summary = baker.make_recipe(
@@ -1767,7 +1830,7 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
             'compliance.tests.utils.compliance_earned_credit',
             compliance_report_version=self.original_report_version,
             earned_credits_amount=800,
-            issuance_status=ComplianceEarnedCredit.IssuanceStatus.DECLINED,
+            issuance_status=issuance_status,
             bccr_trading_name='Test Trading Name',
             bccr_holding_account_id='123',
         )
@@ -1787,8 +1850,10 @@ class TestDecreasedCreditHandler(BaseSupplementaryVersionServiceTest):
         assert new_compliance_version.is_supplementary is True
         assert new_compliance_version.previous_version == self.original_report_version
         assert original_credit_record.earned_credits_amount == Decimal('800')
+
         assert new_credit_record.earned_credits_amount == Decimal('500')
         assert new_credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED
+        assert original_credit_record.issuance_status == ComplianceEarnedCredit.IssuanceStatus.DECLINED
 
 
 class TestSupercededHandler(BaseSupplementaryVersionServiceTest):
