@@ -8,7 +8,9 @@ from registration.models.user_operator import UserOperator
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from service.data_access_service.operation_service import OperationDataAccessService
+from service.data_access_service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineDataAccessService,
+)
 from service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
 from reporting.schema.dashboard import (
@@ -91,20 +93,20 @@ class ReportingDashboardService:
             .annotate(first_version_id=cls.first_report_version_subquery.values("id"))
         )
 
-        current_operations = OperationDataAccessService.get_all_current_operations_for_user(user)
-        # need to fetch previously owned operations in case reports were filed for them already or if they need to
-        # create a new report version for an operation they once owned.
-        if operator_id is not None:
-            previous_operations = OperationDataAccessService.get_previously_owned_operations_for_operator(
-                user, operator_id, reporting_year
-            )
-        else:
-            previous_operations = Operation.objects.none()
-
-        all_operations = current_operations | previous_operations
+        # fetch operations that were owned during the reporting year, including both currently and previously owned operations (if an operation was transferred, the original owner still has reporting responsiblities for the last year of ownership)
+        timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
+            user=user, exclude_previously_owned=False
+        ).filter(
+            Q(end_date__year=reporting_year + 1) | Q(end_date__year__isnull=True, start_date__year__lte=reporting_year)
+        )
+        operations_for_reporting_year = Operation.objects.filter(
+            id__in=timeline.values_list('operation_id', flat=True),
+        )
 
         queryset = (
-            all_operations.filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
+            operations_for_reporting_year.filter(
+                status=Operation.Statuses.REGISTERED
+            )  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
                 # the [:1] is necessary for the sorting and filters to work
