@@ -3,11 +3,8 @@ import pytest
 from registration.models.operation import Operation
 from model_bakery.baker import make_recipe
 from reporting.models.report_operation import ReportOperation
-from registration.models.user import User
 from registration.models.operation_designated_operator_timeline import OperationDesignatedOperatorTimeline
-from registration.models.app_role import AppRole
-from registration.models.user_operator import UserOperator
-from registration.tests.utils.bakers import operation_baker, operator_baker, user_operator_baker
+from registration.tests.utils.bakers import operation_baker, operator_baker
 from reporting.service.reporting_dashboard_service import ReportingDashboardService
 from reporting.tests.utils.bakers import report_version_baker, reporting_year_baker
 from service.report_service import ReportService
@@ -25,35 +22,48 @@ from model_bakery import baker
 @pytest.mark.django_db
 class TestReportingDashboardService:
     @patch(
-        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
+        "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
     )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_get_operations_for_reporting_dashboard(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
-        mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
+        get_operation_timeline_for_user: MagicMock | AsyncMock,
     ):
-        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
-        operator = operator_baker()
-        user_operator = user_operator_baker(
-            {
-                "user": user,
-                "operator": operator,
-                "status": UserOperator.Statuses.APPROVED,
-                "role": UserOperator.Roles.ADMIN,
-            }
-        )
+        user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         mock_get_by_guid.return_value = user_operator.user
-        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        get_operation_timeline_for_user.side_effect = (
+            lambda user, exclude_previously_owned=False: OperationDesignatedOperatorTimeline.objects.all()
+        )
 
         year = reporting_year_baker(reporting_year=5091)
-        operations = operation_baker(operator_id=user_operator.operator.id, _quantity=5)
+
+        operations = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=user_operator.operator,
+            _quantity=5,
+        )
+
+        # set up timeline records
+        for operation in operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                start_date="5090-01-01 01:46:20.789146",
+                end_date="5092-12-31 23:59:59.000000",
+                operator=user_operator.operator,
+            )
 
         # Change operation names so alphabetical sorting produces consistent results
         operations[0].name = "a"
         operations[1].name = "b"
         operations[2].name = "c"
         operations[3].name = "d"
+        operations[3].status = Operation.Statuses.NOT_STARTED
+        operations[4].registration_purpose = Operation.Purposes.POTENTIAL_REPORTING_OPERATION
+        for op in operations:
+            op.save()
 
         sort_field: Optional[str] = "name"
         sort_order: Optional[str] = "asc"
@@ -71,19 +81,10 @@ class TestReportingDashboardService:
         r1_version1_id = ReportService.create_report(operations[1].id, year.reporting_year)
         r1 = ReportVersion.objects.get(pk=r1_version1_id).report
 
-        operations[0].status = Operation.Statuses.REGISTERED
-        operations[1].status = Operation.Statuses.REGISTERED
-        operations[2].status = Operation.Statuses.REGISTERED
-        operations[3].status = Operation.Statuses.NOT_STARTED
-        operations[4].registration_purpose = Operation.Purposes.POTENTIAL_REPORTING_OPERATION
-        for op in operations:
-            op.save()
-
         result = ReportingDashboardService.get_operations_for_reporting_dashboard(
             user_operator.user.user_guid, 5091, sort_field, sort_order, filters
         ).values()
         result_list = list(result)
-
         assert len(result_list) == 3
 
         # Create dictionaries for easy lookup by operation ID
@@ -263,31 +264,46 @@ class TestReportingDashboardService:
             assert res["reporting_year_id"] == rv.report.reporting_year_id
 
     @patch(
-        "service.data_access_service.operation_service.OperationDataAccessService.get_all_current_operations_for_user"
+        "service.data_access_service.operation_designated_operator_timeline_service.OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user"
     )
     @patch("service.data_access_service.user_service.UserDataAccessService.get_by_guid")
     def test_operations_sorting_and_filtering(
         self,
         mock_get_by_guid: MagicMock | AsyncMock,
-        mock_get_all_current_operations_for_user: MagicMock | AsyncMock,
+        get_operation_timeline_for_user: MagicMock | AsyncMock,
     ):
 
         # SETUP
-        user = baker.make(User, app_role=AppRole.objects.get(role_name="industry_user"))
-        operator = operator_baker()
-        user_operator = user_operator_baker(
-            {
-                "user": user,
-                "operator": operator,
-                "status": UserOperator.Statuses.APPROVED,
-                "role": UserOperator.Roles.ADMIN,
-            }
-        )
+        user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
         mock_get_by_guid.return_value = user_operator.user
-        mock_get_all_current_operations_for_user.side_effect = lambda user: Operation.objects.all()
+        get_operation_timeline_for_user.side_effect = (
+            lambda user, exclude_previously_owned=False: OperationDesignatedOperatorTimeline.objects.all()
+        )
 
         year = reporting_year_baker(reporting_year=5091)
-        operations = operation_baker(operator_id=user_operator.operator.id, _quantity=4)
+        operations = baker.make_recipe(
+            'registration.tests.utils.operation',
+            status=Operation.Statuses.REGISTERED,
+            operator=user_operator.operator,
+            _quantity=4,
+        )
+
+        # set up timeline records
+        for operation in operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                start_date="5090-01-01 01:46:20.789146",
+                end_date="5092-12-31 23:59:59.000000",
+                operator=user_operator.operator,
+            )
+        # Change operation names so sorting by name produces consistent results
+        operations[0].name = "a"
+        operations[1].name = "b"
+        operations[2].name = "c"
+        operations[3].name = "d"
+        for op in operations:
+            op.save()
 
         # r0 orginal, report_version_id=1
         r0_r1v1_id = ReportService.create_report(operations[0].id, year.reporting_year)
@@ -308,18 +324,6 @@ class TestReportingDashboardService:
         r2_version1 = ReportVersion.objects.get(pk=r2_version1_id)
         r2_version1.status = "Submitted"
         r2_version1.save()
-
-        operations[0].status = Operation.Statuses.REGISTERED
-        operations[1].status = Operation.Statuses.REGISTERED
-        operations[2].status = Operation.Statuses.REGISTERED
-        operations[3].status = Operation.Statuses.REGISTERED
-        # Change operation names so sorting by name produces consistent results
-        operations[0].name = "a"
-        operations[1].name = "b"
-        operations[2].name = "c"
-        operations[3].name = "d"
-        for op in operations:
-            op.save()
 
         sort_field: Optional[str] = "name"
         sort_order: Optional[str] = "asc"
@@ -528,7 +532,7 @@ class TestReportingDashboardService:
         )
 
         # make a bunch of other random operations for other operators, so that we can later check that the user doesn't have access to these random operations
-        operation_baker(_quantity=20)
+        make_recipe('registration.tests.utils.operation', _quantity=20)
 
         # create report for operation, filed by original_operator
         report_r1v1_id = ReportService.create_report(operation.id, reporting_year_2024.reporting_year)
@@ -537,10 +541,10 @@ class TestReportingDashboardService:
         report_version1.save()
 
         # transfer ownership of operation to new_operator
-        timeline1.end_date = "2025-07-01T00:00:00Z"
+        timeline1.end_date = "2025-12-31T00:00:00Z"
         timeline1.save()
         OperationDesignatedOperatorTimeline.objects.create(
-            operation=operation, operator=new_user_operator.operator, start_date="2025-07-01T00:00:00Z", end_date=None
+            operation=operation, operator=new_user_operator.operator, start_date="2025-12-31T00:00:00Z", end_date=None
         )
         operation.operator = new_user_operator.operator
         operation.save()
@@ -556,9 +560,6 @@ class TestReportingDashboardService:
             original_user_operator.user.user_guid,
             reporting_year_2025.reporting_year,
             filters=ReportingDashboardOperationFilterSchema(),
-        )
-        queryset_2026 = ReportingDashboardService.get_operations_for_reporting_dashboard(
-            original_user_operator.user.user_guid, 2026, filters=ReportingDashboardOperationFilterSchema()
         )
 
         # new user makes calls to get_operations_for_reporting_dashboard
@@ -580,12 +581,9 @@ class TestReportingDashboardService:
         assert report_version1.report.id in list(queryset_2024.values_list("report_id", flat=True))
         # assert original_user doesn't get results for operations from other operators
         assert queryset_2024.count() == 1
-        assert queryset_2025.count() == 1
-        assert queryset_2026.count() == 0
-        # assert original_user sees the transferred operation in their dashboard for 2025, since they transferred it part way through the year
-        assert operation.id in list(queryset_2025.values_list("id", flat=True))
-        # assert original_user doesn't see the transferred operation in their dashboard for 2026
-        assert operation.id not in list(queryset_2026.values_list("id", flat=True))
+
+        # assert original_user does not see transferred operation in their dashboard for 2025
+        assert queryset_2025.count() == 0
 
         # assert new_user doesn't see the report in their dashboard for 2024 (they didn't own it then)
         assert report_version1.report.id not in list(queryset_2024_new_user.values_list("report_id", flat=True))

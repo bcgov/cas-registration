@@ -18,7 +18,7 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
             )
 
     @staticmethod
-    def test_get_operations_for_industry_user():
+    def test_get_current_operations_for_industry_user():
         approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
 
         # simulating a transferred operation - should not be returned
@@ -56,7 +56,45 @@ class TestDataAccessOperationDesignatedOperatorTimelineService:
         assert timeline.count() == 20
 
     @staticmethod
-    def test_get_operations_for_internal_user():
+    def test_get_current_and_previous_operations_for_industry_user():
+        approved_user_operator = baker.make_recipe('registration.tests.utils.approved_user_operator')
+
+        # simulating a transferred operation - should be returned
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            end_date="2024-12-25 01:00:00-08",
+            operator=approved_user_operator.operator,
+        )
+
+        # active, registered operations
+        registered_operations = baker.make_recipe(
+            'registration.tests.utils.operation',
+            operator=approved_user_operator.operator,
+            status=Operation.Statuses.REGISTERED,
+            _quantity=20,
+        )
+        for operation in registered_operations:
+            baker.make_recipe(
+                'registration.tests.utils.operation_designated_operator_timeline',
+                operation=operation,
+                operator=approved_user_operator.operator,
+                end_date=None,
+            )
+
+        # someone else's operations - should not be returned
+        baker.make_recipe(
+            'registration.tests.utils.operation_designated_operator_timeline',
+            _quantity=5,
+        )
+
+        timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
+            approved_user_operator.user, False
+        )
+
+        assert timeline.count() == 21
+
+    @staticmethod
+    def test_get_current_operations_for_internal_user():
         # non-registered operation - should be returned
         baker.make_recipe(
             'registration.tests.utils.operation_designated_operator_timeline',
