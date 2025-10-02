@@ -1,13 +1,16 @@
+from datetime import datetime
 from unittest.mock import patch, MagicMock, AsyncMock
 from django.test import Client
 from registration.models.operation import Operation
 from registration.tests.utils.bakers import operation_baker, user_baker
 from registration.utils import custom_reverse_lazy
 from reporting.models.report import Report
+from reporting.models.reporting_year import ReportingYear
 from reporting.tests.utils.bakers import report_baker, report_version_baker, reporting_year_baker
 from registration.tests.utils.bakers import operator_baker
 from registration.tests.utils.helpers import CommonTestSetup, TestUtils
 from django.db.models import F
+from model_bakery.baker import make_recipe
 
 
 class TestReportingDashboardEndpoints(CommonTestSetup):
@@ -108,3 +111,43 @@ class TestReportingDashboardEndpoints(CommonTestSetup):
             assert item['report_id'] == report.id
             assert item['report_version_id'] == report.report_versions.first().id
             assert item['report_status'] == report.report_versions.first().status
+
+    @patch(
+        "reporting.service.reporting_dashboard_service.ReportingDashboardService.get_operations_for_reporting_dashboard"
+    )
+    @patch("common.api.utils.get_current_user_guid")
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    def test_returns_operations_data_as_provided_by_the_service(
+        self,
+        mock_get_current_year: MagicMock | AsyncMock,
+        mock_get_current_user: MagicMock | AsyncMock,
+        mock_get_operations: MagicMock | AsyncMock,
+    ):
+
+        endpoint_under_test = custom_reverse_lazy("get_dashboard_operations_list")
+        approved_user_operator = make_recipe('registration.tests.utils.approved_user_operator')
+        TestUtils.authorize_current_user_as_operator_user(self, operator=approved_user_operator.operator)
+
+        mock_get_current_year.return_value = ReportingYear.objects.first()
+        mock_get_current_user.return_value = approved_user_operator.user
+
+        operations = make_recipe(
+            'registration.tests.utils.operation', _quantity=6, operator=approved_user_operator.operator
+        )
+        for operation in operations:
+            _id_counter = 0
+            operation.report_id = _id_counter
+            operation.report_version_id = _id_counter
+            operation.first_report_version_id = _id_counter
+            operation.report_status = "draft"
+            operation.report_updated_at = datetime.now()
+            operation.report_submitted_by = "Test User"
+            operation.operation_name = "Mocked Operation Name"
+            operation.report_status_sort_key = 0
+            operation.save()
+            _id_counter += 1
+        mock_get_operations.return_value = operations
+
+        response_json = TestUtils.mock_get_with_auth_role(self, "industry_user", endpoint_under_test).json()
+        assert response_json['count'] == 6
+        assert len(response_json['items']) == 6
