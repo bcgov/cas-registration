@@ -153,7 +153,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     const backButton = screen.getByRole("button", { name: "Back" });
     fireEvent.click(backButton);
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/review-compliance-earned-credits-report`,
+      `/compliance-administration/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/review-compliance-earned-credits-report`,
     );
 
     const continueButton = screen.getByRole("button", {
@@ -178,7 +178,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
 
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/track-status-of-issuance`,
+        `/compliance-administration/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/track-status-of-issuance`,
       );
     });
   });

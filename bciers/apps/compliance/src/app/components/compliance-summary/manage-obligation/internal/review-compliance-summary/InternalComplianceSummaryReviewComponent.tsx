@@ -15,7 +15,7 @@ interface Props {
 export function InternalComplianceSummaryReviewComponent({
   data,
 }: Readonly<Props>) {
-  const backUrl = "/compliance-summaries";
+  const backUrl = "/compliance-administration/compliance-summaries";
 
   return (
     <FormBase

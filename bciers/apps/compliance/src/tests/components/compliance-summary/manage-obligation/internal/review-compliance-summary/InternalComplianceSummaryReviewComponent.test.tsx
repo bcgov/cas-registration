@@ -47,7 +47,9 @@ describe("InternalComplianceSummaryReviewComponent", () => {
   it("renders step buttons with back URL", () => {
     render(<InternalComplianceSummaryReviewComponent data={baseData} />);
     expect(
-      screen.getByText("Mock Buttons - /compliance-summaries"),
+      screen.getByText(
+        "Mock Buttons - /compliance-administration/compliance-summaries",
+      ),
     ).toBeInTheDocument();
   });
 });

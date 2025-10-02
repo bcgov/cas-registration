@@ -17,7 +17,7 @@ export function PenaltyTrackPaymentsComponent({
   data,
   complianceReportVersionId,
 }: Props) {
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
   return (
     <FormBase

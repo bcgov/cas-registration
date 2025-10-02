@@ -23,7 +23,7 @@ export const generateIssuanceRequestTaskList: (
   const reviewSummary = {
     type: "Page" as const,
     title: `Review ${reporting_year} Compliance Summary`,
-    link: `/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`,
+    link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`,
     isActive: activePage === ActivePage.ReviewComplianceSummary,
   };
   if (
@@ -34,7 +34,7 @@ export const generateIssuanceRequestTaskList: (
       {
         type: "Page" as const,
         title: "Track Status of Issuance",
-        link: `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
+        link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`,
         isActive: activePage === ActivePage.TrackStatusOfIssuance,
       },
     ];
@@ -46,13 +46,13 @@ export const generateIssuanceRequestTaskList: (
       {
         type: "Page" as const,
         title: "Review Credits Issuance Request",
-        link: `/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`,
+        link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-credits-issuance-request`,
         isActive: activePage === ActivePage.ReviewCreditsIssuanceRequest,
       },
       {
         type: "Page" as const,
         title: "Review by Director",
-        link: `/compliance-summaries/${complianceReportVersionId}/review-by-director`,
+        link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`,
         isActive: activePage === ActivePage.ReviewByDirector,
       },
     ];

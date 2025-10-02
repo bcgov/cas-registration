@@ -59,6 +59,8 @@ describe("ComplianceSummaryReviewComponent", () => {
 
     // Verify router push is called with correct URLs when buttons are clicked
     fireEvent.click(backButton);
-    expect(mockRouterPush).toHaveBeenCalledWith("/compliance-summaries");
+    expect(mockRouterPush).toHaveBeenCalledWith(
+      "/compliance-administration/compliance-summaries",
+    );
   });
 });

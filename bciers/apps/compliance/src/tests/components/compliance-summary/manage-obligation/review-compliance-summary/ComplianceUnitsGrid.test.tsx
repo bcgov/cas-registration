@@ -109,7 +109,7 @@ describe("ComplianceUnitsGrid", () => {
     fireEvent.click(applyButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      "/compliance-summaries/123/apply-compliance-units",
+      "/compliance-administration/compliance-summaries/123/apply-compliance-units",
     );
   });
 

@@ -24,12 +24,4 @@ const plugins = [
   withSentry, // Use shared Sentry config without overrides
 ];
 
-nextConfig.redirects = async () => [
-  {
-    source: "/reports",
-    destination: "/reports/current-reports",
-    permanent: true,
-  },
-];
-
 module.exports = composePlugins(...plugins)(nextConfig);

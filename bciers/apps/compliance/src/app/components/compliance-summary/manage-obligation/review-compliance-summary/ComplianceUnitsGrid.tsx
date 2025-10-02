@@ -25,7 +25,7 @@ export const ComplianceUnitsGrid = ({
 
   const handleApplyComplianceUnits = () =>
     router.push(
-      `/compliance-summaries/${complianceReportVersionId}/apply-compliance-units`,
+      `/compliance-administration/compliance-summaries/${complianceReportVersionId}/apply-compliance-units`,
     );
 
   const columns = complianceUnitsColumns();

@@ -23,8 +23,8 @@ const PenaltySummaryReviewComponent = ({
   reportingYear,
   complianceReportVersionId,
 }: Props) => {
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-obligation-track-payments`;
+  const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/download-payment-penalty-instructions`;
 
   const [errors, setErrors] = useState<string[]>([]);
   const [isGeneratingPenaltyInvoice, setIsGeneratingPenaltyInvoice] =

@@ -18,13 +18,13 @@ export const generateReviewObligationPenaltyTaskList: (
     {
       type: "Page" as const,
       title: `Review ${reportingYear} Compliance Obligation Report`,
-      link: `/compliance-summaries/${complianceReportVersionId}/review-obligation-summary`,
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-obligation-summary`,
       isActive: activePage === ActivePage.ReviewComplianceObligationReport,
     },
     {
       type: "Page" as const,
       title: "Review Penalty Summary",
-      link: `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`,
+      link: `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`,
       isActive: activePage === ActivePage.ReviewPenaltySummary,
     },
   ];
