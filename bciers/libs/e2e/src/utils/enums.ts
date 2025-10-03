@@ -53,6 +53,7 @@ export enum ButtonText {
 
 // 🚀  App routes
 export enum AppRoute {
+  //Administration/Registration
   DASHBOARD = "dashboard",
   HOME = "home",
   OPERATION = "dashboard/operations/create/1",
@@ -61,6 +62,12 @@ export enum AppRoute {
   OPERATORS = "dashboard/operators",
   PROFILE = "dashboard/profile",
   USERS = "dashboard/users",
+
+  //Reporting
+  CURRENT_REPORTS_GRID = "reporting/reports/current-reports",
+  //Compliance
+  COMPLIANCE_SUMMARIES = "compliance/compliance-summaries",
+  REPORTING = "reporting/reports",
 }
 
 // 👋 playwright ID selectors targeting an HTML element

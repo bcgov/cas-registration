@@ -8,9 +8,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         fixtures = [
-            f'{self.fixture_base_dir}/compliance_summaries.json',
-            f'{self.fixture_base_dir}/compliance_products.json',
-            f'{self.fixture_base_dir}/compliance_obligations.json',
+            # f'{self.fixture_base_dir}/compliance_summaries.json',
+            # f'{self.fixture_base_dir}/compliance_products.json',
+            # f'{self.fixture_base_dir}/compliance_obligations.json',
+            f'{self.fixture_base_dir}/compliance_period.json',
+            f'{self.fixture_base_dir}/compliance_charge_rate.json',
         ]
 
         for fixture in fixtures:

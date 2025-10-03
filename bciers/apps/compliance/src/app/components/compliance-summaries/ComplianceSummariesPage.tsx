@@ -53,8 +53,8 @@ export default async function ComplianceSummariesPage({
         <div className="mb-2">
           {isAllowedIndustryUser && obligationsNotMet && (
             <AlertNote>
-              Your compliance obligation for the {reportingYear} reporting year{" "}
-              {currentDatePST > dueDatePST ? "was" : "is"}{" "}
+              Chesca test Your compliance obligation for the {reportingYear}{" "}
+              reporting year {currentDatePST > dueDatePST ? "was" : "is"}{" "}
               <strong>due on November 30, {reportingYear + 1}</strong>. Please
               pay five business days in advance to account for the processing
               time.
