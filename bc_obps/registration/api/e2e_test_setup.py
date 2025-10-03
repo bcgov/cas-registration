@@ -8,6 +8,14 @@ from django.core.cache import cache
 from rls.utils.manager import RlsManager
 
 
+def apply_specific_compliance_migrations() -> None:
+    """
+    Applies specific compliance migrations required for compliance E2E test.
+    """
+    call_command('migrate', 'compliance', '0002_seed_compliance_periods')
+    call_command('migrate', 'compliance', '0003_seed_compliance_charge_rates')
+
+
 # testing endpoint
 @router.get(
     "/test-setup",
@@ -24,14 +32,16 @@ def setup(
             with RlsManager.bypass_rls():
                 if truncate_only:  # only truncate the tables
                     call_command('truncate_dev_data_tables')
+                    apply_specific_compliance_migrations()
                     return HttpResponse("Test setup complete.", status=200)
                 if load_only:  # only load the data
                     call_command('load_fixtures', workflow)
+                    apply_specific_compliance_migrations()
                     return HttpResponse("Test setup complete.", status=200)
                 call_command('truncate_dev_data_tables')
                 call_command('load_fixtures', workflow)
                 call_command('load_reporting_fixtures', workflow)
-                call_command('load_compliance_fixtures')
+                apply_specific_compliance_migrations()
                 return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
             return HttpResponse(f"Test setup failed. Reason:{e}", status=500)
