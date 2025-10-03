@@ -42,7 +42,7 @@ jobs:
   build-compliance:
     uses: ./.github/workflows/build-compliance.yaml
   build-compliance-e2e:
-    uses: ./github/workflows/build-compliance-e2e.yaml
+    uses: ./.github/workflows/build-compliance-e2e.yaml
   build-dashboard:
     uses: ./.github/workflows/build-dashboard.yaml
   build-dashboard-e2e:
