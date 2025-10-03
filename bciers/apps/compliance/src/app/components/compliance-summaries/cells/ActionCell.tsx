@@ -73,6 +73,12 @@ function getActionCellConfig(row: ComplianceSummary, isAllowedCas?: boolean) {
       issuanceStatus === IssuanceStatus.CREDITS_NOT_ISSUED
     ) {
       cellText = "Request Issuance of Credits";
+    } else if (
+      !isAllowedCas &&
+      issuanceStatus === IssuanceStatus.CHANGES_REQUIRED
+    ) {
+      cellText = "Review Change Required";
+      pathSuffix = "/review-compliance-earned-credits-report";
     }
 
     if (
