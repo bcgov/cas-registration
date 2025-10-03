@@ -30,6 +30,8 @@ def setup(
                     return HttpResponse("Test setup complete.", status=200)
                 call_command('truncate_dev_data_tables')
                 call_command('load_fixtures', workflow)
+                call_command('load_reporting_fixtures', workflow)
+                call_command('load_compliance_fixtures')
                 return HttpResponse("Test setup complete.", status=200)
         except Exception as e:
             return HttpResponse(f"Test setup failed. Reason:{e}", status=500)

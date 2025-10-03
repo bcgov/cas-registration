@@ -676,3 +676,13 @@ export async function checkBreadcrumbText(
   const textLocator = breadcrumbLocator.getByText(expectedText);
   await expect(textLocator).toBeVisible();
 }
+
+export async function checkAllCheckboxes(page: Page) {
+  const checkBoxes = page.getByRole("checkbox");
+  const count = await checkBoxes.count();
+
+  for (let i = 0; i < count; i++) {
+    const box = checkBoxes.nth(i);
+    await box.check();
+  }
+}

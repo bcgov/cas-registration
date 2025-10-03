@@ -1,0 +1,16 @@
+[
+  {
+    "model": "compliance.compliancechargerate",
+    "pk": 1,
+    "fields": {
+      "created_by": null,
+      "created_at": "2025-10-03T17:13:46.825Z",
+      "updated_by": null,
+      "updated_at": null,
+      "archived_by": null,
+      "archived_at": null,
+      "reporting_year": 2024,
+      "rate": "80.00"
+    }
+  }
+]
