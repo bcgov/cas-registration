@@ -13,6 +13,9 @@ class Command(BaseCommand):
     help = 'Load fixtures for the reporting application'
     fixture_base_dir = 'reporting/fixtures/mock'
 
+    def add_arguments(self, parser):
+        parser.add_argument('workflow', nargs='?', type=str, help='Name of the workflow')
+
     def handle(self, *args, **options):
 
         fixtures = [
@@ -24,7 +27,8 @@ class Command(BaseCommand):
             call_command('loaddata', fixture)
 
         self.stdout.write(self.style.SUCCESS(f"Creating Reports from {self.fixture_base_dir}/report.json"))
-        self.load_reports()
+        workflow = options.get('workflow')
+        self.load_reports(workflow)
 
         # Load any additional fixtures you need *after* reports exist
         extra = [
@@ -47,7 +51,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(f"Loading additional report fixture: {fixture}"))
             call_command('loaddata', fixture)
 
-    def load_reports(self):
+    def load_reports(self, workflow):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
             reports = json.load(f)
@@ -56,23 +60,23 @@ class Command(BaseCommand):
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
+            if not workflow:
+                # submit reports
+                operation_ids_to_submit = [
+                    UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
+                    UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
+                ]
 
-            # submit reports
-            operation_ids_to_submit = [
-                UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
-                UUID('b65a3fbc-c81a-49c0-a43a-67bd3a0b488e'),  # Bangles
-            ]
+                for operation_id in operation_ids_to_submit:
+                    # set up required data for submission
+                    # multiple report versions to submit if there are multiple years
+                    report_versions = ReportVersion.objects.filter(
+                        report__operation_id=operation_id,
+                    )
 
-            for operation_id in operation_ids_to_submit:
-                # set up required data for submission
-                # multiple report versions to submit if there are multiple years
-                report_versions = ReportVersion.objects.filter(
-                    report__operation_id=operation_id,
-                )
+                    for report_version in report_versions:
+                        submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
 
-                for report_version in report_versions:
-                    submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
-
-            # create supplmentary report
-            for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
-                ReportVersionService.create_report_version(report)
+                # create supplementary report
+                for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
+                    ReportVersionService.create_report_version(report)
