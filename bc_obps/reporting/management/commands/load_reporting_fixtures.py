@@ -61,7 +61,6 @@ class Command(BaseCommand):
                     reporting_year=report['fields']['reporting_year_id'],
                 )
             if not workflow:
-                print('chesca test not worklow', workflow)
                 # submit reports
                 operation_ids_to_submit = [
                     UUID('002d5a9e-32a6-4191-938c-2c02bfec592d'),  # Banana LFO
