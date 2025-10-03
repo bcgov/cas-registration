@@ -153,8 +153,10 @@ uninstall_helm_charts = KubernetesJobOperator(
     image=K8S_IMAGE,
     cmds=["bash", "-c"],
     arguments=[
-        f"helm uninstall {POSTGRES_CHART_INSTANCE} -n {{ params.destination_namespace }} && "
-        f"helm uninstall {BACKEND_CHART_INSTANCE} -n {{ params.destination_namespace }}"
+        "helm uninstall {{ params.postgres_chart_instance | default('postgres-migration-test') }} ",
+        "--namespace {{ params.destination_namespace }} && ",
+        "helm uninstall {{ params.backend_chart_instance | default('backend-migration-test') }} ",
+        "--namespace {{ params.destination_namespace }}",
     ],
     get_logs=True,
     is_delete_operator_pod=True,
