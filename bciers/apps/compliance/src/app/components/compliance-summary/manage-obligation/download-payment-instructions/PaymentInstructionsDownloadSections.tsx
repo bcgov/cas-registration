@@ -21,16 +21,14 @@ export const PaymentInstructionsDetails = () => {
         <li>Payment amount</li>
         <li>Invoice number</li>
       </ul>
-      <h3>Pay by electronic fund transfer (EFT)</h3>
+      <h3>Pay by electronic funds transfer (EFT) or by wire transfer</h3>
       <ul>
         <li>Include the invoice number as a reference</li>
         <li>
-          Pay at least five business days before the due date to allow for
-          processing time
+          Plan to make your payment at least five business days before the
+          compliance obligation deadline to allow for payment processing
         </li>
       </ul>
-      <h3>Pay by wire transfer</h3>
-      <p>Include the invoice number as a reference</p>
       <h3>Provide correct information for timely processing</h3>
       <p>
         Failure to provide accurate payment information will result in delays in

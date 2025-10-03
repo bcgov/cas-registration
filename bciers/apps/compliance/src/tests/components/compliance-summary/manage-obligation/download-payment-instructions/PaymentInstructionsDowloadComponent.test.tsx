@@ -22,7 +22,7 @@ const setupComponent = (id = 123) =>
   );
 
 const downloadPDFButton = () =>
-  screen.getByRole("button", { name: "Download Payment Information" });
+  screen.getByRole("button", { name: "Download Payment Instructions" });
 
 describe("PaymentInstructionsDownloadComponent", () => {
   beforeEach(() => {
@@ -40,7 +40,9 @@ describe("PaymentInstructionsDownloadComponent", () => {
 
   it("renders the component with payee info and headings", () => {
     setupComponent();
-    expect(screen.getByText("Download Payment Instructions")).toBeVisible();
+    expect(
+      screen.getAllByText("Download Payment Instructions")[0],
+    ).toBeVisible();
     expect(screen.getByText("Payee Information")).toBeVisible();
     expect(
       screen.getByText("Canadian Imperial Bank of Commerce"),
@@ -57,9 +59,10 @@ describe("PaymentInstructionsDownloadComponent", () => {
     ).toBeVisible();
     expect(screen.getByText("Before making a payment")).toBeVisible();
     expect(
-      screen.getByText("Pay by electronic fund transfer (EFT)"),
+      screen.getByText(
+        "Pay by electronic funds transfer (EFT) or by wire transfer",
+      ),
     ).toBeVisible();
-    expect(screen.getByText("Pay by wire transfer")).toBeVisible();
     expect(
       screen.getByText("Provide correct information for timely processing"),
     ).toBeVisible();
