@@ -29,6 +29,8 @@ class Command(BaseCommand):
             "product_emission_intensity",
             "reporting_field",
             "source_type",
+            "compliance_period",
+            "compliance_charge_rate",
         ]
         schemas = ["erc", "erc_history"]
         for schema in schemas:
