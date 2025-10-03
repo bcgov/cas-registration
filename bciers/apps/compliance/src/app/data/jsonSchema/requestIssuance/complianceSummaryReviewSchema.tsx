@@ -40,6 +40,7 @@ export const complianceSummaryReviewUiSchema = (
   // Earned Credits Section
   earned_credits_header: headerUiConfig,
   earned_credits_alert: {
+    // brianna probably here?
     "ui:widget": isCasStaff ? () => null : EarnedCreditsAlertNote,
     "ui:options": {
       label: false,
