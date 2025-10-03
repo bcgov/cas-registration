@@ -10,8 +10,6 @@ export enum AppRoute {
   USERS = "administration/users",
   ADMINISTRATION_DASHBOARD = "administration",
   USER_ACCESS_REQUEST = "administration/users-and-access-requests",
-  CURRENT_REPORTS_GRID = "reporting/reports/current-reports",
-  COMPLIANCE_SUMMARIES = "compliance/compliance-summaries",
 }
 
 // 🔘 button text
