@@ -123,7 +123,7 @@ export default function PaymentInstructionsDownloadComponent({
         backButtonDisabled={false}
         middleButtonDisabled={isGeneratingDownload}
         submitButtonDisabled={false}
-        middleButtonText={"Download Payment Information"}
+        middleButtonText={"Download Payment Instructions"}
         onMiddleButtonClick={handleDownloadInstructions}
       />
       <FormAlerts key="alerts" errors={errors} />

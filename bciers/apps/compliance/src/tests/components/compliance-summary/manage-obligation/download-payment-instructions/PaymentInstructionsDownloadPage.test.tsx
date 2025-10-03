@@ -64,7 +64,9 @@ describe("PaymentInstructionsDownloadPage", () => {
 
     // Check content is rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(screen.getByText("Download Payment Instructions")).toBeVisible();
+    expect(
+      screen.getAllByText("Download Payment Instructions")[0],
+    ).toBeVisible();
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(

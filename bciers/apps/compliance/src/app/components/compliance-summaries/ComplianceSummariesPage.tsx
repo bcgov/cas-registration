@@ -53,11 +53,11 @@ export default async function ComplianceSummariesPage({
         <div className="mb-2">
           {isAllowedIndustryUser && obligationsNotMet && (
             <AlertNote>
-              Your compliance obligation for the {reportingYear} reporting year{" "}
-              {currentDatePST > dueDatePST ? "was" : "is"}{" "}
-              <strong>due on November 30, {reportingYear + 1}</strong>. Please
-              pay five business days in advance to account for the processing
-              time.
+              Your compliance obligation for the {reportingYear} compliance
+              period {currentDatePST > dueDatePST ? "was" : "is"}{" "}
+              <strong>due on November 30, {reportingYear + 1}</strong>. Plan to
+              make your payment at least five business days before the
+              compliance obligation deadline to allow for payment processing.
             </AlertNote>
           )}
         </div>

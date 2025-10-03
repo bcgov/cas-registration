@@ -118,7 +118,7 @@ describe("ComplianceSummariesPage", () => {
 
     expect(
       screen.queryByText(
-        /Your compliance obligation for the 2024 reporting year is/i,
+        /Your compliance obligation for the 2024 compliance period is/i,
       ),
     ).toBeNull();
     expect(
@@ -133,7 +133,7 @@ describe("ComplianceSummariesPage", () => {
     await renderPage();
     expect(
       screen.getByText(
-        /Your compliance obligation for the 2024 reporting year is/i,
+        /Your compliance obligation for the 2024 compliance period is/i,
       ),
     ).toBeVisible();
     expect(screen.getByText(/due on November 30, 2025/i)).toBeVisible();
@@ -152,7 +152,7 @@ describe("ComplianceSummariesPage", () => {
 
     expect(
       screen.getByText(
-        /Your compliance obligation for the 2024 reporting year was/i,
+        /Your compliance obligation for the 2024 compliance period was/i,
       ),
     ).toBeVisible();
     expect(screen.getByText(/due on November 30, 2025/i)).toBeVisible();
@@ -169,7 +169,7 @@ describe("ComplianceSummariesPage", () => {
 
     expect(
       screen.getByText(
-        /Your compliance obligation for the 2024 reporting year is/i,
+        /Your compliance obligation for the 2024 compliance period is/i,
       ),
     ).toBeVisible();
 
@@ -180,7 +180,7 @@ describe("ComplianceSummariesPage", () => {
 
     expect(
       screen.getByText(
-        /Your compliance obligation for the 2024 reporting year was/i,
+        /Your compliance obligation for the 2024 compliance period was/i,
       ),
     ).toBeVisible();
   });
