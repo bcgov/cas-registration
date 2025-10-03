@@ -1,5 +1,6 @@
 from decimal import Decimal
 from unittest.mock import patch
+from compliance.schema.compliance_report_version import ComplianceReportVersionFilterSchema
 import pytest
 from model_bakery.baker import make_recipe
 from compliance.dataclass import RefreshWrapperReturn
@@ -7,6 +8,7 @@ from compliance.service.compliance_dashboard_service import ComplianceDashboardS
 from compliance.models import ComplianceReportVersion
 from registration.models import Operation
 from django.core.exceptions import ObjectDoesNotExist
+from reporting.models.reporting_year import ReportingYear
 from reporting.tests.utils.bakers import reporting_year_baker
 
 
@@ -944,3 +946,47 @@ class TestComplianceDashboardService:
             )
         )
         assert years == {CURRENT_YEAR}
+
+    def test_get_compliance_report_versions_for_dashboard_sorts_and_filters(self, mock_current_reporting_year):
+
+        user = make_recipe('registration.tests.utils.cas_analyst')
+
+        reporting_year_2025 = ReportingYear.objects.get(reporting_year=2025)
+        # Mock the service to return that instance
+        mock_current_reporting_year.return_value = reporting_year_2025
+
+        # Create enough rows for multiple pages; deterministic names for stable sort
+        versions = []
+        for i in range(45):
+            v = make_recipe(
+                "compliance.tests.utils.compliance_report_version",
+                report_compliance_summary__report_version__report__reporting_year=reporting_year_2025,
+                report_compliance_summary__report_version__report_operation__operation_name=f"Plant {i:03d}",
+            )
+            versions.append(v)
+
+        # Sort
+        result_asc = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=_NoopFilters(),
+        )
+
+        result_desc = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=user.user_guid,
+            sort_field="id",
+            sort_order="desc",
+            filters=_NoopFilters(),
+        )
+
+        assert result_asc.first() != result_desc.first()
+
+        # Filter
+        result_filtered = ComplianceDashboardService.get_compliance_report_versions_for_dashboard(
+            user_guid=user.user_guid,
+            sort_field="id",
+            sort_order="asc",
+            filters=ComplianceReportVersionFilterSchema(operation_name='01'),
+        )
+        assert result_filtered.count() == 11  # 001 and 010-019
