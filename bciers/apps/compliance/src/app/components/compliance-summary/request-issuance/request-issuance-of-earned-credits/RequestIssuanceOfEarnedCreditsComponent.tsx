@@ -17,12 +17,15 @@ import { IChangeEvent } from "@rjsf/core";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   complianceReportVersionId: number;
+  data: { issuance_status: IssuanceStatus };
 }
 
 const RequestIssuanceOfEarnedCreditsComponent = ({
+  data,
   complianceReportVersionId,
 }: Readonly<Props>) => {
   const router = useRouter();
@@ -31,7 +34,7 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
 
   const [formData, setFormData] = useState<
     RequestIssuanceOfEarnedCreditsFormData | {}
-  >({});
+  >(data);
   const [errors, setErrors] = useState<string[] | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
