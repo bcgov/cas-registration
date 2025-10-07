@@ -83,6 +83,7 @@ class ElicensingObligationService:
             requests.RequestException: If there's an API error
         """
         from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+        from compliance.tasks import retryable_send_notice_of_obligation_due_email
 
         obligation = ComplianceObligation.objects.get(id=obligation_id)
         try:
@@ -118,6 +119,7 @@ class ElicensingObligationService:
 
                 # If successful, update the compliance status
                 ComplianceReportVersionService.update_compliance_status(obligation.compliance_report_version)
+                retryable_send_notice_of_obligation_due_email.execute(obligation.id)
 
         except Exception:
             obligation.compliance_report_version.status = (

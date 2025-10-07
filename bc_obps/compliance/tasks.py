@@ -5,6 +5,7 @@ from compliance.emails import (
     send_notice_of_credits_requested_generated_email,
     send_notice_of_earned_credits_generated_email,
     send_notice_of_no_obligation_no_credits_generated_email,
+    send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
 )
 from task_scheduler.service.retry_task.factories import create_retryable
@@ -49,6 +50,12 @@ retryable_send_notice_of_obligation_email = create_retryable(
 retryable_send_notice_of_credits_requested_email = create_retryable(
     func=send_notice_of_credits_requested_generated_email,
     tag="credits_requested_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
+retryable_send_notice_of_obligation_due_email = create_retryable(
+    func=send_notice_of_obligation_due_email,
+    tag="obligation_due_email_notifications",
     max_retries=5,
     retry_delay_minutes=10,
 )
