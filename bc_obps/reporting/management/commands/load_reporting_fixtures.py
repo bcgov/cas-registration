@@ -75,8 +75,14 @@ class Command(BaseCommand):
                     )
 
                     for report_version in report_versions:
+                        report_version.report_operation.operator_legal_name = (
+                            report_version.report_operation.operator_legal_name.replace('name from admin', '').strip()
+                        )
+                        report_version.report_operation.operation_name = (
+                            report_version.report_operation.operation_name.replace('name from admin', '').strip()
+                        )
+                        report_version.report_operation.save()
                         submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
-
                 # create supplementary report
                 for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
                     ReportVersionService.create_report_version(report)
