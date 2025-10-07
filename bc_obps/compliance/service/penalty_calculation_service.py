@@ -317,8 +317,7 @@ class PenaltyCalculationService:
         )
         last_adjustment_date = last_adjustment.adjustment_date if last_adjustment else None
 
-        candidate_dates = [d for d in [last_payment_received_date, last_adjustment_date] if d is not None]
-        final_transaction_date = max(candidate_dates) if candidate_dates else None
+        final_transaction_date = max(filter(None, [last_payment_received_date, last_adjustment_date]), default=None)
 
         # Calculate the penalty data, persist it to our database & create the invoice/fee in elicensing for the penalty
         cls.calculate_penalty(

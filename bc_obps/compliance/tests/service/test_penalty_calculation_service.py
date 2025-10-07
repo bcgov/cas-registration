@@ -196,10 +196,16 @@ class TestPenaltyCalculationService:
             elicensing_invoice=clean_invoice,
             base_amount=Decimal("1000000.00"),
         )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("500000.00"),
+            received_date=date(2025, 12, 5),
+        )
         later_adjustment = baker.make_recipe(
             "compliance.tests.utils.elicensing_adjustment",
             elicensing_line_item=clean_fee,
-            amount=Decimal("-900000.00"),
+            amount=Decimal("-500000.00"),
             adjustment_date=date(2025, 12, 10),
         )
         self.obligation.elicensing_invoice = clean_invoice
