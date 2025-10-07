@@ -64,9 +64,10 @@ describe("PaymentInstructionsDownloadPage", () => {
 
     // Check content is rendered
     expect(screen.getByText("Mock Layout")).toBeVisible();
-    expect(
-      screen.getAllByText("Download Payment Instructions")[0],
-    ).toBeVisible();
+    // Verify the page title is rendered
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Download Payment Instructions",
+    );
 
     // Verify task list generation
     expect(generateManageObligationTaskList).toHaveBeenCalledWith(

@@ -5,6 +5,7 @@ from compliance.service.elicensing.elicensing_data_refresh_service import Elicen
 from compliance.service.exceptions import ComplianceInvoiceError
 from service.pdf.pdf_generator_service import PDFGeneratorService
 from compliance.enums import ComplianceInvoiceTypes
+from compliance.constants import CLEAN_BC_LOGO_COMPLIANCE_INVOICE
 
 # Type ignore for weasyprint since it lacks stubs
 
@@ -72,6 +73,7 @@ class PaymentInstructionsService:
             'invoice_number': refreshResult.invoice.invoice_number
             if refreshResult.invoice
             else "Missing Invoice Number",
+            'logo_base64': CLEAN_BC_LOGO_COMPLIANCE_INVOICE,
         }
 
         return context
