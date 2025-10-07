@@ -2,10 +2,9 @@ from typing import Dict, List
 from common.models.email_notification_template import EmailNotificationTemplate
 from compliance.models.compliance_earned_credit import ComplianceEarnedCredit
 from compliance.models.compliance_obligation import ComplianceObligation
-
+from compliance.models.compliance_report_version import ComplianceReportVersion
 from registration.models.operator import Operator
 from registration.models.user_operator import UserOperator
-from reporting.models.report import Report
 from service.email.email_service import GHG_REGULATOR_EMAIL, EmailService
 from service.email.utils import Recipient
 import logging
@@ -73,53 +72,53 @@ def send_notice_of_earned_credits_generated_email(compliance_earned_credit_id: i
         return
 
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
-    report = earned_credit.compliance_report_version.compliance_report.report
+    crv = earned_credit.compliance_report_version
     email_context = {
-        "operator_legal_name": report.operator.legal_name,
-        "operation_name": report.operation.name,
-        "compliance_year": report.reporting_year.reporting_year,
+        "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
+        "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
+        "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
         "earned_credit_amount": earned_credit.earned_credits_amount,
     }
 
-    _send_email_to_operators_approved_users_or_raise(report.operator, template, email_context)
+    _send_email_to_operators_approved_users_or_raise(crv.compliance_report.report.operator, template, email_context)
 
 
-def send_notice_of_no_obligation_no_credits_generated_email(report_id: int) -> None:
+def send_notice_of_no_obligation_no_credits_generated_email(compliance_report_version_id: int) -> None:
     """
     Sends an email to every operator's industry user when there is no obligation or credit, notifying that the obligation is met and no further action is required.
 
     Args:
-        report_id: The id of the report instance for which to send notification emails.
+        compliance_report_version_id: The id of the compliance_report_version instance for which to send notification emails.
     """
-    report = Report.objects.get(id=report_id)
+    crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
     template = EmailNotificationTemplateService.get_template_by_name('No Obligation No Earned Credits Generated')
 
     email_context = {
-        "operator_legal_name": report.operator.legal_name,
-        "operation_name": report.operation.name,
-        "compliance_year": report.reporting_year.reporting_year,
+        "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
+        "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
+        "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
     }
 
-    _send_email_to_operators_approved_users_or_raise(report.operator, template, email_context)
+    _send_email_to_operators_approved_users_or_raise(crv.compliance_report.report.operator, template, email_context)
 
 
-def send_notice_of_obligation_generated_email(report_id: int) -> None:
+def send_notice_of_obligation_generated_email(compliance_report_version_id: int) -> None:
     """
     Sends an email to every operator's industry user when there is an obligation, notifying that the obligation is available to view.
 
      Args:
-        report_id: The id of the report instance for which to send notification emails.
+        compliance_report_version_id: The id of the compliance_report_version instance for which to send notification emails.
     """
-    report = Report.objects.get(id=report_id)
+    crv = ComplianceReportVersion.objects.get(id=compliance_report_version_id)
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
 
     email_context = {
-        "operator_legal_name": report.operator.legal_name,
-        "operation_name": report.operation.name,
-        "compliance_year": report.reporting_year.reporting_year,
+        "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
+        "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
+        "compliance_year": crv.compliance_report.report.reporting_year.reporting_year,
     }
 
-    _send_email_to_operators_approved_users_or_raise(report.operator, template, email_context)
+    _send_email_to_operators_approved_users_or_raise(crv.compliance_report.report.operator, template, email_context)
 
 
 def send_notice_of_credits_requested_generated_email(compliance_earned_credit_id: int) -> None:
@@ -132,12 +131,12 @@ def send_notice_of_credits_requested_generated_email(compliance_earned_credit_id
     if settings.ENVIRONMENT != 'prod':
         return
     earned_credit = ComplianceEarnedCredit.objects.get(id=compliance_earned_credit_id)
-    report = earned_credit.compliance_report_version.compliance_report.report
     template = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
 
+    crv = earned_credit.compliance_report_version
     email_context: Dict[str, object] = {
-        "operator_legal_name": report.operator.legal_name,
-        "operation_name": report.operation.name,
+        "operator_legal_name": crv.report_compliance_summary.report_version.report_operation.operator_legal_name,
+        "operation_name": crv.report_compliance_summary.report_version.report_operation.operation_name,
     }
 
     recipient_emails = [GHG_REGULATOR_EMAIL]

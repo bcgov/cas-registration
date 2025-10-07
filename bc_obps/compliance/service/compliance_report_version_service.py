@@ -42,9 +42,9 @@ class ComplianceReportVersionService:
         ComplianceEarnedCreditsService.create_earned_credits_record(compliance_report_version)
 
     @classmethod
-    def _handle_no_obligation_or_credits(cls, compliance_report: ComplianceReport) -> None:
+    def _handle_no_obligation_or_credits(cls, compliance_report_version: ComplianceReportVersion) -> None:
 
-        retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(compliance_report.report.id)
+        retryable_send_notice_of_no_obligation_no_earned_credits_email.execute(compliance_report_version.id)
 
     @classmethod
     @transaction.atomic
@@ -87,7 +87,7 @@ class ComplianceReportVersionService:
                 compliance_report_version
             ),
             ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS: lambda: cls._handle_no_obligation_or_credits(
-                compliance_report
+                compliance_report_version
             ),
         }
 
