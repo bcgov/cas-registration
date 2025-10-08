@@ -7,6 +7,12 @@ import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import { AppRoute } from "@/administration-e2e/utils/enums";
 import { stabilizeGrid } from "@bciers/e2e/utils/helpers";
+import { RegistrationPurposes } from "@/administration-e2e/utils/enums";
+import {
+  OperationFields,
+  RegulatedOperationFields,
+  ReportingOperationFields,
+} from "@/administration-e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -16,8 +22,23 @@ export class OperationPOM {
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
 
+  readonly operationsUrl: string =
+    process.env.E2E_BASEURL + AppRoute.OPERATIONS;
+
+  readonly registrationPurposeXPath: string = `//*[@id="root_section3_registration_purpose_select"]`;
+
+  private _registrationPurpose?: string;
+
   constructor(page: Page) {
     this.page = page;
+  }
+
+  setRegistrationPurpose(value: string) {
+    this._registrationPurpose = value;
+  }
+
+  getRegistrationPurpose(): string | undefined {
+    return this._registrationPurpose;
   }
 
   // ###  Actions ###
@@ -26,6 +47,7 @@ export class OperationPOM {
     await this.page.goto(this.url);
     const operationsLink = await this.page.getByRole("link", {
       name: "Operations",
+      exact: true,
     });
     await operationsLink.click();
   }
@@ -46,6 +68,36 @@ export class OperationPOM {
     return row;
   }
 
+  async fetchValidFields(registrationPurpose: string) {
+    let fields = [];
+    if (
+      registrationPurpose ===
+      (RegistrationPurposes.NEW_ENTRANT_OPERATION ||
+        RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION)
+    ) {
+      fields = Object.values(OperationFields);
+      // fields = OperationFields;
+    } else if (
+      registrationPurpose === RegistrationPurposes.REPORTING_OPERATION
+    ) {
+      fields = Object.values(ReportingOperationFields);
+    } else if (
+      registrationPurpose === RegistrationPurposes.OBPS_REGULATED_OPERATION
+    ) {
+      fields = Object.values(RegulatedOperationFields);
+    }
+    return fields;
+  }
+
+  async iterateFields(fields: string[], visible: boolean) {
+    for (const field of fields) {
+      console.log(" Chesca test ", field);
+      await expect(this.page.getByText(field)).toBeVisible({
+        visible: visible,
+      });
+    }
+  }
+
   async goToOperation(row: Locator) {
     const viewOperation = await row.getByRole("link", {
       name: /view operation/i,
@@ -55,4 +107,14 @@ export class OperationPOM {
   }
 
   // ###  Assertions ###
+  async assertCorrectFieldsAreVisible(registrationPurpose: string) {
+    const fields = await this.fetchValidFields(registrationPurpose);
+    if (
+      registrationPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
+    ) {
+      this.iterateFields(fields, false);
+    } else {
+      this.iterateFields(fields, true);
+    }
+  }
 }

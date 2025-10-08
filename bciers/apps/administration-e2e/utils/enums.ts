@@ -195,3 +195,49 @@ export const UnactionedRequest: ReadonlyArray<UserAccessRequestActions> = [
 export const ActionedRequest: ReadonlyArray<UserAccessRequestActions> = [
   UserAccessRequestActions.EDIT,
 ];
+
+export enum ChangeRegistrationPurposeE2EValues {
+  BCGHG_ID_FIELD_NAME = "BC GHG ID",
+  BCGHG_ID_FIELD_VALUE = "23219990004",
+  OPERATION_NAME = "Banana LFO - Registered",
+  CONFIRMATION_MODAL_MESSAGE = "Are you sure you want to change your registration purpose?",
+  CHANGE_REG_PURPOSE_BTN = "Change Registration Purpose",
+}
+
+export enum RegistrationPurposes {
+  REPORTING_OPERATION = "Reporting Operation",
+  OBPS_REGULATED_OPERATION = "OBPS Regulated Operation",
+  NEW_ENTRANT_OPERATION = "New Entrant Operation",
+  ELECTRICITY_IMPORT_OPERATION = "Electricity Import Operation",
+}
+
+export enum OperationFields { //All of these fields are also used for New Entrant Operations
+  PRIMARY_NAICS_CODE = "Primary NAICS Code*",
+  SECONDARY_NAICS_CODE = "Secondary NAICS Code",
+  TERTIARY_NAICS_CODE = "Tertiary NAICS Code",
+  PROCESS_FLOW_DIAGRAM = "Process Flow Diagram",
+  BOUNDARY_MAP = "Boundary Map",
+  REPORTING_ACTIVITIES = "Reporting Activities*",
+  REGULATED_PRODUCT_NAMES = "Regulated Product Name(s)*",
+  NEW_ENTRANT_APPLICATION = "New Entrant Application and Statutory Declaration*",
+  FIRST_SHIPMENT_DATE = "When is this operation's date of First Shipment?*",
+}
+
+export const RegulatedOperationFields: ReadonlyArray<OperationFields> = [
+  OperationFields.PRIMARY_NAICS_CODE,
+  OperationFields.SECONDARY_NAICS_CODE,
+  OperationFields.TERTIARY_NAICS_CODE,
+  OperationFields.PROCESS_FLOW_DIAGRAM,
+  OperationFields.BOUNDARY_MAP,
+  OperationFields.REPORTING_ACTIVITIES,
+  OperationFields.REGULATED_PRODUCT_NAMES,
+];
+
+export const ReportingOperationFields: ReadonlyArray<OperationFields> = [
+  OperationFields.PRIMARY_NAICS_CODE,
+  OperationFields.SECONDARY_NAICS_CODE,
+  OperationFields.TERTIARY_NAICS_CODE,
+  OperationFields.PROCESS_FLOW_DIAGRAM,
+  OperationFields.BOUNDARY_MAP,
+  OperationFields.REPORTING_ACTIVITIES,
+];
