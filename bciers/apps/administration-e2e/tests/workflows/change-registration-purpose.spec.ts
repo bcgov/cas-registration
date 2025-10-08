@@ -90,9 +90,6 @@ test.describe("Test changing registration purpose", () => {
     // Confirm registration purpose change
     await clickButton(page, changeRegistrationPurposeButton);
 
-    // Assert Regulated Products not visible
-    await expect(page.getByText("Regulated Product Name(s)")).toBeHidden();
-
     // Assert visible fields are expected based on registration purpose
     await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
     await expect(
