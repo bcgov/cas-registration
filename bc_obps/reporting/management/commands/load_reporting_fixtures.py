@@ -8,6 +8,14 @@ from reporting.models.report_version import ReportVersion
 from service.report_service import ReportService
 from service.report_version_service import ReportVersionService
 
+SUFFIX = " - name from admin"
+
+
+def _strip_admin_suffix(value: str | None) -> str | None:
+    if value is None:
+        return None
+    return value.replace(SUFFIX, "").strip()
+
 
 class Command(BaseCommand):
     help = 'Load fixtures for the reporting application'
@@ -55,11 +63,21 @@ class Command(BaseCommand):
         reports_fixture = f'{self.fixture_base_dir}/report.json'
         with open(reports_fixture) as f:
             reports = json.load(f)
+            report_version_ids = []
             for report in reports:
-                ReportService.create_report(
+                report_version_id = ReportService.create_report(
                     operation_id=report['fields']['operation_id'],
                     reporting_year=report['fields']['reporting_year_id'],
                 )
+                report_version_ids.append(report_version_id)
+
+            for id in report_version_ids:
+                report_version = ReportVersion.objects.get(id=id)
+                ro = report_version.report_operation
+                ro.operator_legal_name = _strip_admin_suffix(ro.operator_legal_name)
+                ro.operation_name = _strip_admin_suffix(ro.operation_name)
+                ro.save()
+
             if not workflow:
                 # submit reports
                 operation_ids_to_submit = [
@@ -75,13 +93,7 @@ class Command(BaseCommand):
                     )
 
                     for report_version in report_versions:
-                        report_version.report_operation.operator_legal_name = (
-                            report_version.report_operation.operator_legal_name.replace('name from admin', '').strip()
-                        )
-                        report_version.report_operation.operation_name = (
-                            report_version.report_operation.operation_name.replace('name from admin', '').strip()
-                        )
-                        report_version.report_operation.save()
+
                         submit_report_from_fixture(report_version, UUID('ba2ba62a-1218-42e0-942a-ab9e92ce8822'))
                 # create supplementary report
                 for report in Report.objects.filter(operation_id=operation_ids_to_submit[0]):
