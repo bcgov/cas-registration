@@ -23,6 +23,7 @@ import {
   fillDropdownByLabel,
   fillComboxboxWidget,
   assertConfirmationModal,
+  searchGridByUniqueValue,
 } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
@@ -54,7 +55,6 @@ test.describe("Test changing registration purpose", () => {
     // Click Edit
     await clickButton(page, "Edit");
 
-    let component = "";
     // Set and use registrationPurpose via OperationPOM getter/setter
     const registrationPurpose = RegistrationPurposes.REPORTING_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
@@ -79,6 +79,7 @@ test.describe("Test changing registration purpose", () => {
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
 
+    let component = "";
     // Say cheese!
     component = "Confirmation to change registration purpose";
     await takeStabilizedScreenshot(happoPlaywright, page, {
@@ -98,13 +99,6 @@ test.describe("Test changing registration purpose", () => {
       page.locator(registrationPurposeXPath).getByText(registrationPurpose),
     ).toBeVisible();
 
-    // Say cheese!
-    component = "Changed registration purpose to Reporting Operation";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: component,
-      variant: "default",
-    });
-
     // Upload missing files to prevent error when saving
     await uploadFile(page, 0);
     await uploadFile(page, 1);
@@ -115,6 +109,13 @@ test.describe("Test changing registration purpose", () => {
       page,
       "All changes have been successfully saved",
     );
+
+    // Say cheese!
+    component = "Changed registration purpose to Reporting Operation";
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: component,
+      variant: "default",
+    });
   });
 
   test("OBPS Regulated Operation to EIO", async ({ page }) => {
@@ -132,10 +133,8 @@ test.describe("Test changing registration purpose", () => {
     await stabilizeGrid(page, 1);
 
     // Go to operation details page
-    const viewOperation = await row.getByRole("link", {
-      name: "View Operation",
-    });
-    await viewOperation.click();
+    await operationPage.goToOperation(row);
+
     await checkBreadcrumbText(
       page,
       ChangeRegistrationPurposeE2EValues.REGULATED_OPERATION_NAME,
@@ -145,7 +144,6 @@ test.describe("Test changing registration purpose", () => {
     // Click Edit
     await clickButton(page, "Edit");
 
-    let component = "";
     // Set and use registrationPurpose via OperationPOM getter/setter
     const registrationPurpose =
       RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION;
@@ -170,13 +168,6 @@ test.describe("Test changing registration purpose", () => {
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
 
-    // Say cheese!
-    component = "Confirmation to change registration purpose";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: component,
-      variant: "default",
-    });
-
     // Confirm registration purpose change
     await clickButton(page, changeRegistrationPurposeButton);
 
@@ -199,7 +190,8 @@ test.describe("Test changing registration purpose", () => {
     );
 
     // Say cheese!
-    component = "Change registration purpose of existing operation to EIO";
+    const component =
+      "Change registration purpose of existing operation to EIO";
     await takeStabilizedScreenshot(happoPlaywright, page, {
       component: component,
       variant: "default",
@@ -221,10 +213,8 @@ test.describe("Test changing registration purpose", () => {
     await stabilizeGrid(page, 1);
 
     // Go to operation details page
-    const viewOperation = await row.getByRole("link", {
-      name: "View Operation",
-    });
-    await viewOperation.click();
+    await operationPage.goToOperation(row);
+
     await checkBreadcrumbText(
       page,
       ChangeRegistrationPurposeE2EValues.REPORTING_OPERATION_NAME,
@@ -234,7 +224,6 @@ test.describe("Test changing registration purpose", () => {
     // Click Edit
     await clickButton(page, "Edit");
 
-    let component = "";
     // Set and use registrationPurpose via OperationPOM getter/setter
     const registrationPurpose = RegistrationPurposes.OBPS_REGULATED_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
@@ -258,13 +247,6 @@ test.describe("Test changing registration purpose", () => {
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
 
-    // Say cheese!
-    component = "Confirmation to change registration purpose";
-    await takeStabilizedScreenshot(happoPlaywright, page, {
-      component: component,
-      variant: "default",
-    });
-
     // Confirm registration purpose change
     await clickButton(page, changeRegistrationPurposeButton);
 
@@ -287,5 +269,94 @@ test.describe("Test changing registration purpose", () => {
       page,
       "All changes have been successfully saved",
     );
+
+    // Say cheese!
+    const component = "Changed registration purpose to Reporting Operation";
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: component,
+      variant: "default",
+    });
+  });
+
+  test("EIO to Regulated Operation", async ({ page }) => {
+    // 🛸 Navigate to operation page
+    const operationPage = new OperationPOM(page);
+    await operationPage.route();
+    await urlIsCorrect(page, operationPage.operationsUrl);
+
+    // Look for operation by operation name
+    const row = await searchGridByUniqueValue(
+      page,
+      /operation name/i,
+      ChangeRegistrationPurposeE2EValues.EIO_OPERATION_NAME,
+    );
+    await stabilizeGrid(page, 1);
+
+    // Go to operation details page
+    await operationPage.goToOperation(row);
+    await checkBreadcrumbText(
+      page,
+      ChangeRegistrationPurposeE2EValues.EIO_OPERATION_NAME,
+    );
+
+    // Click Edit
+    await clickButton(page, "Edit");
+
+    const registrationPurpose = RegistrationPurposes.OBPS_REGULATED_OPERATION;
+    const registrationPurposeXPath = operationPage.registrationPurposeXPath;
+    await selectItemFromMuiSelect(
+      page,
+      registrationPurpose,
+      registrationPurposeXPath,
+      true,
+    );
+
+    // Assert confirmation modal appears
+    const changeRegistrationPurposeButton =
+      ChangeRegistrationPurposeE2EValues.CHANGE_REG_PURPOSE_BTN;
+    await assertConfirmationModal(
+      page,
+      "Confirmation",
+      ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
+      changeRegistrationPurposeButton,
+    );
+    await expect(
+      page.getByRole("button", { name: changeRegistrationPurposeButton }),
+    ).toBeVisible();
+
+    // Confirm registration purpose change
+    await clickButton(page, changeRegistrationPurposeButton);
+
+    // To prevent other errors when saving
+    await uploadFile(page, 0);
+    await uploadFile(page, 1);
+    await fillComboxboxWidget(page, /regulated product+/i, "Gypsum wallboard");
+    await fillComboxboxWidget(
+      page,
+      /reporting activities+/i,
+      "Cement production",
+    );
+
+    // Assert visible fields are expected based on registration purpose
+    await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
+
+    // Assert registration purpose has changed
+    await expect(
+      page.locator(registrationPurposeXPath).getByText(registrationPurpose),
+    ).toBeVisible();
+
+    // Assert operation type dropdown is disabled
+    await expect(page.locator(operationPage.operationTypeXPath)).toBeDisabled();
+
+    // Click Save
+    await clickButton(page, "Save");
+    await checkAlertMessage(page, /select a operation type/i);
+
+    // Say cheese!
+    const component = "Change registration purpose of existing EIO";
+    await takeStabilizedScreenshot(happoPlaywright, page, {
+      component: component,
+      variant: "default",
+    });
   });
 });

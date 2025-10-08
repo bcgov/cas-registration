@@ -33,7 +33,7 @@ export class OperationPOM {
 
   readonly registrationPurposeXPath: string = `//*[@id="root_section3_registration_purpose_select"]`;
 
-  private _registrationPurpose?: string;
+  readonly operationTypeXPath: string = `//*[@id="root_section1_type_select"]`;
 
   constructor(page: Page) {
     this.page = page;

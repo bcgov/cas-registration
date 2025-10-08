@@ -202,6 +202,7 @@ export enum ChangeRegistrationPurposeE2EValues {
   REGULATED_OPERATION_NAME = "Banana LFO - Registered",
   REPORTING_BCGHG_ID_FIELD_VALUE = "23219990019",
   REPORTING_OPERATION_NAME = "Bat LFO - Registered",
+  EIO_OPERATION_NAME = "Bojangles EIO - Registered",
   CONFIRMATION_MODAL_MESSAGE = "Are you sure you want to change your registration purpose?",
   CHANGE_REG_PURPOSE_BTN = "Change Registration Purpose",
 }

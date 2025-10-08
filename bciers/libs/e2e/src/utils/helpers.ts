@@ -692,7 +692,6 @@ export async function searchGridByUniqueValue(
   field: string | RegExp,
   value: string,
 ) {
-  console.log("chesca value", value);
   await page.getByLabel(field).getByPlaceholder("Search").fill(value);
   const row = page.getByRole("row").filter({ hasText: value });
   await expect(row.first()).toBeVisible();
