@@ -195,8 +195,17 @@ class TestSendNotifications:
         # Create a report with earned credits
         report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
         compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.report_compliance_summary', report_version=report_version
+        )
+
         compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
         )
         earned_credit = baker.make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
@@ -206,8 +215,8 @@ class TestSendNotifications:
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Earned Credits Generated')
         expected_context = {
-            "operator_legal_name": approved_user_operator.operator.legal_name,
-            "operation_name": report.operation.name,
+            "operator_legal_name": report_operation.operator_legal_name,
+            "operation_name": report_operation.operation_name,
             "compliance_year": report.reporting_year.reporting_year,
             "earned_credit_amount": 100,
         }
@@ -254,19 +263,32 @@ class TestSendNotifications:
 
         # Create a report with no obligation or earned credits
         report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.report_compliance_summary', report_version=report_version
+        )
+
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name(
             'No Obligation No Earned Credits Generated'
         )
 
         expected_context = {
-            "operator_legal_name": report.operator.legal_name,
-            "operation_name": report.operation.name,
+            "operator_legal_name": report_operation.operator_legal_name,
+            "operation_name": report_operation.operation_name,
             "compliance_year": report.reporting_year.reporting_year,
         }
 
         # Call the function with the report
-        send_notice_of_no_obligation_no_credits_generated_email(report.id)
+        send_notice_of_no_obligation_no_credits_generated_email(compliance_report_version.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -282,17 +304,30 @@ class TestSendNotifications:
 
         # Create a report with no obligation or earned credits
         report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.report_compliance_summary', report_version=report_version
+        )
+
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Generated')
 
         expected_context = {
-            "operator_legal_name": report.operator.legal_name,
-            "operation_name": report.operation.name,
+            "operator_legal_name": report_operation.operator_legal_name,
+            "operation_name": report_operation.operation_name,
             "compliance_year": report.reporting_year.reporting_year,
         }
 
         # Call the function with the report id
-        send_notice_of_obligation_generated_email(report.id)
+        send_notice_of_obligation_generated_email(compliance_report_version.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
@@ -309,8 +344,17 @@ class TestSendNotifications:
         # Create a report with earned credits
         report = baker.make_recipe('reporting.tests.utils.report')
         compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.report_compliance_summary', report_version=report_version
+        )
+
         compliance_report_version = baker.make_recipe(
-            'compliance.tests.utils.compliance_report_version', compliance_report=compliance_report
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
         )
         earned_credit = baker.make_recipe(
             'compliance.tests.utils.compliance_earned_credit',
@@ -320,8 +364,8 @@ class TestSendNotifications:
 
         template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Credits Requested')
         expected_context = {
-            "operator_legal_name": report.operator.legal_name,
-            "operation_name": report.operation.name,
+            "operator_legal_name": report_operation.operator_legal_name,
+            "operation_name": report_operation.operation_name,
         }
 
         # Call the function with the earned credit id

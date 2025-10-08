@@ -4,7 +4,7 @@
     "pk": "e1300fd7-2dee-47d1-b655-2ad3fd10f052",
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
-      "name": "Apple LFO - Registered",
+      "name": "Apple LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 19,
       "swrs_facility_id": 1001,
@@ -20,7 +20,7 @@
     "pk": "002d5a9e-32a6-4191-938c-2c02bfec592d",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Banana LFO - Registered",
+      "name": "Banana LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "bcghg_id": "23219990004",
@@ -37,7 +37,7 @@
     "pk": "556ceeb0-7e24-4d89-b639-61f625f82084",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Barbie LFO - Draft -- no facility",
+      "name": "Barbie LFO - Draft -- no facility - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "regulated_products": [1],
@@ -51,7 +51,7 @@
     "pk": "3b5b95ea-2a1a-450d-8e2e-2e15feed96c9",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Bugle SFO - Registered",
+      "name": "Bugle SFO - Registered - name from admin",
       "submission_date": "2023-12-16T15:27:00.000Z",
       "type": "Single Facility Operation",
       "naics_code": 21,
@@ -69,7 +69,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-12T15:27:00.000Z",
-      "name": "Alien SFO - Draft - no facility",
+      "name": "Alien SFO - Draft - no facility - name from admin",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "regulated_products": [1],
@@ -85,7 +85,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
-      "name": "Bangles SFO - Registered - has Multiple Operators",
+      "name": "Bangles SFO - Registered - has Multiple Operators - name from admin",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "bcghg_id": "23219990001",
@@ -103,7 +103,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-14T15:27:00.000Z",
-      "name": "Alligator SFO - Registered",
+      "name": "Alligator SFO - Registered - name from admin",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "bcghg_id": "23219999999",
@@ -121,7 +121,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-15T15:27:00.000Z",
-      "name": "Anteater LFO - Registered",
+      "name": "Anteater LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990006",
@@ -138,7 +138,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-16T15:27:00.000Z",
-      "name": "Arctic EIO - Registered",
+      "name": "Arctic EIO - Registered - name from admin",
       "type": "Electricity Import Operation",
       "naics_code": 21,
       "bcghg_id": "23219990007",
@@ -155,7 +155,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-17T15:27:00.000Z",
-      "name": "Argument LFO - Registered",
+      "name": "Argument LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990008",
@@ -173,7 +173,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-18T15:27:00.000Z",
-      "name": "Art LFO - Registered",
+      "name": "Art LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "status": "Registered",
@@ -189,7 +189,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-19T15:27:00.000Z",
-      "name": "Aeolian LFO - Registered",
+      "name": "Aeolian LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990010",
@@ -207,7 +207,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-20T15:27:00.000Z",
-      "name": "Anchor LFO - Registered",
+      "name": "Anchor LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990011",
@@ -224,7 +224,7 @@
     "fields": {
       "operator": "685d581b-5698-411f-ae00-de1d97334a71",
       "submission_date": "2024-01-21T15:27:00.000Z",
-      "name": "Airplane LFO - Registered",
+      "name": "Airplane LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "regulated_products": [3, 4],
@@ -241,7 +241,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-22T15:27:00.000Z",
-      "name": "Bojangles EIO - Draft",
+      "name": "Bojangles EIO - Draft - name from admin",
       "type": "Electricity Import Operation",
       "naics_code": 21,
       "status": "Draft",
@@ -254,7 +254,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-23T15:27:00.000Z",
-      "name": "Brine LFO - Registered - No BORO and BCGHG ID",
+      "name": "Brine LFO - Registered - No BORO and BCGHG ID - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "regulated_products": [3],
@@ -270,7 +270,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-24T15:27:00.000Z",
-      "name": "Bling LFO - Draft",
+      "name": "Bling LFO - Draft - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "status": "Draft",
@@ -284,7 +284,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-25T15:27:00.000Z",
-      "name": "Bees LFO - Registered",
+      "name": "Bees LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990016",
@@ -302,7 +302,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-26T15:27:00.000Z",
-      "name": "Blue LFO - Not Started",
+      "name": "Blue LFO - Not Started - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "status": "Not Started",
@@ -315,7 +315,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-27T15:27:00.000Z",
-      "name": "Bullet LFO - Registered",
+      "name": "Bullet LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990018",
@@ -333,7 +333,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-28T15:27:00.000Z",
-      "name": "Bat LFO - Registered",
+      "name": "Bat LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990019",
@@ -349,7 +349,7 @@
     "pk": "ef9044dd-2a27-4d26-86fe-02e51e0755f7",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Bin LFO - Registered",
+      "name": "Bin LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990020",
@@ -365,7 +365,7 @@
     "pk": "aeeb781e-a97b-4ab2-9a6e-02e4522add1a",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Bark LFO - Registered",
+      "name": "Bark LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "bcghg_id": "23219990021",
@@ -381,7 +381,7 @@
     "pk": "02a3ab84-26c6-4a79-bf89-72f877ceef8e",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Blight EIO - Draft",
+      "name": "Blight EIO - Draft - name from admin",
       "type": "Electricity Import Operation",
       "registration_purpose": "Electricity Import Operation",
       "status": "Draft"
@@ -392,7 +392,7 @@
     "pk": "0ac72fa9-2636-4f54-b378-af6b1a070787",
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
-      "name": "Brown LFO - Not Started -- no facility",
+      "name": "Brown LFO - Not Started -- no facility - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 21,
       "status": "Not Started",
@@ -404,7 +404,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "438eff6c-d2e7-40ab-8220-29d3a86ef314",
-      "name": "Cat LFO - Registered",
+      "name": "Cat LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -417,7 +417,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "7e8b72dc-4196-427f-a553-7879748139e1",
-      "name": "Dog LFO - Registered",
+      "name": "Dog LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -431,7 +431,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "4c1010c1-55ca-485d-84bd-6d975fd0af90",
-      "name": "Elephant LFO - Registered",
+      "name": "Elephant LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -445,7 +445,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "5712ee05-5f3b-4822-825d-6fffddafda4c",
-      "name": "Fox LFO - Registered",
+      "name": "Fox LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -459,7 +459,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "edb1aff1-f888-4199-ab88-068364496347",
-      "name": "Giraffe LFO - Registered",
+      "name": "Giraffe LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -473,7 +473,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "ea4314ea-1974-465a-a851-278c8f9c8daa",
-      "name": "Horse LFO - Registered",
+      "name": "Horse LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -487,7 +487,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "04384911-264a-4510-b582-11ee704b8e41",
-      "name": "Iguana LFO - Registered",
+      "name": "Iguana LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -501,7 +501,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "f209ef09-dfe6-42a1-ac4c-7689897f1b51",
-      "name": "Jaguar LFO - Registered",
+      "name": "Jaguar LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -515,7 +515,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "bb979661-0782-49b2-9c64-acd8424b692b",
-      "name": "Kangaroo LFO - Registered",
+      "name": "Kangaroo LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -529,7 +529,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "bb702949-e303-4788-9ba9-806232a5f711",
-      "name": "Lion LFO - Registered",
+      "name": "Lion LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -543,7 +543,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "a35fb5ad-edd9-4465-982e-81b824644d07",
-      "name": "Monkey LFO - Registered",
+      "name": "Monkey LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -557,7 +557,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "5c847c75-3b17-414c-97f8-88ba81cb3821",
-      "name": "Narwhal LFO - Registered",
+      "name": "Narwhal LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -571,7 +571,7 @@
     "model": "registration.operation",
     "fields": {
       "operator": "4a792f0f-cf9d-48c8-9a95-f504c5f84b12",
-      "name": "Ostrich LFO - Registered",
+      "name": "Ostrich LFO - Registered - name from admin",
       "type": "Linear Facilities Operation",
       "naics_code": 20,
       "status": "Registered",
@@ -586,7 +586,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
-      "name": "Compliance SFO - Obligation not met",
+      "name": "Compliance SFO - Obligation not met - name from admin",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "bcghg_id": "13219990046",
@@ -604,7 +604,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
-      "name": "Compliance SFO - Earned credits",
+      "name": "Compliance SFO - Earned credits - name from admin",
       "type": "Single Facility Operation",
       "naics_code": 22,
       "bcghg_id": "13219990047",
@@ -622,7 +622,7 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": null,
-      "name": "Compliance SFO - No obligation or earned credits",
+      "name": "Compliance SFO - No obligation or earned credits - name from admin",
       "type": "Single Facility Operation",
       "naics_code": 21,
       "bcghg_id": "13219990048",
