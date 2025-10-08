@@ -5,8 +5,14 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
-import { AppRoute } from "@/administration-e2e/utils/enums";
-import { stabilizeGrid } from "@bciers/e2e/utils/helpers";
+import {
+  AppRoute,
+  ChangeRegistrationPurposeE2EValues,
+} from "@/administration-e2e/utils/enums";
+import {
+  searchGridByUniqueValue,
+  stabilizeGrid,
+} from "@bciers/e2e/utils/helpers";
 import { RegistrationPurposes } from "@/administration-e2e/utils/enums";
 import {
   OperationFields,
@@ -103,6 +109,17 @@ export class OperationPOM {
     });
     await expect(viewOperation).toBeVisible();
     await viewOperation.click();
+  }
+
+  async searchByBcghgId(bcghgid) {
+    const row = await searchGridByUniqueValue(
+      this.page,
+      ChangeRegistrationPurposeE2EValues.BCGHG_ID_FIELD_NAME,
+      bcghgid,
+    );
+    await stabilizeGrid(this.page, 1);
+
+    return row;
   }
 
   // ###  Assertions ###

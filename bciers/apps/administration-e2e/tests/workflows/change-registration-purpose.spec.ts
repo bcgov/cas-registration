@@ -14,7 +14,6 @@ import {
   assertSuccessfulSnackbar,
   checkBreadcrumbText,
   clickButton,
-  searchGridByUniqueValue,
   selectItemFromMuiSelect,
   stabilizeGrid,
   urlIsCorrect,
@@ -23,6 +22,7 @@ import {
   checkAlertMessage,
   fillDropdownByLabel,
   fillComboxboxWidget,
+  assertConfirmationModal,
 } from "@bciers/e2e/utils/helpers";
 
 const happoPlaywright = require("happo-playwright");
@@ -39,18 +39,12 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE;
 
     // Look for operation by BCGHG ID
-    const row = await searchGridByUniqueValue(
-      page,
-      ChangeRegistrationPurposeE2EValues.BCGHG_ID_FIELD_NAME,
+    const row = await operationPage.searchByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
-    await stabilizeGrid(page, 1);
 
     // Go to operation details page
-    const viewOperation = await row.getByRole("link", {
-      name: "View Operation",
-    });
-    await viewOperation.click();
+    await operationPage.goToOperation(row);
     await checkBreadcrumbText(
       page,
       ChangeRegistrationPurposeE2EValues.REGULATED_OPERATION_NAME,
@@ -72,14 +66,15 @@ test.describe("Test changing registration purpose", () => {
     );
 
     // Assert confirmation modal appears
-    await expect(page.getByText("Confirmation")).toBeVisible();
-    await expect(
-      page.getByText(
-        ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
-      ),
-    ).toBeVisible();
     const changeRegistrationPurposeButton =
       ChangeRegistrationPurposeE2EValues.CHANGE_REG_PURPOSE_BTN;
+    await assertConfirmationModal(
+      page,
+      "Confirmation",
+      ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
+      changeRegistrationPurposeButton,
+    );
+
     await expect(
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
@@ -131,9 +126,7 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE;
 
     // Look for operation by BCGHG ID
-    const row = await searchGridByUniqueValue(
-      page,
-      ChangeRegistrationPurposeE2EValues.BCGHG_ID_FIELD_NAME,
+    const row = await operationPage.searchByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
     await stabilizeGrid(page, 1);
@@ -165,14 +158,14 @@ test.describe("Test changing registration purpose", () => {
     );
 
     // Assert confirmation modal appears
-    await expect(page.getByText("Confirmation")).toBeVisible();
-    await expect(
-      page.getByText(
-        ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
-      ),
-    ).toBeVisible();
     const changeRegistrationPurposeButton =
       ChangeRegistrationPurposeE2EValues.CHANGE_REG_PURPOSE_BTN;
+    await assertConfirmationModal(
+      page,
+      "Confirmation",
+      ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
+      changeRegistrationPurposeButton,
+    );
     await expect(
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
@@ -192,6 +185,8 @@ test.describe("Test changing registration purpose", () => {
 
     // Assert visible fields are expected based on registration purpose
     await operationPage.assertCorrectFieldsAreVisible(changeRegPurposeTo);
+
+    // Assert registration purpose has changed
     await expect(
       page.locator(registrationPurposeXPath).getByText(changeRegPurposeTo),
     ).toBeVisible();
@@ -220,9 +215,7 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REPORTING_BCGHG_ID_FIELD_VALUE;
 
     // Look for operation by BCGHG ID
-    const row = await searchGridByUniqueValue(
-      page,
-      ChangeRegistrationPurposeE2EValues.BCGHG_ID_FIELD_NAME,
+    const row = await operationPage.searchByBcghgId(
       ChangeRegistrationPurposeE2EValues.REPORTING_BCGHG_ID_FIELD_VALUE,
     );
     await stabilizeGrid(page, 1);
@@ -253,14 +246,14 @@ test.describe("Test changing registration purpose", () => {
     );
 
     // Assert confirmation modal appears
-    await expect(page.getByText("Confirmation")).toBeVisible();
-    await expect(
-      page.getByText(
-        ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
-      ),
-    ).toBeVisible();
     const changeRegistrationPurposeButton =
       ChangeRegistrationPurposeE2EValues.CHANGE_REG_PURPOSE_BTN;
+    await assertConfirmationModal(
+      page,
+      "Confirmation",
+      ChangeRegistrationPurposeE2EValues.CONFIRMATION_MODAL_MESSAGE,
+      changeRegistrationPurposeButton,
+    );
     await expect(
       page.getByRole("button", { name: changeRegistrationPurposeButton }),
     ).toBeVisible();
@@ -277,15 +270,15 @@ test.describe("Test changing registration purpose", () => {
 
     // Assert visible fields are expected based on registration purpose
     await operationPage.assertCorrectFieldsAreVisible(changeRegPurposeTo);
+
+    // Assert registration purpose has changed
     await expect(
       page.locator(registrationPurposeXPath).getByText(changeRegPurposeTo),
     ).toBeVisible();
 
-    // Upload missing files to prevent error when saving
+    // To prevent error when saving
     await uploadFile(page, 0);
     await uploadFile(page, 1);
-
-    // Add products
     await fillComboxboxWidget(page, /regulated product+/i, "Gypsum wallboard");
 
     // Click Save

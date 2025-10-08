@@ -712,3 +712,19 @@ export async function uploadFile(page: Page, index: number) {
   const fileChooser = await fileChooserPromise;
   await fileChooser.setFiles(path.join(__dirname, "../docs/test.pdf"));
 }
+
+export async function assertConfirmationModal(
+  page: Page,
+  header: string | RegExp,
+  message: string | RegExp,
+  button: string | RegExp,
+) {
+  // assert visibility of header
+  await expect(page.getByText(header)).toBeVisible();
+
+  // assert visibility of message
+  await expect(page.getByText(message)).toBeVisible();
+
+  // assert visibility of button
+  await expect(page.getByRole("button", { name: button })).toBeVisible();
+}
