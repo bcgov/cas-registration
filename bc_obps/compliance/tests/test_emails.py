@@ -378,7 +378,7 @@ class TestSendNotifications:
             "outstanding_balance": '$5.60',
         }
 
-        # Call the function with the report id
+        # Call the function with the obligcation id
         send_notice_of_obligation_due_email(obligation.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
