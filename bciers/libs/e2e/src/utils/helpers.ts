@@ -654,10 +654,12 @@ export async function waitForSpinner(row: Locator) {
 export async function selectItemFromMuiSelect(
   page: Page,
   choice: string | RegExp,
-  xPath: string,
+  xPath?: string,
   exactChoice: boolean = false,
 ) {
-  const roleCell = page.locator(xPath);
+  let roleCell;
+  if (xPath) roleCell = page.locator(xPath);
+  else roleCell = page.locator(".MuiFormControl-root");
   await expect(roleCell).toBeVisible();
   await roleCell.click();
   const optionsContainer = await page.locator(".MuiList-root");
