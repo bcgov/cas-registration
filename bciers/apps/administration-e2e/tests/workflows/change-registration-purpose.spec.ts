@@ -39,7 +39,7 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE;
 
     // Look for operation by BCGHG ID
-    const row = await operationPage.searchByBcghgId(
+    const row = await operationPage.findRowByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
 
@@ -56,11 +56,11 @@ test.describe("Test changing registration purpose", () => {
 
     let component = "";
     // Set and use registrationPurpose via OperationPOM getter/setter
-    const changeRegPurposeTo = RegistrationPurposes.REPORTING_OPERATION;
+    const registrationPurpose = RegistrationPurposes.REPORTING_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
     await selectItemFromMuiSelect(
       page,
-      changeRegPurposeTo,
+      registrationPurpose,
       registrationPurposeXPath,
       true,
     );
@@ -93,9 +93,9 @@ test.describe("Test changing registration purpose", () => {
     await expect(page.getByText("Regulated Product Name(s)")).toBeHidden();
 
     // Assert visible fields are expected based on registration purpose
-    await operationPage.assertCorrectFieldsAreVisible(changeRegPurposeTo);
+    await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
     await expect(
-      page.locator(registrationPurposeXPath).getByText(changeRegPurposeTo),
+      page.locator(registrationPurposeXPath).getByText(registrationPurpose),
     ).toBeVisible();
 
     // Say cheese!
@@ -126,7 +126,7 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE;
 
     // Look for operation by BCGHG ID
-    const row = await operationPage.searchByBcghgId(
+    const row = await operationPage.findRowByBcghgId(
       ChangeRegistrationPurposeE2EValues.REGULATED_BCGHG_ID_FIELD_VALUE,
     );
     await stabilizeGrid(page, 1);
@@ -147,12 +147,12 @@ test.describe("Test changing registration purpose", () => {
 
     let component = "";
     // Set and use registrationPurpose via OperationPOM getter/setter
-    const changeRegPurposeTo =
+    const registrationPurpose =
       RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
     await selectItemFromMuiSelect(
       page,
-      changeRegPurposeTo,
+      registrationPurpose,
       registrationPurposeXPath,
       true,
     );
@@ -181,14 +181,14 @@ test.describe("Test changing registration purpose", () => {
     await clickButton(page, changeRegistrationPurposeButton);
 
     // Update operation type
-    await fillDropdownByLabel(page, /operation type+/i, changeRegPurposeTo);
+    await fillDropdownByLabel(page, /operation type+/i, registrationPurpose);
 
     // Assert visible fields are expected based on registration purpose
-    await operationPage.assertCorrectFieldsAreVisible(changeRegPurposeTo);
+    await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
 
     // Assert registration purpose has changed
     await expect(
-      page.locator(registrationPurposeXPath).getByText(changeRegPurposeTo),
+      page.locator(registrationPurposeXPath).getByText(registrationPurpose),
     ).toBeVisible();
 
     // Click Save
@@ -215,7 +215,7 @@ test.describe("Test changing registration purpose", () => {
       ChangeRegistrationPurposeE2EValues.REPORTING_BCGHG_ID_FIELD_VALUE;
 
     // Look for operation by BCGHG ID
-    const row = await operationPage.searchByBcghgId(
+    const row = await operationPage.findRowByBcghgId(
       ChangeRegistrationPurposeE2EValues.REPORTING_BCGHG_ID_FIELD_VALUE,
     );
     await stabilizeGrid(page, 1);
@@ -236,11 +236,11 @@ test.describe("Test changing registration purpose", () => {
 
     let component = "";
     // Set and use registrationPurpose via OperationPOM getter/setter
-    const changeRegPurposeTo = RegistrationPurposes.OBPS_REGULATED_OPERATION;
+    const registrationPurpose = RegistrationPurposes.OBPS_REGULATED_OPERATION;
     const registrationPurposeXPath = operationPage.registrationPurposeXPath;
     await selectItemFromMuiSelect(
       page,
-      changeRegPurposeTo,
+      registrationPurpose,
       registrationPurposeXPath,
       true,
     );
@@ -269,11 +269,11 @@ test.describe("Test changing registration purpose", () => {
     await clickButton(page, changeRegistrationPurposeButton);
 
     // Assert visible fields are expected based on registration purpose
-    await operationPage.assertCorrectFieldsAreVisible(changeRegPurposeTo);
+    await operationPage.assertCorrectFieldsAreVisible(registrationPurpose);
 
     // Assert registration purpose has changed
     await expect(
-      page.locator(registrationPurposeXPath).getByText(changeRegPurposeTo),
+      page.locator(registrationPurposeXPath).getByText(registrationPurpose),
     ).toBeVisible();
 
     // To prevent error when saving

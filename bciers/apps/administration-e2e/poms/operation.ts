@@ -39,14 +39,6 @@ export class OperationPOM {
     this.page = page;
   }
 
-  setRegistrationPurpose(value: string) {
-    this._registrationPurpose = value;
-  }
-
-  getRegistrationPurpose(): string | undefined {
-    return this._registrationPurpose;
-  }
-
   // ###  Actions ###
 
   async route() {
@@ -75,27 +67,20 @@ export class OperationPOM {
   }
 
   async fetchValidFields(registrationPurpose: string) {
-    let fields = [];
-    if (
-      registrationPurpose ===
-      (RegistrationPurposes.NEW_ENTRANT_OPERATION ||
-        RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION)
-    ) {
-      fields = Object.values(OperationFields);
-      // fields = OperationFields;
-    } else if (
-      registrationPurpose === RegistrationPurposes.REPORTING_OPERATION
-    ) {
-      fields = Object.values(ReportingOperationFields);
-    } else if (
-      registrationPurpose === RegistrationPurposes.OBPS_REGULATED_OPERATION
-    ) {
-      fields = Object.values(RegulatedOperationFields);
+    switch (registrationPurpose) {
+      case RegistrationPurposes.NEW_ENTRANT_OPERATION:
+      case RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION:
+        return Object.values(OperationFields);
+      case RegistrationPurposes.REPORTING_OPERATION:
+        return Object.values(ReportingOperationFields);
+      case RegistrationPurposes.OBPS_REGULATED_OPERATION:
+        return Object.values(RegulatedOperationFields);
+      default:
+        return [];
     }
-    return fields;
   }
 
-  async iterateFields(fields: string[], visible: boolean) {
+  async assertFieldVisibility(fields: string[], visible: boolean) {
     for (const field of fields) {
       await expect(this.page.getByText(field)).toBeVisible({
         visible: visible,
@@ -111,7 +96,7 @@ export class OperationPOM {
     await viewOperation.click();
   }
 
-  async searchByBcghgId(bcghgid) {
+  async findRowByBcghgId(bcghgid) {
     const row = await searchGridByUniqueValue(
       this.page,
       ChangeRegistrationPurposeE2EValues.BCGHG_ID_FIELD_NAME,
@@ -123,14 +108,18 @@ export class OperationPOM {
   }
 
   // ###  Assertions ###
+  /**
+   * Check if the correct fields are visible for the given registration purpose.
+   * Fields should be hidden only for ELECTRICITY_IMPORT_OPERATION.
+   */
   async assertCorrectFieldsAreVisible(registrationPurpose: string) {
     const fields = await this.fetchValidFields(registrationPurpose);
     if (
       registrationPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
     ) {
-      this.iterateFields(fields, false);
+      this.assertFieldVisibility(fields, false);
     } else {
-      this.iterateFields(fields, true);
+      this.assertFieldVisibility(fields, true);
     }
   }
 }
