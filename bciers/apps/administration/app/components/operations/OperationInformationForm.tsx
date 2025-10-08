@@ -146,8 +146,8 @@ const OperationInformationForm = ({
     <>
       {isRedirectedFromContacts && !role.includes("cas_") && (
         <Note variant="important">
-          To remove the current operation representative, please select a new
-          contact to replace them.
+          Chesca test To remove the current operation representative, please
+          select a new contact to replace them.
         </Note>
       )}
       <ConfirmChangeOfFieldModal

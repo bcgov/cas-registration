@@ -62,7 +62,8 @@ export const createRegistrationPurposeSchema = async () => {
       },
       registration_purpose: {
         type: "string",
-        title: "The purpose of this registration is to register as a:",
+        title:
+          "Chesca test The purpose of this registration is to register as a:",
         anyOf: registrationPurposes.map((purpose: string) => ({
           const: purpose,
           title: purpose,
