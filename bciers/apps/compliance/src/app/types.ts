@@ -37,6 +37,7 @@ export interface BccrComplianceAccountResponse {
 export interface RequestIssuanceOfEarnedCreditsFormData {
   bccr_holding_account_id?: string;
   bccr_trading_name?: string;
+  issuance_status?: IssuanceStatus;
 }
 
 export interface ApplyComplianceUnitsFormData

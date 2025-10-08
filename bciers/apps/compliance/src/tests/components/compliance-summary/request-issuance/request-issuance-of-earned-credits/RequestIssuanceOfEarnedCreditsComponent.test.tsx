@@ -31,6 +31,7 @@ const setupValidAccount = async () => {
   render(
     <RequestIssuanceOfEarnedCreditsComponent
       complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+      data={{}}
     />,
   );
   const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -52,6 +53,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        data={{}}
       />,
     );
 
@@ -68,6 +70,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        data={{}}
       />,
     );
 
@@ -79,6 +82,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        data={{}}
       />,
     );
     expect(screen.queryByText("BCCR Trading Name:")).not.toBeInTheDocument();
@@ -103,6 +107,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        data={{}}
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -191,6 +196,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        data={{}}
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");
@@ -275,6 +281,7 @@ describe("RequestIssuanceOfEarnedCreditsComponent", () => {
     render(
       <RequestIssuanceOfEarnedCreditsComponent
         complianceReportVersionId={TEST_COMPLIANCE_REPORT_VERSION_ID}
+        data={{}}
       />,
     );
     const accountInput = screen.getByLabelText("BCCR Holding Account ID:*");

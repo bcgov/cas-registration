@@ -10,6 +10,8 @@ export const ChangesRequiredAlertNote = () => {
       <Link
         className="text-bc-link-blue decoration-bc-link-blue"
         href={ghgRegulatorEmail}
+        target="_blank"
+        rel="noopener noreferrer"
       >
         GHGRegulator@gov.bc.ca
       </Link>

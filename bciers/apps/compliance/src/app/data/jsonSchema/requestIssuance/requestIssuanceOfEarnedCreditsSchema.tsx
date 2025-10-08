@@ -8,7 +8,7 @@ import {
   readOnlyStringField,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
 import { IssuanceStatus } from "@bciers/utils/src/enums";
-import { ChangesRequiredAlertNote } from "../../../components/compliance-summary/request-issuance/request-issuance-of-earned-credits/ChangesRequiredAlertNote";
+import { ChangesRequiredAlertNote } from "@/compliance/src/app/components/compliance-summary/request-issuance/request-issuance-of-earned-credits/ChangesRequiredAlertNote";
 
 export const requestIssuanceOfEarnedCreditsSchema: RJSFSchema = {
   type: "object",

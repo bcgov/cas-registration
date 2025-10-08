@@ -26,7 +26,7 @@ export default async function RequestIssuanceOfEarnedCreditsPage({
       taskListElements={taskListElements}
     >
       <RequestIssuanceOfEarnedCreditsComponent
-        data={{ issuance_status: earnedCreditData.issuance_status }}
+        data={earnedCreditData}
         complianceReportVersionId={complianceReportVersionId}
       />
     </CompliancePageLayout>
