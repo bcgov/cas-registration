@@ -38,6 +38,8 @@ REFRESH_DATA_BY_INVOICE_PATH = f"{REFRESH_DATA_SERVICE}.refresh_data_by_invoice"
 
 RETRYABLE_OBLIGATION_INTEGRATION_PATH = "compliance.tasks.retryable_process_obligation_integration"
 
+OBLIGATION_DUE_EMAIL_PATH = 'compliance.tasks.retryable_send_notice_of_obligation_due_email'
+
 SYNC_WITH_ELICENSING_PATH = (
     f"{ELICENSING_OBLIGATION_SERVICE_PATH}.ElicensingOperatorService.sync_client_with_elicensing"
 )
@@ -110,6 +112,12 @@ def mock_refresh_by_invoice():
 @pytest.fixture
 def mock_retryable_integration():
     with patch(RETRYABLE_OBLIGATION_INTEGRATION_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_retryable_obligation_due_email():
+    with patch(OBLIGATION_DUE_EMAIL_PATH) as mock:
         yield mock
 
 
@@ -192,7 +200,12 @@ class TestElicensingObligationService:
         assert result["fees"] == [fee_id]
 
     def test_process_obligation_integration_success(
-        self, mock_update_status, mock_refresh_by_invoice, mock_create_invoice, mock_create_fees
+        self,
+        mock_update_status,
+        mock_refresh_by_invoice,
+        mock_create_invoice,
+        mock_create_fees,
+        mock_retryable_obligation_due_email,
     ) -> None:
         """Test successful full obligation integration process"""
         # Setup mocks
@@ -229,9 +242,10 @@ class TestElicensingObligationService:
         assert obligation.elicensing_invoice_id == invoice.id
 
         mock_update_status.assert_called_once_with(obligation.compliance_report_version)
+        mock_retryable_obligation_due_email.execute.assert_called_once_with(obligation.pk)
 
-    def test_process_obligation_integration_failure_sets_pending_status(
-        self, mock_sync_client, mock_create_fees
+    def test_process_obligation_integration_failure_sets_pending_status_and_does_not_email(
+        self, mock_sync_client, mock_create_fees, mock_retryable_obligation_due_email
     ) -> None:
         obligation = make_recipe('compliance.tests.utils.compliance_obligation')
         compliance_report_version = obligation.compliance_report_version
@@ -253,6 +267,7 @@ class TestElicensingObligationService:
             compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_PENDING_INVOICE_CREATION
         )
+        mock_retryable_obligation_due_email.execute.assert_not_called()
 
     def test_handle_obligation_integration_runs_when_invoice_generation_date_passed(
         self, mock_timezone, mock_transaction, mock_retryable_integration
