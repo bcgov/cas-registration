@@ -44,20 +44,6 @@ export class RegistrationPOM {
     await this.saveAndContinueButton.click();
   }
 
-  // async uploadFile(index) {
-  //   // Our file widget has been customized, so the upload button isn't attached to the input. We select by index to get around this.
-  //   const fileChooserPromise = this.page.waitForEvent("filechooser");
-
-  //   const uploadButton = this.page
-  //     .getByRole("button", { name: /upload+/i })
-  //     .nth(index);
-
-  //   await uploadButton.click();
-
-  //   const fileChooser = await fileChooserPromise;
-  //   await fileChooser.setFiles(path.join(__dirname, "../docs/test.pdf"));
-  // }
-
   // Registration-specific form-filling functions
   async fillNewOperationInformation(registrationPurpose: RegistrationPurposes) {
     await fillComboxboxWidget(
