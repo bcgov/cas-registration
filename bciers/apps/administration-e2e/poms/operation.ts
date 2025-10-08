@@ -91,7 +91,6 @@ export class OperationPOM {
 
   async iterateFields(fields: string[], visible: boolean) {
     for (const field of fields) {
-      console.log(" Chesca test ", field);
       await expect(this.page.getByText(field)).toBeVisible({
         visible: visible,
       });
