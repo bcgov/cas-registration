@@ -150,7 +150,7 @@ def send_notice_of_obligation_due_email(obligation_id: int) -> None:
     Sends an email to every operator's industry user when compliance obligation invoices are generated, notifying that they can now pay their obligation.
 
      Args:
-        report_id: The id of the report instance for which to send notification emails.
+       obligation_id: The id of the obligation instance for which to send notification emails.
     """
     from compliance.service.compliance_report_version_service import ComplianceReportVersionService
 
