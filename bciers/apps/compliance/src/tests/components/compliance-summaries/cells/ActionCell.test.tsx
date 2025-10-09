@@ -258,8 +258,8 @@ describe("ActionCell", () => {
           ),
         );
         expectLink(
-          "View Details",
-          "/compliance-summaries/123/review-compliance-earned-credits-report",
+          "Review Change Required",
+          "/compliance-summaries/123/request-issuance-of-earned-credits",
         );
       });
 

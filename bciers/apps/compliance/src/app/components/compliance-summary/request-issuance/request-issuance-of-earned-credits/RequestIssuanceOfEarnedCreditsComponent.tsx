@@ -17,12 +17,15 @@ import { IChangeEvent } from "@rjsf/core";
 import SubmitButton from "@bciers/components/button/SubmitButton";
 import { actionHandler } from "@bciers/actions";
 import { useRouter } from "next/navigation";
+import { IssuanceStatus } from "@bciers/utils/src/enums";
 
 interface Props {
   complianceReportVersionId: number;
+  data: RequestIssuanceOfEarnedCreditsFormData;
 }
 
 const RequestIssuanceOfEarnedCreditsComponent = ({
+  data,
   complianceReportVersionId,
 }: Readonly<Props>) => {
   const router = useRouter();
@@ -31,9 +34,18 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
 
   const [formData, setFormData] = useState<
     RequestIssuanceOfEarnedCreditsFormData | {}
-  >({});
+  >(data);
   const [errors, setErrors] = useState<string[] | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const idRequiringChange =
+    data?.issuance_status === IssuanceStatus.CHANGES_REQUIRED
+      ? data.bccr_holding_account_id
+      : undefined;
+
+  const disabled =
+    "bccr_holding_account_id" in formData
+      ? formData.bccr_holding_account_id === idRequiringChange
+      : false;
 
   const handleChange = (
     e: IChangeEvent<RequestIssuanceOfEarnedCreditsFormData>,
@@ -42,6 +54,12 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
     const prevAccountId = (formData as RequestIssuanceOfEarnedCreditsFormData)
       ?.bccr_holding_account_id;
     const newAccountId = newFormData?.bccr_holding_account_id;
+
+    // If someone enters the same account id that they previously tried, set form data back to the complete initial data so issuance_status appears
+    if (newAccountId === idRequiringChange) {
+      setFormData(data);
+      return;
+    }
 
     // If account ID changed, clear everything except the account ID
     if (prevAccountId !== newAccountId) {
@@ -105,7 +123,10 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
       <div>
         <FormAlerts errors={errors} />
         <ComplianceStepButtons backUrl={backUrl} className="mt-4">
-          <SubmitButton isSubmitting={isSubmitting} disabled={!canSubmit}>
+          <SubmitButton
+            isSubmitting={isSubmitting}
+            disabled={!canSubmit || disabled}
+          >
             Request Issuance of Earned Credits
           </SubmitButton>
         </ComplianceStepButtons>
