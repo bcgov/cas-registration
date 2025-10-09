@@ -7,8 +7,9 @@ import {
   firefox,
   webkit,
   Browser,
+  request,
 } from "@playwright/test";
-import { baseUrlSetup } from "@bciers/e2e/utils/constants";
+import { baseBackendUrl, baseUrlSetup } from "@bciers/e2e/utils/constants";
 import {
   DataTestID,
   E2EValue,
@@ -675,4 +676,33 @@ export async function checkBreadcrumbText(
   const breadcrumbLocator = page.locator('nav[aria-label="breadcrumbs"]');
   const textLocator = breadcrumbLocator.getByText(expectedText);
   await expect(textLocator).toBeVisible();
+}
+
+export async function submitReport(report_version: Number) {
+  const requestContext = await request.newContext();
+  const response = await requestContext.post(
+    `${baseBackendUrl}/reporting/report-version/${report_version}/submit`,
+    {
+      headers: {
+        Authorization: '{"user_guid": "ba2ba62a-1218-42e0-942a-ab9e92ce8822"}',
+        "Content-Type": "application/json",
+      },
+      data: {
+        acknowledgement_of_review: true,
+        acknowledgement_of_records: true,
+        acknowledgement_of_information: true,
+        acknowledgement_of_possible_costs: true,
+        acknowledgements: {},
+        signature: "Test",
+        date: "Oct 02, 2025",
+      },
+    },
+  );
+
+  console.log("Status:", response.status());
+
+  const body = await response.text(); // fallback in case it's not JSON
+  console.log("Response body:", body);
+
+  expect(response.ok()).toBeTruthy();
 }
