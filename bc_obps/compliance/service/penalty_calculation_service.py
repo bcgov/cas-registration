@@ -298,27 +298,33 @@ class PenaltyCalculationService:
 
         # Get the date at which the penalty started accruing
         penalty_accrual_start_date = obligation.elicensing_invoice.due_date + timedelta(days=1)  # type: ignore [union-attr]
-        # Get the received_date of the payment that reduced the triggering obligation to 0. This is the last date that the penalty should be calculated to.
-        final_payment_received_date = (
-            ElicensingPayment.objects.filter(
-                elicensing_line_item=(
-                    ElicensingLineItem.objects.get(
-                        elicensing_invoice=obligation.elicensing_invoice,
-                        line_item_type=ElicensingLineItem.LineItemType.FEE,
-                    )
-                )
-            )
-            .order_by('-received_date')
-            .first()
-            .received_date  # type: ignore [union-attr]
+
+        # Determine the last date that reduced the triggering obligation to 0.
+        fee_line_item = ElicensingLineItem.objects.get(
+            elicensing_invoice=obligation.elicensing_invoice,
+            line_item_type=ElicensingLineItem.LineItemType.FEE,
         )
+
+        last_payment = (
+            ElicensingPayment.objects.filter(elicensing_line_item=fee_line_item).order_by('-received_date').first()
+        )
+        last_payment_received_date = last_payment.received_date if last_payment else None
+
+        last_adjustment = (
+            ElicensingAdjustment.objects.filter(elicensing_line_item=fee_line_item, adjustment_date__isnull=False)
+            .order_by('-adjustment_date')
+            .first()
+        )
+        last_adjustment_date = last_adjustment.adjustment_date if last_adjustment else None
+
+        final_transaction_date = max(filter(None, [last_payment_received_date, last_adjustment_date]), default=None)
 
         # Calculate the penalty data, persist it to our database & create the invoice/fee in elicensing for the penalty
         cls.calculate_penalty(
             obligation=obligation,
             persist_penalty_data=True,
             accrual_start_date=penalty_accrual_start_date,
-            final_accrual_date=final_payment_received_date,
+            final_accrual_date=final_transaction_date,
         )
 
         return CompliancePenalty.objects.get(compliance_obligation=obligation)

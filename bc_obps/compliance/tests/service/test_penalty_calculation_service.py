@@ -179,6 +179,90 @@ class TestPenaltyCalculationService:
     @patch(
         'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
     )
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty")
+    @patch("compliance.service.penalty_calculation_service.CompliancePenalty.objects.get")
+    def test_create_penalty_uses_latest_adjustment_date_when_after_payment(
+        self, mock_get_penalty, mock_calculate, mock_refresh_data
+    ):
+        """Payment does not cover the full obligation; later adjustment fully covers the remainder."""
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 11, 30),
+            outstanding_balance=Decimal("1000000.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        clean_fee = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=clean_invoice,
+            base_amount=Decimal("1000000.00"),
+        )
+        baker.make_recipe(
+            "compliance.tests.utils.elicensing_payment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("500000.00"),
+            received_date=date(2025, 12, 5),
+        )
+        later_adjustment = baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("-500000.00"),
+            adjustment_date=date(2025, 12, 10),
+        )
+        self.obligation.elicensing_invoice = clean_invoice
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        mock_get_penalty.return_value = None
+
+        PenaltyCalculationService.create_penalty(self.obligation)
+
+        mock_calculate.assert_called_with(
+            obligation=self.obligation,
+            persist_penalty_data=True,
+            accrual_start_date=clean_invoice.due_date + timedelta(days=1),
+            final_accrual_date=later_adjustment.adjustment_date,
+        )
+
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
+    @patch("compliance.service.penalty_calculation_service.PenaltyCalculationService.calculate_penalty")
+    @patch("compliance.service.penalty_calculation_service.CompliancePenalty.objects.get")
+    def test_create_penalty_uses_adjustment_date_when_no_payments(
+        self, mock_get_penalty, mock_calculate, mock_refresh_data
+    ):
+        """When there are no payments, use the latest adjustment date as final_accrual_date."""
+        clean_invoice = baker.make_recipe(
+            "compliance.tests.utils.elicensing_invoice",
+            due_date=date(2025, 11, 30),
+            outstanding_balance=Decimal("1000000.00"),
+            invoice_interest_balance=Decimal("0.00"),
+        )
+        clean_fee = baker.make_recipe(
+            "compliance.tests.utils.elicensing_line_item",
+            elicensing_invoice=clean_invoice,
+            base_amount=Decimal("1000000.00"),
+        )
+        only_adjustment = baker.make_recipe(
+            "compliance.tests.utils.elicensing_adjustment",
+            elicensing_line_item=clean_fee,
+            amount=Decimal("-250000.00"),
+            adjustment_date=date(2025, 12, 5),
+        )
+        self.obligation.elicensing_invoice = clean_invoice
+        mock_refresh_data.return_value = RefreshWrapperReturn(data_is_fresh=True, invoice=clean_invoice)
+        mock_get_penalty.return_value = None
+
+        PenaltyCalculationService.create_penalty(self.obligation)
+
+        mock_calculate.assert_called_with(
+            obligation=self.obligation,
+            persist_penalty_data=True,
+            accrual_start_date=clean_invoice.due_date + timedelta(days=1),
+            final_accrual_date=only_adjustment.adjustment_date,
+        )
+
+    @patch(
+        'compliance.service.elicensing.elicensing_data_refresh_service.ElicensingDataRefreshService.refresh_data_wrapper_by_compliance_report_version_id'
+    )
     def test_get_automatic_overdue_penalty(self, mock_refresh_data):
         clean_invoice = baker.make_recipe(
             "compliance.tests.utils.elicensing_invoice",
