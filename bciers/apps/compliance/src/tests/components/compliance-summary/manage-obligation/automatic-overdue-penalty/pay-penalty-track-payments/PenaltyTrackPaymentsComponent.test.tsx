@@ -88,7 +88,7 @@ describe("PenaltyTrackPaymentsComponent", () => {
 
     expect(screen.getByTestId("back-button")).toHaveAttribute(
       "data-url",
-      "/compliance-summaries/999/download-payment-penalty-instructions",
+      "/compliance-administration/compliance-summaries/999/download-payment-penalty-instructions",
     );
   });
 

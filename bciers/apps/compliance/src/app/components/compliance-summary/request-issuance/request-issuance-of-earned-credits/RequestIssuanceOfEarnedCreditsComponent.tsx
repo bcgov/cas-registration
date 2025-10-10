@@ -29,8 +29,8 @@ const RequestIssuanceOfEarnedCreditsComponent = ({
   complianceReportVersionId,
 }: Readonly<Props>) => {
   const router = useRouter();
-  const backUrl = `/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
-  const saveAndContinueUrl = `/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
+  const backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-compliance-earned-credits-report`;
+  const saveAndContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/track-status-of-issuance`;
 
   const [formData, setFormData] = useState<
     RequestIssuanceOfEarnedCreditsFormData | {}

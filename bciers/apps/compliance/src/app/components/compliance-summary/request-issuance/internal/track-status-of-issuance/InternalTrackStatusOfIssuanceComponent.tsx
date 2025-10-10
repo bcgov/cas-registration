@@ -23,13 +23,13 @@ export default function InternalTrackStatusOfIssuanceComponent({
   const isInternalReviewer =
     role === FrontEndRoles.CAS_DIRECTOR || role === FrontEndRoles.CAS_ANALYST;
 
-  let backUrl = `/compliance-summaries/${complianceReportVersionId}/review-by-director`;
+  let backUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-by-director`;
   if (
     [IssuanceStatus.APPROVED, IssuanceStatus.DECLINED].includes(
       data.issuance_status as IssuanceStatus,
     )
   ) {
-    backUrl = "/compliance-summaries";
+    backUrl = "/compliance-administration/compliance-summaries";
   }
 
   return (

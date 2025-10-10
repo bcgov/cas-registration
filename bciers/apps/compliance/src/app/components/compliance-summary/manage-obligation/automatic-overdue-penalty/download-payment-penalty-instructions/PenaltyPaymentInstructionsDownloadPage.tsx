@@ -12,8 +12,8 @@ import {
 export default async function PenaltyPaymentInstructionsDownloadPage({
   compliance_report_version_id: complianceReportVersionId,
 }: HasComplianceReportVersion) {
-  const customBackUrl = `/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
-  const customContinueUrl = `/compliance-summaries/${complianceReportVersionId}/pay-penalty-track-payments`;
+  const customBackUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/review-penalty-summary`;
+  const customContinueUrl = `/compliance-administration/compliance-summaries/${complianceReportVersionId}/pay-penalty-track-payments`;
 
   const {
     penalty_status: penaltyStatus,

@@ -18,14 +18,14 @@ describe("generateReviewObligationPenaltyTaskList", () => {
     expect(taskList[0]).toEqual({
       type: "Page",
       title: `Review ${mockReportingYear} Compliance Obligation Report`,
-      link: `/compliance-summaries/${mockComplianceReportVersionId}/review-obligation-summary`,
+      link: `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-obligation-summary`,
       isActive: true,
     });
 
     expect(taskList[1]).toEqual({
       type: "Page",
       title: "Review Penalty Summary",
-      link: `/compliance-summaries/${mockComplianceReportVersionId}/review-penalty-summary`,
+      link: `/compliance-administration/compliance-summaries/${mockComplianceReportVersionId}/review-penalty-summary`,
       isActive: false,
     });
   });

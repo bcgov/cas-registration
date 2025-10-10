@@ -8,7 +8,7 @@ import serializeSearchParams from "@bciers/utils/src/serializeSearchParams";
 type TBreadCrumbProps = {
   separator: React.ReactNode;
   capitalizeLinks: boolean;
-  defaultLinks?: { label: string; href: string }[];
+  defaultLinks?: { label: string; href?: string }[];
   zone?: string;
 };
 
@@ -151,17 +151,30 @@ export default function Bread({
           <ol className="list-none pl-0 ml-4 sm:ml-6">
             {defaultLinks.map((link, index) => {
               const isLastDefaultLink = index === defaultLinks.length - 1;
+              const hasHref =
+                typeof link.href === "string" && link.href.trim() !== "";
+
               return (
-                <li key={link.href} className={liStyle}>
-                  <Link href={link.href} className={aStyle}>
-                    {capitalizeLinks
-                      ? unslugifyAndCapitalize(link.label)
-                      : link.label}
-                  </Link>
+                <li
+                  key={`${link.href ?? link.label}-${index}`}
+                  className={liStyle}
+                >
+                  {hasHref ? (
+                    <Link href={link.href!} className={aStyle}>
+                      {capitalizeLinks
+                        ? unslugifyAndCapitalize(link.label)
+                        : link.label}
+                    </Link>
+                  ) : (
+                    <span className={aStyle}>
+                      {capitalizeLinks
+                        ? unslugifyAndCapitalize(link.label)
+                        : link.label}
+                    </span>
+                  )}
                   {!isLastDefaultLink || visibleCrumbs.length > 0
                     ? separator
-                    : null}{" "}
-                  {/* Conditionally render the separator */}
+                    : null}
                 </li>
               );
             })}

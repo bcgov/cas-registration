@@ -105,8 +105,8 @@ describe("PenaltyPaymentInstructionsDownloadPage", () => {
 
     expect(capturedPaymentComponentProps).toBeDefined();
 
-    const expectedBack = `/compliance-summaries/456/review-penalty-summary`;
-    const expectedContinue = `/compliance-summaries/456/pay-penalty-track-payments`;
+    const expectedBack = `/compliance-administration/compliance-summaries/456/review-penalty-summary`;
+    const expectedContinue = `/compliance-administration/compliance-summaries/456/pay-penalty-track-payments`;
 
     expect(capturedPaymentComponentProps.customBackUrl).toBe(expectedBack);
     expect(capturedPaymentComponentProps.customContinueUrl).toBe(

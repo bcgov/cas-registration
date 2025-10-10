@@ -14,7 +14,6 @@
         "tiles": [
           {
             "title": "Administration",
-            "href": "/administration",
             "icon": "Layers",
             "content": "View information of any operator, operation, facility, contact.",
             "links": [
@@ -54,7 +53,6 @@
           },
           {
             "title": "Reporting",
-            "href": "/reporting",
             "icon": "File",
             "content": "View Annual Reports for any operation here.",
             "links": [
@@ -76,22 +74,19 @@
             "title": "Compliance",
             "icon": "File",
             "content": "Track compliance obligations, approve or decline issuance requests of earned credits, and track invoices here.",
-            "access_roles": [
-              "cas_admin",
-              "cas_analyst",
-              "cas_director",
-              "cas_view_only"
-            ],
             "links": [
               {
                 "title": "Compliance Summaries",
-                "href": "/compliance/compliance-summaries"
+                "href": "/compliance/compliance-administration/compliance-summaries"
+              },
+              {
+                "title": "Invoices",
+                "href": "/compliance/compliance-administration/invoices"
               }
             ]
           },
           {
             "title": "Clean Growth User Access Management",
-            "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Users",
             "content": "View, approve or decline IDIR user access requests, or to assign access type to users here.",
             "links": [
@@ -103,7 +98,6 @@
           },
           {
             "title": "Report a Problem",
-            "href": "mailto:GHGRegulator@gov.bc.ca",
             "icon": "Wrench",
             "content": "Report a problem to the Clean Growth Digital Services Team here.",
             "links": [

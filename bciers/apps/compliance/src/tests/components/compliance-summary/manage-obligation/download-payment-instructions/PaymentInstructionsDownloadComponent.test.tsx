@@ -89,7 +89,7 @@ describe("PaymentInstructionsDownloadComponent", () => {
     fireEvent.click(backButton);
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        "/compliance-summaries/123/review-compliance-obligation-report",
+        "/compliance-administration/compliance-summaries/123/review-compliance-obligation-report",
       );
     });
 
@@ -97,14 +97,14 @@ describe("PaymentInstructionsDownloadComponent", () => {
     fireEvent.click(continueButton);
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        "/compliance-summaries/123/pay-obligation-track-payments",
+        "/compliance-administration/compliance-summaries/123/pay-obligation-track-payments",
       );
     });
   });
 
   it("uses custom back and continue URLs when props provided", async () => {
-    const customBack = `/compliance-summaries/321/review-penalty-summary`;
-    const customContinue = `/compliance-summaries/321/pay-penalty-track-payments`;
+    const customBack = `/compliance-administration/compliance-summaries/321/review-penalty-summary`;
+    const customContinue = `/compliance-administration/compliance-summaries/321/pay-penalty-track-payments`;
 
     render(
       <PaymentInstructionsDownloadComponent

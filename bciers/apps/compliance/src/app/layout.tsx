@@ -11,10 +11,7 @@ import RootLayout, {
 
 const title = "Compliance";
 
-const defaultLinks = [
-  { label: "Dashboard", href: "/" },
-  { label: title, href: "/compliance" },
-];
+const defaultLinks = [{ label: "Dashboard", href: "/" }, { label: title }];
 
 export const metadata = generateMetadata(title);
 

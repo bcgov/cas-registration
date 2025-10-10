@@ -13,9 +13,12 @@ export const withResponseCompliance: MiddlewareFactory = () => {
 
     const token = await getToken();
     // 🧱 Build rewrite to physical folder path which enforces authorization by IdP and role
-    request.nextUrl.pathname = `${token.identity_provider}/${
-      token.app_role
-    }${pathname.replace(`${appName}/`, "")}`;
+    const re = new RegExp(`^/${appName}(?=/|$)`);
+    const stripped = pathname.replace(re, "") || "/";
+
+    request.nextUrl.pathname = `/${token.identity_provider}/${token.app_role}${
+      stripped.startsWith("/") ? "" : "/"
+    }${stripped}`;
 
     return NextResponse.rewrite(request.nextUrl);
   };

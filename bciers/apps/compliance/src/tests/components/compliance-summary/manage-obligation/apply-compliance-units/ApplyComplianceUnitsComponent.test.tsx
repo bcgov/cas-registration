@@ -749,7 +749,7 @@ describe("ApplyComplianceUnitsComponent", () => {
     fireEvent.click(cancelButton);
 
     expect(mockRouterPush).toHaveBeenCalledWith(
-      `/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/review-compliance-obligation-report`,
+      `/compliance-administration/compliance-summaries/${TEST_COMPLIANCE_REPORT_VERSION_ID}/review-compliance-obligation-report`,
     );
   });
 
