@@ -91,7 +91,6 @@ trigger_wait_for_postgres_restore = PythonOperator(
     python_callable=trigger_k8s_cronjob_with_params,
     task_id="wait_for_postgres_restore",
     op_args=["pg-migration-test-wait-for-postgres-restore-job"],
-    provide_context=True,
     dag=test_migrations_dag,
 )
 
@@ -99,7 +98,6 @@ trigger_postgres_migration_test_cronjob = PythonOperator(
     python_callable=trigger_k8s_cronjob_with_params,
     task_id="postgres_migration_test",
     op_args=["pg-migration-test-job"],
-    provide_context=True,
     dag=test_migrations_dag,
 )
 
@@ -130,7 +128,6 @@ trigger_wait_for_backend = PythonOperator(
     python_callable=trigger_k8s_cronjob_with_params,
     task_id="wait_for_backend",
     op_args=["be-migration-test-wait-for-backend-job"],
-    provide_context=True,
     dag=test_migrations_dag,
 )
 
@@ -138,7 +135,6 @@ trigger_backend_migration_test_cronjob = PythonOperator(
     python_callable=trigger_k8s_cronjob_with_params,
     task_id="backend_migration_test",
     op_args=["be-migration-test-job"],
-    provide_context=True,
     dag=test_migrations_dag,
 )
 
