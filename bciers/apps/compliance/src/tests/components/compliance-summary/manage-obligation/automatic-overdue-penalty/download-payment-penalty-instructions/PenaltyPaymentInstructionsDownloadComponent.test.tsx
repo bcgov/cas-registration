@@ -2,6 +2,7 @@ import PaymentInstructionsDownloadComponent from "@/compliance/src/app/component
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useRouter } from "@bciers/testConfig/mocks";
+import { ComplianceInvoiceTypes } from "@bciers/utils/src/enums";
 
 const mockRouterPush = vi.fn();
 useRouter.mockReturnValue({
@@ -17,14 +18,17 @@ const setupComponent = (id = 123) =>
   render(
     <PaymentInstructionsDownloadComponent
       complianceReportVersionId={id}
-      invoiceID={"OBI690837"}
+      invoiceID={"OBI123456"}
+      customBackUrl={`/compliance-summaries/${id}/review-penalty-summary`}
+      customContinueUrl={`/compliance-summaries/${id}/pay-penalty-track-payments`}
+      invoiceType={ComplianceInvoiceTypes.AUTOMATIC_OVERDUE_PENALTY}
     />,
   );
 
 const downloadPDFButton = () =>
-  screen.getByRole("button", { name: "Download Payment Information" });
+  screen.getByRole("button", { name: "Download Payment Instructions" });
 
-describe("PaymentInstructionsDownloadComponent", () => {
+describe("PenaltyPaymentInstructionsDownloadComponent", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockWindowOpen.mockClear();
@@ -38,9 +42,12 @@ describe("PaymentInstructionsDownloadComponent", () => {
     vi.stubGlobal("open", mockWindowOpen);
   });
 
-  it("renders the component with payee info and headings", () => {
+  it("renders the component with payee info and headings for penalty", () => {
     setupComponent();
-    expect(screen.getByText("Download Payment Instructions")).toBeVisible();
+    // Verify the page title is rendered
+    expect(screen.getByTestId("field-template-label")).toHaveTextContent(
+      "Download Payment Instructions",
+    );
     expect(screen.getByText("Payee Information")).toBeVisible();
     expect(
       screen.getByText("Canadian Imperial Bank of Commerce"),
@@ -57,16 +64,17 @@ describe("PaymentInstructionsDownloadComponent", () => {
     ).toBeVisible();
     expect(screen.getByText("Before making a payment")).toBeVisible();
     expect(
-      screen.getByText("Pay by electronic fund transfer (EFT)"),
+      screen.getByText(
+        "Pay by electronic funds transfer (EFT) or by wire transfer",
+      ),
     ).toBeVisible();
-    expect(screen.getByText("Pay by wire transfer")).toBeVisible();
     expect(
       screen.getByText("Provide correct information for timely processing"),
     ).toBeVisible();
     expect(downloadPDFButton()).toBeEnabled();
   });
 
-  it("validates button text, and navigation", async () => {
+  it("validates button text and navigation for penalty flow", async () => {
     setupComponent();
 
     const backButton = screen.getByRole("button", { name: /back/i });
@@ -81,51 +89,24 @@ describe("PaymentInstructionsDownloadComponent", () => {
     expect(backButton).toBeEnabled();
     expect(continueButton).toBeEnabled();
 
-    // Click back button and verify navigation
+    // Click back button and verify navigation to penalty summary
     fireEvent.click(backButton);
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        "/compliance-summaries/123/review-compliance-obligation-report",
+        "/compliance-summaries/123/review-penalty-summary",
       );
     });
 
-    // Click continue button and verify navigation
+    // Click continue button and verify navigation to penalty track payments
     fireEvent.click(continueButton);
     await waitFor(() => {
       expect(mockRouterPush).toHaveBeenCalledWith(
-        "/compliance-summaries/123/pay-obligation-track-payments",
+        "/compliance-summaries/123/pay-penalty-track-payments",
       );
     });
   });
 
-  it("uses custom back and continue URLs when props provided", async () => {
-    const customBack = `/compliance-summaries/321/review-penalty-summary`;
-    const customContinue = `/compliance-summaries/321/pay-penalty-track-payments`;
-
-    render(
-      <PaymentInstructionsDownloadComponent
-        complianceReportVersionId={321}
-        invoiceID="INV123"
-        customBackUrl={customBack}
-        customContinueUrl={customContinue}
-      />,
-    );
-
-    const backButton = screen.getByRole("button", { name: /back/i });
-    const continueButton = screen.getByRole("button", { name: /continue/i });
-
-    fireEvent.click(backButton);
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith(customBack);
-    });
-
-    fireEvent.click(continueButton);
-    await waitFor(() => {
-      expect(mockRouterPush).toHaveBeenCalledWith(customContinue);
-    });
-  });
-
-  it("handles pdf download correctly", async () => {
+  it("handles penalty pdf download correctly with invoice type query param", async () => {
     const user = userEvent.setup();
 
     const mockBlob = new Blob(["dummy PDF"], { type: "application/pdf" });
@@ -143,8 +124,9 @@ describe("PaymentInstructionsDownloadComponent", () => {
 
     await user.click(downloadPDFButton());
 
+    // Verify the API call includes the penalty invoice type query parameter
     expect(fetch).toHaveBeenCalledWith(
-      "/compliance/api/payment-instructions/123",
+      "/compliance/api/payment-instructions/123?invoice_type=automatic overdue penalty",
       {
         method: "GET",
         cache: "no-store",
@@ -162,7 +144,7 @@ describe("PaymentInstructionsDownloadComponent", () => {
     expect(downloadPDFButton()).toBeEnabled();
   });
 
-  it("displays an error when pdf download fails", async () => {
+  it("displays an error when penalty pdf download fails", async () => {
     const user = userEvent.setup();
 
     vi.stubGlobal(
@@ -172,7 +154,7 @@ describe("PaymentInstructionsDownloadComponent", () => {
         status: 400,
         headers: new Headers({ "Content-Type": "application/json" }),
         json: async () => ({
-          message: "Unable to generate invoice",
+          message: "Unable to generate penalty invoice",
         }),
       }),
     );
@@ -182,7 +164,7 @@ describe("PaymentInstructionsDownloadComponent", () => {
     await user.click(downloadPDFButton());
 
     expect(fetch).toHaveBeenCalledWith(
-      "/compliance/api/payment-instructions/999",
+      "/compliance/api/payment-instructions/999?invoice_type=automatic overdue penalty",
       {
         method: "GET",
         cache: "no-store",
@@ -194,13 +176,15 @@ describe("PaymentInstructionsDownloadComponent", () => {
     const alerts = await screen.findAllByRole("alert");
     const hasErrorText = alerts.some(
       (el) =>
-        el.textContent?.toLowerCase().includes("unable to generate invoice"),
+        el.textContent
+          ?.toLowerCase()
+          .includes("unable to generate penalty invoice"),
     );
     expect(hasErrorText).toBe(true);
     expect(downloadPDFButton()).toBeEnabled();
   });
 
-  it("validates form data is properly displayed", () => {
+  it("validates form data is properly displayed for penalty", () => {
     setupComponent();
 
     // Check all hardcoded form data is displayed

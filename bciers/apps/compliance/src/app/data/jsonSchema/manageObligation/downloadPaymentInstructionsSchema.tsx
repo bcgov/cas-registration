@@ -6,6 +6,7 @@ import {
   readOnlyStringField,
   headerUiConfig,
 } from "@/compliance/src/app/data/jsonSchema/helpers";
+import { LogoWidget } from "./LogoWidget";
 import {
   PaymentInstructionsDetails,
   PaymentRemarks,
@@ -14,6 +15,8 @@ export const createDownloadPaymentInstructionsSchema = (): RJSFSchema => ({
   type: "object",
   title: `Download Payment Instructions`,
   properties: {
+    // Logo
+    logo: readOnlyStringField(),
     // Invoice Number
     invoice_number: readOnlyStringField("Invoice #:"),
     // Payee Info
@@ -37,6 +40,15 @@ export const createDownloadPaymentInstructionsSchema = (): RJSFSchema => ({
 export const downloadPaymentInstructionsUiSchema: UiSchema = {
   "ui:FieldTemplate": FieldTemplate,
   "ui:classNames": "form-heading-label",
+  // Logo
+  logo: {
+    "ui:widget": LogoWidget,
+    "ui:FieldTemplate": FieldTemplate,
+    "ui:options": {
+      inline: true,
+      label: false,
+    },
+  },
   // Invoice Number
   invoice_number: commonReadOnlyOptions,
 
