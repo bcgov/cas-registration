@@ -1,5 +1,5 @@
 from decimal import Decimal
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal, Optional, List, TypedDict
 from django.db.models import QuerySet
 from compliance.models import ElicensingPayment, ElicensingInvoice
@@ -161,3 +161,40 @@ class ComplianceEarnedCreditsUpdate:
     analyst_comment: Optional[str] = None
     director_comment: Optional[str] = None
     director_decision: Optional[Literal["Approved", "Declined"]] = None
+
+
+@dataclass(slots=True, frozen=True)
+class InvoiceAdjustment:
+    """
+    Immutable, per-invoice action the poster will apply to a *previous* CRV's invoice.
+    - version_id: compliance report version id
+    - applied: signed $, negative reduces outstanding
+    - net_outstanding_after: $ after applying `applied`
+    - mark_fully_met: True if net_outstanding_after == 0
+    - should_void_invoice: True if fully met & no prior cash payments
+    """
+
+    version_id: int
+    applied: Decimal
+    net_outstanding_after: Decimal
+    mark_fully_met: bool
+    should_void_invoice: bool
+
+
+@dataclass(slots=True, frozen=True)
+class AdjustmentStrategy:
+    """
+    Immutable, normalized contract consumed by `DecreasedObligationHandle._process_adjustment_after_commit(...)`
+    - invoices : List[InvoiceAdjustment]: the invoice-level adjustments to apply.
+    - credits_tonnes : the quantity of credits (in tonnes) to create/apply.
+    - create_earned_credits : if True, downstream logic should create EarnedCredit records for `credits_tonnes`.
+
+    """
+
+    invoices: List["InvoiceAdjustment"] = field(default_factory=list)
+    credits_tonnes: Decimal = Decimal("0")
+    create_earned_credits: bool = False
+
+    @staticmethod
+    def empty() -> "AdjustmentStrategy":
+        return AdjustmentStrategy()

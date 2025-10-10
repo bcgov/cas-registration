@@ -4,7 +4,6 @@ from compliance.models import (
     ComplianceEarnedCredit,
 )
 from reporting.models import ReportVersion
-from compliance.models.elicensing_adjustment import ElicensingAdjustment
 from compliance.service.supplementary_version_service import (
     NoChangeHandler,
     SupplementaryVersionService,
@@ -30,6 +29,9 @@ INCREASED_CREDIT_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.Increased
 DECREASED_CREDIT_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.DecreasedCreditHandler.handle"
 INCREASED_OBLIGATION_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.IncreasedObligationHandler.handle"
 DECREASED_OBLIGATION_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.DecreasedObligationHandler.handle"
+FIND_NEWEST_UNPAID_ANCHOR_PATH = (
+    f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.DecreasedObligationHandler._find_newest_unpaid_anchor_along_chain"
+)
 NO_OBLIGATION_HANDLER_PATH = f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.NoChangeHandler.handle"
 HANDLE_OBLIGATION_INTEGRATION_PATH = (
     f"{SUPPLEMENTARY_VERSION_SERVICE_PATH}.ElicensingObligationService.handle_obligation_integration"
@@ -114,6 +116,12 @@ def mock_get_rate():
 @pytest.fixture
 def mock_create_credits():
     with patch(CREATE_EARNED_CREDIT_PATH) as mock:
+        yield mock
+
+
+@pytest.fixture
+def mock_find_newest_unpaid_anchor():
+    with patch(FIND_NEWEST_UNPAID_ANCHOR_PATH) as mock:
         yield mock
 
 
@@ -600,8 +608,6 @@ class TestDecreasedObligationHandler(BaseSupplementaryVersionServiceTest):
 
         # Assert
         assert result is False
-
- 
 
 
 class TestNoChangeHandler(BaseSupplementaryVersionServiceTest):
