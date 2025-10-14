@@ -570,3 +570,170 @@ class TestElicensingObligationService:
 
         assert mock_handle_integration.call_count == 1
         mock_handle_integration.assert_called_once_with(999, cp)
+
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "compliance.service.elicensing.elicensing_obligation_service.ElicensingObligationService._get_obligations_for_reminders"
+    )
+    @patch('compliance.tasks.retryable_send_reminder_of_obligation_due_email.execute')
+    def test_send_reminders_for_current_period__happy_path(
+        self,
+        mock_retryable_send_reminder_of_obligation_email,
+        mock_get_obligations_for_reminders,
+        mock_get_current_reporting_year,
+    ):
+
+        ry = ReportingYear.objects.get(reporting_year=2024)
+        cp, created = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry,
+            defaults={"invoice_generation_date": date(2024, 11, 1)},
+        )
+        obligations = _FauxQueryset([MagicMock(id=101), MagicMock(id=202)])
+        mock_get_current_reporting_year.return_value = ry
+        mock_get_obligations_for_reminders.return_value = obligations
+
+        # Act
+        ElicensingObligationService.send_reminders_for_current_period()
+
+        # Assert
+        mock_get_current_reporting_year.assert_called_once()
+        mock_get_obligations_for_reminders.assert_called_once_with(cp)
+
+        assert mock_retryable_send_reminder_of_obligation_email.call_count == 2
+        mock_retryable_send_reminder_of_obligation_email.assert_any_call(101)
+        mock_retryable_send_reminder_of_obligation_email.assert_any_call(202)
+
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "compliance.service.elicensing.elicensing_obligation_service.ElicensingObligationService._get_obligations_for_reminders"
+    )
+    @patch('compliance.tasks.retryable_send_reminder_of_obligation_due_email.execute')
+    def test_send_reminders_for_current_period__no_compliance_period_found(
+        self,
+        mock_retryable_send_reminder_of_obligation_email,
+        mock_get_obligations_for_reminders,
+        mock_get_current_reporting_year,
+    ):
+        """
+        Test case: No compliance period exists for the current reporting year
+        - Should return early
+        - Should not call subsequent methods
+        """
+        # Arrange
+        ry = ReportingYear.objects.get(reporting_year=2024)
+        mock_get_year.return_value = ry
+
+        # Ensure no compliance period exists for this reporting year
+        CompliancePeriod.objects.filter(reporting_year=ry).delete()
+
+        obligations = _FauxQueryset([MagicMock(id=101), MagicMock(id=202)])
+        mock_get_current_reporting_year.return_value = ry
+        mock_get_obligations_for_reminders.return_value = obligations
+
+        # Act
+
+        ElicensingObligationService.send_reminders_for_current_period()
+
+        # Assert
+        mock_get_current_reporting_year.assert_called_once()
+        mock_get_obligations_for_reminders.assert_not_called()
+        mock_retryable_send_reminder_of_obligation_email.assert_not_called()
+
+    @patch("service.reporting_year_service.ReportingYearService.get_current_reporting_year")
+    @patch(
+        "compliance.service.elicensing.elicensing_obligation_service.ElicensingObligationService._get_obligations_for_reminders"
+    )
+    @patch('compliance.tasks.retryable_send_reminder_of_obligation_due_email.execute')
+    def test_send_reminders_for_current_period__no_obligations_found(
+        self,
+        mock_retryable_send_reminder_of_obligation_email,
+        mock_get_obligations_for_reminders,
+        mock_get_current_reporting_year,
+    ):
+        """
+        Test case: No obligations found that need reminders
+        - Should return early
+        - Should not send emails
+        """
+        # Arrange
+        ry = ReportingYear.objects.get(reporting_year=2024)
+        cp, created = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry,
+            defaults={"invoice_generation_date": date(2024, 11, 1)},
+        )
+
+        empty_obligations = _FauxQueryset([])  # Empty queryset
+
+        mock_get_current_reporting_year.return_value = ry
+        mock_get_obligations_for_reminders.return_value = empty_obligations
+
+        # Act
+
+        ElicensingObligationService.send_reminders_for_current_period()
+
+        # Assert
+        mock_get_current_reporting_year.assert_called_once()
+        mock_get_obligations_for_reminders.assert_called_once_with(cp)
+
+        # Act
+        ElicensingObligationService.generate_invoices_for_current_period()
+
+        # Assert
+        mock_get_current_reporting_year.assert_called_once()
+        mock_get_obligations_for_reminders.assert_called_once_with(cp)
+        mock_retryable_send_reminder_of_obligation_email.assert_not_called()
+
+    def test_get_obligations_for_reminders(self):
+        ry_2024 = ReportingYear.objects.get(reporting_year=2024)
+        cp_2024, created = CompliancePeriod.objects.get_or_create(
+            reporting_year=ry_2024,
+            defaults={"invoice_generation_date": date(2024, 11, 1)},
+        )
+        ry_2025 = ReportingYear.objects.get(reporting_year=2025)
+        cp_2025 = make_recipe(
+            'compliance.tests.utils.compliance_period',
+            start_date="2025-01-01",
+            end_date="2025-12-31",
+            compliance_deadline="2026-06-30",
+            invoice_generation_date="2026-11-01",
+            reporting_year=ry_2025,
+        )
+
+        # 2024 obligations with outstanding balances - should all be returned
+        for i in range(1, 5):
+            cr = make_recipe('compliance.tests.utils.compliance_report', compliance_period=cp_2024)
+            crv = make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=cr)
+            invoice = make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal(i + 100))
+            make_recipe(
+                'compliance.tests.utils.compliance_obligation',
+                compliance_report_version=crv,
+                elicensing_invoice=invoice,
+            )
+
+        # obligation with 0 outstanding balance - should not be returned
+        cr_0 = make_recipe('compliance.tests.utils.compliance_report', compliance_period=cp_2024)
+        crv_0 = make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=cr_0)
+        invoice_0 = make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal(0))
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=crv_0,
+            elicensing_invoice=invoice_0,
+        )
+
+        # obligation with no invoice - should not be returned
+        cr_none = make_recipe('compliance.tests.utils.compliance_report', compliance_period=cp_2024)
+        crv_none = make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=cr_none)
+        make_recipe('compliance.tests.utils.compliance_obligation', compliance_report_version=crv_none)
+
+        # obligation in a different compliance period - should not be returned
+        cr_2025 = make_recipe('compliance.tests.utils.compliance_report', compliance_period=cp_2025)
+        crv_2025 = make_recipe('compliance.tests.utils.compliance_report_version', compliance_report=cr_2025)
+        invoice_2025 = make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal(0))
+        make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=crv_2025,
+            elicensing_invoice=invoice_2025,
+        )
+
+        obligations = ElicensingObligationService._get_obligations_for_reminders(cp_2024)
+        assert obligations.count() == 4
