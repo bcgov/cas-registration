@@ -60,7 +60,7 @@ def reverse_obligation_reminder_template(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('common', '0088_notice_of_obligation_due_email_template'),
+        ('common', '0089_update_dashboard_data'),
     ]
 
     operations = [
