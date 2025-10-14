@@ -6,7 +6,7 @@
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
 import { AppRoute } from "@bciers/e2e/utils/enums";
-import { Actions, ComplianceStatus } from "../utils/enums";
+import { Actions, ComplianceStatus, Paths } from "../utils/enums";
 import { getRowCellBySelector, urlIsCorrect } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
@@ -51,6 +51,7 @@ export class CompliancePOM {
   }
 
   async getValueByCellSelector(row: Locator, selector: string) {
+    selector = `[data-field="${selector}"]`;
     const cell = await getRowCellBySelector(row, selector);
     const value = cell.textContent();
     return value;
@@ -86,6 +87,30 @@ export class CompliancePOM {
         break;
     }
     return expectedAction;
+  }
+
+  async getExpectedPath(expectedAction: string) {
+    let expectedPath;
+    switch (expectedAction) {
+      case Actions.REQUEST_ISSUANCE_OF_CREDITS:
+        expectedPath = Paths.REVIEW_COMPLIANCE_EARNED_CREDITS_REPORT;
+        break;
+      case Actions.MANAGE_OBLIGATION:
+        expectedPath = Paths.REVIEW_COMPLIANCE_OBLIGATION_REPORT;
+        break;
+      case Actions.PENDING_INVOICE_CREATION:
+        expectedPath = Paths.PENDING_INVOICE_CREATION;
+        break;
+      case Actions.VIEW_DETAILS:
+        expectedPath = Paths.TRACK_STATUS_OF_ISSUANCE;
+        break;
+    }
+    return expectedPath;
+  }
+
+  async clickAction(row: Locator, actionName: string) {
+    const action = row.getByRole("link", { name: actionName });
+    action.click();
   }
 
   // ###  Assertions ###

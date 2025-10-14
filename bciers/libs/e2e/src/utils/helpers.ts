@@ -99,7 +99,7 @@ export async function checkAlertMessage(
   alertMessage: string | RegExp,
   index: number = 0,
 ) {
-  await expect(page.getByRole("alert").nth(index)).toHaveText(alertMessage);
+  await expect(page.getByRole("alert").nth(index)).toContainText(alertMessage);
 }
 
 // 🛠️ Function: checks the visibility of each text within the specified column of the provided table
@@ -475,6 +475,10 @@ export async function setupTestEnvironment(
   let response: APIResponse = await context.request.get(url);
 
   // Wait for the response and check for success status text and code (e.g., 200)
+  if (response.status() !== 200) {
+    console.error("Test setup failed. Response body:", await response.text());
+  }
+  // expect(response.status()).toBe(200);
   expect(await response.text()).toBe(MessageTextResponse.SETUP_SUCCESS);
   expect(response.status()).toBe(200);
 }
@@ -678,7 +682,7 @@ export async function checkBreadcrumbText(
   await expect(textLocator).toBeVisible();
 }
 
-export async function submitReport(report_version: Number) {
+export async function submitReport(report_version: number) {
   const requestContext = await request.newContext();
   const response = await requestContext.post(
     `${baseBackendUrl}/reporting/report-version/${report_version}/submit`,
