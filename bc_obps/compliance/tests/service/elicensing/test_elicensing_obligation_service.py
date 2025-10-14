@@ -675,9 +675,6 @@ class TestElicensingObligationService:
         mock_get_current_reporting_year.assert_called_once()
         mock_get_obligations_for_reminders.assert_called_once_with(cp)
 
-        # Act
-        ElicensingObligationService.generate_invoices_for_current_period()
-
         # Assert
         mock_get_current_reporting_year.assert_called_once()
         mock_get_obligations_for_reminders.assert_called_once_with(cp)
