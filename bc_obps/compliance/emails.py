@@ -173,3 +173,34 @@ def send_notice_of_obligation_due_email(obligation_id: int) -> None:
     _send_email_to_operators_approved_users_or_raise(
         obligation.compliance_report_version.compliance_report.report.operator, template, email_context
     )
+
+
+def send_reminder_of_obligation_due_email(obligation_id: int) -> None:
+    """
+    Sends an email to every operator's industry user if an operation hasn't paid its obligation, reminding everyone when the obligation is due.
+
+     Args:
+        obligation_id: The id of the obligation instance for which to send notification emails.
+    """
+    from compliance.service.compliance_report_version_service import ComplianceReportVersionService
+
+    obligation = ComplianceObligation.objects.get(id=obligation_id)
+    template = EmailNotificationTemplateService.get_template_by_name('Reminder of Compliance Obligation Due')
+
+    report_version = obligation.compliance_report_version
+    report = report_version.compliance_report.report
+    report_operation = report_version.report_compliance_summary.report_version.report_operation
+    reporting_year = report.reporting_year.reporting_year
+
+    email_context = {
+        "operator_legal_name": report_operation.operator_legal_name,
+        "operation_name": report_operation.operation_name,
+        "compliance_period": reporting_year,
+        "year_due": reporting_year + 1,
+        "tonnes_of_co2": f"{ComplianceReportVersionService.calculate_outstanding_balance_tco2e(report_version):,.4f}",
+        "outstanding_balance": f"${obligation.elicensing_invoice.outstanding_balance:,.2f}",  # type: ignore[union-attr]
+    }
+
+    _send_email_to_operators_approved_users_or_raise(
+        obligation.compliance_report_version.compliance_report.report.operator, template, email_context
+    )
