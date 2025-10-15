@@ -1,3 +1,17 @@
+# [4.2.0](https://github.com/bcgov/cas-registration/compare/v4.1.0...v4.2.0) (2025-10-15)
+
+### Bug Fixes
+
+- compliance emails use operation and operator name from reporting ([c7808be](https://github.com/bcgov/cas-registration/commit/c7808bed3bb086fd2901138bf7b14334b8f2a88b))
+- drop vestigial param ([2e54cf0](https://github.com/bcgov/cas-registration/commit/2e54cf07da93b48bbaeb1cdaf43d60d3f32cacac))
+
+### Features
+
+- consider both payments and adjustments when determining final penalty accrual end date ([7a3c084](https://github.com/bcgov/cas-registration/commit/7a3c084c5beffbeae1e96fc452ac0ce40118d6d7))
+- DecreasedCreditHandler can handle all statuses except approved ([e5eab16](https://github.com/bcgov/cas-registration/commit/e5eab161fe2007ed37c5bef50821ed36b475f1fd))
+- services to send obligation due email ([c1e02b6](https://github.com/bcgov/cas-registration/commit/c1e02b679a11106fab0fa13ecd818b87e3d4e0c9))
+- update payment instructions UI with clearer language and add CleanBC logo ([f94265a](https://github.com/bcgov/cas-registration/commit/f94265a4fe5a10840e4ff287ca21bd38def6876d))
+
 # [4.1.0](https://github.com/bcgov/cas-registration/compare/v4.0.1...v4.1.0) (2025-10-01)
 
 ### Bug Fixes
