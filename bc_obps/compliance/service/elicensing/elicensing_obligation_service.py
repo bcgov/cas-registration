@@ -235,10 +235,15 @@ class ElicensingObligationService:
         Returns obligations that:
         1. Belong to the specified compliance period
         2. Haven't already been paid (outstanding balance > 0)
+        3. Have a status of unmet obligation
+        3. Don't have a void invoice
         """
         return ComplianceObligation.objects.filter(
             compliance_report_version__compliance_report__compliance_period=compliance_period,
+            compliance_report_version__status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            elicensing_invoice__isnull=False,
             elicensing_invoice__outstanding_balance__gt=0,
+            elicensing_invoice__is_void=False,
         ).select_related('compliance_report_version__compliance_report__compliance_period', 'compliance_report_version')
 
     @classmethod

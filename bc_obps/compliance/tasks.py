@@ -100,7 +100,7 @@ SCHEDULED_TASKS = [
         schedule_type="yearly",
         schedule_day_of_month=15,
         schedule_month=11,
-        schedule_hour=3,
+        schedule_hour=4,
         schedule_minute=0,
         tag="obligation_reminder",
     ),
