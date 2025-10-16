@@ -25,31 +25,36 @@ class OperationDesignatedOperatorTimelineDataAccessService:
         return operation_designated_operator_timeline
 
     @classmethod
-    def get_operation_timeline_for_user(cls, user: User) -> QuerySet[OperationDesignatedOperatorTimeline]:
+    def get_operation_timeline_for_user(
+        cls, user: User, exclude_previously_owned: bool = True
+    ) -> QuerySet[OperationDesignatedOperatorTimeline]:
         """
-        Retrieve all operation timeline records accessible by the given user, with optional annotations
-        for SFO facility ID and name.
+        Retrieve all operation timeline records accessible by the given user, optionally including previously owned operations, with optional annotations for SFO facility ID and name.
 
         Depending on the user's role, this function returns a queryset of `Operation` objects:
         - IRC users can access all registered operations.
-        - Industry users can only access operations associated with their own operator (operations that have a non-null end_date are excluded).
+        - Industry users can only access operations associated with their own operator.
 
         The queryset is annotated with the `sfo_facility_id` and `facility_name` if the
         operation type is SFO and the operation is actively designated for a facility.
 
         Args:
             user (User): The user for whom operations are being fetched.
+            exclude_previously_owned (bool): Whether or not to include operations that the user previously owned (ie, that were transferred). Defaults to exclusion.
         """
 
         facilities_subquery = (
             FacilityDesignatedOperationTimeline.objects.filter(
                 operation_id=OuterRef('operation'),
                 operation_id__type=Operation.Types.SFO,
-                end_date__isnull=True,
             )
             .only('facility__pk', 'facility__name')
             .order_by('start_date')
         )
+        if exclude_previously_owned:
+            facilities_subquery.filter(
+                end_date__isnull=True,
+            )
 
         # Subquery for sfo_facility_id (UUID) and facility_name (string)
         sfo_facility_id_subquery = facilities_subquery.values('facility__pk')[:1]
@@ -79,14 +84,16 @@ class OperationDesignatedOperatorTimelineDataAccessService:
             )
             .only(*only_fields)
         )
+        if exclude_previously_owned:
+            queryset = queryset.filter(end_date__isnull=True)
 
         if user.is_irc_user():
             # IRC users see all operations (subject to filtering that's done on the endpoint)
-            return queryset.filter(end_date__isnull=True)
+            return queryset
         else:
             # Industry users can only see operations associated with their own operator
             user_operator = UserOperatorService.get_current_user_approved_user_operator_or_raise(user)
-            return queryset.filter(operator_id=user_operator.operator_id, end_date__isnull=True)
+            return queryset.filter(operator_id=user_operator.operator_id)
 
     @classmethod
     def get_previously_owned_operations_by_operator(

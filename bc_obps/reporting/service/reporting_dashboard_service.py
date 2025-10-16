@@ -4,10 +4,13 @@ from django.db.models import OuterRef, QuerySet, Value, F, Subquery, Case, When,
 from django.db.models.functions import Concat, Coalesce
 from ninja import Query
 from registration.models.operation import Operation
+from registration.models.user_operator import UserOperator
 from reporting.models import ReportOperation
 from reporting.models.report import Report
 from reporting.models.report_version import ReportVersion
-from service.data_access_service.operation_service import OperationDataAccessService
+from service.data_access_service.operation_designated_operator_timeline_service import (
+    OperationDesignatedOperatorTimelineDataAccessService,
+)
 from service.data_access_service.user_service import UserDataAccessService
 from typing import Optional
 from reporting.schema.dashboard import (
@@ -65,44 +68,67 @@ class ReportingDashboardService:
         filters: ReportingDashboardOperationFilterSchema = Query(...),
     ) -> QuerySet[Operation]:
         """
-        Fetches all operations for the user, and annotates it with the associated report data required for the API call
+        Fetches all operations for the user, and annotates it with the associated report data required for the API call.
+        We need to also include operations that were owned by the user's operator at the end of the reporting year, even if
+        the operation has since been transferred to another operator.
         """
         user = UserDataAccessService.get_by_guid(user_guid)
+        user_operator: Optional[UserOperator] = user.user_operators.first()
+        operator_id: Optional[UUID] = user_operator.operator_id if user_operator else None
 
         # Related docs: https://docs.djangoproject.com/en/5.1/ref/models/expressions/#subquery-expressions
+        report_queryset = Report.objects.filter(
+            operation_id=OuterRef("id"),
+            reporting_year=reporting_year,
+        )
+
+        if operator_id is not None:
+            report_queryset = report_queryset.filter(operator_id=operator_id)
+
         report_subquery = (
-            Report.objects.filter(
-                operation_id=OuterRef("id"),
-                reporting_year=reporting_year,
-            )
-            .annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
+            report_queryset.annotate(latest_version_id=cls.latest_report_version_subquery.values("id"))
             .annotate(latest_version_status=cls.latest_report_version_subquery.values("status"))
             .annotate(latest_version_updated_at=cls.latest_report_version_subquery.values("updated_at"))
             .annotate(latest_version_updated_by=cls.latest_report_version_subquery.values("full_name"))
             .annotate(first_version_id=cls.first_report_version_subquery.values("id"))
         )
-        report_operation_name_subquery = ReportOperation.objects.filter(
-            report_version__report__operation_id=OuterRef("id"),
-            report_version__report__reporting_year=reporting_year,
-        ).values("operation_name")[:1]
+
+        # fetch operations that were owned during the reporting year, including both currently and previously owned operations (if an operation was transferred, the original owner still has reporting responsiblities for the last year of ownership)
+        timeline = OperationDesignatedOperatorTimelineDataAccessService.get_operation_timeline_for_user(
+            user=user, exclude_previously_owned=False
+        ).filter(
+            Q(end_date__year=reporting_year + 1) | Q(end_date__year__isnull=True, start_date__year__lte=reporting_year)
+        )
+        operations_for_reporting_year = Operation.objects.filter(
+            id__in=timeline.values_list('operation_id', flat=True),
+        )
 
         queryset = (
-            OperationDataAccessService.get_all_current_operations_for_user(user)
-            .filter(status=Operation.Statuses.REGISTERED)  # ✅ Filter operations with status "Registered"
+            operations_for_reporting_year.filter(
+                status=Operation.Statuses.REGISTERED
+            )  # ✅ Filter operations with status "Registered"
             .exclude(registration_purpose=Operation.Purposes.POTENTIAL_REPORTING_OPERATION)
             .annotate(
-                report_id=report_subquery.values("id"),
-                report_version_id=report_subquery.values("latest_version_id")[
-                    :1
-                ],  # the [:1] is necessary for the sorting and filters to work
-                first_report_version_id=report_subquery.values("first_version_id")[:1],
-                report_status=report_subquery.values("latest_version_status"),
-                report_updated_at=report_subquery.values("latest_version_updated_at"),
-                report_submitted_by=report_subquery.values("latest_version_updated_by"),
-                operation_name=Coalesce(Subquery(report_operation_name_subquery), F("name")),
+                # the [:1] is necessary for the sorting and filters to work
+                report_id=Subquery(report_subquery.values("id")[:1]),
+                report_version_id=Subquery(report_subquery.values("latest_version_id")[:1]),
+                first_report_version_id=Subquery(report_subquery.values("first_version_id")[:1]),
+                report_status=Subquery(report_subquery.values("latest_version_status")[:1]),
+                report_updated_at=Subquery(report_subquery.values("latest_version_updated_at")[:1]),
+                report_submitted_by=Subquery(report_subquery.values("latest_version_updated_by")[:1]),
+                operation_name=Coalesce(
+                    Subquery(
+                        ReportOperation.objects.filter(
+                            report_version__report__operation_id=OuterRef("id"),
+                            report_version__report__reporting_year=reporting_year,
+                        ).values("operation_name")[:1]
+                    ),
+                    F("name"),
+                ),
                 # we have different statuses on the frontend than in the db, so we need to create a custom sort key
                 report_status_sort_key=cls.report_status_sort_key,
             )
+            .distinct()  # this prevents duplication in cases where the operation has had multiple owners
         )
 
         sort_fields = cls._get_sort_fields(sort_field, sort_order)
