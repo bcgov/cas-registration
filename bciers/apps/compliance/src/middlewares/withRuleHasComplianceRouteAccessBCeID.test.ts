@@ -51,7 +51,6 @@ vi.mock("@/compliance/src/app/utils/getComplianceSummary", () => ({
 // Helpers & Setup
 // --------------------
 const DOMAIN = "https://localhost:3000";
-const BASE = `/${constants.COMPLIANCE_BASE}`;
 const defaultCrvId = 123;
 
 function makeReq(path: string): NextRequest {
@@ -75,9 +74,9 @@ const getPathname = (res?: NextResponse | null) => {
   return loc ? new URL(loc).pathname : undefined;
 };
 
-const reviewSummariesPath = `${BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}`;
+const reviewSummariesPath = "compliance/compliance-administration";
 const crvBase = `${reviewSummariesPath}/${defaultCrvId}`;
-const summariesIdBase = `${BASE}/${constants.AppRoutes.REVIEW_COMPLIANCE_SUMMARIES}/${defaultCrvId}`;
+const summariesIdBase = `${reviewSummariesPath}/${defaultCrvId}`;
 
 const pathForSeg = (seg: string) => `${crvBase}/${seg}`;
 const pathUnderSummaries = (seg: string) => `${summariesIdBase}/${seg}`;
