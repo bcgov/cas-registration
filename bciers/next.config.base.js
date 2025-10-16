@@ -30,6 +30,7 @@ const baseConfig = {
         destination: "/",
         permanent: true,
       },
+      // brianna?
       {
         source: "/compliance-administration",
         destination: "/compliance-administration/compliance-summaries",
