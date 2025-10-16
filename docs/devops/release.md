@@ -23,8 +23,8 @@ When you're ready to make a release to test and/or prod, apply the following ste
 
 1. If the dag is not available, this can be done manually:
 
-   1. in your .env, remove/comment out CHES variables (they should automatically be removed by the script but better safe than sorry) and add prod variables (see 1password)
-   1. `poetry run python manage.py check_migrations_with_prod_data --pod-name {pod_name}` (replace {pod_name} with the name of the production Postgres pod (not the leader node)).
+   1. in your .env, remove/comment out CHES variables (they should automatically be removed by the script but better safe than sorry)
+   1. `poetry run python manage.py check_migrations_with_prod_data --pod-name {pod_name}` (replace {pod_name} with the name of a production Postgres follower pod (if you click into the pod, there will be a label that says `postgres-operator.crunchydata.com/role=replica`)).
       If there are any problems with the migrations, create a branch, fix, and merge the fix before continuing.
 
 1. create a `chore/release` branch and create the upstream
@@ -33,7 +33,7 @@ When you're ready to make a release to test and/or prod, apply the following ste
    - Create empty migration files for each django app based on the release version
    - bump the version number
    - generate a change log
-1. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, common, RLS, and task-scheduler)
+1. create a pull request and confirm all the migrations have been created (at the time of writing, one for each of registration, reporting, compliance, common, RLS, and task-scheduler)
 1. once the pull request is approved, if you disabled merging to `develop`, temporarily re-enable merging so you can merge the release PR, and then disable merging again
 1. go to the shipit dev environment and keep an eye on the required checks on the merge commit (note: check-migrations will fail until https://github.com/bcgov/cas-registration/issues/3590 is completed). Once the checks pass, shipit will automatically deploy the release commit to the dev environment once CI passes.
 1. update your local develop branch and fast-forward the `main` branch using:
