@@ -24,7 +24,8 @@ When you're ready to make a release to test and/or prod, apply the following ste
 1. If the dag is not available, this can be done manually:
 
    1. in your .env, remove/comment out CHES variables (they should automatically be removed by the script but better safe than sorry)
-   1. `poetry run python manage.py check_migrations_with_prod_data --pod-name {pod_name}` (replace {pod_name} with the name of a production Postgres follower pod (if you click into the pod, there will be a label that says `postgres-operator.crunchydata.com/role=replica`)).
+   1. login to openshift using the command line ([openshift docs](https://docs.redhat.com/en/documentation/openshift_container_platform/4.13/html/cli_tools/openshift-cli-oc))
+   1. `poetry run python manage.py check_migrations_with_prod_data --pod-name {pod_name}` (replace {pod_name} with the name of a production Postgres follower pod (in openshift, if you click into the pod, there will be a label that says `postgres-operator.crunchydata.com/role=replica`)).
       If there are any problems with the migrations, create a branch, fix, and merge the fix before continuing.
 
 1. create a `chore/release` branch and create the upstream
@@ -48,7 +49,8 @@ This will put the release commit onto the main branch, which is connected to the
 
 1. go to the shipit test environment and keep an eye on the required checks. Once they pass, you can click the `Deploy` button.
 1. once the deploy is complete (the logs will show `Completed Successfully`, usually takes up to 8 minutes), let the team know the release is available in test. Optionally end the merge halt and unlock the develop branch at this point.
-1. once a PO is ready to release to prod, they will typically click the `Deploy` button themselves.
 1. tag github tickets with the release version if applicable (see the team_release_process.md for more details)
+1. update the status of the tickets on the board to `UAT In Test`
+1. once a PO is ready to release to prod, they will typically click the `Deploy` button themselves.
 
 **Do not rebase release PRs**. If a release PR falls behind the develop branch, a new PR will need to be created. `release-it` relies on tags to make comparisons from one release to another. Rebasing makes the tag created during the release process unreachable by [git describe](https://git-scm.com/docs/git-describe), which is what `release-it` uses to determine the parent tag.
