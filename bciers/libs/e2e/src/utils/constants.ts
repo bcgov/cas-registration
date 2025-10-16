@@ -1,6 +1,7 @@
 import { AppRoute, UserRole } from "@bciers/e2e/utils/enums";
 
-export const baseUrlSetup = "http://localhost:8000/api/registration/test-setup";
+export const baseBackendUrl = "http://localhost:8000/api";
+export const baseUrlSetup = `${baseBackendUrl}/registration/test-setup`;
 
 const headersOperationsCAS = [
   "BC GHG ID",

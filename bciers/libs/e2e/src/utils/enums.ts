@@ -61,6 +61,11 @@ export enum AppRoute {
   OPERATORS = "dashboard/operators",
   PROFILE = "dashboard/profile",
   USERS = "dashboard/users",
+
+  //COMPLIANCE
+  COMPLIANCE_SUMMARIES = "compliance/compliance-summaries",
+  REVIEW_EARNED_CREDITS_REPORT = "review-compliance-earned-credits-report",
+  REQUEST_ISSUANCE_OF_EARNED_CREDITS = "request-issuance-of-earned-credits",
 }
 
 // 👋 playwright ID selectors targeting an HTML element
