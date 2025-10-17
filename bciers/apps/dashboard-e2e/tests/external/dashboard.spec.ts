@@ -1,12 +1,18 @@
+import { expect } from "@playwright/test";
 import { setupBeforeAllTest } from "@bciers/e2e/setupBeforeAll";
 import { UserRole } from "@bciers/e2e/utils/enums";
 import {
   analyzeAccessibility,
   takeStabilizedScreenshot,
+  linkIsVisible,
 } from "@bciers/e2e/utils/helpers";
 import { DashboardPOM } from "@/dashboard-e2e/poms/dashboard";
 import { upsertUserOperatorRecord } from "@bciers/e2e/utils/queries";
-import { linkIsVisible } from "@bciers/e2e/utils/helpers";
+import {
+  DashboardTiles,
+  ExternalDashboardLinks,
+  ExternalDashboardTiles,
+} from "@/dashboard-e2e/utils/enums";
 
 const happoPlaywright = require("happo-playwright");
 
@@ -42,6 +48,39 @@ userRoles.forEach((role) => {
         variant: "default",
       });
       await analyzeAccessibility(page);
+
+      for (const linkToCheck of Object.values(ExternalDashboardLinks)) {
+        if (role === "INDUSTRY_USER_ADMIN") {
+          if (linkToCheck === ExternalDashboardLinks.SELECT_OPERATOR)
+            await linkIsVisible(page, linkToCheck, false, true);
+          else await linkIsVisible(page, linkToCheck, true, true);
+        } else if (role === "INDUSTRY_USER_REPORTER") {
+          if (
+            linkToCheck === ExternalDashboardLinks.USERS_AND_ACCESS_REQUESTS ||
+            linkToCheck === ExternalDashboardLinks.SELECT_OPERATOR
+          )
+            await linkIsVisible(page, linkToCheck, false, true);
+          else await linkIsVisible(page, linkToCheck, true, true);
+        } else {
+          if (
+            linkToCheck === ExternalDashboardLinks.SELECT_OPERATOR ||
+            linkToCheck === ExternalDashboardLinks.REPORT_PROBLEM
+          )
+            await linkIsVisible(page, linkToCheck, true, true);
+          else await linkIsVisible(page, linkToCheck, false, true);
+        }
+      }
+      for (const tile of ExternalDashboardTiles) {
+        const tileText = page.getByRole("heading", { name: tile, exact: true });
+        if (role === "INDUSTRY_USER") {
+          if (
+            tile === DashboardTiles.ADMINISTRATION ||
+            tile === DashboardTiles.REPORT_A_PROBLEM
+          ) {
+            await expect(tileText).toBeVisible();
+          } else await expect(tileText).toBeHidden();
+        } else await expect(tileText).toBeVisible();
+      }
     });
   });
 });

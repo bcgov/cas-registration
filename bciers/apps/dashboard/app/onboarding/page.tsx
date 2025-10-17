@@ -79,7 +79,7 @@ export default function Page() {
       >
         <section>
           <h1 className={`${headerStyle} text-3xl`}>
-            Welcome to the B.C. Industrial Emissions Reporting System
+            Chesca Welcome to the B.C. Industrial Emissions Reporting System
           </h1>
           This web application is intended for use by:
           <ol>
