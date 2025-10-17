@@ -5,8 +5,21 @@
  */
 import { Locator, Page, expect } from "@playwright/test";
 // ☰ Enums
-import { AppRoute } from "@/administration-e2e/utils/enums";
-import { stabilizeGrid } from "@bciers/e2e/utils/helpers";
+import {
+  AppRoute,
+  ChangeRegistrationPurposeE2EValues,
+} from "@/administration-e2e/utils/enums";
+import {
+  assertFieldVisibility,
+  searchGridByUniqueValue,
+  stabilizeGrid,
+} from "@bciers/e2e/utils/helpers";
+import { RegistrationPurposes } from "@/administration-e2e/utils/enums";
+import {
+  OperationFields,
+  RegulatedOperationFields,
+  ReportingOperationFields,
+} from "@/administration-e2e/utils/enums";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
 dotenv.config({ path: "./e2e/.env.local" });
@@ -15,6 +28,13 @@ export class OperationPOM {
   readonly page: Page;
 
   readonly url: string = process.env.E2E_BASEURL + AppRoute.DASHBOARD;
+
+  readonly operationsUrl: string =
+    process.env.E2E_BASEURL + AppRoute.OPERATIONS;
+
+  readonly registrationPurposeXPath: string = `//*[@id="root_section3_registration_purpose_select"]`;
+
+  readonly operationTypeXPath: string = `//*[@id="root_section1_type_select"]`;
 
   constructor(page: Page) {
     this.page = page;
@@ -26,6 +46,7 @@ export class OperationPOM {
     await this.page.goto(this.url);
     const operationsLink = await this.page.getByRole("link", {
       name: "Operations",
+      exact: true,
     });
     await operationsLink.click();
   }
@@ -46,6 +67,20 @@ export class OperationPOM {
     return row;
   }
 
+  async fetchValidFields(registrationPurpose: string) {
+    switch (registrationPurpose) {
+      case RegistrationPurposes.NEW_ENTRANT_OPERATION:
+      case RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION:
+        return Object.values(OperationFields);
+      case RegistrationPurposes.REPORTING_OPERATION:
+        return Object.values(ReportingOperationFields);
+      case RegistrationPurposes.OBPS_REGULATED_OPERATION:
+        return Object.values(RegulatedOperationFields);
+      default:
+        return [];
+    }
+  }
+
   async goToOperation(row: Locator) {
     const viewOperation = await row.getByRole("link", {
       name: /view operation/i,
@@ -54,5 +89,30 @@ export class OperationPOM {
     await viewOperation.click();
   }
 
+  async findRowByBcghgId(bcghgid) {
+    const row = await searchGridByUniqueValue(
+      this.page,
+      ChangeRegistrationPurposeE2EValues.BCGHG_ID_FIELD_NAME,
+      bcghgid,
+    );
+    await stabilizeGrid(this.page, 1);
+
+    return row;
+  }
+
   // ###  Assertions ###
+  /**
+   * Check if the correct fields are visible for the given registration purpose.
+   * Fields should be hidden only for ELECTRICITY_IMPORT_OPERATION.
+   */
+  async assertCorrectFieldsAreVisible(registrationPurpose: string) {
+    const fields = await this.fetchValidFields(registrationPurpose);
+    if (
+      registrationPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
+    ) {
+      assertFieldVisibility(this.page, fields, false);
+    } else {
+      assertFieldVisibility(this.page, fields, true);
+    }
+  }
 }

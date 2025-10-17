@@ -16,6 +16,7 @@ import {
   MessageTextResponse,
 } from "@bciers/e2e/utils/enums";
 import AxeBuilder from "@axe-core/playwright";
+import path from "path";
 
 // 🛠️ Function: analyze the accessibility of the page. Use the description argument to indicate what screen/form/etc. is being tested.
 export async function analyzeAccessibility(
@@ -34,15 +35,6 @@ export async function analyzeAccessibility(
   }
 
   expect(accessibilityScanResults.violations).toEqual([]);
-}
-
-// Helpers for filling forms
-export async function addPdf(page: Page, index: number = 0) {
-  // Pass an index if there are multiple file inputs on the page
-  const inputs = await page.locator('input[type="file"]').all();
-  const input = inputs[index];
-  await input.setInputFiles("./e2e/assets/test.pdf");
-  expect(page.getByText("test.pdf")).toBeVisible();
 }
 
 export async function clickButton(page: Page, buttonName: string | RegExp) {
@@ -653,13 +645,20 @@ export async function waitForSpinner(row: Locator) {
 export async function selectItemFromMuiSelect(
   page: Page,
   choice: string | RegExp,
+  xPath?: string,
+  exactChoice: boolean = false,
 ) {
-  const roleCell = page.locator(".MuiFormControl-root");
+  let roleCell;
+  if (xPath) roleCell = page.locator(xPath);
+  else roleCell = page.locator(".MuiFormControl-root");
   await expect(roleCell).toBeVisible();
   await roleCell.click();
   const optionsContainer = await page.locator(".MuiList-root");
   await expect(optionsContainer).toBeVisible();
-  const option = optionsContainer.getByRole("option", { name: choice });
+  const option = optionsContainer.getByRole("option", {
+    name: choice,
+    exact: exactChoice,
+  });
   await expect(option).toBeVisible();
   await option.click();
 }
@@ -677,4 +676,57 @@ export async function checkBreadcrumbText(
   const breadcrumbLocator = page.locator('nav[aria-label="breadcrumbs"]');
   const textLocator = breadcrumbLocator.getByText(expectedText);
   await expect(textLocator).toBeVisible();
+}
+
+export async function searchGridByUniqueValue(
+  page: Page,
+  field: string | RegExp,
+  value: string,
+) {
+  await page.getByLabel(field).getByPlaceholder("Search").fill(value);
+  const row = page.getByRole("row").filter({ hasText: value });
+  await expect(row.first()).toBeVisible();
+  return row;
+}
+
+export async function uploadFile(page: Page, index: number) {
+  // Our file widget has been customized, so the upload button isn't attached to the input. We select by index to get around this.
+  const fileChooserPromise = page.waitForEvent("filechooser");
+
+  const uploadButton = page
+    .getByRole("button", { name: /upload+/i })
+    .nth(index);
+
+  await uploadButton.click();
+
+  const fileChooser = await fileChooserPromise;
+  await fileChooser.setFiles(path.join(__dirname, "../docs/test.pdf"));
+}
+
+export async function assertConfirmationModal(
+  page: Page,
+  header: string | RegExp,
+  message: string | RegExp,
+  button: string | RegExp,
+) {
+  // assert visibility of header
+  await expect(page.getByText(header)).toBeVisible();
+
+  // assert visibility of message
+  await expect(page.getByText(message)).toBeVisible();
+
+  // assert visibility of button
+  await expect(page.getByRole("button", { name: button })).toBeVisible();
+}
+
+export async function assertFieldVisibility(
+  page: Page,
+  fields: string[],
+  visible: boolean,
+) {
+  for (const field of fields) {
+    await expect(page.getByText(field)).toBeVisible({
+      visible: visible,
+    });
+  }
 }

@@ -15,7 +15,7 @@ import {
 } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-import path from "path";
+import { uploadFile } from "@bciers/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
 export class RegistrationPOM {
@@ -41,20 +41,6 @@ export class RegistrationPOM {
 
   async clickSaveAndContinue() {
     await this.saveAndContinueButton.click();
-  }
-
-  async uploadFile(index) {
-    // Our file widget has been customized, so the upload button isn't attached to the input. We select by index to get around this.
-    const fileChooserPromise = this.page.waitForEvent("filechooser");
-
-    const uploadButton = this.page
-      .getByRole("button", { name: /upload+/i })
-      .nth(index);
-
-    await uploadButton.click();
-
-    const fileChooser = await fileChooserPromise;
-    await fileChooser.setFiles(path.join(__dirname, "../docs/test.pdf"));
   }
 
   // Registration-specific form-filling functions
@@ -85,8 +71,8 @@ export class RegistrationPOM {
       /primary naics+/i,
       "212114 - Bituminous coal mining",
     );
-    await this.uploadFile(0); // process flow diagram
-    await this.uploadFile(1); // boundary map
+    await uploadFile(this.page, 0); // process flow diagram
+    await uploadFile(this.page, 1); // boundary map
   }
 
   async fillExistingOperationInformation(
@@ -126,8 +112,8 @@ export class RegistrationPOM {
     );
 
     // files cannot be included in mock data, so even though a real existing operation would have them uploaded already, we upload in the e2e tests
-    await this.uploadFile(0); // process flow diagram
-    await this.uploadFile(1); // boundary map
+    await uploadFile(this.page, 0); // process flow diagram
+    await uploadFile(this.page, 1); // boundary map
   }
 
   async fillSfoFacilityInformation() {
@@ -146,7 +132,7 @@ export class RegistrationPOM {
   }
 
   async fillNewEntrantInformation() {
-    await this.uploadFile(0); // new entrant application
+    await uploadFile(this.page, 0); // new entrant application
   }
 
   async fillNewOperationRepresentative() {

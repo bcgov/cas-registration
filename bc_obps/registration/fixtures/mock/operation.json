@@ -241,11 +241,12 @@
     "fields": {
       "operator": "4242ea9d-b917-4129-93c2-db00b7451051",
       "submission_date": "2024-01-22T15:27:00.000Z",
-      "name": "Bojangles EIO - Draft - name from admin",
+      "name": "Bojangles EIO - Registered - name from admin",
       "type": "Electricity Import Operation",
       "naics_code": 21,
-      "status": "Draft",
-      "registration_purpose": "Electricity Import Operation"
+      "status": "Registered",
+      "registration_purpose": "Electricity Import Operation",
+      "contacts": [4]
     }
   },
   {
