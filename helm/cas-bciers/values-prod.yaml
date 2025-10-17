@@ -153,6 +153,9 @@ download-migration-test-dags:
 download-database-reset-dag:
   enabled: false
 
+run-reset-data-dag-on-upgrade:
+  enabled: false
+
 cas-logging-sidecar:
   host: ~
   index: "cas-bciers-prod-logs"

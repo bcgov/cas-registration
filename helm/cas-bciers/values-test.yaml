@@ -128,6 +128,10 @@ download-database-reset-dag:
   enabled: true
   airflowEndpoint: https://cas-airflow-test.apps.silver.devops.gov.bc.ca
 
+run-reset-data-dag-on-upgrade:
+  enabled: true
+  airflowEndpoint: https://cas-airflow-test.apps.silver.devops.gov.bc.ca
+
 cas-logging-sidecar:
   host: ~
   index: "cas-bciers-test-logs"

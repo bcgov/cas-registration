@@ -241,5 +241,13 @@ download-database-reset-dag:
   helm:
     hook: "pre-install,pre-upgrade"
 
+run-reset-data-dag-on-upgrade:
+  enabled: false
+  airflowEndpoint: ~
+  dagId: bc_obps_reset_data
+  helm:
+    hook: "pre-upgrade"
+    hook-weight: "10"
+
 sentry:
   traceSampleRate: 0.1
