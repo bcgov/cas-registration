@@ -31,7 +31,9 @@ const test = setupBeforeEachTest(UserRole.INDUSTRY_USER_ADMIN);
 
 test.describe.configure({ mode: "serial" });
 test.describe("Test changing registration purpose", () => {
-  test("OBPS Regulated Operation to Reporting Operation", async ({ page }) => {
+  test("Changes registration purpose from OBPS Regulated Operation to Reporting Operation", async ({
+    page,
+  }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
     await operationPage.route();
@@ -115,7 +117,9 @@ test.describe("Test changing registration purpose", () => {
     });
   });
 
-  test("OBPS Regulated Operation to EIO", async ({ page }) => {
+  test("Attempts to change registration purpose from OBPS Regulated Operation to EIO", async ({
+    page,
+  }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
     await operationPage.route();
@@ -195,7 +199,9 @@ test.describe("Test changing registration purpose", () => {
     });
   });
 
-  test("Reporting Operation to OBPS Regulated Operation", async ({ page }) => {
+  test("Changes registration purpose from Reporting Operation to OBPS Regulated Operation", async ({
+    page,
+  }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
     await operationPage.route();
@@ -275,7 +281,9 @@ test.describe("Test changing registration purpose", () => {
     });
   });
 
-  test("EIO to Regulated Operation", async ({ page }) => {
+  test("Attempts to change registration purpose from EIO to Regulated Operation", async ({
+    page,
+  }) => {
     // 🛸 Navigate to operation page
     const operationPage = new OperationPOM(page);
     await operationPage.route();

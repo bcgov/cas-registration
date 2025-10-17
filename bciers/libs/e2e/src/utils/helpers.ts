@@ -37,15 +37,6 @@ export async function analyzeAccessibility(
   expect(accessibilityScanResults.violations).toEqual([]);
 }
 
-// Helpers for filling forms
-export async function addPdf(page: Page, index: number = 0) {
-  // Pass an index if there are multiple file inputs on the page
-  const inputs = await page.locator('input[type="file"]').all();
-  const input = inputs[index];
-  await input.setInputFiles("./e2e/assets/test.pdf");
-  expect(page.getByText("test.pdf")).toBeVisible();
-}
-
 export async function clickButton(page: Page, buttonName: string | RegExp) {
   page
     .getByRole("button", {
@@ -726,4 +717,16 @@ export async function assertConfirmationModal(
 
   // assert visibility of button
   await expect(page.getByRole("button", { name: button })).toBeVisible();
+}
+
+export async function assertFieldVisibility(
+  page: Page,
+  fields: string[],
+  visible: boolean,
+) {
+  for (const field of fields) {
+    await expect(page.getByText(field)).toBeVisible({
+      visible: visible,
+    });
+  }
 }

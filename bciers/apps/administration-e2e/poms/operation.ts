@@ -10,6 +10,7 @@ import {
   ChangeRegistrationPurposeE2EValues,
 } from "@/administration-e2e/utils/enums";
 import {
+  assertFieldVisibility,
   searchGridByUniqueValue,
   stabilizeGrid,
 } from "@bciers/e2e/utils/helpers";
@@ -80,14 +81,6 @@ export class OperationPOM {
     }
   }
 
-  async assertFieldVisibility(fields: string[], visible: boolean) {
-    for (const field of fields) {
-      await expect(this.page.getByText(field)).toBeVisible({
-        visible: visible,
-      });
-    }
-  }
-
   async goToOperation(row: Locator) {
     const viewOperation = await row.getByRole("link", {
       name: /view operation/i,
@@ -117,9 +110,9 @@ export class OperationPOM {
     if (
       registrationPurpose === RegistrationPurposes.ELECTRICITY_IMPORT_OPERATION
     ) {
-      this.assertFieldVisibility(fields, false);
+      assertFieldVisibility(this.page, fields, false);
     } else {
-      this.assertFieldVisibility(fields, true);
+      assertFieldVisibility(this.page, fields, true);
     }
   }
 }

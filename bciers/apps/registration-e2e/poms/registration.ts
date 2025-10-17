@@ -15,7 +15,6 @@ import {
 } from "@bciers/e2e/utils/helpers";
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
-// import path from "path";
 import { uploadFile } from "@bciers/e2e/utils/helpers";
 dotenv.config({ path: "./e2e/.env.local" });
 
