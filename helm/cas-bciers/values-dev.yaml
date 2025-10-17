@@ -124,6 +124,10 @@ download-dags:
 download-migration-test-dags:
   airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
 
+download-database-reset-dag:
+  enabled: true
+  airflowEndpoint: https://cas-airflow-dev.apps.silver.devops.gov.bc.ca
+
 cas-logging-sidecar:
   host: ~
   index: "cas-bciers-dev-logs"

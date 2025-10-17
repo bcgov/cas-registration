@@ -1,0 +1,71 @@
+{{- if not (hasSuffix "-prod" .Release.Namespace)}}
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+metadata:
+  name: reset-database
+  labels: {{- include "cas-bciers.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  suspend: true # This cron job is intended to be triggered manually by Airflow
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      parallelism: 1
+      completions: 1
+      template:
+        metadata:
+          name: {{ template "cas-bciers.fullname" . }}-reset-database
+          labels:
+{{- include "cas-bciers.labels" . | nindent 12 }}
+            component: job-with-database-access
+        spec:
+          activeDeadlineSeconds: 180
+          containers:
+            - name: {{ template "cas-bciers.fullname" . }}-reset-database
+              image: postgres:16.6-alpine
+              env:
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      key: user
+                      name: cas-obps-postgres-pguser-postgres
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: password
+                      name: cas-obps-postgres-pguser-postgres
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: dbname
+                      name: cas-obps-postgres-pguser-postgres
+                - name: PGPORT
+                  valueFrom:
+                    secretKeyRef:
+                      key: port
+                      name: cas-obps-postgres-pguser-postgres
+                - name: PGHOST
+                  valueFrom:
+                    secretKeyRef:
+                      key: host
+                      name: cas-obps-postgres-pguser-postgres
+                - name: APP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: user
+                      name: cas-obps-postgres-pguser-registration
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  psql -c "drop schema if exists public cascade;";
+                  psql -c "create schema public;";
+                  psql -c "grant all privileges on schema public to $(APP_USER) with grant option;";
+                  psql -c "drop schema if exists erc cascade;";
+                  psql -c "drop schema if exists erc_history cascade;";
+                  psql -c "drop schema if exists common cascade;";
+          restartPolicy: Never
+{{ end }}
