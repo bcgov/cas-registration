@@ -25,6 +25,15 @@ export const ExternalDashboardTiles: ReadonlyArray<DashboardTiles> = [
   DashboardTiles.REPORT_A_PROBLEM,
 ];
 
+export enum AdministrationTileText {
+  SELECT_OPERATOR = "Select an Operator",
+  MY_OPERATOR = "My Operator",
+  OPERATIONS = "Operations",
+  TRANSFER = "Report transfer of operation or facility",
+  CONTACTS = "Contacts",
+  ACCESS_REQUEST = "Users and Access Requests",
+}
+
 export enum ExternalDashboardLinks {
   SELECT_OPERATOR = "Select an Operator",
   MY_OPERATOR = "My Operator",
