@@ -12,8 +12,8 @@ export default function Page() {
       <div style={{ fontSize: "16px" }}>
         <p>Your access request was declined.</p>
         <p>
-          If you believe this is an error and you should be granted access,
-          please contact an administrator.
+          Chesca If you believe this is an error and you should be granted
+          access, please contact an administrator.
         </p>
       </div>
     </section>

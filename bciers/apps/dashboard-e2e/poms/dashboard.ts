@@ -9,6 +9,7 @@ import { AppRoute } from "@/administration-e2e/utils/enums";
 
 // ℹ️ Environment variables
 import * as dotenv from "dotenv";
+import { linkIsVisible } from "@bciers/e2e/utils/helpers";
 
 dotenv.config({ path: "./e2e/.env.local" });
 
@@ -41,26 +42,9 @@ export class DashboardPOM {
     await this.page.goto(process.env.E2E_BASEURL + url);
   }
 
-  async linkIsVisible(tileText: string, visible: boolean) {
-    const link = await this.page.getByRole("link", { name: tileText }).first();
-    if (visible) {
-      await expect(link).toBeVisible();
-    } else {
-      await expect(link).toBeHidden();
-    }
-  }
-
   async assertMailToLinkIsVisible(tile: string, link: string) {
     const mailToLink = this.page.locator(`a[href^="${link}"]`).first();
-    await this.linkIsVisible(tile, true);
+    await linkIsVisible(this.page, tile, true);
     await expect(mailToLink).toHaveAttribute("href", `${link}`);
-  }
-
-  async assertSelectOperatorIsVisible(tileText: string, pendingUser: boolean) {
-    if (pendingUser) {
-      await this.linkIsVisible(tileText, true);
-    } else {
-      await this.linkIsVisible(tileText, false);
-    }
   }
 }
