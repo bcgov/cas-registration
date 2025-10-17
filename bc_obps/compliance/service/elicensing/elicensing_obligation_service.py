@@ -226,3 +226,54 @@ class ElicensingObligationService:
                 'compliance_report_version__compliance_report__compliance_period', 'compliance_report_version'
             )
         )
+
+    @classmethod
+    def _get_obligations_for_reminders(cls, compliance_period: CompliancePeriod) -> QuerySet[ComplianceObligation]:
+        """
+        Get obligations that need reminders for the given compliance period.
+
+        Returns obligations that:
+        1. Belong to the specified compliance period
+        2. Haven't already been paid (outstanding balance > 0)
+        3. Have a status of unmet obligation
+        3. Don't have a void invoice
+        """
+        return ComplianceObligation.objects.filter(
+            compliance_report_version__compliance_report__compliance_period=compliance_period,
+            compliance_report_version__status=ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET,
+            elicensing_invoice__isnull=False,
+            elicensing_invoice__outstanding_balance__gt=0,
+            elicensing_invoice__is_void=False,
+        ).select_related('compliance_report_version__compliance_report__compliance_period', 'compliance_report_version')
+
+    @classmethod
+    def send_reminders_for_current_period(cls) -> None:
+        """
+        Sends reminders for obligations in the current compliance period
+        that haven't been paid.
+
+        This method:
+        1. Gets the current reporting year
+        2. Finds the corresponding compliance period
+        3. Sends a reminder email for all obligations for that period that have an outstanding balance > 0
+        """
+
+        from service.reporting_year_service import ReportingYearService
+        from compliance.tasks import retryable_send_reminder_of_obligation_due_email
+
+        current_reporting_year = ReportingYearService.get_current_reporting_year()
+
+        try:
+            compliance_period = CompliancePeriod.objects.get(reporting_year=current_reporting_year)
+        except CompliancePeriod.DoesNotExist:
+            logger.warning(f"No compliance period found for reporting year {current_reporting_year.reporting_year}")
+            return
+
+        obligations = cls._get_obligations_for_reminders(compliance_period)
+
+        if not obligations.exists():
+            logger.info("No obligations found that need reminders")
+            return
+
+        for obligation in obligations:
+            retryable_send_reminder_of_obligation_due_email.execute(obligation.id)

@@ -7,6 +7,7 @@ from compliance.emails import (
     send_notice_of_no_obligation_no_credits_generated_email,
     send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
+    send_reminder_of_obligation_due_email,
 )
 from task_scheduler.service.retry_task.factories import create_retryable
 from task_scheduler.service.scheduled_task.dataclass import ScheduledTaskConfig
@@ -59,6 +60,12 @@ retryable_send_notice_of_obligation_due_email = create_retryable(
     max_retries=5,
     retry_delay_minutes=10,
 )
+retryable_send_reminder_of_obligation_due_email = create_retryable(
+    func=send_reminder_of_obligation_due_email,
+    tag="obligation_reminder_email_notifications",
+    max_retries=5,
+    retry_delay_minutes=10,
+)
 
 ###################
 # Scheduled tasks #
@@ -87,5 +94,14 @@ SCHEDULED_TASKS = [
         schedule_hour=3,
         schedule_minute=0,
         tag="invoice_generation",
+    ),
+    ScheduledTaskConfig(
+        func=ElicensingObligationService.send_reminders_for_current_period,
+        schedule_type="yearly",
+        schedule_day_of_month=15,
+        schedule_month=11,
+        schedule_hour=4,
+        schedule_minute=0,
+        tag="obligation_reminder",
     ),
 ]
