@@ -704,17 +704,15 @@ class NoChangeHandler:
 class IncreasedCreditHandler:
     @staticmethod
     def can_handle(new_summary: ReportComplianceSummary, previous_summary: ReportComplianceSummary) -> bool:
-        original_compliance_report_version = ComplianceReportVersion.objects.get(
-            compliance_report=ComplianceReportVersion.objects.get(
-                report_compliance_summary=previous_summary
-            ).compliance_report,
-            is_supplementary=False,
+        previous_compliance_report_version = ComplianceReportVersion.objects.get(
+            report_compliance_summary=previous_summary
         )
-        # Get the original earned credit record
-        original_earned_credit_record = ComplianceEarnedCredit.objects.filter(
-            compliance_report_version=original_compliance_report_version
+        # Get the previous earned credit record
+        previous_earned_credit_record = ComplianceEarnedCredit.objects.filter(
+            compliance_report_version=previous_compliance_report_version
         ).first()
-        if not original_earned_credit_record:
+
+        if not previous_earned_credit_record:
             return False
         # Return True if excess emissions increased from previous version
         return ZERO_DECIMAL < previous_summary.credited_emissions < new_summary.credited_emissions
@@ -733,9 +731,13 @@ class IncreasedCreditHandler:
                 compliance_report, previous_summary
             )
         )
-        credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
+        # Get the previous earned_credit record
+        previous_earned_credit = ComplianceEarnedCredit.objects.get(
+            compliance_report_version=previous_compliance_version
+        )
 
-        # Create a compliance_report_version record with the 'earned credits' status
+        credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
+        # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
@@ -745,10 +747,14 @@ class IncreasedCreditHandler:
             previous_version=previous_compliance_version,
         )
 
-        # Get the previous earned_credit record
-        previous_earned_credit = ComplianceEarnedCredit.objects.get(
-            compliance_report_version=previous_compliance_version
-        )
+        if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.CREDITS_NOT_ISSUED:
+            previous_earned_credit.earned_credits_amount = (
+                previous_earned_credit.earned_credits_amount + credited_emission_delta
+            )
+            previous_earned_credit.save()
+            compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.NO_OBLIGATION_OR_EARNED_CREDITS
+            compliance_report_version.save()
+
         if previous_earned_credit.issuance_status == ComplianceEarnedCredit.IssuanceStatus.APPROVED:
             ComplianceEarnedCreditsService.create_earned_credits_record(
                 compliance_report_version, credited_emission_delta
@@ -883,7 +889,6 @@ class SupplementaryVersionService:
             .order_by('-id')
             .first()
         )  # Get the most recent one that's older
-
         if not previous_version:
             logger.error(f"No previous version found for report version {report_version.id}")
             return None  # No previous version exists
