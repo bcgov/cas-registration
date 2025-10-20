@@ -4,7 +4,7 @@ import { generateMetadata } from "@bciers/components/layout/RootLayout";
 import { DataGridSearchParams } from "@/compliance/src/app/types";
 import ElicensingInvoicesPage from "@/compliance/src/app/components/elicensing-invoices/ElicensingInvoicesPage";
 
-const title = "Compliance Administration";
+const title = "Compliance Invoices";
 export const metadata = generateMetadata(title);
 
 function InvoicesWithNavigation({
