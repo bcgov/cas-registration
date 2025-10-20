@@ -737,7 +737,7 @@ class IncreasedCreditHandler:
         )
 
         credited_emission_delta = int(new_summary.credited_emissions - previous_summary.credited_emissions)
-        # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not issued)
+        # Create a compliance_report_version record with the 'earned credits' status (status will change if credits not requested)
         compliance_report_version = ComplianceReportVersion.objects.create(
             compliance_report=compliance_report,
             report_compliance_summary=new_summary,
