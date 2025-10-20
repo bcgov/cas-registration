@@ -197,3 +197,19 @@ def send_reminder_of_obligation_due_email(obligation_id: int) -> None:
     _send_email_to_operators_approved_users_or_raise(
         obligation.compliance_report_version.compliance_report.report.operator, template, email_context
     )
+
+
+def send_notice_of_obligation_met_email(obligation_id: int) -> None:
+    """
+    Sends an email to every operator's industry user when their obligation is met.
+
+     Args:
+        compliance_report_version_id: The id of the compliance_report_version instance for which to send notification emails.
+    """
+    obligation = ComplianceObligation.objects.get(id=obligation_id)
+    template = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Met')
+    email_context = _prepare_obligation_context(obligation)
+
+    _send_email_to_operators_approved_users_or_raise(
+        obligation.compliance_report_version.compliance_report.report.operator, template, email_context
+    )
