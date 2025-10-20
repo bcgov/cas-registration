@@ -132,6 +132,7 @@ def mock_find_newest_unpaid_anchor():
         yield mock
 
 
+@pytest.mark.django_db
 class BaseSupplementaryVersionServiceTest:
     def setup_method(self):
         operator = baker.make_recipe('registration.tests.utils.operator')
