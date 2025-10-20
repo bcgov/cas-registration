@@ -15,6 +15,7 @@ class ComplianceReportVersion(TimeStampedModel):
         EARNED_CREDITS = "Earned credits"
         NO_OBLIGATION_OR_EARNED_CREDITS = "No obligation or earned credits"
         SUPERCEDED = "Superceded"
+        REQUIRES_MANUAL_HANDLING = "Requires manual handling"
 
     compliance_report = models.ForeignKey(
         ComplianceReport,
@@ -62,6 +63,11 @@ class ComplianceReportVersion(TimeStampedModel):
         blank=True,
         related_name="subsequent_versions",
         db_comment="Reference to the previous version of this compliance report version.",
+    )
+
+    requires_manual_handling = models.BooleanField(
+        default=False,
+        db_comment="Boolean value identifies whether this record requires manual handling outside of the app",
     )
 
     class Meta(TimeStampedModel.Meta):
