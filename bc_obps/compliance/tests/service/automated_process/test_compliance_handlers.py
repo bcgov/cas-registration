@@ -201,15 +201,26 @@ class TestObligationPaidHandler:
         assert result is False
 
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
-    def test_handle_updates_compliance_status_and_creates_penalty_when_overdue(self, mock_create_penalty):
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_updates_compliance_status_and_creates_penalty_when_overdue(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+    ):
         self.handler.handle(self.invoice)
 
         self.compliance_report_version.refresh_from_db()
         assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         mock_create_penalty.assert_called_once_with(self.obligation)
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
     @patch('compliance.service.penalty_calculation_service.PenaltyCalculationService.create_penalty')
-    def test_handle_updates_compliance_status_but_does_not_create_penalty_when_not_overdue(self, mock_create_penalty):
+    @patch('compliance.tasks.retryable_notice_of_obligation_met_email')
+    def test_handle_updates_compliance_status_but_does_not_create_penalty_when_not_overdue(
+        self,
+        mock_retryable_notice_of_obligation_met_email,
+        mock_create_penalty,
+    ):
         self.invoice.due_date = timezone.now().date() + timedelta(days=1)
         self.invoice.save()
 
@@ -218,6 +229,7 @@ class TestObligationPaidHandler:
         self.compliance_report_version.refresh_from_db()
         assert self.compliance_report_version.status == ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         mock_create_penalty.assert_not_called()
+        mock_retryable_notice_of_obligation_met_email.execute.assert_called_once_with(self.obligation.id)
 
 
 class TestComplianceHandlerManager:

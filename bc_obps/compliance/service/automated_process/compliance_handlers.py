@@ -8,6 +8,7 @@ from compliance.models.compliance_report_version import ComplianceReportVersion
 from compliance.service.penalty_calculation_service import PenaltyCalculationService
 from compliance.service.compliance_obligation_service import ComplianceObligationService
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -85,7 +86,6 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
         has_penalty = hasattr(invoice, 'compliance_penalty') and getattr(invoice, 'compliance_penalty', None)
         if has_penalty:
             return False
-
         return (
             invoice.compliance_obligation.compliance_report_version.status
             == ComplianceReportVersion.ComplianceStatus.OBLIGATION_NOT_MET
@@ -94,10 +94,13 @@ class ObligationPaidHandler(ComplianceUpdateHandler):
 
     def handle(self, invoice: ElicensingInvoice) -> None:
         """Update compliance status to OBLIGATION_FULLY_MET."""
+        from compliance.tasks import retryable_notice_of_obligation_met_email
+
         obligation = invoice.compliance_obligation
         compliance_report_version = obligation.compliance_report_version
         compliance_report_version.status = ComplianceReportVersion.ComplianceStatus.OBLIGATION_FULLY_MET
         compliance_report_version.save(update_fields=['status'])
+        retryable_notice_of_obligation_met_email.execute(obligation.id)
         logger.info(f"Updated compliance status for obligation {obligation.obligation_id}")
         if invoice.due_date < timezone.now().date():
             PenaltyCalculationService.create_penalty(obligation)

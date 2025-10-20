@@ -18,6 +18,7 @@ from compliance.emails import (
     send_notice_of_obligation_due_email,
     send_notice_of_obligation_generated_email,
     send_reminder_of_obligation_due_email,
+    send_notice_of_obligation_met_email,
 )
 
 pytestmark = pytest.mark.django_db
@@ -483,6 +484,61 @@ class TestSendNotifications:
 
         # Call the function with the obligcation id
         send_reminder_of_obligation_due_email(obligation.id)
+        mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
+            approved_user_operator.operator,
+            template_instance,
+            expected_context,
+        )
+
+    @patch(SEND_EMAIL_TO_OPERATORS_USERS_PATH)
+    @patch('compliance.emails._prepare_obligation_context')
+    def test_obligation_met_email(
+        self, mock_prepare_obligation_context, mock_send_email_to_operators_approved_users_or_raise
+    ):
+        # admin user
+        approved_user_operator = baker.make_recipe(
+            'registration.tests.utils.approved_user_operator',
+        )
+
+        # Create mock data
+        report = baker.make_recipe('reporting.tests.utils.report', operator=approved_user_operator.operator)
+        compliance_report = baker.make_recipe('compliance.tests.utils.compliance_report', report=report)
+        report_version = baker.make_recipe('reporting.tests.utils.report_version', report=report)
+        report_operation = baker.make_recipe('reporting.tests.utils.report_operation', report_version=report_version)
+        report_compliance_summary = baker.make_recipe(
+            'compliance.tests.utils.report_compliance_summary', report_version=report_version
+        )
+        compliance_report_version = baker.make_recipe(
+            'compliance.tests.utils.compliance_report_version',
+            compliance_report=compliance_report,
+            report_compliance_summary=report_compliance_summary,
+        )
+        invoice = baker.make_recipe('compliance.tests.utils.elicensing_invoice', outstanding_balance=Decimal('0'))
+        obligation = baker.make_recipe(
+            'compliance.tests.utils.compliance_obligation',
+            compliance_report_version=compliance_report_version,
+            elicensing_invoice=invoice,
+        )
+
+        template_instance = EmailNotificationTemplateService.get_template_by_name('Notice of Obligation Met')
+
+        report_version = obligation.compliance_report_version
+        report = report_version.compliance_report.report
+        report_operation = report_version.report_compliance_summary.report_version.report_operation
+        reporting_year = report.reporting_year.reporting_year
+        expected_context = {
+            "operator_legal_name": report_operation.operator_legal_name,
+            "operation_name": report_operation.operation_name,
+            "compliance_period": reporting_year,
+            # the following properties aren't used in the email, but we're reusing the helper function that includes them
+            "year_due": reporting_year + 1,
+            "tonnes_of_co2": '1,000.1234',
+            "outstanding_balance": '$0.00',
+        }
+        mock_prepare_obligation_context.return_value = expected_context
+
+        # Call the function with the obligcation id
+        send_notice_of_obligation_met_email(obligation.id)
         mock_send_email_to_operators_approved_users_or_raise.assert_called_once_with(
             approved_user_operator.operator,
             template_instance,
