@@ -3,7 +3,7 @@ from trigger_k8s_cronjob import trigger_k8s_cronjob
 from airflow.providers.standard.operators.python import PythonOperator
 from airflow.providers.cncf.kubernetes.operators.job import KubernetesJobOperator
 from datetime import datetime, timedelta, timezone
-from airflow import dag
+from airflow.sdk import dag
 import os
 import sys
 
